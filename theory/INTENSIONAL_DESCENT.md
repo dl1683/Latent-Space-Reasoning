@@ -255,6 +255,39 @@ would prove the monoid is not a group.
 Until step 4, the accurate claim is: depth-invariant relative
 leakage gain, not a multiplicative character or algebraic law.
 
+### Eigendecomposition of K_a
+
+The matrix representation of K_a on the (C, L, R) simplex is:
+
+\[
+K_a = \begin{pmatrix} 1 & 1-a & 0 \\ 0 & a & 0 \\ 0 & 0 & 1 \end{pmatrix}.
+\]
+
+Eigenvalues and eigenvectors:
+- **Eigenvalue 1** (multiplicity 2): span{(1,0,0), (0,0,1)} — the
+  "correct + residual" plane. These directions are invariant under
+  all K_a.
+- **Eigenvalue a** (multiplicity 1): direction (-1, 1, 0) — the
+  "leakage direction." K_a contracts (a < 1) or amplifies (a > 1)
+  along this direction.
+
+Geometric interpretation: K_a is a shear on the C-L subspace that
+scales the leakage direction by a while preserving R and S = C + L.
+The leakage direction (-1, 1, 0) represents converting between
+correct and shadow probability. The character χ(u) = a_u measures
+the "confidence modulation strength" of each null-witness class:
+a < 1 absorbs leakage (more confident), a > 1 generates it (less
+confident), a = 1 is the identity.
+
+On the log scale, log(a_u) is additive under composition:
+log(a_{uv}) = log(a_u) + log(a_v). This maps the null-witness
+monoid into (ℝ, +), an additive character. The log-character has a
+Bayesian interpretation: if the model were performing exact Bayesian
+updating, all null-witness classes would have a = 1 (log a = 0),
+since denotationally null operations provide no evidence. The
+deviation log(a_u) ≠ 0 measures the degree of non-Bayesian belief
+updating — the model's sensitivity to surface form over denotation.
+
 ## D15. Witness transport — definition (Codex repair)
 
 The global D5 causal-state action is:
