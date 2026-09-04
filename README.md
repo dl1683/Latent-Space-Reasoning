@@ -35,7 +35,7 @@ In one Qwen3-1.7B prompt family, deeply nested bindings were less likely to be r
 
 4. **Operator algebra is finer than semantic role.** Different surface texts within the same semantic class produce detectably different operators (within-class coefficient of variation 0.33–0.51). The model distinguishes paraphrases that humans consider equivalent.
 
-5. **Composition and noncommutativity under test.** If suffix operators from different semantic classes produce order-dependent effects beyond what same-class pairs exhibit, the transformation monoid is genuinely content-noncommutative.
+5. **Controlled noncommutativity confirmed.** Applying suffix A then suffix M produces a measurably different output distribution than M then A (median TV = 0.068), and this difference survives after algebraically subtracting all additive position/recency effects via token-length-matched neutral fillers (excess = 0.038, 3.8× threshold). The suffix operators genuinely interact — the transformation monoid is content-noncommutative, ruling out multiplicative-character, logit-bias, and position-decay explanations.
 
 ## Nine Breakpoints: Design Constraints for Native Mathematics
 

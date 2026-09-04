@@ -5,6 +5,62 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Gate 2 v2 — Filler-Based Noncommutativity (2026-09-04, COMPLETE)
+
+Distance from claim: 0 (this IS the native math claim).
+
+216 calls, 8 arms per context, 24 contexts (3 vars x 8 vals), depth 4.
+135s CPU on Qwen3-1.7B-Base. Deterministic (seed 42).
+
+**Purpose:** Test whether suffix operators A and M compose non-trivially
+(noncommutatively) after absorbing all additive position/recency effects.
+Uses Codex-designed token-length-matched neutral fillers and algebraic
+subtraction: predicted_phi(AM) = phi(AF_M) + phi(F_AM) - phi(F_AF_M).
+
+**Design:** 8 arms: AM, MA, AF_M, F_MA, MF_A, F_AM, F_AF_M, F_MF_A.
+A = "# {var} is unchanged.\n" (5 tok), M = "# Reassigning {var} now.\n" (7 tok).
+F_A = "# Code block follows.\n" (5 tok), F_M = "# Looking at the next part.\n" (7 tok).
+
+**Results:**
+
+| Metric | Value |
+|---|---|
+| Direct TV(AM,MA) median | 0.068 |
+| Direct TV(AM,MA) mean | 0.072 |
+| Excess (prob-space) mean | 0.033 |
+| Excess (log-ratio) mean | 0.038 |
+| Gate 1 (direct > 0.01) | PASS |
+| Gate 2 (excess > 0.01) | PASS |
+| Verdict | NONCOMMUTATIVE_CONTROLLED |
+
+Per-variable (log-ratio): x direct=0.040/excess=0.038, y direct=0.112/excess=0.026,
+z direct=0.063/excess=0.050.
+
+**What we learned:**
+1. A and M genuinely interact beyond position/recency effects.
+2. Rejects K_a, logit-bias, and position-weighted additive decay as complete models.
+3. Interaction is variable-dependent: x/z show mostly genuine, y mostly positional.
+4. Robust across probability-space and log-ratio coordinate systems.
+
+Config: `experiments/config/svb_qwen3_composition_v2.json`
+Results: `experiments/results/svb_qwen3_composition_v2/result.json`
+Runner: `experiments/run_composition_v2.py`
+
+---
+
+## Gate 2 v1 — Operator-Level Composition (2026-09-04, COMPLETE — RECENCY_DOMINATED)
+
+Distance from claim: 0.
+
+504 calls, 4 pairs (2 cross-role, 2 same-role controls), depth 4. 550s CPU.
+Verdict: RECENCY_DOMINATED. Cross-role TV median=0.081 < same-role max=0.130.
+Codex correction: same-role controls are the wrong null model.
+
+Config: `experiments/config/svb_qwen3_composition.json`
+Results: `experiments/results/svb_qwen3_composition/result.json`
+
+---
+
 ## Gate 1b — Confound Control (2×2 ANOVA + lumpability + surface equivalence) (2026-09-04, COMPLETE)
 
 Distance from claim: 0 (this IS the native math claim).

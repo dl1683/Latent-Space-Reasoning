@@ -4,6 +4,38 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### GATE 2 v2: NONCOMMUTATIVE_CONTROLLED — genuine interaction confirmed (2026-09-04)
+
+216 calls, 8 arms per context (Codex filler-based design), 24 contexts, depth 4. 135s CPU.
+Token-length-matched fillers: F_A="# Code block follows.\n" (5tok), F_M="# Looking at the next part.\n" (7tok).
+
+**Results:**
+- Direct TV(AM,MA): mean=0.072, median=0.068, max=0.141
+- Excess beyond filler null (prob-space): mean=0.033
+- Excess beyond filler null (log-ratio): mean=0.038
+- Both pre-registered gates PASS (threshold 0.01)
+- Verdict: NONCOMMUTATIVE_CONTROLLED
+
+**Per-variable breakdown (log-ratio excess):**
+- x: direct=0.040, excess=0.038 — nearly all genuine interaction
+- y: direct=0.112, excess=0.026 — large effect but mostly position-dependent
+- z: direct=0.063, excess=0.050 — mostly genuine interaction
+
+**What we learned:**
+1. A and M genuinely interact — the effect of applying A is modulated by M's presence
+   and vice versa, beyond any additive position/recency model.
+2. The interaction is variable-dependent: x and z contexts produce more genuine
+   noncommutativity, while y contexts have a larger raw effect that's more position-dominated.
+3. This is the first controlled evidence that suffix operators compose non-trivially.
+   K_A o K_M != K_M o K_A even after subtracting position effects.
+4. Robust across probability-space and log-ratio coordinate predictions.
+
+**What's next:** Codex evidence gate running. Then: what algebraic relations do these
+operators satisfy? Path from "operators don't commute" to "here is the native algebra."
+Gate 3 (causal relay-state composition) remains the decisive experiment but needs GPU.
+
+---
+
 ### GATE 2 v1: RECENCY_DOMINATED — MISLEADING class too variable (2026-09-04)
 
 504 calls, 4 pairs (2 cross-role, 2 same-role controls), depth 4 only. 550s CPU.

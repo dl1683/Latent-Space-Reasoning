@@ -54,9 +54,13 @@ math claim rests on the full action α and its quotient structure, not χ.
   be distinguished from MISLEADING internal variation.
   Codex correction: same-role controls are the wrong null model. Need filler-based
   design with token-length-matched neutral fillers to absorb additive position effects.
-- Gate 2 v2 (Noncommutativity, filler-based): PENDING. Codex-designed 192-call
-  experiment with 8 arms per context. Fillers absorb any additive slot/recency model
-  algebraically. Pre-registered gates: TV(AM,MA) > 0.01 AND excess interaction > 0.01.
+- Gate 2 v2 (Noncommutativity, filler-based): COMPLETE — NONCOMMUTATIVE_CONTROLLED.
+  216 calls, 24 contexts, deterministic. Both pre-registered gates pass:
+  (1) Direct TV(AM,MA) median=0.068 > 0.01; (2) Excess beyond filler null:
+  prob-space mean=0.033, log-ratio mean=0.038, both > 0.01. Robust across
+  coordinate systems. Per-variable: x and z show genuine interaction (excess ~= direct),
+  y shows mostly position-dependent ordering. Rejects K_a, logit-bias, and
+  position-weighted additive decay as complete explanations of order effects.
 - Gate 3 (Causal Relay-State Composition): Codex-designed decisive experiment.
   Compile operations into relay states at declared layer-position cut, mask
   original tokens, predict unseen compositions from atomic table, transplant

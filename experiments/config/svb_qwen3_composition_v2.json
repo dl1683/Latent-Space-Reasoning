@@ -1,0 +1,56 @@
+{
+  "experiment_name": "SVB-Qwen3-Composition-v2-Filler-Based",
+  "purpose": "Gate 2 v2: Codex-designed filler-based noncommutativity test. 8 arms per context absorb any additive position/recency model algebraically. Token-length-matched neutral fillers replace same-role controls. Pre-registered gates: (1) TV(AM,MA) > 0.01; (2) excess interaction beyond filler-derived null > 0.01.",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 2, 3, 4, 5, 6, 7, 8],
+  "inner_value": 99,
+  "depths": [4],
+  "single_var_only": true,
+  "eps_eq": 0.01,
+
+  "_CODEX_DESIGN": {
+    "source": "codex_gate2_strategy.txt (Architecture Theorist + Scaling Expert)",
+    "key_insight": "Same-role controls cannot absorb the discounted-scalar rival s'=lambda*s+delta_u. Filler arms estimate an arbitrary additive slot/recency model and allow algebraic subtraction.",
+    "filler_null_model": "In additive log-ratio coordinates phi: predicted_phi(AM) = phi(AF_M) + phi(F_AM) - phi(F_AF_M). If actual AM differs from this prediction, there is a genuine interaction beyond position.",
+    "pre_registered_gates": {
+      "gate_1_direct": "Lower bound for median TV(AM,MA) > 0.01 (paired, context-stratified)",
+      "gate_2_excess": "Lower bound for signed order contrast unexplained by filler null > 0.01"
+    },
+    "interpretation": {
+      "both_pass": "Controlled surface-level noncommutativity; rejects K_a, context-free logit addition, and position-weighted additive decay",
+      "direct_passes_excess_fails": "Ordinary recency/position explains the order effect",
+      "direct_fails": "The selected generators commute within tolerance"
+    }
+  },
+
+  "filler_composition": {
+    "surface_A": "# {var} is unchanged.\n",
+    "surface_M": "# Reassigning {var} now.\n",
+    "filler_A": "# Code block follows.\n",
+    "filler_M": "# Looking at the next part.\n",
+    "token_counts": {"A": 5, "M": 7, "F_A": 5, "F_M": 7},
+
+    "arms": [
+      {"name": "AM",    "suffix_1": "A",   "suffix_2": "M",   "label": "A then M"},
+      {"name": "MA",    "suffix_1": "M",   "suffix_2": "A",   "label": "M then A"},
+      {"name": "AF_M",  "suffix_1": "A",   "suffix_2": "F_M", "label": "A then filler-M"},
+      {"name": "F_MA",  "suffix_1": "F_M", "suffix_2": "A",   "label": "filler-M then A"},
+      {"name": "MF_A",  "suffix_1": "M",   "suffix_2": "F_A", "label": "M then filler-A"},
+      {"name": "F_AM",  "suffix_1": "F_A", "suffix_2": "M",   "label": "filler-A then M"},
+      {"name": "F_AF_M","suffix_1": "F_A", "suffix_2": "F_M", "label": "filler-A then filler-M"},
+      {"name": "F_MF_A","suffix_1": "F_M", "suffix_2": "F_A", "label": "filler-M then filler-A"}
+    ]
+  },
+
+  "query_template": "f()\nprint({var})  # Output: ",
+  "templates": {
+    "depth4_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n"
+  },
+
+  "estimated_calls": "8 arms x 24 contexts = 192 calls, ~4-5 min CPU",
+  "result_dir": "experiments/results/svb_qwen3_composition_v2"
+}
