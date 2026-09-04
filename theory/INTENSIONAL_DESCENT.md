@@ -88,6 +88,12 @@ for all w, applied at w = T_{v'} z.
 
 with the quotient projection J: P → I, J(u) = [u]_M.
 
+Because ≡_M is a monoid congruence, I inherits a monoid structure:
+[u]_M · [v]_M := [u·v]_M, with identity [ε]_M. Moreover,
+I ≅ im(α) ⊆ End(Q_M), making I a **transformation monoid** acting on
+behavioral places. It is not generally a group (suffix concatenation
+and attention-state overwriting provide no general inverses).
+
 ### Denotational congruence
 
 \[
@@ -113,7 +119,10 @@ denotation. If two traces produce the same future-response state from
 every starting point, they must also produce the same store
 transformation. This is a testable empirical property (IDC-S).
 
-When this holds, E = q ∘ J by construction.
+When this holds, E = q ∘ J by construction. Furthermore, q is a
+monoid homomorphism, so I is **graded by denotation**: fibers
+q⁻¹(d₁) · q⁻¹(d₂) ⊆ q⁻¹(d₁d₂). The identity fiber
+K = q⁻¹(id) = ker(E)/≡_M = EqWit is a submonoid of I.
 
 ### Key condition: non-descent (≡_E ⊄ ≡_M)
 
@@ -201,6 +210,50 @@ equality structure. In a non-groupoid, equal-effect paths cannot
 generally be reduced to v⁻¹u, so this captures null endomorphisms
 only. The full equal-denotation fiber ker_d(E) = {(u,v): E(u)=E(v)}
 is a broader object.
+
+### Multiplicative character (leakage coordinate)
+
+Suppose a behavioral observable ℓ (e.g., shadow-digit probability L)
+satisfies a separable depth-scaling law cellwise:
+
+\[
+\ell(K_u p_d) = a_u \cdot \ell(p_d)
+\]
+
+where a_u depends only on the null-witness class [u]_M and p_d is
+the pre-suffix state at depth d. Then the map
+
+\[
+\chi : \mathsf{EqWit} \to (\mathbb{R}_{\ge 0}, \times),
+\qquad \chi([u]) = a_u
+\]
+
+is a **multiplicative character** — a one-dimensional representation
+of the null-witness monoid — provided the composition law holds:
+
+\[
+a_{uv} = a_u \cdot a_v.
+\]
+
+The operator family consistent with this structure is:
+
+\[
+K_a(C, L, R) = (C + (1-a)L,\; aL,\; R),
+\]
+
+which composes as K_a ∘ K_b = K_{ab} and preserves both R and
+S = C + L. An idempotent in this family satisfies a² = a, giving
+a ∈ {0, 1}. A nontrivial idempotent (a = 0, total absorption)
+would prove the monoid is not a group.
+
+**Promotion ladder** (each step requires the previous):
+1. Stable cellwise ratio: L_M/L_A ≈ 4 per context, not just means
+2. Coordinate action: R preserved, S = C+L preserved, λ' = a_u · λ
+3. Surface descent: paraphrases in the same class yield same a_u
+4. Composition: a_{uv} ≈ a_u · a_v on unseen compositions
+
+Until step 4, the accurate claim is: depth-invariant relative
+leakage gain, not a multiplicative character or algebraic law.
 
 ## D15. Witness transport — definition (Codex repair)
 
