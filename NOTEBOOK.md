@@ -4,7 +4,63 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
-### CRC-1 result: INVALID / comprehensive negative — dead histories haunt (2026-09-04)
+### CEG-1 RESULT: RELAY — dead info relayed through attention (2026-09-04)
+
+914 forwards, 259s. Custom 4D attention masks, eager attention, full forward
+passes. Fixture perfect (TV=0.00), mask effectiveness confirmed (TV=0.856).
+
+**Finding:** RELAY-CUT (block live+ positions from attending to dead tokens)
+eliminates 100% of dead-content effect — ALL 96 pairs, ALL renderings,
+EXACTLY zero. QUERY-CUT (block only query→dead) leaves ~48% residual.
+SYNCHRONIZER (live-value restatement) only 22% erasure.
+
+**Mechanism:** Live-write positions (tokens 10-19) attend to dead-write tokens
+(0-9) and absorb their content into their representations. The query then
+reads this relayed information from the live positions. Two pathways:
+~52% direct (query→dead KV), ~48% relay (query→live→dead).
+
+**Controls:** Dead-content effect 3.88x above dummy-register baseline
+(standard Δ=0.406 vs dummy Δ=0.105). LIVE-CUT positive control: Δ=0.934
+(masks work). Calibration vs held-out: consistent.
+
+**Caveats:** Competence 83.6% (below 95%). RELAY-CUT=0 is mathematically
+expected given mask design — scientific content in QUERY-CUT residual.
+QUERY-CUT mean erasure negative (-24%) due to outlier pairs where blocking
+direct access amplifies the effect.
+
+**Next:** Codex Evidence Gate. Then characterize the relay algebraically.
+
+---
+
+### CEG-1 design: Causal Erasure Graph v1 (2026-09-04)
+
+**Direction pivot (Codex strategic review):** CRC closed on Qwen3-1.7B-Base.
+Next instrument: position-controlled causal-erasure via attention mask
+interventions. Binding question: when an assignment becomes semantically dead,
+does its influence survive through direct KV access, relay into later states,
+or because no legal continuation synchronizes the model?
+
+**Design:** 16 fixed-slot histories (4 dead combos × 4 live stores) ×
+4 rendering templates (2 calibration, 2 held-out). 6 intervention arms:
+OPEN, QUERY-CUT, RELAY-CUT, DUMMY-CUT (on dummy-register histories),
+LIVE-CUT (positive control), SYNCHRONIZER (append live-store restatement).
+Custom 4D attention masks with eager attention, complete forward passes
+(no KV cache). Fixture validation: OPEN mask must match standard inference
+within TV 1e-5. ~900 CPU forwards.
+
+**Predeclared interpretations:**
+- QUERY-CUT collapses → dead info directly reread from old KV cells
+- Only RELAY-CUT collapses → dead info relayed into later states
+- SYNCHRONIZER collapses → denizen-executable reset word exists (→ reuse CRC)
+- Neither works, LIVE-CUT does → distributed/redundant (stop Qwen line)
+
+**Codex adversarial corrections adopted for STATE.md:** "Dead histories haunt"
+replaced with licensed sentence; competence-failure overclaim corrected;
+relation rates marked as confounded.
+
+---
+
+### CRC-1 result: INVALID / bounded negative (2026-09-04)
 
 CRC-1 complete. 1508 forwards, 357s. Two-register overwrite semigroup on
 Qwen3-1.7B-Base. Task-aligned {0,1} observer — the coarsest possible

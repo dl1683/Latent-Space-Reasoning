@@ -1,0 +1,54 @@
+{
+  "experiment_name": "CEG-1: Causal Erasure Graph on Qwen3-1.7B-Base",
+  "purpose": "Where does dead information live: direct KV access, relay into later states, or no legal synchronizer? Position-controlled causal erasure via attention mask interventions. Codex strategic design (2026-09-04, .codex_post_crc1.txt).",
+
+  "_CODEX_DESIGN_GATE": {
+    "verdict": "GO (post-CRC closure)",
+    "source": ".codex_post_crc1.txt (2026-09-04)",
+    "key_design_choices": [
+      "Fixed 4-line slot histories, not random generation",
+      "16 histories per rendering: 4 dead combos x 4 live stores",
+      "Custom 4D attention masks for causal interventions",
+      "Eager attention, no KV cache, full forward passes",
+      "6 intervention arms: OPEN, QUERY-CUT, RELAY-CUT, DUMMY-CUT, LIVE-CUT, SYNCHRONIZER",
+      "4 renderings (2 calibration, 2 held-out) for generalization",
+      "Continuous measurements: delta_I(h,h') = max_c TV(B_c(Ih), B_c(Ih'))",
+      "Fixture validation: OPEN mask must reproduce standard inference within TV 1e-5"
+    ]
+  },
+
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "attn_implementation": "eager",
+  "seed": 42,
+
+  "renderings": {
+    "calibration": [
+      {"reg0": "a", "reg1": "b", "dummy0": "c", "dummy1": "d"},
+      {"reg0": "x", "reg1": "y", "dummy0": "w", "dummy1": "z"}
+    ],
+    "held_out": [
+      {"reg0": "p", "reg1": "q", "dummy0": "r", "dummy1": "s"},
+      {"reg0": "m", "reg1": "n", "dummy0": "j", "dummy1": "k"}
+    ]
+  },
+
+  "values": [0, 1],
+  "query_template": "print({reg})  # Output: ",
+
+  "preflight_threshold": 0.95,
+  "fixture_tv_threshold": 1e-5,
+
+  "predeclared_interpretations": {
+    "no_dead_content_effect": "Retract dead-histories finding; CRC-1 was explained by position, generic lexical change, or incompetence.",
+    "query_cut_collapses": "Obsolete KV cells are directly reread by the query.",
+    "relay_cut_only_collapses": "Dead content is copied into later token states via attention relay.",
+    "synchronizer_collapses": "Denizen-executable reset word exists; reuse CRC to test closure.",
+    "neither_cuts_nor_sync": "Residue is distributed or redundantly relayed. Stop Qwen history line.",
+    "mask_fixtures_fail": "Implementation-invalid, no scientific reading."
+  },
+
+  "estimated_forwards": "~900",
+  "result_dir": "results/ceg_1"
+}

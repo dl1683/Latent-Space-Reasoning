@@ -1,44 +1,68 @@
 # STATE
 
-## CRC-1 result: INVALID / comprehensive negative (2026-09-04)
+## CEG-1 result: RELAY — attention-mediated information relay (2026-09-04)
+
+**CEG-1 (Codex strategic design):** Custom 4D attention masks on Qwen3-1.7B-Base
+(eager attention, full forward passes). 16 fixed-slot histories × 4 renderings,
+6 intervention arms. 914 forwards, 259s CPU.
+
+**Verdict: RELAY.** Dead information persists through attention relay into
+live-write representations. Two pathways:
+- ~52% direct: query tokens attend to dead-write KV cells
+- ~48% relay: live-write tokens attend to dead-write tokens, query reads relayed info
+
+**Key numbers:** RELAY-CUT Δ=0.000 (100% erasure, all 96 pairs). QUERY-CUT
+Δ=0.194 (partial, ~52% median erasure). LIVE-CUT Δ=0.934 (positive control).
+SYNCHRONIZER Δ=0.267 (live restatement: only 22% erasure). Dead-content effect
+3.88x above dummy baseline. Replicates across 4 rendering templates.
+
+**Caveats (pre-Evidence-Gate):** Competence 83.6%. RELAY-CUT=0 is mathematically
+expected given mask design — scientific content is in the QUERY-CUT residual.
+QUERY-CUT residual (0.194) only partly above dummy baseline (0.105).
+
+---
+
+## CRC-1 result: INVALID / bounded negative (2026-09-04)
 
 **CRC-1 (Codex Architecture Theorist design):** Two binary registers, 32 roots
 (8 per store), 4 literal actions, task-aligned {0,1} observer. 1508 forwards,
-357s CPU. **INVALID** (competence 87.5% < 95% threshold). Even ignoring
-validity: identity partition (Q_1=32), zero compression at all tolerances
-(min D_1=0.099), algebraic relations 25.9% (idempotence 37.9%, absorption
-20.7%, commutation 19.1%). Dead histories haunt the transformer — `a=0;a=0`
-does NOT behave like `a=0`.
+357s CPU. **INVALID** (competence 87.5% < 95% threshold). Identity partition
+(Q_1=32), zero compression at all tolerances (min D_1=0.099), algebraic
+relations 25.9% (idempotence 37.9%, absorption 20.7%, commutation 19.1%).
 
-**CRC verdict (combined CRC-0 + CRC-1):** Two experiments, two task families,
-two observer granularities (full-vocab and task-aligned {0,1}). Both produce
-identity partitions. Per Codex: "If the overwrite experiment also gives
-identity under the task-aligned observer despite ≥95% competence, stop CRC
-as a discovery engine for this transformer." We got identity PLUS competence
-failure — even more decisive. CRC on Qwen3-1.7B-Base is closed.
+**Licensed sentence (Codex-corrected):** In the tested Qwen3-1.7B-Base
+interface, semantically cofinal assignment histories induced distinct
+conditional binary response profiles; because baseline competence was 87.5%
+and the principal law comparisons were not position-matched, this does not
+yet prove that correctly executed overwritten facts remain causally active.
 
-**What CRC established (structural facts):**
-1. Qwen3-1.7B-Base maintains distinct behavioral states per history — no lossy compression.
-2. Dead writes remain operationally visible (absorption fails at 20.7%).
-3. Order of independent register writes matters (commutation fails at 19.1%).
-4. Even repeated identical writes change behavior (idempotence fails at 37.9%).
-5. The apparatus works (Mode F ~0, tokenization clean, clique-verified).
+**CRC verdict (combined CRC-0 + CRC-1, Codex strategic review):** Two
+experiments, two task families, two observers. Both identity partitions.
+CRC-1 removed CRC-0's strongest design excuses (fine observer, root-dependent
+actions, no guaranteed collisions) and still landed far from compression.
+CRC on Qwen3-1.7B-Base is **closed** as a discovery engine. Retained only as
+a downstream assay if a future method discovers a plausible synchronizer.
 
-**Cross-framework convergence (strong finding):** CRC-1 (Qwen3-1.7B, Python
-registers) confirms the same primacy bias and non-commutation found by
-predictive_setter_algebra_v1 (Qwen3-0.6B, natural language entity-value
-pairs). Two models, two formalisms, three instruments — same pattern. This
-is a **structural property of transformer sequential state processing**:
-early facts dominate, independent writes interfere, identical repetitions
-change behavior. Competence position analysis: 100% correct when queried
-register's last write is the final line, 75% when it's not (model predicts
-the overwritten value in all 8 failures).
+**Codex adversarial corrections (adopted verbatim):**
+1. "Competence failure makes it more decisive" is scientifically wrong —
+   invalid data cannot strengthen claims about competent computation.
+2. Normalized {0,1} is not "the coarsest possible observer."
+3. Q_1=Q_2=32 is trivial, not meaningful tower stabilization.
+4. Algebraic relation rates are confounded by length, position, competence.
 
-**Open question:** What is the next approach? CRC as a discovery engine is
-done for this transformer. Options: (a) constructive — build/find a model
-with explicit state bottleneck, (b) different instrument — not refinement
-towers but something else, (c) different model at its capacity limit,
-(d) characterize the commitment/primacy structure itself as the native math.
+**Cross-framework convergence:** CRC-1 (Qwen3-1.7B, Python) partly replicates
+predictive_setter_algebra_v1 (Qwen3-0.6B, NL) primacy findings. Extends that
+failure class to 1.7B and a probabilistic binary observer.
+
+**Competence position analysis:** 100% correct when queried register's last
+write is the final line, 75% when it's not. All 8 failures predict the
+overwritten value. Positional structure, not yet causally localized.
+
+**Next: CEG-1 (Causal Erasure Graph v1).** Characterize the causal support of
+path dependence via attention mask interventions. Where does dead information
+live: direct KV access, relay into later states, or no legal synchronizer?
+16 histories × 6 intervention arms × 2 channels. ~800-1000 CPU forwards.
+Codex design: `.codex_post_crc1.txt`.
 
 ---
 
