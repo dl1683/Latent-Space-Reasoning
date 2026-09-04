@@ -39,6 +39,14 @@ EARLIER (overwritten) value. This is a clean structural result: positional
 recency dominates semantic state tracking. Intervening writes to the OTHER
 register interfere with recall of the queried register's value.
 
+**Cross-framework convergence:** The prior `predictive_setter_algebra_v1`
+experiment (2026-08-31, natural language fact appending) found last_write_wins
+= 27%, commutation = 56%. CRC-1 (2026-09-04, Python register assignments,
+full CRC framework) found absorption = 20.7%, commutation = 19.1%. Two
+completely independent methods, same model, same finding: **primacy bias +
+non-commutation are structural properties of Qwen3-1.7B-Base**, not
+artifacts of any single measurement approach.
+
 **Next:** Codex strategic analysis for what to do after CRC closure.
 
 ---
