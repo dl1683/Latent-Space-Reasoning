@@ -4,6 +4,23 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### GATE 1 COMPLETE + CONFOUND DIAGNOSTIC + GATE 1b LAUNCHED (2026-09-04)
+
+Gate 1 re-run completed (2835 calls, 31.6 min — slower due to duplicate process contention).
+Full analysis including holdout set, per-depth breakdown, and confound diagnostic.
+
+**Decisive test (all data):** ASSERT L=0.032, MISLEADING_ASSERT L=0.124, **+0.092 diff (t=21.23)**.
+**Holdout replication:** +0.121 diff. Effect is LARGER on held-out surfaces.
+**Per-depth scaling:** d2 +0.047, d3 +0.105, d4 +0.126. Content effect grows with depth.
+
+**Confound diagnostic:** MIXED. Content effect (misleading_novar - assert) = +0.061.
+Var-mention effect (misleading_var - misleading_novar) = +0.051. Both comparable (~1.2:1).
+"Updating the value" (no var mention) has L=0.097 vs assert 0.036 = genuine content effect.
+But var-mentioning surfaces average L=0.148, adding ~50% more.
+
+**Gate 1b launched** (svb_qwen3_gate1b.json): 2x2 content × var-mention crossover with
+BASELINE role for F8 lumpability. ~3096 calls, ~19 min on CPU. Running now.
+
 ### GATE 1 PRELIMINARY: Content sensitivity confirmed, form/content confound identified (2026-09-04)
 
 Gate 1 experiment completed all 3 depths (2835 calls, ~17 min on CPU).
