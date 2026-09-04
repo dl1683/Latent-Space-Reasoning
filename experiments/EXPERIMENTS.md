@@ -5,6 +5,69 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Curvature Test: Depth × Suffix Interaction (2026-09-04, COMPLETE — SUB_THRESHOLD_SIGNAL)
+
+Distance from claim: 0 (tests non-additivity of behavioral quotient).
+
+Codex-designed interventional curvature test. κ = [z(d_high, MISLEAD) - z(d_high, ASSERT)]
+- [z(d_low, MISLEAD) - z(d_low, ASSERT)]. Under additive logit model κ=0. Nonzero κ
+means the suffix effect depends on depth — a candidate native curvature.
+
+288 calls, 98.3s CPU. 3 variables × 8 values × 3 depths × 3 suffixes.
+Split-half validation: train on {x,y}, hold out {z}.
+
+**Gate 0 (Competence):** PASS — 100% accuracy (72/72) on no-suffix prompts.
+
+**d2→d3:** NO_CURVATURE (genuinely null). Training mean κ=-0.0009, holdout +0.085.
+Variable-specific effects (x positive, y negative) cancel in aggregate. Sign mismatch.
+
+**d3→d4:** Sub-threshold but UNIVERSALLY consistent.
+- κ = -0.28 (ALL 24 measurements negative, 100% sign agreement)
+- Train mean: -0.286, Holdout mean: -0.281 (perfect match)
+- Bootstrap 95% CI: [-0.33, -0.24] (excludes zero)
+- Not digit-predicted (digit range 0.169 < |mean| 0.284)
+- **ONLY failing gate: magnitude (0.28 < 0.5 pre-registered threshold)**
+
+**Suffix effect ΔS (MISLEAD - ASSERT) by depth:**
+- d2: -1.663 (std 0.182)
+- d3: -1.635 (std 0.171)
+- d4: -1.919 (std 0.256)
+
+**What we learned:** The misleading suffix becomes 0.28 nats MORE effective at pushing
+toward shadow at depth 4 vs depth 3, with perfect consistency across all variables and
+digit values. The depth×suffix interaction is non-additive — the model's response to
+semantic manipulation depends on structural nesting depth. This is a candidate
+structural-semantic curvature, below the pre-registered threshold but passing all
+other gates. The asymmetry (null at d2→d3, signal at d3→d4) suggests a transition
+in the model's scope-processing regime between depth 3 and depth 4.
+
+Config: `config/curvature_qwen3.json`. Results: `results/curvature_qwen3/result.json`.
+Runner: `run_curvature.py`.
+
+---
+
+## S3 Permutation Composition (2026-09-04, COMPLETE — MODEL_CANNOT_COMPOSE)
+
+Distance from claim: 1 (task family competence test).
+
+Codex-designed experiment testing whether Qwen3-1.7B-Base computes S3 permutation
+group composition with genuine algebraic structure. 36 ordered pairs (6x6),
+6-way candidate scoring via teacher forcing, 4 pre-registered gates.
+
+**Result:** Gate 1 FAIL (4/36 correct, threshold 34). Model has degenerate c021
+output bias — predicts the same permutation regardless of input. All 4 "correct"
+predictions are lucky matches. Gate 2 also FAIL (additive null beats model).
+
+**What we learned:** Qwen3-1.7B-Base cannot trace Python function calls for tuple
+permutation operations. This is a COMPETENCE failure, not an algebra failure. The
+task is beyond the model's code-tracing capability at 1.7B parameters. Future
+composition tests must use tasks within the model's proven competence (e.g.,
+SVB-style variable retrieval with simple single-digit output).
+
+Config: `config/s3_qwen3.json`. Results: `results/s3_qwen3/result.json`.
+
+---
+
 ## Congruence Test (2026-09-04, COMPLETE — NO_CONGRUENCE)
 
 Distance from claim: 0.

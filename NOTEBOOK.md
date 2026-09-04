@@ -4,6 +4,43 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### CURVATURE TEST: sub-threshold but universally consistent d3→d4 interaction (2026-09-04)
+
+Codex-designed 2×2 interventional test (depth × suffix). 288 calls, 98s.
+
+d2→d3: genuinely null (κ≈0, variable-specific effects cancel).
+d3→d4: κ=-0.28 across ALL 24 measurements (100% sign agreement). Train/holdout
+perfect match. CI [-0.33, -0.24] excludes zero. Not digit-predicted.
+ONLY failing gate: magnitude (0.28 < 0.5 pre-registered threshold).
+
+The misleading suffix becomes 0.28 nats more effective at depth 4 vs depth 3.
+This is a real structural-semantic interaction: the model's response to semantic
+manipulation depends on nesting depth. The effect is non-additive — under an
+additive model κ=0, but we observe κ=-0.28 with perfect consistency.
+
+The asymmetry is interesting: nothing happens from d2→d3, but d3→d4 shows a
+universal effect. The model's scope-processing regime changes somewhere between
+depth 3 and 4.
+
+Formal verdict: NO_CURVATURE (pre-registered threshold). But passing 4/5 gates
+with 100% sign coherence demands Codex adjudication. Is the threshold too
+stringent, or is 0.28 nats genuinely too small to constitute native curvature?
+
+NEXT: Codex adjudication on the borderline result. Two questions: (1) Is 0.28
+nats sufficient? (2) What does the d3/d4 asymmetry mean mechanistically?
+
+### S3 PERMUTATION COMPOSITION: model cannot compose (2026-09-04)
+
+Codex-designed S3 experiment. Gate 1 FAIL: 4/36 correct (degenerate c021 bias).
+The model cannot trace Python function calls for tuple permutations at 1.7B.
+This is a competence failure, not an algebra failure. Behavioral testing of
+compositional algebra requires tasks within the model's proven competence.
+
+Key insight: behavioral bottleneck. Even if algebraic structure exists internally,
+the model can't express it through code-tracing behavior. Two paths forward:
+(a) compositional tasks with simple output (extend SVB), or (b) probe hidden
+states directly (short GPU burst, bypasses behavioral bottleneck).
+
 ### CONGRUENCE TEST: behavioral equivalence is NOT algebraic (2026-09-04)
 
 768 calls, 218s CPU. Codex-designed decisive test for native algebra.

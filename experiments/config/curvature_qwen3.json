@@ -1,0 +1,27 @@
+{
+  "experiment_name": "Curvature-Depth-Suffix-Qwen3",
+  "purpose": "Test depth x suffix interaction (kappa): does the suffix effect on z=log(p_correct/p_shadow) depend on depth? Nonzero kappa = candidate native curvature. Codex design (session 01a06cdd).",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 2, 3, 4, 5, 6, 7, 8],
+  "depths": [2, 3, 4],
+  "suffixes": {
+    "none": "",
+    "assert": "# {var} is unchanged.\n",
+    "mislead": "# Changing {var}.\n"
+  },
+  "query_template": "f()\nprint({var})  # Output: ",
+  "training_vars": ["x", "y"],
+  "holdout_vars": ["z"],
+  "gates": {
+    "competence_accuracy": 0.80,
+    "competence_termination": 0.95,
+    "min_kappa_magnitude": 0.5,
+    "min_sign_agreement": 0.70,
+    "min_snr_vs_noise": 10.0
+  },
+  "result_dir": "results/curvature_qwen3"
+}

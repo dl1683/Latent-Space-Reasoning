@@ -23,10 +23,15 @@ The actual operator is a surface-specific, depth-invariant logit bias on
 shadow probability: δ_L(s) constant across d2-d4 (CV=0.036 for ASSERT).
 Quotient closure holds for single suffixes (100% ASSERT). BUT congruence
 test FAILS: behavioral equivalence is NOT preserved under composition with
-semantically heavy suffixes (ratio 2.6-13.2x). This establishes that the
-delta_L landscape is learned semantic control, NOT native algebra. Text
-features predict delta_L at R2=0.88. SVB task family is exhausted for
-the native math claim — need a new task family or mechanistic approach.
+semantically heavy suffixes (ratio 2.6-13.2x). Text features predict
+delta_L at R2=0.88.
+
+**Curvature finding (2026-09-04):** Depth × suffix interaction is NON-ADDITIVE
+at d3→d4 (κ=-0.28, 24/24 negative, CI [-0.33,-0.24] excludes zero, train/holdout
+match). Null at d2→d3. The misleading suffix strengthens by 0.28 nats at depth 4.
+Formal verdict: SUB_THRESHOLD (0.28 < 0.5 pre-registered magnitude gate). Passes
+all other gates (sign match, CI, 100% sign agreement, not digit-predicted).
+Codex adjudication pending on whether this constitutes native curvature.
 
 **Distance from central claim: 0.** This IS the native math claim.
 

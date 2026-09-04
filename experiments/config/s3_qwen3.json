@@ -1,0 +1,21 @@
+{
+  "experiment_name": "S3-Composition-Qwen3",
+  "purpose": "Test S3 permutation group composition: does Qwen3-1.7B compute with algebraic structure or just additive logit biases? Codex design (session 01a06cc9).",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "nonce_py": ["ka", "zu", "mi"],
+  "nonce_alt": ["rex", "pog", "wib"],
+  "gates": {
+    "gate1_min_correct": 34,
+    "gate1_total": 36,
+    "gate2_accuracy_margin_pp": 25,
+    "gate2_nll_margin_nats": 0.5,
+    "gate3_min_agreement": 34,
+    "gate4_min_closure": 0.95
+  },
+  "separating_continuations": [[0,1,2], [1,0,2], [1,2,0]],
+  "result_dir": "results/s3_qwen3",
+  "estimated_calls": "~1400 forward passes, ~10-15 min CPU"
+}
