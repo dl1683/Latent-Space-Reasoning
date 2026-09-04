@@ -1,0 +1,139 @@
+{
+  "experiment_name": "SVB-Qwen3-Gate1b-VarMentionControl",
+  "purpose": "Gate 1b: controls for the variable-mention confound identified in Gate 1. Adds ASSERT_VAR (true invariance assertions that mention the variable) and MISLEADING_ASSERT_NOVAR (misleading assertions that do NOT mention it). 2x2 design: content (true vs misleading) x variable-mention (present vs absent). If content-driven, L tracks assertion truth regardless of var mention. If var-mention-driven, L tracks whether the variable appears in the comment.",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 2, 3, 4, 5, 6, 7, 8],
+  "inner_value": 99,
+  "depths": [2, 3, 4],
+  "single_var_only": true,
+
+  "intensional_roles": {
+    "ASSERT": {
+      "description": "True invariance assertion, NO variable mention",
+      "train_surfaces": [
+        "# No changes.\n",
+        "# State unchanged.\n",
+        "# Nothing modified.\n",
+        "# Values preserved.\n",
+        "# No updates.\n",
+        "# Same as before.\n"
+      ],
+      "holdout_surfaces": [
+        "# All variables intact.\n",
+        "# No side effects.\n"
+      ]
+    },
+    "ASSERT_VAR": {
+      "description": "True invariance assertion that MENTIONS the variable (controls for var-mention effect)",
+      "var_specific": true,
+      "train_surfaces": [
+        "# {var} is unchanged.\n",
+        "# {var} stays the same.\n",
+        "# {var} not modified.\n",
+        "# {var} retains its value.\n"
+      ],
+      "holdout_surfaces": [
+        "# {var} is still intact.\n",
+        "# {var} was not touched.\n"
+      ]
+    },
+    "MISLEADING_ASSERT": {
+      "description": "Misleading assertion (describes rewrite) that MENTIONS the variable",
+      "var_specific": true,
+      "train_surfaces": [
+        "# Reassigning {var} now.\n",
+        "# Updating {var}.\n",
+        "# Setting {var} to new value.\n",
+        "# Overwriting {var}.\n"
+      ],
+      "holdout_surfaces": [
+        "# Changing {var}.\n",
+        "# {var} gets reassigned.\n"
+      ]
+    },
+    "MISLEADING_ASSERT_NOVAR": {
+      "description": "Misleading assertion (describes rewrite) with NO variable mention (controls for var-mention effect)",
+      "train_surfaces": [
+        "# Reassigning the value now.\n",
+        "# Overwriting the variable.\n",
+        "# Updating to a new value.\n",
+        "# Setting a different value.\n"
+      ],
+      "holdout_surfaces": [
+        "# Changing the current value.\n",
+        "# About to overwrite.\n"
+      ]
+    },
+    "REWRITE": {
+      "description": "Identity assignment -- syntactically an assignment, semantically a no-op",
+      "var_specific": true,
+      "train_surfaces": [
+        "{var} = {var}\n",
+        "{var} = +{var}\n",
+        "{var} = int({var})\n",
+        "{var} = ({var})\n",
+        "{var} = {var} if True else {var}\n",
+        "{var} = {var} + 0\n"
+      ],
+      "holdout_surfaces": [
+        "{var} = {var} or {var}\n",
+        "{var} = [{var}][0]\n"
+      ]
+    },
+    "OBSERVE": {
+      "description": "Read-only check -- observes but does not modify",
+      "var_specific": true,
+      "train_surfaces": [
+        "_ = {var}\n",
+        "type({var})\n",
+        "isinstance({var}, int)\n",
+        "{var} == {var}\n"
+      ],
+      "holdout_surfaces": [
+        "id({var})\n",
+        "{var} is {var}\n"
+      ]
+    },
+    "BOUNDARY": {
+      "description": "Pure structural delimiter -- no semantic content",
+      "train_surfaces": [
+        "\n",
+        "pass\n",
+        "...\n",
+        "\n\n"
+      ],
+      "holdout_surfaces": [
+        "pass  \n",
+        "\n\n\n"
+      ]
+    },
+    "BASELINE": {
+      "description": "No suffix at all -- raw prefix response for lumpability (F8) testing",
+      "train_surfaces": [
+        ""
+      ],
+      "holdout_surfaces": []
+    }
+  },
+
+  "query_template": "f()\nprint({var})  # Output: ",
+  "templates": {
+    "depth2_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        return {var}\n    g()\n    return {var}\n",
+    "depth3_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n",
+    "depth4_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n"
+  },
+
+  "predictions": {
+    "H_content": "Content drives behavior: ASSERT and ASSERT_VAR both show low L (true assertions suppress regardless of var mention). MISLEADING_ASSERT and MISLEADING_ASSERT_NOVAR both show high L (misleading assertions suppress less regardless of var mention). Main effect of content >> main effect of var-mention.",
+    "H_var_mention": "Variable mention drives behavior: ASSERT_VAR and MISLEADING_ASSERT both show similar L (mentioning the variable shifts behavior regardless of assertion truth). ASSERT and MISLEADING_ASSERT_NOVAR both show similar L. Main effect of var-mention >> main effect of content.",
+    "H_interaction": "Both factors contribute: content and var-mention have additive or interactive effects on L.",
+    "decisive_test": "2x2 ANOVA on L with factors content (true/misleading) and var_mention (present/absent). If content main effect significant and var_mention not: H_content. If var_mention significant and content not: H_var_mention."
+  },
+
+  "estimated_calls": "8 roles x ~6 surfaces x 3 vars x 8 vals x 3 depths = ~3096 calls (incl 72 baseline), ~19 min on CPU",
+  "result_dir": "experiments/results/svb_qwen3_gate1b"
+}

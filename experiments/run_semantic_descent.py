@@ -127,11 +127,11 @@ def analyze(observations, cfg):
             ratio = between_var / within_mean
             print(f"  Between/Within ratio:          {ratio:.2f}")
             if ratio > 4:
-                print(f"  → STRONG: role explains {ratio:.0f}× more variance than surface")
+                print(f"  -> STRONG: role explains {ratio:.0f}x more variance than surface")
             elif ratio > 1.5:
-                print(f"  → MODERATE: role-based structure present")
+                print(f"  -> MODERATE: role-based structure present")
             else:
-                print(f"  → WEAK: surface features dominate")
+                print(f"  -> WEAK: surface features dominate")
 
         print()
 
@@ -156,14 +156,14 @@ def analyze(observations, cfg):
         print(f"  Difference (misleading - true): {diff:+.4f}")
 
         if diff > 0.02:
-            print(f"  → Model follows CONTENT: misleading comments suppress less")
+            print(f"  -> Model follows CONTENT: misleading comments suppress less")
             print(f"    (comments about rewriting treated differently from assertions)")
             print(f"    SUPPORTS intensional descent")
         elif abs(diff) < 0.01:
-            print(f"  → Model follows FORM: comment form dominates regardless of content")
+            print(f"  -> Model follows FORM: comment form dominates regardless of content")
             print(f"    SUPPORTS lexical cueing hypothesis")
         else:
-            print(f"  → AMBIGUOUS: small difference, needs more data")
+            print(f"  -> AMBIGUOUS: small difference, needs more data")
 
     print("=== F6 BASELINE: STATEMENT-TYPE vs INTENSIONAL ROLE ===\n")
 
@@ -197,11 +197,11 @@ def analyze(observations, cfg):
         improvement = (role_between - stmt_between) / stmt_between * 100
         print(f"  Role improvement over stmt-type: {improvement:+.1f}%")
         if improvement > 20:
-            print(f"  → PASS: intensional role explains more than statement type")
+            print(f"  -> PASS: intensional role explains more than statement type")
         elif improvement > 0:
-            print(f"  → MARGINAL: small improvement from role over statement type")
+            print(f"  -> MARGINAL: small improvement from role over statement type")
         else:
-            print(f"  → FAIL: statement type alone is sufficient (F6)")
+            print(f"  -> FAIL: statement type alone is sufficient (F6)")
 
     return {
         "within_role_L_var": float(within_mean) if within_var else None,
