@@ -1,6 +1,28 @@
 # STATE
 
-## Active campaign: Continuation-Refinement Calculus (2026-09-04)
+## CRC-0 result: FAIL — no compression (2026-09-04)
+
+**CRC-0 (Codex-designed, decisive):** 36 roots, 3 typed actions, exhaustive
+words through length 2, full 151K-token distribution. Q_1 = 36 classes (one
+per root state). No compression, no closure, no transfer. The model maintains
+36 behaviorally distinct states — every (variable, value, presentation)
+triple is unique after one action. Tower stabilizes trivially at the identity
+partition. Verdict stable across tolerances 0.005–0.02. Clean negative:
+apparatus works, model doesn't compress on this task family. Min D_1 = 0.0165,
+just 65% above primary tolerance — the model is ALMOST compressible but not
+quite. Q_0 had 33 classes (some presentation equivalence) but all split at Q_1.
+
+**Implication:** The CRC framework on the SVB variable-scoping task family
+produces a clean but trivial result. The refinement tower exists but is the
+identity. This closes the SVB task family as a substrate for finding compact
+native structure in Qwen3-1.7B-Base.
+
+**What remains open:** Whether a different task family (one where the model
+genuinely compresses — i.e., distinct histories produce equivalent futures)
+would yield nontrivial CRC structure. The framework itself is not falsified;
+the task family is exhausted.
+
+## Prior campaign: Continuation-Refinement Calculus (2026-09-04)
 
 **Pivot from SVB (Codex-directed, 2026-09-04):** All SVB-campaign experiments
 produced structured negatives (congruence, S3 composition, noncommutativity,

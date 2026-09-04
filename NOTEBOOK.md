@@ -4,6 +4,33 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### CRC-0 result: FAIL — no compression (2026-09-04)
+
+CRC-0 complete. 544 forwards, 210s CPU. Codex-designed: 36 roots (3 vars ×
+4 vals × 3 presentations), 3 typed actions (N/H/R), exhaustive A^2 = 13
+words per root, full 151K-vocab distribution, clique-verified classes.
+
+Result: Q_0 = 33, Q_1 = 36, Q_2 = 36. No compression at any tolerance.
+The model maintains a unique behavioral signature for every (var, val, pres)
+triple. Three Q_0 pairs merged (presentation variants with TV < 0.01) but
+all split at Q_1: the H action distinguishes presentations at TV~0.028,
+the R action distinguishes cross-variable pairs at TV=0.111.
+
+Transfer vacuously fails (all Q_1 classes are singletons). Mode F control
+shows TV = 7e-7 (cache perfectly faithful). Verdict stable at all tolerances.
+
+Key observation: min D_1 = 0.0165, just 65% above eps=0.01. The model is
+ALMOST compressible — presentation variants nearly merge — but not quite.
+This "almost" is itself interesting: the model treats different presentations
+as nearly but not exactly equivalent, and even a neutral comment reveals the
+difference.
+
+This closes the SVB task family as a CRC substrate. The framework works
+(clean, interpretable, decisive) but the task doesn't yield compression.
+Next: Codex consultation on what task family WOULD yield nontrivial structure.
+
+---
+
 ### PIVOT: Continuation-Refinement Calculus (2026-09-04)
 
 Codex Architecture Theorist analysis (codex_post_svb_pivot.txt, ~12KB):

@@ -5,6 +5,54 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## CRC-0: Continuation-Refinement Calculus (2026-09-04, COMPLETE — FAIL / NO COMPRESSION)
+
+Distance from claim: 0.
+
+Decisive test of the CRC framework: does Qwen3-1.7B-Base admit a compact
+predictive refinement tower on the SVB task family? Codex-designed (design
+gate: REVISE then GO). Full next-token distribution (151,643 vocab), not
+11-bin projection. 3 typed actions (N=neutral comment, H=heavy comment,
+R=reassignment), 36 roots (3 variables × 4 values × 3 presentation
+templates), exhaustive words through length 2 (13 per root). Clique-verified
+equivalence classes. Cross-fitted transfer testing. Multi-tolerance stability.
+
+544 forwards, 210s CPU, Qwen3-1.7B-Base float32.
+
+**Preflight PASS**: Tokenization clean. Competence 36/36 = 100%.
+
+**Q_0**: 33 classes (3 pairs merged at immediate response: x_1_P1≡y_1_P0,
+y_3_P0≡y_3_P1, y_5_P0≡y_5_P1). Some presentation equivalence at horizon 0.
+
+**Q_1**: 36 classes — **no compression**. Every root distinct. All Q_0 pairs
+split. Min pairwise D_1 = 0.0165. Witnesses: R splits cross-var pair (TV=0.111),
+H splits presentation pairs (TV~0.028).
+
+**Q_2**: 36 classes. Tower stabilizes trivially. Q_1→Q_2 frag = 0.000.
+
+**Closure**: vacuous (0/0, no multi-member Q_1 classes). Coverage: 0%.
+
+**Transfer**: FAIL all folds (all singletons — no class members to predict from).
+Text baseline TV = 0.039–0.057; nearest-neighbor = 0.016–0.031.
+
+**Mode F**: TV = 7.0e-7. Cache perfectly faithful.
+
+**Verdict stability**: Same FAIL at eps = 0.005, 0.01, 0.02.
+
+**VERDICT: FAIL — no compression (Q_1 ~ one per state).**
+
+**What we learned:**
+1. The model maintains 36 distinct behavioral states (every var×val×pres triple
+   produces a unique full-distribution signature surviving action application).
+2. Q_0 compression exists (33/36) but shatters after one action.
+3. Min D_1 = 0.0165, just 65% above tolerance — model is ALMOST compressible.
+4. The CRC apparatus works cleanly; the model doesn't compress on this task.
+
+Config: `config/crc_0.json`. Results: `results/crc_0/result.json`.
+Runner: `run_crc_0.py`. Codex design gate: `.codex_crc_design.txt`.
+
+---
+
 ## Curvature Control: Isochronous Position-Matched (2026-09-04, COMPLETE — FAIL / LINE CLOSED)
 
 Distance from claim: 0.

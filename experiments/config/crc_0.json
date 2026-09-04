@@ -1,0 +1,75 @@
+{
+  "experiment_name": "CRC-0: Continuation-Refinement Calculus on Qwen3-1.7B-Base",
+  "purpose": "Decisive test (Codex-revised): does a compact predictive refinement tower exist? 3 typed actions x 36 roots (3 vars x 4 vals x 3 presentations). Full next-token distribution. Exhaustive words through length 2. Cross-fitted transfer on held-out vars and presentations. One round.",
+
+  "_CODEX_DESIGN_GATE": {
+    "verdict": "REVISE then GO",
+    "source": ".codex_crc_design.txt (2026-09-04)",
+    "key_revisions": [
+      "3 typed actions (N,H,R), not 10",
+      "36 roots with 3 presentations for transfer testing",
+      "Exhaustive A^2 = 13 words per root (504 forwards total)",
+      "Clique-verified equivalence classes (not union-find)",
+      "Response-TV baseline comparison, not class accuracy",
+      "Leave-one-variable-out and leave-one-presentation-out folds",
+      "Dense softmax for exact TV, then top-k for storage",
+      "Multi-tolerance verdict stability check (0.005, 0.01, 0.02)"
+    ]
+  },
+
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 3, 5, 7],
+  "inner_value": 99,
+  "depth": 4,
+  "single_var_only": true,
+
+  "top_k_store": 1000,
+  "eps_values": [0.005, 0.01, 0.02],
+  "eps_primary": 0.01,
+
+  "query_template": "f()\nprint({var})  # Output: ",
+  "templates": {
+    "P0": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n",
+    "P1": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def inner():\n                {var} = 99999\n                return {var}\n            inner()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n",
+    "P2": "{var} = {outer_val}\ndef func():\n    {var} = 99\n    def layer1():\n        {var} = 999\n        def layer2():\n            {var} = 9999\n            def layer3():\n                {var} = 99999\n                return {var}\n            layer3()\n            return {var}\n        layer2()\n        return {var}\n    layer1()\n    return {var}\n"
+  },
+
+  "actions": {
+    "N": {"name": "N", "suffix": "# No changes.\n", "type": "neutral"},
+    "H": {"name": "H", "suffix": "# Reassigning {var} now.\n", "type": "heavy"},
+    "R": {"name": "R", "suffix": "{var} = {r_val}\n", "type": "reassign"}
+  },
+  "r_val": 3,
+
+  "decisiveness": {
+    "pass": [
+      "Valid, nonvacuous tolerance classes (clique-verified)",
+      "|Q_1| < |Z|/2 over distinct histories",
+      "Q_1 to Q_2 fragmentation <= 10%",
+      "Cross-fitted same-level closure > 0.8 with >= 90% coverage",
+      "Full-response TV improvement over strongest baseline",
+      "Transfer on both variable and presentation folds",
+      "Same verdict at 0.005 and 0.02 tolerances"
+    ],
+    "fail": [
+      "Compression disappears (Q_1 ~ one per state)",
+      "Cross-fitted closure < 0.5",
+      "Best raw-history baseline matches the calculus"
+    ],
+    "invalid": [
+      "Non-transitive tolerance classes",
+      "Competence below threshold",
+      "Coverage failures",
+      "Tokenization boundary violations"
+    ]
+  },
+
+  "estimated_forwards": "~510 (36 root + 36*13 words + ~6 sentinels)",
+  "estimated_time": "15-25 min CPU",
+  "result_dir": "results/crc_0"
+}

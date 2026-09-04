@@ -47,7 +47,10 @@ Properties:
 - ≡_0 is immediate response equivalence (same present observations)
 - ≡_{h+1} refines ≡_h (never coarsens)
 - ≡_∞ = ≡_M (the full behavioral equivalence from D4)
-- Each ≡_h is a monoid congruence on A* (by the same argument as D11)
+- Each ≡_h induces graded maps T_a : Q_{h+1} → Q_h (by monotonicity,
+  CR-4), NOT automatically T_a : Q_h → Q_h. Same-level closure is
+  evidence only after stabilization and only when tested out of sample.
+  (Correction per Codex design gate, 2026-09-04.)
 
 The quotient tower:
 

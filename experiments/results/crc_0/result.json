@@ -1,0 +1,348 @@
+{
+  "config": {
+    "experiment_name": "CRC-0: Continuation-Refinement Calculus on Qwen3-1.7B-Base",
+    "purpose": "Decisive test (Codex-revised): does a compact predictive refinement tower exist? 3 typed actions x 36 roots (3 vars x 4 vals x 3 presentations). Full next-token distribution. Exhaustive words through length 2. Cross-fitted transfer on held-out vars and presentations. One round.",
+    "_CODEX_DESIGN_GATE": {
+      "verdict": "REVISE then GO",
+      "source": ".codex_crc_design.txt (2026-09-04)",
+      "key_revisions": [
+        "3 typed actions (N,H,R), not 10",
+        "36 roots with 3 presentations for transfer testing",
+        "Exhaustive A^2 = 13 words per root (504 forwards total)",
+        "Clique-verified equivalence classes (not union-find)",
+        "Response-TV baseline comparison, not class accuracy",
+        "Leave-one-variable-out and leave-one-presentation-out folds",
+        "Dense softmax for exact TV, then top-k for storage",
+        "Multi-tolerance verdict stability check (0.005, 0.01, 0.02)"
+      ]
+    },
+    "model_id": "Qwen/Qwen3-1.7B-Base",
+    "device": "cpu",
+    "dtype": "float32",
+    "seed": 42,
+    "variables": [
+      "x",
+      "y",
+      "z"
+    ],
+    "outer_values": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "inner_value": 99,
+    "depth": 4,
+    "single_var_only": true,
+    "top_k_store": 1000,
+    "eps_values": [
+      0.005,
+      0.01,
+      0.02
+    ],
+    "eps_primary": 0.01,
+    "query_template": "f()\nprint({var})  # Output: ",
+    "templates": {
+      "P0": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n",
+      "P1": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def inner():\n                {var} = 99999\n                return {var}\n            inner()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n",
+      "P2": "{var} = {outer_val}\ndef func():\n    {var} = 99\n    def layer1():\n        {var} = 999\n        def layer2():\n            {var} = 9999\n            def layer3():\n                {var} = 99999\n                return {var}\n            layer3()\n            return {var}\n        layer2()\n        return {var}\n    layer1()\n    return {var}\n"
+    },
+    "actions": {
+      "N": {
+        "name": "N",
+        "suffix": "# No changes.\n",
+        "type": "neutral"
+      },
+      "H": {
+        "name": "H",
+        "suffix": "# Reassigning {var} now.\n",
+        "type": "heavy"
+      },
+      "R": {
+        "name": "R",
+        "suffix": "{var} = {r_val}\n",
+        "type": "reassign"
+      }
+    },
+    "r_val": 3,
+    "decisiveness": {
+      "pass": [
+        "Valid, nonvacuous tolerance classes (clique-verified)",
+        "|Q_1| < |Z|/2 over distinct histories",
+        "Q_1 to Q_2 fragmentation <= 10%",
+        "Cross-fitted same-level closure > 0.8 with >= 90% coverage",
+        "Full-response TV improvement over strongest baseline",
+        "Transfer on both variable and presentation folds",
+        "Same verdict at 0.005 and 0.02 tolerances"
+      ],
+      "fail": [
+        "Compression disappears (Q_1 ~ one per state)",
+        "Cross-fitted closure < 0.5",
+        "Best raw-history baseline matches the calculus"
+      ],
+      "invalid": [
+        "Non-transitive tolerance classes",
+        "Competence below threshold",
+        "Coverage failures",
+        "Tokenization boundary violations"
+      ]
+    },
+    "estimated_forwards": "~510 (36 root + 36*13 words + ~6 sentinels)",
+    "estimated_time": "15-25 min CPU",
+    "result_dir": "experiments/results/crc_0"
+  },
+  "competence": 1.0,
+  "n_roots": 36,
+  "q0": {
+    "n_classes": 33,
+    "all_cliques": true,
+    "tv_min": 0.003749550127054354,
+    "tv_max": 0.9122392996870854,
+    "tv_median": 0.810780124868441
+  },
+  "q1": {
+    "n_classes": 36,
+    "all_cliques": true,
+    "classes": {
+      "0": [
+        "d4_x_1_P0"
+      ],
+      "1": [
+        "d4_x_1_P1"
+      ],
+      "2": [
+        "d4_x_1_P2"
+      ],
+      "3": [
+        "d4_x_3_P0"
+      ],
+      "4": [
+        "d4_x_3_P1"
+      ],
+      "5": [
+        "d4_x_3_P2"
+      ],
+      "6": [
+        "d4_x_5_P0"
+      ],
+      "7": [
+        "d4_x_5_P1"
+      ],
+      "8": [
+        "d4_x_5_P2"
+      ],
+      "9": [
+        "d4_x_7_P0"
+      ],
+      "10": [
+        "d4_x_7_P1"
+      ],
+      "11": [
+        "d4_x_7_P2"
+      ],
+      "12": [
+        "d4_y_1_P0"
+      ],
+      "13": [
+        "d4_y_1_P1"
+      ],
+      "14": [
+        "d4_y_1_P2"
+      ],
+      "15": [
+        "d4_y_3_P0"
+      ],
+      "16": [
+        "d4_y_3_P1"
+      ],
+      "17": [
+        "d4_y_3_P2"
+      ],
+      "18": [
+        "d4_y_5_P0"
+      ],
+      "19": [
+        "d4_y_5_P1"
+      ],
+      "20": [
+        "d4_y_5_P2"
+      ],
+      "21": [
+        "d4_y_7_P0"
+      ],
+      "22": [
+        "d4_y_7_P1"
+      ],
+      "23": [
+        "d4_y_7_P2"
+      ],
+      "24": [
+        "d4_z_1_P0"
+      ],
+      "25": [
+        "d4_z_1_P1"
+      ],
+      "26": [
+        "d4_z_1_P2"
+      ],
+      "27": [
+        "d4_z_3_P0"
+      ],
+      "28": [
+        "d4_z_3_P1"
+      ],
+      "29": [
+        "d4_z_3_P2"
+      ],
+      "30": [
+        "d4_z_5_P0"
+      ],
+      "31": [
+        "d4_z_5_P1"
+      ],
+      "32": [
+        "d4_z_5_P2"
+      ],
+      "33": [
+        "d4_z_7_P0"
+      ],
+      "34": [
+        "d4_z_7_P1"
+      ],
+      "35": [
+        "d4_z_7_P2"
+      ]
+    }
+  },
+  "q2": {
+    "n_classes": 36,
+    "all_cliques": true
+  },
+  "refinement": {
+    "q0_to_q1": 1.0909090909090908,
+    "q1_to_q2_frag": 0.0,
+    "split_events": [
+      {
+        "pair": [
+          "d4_x_1_P1",
+          "d4_y_1_P0"
+        ],
+        "worst_action": "R",
+        "worst_tv": 0.11112786951391877
+      },
+      {
+        "pair": [
+          "d4_y_3_P0",
+          "d4_y_3_P1"
+        ],
+        "worst_action": "H",
+        "worst_tv": 0.02801388526441431
+      },
+      {
+        "pair": [
+          "d4_y_5_P0",
+          "d4_y_5_P1"
+        ],
+        "worst_action": "H",
+        "worst_tv": 0.027136467749236327
+      }
+    ]
+  },
+  "closure": {
+    "score": 1.0,
+    "total": 0,
+    "passed": 0,
+    "coverage": 0.0
+  },
+  "baselines": {
+    "leave_one_variable_out": {
+      "x": {
+        "quotient_mean_tv": 1.0,
+        "text_mean_tv": 0.047011605779071305,
+        "nn_mean_tv": 0.02719780891622187
+      },
+      "y": {
+        "quotient_mean_tv": 1.0,
+        "text_mean_tv": 0.05735773280507952,
+        "nn_mean_tv": 0.03028216642847687
+      },
+      "z": {
+        "quotient_mean_tv": 1.0,
+        "text_mean_tv": 0.0516225247810847,
+        "nn_mean_tv": 0.02894815468283742
+      }
+    },
+    "leave_one_presentation_out": {
+      "P0": {
+        "quotient_mean_tv": 1.0,
+        "text_mean_tv": 0.046475270132408764,
+        "nn_mean_tv": 0.017268113692512247
+      },
+      "P1": {
+        "quotient_mean_tv": 1.0,
+        "text_mean_tv": 0.03907386972330462,
+        "nn_mean_tv": 0.015935002405835993
+      },
+      "P2": {
+        "quotient_mean_tv": 1.0,
+        "text_mean_tv": 0.05566436321998056,
+        "nn_mean_tv": 0.03142483948436319
+      }
+    }
+  },
+  "mode_f": {
+    "mean_tv": 7.026543529483346e-07,
+    "samples": [
+      {
+        "root": "d4_x_1_P0",
+        "action": "N",
+        "tv": 1.6481506442852604e-07
+      },
+      {
+        "root": "d4_x_1_P0",
+        "action": "H",
+        "tv": 8.588181312684606e-07
+      },
+      {
+        "root": "d4_y_5_P0",
+        "action": "N",
+        "tv": 5.540893681165166e-07
+      },
+      {
+        "root": "d4_y_5_P0",
+        "action": "R",
+        "tv": 1.2328948479798351e-06
+      }
+    ]
+  },
+  "tolerance_stability": {
+    "0.005": {
+      "q1_classes": 36,
+      "q2_classes": 36,
+      "cliques_q1": true,
+      "cliques_q2": true,
+      "compression": false,
+      "fragmentation": 0.0
+    },
+    "0.01": {
+      "q1_classes": 36,
+      "q2_classes": 36,
+      "cliques_q1": true,
+      "cliques_q2": true,
+      "compression": false,
+      "fragmentation": 0.0
+    },
+    "0.02": {
+      "q1_classes": 35,
+      "q2_classes": 36,
+      "cliques_q1": true,
+      "cliques_q2": true,
+      "compression": false,
+      "fragmentation": 0.02857142857142857
+    }
+  },
+  "verdict_stable": true,
+  "verdict": "FAIL: no compression (Q_1 ~ one per state)",
+  "forwards": 544,
+  "elapsed_s": 209.92803192138672
+}
