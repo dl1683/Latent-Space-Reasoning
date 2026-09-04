@@ -27,11 +27,15 @@ In one Qwen3-1.7B prompt family, deeply nested bindings were less likely to be r
 
 ### Key findings
 
-1. **Single-count maximum.** Among tested suffix counts {0, 1, 2, 4}, suffix count 1 yields the highest σ at all depths d2–d4. Additional suffixes do not improve further.
+1. **Content-driven, not surface-driven.** A 2×2 crossover experiment separating semantic content from surface features shows content drives 6.3× more effect than variable-mention confounds. The model distinguishes what a comment *means*, not just its syntactic form.
 
-2. **The observed gain grows with depth.** On this fixed panel, the absolute s1−s0 difference rises from 1.2 points at d1 to 12.6 points at d4.
+2. **Well-defined operators on a probability simplex.** Lumpability analysis (R² = 0.79–0.98 across 7 role types) demonstrates that suffix operations act as approximately well-defined transformations on the (correct-digit, shadow-digit, residual) probability simplex. This is the coordinate system native to the model's computation.
 
-3. **Ongoing architecture investigation.** Research is testing whether the Qwen3 pattern generalizes across clean architectures, tasks, and prompt families.
+3. **Single-count maximum with depth scaling.** Among tested suffix counts {0, 1, 2, 4}, suffix count 1 yields the highest σ at all depths d2–d4. The absolute gain rises from 1.2 pp at d1 to 12.6 pp at d4.
+
+4. **Operator algebra is finer than semantic role.** Different surface texts within the same semantic class produce detectably different operators (within-class coefficient of variation 0.33–0.51). The model distinguishes paraphrases that humans consider equivalent.
+
+5. **Composition and noncommutativity under test.** If suffix operators from different semantic classes produce order-dependent effects beyond what same-class pairs exhibit, the transformation monoid is genuinely content-noncommutative.
 
 ## Nine Breakpoints: Design Constraints for Native Mathematics
 

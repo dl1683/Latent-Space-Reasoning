@@ -4,6 +4,31 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### GATE 2 v1: RECENCY_DOMINATED — MISLEADING class too variable (2026-09-04)
+
+504 calls, 4 pairs (2 cross-role, 2 same-role controls), depth 4 only. 550s CPU.
+
+**Results:**
+- Cross-role TV: mean=0.085, median=0.081
+- Same-role ASSERT: mean=0.006 (nearly commutative, despite 3.8× a_u range!)
+- Same-role MISLEADING: mean=0.097 (highly noncommutative, 2.9× a_u range)
+- Verdict: RECENCY_DOMINATED (cross-role median 0.081 < same-role max 0.130)
+
+**What we learned:**
+1. ASSERT class is remarkably orderly — "State unchanged" (a_u=0.10) and "No changes"
+   (a_u=0.38) nearly commute (TV=0.006). The ASSERT operator is content-stable.
+2. MISLEADING class is chaotic — "Changing {var}" (a_u=0.50) and "{var} gets reassigned"
+   (a_u=1.44) are highly order-dependent (TV=0.097). The class is too heterogeneous.
+3. Cross-role noncommutativity (0.081) is real but CANNOT be distinguished from the
+   extreme within-MISLEADING order effects.
+
+**Codex correction (received before experiment):** Same-role controls are the wrong
+null model. They don't properly absorb the discounted-scalar rival s'=λs+δ_u.
+Need token-length-matched neutral fillers and an additive interaction test.
+Next: redesigned 192-call experiment with Codex's filler-based null model.
+
+---
+
 ### GATE 1b COMPLETE: CONTENT DOMINATES, LUMPABILITY STRONG (2026-09-04)
 
 3,384 calls across 8 roles × 3 depths × 3 vars × 8 values. ~100 min CPU.

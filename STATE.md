@@ -47,13 +47,16 @@ math claim rests on the full action α and its quotient structure, not χ.
     (ASSERT:"State unchanged" ↔ ASSERT_VAR:"{var} is unchanged", max TV=0.009).
     Class M has ZERO qualifying pairs (best=0.022). Between-class p5=0.024.
   - F6 Baseline: MARGINAL (+0.0064 TV over cheap features).
-- Gate 2 (Noncommutativity): REDESIGNED per Codex review. Tests order-dependence
-  of E-null suffix pairs. Both K_a matrices AND logit biases commute, so
-  noncommutativity defeats both scalar models simultaneously. Config revised
-  with same-role recency controls (360 calls, ~7.5 min). Codex design gate:
-  REVISE (recency confound). PARTIALLY UNBLOCKED: Class A has one validated
-  pair (ASSERT:"State unchanged" ↔ ASSERT_VAR:"{var} is unchanged"). Class M
-  has NO validated pair at eps_eq=0.01 — need relaxed threshold or new surfaces.
+- Gate 2 v1 (Noncommutativity, same-role controls): COMPLETE — RECENCY_DOMINATED.
+  Cross-role TV median=0.081 < same-role max=0.130. Same-role ASSERT nearly
+  commutes (TV=0.006) but same-role MISLEADING is highly noncommutative (TV=0.097)
+  due to extreme a_u variation (0.50 vs 1.44). Cross-role signal real but cannot
+  be distinguished from MISLEADING internal variation.
+  Codex correction: same-role controls are the wrong null model. Need filler-based
+  design with token-length-matched neutral fillers to absorb additive position effects.
+- Gate 2 v2 (Noncommutativity, filler-based): PENDING. Codex-designed 192-call
+  experiment with 8 arms per context. Fillers absorb any additive slot/recency model
+  algebraically. Pre-registered gates: TV(AM,MA) > 0.01 AND excess interaction > 0.01.
 - Gate 3 (Causal Relay-State Composition): Codex-designed decisive experiment.
   Compile operations into relay states at declared layer-position cut, mask
   original tokens, predict unseen compositions from atomic table, transplant
