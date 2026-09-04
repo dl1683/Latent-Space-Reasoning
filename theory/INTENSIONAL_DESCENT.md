@@ -28,7 +28,7 @@ store transformations. Both have a single object (the "current state").
 The extensional evaluation is a monoid homomorphism:
 
 \[
-E: \mathcal{P} \to \mathcal{D}, \qquad E(u \cdot v) = E(v) \circ E(u).
+E: \mathcal{P} \to \mathcal{D}, \qquad E(u \cdot v) = E(u) \circ E(v).
 \]
 
 E maps a presented trace to the store transformation it effects.
@@ -69,11 +69,16 @@ v ≡_M v', then for all z:
 
 \[
 d_\infty(T_{u \cdot v} z, T_{u' \cdot v'} z)
-= d_\infty(T_u(T_v z), T_{u'}(T_{v'} z)) = 0
+= d_\infty(T_u(T_v z), T_{u'}(T_{v'} z))
+\le d_\infty(T_u(T_v z), T_u(T_{v'} z))
+  + d_\infty(T_u(T_{v'} z), T_{u'}(T_{v'} z))
+= 0 + 0 = 0
 \]
 
-since T_v z ~ T_{v'} z (by v ≡_M v') and T_u w = T_{u'} w for all
-w with w ~ w' (by u ≡_M u').
+by the triangle inequality. The first term vanishes because T_u is
+nonexpansive under d_∞ and T_v z ~ T_{v'} z (by v ≡_M v'). The
+second vanishes because u ≡_M u' gives d_∞(T_u w, T_{u'} w) = 0
+for all w, applied at w = T_{v'} z.
 
 ### Intensional quotient
 
@@ -128,8 +133,7 @@ where Δ_P is literal equality of traces (identity congruence).
 
 - **Left strict inclusion** (compression): the model identifies
   distinct traces — different surface realizations of the same
-  computational operation. |I| < |P| in the appropriate sense: the
-  behavioral congruence is nontrivial.
+  computational operation. The behavioral congruence is nontrivial.
 
 - **Right strict inclusion** (non-descent): the model distinguishes
   denotationally equivalent operations. Some E-equivalent traces are
@@ -371,10 +375,13 @@ or a cheap context-state baseline predicts as well as the proposed
 null-witness class. This kills "strictly coarser than token history."
 Kills IDC-C.
 
-**(F7) Coarse-readout artifact.** Distinctions or composition
-disappear under the full next-token response law or independent
-registered coarse-grainings. The (C,L,R) projection manufactures
-apparent structure. Kills the bridge from d_∞ to the measured quotient.
+**(F7) Coarse-readout artifact.** Role clustering, compression, or
+the fitted operator/composition structure disappear under the full
+next-token response law or independent registered coarse-grainings.
+A positive coarse distinction is preserved by any fixed Markov
+projection; what may be artifactual is the algebraic structure
+(clustering, operator fit, composition law) built on top of it.
+Kills the bridge from d_∞ to the measured quotient.
 
 **(F8) No lumpability.** Two states with the same (C,L,R) response
 vector evolve differently after the same null-witness move. Then no
