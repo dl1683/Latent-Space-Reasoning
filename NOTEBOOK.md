@@ -4,6 +4,34 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### STRATEGIC PIVOT: Intensional Descent Criterion (2026-09-04)
+
+Codex Architecture Theorist synthesis delivered a clear verdict: the coefficient
+cartography (suffix counts, attenuation estimates, simplex analysis) is standard
+R^n mathematics — necessary scaffolding but NOT the native math. The native math
+is the EQUALITY-WITNESS ALGEBRA: the structure of how denotationally null moves
+(things that "do nothing" extensionally) have nontrivial, compositional, causal
+model actions.
+
+Formal framework written: theory/INTENSIONAL_DESCENT.md
+- D10-D15 extend D1-D7 with external denotational category
+- P → I → D factorization: model factors through intensional quotient but NOT
+  through extensional denotation
+- Equality witnesses: classes of "doing nothing" the model distinguishes
+- Witness transport: context-indexed operators on denotational fibers
+- Five exact falsifiers (F1-F5)
+
+Biggest credible claim: "Pretrained transformers implement proof-relevant causal
+semantics — they compress execution histories into equality-witness classes
+strictly finer than denotational state, compositional, and causally controlling."
+
+Gate 1 (Semantic Descent) experiment designed and launched:
+- 5 intensional roles × ~7 surface realizations × 3 vars × 9 vals × 3 depths
+- Critical test: MISLEADING_ASSERT (comments describing rewrites) vs true ASSERT
+- If content > form: intensional descent. If form > content: lexical cueing.
+
+Codex reviewing the theorem attempt in parallel.
+
 ### DEPTH-5 REVEALS L SATURATION: shadow leakage has finite capacity (2026-09-04)
 
 Depth-5 prediction experiment (P4) shows the exponential depth model BREAKS:

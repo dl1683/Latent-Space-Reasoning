@@ -1,6 +1,40 @@
 # STATE
 
-## Current statement (2026-09-01, FROZEN-RESIDUAL MEASUREMENT LANE CLOSED)
+## Active campaign: Intensional Descent Criterion (2026-09-04)
+
+**Central claim under test:** Pretrained transformers implement proof-relevant
+causal semantics — they compress execution histories into equality-witness
+classes that are strictly finer than denotational state, strictly coarser than
+token history, compositional across operations, and causally controlling later
+inference.
+
+**Formal framework:** theory/INTENSIONAL_DESCENT.md (D10-D15, extending D1-D7).
+Key structure: P →J→ I →q→ D factorization. Model's action factors through
+intensional quotient I but NOT through extensional denotation D.
+
+**Distance from central claim: 0.** This IS the native math claim.
+
+**Three sequential gates:**
+- Gate 1 (Semantic Descent): Does behavior follow intensional role, not surface
+  form? RUNNING (run_semantic_descent.py). Decisive test: MISLEADING_ASSERT
+  (comments describing rewrites) vs true ASSERT.
+- Gate 2 (Composition): Do witness transport operators compose predictably?
+  BLOCKED on Gate 1.
+- Gate 3 (Causal Transfer): Can witness state be transplanted between
+  extensionally equivalent histories? BLOCKED on Gate 2.
+
+**Kill conditions:** F1 (surface dependence), F2 (non-generalization),
+F3 (non-composition), F4 (non-causal), F5 (trivial fiber).
+
+**Prior evidence:** SVB suffix ablation (a≈0.38 for ASSERT vs β≈0.13 reverse
+for REWRITE) supports IDC-2 (extensional non-descent). IDC-1 (intensional
+factorization across paraphrases) untested — Gate 1 tests this.
+
+---
+
+## Prior campaigns (closed)
+
+## Frozen-residual measurement lane (2026-09-01, CLOSED)
 
 **The entire frozen-residual measurement lane is CLOSED.** Terminal diagnostic
 (Codex round 10) showed the OCI/RAC composition is ordinary logit addition

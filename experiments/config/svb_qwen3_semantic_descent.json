@@ -1,0 +1,104 @@
+{
+  "experiment_name": "SVB-Qwen3-SemanticDescent",
+  "purpose": "Gate 1 of the Intensional Descent Criterion. Tests whether the model's suffix response tracks intensional ROLE (assertion, rewrite, observation, boundary) rather than SURFACE form (comment vs code, specific tokens). Decisive: if within-role variance < between-role variance across held-out paraphrases, intensional descent holds. If behavior follows surface form regardless of semantic content, this is lexical cueing.",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "inner_value": 99,
+  "depths": [2, 3, 4],
+  "single_var_only": true,
+
+  "intensional_roles": {
+    "ASSERT": {
+      "description": "Declarative assertion that state is unchanged",
+      "train_surfaces": [
+        "# No changes.\n",
+        "# State unchanged.\n",
+        "# Nothing modified.\n",
+        "# Values preserved.\n",
+        "# No updates.\n",
+        "# Same as before.\n"
+      ],
+      "holdout_surfaces": [
+        "# All variables intact.\n",
+        "# No side effects.\n"
+      ]
+    },
+    "MISLEADING_ASSERT": {
+      "description": "Comment form but describes a rewrite (tests: does model follow form or content?)",
+      "var_specific": true,
+      "train_surfaces": [
+        "# Reassigning {var} now.\n",
+        "# Updating the value.\n",
+        "# Setting {var} to new value.\n",
+        "# Overwriting {var}.\n"
+      ],
+      "holdout_surfaces": [
+        "# Changing {var}.\n",
+        "# {var} gets reassigned.\n"
+      ]
+    },
+    "REWRITE": {
+      "description": "Identity assignment — syntactically an assignment, semantically a no-op",
+      "var_specific": true,
+      "train_surfaces": [
+        "{var} = {var}\n",
+        "{var} = +{var}\n",
+        "{var} = int({var})\n",
+        "{var} = ({var})\n",
+        "{var} = {var} if True else {var}\n",
+        "{var} = {var} + 0\n"
+      ],
+      "holdout_surfaces": [
+        "{var} = {var} or {var}\n",
+        "{var} = [{var}][0]\n"
+      ]
+    },
+    "OBSERVE": {
+      "description": "Read-only check — observes but does not modify",
+      "var_specific": true,
+      "train_surfaces": [
+        "_ = {var}\n",
+        "type({var})\n",
+        "isinstance({var}, int)\n",
+        "{var} == {var}\n"
+      ],
+      "holdout_surfaces": [
+        "id({var})\n",
+        "{var} is {var}\n"
+      ]
+    },
+    "BOUNDARY": {
+      "description": "Pure structural delimiter — no semantic content",
+      "train_surfaces": [
+        "\n",
+        "pass\n",
+        "...\n",
+        "\n\n"
+      ],
+      "holdout_surfaces": [
+        "pass  \n",
+        "\n\n\n"
+      ]
+    }
+  },
+
+  "query_template": "f()\nprint({var})  # Output: ",
+  "templates": {
+    "depth2_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        return {var}\n    g()\n    return {var}\n",
+    "depth3_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n",
+    "depth4_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n"
+  },
+
+  "predictions": {
+    "H_intensional": "Within-role variance << between-role variance. ASSERT variants cluster together (strong suppression), REWRITE variants cluster together (reverse transport), regardless of surface form. MISLEADING_ASSERT behaves differently from true ASSERT despite sharing comment form.",
+    "H_lexical": "Comment-form suffixes cluster together regardless of content. MISLEADING_ASSERT behaves like true ASSERT because it is a comment. Code-form suffixes cluster separately.",
+    "decisive_test": "MISLEADING_ASSERT vs true ASSERT. If model follows content: MISLEADING_ASSERT should suppress LESS than true ASSERT (or even enhance shadow). If model follows form: MISLEADING_ASSERT and ASSERT should be indistinguishable."
+  },
+
+  "estimated_calls": "5 roles × ~7 surfaces × 3 vars × 9 vals × 3 depths = ~2835 calls, ~15 min on CPU",
+  "result_dir": "experiments/results/svb_qwen3_semantic_descent"
+}
