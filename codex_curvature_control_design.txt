@@ -1,0 +1,608 @@
+Design gate: **GO**. The design is preflight-valid, CPU-bounded at 768 expected calls, and yields an unambiguous `PASS_CONTROLLED_CURVATURE` or `FAIL_NO_CONTROLLED_CURVATURE`.
+
+No repository files were written. The design builds on [run_curvature.py](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_curvature.py>) and [run_semantic_descent.py](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_semantic_descent.py>). Blackboard findings are recorded as `e961–e967`.
+
+## Complete JSON config
+
+```json
+{
+  "schema_version": "1.0",
+  "experiment_name": "Curvature-Control-Isochronous-Qwen3-v1",
+  "purpose": "Test whether the negative d3-to-d4 depth-by-semantic-suffix interaction survives exact token-position matching, varied inner literals and shadow readouts, held-out surface/template families, a prospectively fitted position-gain null, clustered inference, and replay calibration.",
+  "model": {
+    "model_id": "Qwen/Qwen3-1.7B-Base",
+    "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+    "device": "cpu",
+    "dtype": "float32",
+    "local_files_only": true,
+    "adapter": "experiments/run_svb_0.py::ModelAdapter"
+  },
+  "execution": {
+    "single_process": true,
+    "max_parallel_model_jobs": 1,
+    "seed": 42,
+    "bootstrap_seed": 42017,
+    "max_wall_seconds": 1800,
+    "expected_model_calls": 768,
+    "max_model_calls": 800,
+    "checkpoint_every_context": true
+  },
+  "task": {
+    "variable": "x",
+    "outer_value": 4,
+    "analysis_shadow_digits": [8, 9],
+    "termination_gate": "not_applicable_teacher_forced_next_token_distribution",
+    "query_template": "{fn0}()\nprint({var})  # Output: "
+  },
+  "inner_literal_profiles": [
+    {
+      "id": "repeat8",
+      "inner1": "88",
+      "inner2": "888",
+      "inner3": "8888",
+      "inner4": "88888"
+    },
+    {
+      "id": "repeat9",
+      "inner1": "99",
+      "inner2": "999",
+      "inner3": "9999",
+      "inner4": "99999"
+    }
+  ],
+  "template_schema": {
+    "depth3": "{var} = {outer_value}\ndef {fn0}():\n    {var} = {inner1}\n    def {fn1}():\n        {var} = {inner2}\n        def {fn2}():\n            {var} = {inner3}\n            return {var}\n        {fn2}()\n        return {var}\n    {fn1}()\n    return {var}\n",
+    "depth4": "{var} = {outer_value}\ndef {fn0}():\n    {var} = {inner1}\n    def {fn1}():\n        {var} = {inner2}\n        def {fn2}():\n            {var} = {inner3}\n            def {fn3}():\n                {var} = {inner4}\n                return {var}\n            {fn3}()\n            return {var}\n        {fn2}()\n        return {var}\n    {fn1}()\n    return {var}\n"
+  },
+  "template_instances": [
+    {
+      "id": "short_fghk",
+      "family": "short_names",
+      "split": "train",
+      "fn0": "f",
+      "fn1": "g",
+      "fn2": "h",
+      "fn3": "k"
+    },
+    {
+      "id": "short_pqrs",
+      "family": "short_names",
+      "split": "train",
+      "fn0": "p",
+      "fn1": "q",
+      "fn2": "r",
+      "fn3": "s"
+    },
+    {
+      "id": "descriptive_scope",
+      "family": "descriptive_names",
+      "split": "holdout",
+      "fn0": "outer",
+      "fn1": "middle",
+      "fn2": "inner",
+      "fn3": "deep"
+    },
+    {
+      "id": "tree_names",
+      "family": "descriptive_names",
+      "split": "holdout",
+      "fn0": "root",
+      "fn1": "branch",
+      "fn2": "leaf",
+      "fn3": "tip"
+    },
+    {
+      "id": "sequence_names",
+      "family": "descriptive_names",
+      "split": "holdout",
+      "fn0": "start",
+      "fn1": "next_step",
+      "fn2": "later",
+      "fn3": "final_step"
+    },
+    {
+      "id": "hierarchy_names",
+      "family": "descriptive_names",
+      "split": "holdout",
+      "fn0": "main",
+      "fn1": "child",
+      "fn2": "grandchild",
+      "fn3": "deepest"
+    }
+  ],
+  "positioned_none": {
+    "id": "NONE5",
+    "text": "#\n#\n#\n#\n#\n",
+    "expected_tokens": 5,
+    "meaning": "No semantic operation; five bare comment tokens keep query position equal to every suffix arm."
+  },
+  "semantic_surface_pairs": [
+    {
+      "id": "keep_change",
+      "split": "train",
+      "assert_id": "A_KEEP",
+      "assert_text": "# Keep {var} unchanged.\n",
+      "mislead_id": "M_CHANGE",
+      "mislead_text": "# Change {var} now.\n",
+      "expected_tokens_each": 5
+    },
+    {
+      "id": "preserve_modify",
+      "split": "train",
+      "assert_id": "A_PRESERVE",
+      "assert_text": "# Preserve {var} unchanged.\n",
+      "mislead_id": "M_MODIFY",
+      "mislead_text": "# Modify {var} now.\n",
+      "expected_tokens_each": 5
+    },
+    {
+      "id": "maintain_update",
+      "split": "holdout",
+      "assert_id": "A_MAINTAIN",
+      "assert_text": "# Maintain {var} unchanged.\n",
+      "mislead_id": "M_UPDATE",
+      "mislead_text": "# Update {var} now.\n",
+      "expected_tokens_each": 5
+    },
+    {
+      "id": "leave_replace",
+      "split": "holdout",
+      "assert_id": "A_LEAVE",
+      "assert_text": "# Leave {var} unchanged.\n",
+      "mislead_id": "M_REPLACE",
+      "mislead_text": "# Replace {var} now.\n",
+      "expected_tokens_each": 5
+    },
+    {
+      "id": "remain_different",
+      "split": "holdout",
+      "assert_id": "A_REMAIN",
+      "assert_text": "# {var} remains unchanged.\n",
+      "mislead_id": "M_DIFFERENT",
+      "mislead_text": "# Set {var} differently.\n",
+      "expected_tokens_each": 5
+    }
+  ],
+  "neutral_surfaces": [
+    {
+      "id": "N_NOTE",
+      "split": "train",
+      "text": "# Note about {var}.\n",
+      "expected_tokens": 5
+    },
+    {
+      "id": "N_READ",
+      "split": "train",
+      "text": "# Reading {var} only.\n",
+      "expected_tokens": 5
+    },
+    {
+      "id": "N_CHECK",
+      "split": "train",
+      "text": "# Checking {var} value.\n",
+      "expected_tokens": 5
+    },
+    {
+      "id": "N_COMMENT",
+      "split": "holdout",
+      "text": "# Comment on {var}.\n",
+      "expected_tokens": 5
+    }
+  ],
+  "padding": {
+    "target": "Make d3 suffix_start and query_start equal the corresponding natural d4 positions within each template and literal profile.",
+    "delta_definition": "token_count(depth4_prefix)-token_count(depth3_prefix)",
+    "families": [
+      {
+        "id": "PAD_BARE",
+        "builder": "repeat",
+        "unit": "#\n",
+        "unit_tokens": 1,
+        "rule": "unit repeated delta times"
+      },
+      {
+        "id": "PAD_WORD",
+        "builder": "quotient_remainder",
+        "primary_unit": "# pad\n",
+        "primary_unit_tokens": 3,
+        "remainder_unit": "#\n",
+        "remainder_unit_tokens": 1,
+        "rule": "primary_unit repeated floor(delta/3), then remainder_unit repeated delta mod 3"
+      }
+    ],
+    "preflight_required": true,
+    "expected_verified_counts": {
+      "short_fghk": {"d3": 58, "d4": 79, "delta": 21},
+      "short_pqrs": {"d3": 58, "d4": 79, "delta": 21},
+      "descriptive_scope": {"d3": 58, "d4": 79, "delta": 21},
+      "tree_names": {"d3": 58, "d4": 79, "delta": 21},
+      "sequence_names": {"d3": 60, "d4": 83, "delta": 23},
+      "hierarchy_names": {"d3": 60, "d4": 81, "delta": 21}
+    }
+  },
+  "placements": [
+    {
+      "id": "D3_RAW",
+      "depth": 3,
+      "padding": null,
+      "role": "position-gain source"
+    },
+    {
+      "id": "D3_MATCH_BARE",
+      "depth": 3,
+      "padding": "PAD_BARE",
+      "role": "isochronous d3 control"
+    },
+    {
+      "id": "D3_MATCH_WORD",
+      "depth": 3,
+      "padding": "PAD_WORD",
+      "role": "isochronous d3 robustness control"
+    },
+    {
+      "id": "D4_NATURAL",
+      "depth": 4,
+      "padding": null,
+      "role": "claim target"
+    }
+  ],
+  "estimands": {
+    "z": "log(p_correct/p_shadow), computed separately for shadow_digit 8 and 9 from each stored distribution",
+    "effect": "E(surface,placement)=z(surface,placement)-z(NONE5,placement)",
+    "assert_component": "rho_A=E(A,D4_NATURAL)-E(A,D3_MATCH_PAD)",
+    "mislead_component": "rho_M=E(M,D4_NATURAL)-E(M,D3_MATCH_PAD)",
+    "isochronous_curvature": "kappa_iso=rho_M-rho_A",
+    "original_threshold_diagnostic_nat": 0.5
+  },
+  "position_gain_null": {
+    "equation": "E(D3_MATCH_PAD)=alpha[pad,shadow]+gain[pad,shadow]*E(D3_RAW)",
+    "estimator": "Ordinary least squares with intercept; one frozen fit per padding family and shadow digit.",
+    "fit_templates": "train",
+    "fit_surfaces": "train semantic pairs plus train neutral surfaces",
+    "forbidden_from_fit": "all holdout template instances, holdout semantic pairs, and N_COMMENT",
+    "validation": {
+      "templates": "holdout",
+      "surfaces": ["N_COMMENT"],
+      "secondary_surface_validation": "Holdout semantic pairs on train templates; prediction only, never refit.",
+      "min_train_effect_sd_nat": 0.05,
+      "max_holdout_neutral_mae_nat": 0.05,
+      "max_holdout_neutral_p90_abs_error_nat": 0.1,
+      "max_abs_holdout_neutral_mean_error_nat": 0.03
+    },
+    "semantic_prediction": "E_hat_at_d4_position=alpha[pad,shadow]+gain[pad,shadow]*E(surface,D3_RAW)",
+    "residual": "R(surface,pad)=E(surface,D4_NATURAL)-E_hat_at_d4_position",
+    "null_adjusted_curvature": "kappa_gain=R(M,pad)-R(A,pad)"
+  },
+  "inference": {
+    "claim_cells": "Cartesian product of holdout template instances and holdout semantic-pair families only.",
+    "primary_cluster": ["template_id", "surface_pair_id"],
+    "nested_factors": [
+      "inner_literal_profile",
+      "shadow_digit",
+      "padding_family"
+    ],
+    "block_value": "Mean kappa over nested factors within each template_id x surface_pair_id block.",
+    "bootstrap": {
+      "method": "two-way pigeonhole cluster bootstrap",
+      "replicates": 100000,
+      "resample": "Independently resample holdout template IDs and holdout surface-pair IDs with replacement; take their Cartesian cells; refit the gain null from resampled train template/surface clusters for kappa_gain.",
+      "seed": 42017,
+      "ci": 0.95
+    }
+  },
+  "replay": {
+    "context_ids": [
+      "short_fghk::repeat8",
+      "short_pqrs::repeat9",
+      "descriptive_scope::repeat8",
+      "sequence_names::repeat9"
+    ],
+    "placements": ["D3_MATCH_BARE", "D4_NATURAL"],
+    "surface_ids": ["NONE5", "A_KEEP", "M_CHANGE"],
+    "exact_repeat_count": 1,
+    "expected_extra_calls": 24,
+    "noise_floor_z": "q99 absolute repeated-call delta in z across both shadow digits",
+    "noise_floor_tv": "q99 repeated-call total-variation distance on the stored 11-bin distribution"
+  },
+  "gates": {
+    "G0_static_validity": {
+      "require_all_suffix_tokens_equal": 5,
+      "require_no_suffix_query_boundary_merge": true,
+      "require_exact_suffix_start_match": true,
+      "require_exact_query_start_match": true,
+      "require_expected_calls_lte": 800,
+      "on_fail": "FAIL_INVALID_DESIGN_NO_MODEL_RUN"
+    },
+    "G1_competence": {
+      "arm": "NONE5",
+      "candidate_digit_accuracy_overall_min": 0.95,
+      "candidate_digit_accuracy_each_placement_min": 0.9,
+      "require_p_correct_gt_p_shadow": true,
+      "on_fail": "FAIL_COMPETENCE"
+    },
+    "G2_semantic_positive_control": {
+      "estimand": "z(A)-z(M) on matched d3 and natural d4",
+      "mean_nat_min": 0.5,
+      "two_way_cluster_ci_lower_min": 0.25,
+      "require_train_and_holdout_splits": true,
+      "on_fail": "FAIL_SEMANTIC_CONTROL"
+    },
+    "G3_replay_noise": {
+      "q99_tv_max": 0.000001,
+      "q99_abs_z_delta_max": 0.00001,
+      "min_signal_to_noise": 10.0,
+      "noise_denominator_floor_nat": 0.000001,
+      "on_fail": "FAIL_REPLAY_NOISE"
+    },
+    "G4_position_gain_validity": {
+      "require_both_padding_families": true,
+      "use_validation_thresholds_from_position_gain_null": true,
+      "on_fail": "FAIL_POSITION_NULL_INVALID"
+    },
+    "G5_isochronous_curvature": {
+      "predicted_direction": "negative",
+      "heldout_mean_kappa_nat_max": -0.15,
+      "heldout_cluster_ci_upper_max": -0.05,
+      "heldout_block_sign_agreement_min": 0.75,
+      "min_retention_fraction_of_original_abs_kappa": 0.5,
+      "original_abs_kappa_nat": 0.2840873517,
+      "each_padding_family_mean_max": -0.1,
+      "max_abs_difference_between_padding_family_means": 0.1,
+      "each_shadow_digit_mean_max": -0.05,
+      "each_inner_literal_profile_mean_max": -0.05,
+      "require_every_holdout_template_marginal_negative": true,
+      "require_every_holdout_surface_pair_marginal_negative": true,
+      "on_fail": "FAIL_ISOCHRONOUS_CURVATURE"
+    },
+    "G6_gain_null_residual": {
+      "predicted_direction": "negative",
+      "heldout_mean_kappa_gain_nat_max": -0.15,
+      "heldout_cluster_ci_upper_max": -0.05,
+      "heldout_block_sign_agreement_min": 0.75,
+      "require_leave_one_train_cluster_out_sign_stability": true,
+      "on_fail": "FAIL_POSITION_GAIN_EXPLAINS"
+    }
+  },
+  "verdict": {
+    "pass": "PASS_CONTROLLED_CURVATURE only if G0 through G6 all pass",
+    "fail": "FAIL_NO_CONTROLLED_CURVATURE if any gate fails; preserve the first failing gate and all diagnostics",
+    "licensed_pass_claim": "A representative-stable d3-to-d4 semantic interaction survives exact position matching and a prospectively fitted generic position-gain null on held-out template and suffix families.",
+    "never_claim": "A PASS is not by itself native geometry, quotient congruence, a phase transition, or a hidden-state mechanism."
+  },
+  "artifacts": {
+    "result_dir": "experiments/results/curvature_control_qwen3_v1",
+    "checkpoint": "result.partial.json",
+    "result": "result.json",
+    "required_metadata": [
+      "config_sha256",
+      "runner_sha256",
+      "model_revision",
+      "tokenizer_counts",
+      "call_count",
+      "elapsed_s",
+      "all_gate_metrics",
+      "cluster_table",
+      "null_coefficients",
+      "replay_pairs"
+    ]
+  }
+}
+```
+
+## Runner specification
+
+### 1. Static preflight before model loading
+
+The runner should load only the pinned tokenizer first.
+
+For every expanded context and surface, assert:
+
+- Every semantic, neutral, and `NONE5` surface is exactly five tokens.
+- `encode(surface + query) == encode(surface) + encode(query)`.
+- `delta = len(depth4_prefix) - len(depth3_prefix)` is positive.
+- Each generated padding string tokenizes to exactly `delta`.
+- `d3_prefix_tokens + padding_tokens == d4_prefix_tokens`.
+- Therefore suffix starts agree exactly.
+- Since every surface is five tokens, query starts also agree exactly.
+- Expected calls equal 768 and do not exceed 800.
+
+Verified padding forms:
+
+- For `delta=21`:
+  - `PAD_BARE`: 21 repetitions of `"#\n"`.
+  - `PAD_WORD`: seven repetitions of `"# pad\n"`.
+- For `delta=23`:
+  - `PAD_BARE`: 23 repetitions of `"#\n"`.
+  - `PAD_WORD`: seven repetitions of `"# pad\n"` followed by two `"#\n"` lines.
+
+Any mismatch returns `FAIL_INVALID_DESIGN_NO_MODEL_RUN`.
+
+### 2. Pinned CPU loading
+
+Resolve the pinned snapshot locally and pass its absolute snapshot path to an unchanged `ModelAdapter`:
+
+```python
+snapshot_path = snapshot_download(
+    cfg["model"]["model_id"],
+    revision=cfg["model"]["revision"],
+    local_files_only=True,
+)
+adapter_cfg = {
+    **cfg,
+    "model_id": snapshot_path,
+    "device": "cpu",
+    "dtype": "float32",
+}
+adapter = ModelAdapter(adapter_cfg)
+```
+
+Set `CUDA_VISIBLE_DEVICES=""` before importing Torch. Assert every model parameter is on CPU. Do not use multiprocessing or external workers.
+
+### 3. Collection order
+
+There are 12 prompt contexts:
+
+\[
+6\ \text{templates}\times2\ \text{literal profiles}.
+\]
+
+For each context:
+
+1. Build and cache the d3 prefix.
+2. Evaluate all 15 arms under:
+   - `D3_RAW`
+   - `D3_MATCH_BARE`
+   - `D3_MATCH_WORD`
+3. Run any selected d3 replay calls before deleting the state.
+4. Delete the state and collect garbage.
+5. Build and cache the d4 prefix.
+6. Evaluate all 15 arms under `D4_NATURAL`.
+7. Run selected d4 replays.
+8. Delete the state, checkpoint atomically, and check wall/call caps.
+
+Each observation must store:
+
+```text
+template_id, template_family, template_split
+literal_profile
+depth, placement, padding_family
+prefix_tokens, padding_tokens, suffix_tokens
+suffix_start, query_start
+surface_id, surface_role, surface_pair_id, surface_split
+dist[11]
+top_digit
+call_index
+is_replay
+```
+
+The call budget is:
+
+\[
+12\times(2\ \text{prefix calls}+4\times15\ \text{continuations})
++24\ \text{replays}=768.
+\]
+
+### 4. Primary estimands
+
+For each stored distribution and each offline shadow digit \(q\in\{8,9\}\):
+
+\[
+z_q=\log p(4)-\log p(q).
+\]
+
+Use a floor of `1e-30` only for numerical safety.
+
+At every placement, compare semantic arms against the position-matched `NONE5`:
+
+\[
+E_s=z_s-z_{\text{NONE5}}.
+\]
+
+For each padding family:
+
+\[
+\rho_A=E_A(d4)-E_A(d3_{\mathrm{matched}}),
+\]
+
+\[
+\rho_M=E_M(d4)-E_M(d3_{\mathrm{matched}}),
+\]
+
+\[
+\kappa_{\mathrm{iso}}=\rho_M-\rho_A.
+\]
+
+Report \(\rho_A\) and \(\rho_M\) separately even when the overall gate fails.
+
+### 5. Position-gain null
+
+For each padding family \(j\) and shadow digit \(q\), fit:
+
+\[
+E^{d3,\mathrm{matched}}_{s}
+=\alpha_{j,q}+g_{j,q}E^{d3,\mathrm{raw}}_{s}+\epsilon.
+\]
+
+Fit only on:
+
+- `short_names` train templates;
+- the two train semantic-pair families;
+- `N_NOTE`, `N_READ`, and `N_CHECK`.
+
+Do not fit on any holdout template, holdout semantic pair, or `N_COMMENT`.
+
+First validate the frozen mapping on `N_COMMENT` under all holdout templates. If the neutral effect range is too narrow or validation exceeds the registered error limits, G4 fails. Null failure must never count as evidence for curvature.
+
+For each held-out semantic surface, predict:
+
+\[
+\widehat E^{d4\text{-position}}_s
+=\alpha_{j,q}+g_{j,q}E^{d3,\mathrm{raw}}_s.
+\]
+
+Then:
+
+\[
+R_s=E^{d4}_s-\widehat E^{d4\text{-position}}_s
+\]
+
+and
+
+\[
+\kappa_{\mathrm{gain}}=R_M-R_A.
+\]
+
+### 6. Holdout and clustering
+
+Nothing claim-bearing may use train templates or train suffix families.
+
+The primary table has:
+
+\[
+4\ \text{held-out templates}\times
+3\ \text{held-out suffix pairs}=12\ \text{blocks}.
+\]
+
+Within each block, average over:
+
+- two inner-literal profiles;
+- both offline shadow digits;
+- both padding families.
+
+Do not treat those nested rows as independent.
+
+For confidence intervals, independently resample template IDs and suffix-pair IDs with replacement and take the resulting Cartesian block table. Use 100,000 replicates with seed `42017`. For `kappa_gain`, refit the nuisance gain model inside every bootstrap replicate.
+
+Also report:
+
+- eight individual block values;
+- every template marginal;
+- every suffix-family marginal;
+- both padding marginals;
+- both shadow-digit marginals;
+- both literal-profile marginals.
+
+The config actually produces **12** primary blocks, not eight: four templates × three held-out suffix pairs.
+
+### 7. Verdict order
+
+Evaluate gates in order and retain the first failure:
+
+1. `G0`: token and budget validity.
+2. `G1`: task competence under `NONE5`.
+3. `G2`: ASSERT/MISLEAD positive control.
+4. `G3`: replay noise and SNR.
+5. `G4`: position-gain null identifiability and held-out validation.
+6. `G5`: matched-position curvature.
+7. `G6`: survival after position-gain subtraction.
+
+`PASS_CONTROLLED_CURVATURE` requires every gate.
+
+The new 0.15-nat threshold is prospective and has two rationales:
+
+- it retains at least half of the original 0.284-nat estimate;
+- its odds multiplier is approximately `exp(0.15)=1.16`, large enough to distinguish from the ±0.05-nat practical-null band.
+
+The old 0.5-nat threshold must still be reported as a diagnostic; it is not silently replaced.
+
+A PASS licenses only a controlled behavioral interaction. It still does not establish native geometry, quotient congruence, a phase transition, or a hidden-state mechanism.

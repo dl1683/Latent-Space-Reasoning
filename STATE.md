@@ -26,16 +26,19 @@ test FAILS: behavioral equivalence is NOT preserved under composition with
 semantically heavy suffixes (ratio 2.6-13.2x). Text features predict
 delta_L at R2=0.88.
 
-**Curvature finding (2026-09-04, Codex-adjudicated):** On one preregistered SVB
-surface pair, the d3→d4 MISLEAD-minus-ASSERT logit contrast was −0.284 nat in all
-24 crossed cells; it missed the 0.5-nat gate and remains confounded by position,
-shadow-token exposure, and surface choice. Gate 1b cross-surface check: only 65.5%
-of 168 (assert,mislead) pairs show negative κ; NOT representative-invariant.
-Codex verdict: REVISE / CONTROL REQUIRED. What it advances: the fixed suffix
-contrast is context-dependent and cannot be represented by the simplest globally
-additive logit-shift model — a candidate obstruction, not yet a law.
-NEXT: one confound-killing control round (position-matched, multi-surface, varied
-shadow). If residual curvature doesn't survive controls, close this line.
+**Curvature line (2026-09-04, CLOSED — Codex-adjudicated):** Confound-killing
+control round completed: isochronous position-matched design (768 calls, 6
+templates, 2 shadow digits, 2 padding families). G0-G3 PASS, G4-G6 FAIL.
+G5: κ=−0.542 nat, 12/12 block averages negative, CI [−0.698, −0.362] — but
+pad_diff_ok FAILS (0.329 > 0.10 tolerance). 93/96 individual cells negative,
+3 PAD_BARE cells positive. Position-gain null (G4) failed to transport across
+template families. Codex verdict: Option (b) — real but qualified behavioral
+interaction, NOT confirmed intrinsic curvature. Line CLOSED per one-round
+authorization. Transferable residue: exact position matching did not produce
+representative-invariant magnitude; scalar position-gain law fails transport;
+response law is presentation-conditioned. Key observation: "This line is not
+working as a route to native latent-space mathematics: it remains scalar logit
+finite differences and OLS — the R^n trap."
 
 **Distance from central claim: 0.** This IS the native math claim.
 

@@ -5,6 +5,56 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Curvature Control: Isochronous Position-Matched (2026-09-04, COMPLETE — FAIL / LINE CLOSED)
+
+Distance from claim: 0.
+
+Confound-killing control for the d3→d4 curvature signal. Codex-designed
+(session 01a06cea), implementing exact token-position matching (two padding
+families), varied inner literals (repeat8/repeat9), two shadow readouts (sd8/sd9),
+6 template instances (2 train / 4 holdout), 5 surface pairs (2 train / 3 holdout),
+position-gain null model (OLS), and 24-call deterministic replay calibration.
+
+768 model calls, 249s CPU, Qwen3-1.7B-Base float32.
+
+**G0 PASS**: All token counts verified, all boundaries clean.
+**G1 PASS** (threshold 0.80): 85.4% accuracy. repeat8 profile causes digit-8 competition.
+**G2 PASS**: Mean assert-minus-mislead gap = 2.16 nat.
+**G3 PASS**: Zero replay noise (deterministic CPU).
+**G4 FAIL**: All 4 position-gain null models fail holdout validation (train R²=0.82-0.96,
+holdout MAE=0.16-0.25 > 0.05 threshold). Scalar position gain doesn't transport.
+**G5 FAIL**: 9/10 checks pass. Mean κ = -0.542 nat, CI [-0.698, -0.362], 12/12 blocks
+negative. Only failure: pad_diff_ok — PAD_BARE (-0.377) vs PAD_WORD (-0.706), diff
+0.329 > 0.10 threshold. Individual cells: 93/96 negative, 3 PAD_BARE cells positive.
+**G6 FAIL**: No valid null models from G4.
+
+**Codex adjudication: Option (b) — real but qualified, LINE CLOSED.**
+- The behavioral interaction is real but padding-sensitive, not intrinsic curvature.
+- G5 is a genuine refutation of the preregistered invariant claim.
+- The authorized "exactly one control round" has been spent and did not pass G4-G6.
+- Most of κ comes from ASSERT becoming more beneficial at d4 (ρ_A=+0.375), not
+  just MISLEAD strengthening (ρ_M=-0.167).
+- "Still the R^n trap": scalar logit differences and OLS, not native math.
+
+**Transferable residue:**
+- Position matching did not produce representative-invariant magnitude.
+- Scalar position-gain law fails to transport across template families.
+- The response is presentation-conditioned (padding content modulates magnitude).
+
+**Licensed sentence:** In this configured Qwen3-1.7B SVB control, the held-out
+d3-to-d4 change in the MISLEAD-minus-ASSERT correct/shadow logit contrast was
+negative on all 12 template-by-surface block averages under two exact-position
+padding controls (mean −0.542 nat; clustered CI [−0.698, −0.362]); its magnitude
+differed substantially between bare and word padding, and the registered
+position-gain null did not validate, so this is a padding-sensitive behavioral
+interaction rather than confirmed intrinsic curvature.
+
+Config: `config/curvature_control_qwen3.json`.
+Results: `results/curvature_control_qwen3_v1/result.json`.
+Runner: `run_curvature_control.py`. Codex adjudication: `codex_curvature_control_adjudication.txt`.
+
+---
+
 ## Curvature Test: Depth × Suffix Interaction (2026-09-04, COMPLETE — SUB_THRESHOLD / CONTROL REQUIRED)
 
 Distance from claim: 0.

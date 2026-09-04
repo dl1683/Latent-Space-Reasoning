@@ -1,0 +1,46 @@
+## Verdict
+
+**Option (b), with a formal FAIL and terminal closure of this line.**
+
+The experiment supports a real, padding-sensitive behavioral interaction. It does **not** confirm padding-invariant curvature or show survival against a validated position-gain null. Under the prior “exactly one control round” ruling, the curvature line should now close rather than receive another rescue experiment.
+
+| Gate | Adjudication |
+|---|---|
+| G0 | Pass. My additional tokenizer check found zero boundary mismatches across all 360 padding/surface combinations and exact matched positions. |
+| G1 | Pass under the disclosed amended 0.80/0.75 thresholds. This remains a design amendment from the original 0.95/0.90 specification. |
+| G2 | Substantively strong, but incompletely implemented. The runner omits the registered clustered CI and split checks and includes `D3_RAW`. Reconstructing the intended matched-d3/d4 gate gives mean 2.069 nat, CI approximately [1.752, 2.378], with both train and holdout comfortably positive. |
+| G3 | Pass. |
+| G4 | **Hard fail.** The scalar gain null does not transport to held-out templates. Its failure cannot count as curvature evidence. |
+| G5 | **Hard fail as preregistered.** Nine of ten checks passing is not a soft pass because `pad_diff_ok` was explicitly part of `all(checks.values())`. |
+| G6 | Not adjudicated—not evidence of failure or success—because no valid G4 model exists. |
+| Overall | **`FAIL_NO_CONTROLLED_CURVATURE`** remains correct. |
+
+Direct answers:
+
+1. **The 12/12 block-level sign agreement is strong evidence for a narrow behavioral interaction**, namely that natural d4 differs from d3 under both tested exact-position controls. It is not sufficient for an intrinsic or representative-independent depth law. The 12 values are crossed block averages, not twelve independent replications, and the bootstrap averages over padding rather than estimating uncertainty across padding families.
+
+   There is also an important correction: the underlying result is **93/96 negative cells**, not 96/96. Three PAD_BARE combinations are positive, including two materially positive cells (+0.304 and +0.479 nat).
+
+2. **Padding sensitivity does not erase the negative average, but it refutes padding invariance.** Both padding families being negative makes an artifact unique to one padding string less plausible. However, the 0.329-nat difference is large, deterministic, and over three times the registered tolerance.
+
+   It is not evidence that the model processes padding differently “at different depths”: padding was varied only at d3. The experiment therefore measures padding-content sensitivity of the control construction, not a factorial depth×padding mechanism.
+
+3. **G5 is a genuine refutation of the preregistered invariant claim, not a refutation of every interaction.** The legitimate conclusion is: the κ statistic is robustly negative on average but its magnitude is presentation-dependent. Retroactively declaring the pad threshold too strict would convert a falsification check into a confirmation rule after seeing the result.
+
+4. **Choose (b), carefully renamed:** the behavioral curvature statistic is real but qualified; intrinsic curvature is not confirmed. Option (a) overstates the evidence because padding alone has not explained the sign. Option (c) improperly waives a prospective gate.
+
+5. **Close the curvature line.** The authorized confound-killing round has been spent and did not pass G4–G6. Preserve the transferable residue:
+
+   - Exact position matching did not produce a representative-invariant magnitude.
+   - A scalar position-gain law failed to transport across template families.
+   - The response law is presentation-conditioned.
+
+   Reopening would require a new, theory-first proposition defining intrinsic equivalence or transport and varying representative content factorially at both depths. That would be a new line, not another curvature rescue round.
+
+The claim that the signal “doubled because the original was attenuated” is also unlicensed: the surface population, literal profiles, shadow digits, and padded-d3 estimand all changed. The −0.542 versus −0.284 comparison is descriptive, not an attenuation estimate. Its decomposition is \(\bar\rho_A=+0.375\) and \(\bar\rho_M=-0.167\), so most of κ comes from ASSERT becoming relatively more beneficial—not simply MISLEAD strengthening.
+
+Finally, the [runner](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_curvature_control.py>), [config](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/config/curvature_control_qwen3.json>), and [result](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/curvature_control_qwen3_v1/result.json>) are not yet a publication-grade certificate: the runner does not enforce the configured model revision, several registered reducer checks are absent, the artifacts are untracked, and the ledger’s stated commit does not contain them. These defects do not erase the local G5 arithmetic, but they preclude a fully hash-bound confirmatory claim.
+
+**Licensed sentence:** In this configured Qwen3-1.7B SVB control, the held-out d3-to-d4 change in the MISLEAD-minus-ASSERT correct/shadow logit contrast was negative on all 12 template-by-surface block averages under two exact-position padding controls (mean −0.542 nat; clustered CI [−0.698, −0.362]); its magnitude differed substantially between bare and word padding, and the registered position-gain null did not validate, so this is a padding-sensitive behavioral interaction rather than confirmed intrinsic curvature.
+
+Recorded on audit board `e5a4e16f` as entries `e865–e875`. This line is not working as a route to native latent-space mathematics: it remains scalar logit finite differences and OLS—useful diagnostics, but still the \(R^n\) trap.

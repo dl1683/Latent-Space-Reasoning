@@ -4,6 +4,29 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### CURVATURE CONTROL: line closed — R^n trap (2026-09-04)
+
+Confound-killing isochronous control round. 768 calls, 249s CPU. 6 templates,
+2 shadow digits, 2 padding families. Position-matched via padding prepended to d3.
+
+Results: G0-G3 PASS, G4-G6 FAIL. κ=−0.542 nat, 12/12 blocks negative, but
+padding sensitivity (0.329 nat gap) exceeds 0.10 tolerance. 93/96 cells negative,
+3 PAD_BARE positive. Position-gain null failed transport across template families.
+
+Codex adjudication: real but qualified behavioral interaction, not intrinsic
+curvature. Line CLOSED per one-round authorization.
+
+Critical insight (Codex): "This line is not working as a route to native
+latent-space mathematics: it remains scalar logit finite differences and OLS —
+the R^n trap." All SVB-campaign experiments (congruence, S3 composition,
+noncommutativity, curvature) produced structured negatives. The suffix effects
+are learned semantic control — useful diagnostics, but R^n projections of
+inherently non-R^n structure.
+
+What's needed: a fundamentally different approach that works IN the latent space
+natively, not by projecting it onto scalars and fitting linear models.
+
+
 ### CURVATURE TEST: sub-threshold, surface-specific interaction (2026-09-04)
 
 Codex-designed 2×2 interventional test (depth × suffix). 288 calls, 98s.

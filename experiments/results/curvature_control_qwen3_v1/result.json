@@ -1,0 +1,540 @@
+{
+  "config": {
+    "schema_version": "1.0",
+    "experiment_name": "Curvature-Control-Isochronous-Qwen3-v1",
+    "purpose": "Test whether the negative d3-to-d4 depth-by-semantic-suffix interaction survives exact token-position matching, varied inner literals and shadow readouts, held-out surface/template families, a prospectively fitted position-gain null, clustered inference, and replay calibration.",
+    "model": {
+      "model_id": "Qwen/Qwen3-1.7B-Base",
+      "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+      "device": "cpu",
+      "dtype": "float32",
+      "local_files_only": true,
+      "adapter": "experiments/run_svb_0.py::ModelAdapter"
+    },
+    "execution": {
+      "single_process": true,
+      "max_parallel_model_jobs": 1,
+      "seed": 42,
+      "bootstrap_seed": 42017,
+      "max_wall_seconds": 1800,
+      "expected_model_calls": 768,
+      "max_model_calls": 800,
+      "checkpoint_every_context": true
+    },
+    "task": {
+      "variable": "x",
+      "outer_value": 4,
+      "analysis_shadow_digits": [
+        8,
+        9
+      ],
+      "query_template": "{fn0}()\nprint({var})  # Output: "
+    },
+    "inner_literal_profiles": [
+      {
+        "id": "repeat8",
+        "inner1": "88",
+        "inner2": "888",
+        "inner3": "8888",
+        "inner4": "88888"
+      },
+      {
+        "id": "repeat9",
+        "inner1": "99",
+        "inner2": "999",
+        "inner3": "9999",
+        "inner4": "99999"
+      }
+    ],
+    "template_schema": {
+      "depth3": "{var} = {outer_value}\ndef {fn0}():\n    {var} = {inner1}\n    def {fn1}():\n        {var} = {inner2}\n        def {fn2}():\n            {var} = {inner3}\n            return {var}\n        {fn2}()\n        return {var}\n    {fn1}()\n    return {var}\n",
+      "depth4": "{var} = {outer_value}\ndef {fn0}():\n    {var} = {inner1}\n    def {fn1}():\n        {var} = {inner2}\n        def {fn2}():\n            {var} = {inner3}\n            def {fn3}():\n                {var} = {inner4}\n                return {var}\n            {fn3}()\n            return {var}\n        {fn2}()\n        return {var}\n    {fn1}()\n    return {var}\n"
+    },
+    "template_instances": [
+      {
+        "id": "short_fghk",
+        "family": "short_names",
+        "split": "train",
+        "fn0": "f",
+        "fn1": "g",
+        "fn2": "h",
+        "fn3": "k"
+      },
+      {
+        "id": "short_pqrs",
+        "family": "short_names",
+        "split": "train",
+        "fn0": "p",
+        "fn1": "q",
+        "fn2": "r",
+        "fn3": "s"
+      },
+      {
+        "id": "descriptive_scope",
+        "family": "descriptive_names",
+        "split": "holdout",
+        "fn0": "outer",
+        "fn1": "middle",
+        "fn2": "inner",
+        "fn3": "deep"
+      },
+      {
+        "id": "tree_names",
+        "family": "descriptive_names",
+        "split": "holdout",
+        "fn0": "root",
+        "fn1": "branch",
+        "fn2": "leaf",
+        "fn3": "tip"
+      },
+      {
+        "id": "sequence_names",
+        "family": "descriptive_names",
+        "split": "holdout",
+        "fn0": "start",
+        "fn1": "next_step",
+        "fn2": "later",
+        "fn3": "final_step"
+      },
+      {
+        "id": "hierarchy_names",
+        "family": "descriptive_names",
+        "split": "holdout",
+        "fn0": "main",
+        "fn1": "child",
+        "fn2": "grandchild",
+        "fn3": "deepest"
+      }
+    ],
+    "positioned_none": {
+      "id": "NONE5",
+      "text": "#\n#\n#\n#\n#\n",
+      "expected_tokens": 5
+    },
+    "semantic_surface_pairs": [
+      {
+        "id": "keep_change",
+        "split": "train",
+        "assert_id": "A_KEEP",
+        "assert_text": "# Keep {var} unchanged.\n",
+        "mislead_id": "M_CHANGE",
+        "mislead_text": "# Change {var} now.\n",
+        "expected_tokens_each": 5
+      },
+      {
+        "id": "preserve_modify",
+        "split": "train",
+        "assert_id": "A_PRESERVE",
+        "assert_text": "# Preserve {var} unchanged.\n",
+        "mislead_id": "M_MODIFY",
+        "mislead_text": "# Modify {var} now.\n",
+        "expected_tokens_each": 5
+      },
+      {
+        "id": "maintain_update",
+        "split": "holdout",
+        "assert_id": "A_MAINTAIN",
+        "assert_text": "# Maintain {var} unchanged.\n",
+        "mislead_id": "M_UPDATE",
+        "mislead_text": "# Update {var} now.\n",
+        "expected_tokens_each": 5
+      },
+      {
+        "id": "leave_replace",
+        "split": "holdout",
+        "assert_id": "A_LEAVE",
+        "assert_text": "# Leave {var} unchanged.\n",
+        "mislead_id": "M_REPLACE",
+        "mislead_text": "# Replace {var} now.\n",
+        "expected_tokens_each": 5
+      },
+      {
+        "id": "remain_different",
+        "split": "holdout",
+        "assert_id": "A_REMAIN",
+        "assert_text": "# {var} remains unchanged.\n",
+        "mislead_id": "M_DIFFERENT",
+        "mislead_text": "# Set {var} differently.\n",
+        "expected_tokens_each": 5
+      }
+    ],
+    "neutral_surfaces": [
+      {
+        "id": "N_NOTE",
+        "split": "train",
+        "text": "# Note about {var}.\n",
+        "expected_tokens": 5
+      },
+      {
+        "id": "N_READ",
+        "split": "train",
+        "text": "# Reading {var} only.\n",
+        "expected_tokens": 5
+      },
+      {
+        "id": "N_CHECK",
+        "split": "train",
+        "text": "# Checking {var} value.\n",
+        "expected_tokens": 5
+      },
+      {
+        "id": "N_COMMENT",
+        "split": "holdout",
+        "text": "# Comment on {var}.\n",
+        "expected_tokens": 5
+      }
+    ],
+    "padding": {
+      "families": [
+        {
+          "id": "PAD_BARE",
+          "builder": "repeat",
+          "unit": "#\n",
+          "unit_tokens": 1
+        },
+        {
+          "id": "PAD_WORD",
+          "builder": "quotient_remainder",
+          "primary_unit": "# pad\n",
+          "primary_unit_tokens": 3,
+          "remainder_unit": "#\n",
+          "remainder_unit_tokens": 1
+        }
+      ],
+      "expected_verified_counts": {
+        "short_fghk": {
+          "d3": 58,
+          "d4": 79,
+          "delta": 21
+        },
+        "short_pqrs": {
+          "d3": 58,
+          "d4": 79,
+          "delta": 21
+        },
+        "descriptive_scope": {
+          "d3": 58,
+          "d4": 79,
+          "delta": 21
+        },
+        "tree_names": {
+          "d3": 58,
+          "d4": 79,
+          "delta": 21
+        },
+        "sequence_names": {
+          "d3": 60,
+          "d4": 83,
+          "delta": 23
+        },
+        "hierarchy_names": {
+          "d3": 60,
+          "d4": 81,
+          "delta": 21
+        }
+      }
+    },
+    "placements": [
+      {
+        "id": "D3_RAW",
+        "depth": 3,
+        "padding": null
+      },
+      {
+        "id": "D3_MATCH_BARE",
+        "depth": 3,
+        "padding": "PAD_BARE"
+      },
+      {
+        "id": "D3_MATCH_WORD",
+        "depth": 3,
+        "padding": "PAD_WORD"
+      },
+      {
+        "id": "D4_NATURAL",
+        "depth": 4,
+        "padding": null
+      }
+    ],
+    "replay": {
+      "context_ids": [
+        "short_fghk::repeat8",
+        "short_pqrs::repeat9",
+        "descriptive_scope::repeat8",
+        "sequence_names::repeat9"
+      ],
+      "placements": [
+        "D3_MATCH_BARE",
+        "D4_NATURAL"
+      ],
+      "surface_ids": [
+        "NONE5",
+        "A_KEEP",
+        "M_CHANGE"
+      ],
+      "expected_extra_calls": 24
+    },
+    "gates": {
+      "G0_static_validity": {
+        "require_all_suffix_tokens_equal": 5,
+        "require_no_suffix_query_boundary_merge": true,
+        "require_exact_suffix_start_match": true,
+        "require_exact_query_start_match": true,
+        "require_expected_calls_lte": 800
+      },
+      "G1_competence": {
+        "arm": "NONE5",
+        "candidate_digit_accuracy_overall_min": 0.8,
+        "candidate_digit_accuracy_each_placement_min": 0.75
+      },
+      "G2_semantic_positive_control": {
+        "mean_nat_min": 0.5,
+        "ci_lower_min": 0.25
+      },
+      "G3_replay_noise": {
+        "q99_tv_max": 1e-06,
+        "q99_abs_z_delta_max": 1e-05,
+        "min_signal_to_noise": 10.0,
+        "noise_floor_nat": 1e-06
+      },
+      "G4_position_gain_validity": {
+        "min_train_effect_sd_nat": 0.05,
+        "max_holdout_neutral_mae_nat": 0.05,
+        "max_holdout_neutral_p90_abs_error_nat": 0.1,
+        "max_abs_holdout_neutral_mean_error_nat": 0.03
+      },
+      "G5_isochronous_curvature": {
+        "predicted_direction": "negative",
+        "heldout_mean_kappa_nat_max": -0.15,
+        "heldout_ci_upper_max": -0.05,
+        "heldout_block_sign_agreement_min": 0.75,
+        "min_retention_fraction": 0.5,
+        "original_abs_kappa_nat": 0.2840873517,
+        "each_padding_family_mean_max": -0.1,
+        "max_abs_pad_family_diff": 0.1,
+        "each_shadow_digit_mean_max": -0.05,
+        "each_literal_profile_mean_max": -0.05
+      },
+      "G6_gain_null_residual": {
+        "predicted_direction": "negative",
+        "heldout_mean_kappa_gain_nat_max": -0.15,
+        "heldout_ci_upper_max": -0.05,
+        "heldout_block_sign_agreement_min": 0.75
+      }
+    },
+    "result_dir": "results/curvature_control_qwen3_v1"
+  },
+  "verdict": "FAIL_NO_CONTROLLED_CURVATURE",
+  "first_failing_gate": "G4",
+  "gates": {
+    "G1": {
+      "pass": true,
+      "accuracy": 0.8541666666666666,
+      "placement_accuracies": {
+        "D3_RAW": 0.9166666666666666,
+        "D3_MATCH_BARE": 0.8333333333333334,
+        "D3_MATCH_WORD": 0.8333333333333334,
+        "D4_NATURAL": 0.8333333333333334
+      },
+      "n": 48
+    },
+    "G2": {
+      "pass": "True",
+      "mean_assert_minus_mislead": 2.1600776236168246,
+      "n_assert": 480,
+      "n_mislead": 480
+    },
+    "G3": {
+      "pass": true,
+      "q99_tv": 0.0,
+      "q99_abs_z_delta": 0.0,
+      "noise_floor_nat": 1e-06,
+      "n_replay_pairs": 24
+    },
+    "G4": {
+      "pass": false,
+      "models": {
+        "PAD_BARE_sd8": {
+          "valid": false,
+          "alpha": 0.14410577800793062,
+          "gain": 0.796129768949668,
+          "n_train": 28,
+          "train_r2": 0.9524736789030556,
+          "holdout_mae": 0.15918197379140786,
+          "holdout_mean_error": -0.15918197379140786,
+          "holdout_p90": 0.2924991698496213
+        },
+        "PAD_BARE_sd9": {
+          "valid": false,
+          "alpha": 0.17659826790023747,
+          "gain": 0.7721655609907871,
+          "n_train": 28,
+          "train_r2": 0.9580902794118108,
+          "holdout_mae": 0.25192575832021036,
+          "holdout_mean_error": -0.25192575832021036,
+          "holdout_p90": 0.4201233661372597
+        },
+        "PAD_WORD_sd8": {
+          "valid": false,
+          "alpha": -0.1727591474293047,
+          "gain": 0.7844389227027058,
+          "n_train": 28,
+          "train_r2": 0.8238577474472057,
+          "holdout_mae": 0.21136311332934793,
+          "holdout_mean_error": 0.18109973680852645,
+          "holdout_p90": 0.3816430165693645
+        },
+        "PAD_WORD_sd9": {
+          "valid": false,
+          "alpha": -0.2733323248347137,
+          "gain": 0.8107729438182285,
+          "n_train": 28,
+          "train_r2": 0.9114884110700985,
+          "holdout_mae": 0.21656684871131784,
+          "holdout_mean_error": 0.21656684871131784,
+          "holdout_p90": 0.3616132446813588
+        }
+      }
+    },
+    "G5": {
+      "pass": false,
+      "checks": {
+        "mean_ok": true,
+        "ci_ok": true,
+        "sign_ok": true,
+        "retention_ok": true,
+        "each_pad_ok": true,
+        "pad_diff_ok": false,
+        "each_sd_ok": true,
+        "each_lp_ok": true,
+        "every_tmpl_neg": true,
+        "every_pair_neg": true
+      },
+      "stats": {
+        "mean": -0.5416841944778231,
+        "ci_lo": -0.6976103603676717,
+        "ci_hi": -0.36178758151364393,
+        "sign_agreement": 1.0,
+        "n_blocks": 12,
+        "block_values": [
+          -0.6501707993072732,
+          -0.7202746741919895,
+          -0.8663225287777097,
+          -0.5281870510068952,
+          -0.6549389293097406,
+          -0.5497815514151434,
+          -0.5547013510950476,
+          -0.6113136036729071,
+          -0.4950053628131892,
+          -0.42196469489343064,
+          -0.2805705068039325,
+          -0.16697928044661955
+        ],
+        "marginals": {
+          "tmpl_tree_names": -0.7455893340923243,
+          "tmpl_sequence_names": -0.5776358439105931,
+          "tmpl_descriptive_scope": -0.5536734391937146,
+          "tmpl_hierarchy_names": -0.2898381607146609,
+          "pair_maintain_update": -0.5387559740756617,
+          "pair_remain_different": -0.5667744284946425,
+          "pair_leave_replace": -0.5195221808631654,
+          "padding_family_PAD_BARE": -0.37717152634778733,
+          "padding_family_PAD_WORD": -0.7061968626078591,
+          "shadow_digit_8": -0.5292464477863122,
+          "shadow_digit_9": -0.5541219411693341,
+          "literal_profile_repeat9": -0.5015292483298895,
+          "literal_profile_repeat8": -0.5818391406257569
+        }
+      }
+    },
+    "G6": {
+      "pass": false,
+      "reason": "no holdout blocks",
+      "stats": {
+        "n": 0
+      }
+    }
+  },
+  "config_sha256": "40e8132f330a49f8",
+  "kappa_iso_summary": {
+    "mean": -0.5416841944778231,
+    "ci_lo": -0.6976103603676717,
+    "ci_hi": -0.36178758151364393,
+    "sign_agreement": 1.0,
+    "n_blocks": 12,
+    "block_values": [
+      -0.6501707993072732,
+      -0.7202746741919895,
+      -0.8663225287777097,
+      -0.5281870510068952,
+      -0.6549389293097406,
+      -0.5497815514151434,
+      -0.5547013510950476,
+      -0.6113136036729071,
+      -0.4950053628131892,
+      -0.42196469489343064,
+      -0.2805705068039325,
+      -0.16697928044661955
+    ],
+    "marginals": {
+      "tmpl_tree_names": -0.7455893340923243,
+      "tmpl_sequence_names": -0.5776358439105931,
+      "tmpl_descriptive_scope": -0.5536734391937146,
+      "tmpl_hierarchy_names": -0.2898381607146609,
+      "pair_maintain_update": -0.5387559740756617,
+      "pair_remain_different": -0.5667744284946425,
+      "pair_leave_replace": -0.5195221808631654,
+      "padding_family_PAD_BARE": -0.37717152634778733,
+      "padding_family_PAD_WORD": -0.7061968626078591,
+      "shadow_digit_8": -0.5292464477863122,
+      "shadow_digit_9": -0.5541219411693341,
+      "literal_profile_repeat9": -0.5015292483298895,
+      "literal_profile_repeat8": -0.5818391406257569
+    }
+  },
+  "kappa_gain_summary": {
+    "n": 0
+  },
+  "null_models": {
+    "PAD_BARE_sd8": {
+      "valid": false,
+      "alpha": 0.14410577800793062,
+      "gain": 0.796129768949668,
+      "n_train": 28,
+      "train_r2": 0.9524736789030556,
+      "holdout_mae": 0.15918197379140786,
+      "holdout_mean_error": -0.15918197379140786,
+      "holdout_p90": 0.2924991698496213
+    },
+    "PAD_BARE_sd9": {
+      "valid": false,
+      "alpha": 0.17659826790023747,
+      "gain": 0.7721655609907871,
+      "n_train": 28,
+      "train_r2": 0.9580902794118108,
+      "holdout_mae": 0.25192575832021036,
+      "holdout_mean_error": -0.25192575832021036,
+      "holdout_p90": 0.4201233661372597
+    },
+    "PAD_WORD_sd8": {
+      "valid": false,
+      "alpha": -0.1727591474293047,
+      "gain": 0.7844389227027058,
+      "n_train": 28,
+      "train_r2": 0.8238577474472057,
+      "holdout_mae": 0.21136311332934793,
+      "holdout_mean_error": 0.18109973680852645,
+      "holdout_p90": 0.3816430165693645
+    },
+    "PAD_WORD_sd9": {
+      "valid": false,
+      "alpha": -0.2733323248347137,
+      "gain": 0.8107729438182285,
+      "n_train": 28,
+      "train_r2": 0.9114884110700985,
+      "holdout_mae": 0.21656684871131784,
+      "holdout_mean_error": 0.21656684871131784,
+      "holdout_p90": 0.3616132446813588
+    }
+  }
+}
