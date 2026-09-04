@@ -363,6 +363,44 @@ Failure of K_u² to match K_{uu} shows either: (a) the (C,L,R) projection
 is not lumpable, or (b) the context-dependent action genuinely varies
 with prefix. These are distinct failure modes.
 
+### Noncommutativity criterion (Codex review 2026-09-04)
+
+For u, v ∈ ker(E), both rivals predict order-independence:
+
+1. **Scalar character:** χ(u·v) = χ(u)·χ(v) = χ(v)·χ(u) = χ(v·u).
+2. **Logit-bias model:** δ_{u·v} = δ_u + δ_v = δ_v + δ_u = δ_{v·u}.
+3. **K_a model:** K_{a_u}·K_{a_v} = K_{a_v}·K_{a_u} (upper-triangular
+   with identical diagonal commute).
+
+All three predict:
+
+\[
+d_\infty(T_{u \cdot v}\, z,\; T_{v \cdot u}\, z) = 0
+\quad\forall z.
+\]
+
+By contrast, the full action α has no reason to commute:
+
+\[
+\alpha(u) \circ \alpha(v) \ne \alpha(v) \circ \alpha(u)
+\]
+
+is possible whenever the endomorphism monoid End(Q_M) is
+noncommutative. If observed, this is a certificate that the monoid
+action is genuinely non-scalar — it requires the full state-space
+action and cannot be reduced to any 1D parameter.
+
+**Test design:** For E-null traces u (ASSERT class) and v
+(MISLEADING class), compare response distributions of u-then-v vs
+v-then-u on the same context z. Under execution-order convention:
+suffix_AB = expand(A) + expand(B), suffix_BA = expand(B) + expand(A).
+The D1 formal words are B·A and A·B respectively.
+
+**Pre-registration:** TV(response(AB, z), response(BA, z)) > eps_eq
+for any z establishes noncommutativity. The test is decisive:
+commutativity is consistent with all three scalar models;
+noncommutativity defeats all three simultaneously.
+
 ## D16. Vertical kernel action — definition (replaces "holonomy")
 
 For a composed null trace γ = u₁ · u₂ · ... · uₙ with E(γ) = id,

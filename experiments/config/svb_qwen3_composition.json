@@ -1,0 +1,38 @@
+{
+  "experiment_name": "SVB-Qwen3-Composition-Noncommutativity",
+  "purpose": "Tests the noncommutativity criterion: does order of E-null suffixes matter? Both logit-bias and K_a models predict order-independence (additive/commutative). If TV(response(AB), response(BA)) > eps_eq, the monoid is genuinely non-commutative and neither scalar model can explain the data. This is the single strongest discriminator for native non-scalar structure.",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 2, 3, 4, 5, 6, 7, 8],
+  "inner_value": 99,
+  "depths": [4],
+  "single_var_only": true,
+
+  "composition_pairs": [
+    {
+      "role_a": "ASSERT_VAR",
+      "role_b": "MISLEADING_ASSERT",
+      "surface_a": "# {var} is unchanged.\n",
+      "surface_b": "# Reassigning {var} now.\n"
+    }
+  ],
+
+  "intensional_roles": {},
+
+  "query_template": "f()\nprint({var})  # Output: ",
+  "templates": {
+    "depth4_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n"
+  },
+
+  "predictions": {
+    "H_commutative": "Order does not matter: TV(AB, BA) < eps_eq for all contexts. Consistent with logit-bias, K_a, and scalar character models.",
+    "H_noncommutative": "Order matters: TV(AB, BA) > eps_eq for some contexts. Defeats logit-bias, K_a, AND scalar character simultaneously. Establishes genuine non-scalar monoid structure.",
+    "decisive_test": "TV distance between A_then_B and B_then_A response distributions per context. eps_eq = 0.01. If max TV > 0.01 across contexts, declare noncommutative."
+  },
+
+  "estimated_calls": "3 vars x 8 vals x 1 depth x 5 conditions = 120 calls, ~2.5 min CPU",
+  "result_dir": "experiments/results/svb_qwen3_composition"
+}

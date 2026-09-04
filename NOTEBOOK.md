@@ -4,6 +4,32 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### CODEX LOGIT-BIAS RIVAL REVIEW + COMPOSITION TEST DESIGN (2026-09-04)
+
+Codex Architecture Theorist follow-up (session 01a06c48) on how to defeat the
+logit-bias rival. Key findings:
+
+**1. Content dominance ≠ rival defeat.** Even if Gate 1b shows content >> var-mention,
+a content-specific logit bias δ_true vs δ_misleading is fully consistent. Content
+dominance rejects the narrow "mentions-variable" hypothesis but not the logit bias.
+
+**2. Analyzer Step 4 was tautological.** The K_a vs logit-bias comparison fitted a_u
+and δ_u per cell and "predicted" the same cell. FIXED: now cross-fits one parameter
+per role on train split, predicts holdout. Reports full (C,L,R) prediction errors.
+
+**3. R-preservation is testable.** K_a predicts ΔC=-ΔL, ΔR=0. Logit-bias predicts
+all non-shadow probs scale by 1/Z where Z=1+(b-1)L, so R'=R/Z≠R and R'/C'=R/C preserved.
+For b≈4, L≈0.05, R≈0.25: expected |ΔR| ≈ 0.026. Gate 1b data can adjudicate.
+
+**4. Noncommutativity criterion — the strongest discriminator.** K_a matrices ALSO
+commute (upper-triangular with same diagonal). So noncommutativity defeats BOTH logit-bias
+AND K_a simultaneously. If α(u)∘α(v) ≠ α(v)∘α(u), the monoid is genuinely non-scalar.
+
+**Actions:** Analyzer Step 4 rewritten with cross-fitting. Noncommutativity criterion
+added to theory/INTENSIONAL_DESCENT.md. Composition runner (run_composition) added to
+run_semantic_descent.py. Config svb_qwen3_composition.json created: 120 calls, ~2.5 min.
+Gate 1b ~20 min from completion; composition test runs after.
+
 ### CODEX NATIVE MATH ASSESSMENT: χ demoted, logit-bias rival identified (2026-09-04)
 
 Two independent Codex reviews (Architecture Theorist + Novelty Challenger) on whether

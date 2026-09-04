@@ -67,6 +67,58 @@ def run_gate1(adapter, cfg):
     return observations
 
 
+def run_composition(adapter, cfg):
+    """Run ordered composition pairs for the noncommutativity test.
+
+    Config must have 'composition_pairs': list of
+      {"role_a": str, "role_b": str, "surface_a": str, "surface_b": str}
+    Also runs baseline, a_only, b_only for each pair.
+    """
+    pairs = cfg["composition_pairs"]
+    observations = {}
+    call_count_start = adapter.call_count
+
+    for depth in cfg["depths"]:
+        tmpl_key = f"depth{depth}_single"
+        tmpl = cfg["templates"][tmpl_key]
+        t0 = time.time()
+
+        for var in cfg["variables"]:
+            for val in cfg["outer_values"]:
+                prefix = build_prefix(tmpl, var=var, outer_val=val)
+                state = adapter.get_state_after_prefix(prefix)
+                query = build_query(var, cfg)
+
+                suffixes = []
+                for pi, pair in enumerate(pairs):
+                    sa = expand_surface(pair["surface_a"], var)
+                    sb = expand_surface(pair["surface_b"], var)
+                    ra, rb = pair["role_a"], pair["role_b"]
+                    suffixes.append((f"BASELINE_p{pi}", query))
+                    suffixes.append((f"{ra}_only_p{pi}", sa + query))
+                    suffixes.append((f"{rb}_only_p{pi}", sb + query))
+                    suffixes.append((f"{ra}_then_{rb}_p{pi}", sa + sb + query))
+                    suffixes.append((f"{rb}_then_{ra}_p{pi}", sb + sa + query))
+
+                for i, (cond_name, suffix_str) in enumerate(suffixes):
+                    last = (i == len(suffixes) - 1)
+                    dist = adapter.get_dist_from_state(
+                        state, suffix_str, deepcopy=not last)
+                    key = f"d{depth}_{var}_{val}_{cond_name}"
+                    observations[key] = {
+                        "depth": depth, "var": var, "val": val,
+                        "condition": cond_name, "dist": dist.tolist(),
+                    }
+
+                del state
+            gc.collect()
+
+        calls = adapter.call_count - call_count_start
+        print(f"  d{depth}: {time.time()-t0:.1f}s ({calls} calls total)", flush=True)
+
+    return observations
+
+
 def compute_operator(dist, val, shadow_digit=9):
     """Extract (C, L, R) from 11-bin distribution."""
     C = float(dist[val])
@@ -222,15 +274,24 @@ def main():
     result_dir = Path(cfg["result_dir"])
     result_dir.mkdir(parents=True, exist_ok=True)
 
-    print("Gate 1: Semantic Descent Experiment", flush=True)
+    is_composition = "composition_pairs" in cfg and cfg["composition_pairs"]
+
+    if is_composition:
+        print("Composition / Noncommutativity Experiment", flush=True)
+    else:
+        print("Gate 1: Semantic Descent Experiment", flush=True)
     print(f"Config: {config_path}", flush=True)
     t_start = time.time()
 
     adapter = ModelAdapter(cfg)
     print(f"Model loaded. Digit tokens: {adapter.digit_token_ids}", flush=True)
 
-    observations = run_gate1(adapter, cfg)
-    summary = analyze(observations, cfg)
+    if is_composition:
+        observations = run_composition(adapter, cfg)
+        summary = analyze_composition(observations, cfg)
+    else:
+        observations = run_gate1(adapter, cfg)
+        summary = analyze(observations, cfg)
 
     elapsed = time.time() - t_start
     print(f"\nTotal: {adapter.call_count} calls, {elapsed:.1f}s ({elapsed/60:.1f} min)", flush=True)
@@ -245,6 +306,96 @@ def main():
             "elapsed_s": elapsed,
         }, f, indent=2)
     print(f"Saved to {result_file}", flush=True)
+
+
+def analyze_composition(observations, cfg):
+    """Analyze composition experiment for noncommutativity."""
+    print("\n=== NONCOMMUTATIVITY TEST ===\n")
+
+    pairs = cfg["composition_pairs"]
+    results = {}
+
+    for pi, pair in enumerate(pairs):
+        ra, rb = pair["role_a"], pair["role_b"]
+        ab_name = f"{ra}_then_{rb}_p{pi}"
+        ba_name = f"{rb}_then_{ra}_p{pi}"
+
+        ab_dists = {}
+        ba_dists = {}
+        baseline_dists = {}
+        a_dists = {}
+        b_dists = {}
+
+        for key, obs in observations.items():
+            cond = obs["condition"]
+            ctx = (obs["depth"], obs["var"], obs["val"])
+            if obs["val"] == 9:
+                continue
+            dist = np.array(obs["dist"])
+            if cond == ab_name:
+                ab_dists[ctx] = dist
+            elif cond == ba_name:
+                ba_dists[ctx] = dist
+            elif cond == f"BASELINE_p{pi}":
+                baseline_dists[ctx] = dist
+            elif cond == f"{ra}_only_p{pi}":
+                a_dists[ctx] = dist
+            elif cond == f"{rb}_only_p{pi}":
+                b_dists[ctx] = dist
+
+        tv_list = []
+        print(f"  Pair {pi}: {ra} x {rb}")
+        print(f"  {'Context':<25} {'TV(AB,BA)':>10} {'L_AB':>8} {'L_BA':>8} {'L_A':>8} {'L_B':>8} {'L_bl':>8}")
+
+        for ctx in sorted(ab_dists.keys()):
+            if ctx not in ba_dists:
+                continue
+            d_ab = ab_dists[ctx]
+            d_ba = ba_dists[ctx]
+            tv = 0.5 * np.sum(np.abs(d_ab - d_ba))
+            tv_list.append(tv)
+
+            val = ctx[2]
+            L_ab = float(d_ab[9])
+            L_ba = float(d_ba[9])
+            L_a = float(a_dists[ctx][9]) if ctx in a_dists else float('nan')
+            L_b = float(b_dists[ctx][9]) if ctx in b_dists else float('nan')
+            L_bl = float(baseline_dists[ctx][9]) if ctx in baseline_dists else float('nan')
+            label = f"d{ctx[0]}_{ctx[1]}_{ctx[2]}"
+            print(f"  {label:<25} {tv:10.4f} {L_ab:8.4f} {L_ba:8.4f} {L_a:8.4f} {L_b:8.4f} {L_bl:8.4f}")
+
+        if tv_list:
+            tv_arr = np.array(tv_list)
+            print(f"\n  TV(AB, BA) summary:")
+            print(f"    mean={tv_arr.mean():.4f}, max={tv_arr.max():.4f}, "
+                  f"p95={np.percentile(tv_arr, 95):.4f}, min={tv_arr.min():.4f}")
+
+            eps_eq = 0.01
+            n_noncommutative = np.sum(tv_arr > eps_eq)
+            print(f"\n  Contexts with TV > {eps_eq}: {n_noncommutative}/{len(tv_arr)}")
+
+            print(f"\n  === VERDICT ===\n")
+            if tv_arr.max() > eps_eq and n_noncommutative >= 3:
+                print(f"  -> NONCOMMUTATIVE (max TV={tv_arr.max():.4f}, "
+                      f"{n_noncommutative}/{len(tv_arr)} contexts)")
+                print(f"     Defeats logit-bias, K_a, AND scalar character.")
+                print(f"     Genuine non-scalar monoid structure established.")
+                results["verdict"] = "NONCOMMUTATIVE"
+            elif tv_arr.max() > eps_eq:
+                print(f"  -> MARGINAL ({n_noncommutative}/{len(tv_arr)} contexts)")
+                print(f"     Some noncommutativity but not robust.")
+                results["verdict"] = "MARGINAL"
+            else:
+                print(f"  -> COMMUTATIVE (max TV={tv_arr.max():.4f} <= {eps_eq})")
+                print(f"     Consistent with scalar models.")
+                results["verdict"] = "COMMUTATIVE"
+
+            results["tv_mean"] = float(tv_arr.mean())
+            results["tv_max"] = float(tv_arr.max())
+            results["n_contexts"] = len(tv_list)
+            results["n_noncommutative"] = int(n_noncommutative)
+
+    return results
 
 
 if __name__ == "__main__":
