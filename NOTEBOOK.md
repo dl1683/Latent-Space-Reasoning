@@ -4,6 +4,48 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### CONGRUENCE TEST: behavioral equivalence is NOT algebraic (2026-09-04)
+
+768 calls, 218s CPU. Codex-designed decisive test for native algebra.
+
+3 equivalence pairs (surfaces with delta_L diff < 0.006):
+- strong_assert: "# State unchanged." ~ "# {var} is unchanged." (TV=0.006)
+- moderate_assert: "# Values preserved." ~ "# {var} is still intact." (TV=0.013)
+- misleading: "# Changing {var}." ~ "# Updating to a new value." (TV=0.025)
+
+Composed with neutral suffix "# No changes.":
+- Equivalence PRESERVED (ratios 0.62-1.90x). Trivial.
+
+Composed with misleading suffix "# Reassigning {var} now.":
+- Equivalence DESTROYED (ratios 2.6-13.2x). Non-trivial.
+
+Verdict: NO CONGRUENCE. The behavioral equivalence defined by delta_L is
+surface-level. Composition with a semantically heavy suffix reveals differences
+that our (C,L,R) quotient cannot see. The model internally distinguishes
+surfaces that our scalar metric says are equivalent.
+
+IMPLICATION: This is the Codex-predicted failure mode. The delta_L landscape
+is learned semantic control, not native algebra. Per Codex: "close this line
+as a useful hole — the latent space exposes stable semantic biases but no
+context-independent navigation law."
+
+ADDITIONAL FINDING: delta_L is predictable from text features (R2=0.88).
+Simple binary features (has_preserve, has_change, is_rewrite, is_observe)
+explain 88% of delta_L variance. This strengthens the "trained behavior"
+interpretation.
+
+WHAT THE SVB CAMPAIGN ESTABLISHED (positive):
+1. Suffix effects are real and content-driven (6.3x content over confound)
+2. The effect is a depth-invariant logit bias on shadow probability
+3. ASSERT and MISLEADING are cleanly separable by delta_L (no overlap)
+4. Quotient closure holds for single suffixes (100% ASSERT)
+5. The quotient is NOT preserved under composition -> not algebra
+
+NEXT: Switch task families. SVB is squeezed dry. Need a task where the
+model's internal structure demands richer algebraic operations.
+
+---
+
 ### QUOTIENT CLOSURE TEST: K_s stochastic DEAD, logit-shift WINS (2026-09-04)
 
 Held-out prediction test on Gate 1b data (3,384 obs, 43 surfaces, no new model calls).

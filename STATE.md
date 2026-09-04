@@ -19,13 +19,14 @@ is a submonoid. If the leakage observable satisfies a separable depth-scaling la
 χ: EqWit → (R≥0, ×) is a **multiplicative character** of the monoid.
 
 **Operator status (2026-09-04):** K_A as 3×3 stochastic matrix is DEAD.
-Held-out test: 0/43 surfaces beat any baseline (K_s mean err 0.29 vs logit-
-shift 0.04). The actual operator is a surface-specific, depth-invariant
-logit bias on shadow probability: δ_L(s) constant across d2-d4 (CV=0.036
-for ASSERT). This is mathematically simple (a constant, not an algebra)
-but structurally real (quotient closure 100% for ASSERT roles). The native
-math claim requires finding algebraic structure in the δ_L landscape or
-identifying a richer quotient beyond (C,L,R).
+The actual operator is a surface-specific, depth-invariant logit bias on
+shadow probability: δ_L(s) constant across d2-d4 (CV=0.036 for ASSERT).
+Quotient closure holds for single suffixes (100% ASSERT). BUT congruence
+test FAILS: behavioral equivalence is NOT preserved under composition with
+semantically heavy suffixes (ratio 2.6-13.2x). This establishes that the
+delta_L landscape is learned semantic control, NOT native algebra. Text
+features predict delta_L at R2=0.88. SVB task family is exhausted for
+the native math claim — need a new task family or mechanistic approach.
 
 **Distance from central claim: 0.** This IS the native math claim.
 

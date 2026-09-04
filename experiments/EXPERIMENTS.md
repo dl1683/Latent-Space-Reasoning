@@ -5,6 +5,58 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Congruence Test (2026-09-04, COMPLETE — NO_CONGRUENCE)
+
+Distance from claim: 0.
+
+768 calls, 218s CPU. Codex-designed decisive test for native algebra.
+
+**Purpose:** Test whether behavioral equivalence (surfaces with matching δ_L)
+is preserved under suffix composition — the algebraic congruence property.
+
+**Design:** 3 equivalence pairs (cross-role surfaces with δ_L diff < 0.006),
+composed with 2 composers (neutral: "# No changes.", heavy: "# Reassigning {var} now."),
+in both orders (a;c and c;a), across 24 contexts.
+
+**Results:**
+
+| Pair | Single TV | Neutral comp | Heavy comp | Ratio (heavy) |
+|---|---|---|---|---|
+| strong_assert | 0.006 | 0.004-0.011 | 0.019-0.074 | 3.4-13.2 |
+| moderate_assert | 0.013 | 0.008-0.012 | 0.038-0.048 | 3.0-3.8 |
+| misleading | 0.025 | 0.023-0.043 | 0.051-0.064 | 2.1-2.6 |
+
+**Verdict:** NO_CONGRUENCE. Behavioral equivalence holds in isolation but is
+destroyed by composition with semantically heavy suffixes. The δ_L-based
+quotient is NOT an algebraic congruence.
+
+**Additional finding:** δ_L is predicted by text features at R²=0.88.
+Dominant features: has_preserve (-1.86), is_rewrite (+0.71), has_change (-0.57).
+
+Config: `experiments/config/svb_qwen3_composition_v2.json` (shared)
+Results: `experiments/results/svb_qwen3_congruence/result.json`
+Runner: `experiments/run_congruence.py`
+
+---
+
+## Quotient Closure + Held-Out Prediction (2026-09-04, COMPLETE — K_s DEAD)
+
+Distance from claim: 0.
+
+Pure analysis on Gate 1b data (3,384 obs, no new model calls).
+
+**Purpose:** Test if K_s (3×3 stochastic matrix on CLR simplex) generalizes
+on held-out data and beats baselines.
+
+**Results:** K_s: 0/43 surfaces beat ANY baseline. Mean err 0.290 vs best
+baseline (logit-shift) 0.039. The actual operator is a constant logit shift.
+Shadow logit shift δ_L is depth-invariant (CV=0.036 ASSERT). Response
+collision closure 100% for ASSERT roles. Cross-role transfer fails.
+
+Runner: `experiments/analyze_quotient_closure.py`
+
+---
+
 ## Gate 2 v2 Multi-Filler Robustness (2026-09-04, COMPLETE — POSITION_WITH_NONLINEAR_GAIN)
 
 Distance from claim: 0.
