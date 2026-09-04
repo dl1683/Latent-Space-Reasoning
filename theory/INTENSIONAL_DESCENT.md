@@ -308,6 +308,15 @@ Actions compose exactly:
 \alpha(u \cdot v) = \alpha(u) \circ \alpha(v).
 \]
 
+**Convention note (D1 word order vs. execution order):** In D1,
+T_{wa} = T_w ∘ T_a with a applied FIRST (rightmost acts first). So
+the D1 word u·v means v executes first, then u. In experiments,
+"A then B" (A executed first) corresponds to the D1 formal word B·A.
+The action α(B·A) = α(B) ∘ α(A) applies A first then B, matching
+execution order. For the character, χ(B·A) = χ(B)·χ(A) = χ(A)·χ(B)
+since real multiplication commutes. Experiment configs use execution
+order ("A_then_B") with this translation understood.
+
 Consequently:
 
 \[

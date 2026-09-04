@@ -23,7 +23,7 @@ def tv_distance(p, q):
     return 0.5 * np.sum(np.abs(np.array(p) - np.array(q)))
 
 
-def analyze_surface_equivalence(result_path, eps_eq=0.02, eps_sep=0.03):
+def analyze_surface_equivalence(result_path, eps_eq=0.01, eps_sep=0.03):
     with open(result_path) as f:
         data = json.load(f)
 
