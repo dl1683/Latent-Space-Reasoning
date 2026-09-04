@@ -1,0 +1,67 @@
+{
+  "experiment_name": "SVB-Qwen3-Composition-v2-MultiFiller",
+  "purpose": "Gate 2 v2 repair: multi-filler robustness test. Same 8-arm design with 3 independently selected filler pairs. Tests whether the residual order contrast (the CORRECT statistic) is consistent across filler pairs. If consistent: genuine surface interaction. If filler-dependent: filler-specific artifact.",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 2, 3, 4, 5, 6, 7, 8],
+  "inner_value": 99,
+  "depths": [4],
+  "single_var_only": true,
+  "eps_eq": 0.01,
+
+  "filler_pairs": [
+    {
+      "name": "pair1",
+      "filler_A": "# Code block follows.\n",
+      "filler_M": "# Looking at the next part.\n",
+      "note": "Original pair from v2"
+    },
+    {
+      "name": "pair2",
+      "filler_A": "# Nothing to report.\n",
+      "filler_M": "# Moving on to what follows.\n",
+      "note": "Independent pair 2"
+    },
+    {
+      "name": "pair3",
+      "filler_A": "# For reference only.\n",
+      "filler_M": "# Turning to the next section.\n",
+      "note": "Independent pair 3"
+    }
+  ],
+
+  "surfaces": {
+    "surface_A": "# {var} is unchanged.\n",
+    "surface_M": "# Reassigning {var} now.\n"
+  },
+
+  "arms": [
+    {"name": "AM",    "suffix_1": "A",   "suffix_2": "M"},
+    {"name": "MA",    "suffix_1": "M",   "suffix_2": "A"},
+    {"name": "AF_M",  "suffix_1": "A",   "suffix_2": "F_M"},
+    {"name": "F_MA",  "suffix_1": "F_M", "suffix_2": "A"},
+    {"name": "MF_A",  "suffix_1": "M",   "suffix_2": "F_A"},
+    {"name": "F_AM",  "suffix_1": "F_A", "suffix_2": "M"},
+    {"name": "F_AF_M","suffix_1": "F_A", "suffix_2": "F_M"},
+    {"name": "F_MF_A","suffix_1": "F_M", "suffix_2": "F_A"}
+  ],
+
+  "pre_registered_statistic": {
+    "name": "residual_order_contrast",
+    "formula": "0.5 * ||( p_AM - p_MA ) - ( predicted_AM - predicted_MA )||_1",
+    "prediction_method": "log_ratio",
+    "gate": "median residual_order_contrast > eps_eq across 24 contexts, consistent across 3 filler pairs",
+    "consistency_test": "max pairwise TV between filler-pair-specific residuals < 2 * median residual"
+  },
+
+  "query_template": "f()\nprint({var})  # Output: ",
+  "templates": {
+    "depth4_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n"
+  },
+
+  "estimated_calls": "AM/MA shared across pairs (48) + 6 filler arms x 3 pairs x 24 contexts (432) = 480 calls, ~12-15 min CPU",
+  "result_dir": "experiments/results/svb_qwen3_composition_v2_multifiller"
+}

@@ -5,7 +5,38 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## Gate 2 v2 — Filler-Based Noncommutativity (2026-09-04, PROVISIONAL)
+## Gate 2 v2 Multi-Filler Robustness (2026-09-04, COMPLETE — POSITION_WITH_NONLINEAR_GAIN)
+
+Distance from claim: 0.
+
+288 new calls (filler pairs 2 & 3), reusing 192 from v2 (AM/MA + pair 1).
+3 independently selected token-matched filler pairs. 2.4 min CPU.
+
+**Purpose:** Test whether residual order contrast (the correct statistic) is
+consistent across filler pairs and survives scalar gain fit.
+
+**Results:**
+
+| Filler pair | Resid. median | Gain-fit median | Contexts > 0.01 (gain) |
+|---|---|---|---|
+| pair1 | 0.067 | 0.007 | 6/24 |
+| pair2 | 0.040 | 0.003 | 0/24 |
+| pair3 | 0.089 | 0.009 | 10/24 |
+
+Cross-filler correlations: pair1-2 r=0.82, pair1-3 r=0.92, pair2-3 r=0.69.
+
+**Verdict:** POSITION_WITH_NONLINEAR_GAIN. The order effect is real, consistent
+across fillers, but fully absorbed by a scalar gain fit. Position with
+context-dependent magnitude is the correct explanation. Gate 2 composition is
+a structured negative.
+
+Config: `experiments/config/svb_qwen3_composition_v2_multifiller.json`
+Results: `experiments/results/svb_qwen3_composition_v2_multifiller/result.json`
+Runner: `experiments/run_multifiller.py`
+
+---
+
+## Gate 2 v2 — Filler-Based Noncommutativity (2026-09-04, CLOSED — subsumed by multi-filler)
 
 Distance from claim: 0 (this IS the native math claim).
 

@@ -35,7 +35,7 @@ In one Qwen3-1.7B prompt family, deeply nested bindings were less likely to be r
 
 4. **Operator algebra is finer than semantic role.** Different surface texts within the same semantic class produce detectably different operators (within-class coefficient of variation 0.33–0.51). The model distinguishes paraphrases that humans consider equivalent.
 
-5. **Robust order dependence under investigation.** Applying suffix A then suffix M produces a measurably different output distribution than M then A (median TV = 0.068). Filler-based controls confirm the direction of the order effect but a nonlinear position-gain rival remains open. Multi-filler robustness and held-out prefix tests are in progress.
+5. **Order effects are positional, not compositional.** Applying suffix A then suffix M produces a measurably different output distribution than M then A (median TV = 0.068). Controlled experiments with three independent token-matched filler pairs confirm the order effect is real and consistent (cross-pair correlation 0.69–0.92), but a scalar gain fit fully absorbs it — the effect direction is positional and the magnitude is context-dependent. This rules out genuine noncommutative content interaction while revealing that position effects in latent space have a nonlinear gain structure worth studying.
 
 ## Nine Breakpoints: Design Constraints for Native Mathematics
 

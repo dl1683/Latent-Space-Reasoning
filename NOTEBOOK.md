@@ -4,6 +4,34 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### GATE 2 v2 MULTI-FILLER: CLOSED — POSITION_WITH_NONLINEAR_GAIN (2026-09-04)
+
+Multi-filler robustness test with 3 independently selected filler pairs (all
+token-matched). 288 new calls (pairs 2 & 3), reusing AM/MA and pair 1 from v2.
+2.4 min CPU.
+
+Results:
+- Residual order contrast (pre-gain): all 3 pairs pass (medians 0.040, 0.067, 0.089)
+- Cross-filler consistency: corr 0.69–0.92 (the order effect is real, not filler-specific)
+- Scalar gain fit: ALL fail (post-gain medians 0.003, 0.007, 0.009 < 0.01)
+- Pair 2 has 0/24 contexts above threshold post-gain
+
+Verdict: The order effect is real and consistent across fillers, but it is fully
+explained by position with context-dependent magnitude (nonlinear gain). There is
+no genuine content interaction between A and M beyond position effects.
+
+Gate 2 composition is now a STRUCTURED NEGATIVE. The surfaces A and M don't interact
+noncommutatively — they contribute additive position-dependent effects whose magnitude
+varies by context.
+
+Strongest remaining finding: K_A correction operator (depth-invariant L→C ≈ 0.72).
+This is independent of composition and describes a genuine operator equation.
+
+Next: Codex strategy session on K_A as headline finding. Design held-out prediction
+test for the atomic operator equation.
+
+---
+
 ### CODEX EVIDENCE GATE: Gate 2 v2 downgraded to PROVISIONAL (2026-09-04)
 
 Codex identified critical Gate 2 issue: implementation computed armwise prediction

@@ -54,14 +54,14 @@ math claim rests on the full action α and its quotient structure, not χ.
   be distinguished from MISLEADING internal variation.
   Codex correction: same-role controls are the wrong null model. Need filler-based
   design with token-length-matched neutral fillers to absorb additive position effects.
-- Gate 2 v2 (Noncommutativity, filler-based): PROVISIONAL (Codex evidence gate).
+- Gate 2 v2 (Noncommutativity, filler-based): CLOSED — POSITION_WITH_NONLINEAR_GAIN.
   216 calls, 24 contexts, deterministic. Gate 1 (direct order) PASSES strongly:
-  median TV(AM,MA) = 0.068 > 0.01. Gate 2 (excess interaction) DISPUTED:
-  implementation computed armwise prediction error (mean=0.033), not the
-  pre-registered residual order contrast. Corrected diagnostic: filler-predicted
-  order vectors align almost perfectly with observed (cosine=0.996) but over-predict
-  magnitude. Nonlinear position gain is the strongest rival. Repair needed:
-  frozen residual-order statistic, multi-filler robustness, held-out prefix family.
+  median TV(AM,MA) = 0.068 > 0.01. Gate 2 (excess interaction) FAILS after
+  multi-filler robustness test: residual order contrast exists (medians 0.040–0.089
+  across 3 filler pairs, cross-pair corr 0.69–0.92) but scalar gain fit absorbs
+  it entirely (post-gain medians 0.003–0.009 < 0.01, 0/24 contexts above threshold
+  for pair 2). The order effect direction is positional; magnitude is context-dependent.
+  Nonlinear position gain is confirmed as the correct explanation.
 - Gate 3 (Causal Relay-State Composition): Codex-designed decisive experiment.
   Compile operations into relay states at declared layer-position cut, mask
   original tokens, predict unseen compositions from atomic table, transplant
