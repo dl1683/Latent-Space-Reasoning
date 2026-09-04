@@ -4,6 +4,37 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### CRC-1 result: INVALID / comprehensive negative — dead histories haunt (2026-09-04)
+
+CRC-1 complete. 1508 forwards, 357s. Two-register overwrite semigroup on
+Qwen3-1.7B-Base. Task-aligned {0,1} observer — the coarsest possible
+observer that captures task semantics.
+
+**Result:** INVALID (competence 87.5%). Identity partition (Q_1=32, zero
+compression). Algebraic relations: idempotence 37.9%, absorption 20.7%,
+commutation 19.1%. Min D_1 = 0.099 — not even close to merging.
+
+**The binding finding:** Dead histories haunt the transformer. The model
+treats `a=0; a=0` differently from `a=0` alone. It treats `a=0; a=1` differently
+from just `a=1`. It treats `a=0; b=1` differently from `b=1; a=0`. The
+overwritten fact, the redundant repetition, and the execution order of
+independent operations — all are visible in the model's next-token prediction,
+even through the coarsest binary observer.
+
+**What this closes:** CRC on Qwen3-1.7B-Base. Two task families (SVB
+scoping, binary register overwrite), two observers (full-vocab, binary).
+Both identity partitions. The Codex stop condition is met.
+
+**What this opens:** The path-dependence IS a structural finding. It's not
+just "no compression" — it's a positive characterization: the model's
+computation is history-sensitive in specific, measurable ways. The algebra
+of actions (idempotence, absorption, commutation) fails at specific rates
+that characterize HOW the model processes history.
+
+**Next:** Codex strategic analysis for what to do after CRC closure.
+
+---
+
 ### RE-CONTEXTUALIZATION: Two campaigns, zero positive results (2026-09-04)
 
 **Project**: Latent-Space-Reasoning.

@@ -5,6 +5,62 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## CRC-1: Overwrite/Erasure Semigroup (2026-09-04, COMPLETE — INVALID / COMPREHENSIVE NEGATIVE)
+
+Distance from claim: 0.
+
+Does a transformer garbage-collect overwritten facts, or do dead histories
+continue haunting its future behavior? Codex Architecture Theorist design.
+Two binary registers (a,b), 32 roots (8 per final store in {0,1}²), 4
+literal actions (a=0, a=1, b=0, b=1). Task-aligned {0,1} normalized binary
+observer (primary), full-vocab diagnostic. Exhaustive words through length 2.
+Cross-fitted 2-fold closure. Non-oracle NN baseline. Algebraic relation
+verification (idempotence, absorption, commutation).
+
+1508 forwards, 357s CPU, Qwen3-1.7B-Base float32.
+
+**Preflight**: Tokenization clean. Competence 56/64 = **87.5%** — below
+95% threshold, rendering experiment INVALID per preregistered criteria.
+
+**Q_0**: 31 classes (task-channel). Store purity 1.0. Min TV = 0.011.
+
+**Q_1**: **32 classes — identity partition.** Zero compression at every
+tolerance level (0.005–0.05). Min D_1 = 0.099, far above any reasonable eps.
+No multi-member classes. Every root is behaviorally distinct under even the
+coarsest {0,1} observer.
+
+**Q_2**: 32 classes. Tower trivially stable. Q_1→Q_2 frag = 0.000.
+
+**Closure (cross-fitted)**: 52/256 = 0.203. (Bug fix: halves trained
+separately, test roots assigned to nearest train class.)
+
+**Algebraic relations**: Overall 25.9% pass rate (need >=95%).
+- Idempotence: 37.9% (mean TV=0.054). a=0;a=0 ≢ a=0.
+- Absorption: 20.7% (mean TV=0.102). a=0;a=1 ≢ a=1. Dead writes visible.
+- Commutation: 19.1% (mean TV=0.110). a=u;b=v ≢ b=v;a=u. Not independent.
+
+**Baselines**: NN (non-oracle, D_1-selected) TV ≈ 0.10. Quotient = 1.0
+(all singletons). Store-matched = 1.0 (all held out in LOSO).
+
+**Mode F**: TV = 1e-6. Cache perfectly faithful.
+
+**Verdict**: INVALID (competence below 95%). But even ignoring validity:
+comprehensive FAIL — identity partition, massive algebraic relation failure,
+no compression at any tolerance. The model does NOT forget overwritten
+facts; dead history remains operationally visible.
+
+**Bug fixes from CRC-0**: (1) Closure now cross-fitted (2-fold). (2) NN
+baseline selects neighbor by D_1 metric, not oracle.
+
+**Binding finding**: Dead histories haunt the transformer. a=0;a=0 does
+not behave like a=0. Order of independent register writes matters. The
+model's state is path-dependent even for semantically equivalent programs.
+
+Config: `experiments/config/crc_1.json`. Runner: `experiments/run_crc_1.py`.
+Results: `experiments/results/crc_1/result.json`.
+
+---
+
 ## CRC-0: Continuation-Refinement Calculus (2026-09-04, COMPLETE — FAIL / NO COMPRESSION)
 
 Distance from claim: 0.

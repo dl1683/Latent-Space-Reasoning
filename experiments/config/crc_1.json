@@ -1,0 +1,74 @@
+{
+  "experiment_name": "CRC-1: Overwrite/Erasure Semigroup on Qwen3-1.7B-Base",
+  "purpose": "Does a transformer behaviorally garbage-collect overwritten facts? Two binary registers, 32 roots (8 per final store in {0,1}^2), 4 literal actions, normalized {0,1} task-aligned observer. Tests idempotence, absorption, commutation, erasure. Codex Architecture Theorist design (2026-09-04).",
+
+  "_CODEX_DESIGN_GATE": {
+    "verdict": "GO (post-CRC-0 strategic pivot)",
+    "source": ".codex_post_crc0.txt (2026-09-04)",
+    "key_design_choices": [
+      "Two binary registers, not variable scoping",
+      "4 literal actions identical for every root (no variable substitution)",
+      "Task-aligned {0,1} observer as primary, full-vocab as diagnostic",
+      "32 roots with 8 per final store for erasure convergence testing",
+      "Genuine algebraic relations: idempotence, absorption, commutation",
+      "Fix CRC-0 bugs: cross-fitted closure, non-oracle NN baseline"
+    ]
+  },
+
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+
+  "registers": ["a", "b"],
+  "values": [0, 1],
+  "history_length": 4,
+  "roots_per_store": 8,
+
+  "actions": {
+    "a0": {"suffix": "a = 0\n", "register": "a", "value": 0},
+    "a1": {"suffix": "a = 1\n", "register": "a", "value": 1},
+    "b0": {"suffix": "b = 0\n", "register": "b", "value": 0},
+    "b1": {"suffix": "b = 1\n", "register": "b", "value": 1}
+  },
+
+  "query_templates": {
+    "a": "print(a)  # Output: ",
+    "b": "print(b)  # Output: "
+  },
+
+  "eps_values": [0.005, 0.01, 0.02, 0.05],
+  "eps_primary": 0.02,
+  "top_k_store": 1000,
+
+  "algebraic_relations": {
+    "idempotence": "a=v; a=v should equal a=v alone (same future behavior)",
+    "absorption": "a=u; a=v should equal a=v alone (earlier write is dead)",
+    "commutation": "a=u; b=v should equal b=v; a=u (independent registers commute)"
+  },
+
+  "decisiveness": {
+    "pass": [
+      "Full-vocab greedy competence >= 95%",
+      "|Q_1| <= 8 from 32 histories (>= 4x compression)",
+      ">= 90% of histories in multi-member classes",
+      "Class purity vs 4 final stores >= 95%",
+      "Q_1->Q_2 fragmentation <= 10%",
+      ">= 95% algebraic relation satisfaction on held-out roots",
+      "Compact transition table within 0.01 TV of uncompressed at <= 1/4 states"
+    ],
+    "fail": [
+      "Q_1 ~ identity (one per root)",
+      "Class purity < 80%",
+      "Dead histories remain visible (overwritten writes change future behavior)"
+    ],
+    "invalid": [
+      "Competence below 95%",
+      "Non-transitive tolerance classes"
+    ]
+  },
+
+  "estimated_forwards": "~1400 (32 root + 32*21*2 words*channels + sentinels)",
+  "estimated_time": "20-35 min CPU",
+  "result_dir": "results/crc_1"
+}

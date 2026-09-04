@@ -1,5 +1,36 @@
 # STATE
 
+## CRC-1 result: INVALID / comprehensive negative (2026-09-04)
+
+**CRC-1 (Codex Architecture Theorist design):** Two binary registers, 32 roots
+(8 per store), 4 literal actions, task-aligned {0,1} observer. 1508 forwards,
+357s CPU. **INVALID** (competence 87.5% < 95% threshold). Even ignoring
+validity: identity partition (Q_1=32), zero compression at all tolerances
+(min D_1=0.099), algebraic relations 25.9% (idempotence 37.9%, absorption
+20.7%, commutation 19.1%). Dead histories haunt the transformer — `a=0;a=0`
+does NOT behave like `a=0`.
+
+**CRC verdict (combined CRC-0 + CRC-1):** Two experiments, two task families,
+two observer granularities (full-vocab and task-aligned {0,1}). Both produce
+identity partitions. Per Codex: "If the overwrite experiment also gives
+identity under the task-aligned observer despite ≥95% competence, stop CRC
+as a discovery engine for this transformer." We got identity PLUS competence
+failure — even more decisive. CRC on Qwen3-1.7B-Base is closed.
+
+**What CRC established (structural facts):**
+1. Qwen3-1.7B-Base maintains distinct behavioral states per history — no lossy compression.
+2. Dead writes remain operationally visible (absorption fails at 20.7%).
+3. Order of independent register writes matters (commutation fails at 19.1%).
+4. Even repeated identical writes change behavior (idempotence fails at 37.9%).
+5. The apparatus works (Mode F ~0, tokenization clean, clique-verified).
+
+**Open question:** What is the next approach? CRC as a discovery engine is
+done for this transformer. Options: (a) constructive — build/find a model
+with explicit state bottleneck, (b) different instrument — not refinement
+towers but something else, (c) different model at its capacity limit.
+
+---
+
 ## CRC-0 result: FAIL — no compression (2026-09-04)
 
 **CRC-0 (Codex-designed, decisive):** 36 roots, 3 typed actions, exhaustive

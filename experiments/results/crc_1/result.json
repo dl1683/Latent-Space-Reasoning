@@ -1,0 +1,710 @@
+{
+  "config_path": "config/crc_1.json",
+  "experiment": "CRC-1: Overwrite/Erasure Semigroup on Qwen3-1.7B-Base",
+  "competence": 0.875,
+  "n_roots": 32,
+  "roots": [
+    {
+      "label": "r0_a0b0",
+      "store": [
+        0,
+        0
+      ],
+      "seq": [
+        3,
+        2,
+        2,
+        0
+      ],
+      "text": "b = 1\nb = 0\nb = 0\na = 0\n"
+    },
+    {
+      "label": "r1_a0b0",
+      "store": [
+        0,
+        0
+      ],
+      "seq": [
+        2,
+        2,
+        2,
+        0
+      ],
+      "text": "b = 0\nb = 0\nb = 0\na = 0\n"
+    },
+    {
+      "label": "r2_a0b0",
+      "store": [
+        0,
+        0
+      ],
+      "seq": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "text": "b = 1\na = 1\nb = 0\na = 0\n"
+    },
+    {
+      "label": "r3_a0b0",
+      "store": [
+        0,
+        0
+      ],
+      "seq": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "text": "a = 1\na = 0\nb = 1\nb = 0\n"
+    },
+    {
+      "label": "r4_a0b0",
+      "store": [
+        0,
+        0
+      ],
+      "seq": [
+        1,
+        0,
+        2,
+        0
+      ],
+      "text": "a = 1\na = 0\nb = 0\na = 0\n"
+    },
+    {
+      "label": "r5_a0b0",
+      "store": [
+        0,
+        0
+      ],
+      "seq": [
+        3,
+        2,
+        0,
+        2
+      ],
+      "text": "b = 1\nb = 0\na = 0\nb = 0\n"
+    },
+    {
+      "label": "r6_a0b0",
+      "store": [
+        0,
+        0
+      ],
+      "seq": [
+        2,
+        3,
+        2,
+        0
+      ],
+      "text": "b = 0\nb = 1\nb = 0\na = 0\n"
+    },
+    {
+      "label": "r7_a0b0",
+      "store": [
+        0,
+        0
+      ],
+      "seq": [
+        1,
+        2,
+        1,
+        0
+      ],
+      "text": "a = 1\nb = 0\na = 1\na = 0\n"
+    },
+    {
+      "label": "r8_a0b1",
+      "store": [
+        0,
+        1
+      ],
+      "seq": [
+        1,
+        1,
+        3,
+        0
+      ],
+      "text": "a = 1\na = 1\nb = 1\na = 0\n"
+    },
+    {
+      "label": "r9_a0b1",
+      "store": [
+        0,
+        1
+      ],
+      "seq": [
+        1,
+        0,
+        3,
+        3
+      ],
+      "text": "a = 1\na = 0\nb = 1\nb = 1\n"
+    },
+    {
+      "label": "r10_a0b1",
+      "store": [
+        0,
+        1
+      ],
+      "seq": [
+        3,
+        2,
+        0,
+        3
+      ],
+      "text": "b = 1\nb = 0\na = 0\nb = 1\n"
+    },
+    {
+      "label": "r11_a0b1",
+      "store": [
+        0,
+        1
+      ],
+      "seq": [
+        2,
+        2,
+        0,
+        3
+      ],
+      "text": "b = 0\nb = 0\na = 0\nb = 1\n"
+    },
+    {
+      "label": "r12_a0b1",
+      "store": [
+        0,
+        1
+      ],
+      "seq": [
+        1,
+        3,
+        0,
+        0
+      ],
+      "text": "a = 1\nb = 1\na = 0\na = 0\n"
+    },
+    {
+      "label": "r13_a0b1",
+      "store": [
+        0,
+        1
+      ],
+      "seq": [
+        0,
+        1,
+        3,
+        0
+      ],
+      "text": "a = 0\na = 1\nb = 1\na = 0\n"
+    },
+    {
+      "label": "r14_a0b1",
+      "store": [
+        0,
+        1
+      ],
+      "seq": [
+        3,
+        0,
+        1,
+        0
+      ],
+      "text": "b = 1\na = 0\na = 1\na = 0\n"
+    },
+    {
+      "label": "r15_a0b1",
+      "store": [
+        0,
+        1
+      ],
+      "seq": [
+        3,
+        1,
+        0,
+        3
+      ],
+      "text": "b = 1\na = 1\na = 0\nb = 1\n"
+    },
+    {
+      "label": "r16_a1b0",
+      "store": [
+        1,
+        0
+      ],
+      "seq": [
+        2,
+        2,
+        1,
+        2
+      ],
+      "text": "b = 0\nb = 0\na = 1\nb = 0\n"
+    },
+    {
+      "label": "r17_a1b0",
+      "store": [
+        1,
+        0
+      ],
+      "seq": [
+        2,
+        3,
+        2,
+        1
+      ],
+      "text": "b = 0\nb = 1\nb = 0\na = 1\n"
+    },
+    {
+      "label": "r18_a1b0",
+      "store": [
+        1,
+        0
+      ],
+      "seq": [
+        1,
+        1,
+        3,
+        2
+      ],
+      "text": "a = 1\na = 1\nb = 1\nb = 0\n"
+    },
+    {
+      "label": "r19_a1b0",
+      "store": [
+        1,
+        0
+      ],
+      "seq": [
+        1,
+        3,
+        2,
+        2
+      ],
+      "text": "a = 1\nb = 1\nb = 0\nb = 0\n"
+    },
+    {
+      "label": "r20_a1b0",
+      "store": [
+        1,
+        0
+      ],
+      "seq": [
+        0,
+        1,
+        1,
+        2
+      ],
+      "text": "a = 0\na = 1\na = 1\nb = 0\n"
+    },
+    {
+      "label": "r21_a1b0",
+      "store": [
+        1,
+        0
+      ],
+      "seq": [
+        3,
+        2,
+        2,
+        1
+      ],
+      "text": "b = 1\nb = 0\nb = 0\na = 1\n"
+    },
+    {
+      "label": "r22_a1b0",
+      "store": [
+        1,
+        0
+      ],
+      "seq": [
+        3,
+        3,
+        2,
+        1
+      ],
+      "text": "b = 1\nb = 1\nb = 0\na = 1\n"
+    },
+    {
+      "label": "r23_a1b0",
+      "store": [
+        1,
+        0
+      ],
+      "seq": [
+        1,
+        2,
+        2,
+        1
+      ],
+      "text": "a = 1\nb = 0\nb = 0\na = 1\n"
+    },
+    {
+      "label": "r24_a1b1",
+      "store": [
+        1,
+        1
+      ],
+      "seq": [
+        0,
+        1,
+        3,
+        3
+      ],
+      "text": "a = 0\na = 1\nb = 1\nb = 1\n"
+    },
+    {
+      "label": "r25_a1b1",
+      "store": [
+        1,
+        1
+      ],
+      "seq": [
+        1,
+        3,
+        3,
+        3
+      ],
+      "text": "a = 1\nb = 1\nb = 1\nb = 1\n"
+    },
+    {
+      "label": "r26_a1b1",
+      "store": [
+        1,
+        1
+      ],
+      "seq": [
+        0,
+        3,
+        1,
+        3
+      ],
+      "text": "a = 0\nb = 1\na = 1\nb = 1\n"
+    },
+    {
+      "label": "r27_a1b1",
+      "store": [
+        1,
+        1
+      ],
+      "seq": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "text": "b = 0\na = 0\nb = 1\na = 1\n"
+    },
+    {
+      "label": "r28_a1b1",
+      "store": [
+        1,
+        1
+      ],
+      "seq": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "text": "b = 0\nb = 1\na = 0\na = 1\n"
+    },
+    {
+      "label": "r29_a1b1",
+      "store": [
+        1,
+        1
+      ],
+      "seq": [
+        1,
+        1,
+        3,
+        1
+      ],
+      "text": "a = 1\na = 1\nb = 1\na = 1\n"
+    },
+    {
+      "label": "r30_a1b1",
+      "store": [
+        1,
+        1
+      ],
+      "seq": [
+        2,
+        2,
+        1,
+        3
+      ],
+      "text": "b = 0\nb = 0\na = 1\nb = 1\n"
+    },
+    {
+      "label": "r31_a1b1",
+      "store": [
+        1,
+        1
+      ],
+      "seq": [
+        2,
+        3,
+        3,
+        1
+      ],
+      "text": "b = 0\nb = 1\nb = 1\na = 1\n"
+    }
+  ],
+  "q0": {
+    "n_classes": 31,
+    "all_cliques": true,
+    "store_purity": 1.0
+  },
+  "q1": {
+    "n_classes": 32,
+    "all_cliques": true,
+    "store_purity": 1.0,
+    "multi_member_coverage": 0.0,
+    "classes": {
+      "0": [
+        "r0_a0b0"
+      ],
+      "1": [
+        "r1_a0b0"
+      ],
+      "2": [
+        "r2_a0b0"
+      ],
+      "3": [
+        "r3_a0b0"
+      ],
+      "4": [
+        "r4_a0b0"
+      ],
+      "5": [
+        "r5_a0b0"
+      ],
+      "6": [
+        "r6_a0b0"
+      ],
+      "7": [
+        "r7_a0b0"
+      ],
+      "8": [
+        "r8_a0b1"
+      ],
+      "9": [
+        "r9_a0b1"
+      ],
+      "10": [
+        "r10_a0b1"
+      ],
+      "11": [
+        "r11_a0b1"
+      ],
+      "12": [
+        "r12_a0b1"
+      ],
+      "13": [
+        "r13_a0b1"
+      ],
+      "14": [
+        "r14_a0b1"
+      ],
+      "15": [
+        "r15_a0b1"
+      ],
+      "16": [
+        "r16_a1b0"
+      ],
+      "17": [
+        "r17_a1b0"
+      ],
+      "18": [
+        "r18_a1b0"
+      ],
+      "19": [
+        "r19_a1b0"
+      ],
+      "20": [
+        "r20_a1b0"
+      ],
+      "21": [
+        "r21_a1b0"
+      ],
+      "22": [
+        "r22_a1b0"
+      ],
+      "23": [
+        "r23_a1b0"
+      ],
+      "24": [
+        "r24_a1b1"
+      ],
+      "25": [
+        "r25_a1b1"
+      ],
+      "26": [
+        "r26_a1b1"
+      ],
+      "27": [
+        "r27_a1b1"
+      ],
+      "28": [
+        "r28_a1b1"
+      ],
+      "29": [
+        "r29_a1b1"
+      ],
+      "30": [
+        "r30_a1b1"
+      ],
+      "31": [
+        "r31_a1b1"
+      ]
+    }
+  },
+  "q2": {
+    "n_classes": 32,
+    "all_cliques": true
+  },
+  "refinement": {
+    "q1_to_q2_frag": 0.0
+  },
+  "closure": {
+    "score": 0.203125,
+    "total": 256,
+    "passed": 52,
+    "method": "cross-fitted (2-fold)"
+  },
+  "algebraic_relations": {
+    "idempotence": {
+      "pass_rate": 0.37890625,
+      "mean_tv": 0.054180846178351075,
+      "n_pass": 97,
+      "n_total": 256
+    },
+    "absorption": {
+      "pass_rate": 0.20703125,
+      "mean_tv": 0.10163266720676561,
+      "n_pass": 53,
+      "n_total": 256
+    },
+    "commutation": {
+      "pass_rate": 0.19140625,
+      "mean_tv": 0.10957956547275106,
+      "n_pass": 49,
+      "n_total": 256
+    }
+  },
+  "overall_relation_rate": 0.2591145833333333,
+  "baselines": {
+    "leave_one_store_out": {
+      "(0, 0)": {
+        "quotient_mean_tv": 1.0,
+        "nn_mean_tv": 0.10541687316320827,
+        "store_mean_tv": 1.0
+      },
+      "(0, 1)": {
+        "quotient_mean_tv": 1.0,
+        "nn_mean_tv": 0.09660903040418707,
+        "store_mean_tv": 1.0
+      },
+      "(1, 0)": {
+        "quotient_mean_tv": 1.0,
+        "nn_mean_tv": 0.1086338797135806,
+        "store_mean_tv": 1.0
+      },
+      "(1, 1)": {
+        "quotient_mean_tv": 1.0,
+        "nn_mean_tv": 0.09553628473683082,
+        "store_mean_tv": 1.0
+      }
+    }
+  },
+  "mode_f": {
+    "mean_tv": 6.22252939544779e-07,
+    "samples": [
+      {
+        "root": "r0_a0b0",
+        "action": "a0",
+        "channel": "a",
+        "tv": 3.905419678762456e-07
+      },
+      {
+        "root": "r0_a0b0",
+        "action": "a1",
+        "channel": "b",
+        "tv": 9.622778945894694e-07
+      },
+      {
+        "root": "r16_a1b0",
+        "action": "b0",
+        "channel": "a",
+        "tv": 1.2999671478164387e-10
+      },
+      {
+        "root": "r16_a1b0",
+        "action": "b1",
+        "channel": "b",
+        "tv": 1.1360618989986193e-06
+      }
+    ]
+  },
+  "tolerance_stability": {
+    "0.005": {
+      "q1_classes": 32,
+      "q2_classes": 32,
+      "compression": false,
+      "fragmentation": 0.0,
+      "multi_member": 0,
+      "store_purity": 1.0
+    },
+    "0.01": {
+      "q1_classes": 32,
+      "q2_classes": 32,
+      "compression": false,
+      "fragmentation": 0.0,
+      "multi_member": 0,
+      "store_purity": 1.0
+    },
+    "0.02": {
+      "q1_classes": 32,
+      "q2_classes": 32,
+      "compression": false,
+      "fragmentation": 0.0,
+      "multi_member": 0,
+      "store_purity": 1.0
+    },
+    "0.05": {
+      "q1_classes": 32,
+      "q2_classes": 32,
+      "compression": false,
+      "fragmentation": 0.0,
+      "multi_member": 0,
+      "store_purity": 1.0
+    }
+  },
+  "full_vocab_diagnostic": {
+    "d0_min": 0.0271455342723943,
+    "d0_median": 0.6208395733350103,
+    "d0_max": 0.9469337370637438
+  },
+  "d1_matrix_min_nonzero": 0.09910588527814315,
+  "d1_matrix_nearest_pair": {
+    "i": "r12_a0b1",
+    "j": "r15_a0b1",
+    "d1": 0.09910588527814315,
+    "stores": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        1
+      ]
+    ]
+  },
+  "verdict": "INVALID: competence below 95%",
+  "forwards": 1508,
+  "elapsed_s": 356.5979037284851
+}
