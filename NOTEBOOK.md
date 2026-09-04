@@ -4,6 +4,38 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### CONTENT-SPECIFICITY CONFIRMED (P2): the suffix is a semantic intervention, not a boundary signal (2026-09-04)
+
+Suffix ablation experiment (6 conditions, 756 calls, 237s CPU) tests whether
+any code-like token provides the ~62% shadow suppression, or if "# No changes.\n"
+is special. Result: content IS specific.
+
+Two-component model:
+- Generic boundary signal (~17%): any code token (pass, newline, short comment)
+  provides modest suppression (a_c ~ 0.82). This is the "boundary appeared" cue.
+- Content-specific "no changes" signal (~45% additional): the semantic content
+  carries the dominant disambiguation signal.
+- Self-assignment "x = x" actively INTERFERES (a_c > 1.6, mass flows C -> L).
+
+R-preservation hierarchy: "# No changes.\n" is the ONLY suffix that is both
+strongly suppressive AND R-preserving (|dR| < 0.002). Other suffixes partially
+disturb R. This selects a distinguished kernel from the operator family.
+
+Codex review (switched controlled transducer formalization): GO on controlled
+fiberwise response-law synchronization. NO-GO on declaring native coordinates
+or full predictive-state synchronizer yet. Key corrections adopted:
+- (C,L,R) is R^3 subset; K is standard stochastic linear map
+- The native contribution is the operationally induced quotient, not the matrix
+- (C,L,R) equality is not predictive-state equality (R collapses bins)
+- Call it "one-probe fiber synchronizer" or "registered response-law synchronizer"
+- Obs. 6 "fresh readout" / "look twice" interpretations marked SUPERSEDED
+
+Gossip version (Codex): "A comment doesn't give the transformer more time —
+it tells it which overwritten value to stop believing."
+
+Next: depth-5 prediction (P4), nested vs flat control (P3), Codex on the
+theoretical implications of content-specificity and the operator family.
+
 ### SHADOW TRACKING CONFIRMED: boundary-conditioned attenuation is a genuine scope mechanism (2026-09-04)
 
 Reanalysis of per-cell 11-bin distributions revealed the suffix effect is NOT a

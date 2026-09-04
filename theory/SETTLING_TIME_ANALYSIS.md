@@ -100,60 +100,16 @@ monotonically with suffix count but does not oscillate. This rules out
 resonance and is consistent with attention dilution: more suffix positions
 dilute the attention budget available for scope binding.
 
-## Observation 6: Mixture model (best fit)
+## Observation 6: Mixture model (SUPERSEDED by Obs. 7-8)
 
-The data is extremely well described by:
-
-    σ(d, 1) = 0.5 × σ(d, 0) + 0.5 × p
-
-where p ≈ 1.0 (depth-independent fresh readout probability).
-
-| Depth | σ(d,0) | σ(d,1) actual | σ(d,1) predicted | Residual |
-|-------|--------|---------------|------------------|----------|
-| d1 | 0.958 | 0.970 | 0.979 | -0.009 |
-| d2 | 0.897 | 0.945 | 0.948 | -0.003 |
-| d3 | 0.792 | 0.900 | 0.896 | +0.004 |
-| d4 | 0.753 | 0.880 | 0.877 | +0.003 |
-
-Residuals are ≤0.009 (well within n=27 sampling noise). At d≥2,
-residuals are ≤0.004.
-
-**Interpretation**: The suffix creates a second, independent readout
-pathway with near-perfect accuracy (~99-100% at d≥2). The model's
-answer is a 50-50 mixture of the original readout (depth-degraded)
-and this fresh readout (depth-independent). At d1, the fresh pathway
-is slightly below perfect (p ≈ 0.98), consistent with a ceiling effect.
-
-**Falsifiable prediction**: At d5, if σ(5,0) follows the exponential
-model (≈0.45), then σ(5,1) ≈ 0.5 × 0.45 + 0.5 × 1.0 ≈ 0.73. This
-is a strong prediction from 4 data points, testable with a d5 template.
-
-**Gossip-magazine version**: "One comment line lets the model look
-at the answer twice — and the second look is always right."
-
-## Connection to breakpoints
-
-The mixture model directly addresses three breakpoints:
-
-**BP-1 (presence ≠ causation):** The outer-scope value is ENCODED in the
-hidden state at all depths (the fresh readout pathway proves this — p≈1.0
-means the information is always present). But the information is only
-ADDRESSABLE through the suffix-triggered pathway at deep nesting. Without
-the suffix, the depth penalty makes the information progressively less
-addressable — despite being fully present.
-
-**BP-7 (snapshot ≠ computation):** The settling effect IS a computational
-trajectory phenomenon. The suffix adds one more step to the trajectory,
-and that step enables a readout pathway that doesn't exist in the original
-trajectory. You cannot understand this from a single-layer activation
-snapshot — it requires the full trajectory through the suffix token.
-
-**BP-6 (observation ≠ state):** The choice of readout (with or without
-suffix) changes the observable. The model's "state" after processing
-depth-4 code contains the correct answer, but you only SEE it if you
-observe through the suffix-triggered pathway. The without-suffix
-observation gives σ=0.75; the with-suffix observation gives σ=0.88.
-Same state, different observation, different measurement.
+The aggregate data fits σ(d,1) = 0.5·σ(d,0) + 0.5·p with p ≈ 1.0
+and residuals ≤0.004 at d≥2. But this was a reparameterization of
+shadow attenuation: the "50% recovery" IS "suffix suppresses ~62%
+of shadow leakage." The distributional analysis (Obs. 7-8) reveals
+the actual mechanism — shadow-binding suppression, not dual-pathway
+readout. The data table and fit remain valid descriptive summaries;
+the "fresh readout pathway" and "look twice" interpretations are
+refuted. Prediction d5 σ ≈ 0.73 reframed under attenuation law (P4).
 
 ## Observation 7: Shadow-binding suppression (REFRAMES Obs. 6)
 
@@ -270,29 +226,112 @@ interference that undoes part of the suppression.
 ## Theoretical summary
 
 The suffix effect on nested-variable readout has a precise mathematical
-description:
+description as a controlled Markov kernel (Codex formalization):
 
-**State:** (C, L, R) decomposition of the response law, where
-C = P(correct target), L = P(shadow digit), R = 1 - C - L.
+**Response decomposition:** P = C*d_y + L*d_z + R, where y = target
+(outer value), z = shadow digit, program-relative.
 
-**Depth law:** L grows exponentially with depth: L ~ 0.03·exp(0.6d)
+**Controlled kernel** (acts on d_z, fixes other response coordinates):
 
-**First-suffix action:** T: (C, L, R) → (C + (1-a_c)·L, a_c·L, R)
-with a_c ≈ 0.38 at d ≥ 2. R is invariant.
+    K_{y,z,a} d_z = a*d_z + (1-a)*d_y
+    K_{y,z,a} d_j = d_j    (j != z)
 
-**Non-iterability:** T is one-shot. Repeated application does NOT give
-T^n; instead, extra suffixes add noise to R and partially reverse L
-suppression. The "therapeutic dose" is exactly one.
+with a = a_c ~ 0.38 at d >= 2. This contracts the nuisance direction
+d_z - d_y by factor a, while leaving unrelated response coordinates
+approximately fixed. Its global TV contraction coefficient is 1;
+contraction occurs only along the empirically identified nuisance fiber.
 
-**Shadow-specificity:** Gain vanishes when target = shadow digit.
+**Content-specificity:** The kernel is parameterized by suffix content.
+"# No changes.\n" actuates the R-preserving kernel (a_c ~ 0.38).
+Generic code tokens give weaker kernels (a_c ~ 0.82). Self-assignment
+reverses the direction (C -> L). The semantic content "no changes"
+carries the dominant disambiguation signal (~45% of 62% total).
 
-**Synchronization:** The suffix contracts within-binding variation
-(25-59%) while enhancing between-binding discrimination (1-18%).
+**One-shot optimality:** T is optimal among tested counts {0,1,2,4}.
+Because s=2,4 do not behave as K^2, K^4, the full system is a
+switched controlled transducer, not an iterated homogeneous system:
 
-The mechanism is boundary-conditioned shadow attenuation: a single
-boundary cue suppresses the dominant shadow competitor. The cue acts
-as a phase switch in the readout — same binding trace, query-ready
-phase. Not generic computation, not dual-pathway readout, not settling.
+    (m, mu) --[suffix]--> (m', K^{(m)} mu)
+
+The first boundary symbol enters the useful mode; later repetitions
+invoke a different transition. This is the mathematical signature
+of one-shot optimality.
+
+**Shadow tracking:** Suppression follows the actual shadow digit under
+relabeling. a_c consistent across shadow digits (0.37-0.42).
+
+**One-probe synchronization:** The kernel contracts within-binding
+response-law variation (25-59%) while enhancing between-binding
+discrimination (1-18%). Shadow coordinates explain ~97-102% of the
+contraction. Licensed as a one-probe fiber synchronizer.
+
+**Scope:** One model (Qwen3-1.7B-Base), one template family, one
+query probe, n=27 cells/depth. Cross-model and cross-task stability
+are open predictions.
+
+## Toward native coordinates (connection to the project thesis)
+
+The (C, L, R) simplex is a subset of R^3 and the kernel K is a
+standard stochastic linear map. The mathematics itself is ordinary.
+What may be native is the *operationally induced quotient*: the
+program-relative decomposition (target y, shadow z, residual) that
+makes an apparently nonlinear distributional effect become a simple
+proportional law. The coordinates are defined by program semantics,
+not by vector geometry or layer structure.
+
+Specifically:
+
+1. **Program-relative quotient.** The (C, L, R) decomposition is
+   relative to a PROGRAM (which defines target y and shadow z).
+   Different programs induce different decompositions of the same
+   11-bin distribution. The operator T acts uniformly across programs —
+   same a_c regardless of which digit is the shadow (confirmed by
+   relabeling). The quotient itself — collapsing 11 bins to 3 by
+   program semantics — is the potentially native contribution.
+
+2. **Compositional.** T acts uniformly across variable names, target
+   values, and shadow digits. The attenuation coefficient a_c is
+   stable across these variations (0.37-0.42 at d≥2).
+
+3. **R invariance.** R is approximately conserved under the "# No
+   changes" suffix (|dR| < 0.002). This constraint is content-specific:
+   other suffixes partially disturb R (see Obs. 11). The R-preserving
+   property selects a distinguished operator from the family.
+
+4. **Nonlinear-to-linear reduction.** T is nonlinear on the raw 11-bin
+   distribution (the effect vector is completely state-dependent). In
+   (C, L, R) coordinates: T(C,L,R) = (C+(1-a_c)L, a_c·L, R). The
+   right quotient makes the dynamics simple.
+
+5. **(C, L, R) equality is NOT predictive-state equality.** R collapses
+   distinct response bins, and no sufficient family of future tests has
+   been checked. The decomposition is a registered response-law quotient,
+   not a full predictive state. Cross-probe verification is needed.
+
+## One-probe response-law contraction
+
+Define the state distance between two programs as TV(response_law_1,
+response_law_2). The suffix acts as a contraction-with-expansion:
+
+| Depth | Same-binding contraction | Diff-binding expansion | Gap |
+|-------|-------------------------|----------------------|-----|
+| d1 | 0.88 (12% contraction) | 1.01 (1% expansion) | 0.13 |
+| d2 | 0.60 (40% contraction) | 1.05 (5% expansion) | 0.46 |
+| d3 | 0.49 (51% contraction) | 1.15 (15% expansion) | 0.66 |
+| d4 | 0.75 (25% contraction) | 1.18 (18% expansion) | 0.43 |
+
+Shadow coordinates ({correct, shadow} bins) explain ~97-102% of
+within-binding contraction at d2-d4. The contraction IS the shadow
+suppression, viewed in metric-space terms. The licensed term is
+**one-probe fiber synchronizer** or **registered response-law
+synchronizer** — not full predictive-state synchronization, since
+only one query probe has been tested.
+
+NOTE: The two synchronization tables in this document use different
+aggregations (ratio-of-means vs mean-of-ratios), producing different
+numbers. The Obs. 9 table uses ratio-of-means; this table uses
+ratio-of-means with different pairing. Both show the same qualitative
+pattern.
 
 ## Confirmed predictions
 
@@ -324,11 +363,56 @@ change at all depths). The suffix resolves a BINDING DISAMBIGUATION
 problem, not an information gap. Scope-pair entropy H(C,L) drops
 by 0.08-0.33 bits (resolves ~42% of disambiguation at d≥2).
 
-## Remaining predictions
+### P2: Suffix content sensitivity — CONFIRMED (2026-09-04)
 
-### P2: Suffix content sensitivity
-Does the boundary cue need to be a Python-compatible statement?
-Config: experiments/config/svb_qwen3_suffix_ablation.json
+Experiment: experiments/config/svb_qwen3_suffix_ablation.json
+Results: experiments/results/svb_qwen3_suffix_ablation/result.json
+756 calls, 236.4s CPU. Six suffix conditions across d1-d4.
+
+| Suffix | a_c (d2-d4 mean) | Suppression | R disruption | Type |
+|--------|-----------------|-------------|--------------|------|
+| (none) | --- | 0% | --- | baseline |
+| `# No changes.\n` | 0.380 | 62.0% | <0.002 | STRONG, R-preserving |
+| `\n` | 0.801 | 19.9% | <0.001 | MODERATE, R-preserving |
+| `# TODO\n` | 0.819 | 18.1% | ~0.004 | MODERATE, R-deflecting |
+| `pass\n` | 0.871 | 12.9% | ~0.006 | MODERATE, R-disrupting |
+| `x = x\n` | 1.609 | -60.9% | ~0.007 | INTERFERENCE |
+
+**Verdict: CONTENT-SPECIFICITY CONFIRMED.** The boundary cue is
+not any code-like token — "# No changes.\n" is uniquely effective.
+
+**Two-component model:**
+- Generic boundary signal (~17%): any code token provides modest
+  shadow suppression (a_c ~ 0.82). This is the "something appeared
+  after the nested code" signal.
+- Content-specific "no changes" signal (~45% additional): the
+  semantic content "No changes" contributes the dominant suppression.
+  At d2: 18% generic + 45% specific = 63% total.
+
+**R-preservation hierarchy:** "# No changes.\n" is the only suffix
+that is both strongly suppressive AND R-preserving (|dR| < 0.002).
+Generic suffixes partially disturb R. Self-assignment reverses the
+operator direction entirely (C → L, a_c > 1.6).
+
+**Operator family:** Different suffix contents actuate different
+members of a transition kernel family:
+
+    K_nochanges: (C,L,R) → (C + 0.62L, 0.38L, R)      [R-preserving]
+    K_newline:   (C,L,R) → (C + 0.20L, 0.80L, R-e)    [weak, clean]
+    K_pass:      (C,L,R) → (C + 0.13L, 0.87L, R-e')   [weak, R-leaky]
+    K_selfassign: reverses — mass flows C → L            [interference]
+
+The "# No changes.\n" kernel is distinguished by being BOTH the
+strongest suppressor AND the only one that preserves R invariance.
+This is not accidental: the semantic content "no changes" is exactly
+the information the model needs to resolve binding ambiguity without
+disturbing non-scope mass.
+
+**Codex gossip version (adopted verbatim):** "A comment doesn't give
+the transformer more time — it tells it which overwritten value to
+stop believing."
+
+## Remaining predictions
 
 ### P3: Nested vs flat structure control
 Token/occurrence-matched flat repetition vs nested scopes.
