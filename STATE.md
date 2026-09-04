@@ -1,6 +1,18 @@
 # STATE
 
-## Active campaign: Intensional Descent Criterion (2026-09-04)
+## Active campaign: Continuation-Refinement Calculus (2026-09-04)
+
+**Pivot from SVB (Codex-directed, 2026-09-04):** All SVB-campaign experiments
+produced structured negatives (congruence, S3 composition, noncommutativity,
+curvature). Root cause: scalar logit projections (the R^n trap). New direction:
+study which future operations distinguish which states, not where states lie
+in a vector space. Primary objects: separating languages Sep(x,y), refinement
+tower Q_0 ← Q_1 ← ..., Brzozowski derivatives under actions. Theory document:
+theory/CONTINUATION_REFINEMENT.md. One bounded CPU test on Qwen3, decisive.
+
+---
+
+## Prior campaign: Intensional Descent Criterion (2026-09-03 — 2026-09-04, CLOSED)
 
 **Central claim under test:** Pretrained transformers implement proof-relevant
 causal semantics — they compress execution histories into equality-witness

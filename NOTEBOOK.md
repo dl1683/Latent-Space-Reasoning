@@ -4,6 +4,31 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### PIVOT: Continuation-Refinement Calculus (2026-09-04)
+
+Codex Architecture Theorist analysis (codex_post_svb_pivot.txt, ~12KB):
+All SVB experiments projected Q_M onto scalars. The structured negatives
+trace to discarding structure that later operations reveal. New direction:
+study the calculus of distinguishing futures, not scalar distances.
+
+Key objects: Sep(x,y) = set of continuations that prove states different.
+Refinement tower Q_0 ← Q_1 ← ... (bounded-horizon equivalence classes).
+Brzozowski derivative: how an action transforms separating languages.
+
+Codex corrections to IDC framework:
+1. Replace strict chain (Δ ⊂ ≡_M ⊂ ≡_E) with kernel comparison
+2. Replace one-object monoid with graded typed process category
+3. Make response-tree equality primary, demote D7 metric/Finsler geometry
+4. Add finite-access refinement tower
+5. Require finite predictive presentation for promotion
+
+Important: congruence experiment didn't test Q_M (congruence by construction).
+It tested a coarse measured quotient via δ_L and 11-bin projection.
+
+Theory: theory/CONTINUATION_REFINEMENT.md (CR-1 through CR-9).
+Next: zero-call reanalysis of congruence data, then one bounded CPU test.
+
+
 ### CURVATURE CONTROL: line closed — R^n trap (2026-09-04)
 
 Confound-killing isochronous control round. 768 calls, 249s CPU. 6 templates,

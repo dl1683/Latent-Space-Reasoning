@@ -1,0 +1,186 @@
+## Recommendation
+
+Close SVB as a route to native algebra. Do not run Gate 3 on its failed premises.
+
+The next unit should be a theory-first **Continuation-Refinement Calculus**, followed by one bounded CPU-only test. Its question is:
+
+> Instead of asking where two states lie in a vector space, ask which future move first proves that they are different—and whether those distinctions admit a compact predictive calculus.
+
+This directly converts the SVB negatives into a new mathematical object. It also provides a cheap substrate gate: if Qwen’s refinement structure does not compress, stop mining frozen Qwen and move to a recurrent, fixed-workspace architecture.
+
+## A. What native latent mathematics should look like
+
+“Native” cannot mean “impossible to encode in \(\mathbb R^n\).” Any finite digital model can be encoded numerically. It should mean that the mathematical objects and laws are induced by the model’s legal computations and observable consequences, rather than by an arbitrary activation chart.
+
+Make the complete response tree primary:
+
+\[
+\operatorname{Beh}(x)(w,c)=r_c(T_wx).
+\]
+
+Then define:
+
+\[
+x\equiv_h y
+\iff
+r_c(T_wx)=r_c(T_wy)
+\quad
+\forall c,\ |w|\le h,
+\]
+
+and the distinguishing-future language
+
+\[
+\operatorname{Sep}(x,y)
+=
+\{w:\exists c,\ r_c(T_wx)\neq r_c(T_wy)\}.
+\]
+
+Under the project’s word-order convention,
+
+\[
+\operatorname{Sep}(T_ax,T_ay)
+=
+\{w:wa\in\operatorname{Sep}(x,y)\}.
+\]
+
+That derivative is a native notion of direction: applying \(a\) changes which future experiments can distinguish two places.
+
+A denizen would consequently invent:
+
+- **Place:** equivalence under available futures, not activation proximity.
+- **Direction:** how a move transforms the language of distinguishing futures.
+- **Distance/cost:** the shortest or cheapest legal continuation that separates or reaches a state. This is generally asymmetric.
+- **Map:** a compressed machine predicting the response tree of unexecuted continuations.
+- **Law:** representative-independent relations among typed moves—conditional commutation, absorption, idempotence, refinement, or erasure—that predict unseen compositions.
+- **Geometry:** the refinement tower
+  \[
+  Q_0 \leftarrow Q_1 \leftarrow Q_2 \leftarrow\cdots,
+  \]
+  together with reachability and causal dependency, rather than a manifold fitted around activation vectors.
+
+This is related to automata and coalgebra, as the existing theory already acknowledges. The field-changing contribution would not be renaming those subjects. It would be discovering a small, causally realized presentation of a real model’s continuation process—or establishing that current architectures do not admit one. [AXIOMS.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/AXIOMS.md:132>) already contains the right response-tree foundation, but currently subordinates it to metric geometry in several places.
+
+## B. What the SVB negatives actually imply
+
+| Result | Structural implication |
+|---|---|
+| Congruence ratios of 2.6–13.2× | The immediate \(\delta_L\)/CLR observation discarded distinctions that a later suffix could reveal. The measured state was not Markov-sufficient. |
+| S3: 4/36 correct | Do not impose an attractive external algebra on a task the model cannot execute. Start from reliable native behavior and discover its operations. |
+| Position with nonlinear gain | A suffix is not a context-free endomorphism. “The same suffix in slot 1” and “the same suffix in slot 2” are different typed arrows unless stationarity is demonstrated. |
+| Padding-sensitive curvature | Presentation is not presently a gauge symmetry. It must remain part of the state until a tested quotient removes it. Regressing it away does not create invariance. |
+
+There is also an important correction to the current project wording: **the experiment did not show that the exact \(Q_M\) equivalence fails congruence.** D11 defines equivalence through every starting state and future, and therefore makes it a congruence by construction. The runner selected approximately similar surfaces using \(\delta_L\) and tested a finite 11-bin response projection. The heavy composer supplied a previously omitted distinguisher. Thus the result refutes the coarse measured quotient, not \(Q_M\). [INTENSIONAL_DESCENT.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/INTENSIONAL_DESCENT.md:53>) and [EXPERIMENTS.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/EXPERIMENTS.md:117>).
+
+Collectively, the negatives say: **stop searching for global operators on a coarse response simplex. Search for the calculus of how future operations split, preserve, or erase apparent equivalences.**
+
+## C. Ranked directions
+
+| Rank | Direction | Discovery if successful | Why it escapes the trap | Cost | Falsifier |
+|---|---|---|---|---|---|
+| **1 — do next** | **Continuation-Refinement Calculus** | A finite set of distinction states and derivatives that predicts unseen continuations; or a quantitative obstruction to compact predictive state | Primary objects are response trees, partitions, distinguishing languages, and legal-word derivatives—not activation coordinates or fitted matrices | Theory: low. First zero-call reanalysis. Fresh test: roughly 300–1,000 CPU forwards, moderate reducer complexity | Refinement approaches one class per surface; derivative signatures do not transfer; raw text/position predicts as well; held-out continuation laws fail |
+| **2** | **Fixed-workspace recurrent/looped substrate** | A finite, stationary causal state with typed read/write operations and genuine compositional laws | Tied iteration acts repeatedly on the same operational carrier; slot permutation, types, reachability, and causal substitution—not Euclidean displacement—define the structure | High: architectural implementation and eventually GPU training; theory/design can start now | Workspace state is not sufficient; raw-history bypass wins; held-out compositions fail; alleged laws reduce to matrices or lexical codes |
+| **3** | **Full-KV causal event algebra** | Which position/layer/head events create, preserve, or destroy future distinctions; possibly partial-commutation laws from disjoint causal support | Treats the transformer state as a growing graded causal trace rather than a single residual vector | High implementation complexity; small panels are CPU-feasible, but broad interventions become expensive | Supports are diffuse and presentation-specific; no stable causal classes; event laws do not predict held-out intervention effects |
+| **4** | **Directed reachability and operational cost** | Asymmetric reachability classes, minimal distinguishing/recovery programs, irreversible sinks, and barriers | Cost is legal computation and reachability, not norm or geodesic length | Moderate-to-high because branching grows quickly; CPU search with aggressive bounds | Token count or prompt length explains cost; paths do not transfer; no compressed policy beats brute-force search |
+
+Direction 1 is the gate for Direction 2. Give frozen Qwen exactly one bounded chance to exhibit a compact refinement calculus. If it does not, the result is a substrate diagnosis, not permission for another measurement ladder.
+
+## D. Intensional Descent: keep the kernel, replace the architecture
+
+The framework is half right.
+
+Keep:
+
+- D1–D6’s refusal to assume vector, metric, or manifold structure.
+- The full future-response map and \(Q_M\).
+- External denotation \(E\) as a separately declared semantics.
+- Causal realization and representative independence as promotion requirements.
+
+Change:
+
+1. **Replace the strict chain.**
+
+   The current claim requires
+
+   \[
+   \Delta_{\mathcal P}\subsetneq{\equiv_M}\subsetneq{\equiv_E}.
+   \]
+
+   That assumes a model never behaviorally conflates denotationally different operations. An imperfect model can simultaneously over-distinguish equal programs and under-distinguish unequal programs.
+
+   Instead compare two kernel relations:
+
+   \[
+   R_M=\ker(\alpha),\qquad R_E=\ker(E).
+   \]
+
+   Then study:
+
+   - \(R_E\setminus R_M\): history or presentation sensitivity;
+   - \(R_M\setminus R_E\): semantic blindness or competence failure;
+   - \(R_M\cap R_E\): jointly erased distinctions.
+
+   A factor \(I\to D\) should be an empirical success condition, not the starting ontology.
+
+2. **Replace the one-object monoid with a graded process category.**
+
+   Objects should include token position, execution phase, available history, and response interface. A suffix at two positions is then represented by two appropriately typed arrows. The positional-gain result is evidence for this typing, not merely a nuisance coefficient.
+
+3. **Make equality of response trees primary.**
+
+   \(d_\infty\), TV, Fisher geometry, and regression can remain experimental tools, but not foundational ontology. D7 explicitly imports manifolds, tangent spaces, Fisher metrics, and Finsler-type seminorms; that entire branch is R^n scaffolding and should be demoted from the native core. [AXIOMS.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/AXIOMS.md:327>).
+
+4. **Add the finite-access refinement tower.**
+
+   Exact \(Q_M\) is an omniscient external construction. A denizen has \(Q_h\), discovered through bounded futures, plus proofs or invariants controlling unseen branches. The existing finite-access theorem already explains why finite agreement cannot certify identity. [AXIOMS.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/AXIOMS.md:1279>).
+
+5. **Require a finite predictive presentation.**
+
+   A quotient existing definitionally is not a discovery. Promotion requires compression over raw history, prediction of unseen derivatives/compositions, presentation transfer, and causal realization.
+
+So: **\(Q_M\) is the right semantic north star, but the present IDC factorization is too clean for the actual model and the metric/differential extensions re-enter the R^n tunnel.**
+
+## E. Is Qwen3-1.7B the wrong substrate?
+
+Native mathematics is not proven impossible in Qwen. But a compact stationary algebra at the tested interfaces now looks unlikely.
+
+The likely structural hole is:
+
+\[
+\text{full state}=\text{growing, position-indexed KV history}
+\quad\neq\quad
+\text{single residual or CLR response slice}.
+\]
+
+Later attention can reread surface history that the coarse response projection appeared to forget. That predicts exactly the observed combination:
+
+- apparent equivalence split by a later suffix;
+- strong position dependence;
+- padding-sensitive interaction;
+- weak interchangeability at single residual ports;
+- failure on tasks demanding explicit composition.
+
+The project’s own port-compression note identifies this possibility, although it remains a conjecture rather than a proved result. [AXIOMS.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/AXIOMS.md:2456>). Earlier Qwen results are consistent with distributed whole-sequence computation and repeated single-port failures, but do not prove impossibility. [STATE.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/STATE.md:864>).
+
+A plain SSM is not the answer: fixed-state recurrence improves Markov closure, but a diagonal or linear recurrence is already well described by linear systems and spectral theory.
+
+The better substrate is a **looped or recurrent transformer with a fixed explicit workspace**:
+
+- tied update across reasoning steps;
+- fixed typed slots or graph-structured state;
+- raw-history access cut off after compilation;
+- explicit read/write/query ports;
+- permutation or renaming symmetries built into the interface;
+- tasks requiring held-out composition rather than memorized endpoint prediction.
+
+That architecture does not guarantee new mathematics. It creates the conditions under which stable operational identity, iteration, reachability, and composition can exist.
+
+## Exact next move
+
+1. Write the Continuation-Refinement theorem attempt first.
+2. Reanalyse the existing congruence artifact as a zero-call \(Q_0\to Q_1\) split witness.
+3. Lock one CPU experiment using the full next-token response law and a task already above the competence gate.
+4. Measure refinement growth, shortest distinguishing futures, derivative closure, held-out prediction, and compression against raw surface/position history.
+5. Stop after that round if the quotient continues fragmenting or the text baseline matches it. Then move directly to the fixed-workspace architecture design.
+
+No more SVB coefficients, curvature controls, S3 repairs, or Gate 3. The next artifact must be either a compact predictive calculus or a clean architectural obstruction.
