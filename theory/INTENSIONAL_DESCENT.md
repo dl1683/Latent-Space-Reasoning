@@ -408,15 +408,29 @@ effects EXCEED same-role order effects (A₁A₂/A₂A₁, B₁B₂/B₂B₁)
 and survive a position-weighted decay null. See Gate 2 config.
 
 **What noncommutativity establishes (corrected per Codex review):**
-Non-commutativity alone does NOT imply lumpability failure or a
-dimension lower bound — generic 2×2 matrices already fail to
-commute. What it establishes is that the model's action on the
-behaviorally observable response law is outside the K_a family
-(which commutes by shared eigenvectors) and outside context-free
-additive logit models (which commute by addition). It becomes
-native-math evidence only when the non-commuting relation descends
-across model-discovered equivalence classes (representative
-independence) and exceeds the recency baseline.
+Non-commutativity alone does NOT imply lumpability failure, a
+dimension lower bound, nonlinearity, compression, proof-relevance,
+or topological holes. Generic 2×2 matrices already fail to commute;
+scalar states with decay (s'=λs+δ) are noncommutative. What
+controlled noncommutativity establishes is an obstruction to
+specified commutative factorizations: the model's action is outside
+the K_a family (which commutes by shared eigenvectors) and outside
+context-free additive logit models (which commute by addition).
+
+Even cross-role > same-role TV does not fully rule out recency:
+same-role paraphrase swaps can be tiny because δ_{A₁}≈δ_{A₂},
+while cross-role differences are large because δ_A≠δ_B. Position-
+matched singleton-plus-filler arms estimating the decay null are
+required (Codex Architecture Theorist, 2026-09-04).
+
+Noncommutativity becomes native-math evidence only when the non-
+commuting relation descends across model-discovered equivalence
+classes (representative independence), survives the recency/position
+baseline, AND connects to causal internal state (relay-state
+composition, Gate 3). "Noncommutativity is cheap; stable equations
+are expensive" — the native prize is model-discovered relations
+(idempotence, conditional commutation, absorption) that predict
+unseen compositions.
 
 ## D16. Vertical kernel action — definition (replaces "holonomy")
 
@@ -627,8 +641,9 @@ survive cheap baselines (F6).
 ## Next steps
 
 1. ~~Codex review of theorem attempt~~ — DONE (v2 repairs adopted).
-2. Gate 1 (semantic descent) — RUNNING on Qwen3-1.7B.
-3. If Gate 1 passes: Gate 2 (composition).
-4. If Gate 2 passes: Gate 3 (causal transfer).
-5. Cross-model replication if all gates pass.
-6. Follow-up Codex review of v2 formalization.
+2. ~~Gate 1 (semantic descent)~~ — CONFIRMED. +0.092 (t=21.23). Holdout +0.121.
+3. Gate 1b (confound control) — RUNNING. 2×2 content × var-mention ANOVA.
+4. Gate 2 (composition/noncommutativity) — DESIGNED with recency controls.
+   Cross-role TV must exceed same-role TV. Surfaces from Gate 1b prevalidation.
+5. If Gate 2 passes: Gate 3 (causal transfer, requires GPU).
+6. Cross-model replication if all gates pass.

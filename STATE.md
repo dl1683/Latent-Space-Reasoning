@@ -36,10 +36,21 @@ math claim rests on the full action α and its quotient structure, not χ.
   F6 baseline + F8 lumpability. Analysis pipeline ready.
 - Gate 2 (Noncommutativity): REDESIGNED per Codex review. Tests order-dependence
   of E-null suffix pairs. Both K_a matrices AND logit biases commute, so
-  noncommutativity defeats both scalar models simultaneously. Config ready
-  (120 calls, ~2.5 min). Codex design gate running. BLOCKED on Gate 1b.
-- Gate 3 (Causal Transfer): Internal state transplant between extensionally
-  equivalent histories. BLOCKED on Gate 2, requires GPU.
+  noncommutativity defeats both scalar models simultaneously. Config revised
+  with same-role recency controls (360 calls, ~7.5 min). BLOCKED on Gate 1b
+  surface prevalidation. Codex design gate: REVISE (recency confound).
+- Gate 3 (Causal Relay-State Composition): Codex-designed decisive experiment.
+  Compile operations into relay states at declared layer-position cut, mask
+  original tokens, predict unseen compositions from atomic table, transplant
+  relay states causally. BLOCKED on Gate 2, requires GPU.
+
+**Codex theory verdict (Architecture Theorist, 2026-09-04):**
+"Noncommutativity is cheap; stable equations are expensive." The transformation
+monoid exists for any sequential transducer. The native prize is model-discovered,
+representative-independent algebra with causal realization. Gate 2 noncommutativity
+is necessary but narrow — it proves an obstruction to commutative factorizations,
+NOT dimension bounds, compression, proof-relevance, or topology. The full native
+math claim requires the causal relay-state experiment (Gate 3).
 
 **Logit-bias rival (Codex 2026-09-04 follow-up):** Content dominance alone
 does NOT defeat the rival — content-specific δ_u is compatible. Analyzer

@@ -4,6 +4,54 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### CODEX NATIVE MATH THEORY FOUNDATIONS (2026-09-04)
+
+Codex Architecture Theorist (session 01a06c67) on what native latent-space
+math IS and what noncommutativity actually proves.
+
+**Central verdict: "Noncommutativity is cheap; stable equations are expensive."**
+The transformation monoid exists for ANY sequential transducer. The native prize
+is model-discovered, representative-independent algebra with causal realization.
+
+**What noncommutativity proves (and doesn't):**
+- PROVES: obstruction to specified commutative factorizations (K_a, logit-bias)
+- DOES NOT PROVE: dimension >1, nonlinearity, lumpability failure, compression,
+  proof-relevance, topological holes, transformer-specificity, or compositional
+  prediction. Cross-role > same-role TV doesn't even rule out recency — position-
+  matched singleton+filler arms are required.
+
+**The right framework:** Typed causal process category C_M = Q_M ⋊ I. Objects =
+predictive causal states at layer-position cuts. Arrows = model computations.
+External denotation is a functor. EqWit = vertical arrows invisible to denotation.
+Commuting/failing squares between layer transports and behavioral operations are
+where architecture enters.
+
+**The decisive experiment: "causal relay-state composition"**
+1. Multiple surfaces per role, assigned to nonce codes (so physical code can't
+   predict role)
+2. Define relay-state equivalence by causal substitution at declared layer cut
+3. Mask original tokens downstream — test compiled state vs rereading
+4. Predict unseen compositions from atomic transition table
+5. Transplant relay-token state causally — must follow class + composition table
+6. Practical control: use predicted class to correct degraded scope answer
+
+**Directed homotopy:** Still viable but EqWit ≅ π₁↑ NOT justified. Needs:
+verified execution squares (empirical 2-cells), directed graph/cubical complex,
+demonstrated inequivalent parallel paths with same endpoints. AB≠BA alone
+supplies neither equal endpoints nor absence of homotopy.
+
+**Native math manifesto axioms:** Operational identity (future-experiment
+substitutability), causal action (admissible model computations), presentation
+invariance (surface/coordinate changes), architecture locality (layer-position
+causal graph). First theorems: predictive-state minimality, kernel/fiber,
+causal-realization, independence (commutation from disjoint causal cones),
+obstruction (failed square forbids coarse factorization).
+
+**Implication for current program:** Gate 1b → Gate 2 composition path is valid
+but NARROW. The composition test can reject K_a/logit-bias but cannot establish
+native math alone. The full program needs the causal relay-state experiment
+(Gate 3+), which requires GPU and internal-state access.
+
 ### CODEX LOGIT-BIAS RIVAL REVIEW + COMPOSITION TEST DESIGN (2026-09-04)
 
 Codex Architecture Theorist follow-up (session 01a06c48) on how to defeat the
