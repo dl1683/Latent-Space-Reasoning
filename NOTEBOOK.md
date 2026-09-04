@@ -4,6 +4,32 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### CODEX NATIVE MATH ASSESSMENT: χ demoted, logit-bias rival identified (2026-09-04)
+
+Two independent Codex reviews (Architecture Theorist + Novelty Challenger) on whether
+the multiplicative character constitutes native latent-space math.
+
+**Verdict: NOT YET NATIVE.** K_a is ordinary linear algebra on a coarse output simplex
+(in (S,L,R) coordinates it's just diag(1,a,1)). The multiplicative character χ is
+standard representation theory. Both are R^n scaffolding, not native structure.
+
+**Key corrections adopted:**
+1. Bayesian interpretation was WRONG: E(u)=id does not imply likelihood ratio=1.
+   A denotationally null operation can still be evidence about the answer/task.
+   Likelihood ratios multiply ODDS, not raw probability L.
+2. **Strongest rival: constant shadow-logit bias.** A suffix producing additive
+   logit shift δ_u gives L'/C' = e^{δ_u} × L/C exactly, and L'/L ≈ e^{δ_u} when
+   L is small. Setting δ_u ≈ log(4) reproduces the 4x ratio with no EqWit needed.
+3. Discriminating tests: K_a predicts R'=R; logit-bias predicts R changes via
+   normalization. K_a predicts stable raw ratio; logit-bias predicts stable log-odds.
+
+**What IS potentially native:** The operational quotient — denotationally null histories
+becoming different moves because they alter future possibilities. The behavioral action
+α and its path algebra, not K_a or χ by themselves.
+
+**Actions taken:** Theory Bayesian section corrected. K_a vs logit-bias comparison added
+to character analyzer. χ demoted to diagnostic candidate. Idempotent config created.
+
 ### CODEX FOLLOW-UP: Idempotent test + multiplicative character theory (2026-09-04)
 
 Codex Architecture Theorist follow-up on two questions from Gate 1 results.
