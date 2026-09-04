@@ -4,6 +4,37 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### CR-14 revised to commit-seal carrier (2026-09-04)
+
+Codex design gate corrected the original CR-14 hard-register experimental
+design as EAC tautological: hard-wired overwrite guarantees |Q_H|=16 by
+construction, so testing whether it erases is circular. WB-1 validates the
+math (|Q_H| matches ∏|V_r| = 4^2 = 16, the store cardinality for initialized
+registers) but is architecturally tautological — a single-seed diagnostic,
+not L1-L4 validation (Codex: learned write heads unused, overwrite arm retains
+history-bearing GRU path, arms have unequal parameters).
+
+Revised CR-14 uses commit-seal carrier: hard SEAL (information bottleneck
+erasing pre-commit activations) + LEARNED update U(m, proposal) → m+.
+The model CAN fail (encode both old/new values, entangle addresses, ignore
+carrier). The learned update is the falsifiable object.
+
+Also corrected: L1 renamed "absorption" (not "idempotence"). Quotient bound:
+∏|V_r| for initialized registers, ∏(|V_r|+1) only when registers have a
+distinct unwritten state.
+
+Positive-control staircase: rung 1 = 1 address, 2 values, 2 commits,
+counterfactual pairs, self-transplant + no-seal ablation + value-proposal
+shuffle (not scrambled-address — impossible with 1 address).
+
+Codex WB-2 design gate (compositional): strongest candidate is chained Z4
+operations (A(x,y)=(x+y mod 4,y), B(x,y)=(x,x+y mod 4)) but it should run
+at rung 3, after rungs 1 and 2 pass. Z4 is imported algebra (scaffolding),
+not native latent math — the native candidate is the behaviorally established
+congruence and induced transformation semigroup of the learned carrier.
+
+---
+
 ### WB-1 complete: F4 — task too simple, overwrite hits exact bound (2026-09-04)
 
 First constructed artifact. Two GRU models (~25K params, CPU), 2 registers × 4
@@ -45,7 +76,7 @@ predictive states.
 - Laws: overwrite idempotence (L1), cross-register commutativity (L2),
   preservation of unrelated distinctions (L3), write fidelity (L4)
 - Theorem: every write history has a unique last-write normal form; predictive
-  quotient bounded by store cardinality ∏|V_r|, not history length
+  quotient bounded by store cardinality ∏(|V_r|+1), not history length
 - Five pre-declared falsifiers (F1-F5), each testable in one round
 - Primary gate (F1): overwrite model must produce a smaller quotient than
   matched append-only ablation

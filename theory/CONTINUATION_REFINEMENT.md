@@ -273,14 +273,14 @@ the current value of register r from the model's state.
 
 ### Laws (required at the behavioral level)
 
-**L1. Overwrite (same-register idempotence):**
+**L1. Overwrite absorption (NOT idempotence):**
 
     W_{r,v'} ∘ W_{r,v}(x) ≃ W_{r,v'}(x)
 
 The last write to a register determines all future behavior. Dead writes
-have no causal residue. This is the negation of CEG-1's finding on
-pretrained transformers — and is by construction in a hard-masked
-register file.
+have no causal residue. Note: this is absorption (general v, v'), not
+idempotence (which is the v'=v special case). Correction per Codex
+design gate 2026-09-04.
 
 **L2. Independence (cross-register commutativity):**
 
@@ -328,15 +328,17 @@ where:
 **Corollary (Quotient bound).** The number of behaviorally distinct
 write-reachable states from any starting state x is at most:
 
-    |Q_writes(x)| ≤ ∏_{r∈R} |V_r|
+    |Q_writes(x)| ≤ ∏_{r∈R} (|V_r| + 1)
 
-This is the store cardinality |S|. The bound is independent of the
-number of write operations performed — history length does not grow
-the predictive state.
+The +1 accounts for untouched registers (never written). Reaching the
+tighter bound ∏|V_r| (without +1) requires an additional store-
+sufficiency condition: that the current-value-write identity holds
+(writing the value a register already holds is a no-op). This tighter
+bound is itself something to test, not assume. Correction per Codex
+design gate 2026-09-04.
 
-This is compression: a model satisfying L1-L2 has a predictive quotient
-bounded by its register capacity, not by the exponentially growing space
-of possible histories.
+The bound is independent of the number of write operations — history
+length does not grow the predictive state.
 
 ## CR-12. Distance from CR-7 promotion criteria
 
@@ -406,45 +408,106 @@ Each falsifier is testable in a single experimental round. F1 is the
 primary gate: if the overwrite model has the same quotient as append-
 only, stop.
 
-## CR-14. Experimental design (pre-declaration)
+## CR-14. Experimental design — commit-seal carrier (revised)
 
-**Architecture.** A recurrent model with:
-- A fixed-size register file: k registers, each V_r = {0, 1, ..., m-1}
-- A learned write gate: at each step, the model selects (r, v) or NOP
-- Hard-masked overwrite: writing to r replaces its value; old value is
-  not accessible through any read path
-- Unrestricted read: the model can read all registers at any time
+**Revision note (2026-09-04):** The original CR-14 used a hard-wired
+register file with hard-masked overwrite. Codex design gate identified
+this as a repeat of the EAC tautology: if overwrite is guaranteed by
+construction, testing whether overwritten values are erased is
+tautological. WB-1 confirmed: |Q_H|=16 exactly (by construction), but
+the result is architectural, not learned. The revised design makes the
+LEARNED UPDATE — not the hard-wired register semantics — the smallest
+falsifiable object.
 
-**Matched ablation.** Same model, same total capacity, append-only
-carrier: each write appends to a log (no overwrite, no erasure). Same
-number of write slots as the overwrite model has total write events.
-The only architectural difference is the overwrite boundary.
+### Architecture: commit-seal carrier
 
-**Task family.** Multi-step fact-tracking with overwrites: k entities,
-each with a mutable attribute. The task presents a sequence of updates
-(some overwriting prior values) and queries about current attribute
-values. The correct answer depends ONLY on the last write to each
-entity — dead history is irrelevant.
+A recurrent model with:
 
-**Controls:**
-- Scrambled-key control: writes target random registers (not the
-  correct entity). Tests whether the model uses the address structure.
-- Independent relabeling: entity names are relabeled between training
-  and test. Tests whether the learned structure is name-invariant.
-- Append-only ablation: primary comparison (F1 gate).
-- No raw successor embeddings: the model cannot bypass the register
-  file by attending to raw token representations.
+1. **Transient encoder**: processes each input statement, producing a
+   write proposal (address, value embedding).
 
-**Measurements:**
-- Primary: |Q_H| for overwrite vs append-only (F1 gate)
-- Compression ratio: |Q_H| / |{distinct histories}|
-- Transfer accuracy on held-out presentations (F3 gate)
-- Causal substitution error: behavioral distance between store-
-  equivalent states with different histories
-- Advantage: accuracy and quotient size difference vs append-only
+2. **Learned update U**: a neural function
+       m+ = U(m, address, proposal)
+   that computes the new carrier state from the old carrier, the
+   addressed slot, and the proposed value. U is LEARNED — it is not
+   hard-wired to overwrite.
 
-**One round, decisive.** Build the smallest model that can be wrong.
-A 2-register, 4-value system (|S|=16) with 5-step write sequences
-(|histories|=16^5=1M). If the overwrite model compresses to ~16
-classes and the append-only does not, the write boundary matters.
-If both compress equally, F1 kills the line.
+3. **Hard seal (COMMIT)**: at commit, all pre-commit token and
+   activation history is erased. All subsequent influence on behavior
+   must pass through m+. The seal is the information bottleneck — the
+   only hard constraint.
+
+4. **Learned reader**: consumes m, the queried address, and a per-
+   episode output legend to produce the response.
+
+**What the model CAN fail at:**
+- Encoding (old_value, new_value) in m+ instead of just new_value
+- Entangling addresses (mixing which slot holds which value)
+- Ignoring the carrier (using hidden state instead of m)
+- Producing non-portable m+ (works only with specific readers)
+
+**What the seal guarantees:**
+- If U learns to produce m+ that retains only current values, dead
+  information CANNOT leak through other paths
+- This is the guarantee pretrained transformers lack (CEG-1 finding)
+
+### Matched ablation: no-seal recurrent
+
+Same architecture, same U, same parameters, same everything — but
+NO seal. The model can access both m+ AND pre-commit activations.
+Parameter- and activation-matched. The ONLY difference is the
+information bottleneck.
+
+If the sealed model has a smaller quotient, the seal is doing useful
+work. If both quotients are equal, the seal provides no compositional
+advantage.
+
+### Positive-control staircase
+
+Do not jump to the full design. Change exactly one difficulty per rung:
+
+**Rung 1 (first implementation):**
+- 1 address
+- 2 values
+- 2 commits (write(u), then write(v))
+- Training entities and wording (no held-out)
+- Zero configured filler
+
+Primary claim: after write(u); write(v), changing u does not materially
+change any registered future response, while transplanting the committed
+carrier transfers v-specific behavior.
+
+Required controls:
+- ≥95% visible and single-write competence
+- Self-transplant, wrong-live-value transplant
+- Value-proposal shuffle (scrambled address is impossible with 1 address;
+  shuffle the value-to-proposal mapping instead)
+- Matched no-seal ablation
+- Approximate paired erasure with tolerance frozen from noise floor
+
+**Subsequent rungs (only after prior rung passes):**
+1. Second address + cross-address commutation (tests L2)
+2. Short delay between writes
+3. Held-out entity names
+4. Unseen wording/templates
+5. Long delay
+
+### Measurements
+
+- Primary: paired erasure — changing the obsolete write u does not
+  change registered futures (within tolerance)
+- Causal donor following: transplanting m+ transfers v-specific
+  behavior to a new context
+- Quotient: |Q_H| for sealed vs no-seal (F1 gate)
+- Accuracy: single-write competence ≥95%
+
+### WB-1 status (hard-register experiment)
+
+WB-1 (hard-wired register, 2026-09-04) is a single-seed diagnostic, not
+L1-L4 validation (Codex: learned write heads unused, overwrite arm retains
+history-bearing GRU path, arms have unequal parameters). Overwrite model
+achieves |Q_H|=16 (= ∏|V_r| = 4^2; note: the +1 in the general bound
+∏(|V_r|+1) counts a distinct unwritten state — WB-1 initializes all
+registers to 0, so no unwritten state exists). Append-only: |Q_H|=20,
+alignment 0.750 (25% history leakage). F4: both compress on simple
+fact-tracking. WB-1 is retained as a mathematical diagnostic.

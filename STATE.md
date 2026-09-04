@@ -19,8 +19,18 @@ transfer across held-out presentations, (4) causal substitution of store-
 equivalent states, (5) advantage over matched append-only ablation.
 
 **Theory:** theory/CONTINUATION_REFINEMENT.md, CR-10 through CR-14. Laws L1-L4
-(overwrite idempotence, cross-register commutativity, preservation, write
-fidelity). Last-write normal form theorem. Five pre-declared falsifiers.
+(overwrite absorption, cross-register commutativity, preservation, write
+fidelity). Last-write normal form theorem (quotient bounded by ∏(|V_r|+1)
+in general, ∏|V_r| for initialized registers; not history length). Five
+pre-declared falsifiers.
+
+**CR-14 revised (2026-09-04):** Original hard-register design was EAC
+tautological (Codex correction). Replaced with commit-seal carrier: hard seal
+(information bottleneck) + learned update U(m, address, proposal) → m+. The
+model CAN fail — the learned update is the falsifiable object, not the
+hard-wired register semantics. WB-1 validates the normal form math but is
+architecturally tautological. Positive-control staircase: 1 address, 2 values,
+2 commits first.
 
 **Narrative gate:** "Give a model an internal act that genuinely means 'replace
 this fact,' then test whether compositional reasoning becomes possible because
@@ -28,9 +38,8 @@ dead history is truly dead."
 
 **Distance from central claim: 0.** This IS the native math artifact.
 
-**Next step:** Codex design gate on CR-14 experimental design before
-implementation. Then: build the smallest model that can be wrong (2 registers,
-4 values, 5-step sequences). One round, decisive.
+**Next step:** Codex WB-2 design gate for commit-seal carrier experiment (rung 1
+of staircase). Then implement and run on CPU.
 
 ---
 
