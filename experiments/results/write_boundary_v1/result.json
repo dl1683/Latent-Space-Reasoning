@@ -1,0 +1,74 @@
+{
+  "config": {
+    "experiment_id": "write_boundary_v1",
+    "description": "CR-14 minimal construction: 2 registers x 4 values, 5-step write sequences. Overwrite model vs append-only ablation. Primary gate: F1 (quotient comparison).",
+    "n_registers": 2,
+    "n_values": 4,
+    "n_steps": 5,
+    "d_embed": 32,
+    "d_hidden": 64,
+    "n_train": 4000,
+    "n_val": 1000,
+    "n_epochs": 300,
+    "lr": 0.001,
+    "batch_size": 128,
+    "quotient_tolerance": 0.05,
+    "seed": 42,
+    "generalization_lengths": [
+      7,
+      10,
+      15
+    ],
+    "notes": "Store cardinality |S|=16. History space: 8^5=32768. Expected overwrite compression: 32768:16=2048:1. Append-only compression: empirical."
+  },
+  "store_cardinality": 16,
+  "history_space": 32768,
+  "timestamp": "2026-09-04T14:39:51",
+  "overwrite": {
+    "n_params": 21338,
+    "final_train_acc": 1.0,
+    "final_val_acc": 1.0,
+    "final_train_loss": 1.5149990686040837e-06,
+    "quotient": {
+      "n_quotient_classes": 16,
+      "n_histories": 32768,
+      "n_store_states": 16,
+      "store_alignment_rate": 1.0,
+      "compression_ratio": 2048.0,
+      "tolerance": 0.05
+    },
+    "generalization": {
+      "7": 1.0,
+      "10": 1.0,
+      "15": 1.0
+    }
+  },
+  "append_only": {
+    "n_params": 27844,
+    "final_train_acc": 1.0,
+    "final_val_acc": 1.0,
+    "final_train_loss": 1.6745304446885712e-06,
+    "quotient": {
+      "n_quotient_classes": 20,
+      "n_histories": 32768,
+      "n_store_states": 16,
+      "store_alignment_rate": 0.75,
+      "compression_ratio": 1638.4,
+      "tolerance": 0.05
+    },
+    "generalization": {
+      "7": 1.0,
+      "10": 1.0,
+      "15": 0.9990000128746033
+    }
+  },
+  "comparison": {
+    "overwrite_quotient": 16,
+    "appendonly_quotient": 20,
+    "quotient_ratio": 1.25,
+    "store_cardinality": 16,
+    "overwrite_at_bound": true,
+    "f1_gate": "FAIL"
+  },
+  "verdict": "F4 \u2014 both compress; task may be too simple"
+}

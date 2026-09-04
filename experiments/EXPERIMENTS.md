@@ -5,6 +5,53 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## WB-1: Write-Boundary Construction v1 (2026-09-04, COMPLETE — F4 / TASK TOO SIMPLE)
+
+Distance from claim: 0. First constructed artifact.
+
+Can an explicit overwrite mechanism produce compositional compression that a
+matched append-only carrier cannot? Two custom GRU models (~25K params, CPU),
+same fact-tracking task (2 registers × 4 values, 5-step write sequences, 32768
+possible histories).
+
+**Theory:** CR-10 through CR-14 in theory/CONTINUATION_REFINEMENT.md. Selective
+write-boundary laws (L1-L4), last-write normal form theorem, store cardinality
+bound |Q_H| ≤ |S| = 16. Five pre-declared falsifiers.
+
+**Results:**
+
+| | Overwrite | Append-only |
+|---|---|---|
+| Params | 21,338 | 27,844 |
+| Val accuracy | 100% | 100% |
+| |Q_H| | **16** (exact bound) | 20 |
+| Compression | 2048:1 | 1638:1 |
+| Store alignment | **1.000** | 0.750 |
+| Gen len=7 | 100% | 100% |
+| Gen len=10 | 100% | 100% |
+| Gen len=15 | 100% | 99.9% |
+
+**Verdict: F4 — both compress; task may be too simple.** The append-only GRU
+with attention learns to extract last-write information from its log almost as
+well as the hard-masked register file. Quotient ratio 1.25x < 1.5x threshold.
+
+**What survives:**
+1. Overwrite model hits the theoretical bound EXACTLY (16 classes, perfect store
+   alignment). The normal form theorem is confirmed by construction.
+2. Append-only model leaks 25% of history (20 classes, 0.750 alignment). For 4
+   of 16 store states, different write histories produce different behavior. The
+   architectural difference IS visible, just not dramatic on this task.
+3. Both generalize perfectly to 3× longer sequences on simple fact-tracking.
+
+**What F4 means:** Simple fact-tracking (last-write recall) is too easy — a GRU
+with attention can learn it without needing an explicit overwrite boundary. The
+decisive test requires tasks where the answer depends on RELATIONSHIPS between
+registers or on compositional operations, not just individual register reads.
+
+**Next:** WB-2 — compositional task with cross-register operations.
+
+---
+
 ## CEG-1: Causal Erasure Graph v1 (2026-09-04, COMPLETE — REVISE / NO_INTERFACE)
 
 Distance from claim: 0.

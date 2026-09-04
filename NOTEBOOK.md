@@ -4,6 +4,61 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### WB-1 complete: F4 — task too simple, overwrite hits exact bound (2026-09-04)
+
+First constructed artifact. Two GRU models (~25K params, CPU), 2 registers × 4
+values, 5-step sequences. Overwrite model: |Q_H|=16 EXACTLY (theoretical bound),
+store alignment 1.000, 100% generalization to length 15. Append-only model:
+|Q_H|=20, alignment 0.750, 99.9% generalization. Both compress ~2000:1.
+
+F4 fires: the quotient ratio (1.25x) doesn't clear the 1.5x threshold. Simple
+fact-tracking is too easy — a GRU+attention learns last-write extraction without
+needing the overwrite boundary.
+
+**Signal:** The 25% history leakage in append-only IS the architectural
+difference showing through. 4 of 16 store states have history-dependent behavior
+in the append-only model, vs zero in the overwrite model. The difference exists
+but doesn't bite on simple tasks.
+
+**Next:** WB-2 with compositional cross-register operations. The task must
+require reasoning ACROSS registers, not just individual register reads.
+
+---
+
+### Pivot to construction: Selective Write-Boundary program (2026-09-04)
+
+Codex direction dialogue: skip CEG-1R, close Qwen path-dependence line, pivot
+to constructing a latent substrate with an explicit write boundary.
+
+**Decision logic:** CEG-1R's outcomes both lead to the same next step
+(construction), so running it is measurement entropy. Measurement-to-artifact
+ratio was infinite (506:0), governance requires halt above 5:1. CEG-1R is not
+literally the R^n trap but remains an outside-in measurement tunnel — it
+characterizes what a surgeon can cut, not a move available to a denizen.
+
+**Critical pushback adopted:** The write boundary alone is NOT the artifact
+(repeats EAC tautology). It is a declared substrate axiom. The scientific
+question is whether a learned denizen can USE it for portable, compositional
+predictive states.
+
+**Theory (CR-10 through CR-14):**
+- Laws: overwrite idempotence (L1), cross-register commutativity (L2),
+  preservation of unrelated distinctions (L3), write fidelity (L4)
+- Theorem: every write history has a unique last-write normal form; predictive
+  quotient bounded by store cardinality ∏|V_r|, not history length
+- Five pre-declared falsifiers (F1-F5), each testable in one round
+- Primary gate (F1): overwrite model must produce a smaller quotient than
+  matched append-only ablation
+
+**Narrative:** "Give a model an internal act that genuinely means 'replace this
+fact,' then test whether compositional reasoning becomes possible because dead
+history is truly dead."
+
+**Next:** Codex design gate on CR-14 experimental design, then implement the
+smallest model that can be wrong (2 registers × 4 values, 5-step sequences).
+
+---
+
 ### CEG-1 Evidence Gate: REVISE — bounded context dependence, not relay (2026-09-04)
 
 Codex Evidence Gate (audit #38) returned REVISE / formal NO_INTERFACE. The

@@ -1,0 +1,18 @@
+{
+  "experiment_id": "write_boundary_v1",
+  "description": "CR-14 minimal construction: 2 registers x 4 values, 5-step write sequences. Overwrite model vs append-only ablation. Primary gate: F1 (quotient comparison).",
+  "n_registers": 2,
+  "n_values": 4,
+  "n_steps": 5,
+  "d_embed": 32,
+  "d_hidden": 64,
+  "n_train": 4000,
+  "n_val": 1000,
+  "n_epochs": 300,
+  "lr": 0.001,
+  "batch_size": 128,
+  "quotient_tolerance": 0.05,
+  "seed": 42,
+  "generalization_lengths": [7, 10, 15],
+  "notes": "Store cardinality |S|=16. History space: 8^5=32768. Expected overwrite compression: 32768:16=2048:1. Append-only compression: empirical."
+}

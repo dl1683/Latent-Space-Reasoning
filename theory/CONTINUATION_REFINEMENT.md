@@ -238,3 +238,213 @@ The fresh experiment will:
 4. Test derivative closure: does knowing [x] and a predict [T_a x]?
 5. Compare against text/position baselines
 6. One round, decisive
+
+## CR-10. Selective write boundary — axioms
+
+Motivated by CEG-1 (REVISE): pretrained transformers have no endogenous
+overwrite boundary — dead information persists in the append-only carrier.
+The construction program asks: if a model is given an internal "replace
+this fact" operation, does compositional reasoning become possible because
+dead history is truly dead?
+
+The write boundary is a declared substrate axiom, not the artifact itself
+(Codex pushback, 2026-09-04). The scientific question is whether a
+LEARNED DENIZEN can use it to form portable, compositional predictive
+states. Boundary satisfaction is by construction; learned use, transfer,
+and causal substitution are the claim-bearing results.
+
+### Definitions
+
+Import ≡_M (behavioral equivalence from CR-1) and ≡_h (horizon-bounded
+from CR-2). Write x ≃ y as shorthand for x ≡_M y.
+
+**Register store.** A finite set R of register names. Each r ∈ R holds
+values from a finite alphabet V_r. The store type is S = ∏_{r∈R} V_r.
+A store state σ ∈ S is a function σ: R → ⋃_r V_r with σ(r) ∈ V_r.
+
+**Keyed write.** For each r ∈ R and v ∈ V_r, there is an endogenous
+action W_{r,v}: Z → Z that writes value v to register r. "Endogenous"
+means: available to the model as an internal operation, not an external
+surgical intervention. The model can choose to perform W_{r,v} as part
+of its computation.
+
+**Read.** For each r ∈ R, a readout function read_r: Z → V_r extracts
+the current value of register r from the model's state.
+
+### Laws (required at the behavioral level)
+
+**L1. Overwrite (same-register idempotence):**
+
+    W_{r,v'} ∘ W_{r,v}(x) ≃ W_{r,v'}(x)
+
+The last write to a register determines all future behavior. Dead writes
+have no causal residue. This is the negation of CEG-1's finding on
+pretrained transformers — and is by construction in a hard-masked
+register file.
+
+**L2. Independence (cross-register commutativity):**
+
+    W_{r,v} ∘ W_{s,u}(x) ≃ W_{s,u} ∘ W_{r,v}(x)    for r ≠ s
+
+Writes to different registers do not interfere. The order of unrelated
+writes is irrelevant to future behavior.
+
+**L3. Preservation (unrelated distinctions survive):**
+
+    x ≢_M y via Sep_{s≠r}  ⟹  W_{r,v}(x) ≢_M W_{r,v}(y)
+
+Writing to register r preserves behavioral distinctions that depend on
+other registers. A write does not globally scramble the predictive state.
+
+**L4. Write fidelity:**
+
+    read_r(W_{r,v}(x)) = v
+
+A write actually writes. Combined with L1, this gives: read_r recovers
+the last-written value regardless of history.
+
+## CR-11. Last-write normal form — theorem
+
+**Theorem (Normal Form).** If L1 and L2 hold, then for any finite
+sequence of writes w = W_{r_n, v_n} ∘ ··· ∘ W_{r_1, v_1} applied to
+state x, there exists a unique normal form:
+
+    nf(w)(x) ≃ (∏_{r ∈ touched(w)} W_{r, last(w,r)})(x)
+
+where:
+- touched(w) = {r_1, ..., r_n} (registers written at least once)
+- last(w, r) = v_j where j = max{i : r_i = r} (the final value written to r)
+- The product is well-defined (order-independent) by L2.
+
+**Proof sketch.**
+1. By L1, consecutive same-register writes collapse:
+   W_{r,v'} ∘ W_{r,v} ≃ W_{r,v'}.
+2. By L2, writes to different registers can be reordered.
+3. Apply L1 repeatedly to eliminate all but the last write to each
+   register. Apply L2 to sort the remaining writes into any canonical
+   order. The result is unique because last(w,r) is determined by w
+   and the product is order-independent.  □
+
+**Corollary (Quotient bound).** The number of behaviorally distinct
+write-reachable states from any starting state x is at most:
+
+    |Q_writes(x)| ≤ ∏_{r∈R} |V_r|
+
+This is the store cardinality |S|. The bound is independent of the
+number of write operations performed — history length does not grow
+the predictive state.
+
+This is compression: a model satisfying L1-L2 has a predictive quotient
+bounded by its register capacity, not by the exponentially growing space
+of possible histories.
+
+## CR-12. Distance from CR-7 promotion criteria
+
+The write-boundary substrate earns "native mathematics" status by
+satisfying CR-7 with these instantiations:
+
+1. **Compression**: |Q_H| ≤ |S| = ∏_r |V_r| << |{distinct write
+   histories}|. TESTED. The quotient compresses write histories into
+   live-store states.
+
+2. **Prediction**: The transition table at Q_H (indexed by store
+   contents, not history) predicts responses to unseen continuations
+   better than raw text/position baselines. TESTED.
+
+3. **Transfer**: The compression transfers across held-out surface
+   presentations (different wordings of the same write operations)
+   without refitting. TESTED.
+
+4. **Derivative closure**: Sep(T_a(x), T_a(y)) is predictable from
+   the store states σ(x), σ(y) and the action a. That is, knowing
+   what's in the registers (not how they got there) suffices to predict
+   which futures distinguish two states. TESTED.
+
+5. **Causal substitution**: States with identical store contents but
+   different write histories can be swapped in a recurrent model without
+   behavioral change beyond a declared tolerance. TESTED.
+
+**By construction (not tested):**
+- L1 satisfaction (hard mask on overwritten values)
+- L2 satisfaction (parallel register file)
+- L4 satisfaction (write gate directly sets register value)
+
+**Claim-bearing (tested):**
+- Learned use: the model uses writes for compositional reasoning
+- Compression: |Q_H| << |histories|
+- Transfer: structure generalizes across presentations
+- Causal substitution: store-equivalent states are behaviorally equivalent
+- Advantage over ablation: overwrite model outperforms matched append-only
+
+## CR-13. Falsifiers
+
+The construction program is falsified if ANY of:
+
+**F1. Overwrite irrelevance.** The overwrite model produces the same
+behavioral quotient as the matched append-only ablation. The write
+boundary doesn't help — the model either ignores it or the benefit
+is zero.
+
+**F2. History leakage.** Despite the hard-masked register, the model
+encodes overwritten values in its hidden state or attention patterns.
+|Q_H| > |S| because the model's behavior depends on write history,
+not just current store contents. The boundary is present but unused.
+
+**F3. No transfer.** Compression holds on training presentations but
+does not transfer to held-out wordings. The quotient is surface-
+specific, not a native structure.
+
+**F4. Trivial task.** The task is simple enough that even the append-
+only model compresses. The write boundary provides no advantage because
+the task doesn't require overwriting.
+
+**F5. EAC tautology.** The only demonstrated property is that erased
+values are erased — no compositional benefit. This repeats the
+architecturally tautological EAC result without scientific content.
+
+Each falsifier is testable in a single experimental round. F1 is the
+primary gate: if the overwrite model has the same quotient as append-
+only, stop.
+
+## CR-14. Experimental design (pre-declaration)
+
+**Architecture.** A recurrent model with:
+- A fixed-size register file: k registers, each V_r = {0, 1, ..., m-1}
+- A learned write gate: at each step, the model selects (r, v) or NOP
+- Hard-masked overwrite: writing to r replaces its value; old value is
+  not accessible through any read path
+- Unrestricted read: the model can read all registers at any time
+
+**Matched ablation.** Same model, same total capacity, append-only
+carrier: each write appends to a log (no overwrite, no erasure). Same
+number of write slots as the overwrite model has total write events.
+The only architectural difference is the overwrite boundary.
+
+**Task family.** Multi-step fact-tracking with overwrites: k entities,
+each with a mutable attribute. The task presents a sequence of updates
+(some overwriting prior values) and queries about current attribute
+values. The correct answer depends ONLY on the last write to each
+entity — dead history is irrelevant.
+
+**Controls:**
+- Scrambled-key control: writes target random registers (not the
+  correct entity). Tests whether the model uses the address structure.
+- Independent relabeling: entity names are relabeled between training
+  and test. Tests whether the learned structure is name-invariant.
+- Append-only ablation: primary comparison (F1 gate).
+- No raw successor embeddings: the model cannot bypass the register
+  file by attending to raw token representations.
+
+**Measurements:**
+- Primary: |Q_H| for overwrite vs append-only (F1 gate)
+- Compression ratio: |Q_H| / |{distinct histories}|
+- Transfer accuracy on held-out presentations (F3 gate)
+- Causal substitution error: behavioral distance between store-
+  equivalent states with different histories
+- Advantage: accuracy and quotient size difference vs append-only
+
+**One round, decisive.** Build the smallest model that can be wrong.
+A 2-register, 4-value system (|S|=16) with 5-step write sequences
+(|histories|=16^5=1M). If the overwrite model compresses to ~16
+classes and the append-only does not, the write boundary matters.
+If both compress equally, F1 kills the line.

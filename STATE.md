@@ -1,5 +1,49 @@
 # STATE
 
+## Current direction: Selective Write-Boundary Construction (2026-09-04)
+
+**Pivot (Codex direction dialogue, 2026-09-04):** Close the pretrained-Qwen
+path-dependence line. Skip CEG-1R — its outcomes produce no different program
+decisions (both paths lead to construction). Measurement-to-artifact ratio was
+infinite (506:0); governance required halt above 5:1.
+
+**Central question:** If a model is given an internal "replace this fact"
+operation (an endogenous keyed write with hard-masked overwrite), does
+compositional reasoning become possible because dead history is truly dead?
+
+**Anti-tautology constraint (Codex):** The write boundary alone is NOT the
+artifact. Boundary satisfaction is by construction. The claim-bearing results
+are: (1) learned use of writes for compositional reasoning, (2) predictive
+compression — |Q_H| bounded by store cardinality not history length, (3)
+transfer across held-out presentations, (4) causal substitution of store-
+equivalent states, (5) advantage over matched append-only ablation.
+
+**Theory:** theory/CONTINUATION_REFINEMENT.md, CR-10 through CR-14. Laws L1-L4
+(overwrite idempotence, cross-register commutativity, preservation, write
+fidelity). Last-write normal form theorem. Five pre-declared falsifiers.
+
+**Narrative gate:** "Give a model an internal act that genuinely means 'replace
+this fact,' then test whether compositional reasoning becomes possible because
+dead history is truly dead."
+
+**Distance from central claim: 0.** This IS the native math artifact.
+
+**Next step:** Codex design gate on CR-14 experimental design before
+implementation. Then: build the smallest model that can be wrong (2 registers,
+4 values, 5-step sequences). One round, decisive.
+
+---
+
+## Qwen path-dependence line: CLOSED (2026-09-04)
+
+CEG-1R preserved as a deferred diagnostic only. The line produced one
+transferable finding: pretrained transformers have no endogenous overwrite
+boundary — dead information persists in the append-only carrier, and the
+residual under attention cuts is broadcast context sensitivity, not semantic
+relay. This finding directly motivates the construction program above.
+
+---
+
 ## CEG-1 result: REVISE / formal NO_INTERFACE — bounded context dependence (2026-09-04)
 
 **CEG-1 (Codex strategic design):** Custom 4D attention masks on Qwen3-1.7B-Base
@@ -50,9 +94,9 @@ this relay is irreversible."
 **Measurement-to-artifact ratio:** 506 apparatus lines to 0 construction lines
 (infinite). One-more-test cap is binding.
 
-**Next: CEG-1R** (terminal pretrained-Qwen localization test). If NO_INTERFACE
-or fail → close Qwen path-dependence line, construct latent substrate with
-explicit write boundary.
+**Line closed.** CEG-1R skipped (Codex direction dialogue: decision value nil).
+Qwen path-dependence line closed. Transferable finding: no endogenous overwrite
+boundary in pretrained transformers. Construction program opened (CR-10+).
 
 ---
 
