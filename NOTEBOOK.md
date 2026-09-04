@@ -4,6 +4,48 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### GATE 1 PRELIMINARY: Content sensitivity confirmed, form/content confound identified (2026-09-04)
+
+Gate 1 experiment completed all 3 depths (2835 calls, ~17 min on CPU).
+
+Train-set results (n per role: ASSERT=486, MISLEADING_ASSERT=324, REWRITE=486,
+OBSERVE=324, BOUNDARY=324):
+
+| Role               | C_mean | L_mean | R_mean |
+|---|---|---|---|
+| ASSERT             | 0.9395 | 0.0342 | 0.0263 |
+| MISLEADING_ASSERT  | 0.8493 | 0.1138 | 0.0369 |
+| REWRITE            | 0.5235 | 0.4244 | 0.0521 |
+| OBSERVE            | 0.6473 | 0.3292 | 0.0235 |
+| BOUNDARY           | 0.8191 | 0.1505 | 0.0304 |
+
+DECISIVE TEST: MISLEADING_ASSERT L=0.114 vs ASSERT L=0.034 = +0.080 difference.
+The model follows CONTENT, not just form: misleading comments (that say they're
+rewriting but denotationally don't) get 3.3x higher shadow leakage than true
+assertions of invariance.
+
+Between/within ratio = 1.17 (weak overall). Codex follow-up identified why:
+only ASSERT vs MISLEADING_ASSERT genuinely crosses form and content. REWRITE,
+OBSERVE, BOUNDARY are confounded with their statement types (assignment,
+expression, delimiter). The five-class null-witness claim isn't supportable
+from this design alone.
+
+Codex V2 corrections applied to theory/INTENSIONAL_DESCENT.md:
+- D10 composition order matched to D1 convention
+- D11 congruence proof: triangle decomposition added
+- Removed residual |I|<|P|
+- F7 revised: what may be artifactual is algebraic structure, not coarse distinctions
+
+Codex F6/F8 findings:
+- F6 needs nested ladder: M_state < M_cheap < M_cheap+role (variance comparison inadequate)
+- F8 (lumpability): Gate 1 data alone insufficient; need empty-suffix baseline responses
+- Exclude val=9 from all (C,L,R) analyses (shadow/correct digit collision)
+- Current design supports narrow comment-content result, not five-class claim
+- Need balanced role-by-realization crossover for stronger Gate 1
+
+Re-running experiment with Unicode fix (crashed on Windows cp1252 arrow character).
+Awaiting full results including holdout set and per-depth breakdown.
+
 ### STRATEGIC PIVOT: Intensional Descent Criterion (2026-09-04)
 
 Codex Architecture Theorist synthesis delivered a clear verdict: the coefficient

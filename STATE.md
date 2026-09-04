@@ -16,19 +16,27 @@ intensional quotient I but NOT through extensional denotation D.
 
 **Three sequential gates:**
 - Gate 1 (Semantic Descent): Does behavior follow intensional role, not surface
-  form? RUNNING (run_semantic_descent.py). Decisive test: MISLEADING_ASSERT
-  (comments describing rewrites) vs true ASSERT.
+  form? PRELIMINARY POSITIVE — MISLEADING_ASSERT L=0.114 vs ASSERT L=0.034
+  (+0.080 diff, 3.3x). Model follows content, not just form. BUT: variable-mention
+  confound identified (MISLEADING_ASSERT mentions var, ASSERT doesn't). Gate 1b
+  (2x2 confound control) designed and ready to run.
 - Gate 2 (Composition): Do witness transport operators compose predictably?
-  BLOCKED on Gate 1.
+  BLOCKED on Gate 1b.
 - Gate 3 (Causal Transfer): Can witness state be transplanted between
   extensionally equivalent histories? BLOCKED on Gate 2.
 
-**Kill conditions:** F1 (surface dependence), F2 (non-generalization),
-F3 (non-composition), F4 (non-causal), F5 (trivial fiber).
+**Active confound:** MISLEADING_ASSERT surfaces mention the variable name
+(3/4 do), while ASSERT surfaces don't. The +0.080 L difference could be a
+variable-mention effect rather than content sensitivity. Gate 1b adds
+ASSERT_VAR (true assertions + var mention) and MISLEADING_ASSERT_NOVAR
+(misleading assertions - var mention) to disentangle.
 
-**Prior evidence:** SVB suffix ablation (a≈0.38 for ASSERT vs β≈0.13 reverse
-for REWRITE) supports IDC-2 (extensional non-descent). IDC-1 (intensional
-factorization across paraphrases) untested — Gate 1 tests this.
+**Kill conditions:** F0-F9 in theory/INTENSIONAL_DESCENT.md. F6 (baseline)
+requires nested ladder M_state < M_cheap < M_cheap+role per Codex.
+
+**Prior evidence:** SVB suffix ablation (a~0.38 for ASSERT vs b~0.13 reverse
+for REWRITE) supports IDC-N (extensional non-descent). Gate 1 partially
+supports IDC-C (compression) pending confound resolution.
 
 ---
 
