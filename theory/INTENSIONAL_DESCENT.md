@@ -645,9 +645,13 @@ survive cheap baselines (F6).
 3. ~~Gate 1b (confound control)~~ — COMPLETE. Content dominates 6.3x over
    var-mention. Lumpability R2=0.79–0.98: K_u well-defined on (C,L,R).
    Surface-specific a_u (within-class CV 0.33–0.51). Surface equivalence weak.
-4. Gate 2 (composition/noncommutativity) — RUNNING. Operator-level design:
-   maximally contrasting same-role controls (3.8x and 2.9x a_u range within
-   class). Cross-role TV must exceed same-role TV.
-5. If Gate 2 passes: Gate 3 (causal relay-state composition, requires GPU).
+4. ~~Gate 2 v1 (same-role controls)~~ — RECENCY_DOMINATED. Cross-role TV < same-role max.
+5. ~~Gate 2 v2 (filler-based, Codex design)~~ — NONCOMMUTATIVE_CONTROLLED. Both
+   pre-registered gates pass: direct TV median=0.068, excess beyond filler null
+   mean=0.038 (log-ratio). Genuine interaction survives position correction.
+   Position-specific operator analysis: K_A is a correction operator (L->C=0.34
+   in pos1, L->C=0.72 in pos2). K_M is a confusion operator (C->L=0.07).
+   Position-corrected composition residual=0.048 (MODERATE compositionality).
+6. Gate 3 (causal relay-state composition, requires GPU).
    Design: theory/GATE3_DESIGN.md.
-6. Cross-model replication if all gates pass.
+7. Cross-model replication if all gates pass.

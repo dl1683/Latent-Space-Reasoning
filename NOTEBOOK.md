@@ -4,7 +4,27 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
-### GATE 2 v2: NONCOMMUTATIVE_CONTROLLED — genuine interaction confirmed (2026-09-04)
+### CODEX EVIDENCE GATE: Gate 2 v2 downgraded to PROVISIONAL (2026-09-04)
+
+Codex identified critical Gate 2 issue: implementation computed armwise prediction
+error (mean=0.033), not the pre-registered residual order contrast. Corrected
+diagnostics show filler-predicted order vectors align almost perfectly with observed
+(cosine=0.996) but over-predict magnitude. Fitting one scalar gain per context
+reduces mean residual TV to 0.008 (below threshold in 18/24 contexts).
+
+Strongest rival: nonlinear position/recency gain or saturation. The order effect
+is real (Gate 1 strong) but may be fully positional with nonlinear gain profile.
+
+Repair plan: (1) freeze exact residual-order statistic and clustered lower bound,
+(2) test nonlinear-gain rival with context-feature prediction, (3) multi-filler
+robustness (multiple mechanically selected filler pairs), (4) held-out prefix family.
+
+Also found: depth-invariant K_A correction rate (L->C ~= 0.72 across d2-d4).
+This is a stable operator equation independent of the noncommutativity claim.
+
+---
+
+### GATE 2 v2: PROVISIONAL — direct order effect confirmed, excess disputed (2026-09-04)
 
 216 calls, 8 arms per context (Codex filler-based design), 24 contexts, depth 4. 135s CPU.
 Token-length-matched fillers: F_A="# Code block follows.\n" (5tok), F_M="# Looking at the next part.\n" (7tok).

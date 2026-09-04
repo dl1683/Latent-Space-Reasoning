@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## Gate 2 v2 — Filler-Based Noncommutativity (2026-09-04, COMPLETE)
+## Gate 2 v2 — Filler-Based Noncommutativity (2026-09-04, PROVISIONAL)
 
 Distance from claim: 0 (this IS the native math claim).
 
@@ -36,11 +36,18 @@ F_A = "# Code block follows.\n" (5 tok), F_M = "# Looking at the next part.\n" (
 Per-variable (log-ratio): x direct=0.040/excess=0.038, y direct=0.112/excess=0.026,
 z direct=0.063/excess=0.050.
 
+**Codex evidence gate: PROVISIONAL.** Gate 1 (direct order) strong. Gate 2
+(excess) disputed: implementation computed armwise prediction error, not
+pre-registered residual order contrast. Filler-predicted order vectors align
+(cosine=0.996) but over-predict magnitude. Nonlinear position gain is the
+strongest rival. Repair: frozen residual-order statistic, multi-filler
+robustness, held-out prefix family.
+
 **What we learned:**
-1. A and M genuinely interact beyond position/recency effects.
-2. Rejects K_a, logit-bias, and position-weighted additive decay as complete models.
-3. Interaction is variable-dependent: x/z show mostly genuine, y mostly positional.
-4. Robust across probability-space and log-ratio coordinate systems.
+1. Direct order effect is robust (median TV=0.068, all 24 contexts above threshold).
+2. Filler-based controls confirm direction but not independence from position.
+3. Nonlinear position gain (scalar fit) reduces 18/24 contexts below threshold.
+4. K_A correction rate L->C is depth-invariant at ~0.72 (separate finding).
 
 Config: `experiments/config/svb_qwen3_composition_v2.json`
 Results: `experiments/results/svb_qwen3_composition_v2/result.json`
