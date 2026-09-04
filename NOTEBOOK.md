@@ -4,6 +4,30 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### SHADOW TRACKING CONFIRMED: boundary-conditioned attenuation is a genuine scope mechanism (2026-09-04)
+
+Reanalysis of per-cell 11-bin distributions revealed the suffix effect is NOT a
+"fresh readout pathway" or "mixture model." It is specific suppression of the
+dominant shadow-binding competitor. The shadow relabeling experiment (3 conditions:
+shadow9/2/5, 324 calls, 95s CPU) confirms the mechanism tracks the actual shadow
+digit under relabeling — not hardcoded to digit 9.
+
+Key results:
+- The attenuation law: L(d,1) = a_c · L(d,0), a_c ≈ 0.38 at d≥2
+- R (non-shadow, non-correct mass) is invariant (<0.002 change)
+- Scope-relevant mass (C+L) is invariant — the model already knows the
+  answer is {target, shadow}; the suffix resolves the disambiguation
+- Scope-pair entropy reduction: 0.08-0.33 bits (42% at d≥2)
+- The operator is one-shot, not iterable (s>1 adds interference)
+- Within-binding variation contracts 25-59% (synchronization signature)
+
+Mathematical object: T_suffix: (C,L,R) → (C+(1-a_c)L, a_c·L, R) is a linear
+operator on the response-law simplex. One-parameter family indexed by a_c.
+Preserves scope-relevant mass, contracts shadow leakage, invariant residual.
+
+Next: suffix content sensitivity (P2), nested vs flat control (P3), Codex
+follow-up on predictive-state transducer framework.
+
 ### SVB DECODE VERIFICATION COMPLETE: runtime path localized; architecture claim rejected (2026-09-03)
 
 Across four fixed conditions, tokenwise cached processing of the 12-token query

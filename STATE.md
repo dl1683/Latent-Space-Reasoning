@@ -543,6 +543,33 @@ Results: experiments/results/svb_qwen3_formal/result.json.
 Mamba-1.4b (pure SSM): the current 11-bin framework was unusable (`sigma≈0` on
 the tested checkpoint), so it supplies no architecture comparison.
 
+### Shadow-digit relabeling: CONFIRMED shadow tracking (2026-09-04)
+
+Distance-from-claim: **1** — identifies the mechanism as binding-specific shadow attenuation.
+Runner: experiments/run_shadow_relabel.py. Config: experiments/config/svb_qwen3_shadow_relabel.json.
+324 calls, 94.8s CPU.
+
+**DECISIVE RESULT:** The suffix suppresses the actual shadow digit, not a hardcoded token.
+
+| Condition | Shadow | d4 gain (pp) | d4 drop shadow (pp) | d4 corr | a_c |
+|-----------|--------|-------------|---------------------|---------|-----|
+| shadow9 | 9 | +14.86 | -14.79 | -0.991 | 0.42 |
+| shadow2 | 2 | +18.73 | -19.26 | -0.999 | 0.37 |
+| shadow5 | 5 | +17.85 | -18.40 | -0.997 | 0.41 |
+
+The attenuation law: L(d,1) = a_c · L(d,0), a_c ≈ 0.38 at d≥2. R invariant.
+Scope-relevant mass (C+L) invariant — the suffix resolves a binding disambiguation,
+not an information gap. Scope-pair entropy drops 0.08-0.33 bits.
+
+The operator T: (C,L,R) → (C+(1-a_c)L, a_c·L, R) is one-shot, not iterable.
+
+This reframes the entire suffix effect from "additional computation" or "dual-pathway
+readout" to "boundary-conditioned shadow attenuation": the suffix acts as a boundary
+cue that phase-switches the readout to suppress the dominant shadow competitor.
+
+Theory: theory/SETTLING_TIME_ANALYSIS.md.
+Results: experiments/results/svb_qwen3_shadow_relabel/result.json.
+
 ### Qwen suffix-response probes (2026-09-03, DESCRIPTIVE MECHANISM SCREEN)
 
 Distance-from-claim: **1** — separates several cheap accounts without yet identifying a mechanism.

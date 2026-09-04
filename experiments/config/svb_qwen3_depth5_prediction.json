@@ -1,0 +1,40 @@
+{
+  "experiment_name": "SVB-Qwen3-Depth5-Prediction",
+  "purpose": "Test the mixture model prediction: sigma(5,1) in [0.68, 0.78]. Pre-registered prediction from theory/SETTLING_TIME_ANALYSIS.md. If sigma(5,0) follows the exponential model (~0.45), and the mixture model holds (sigma(d,1) = 0.5*sigma(d,0) + 0.5), then sigma(5,1) ~ 0.73.",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "inner_value": 99,
+  "inner_value_depth2": 999,
+  "depths": [1, 2, 3, 4, 5],
+  "single_var_only": true,
+  "neutral_suffix": "# No changes.\n",
+  "neutral_suffix_counts": [0, 1],
+  "query_template": "f()\nprint({var})  # Output: ",
+  "templates": {
+    "depth1_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    return {var}\n",
+    "depth2_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        return {var}\n    g()\n    return {var}\n",
+    "depth3_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n",
+    "depth4_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n",
+    "depth5_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                def m():\n                    {var} = 999999\n                    return {var}\n                m()\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n"
+  },
+  "predictions": {
+    "mixture_model": {
+      "d5_s0_exponential_prediction": 0.452,
+      "d5_s1_mixture_prediction": 0.726,
+      "d5_s1_prediction_interval": [0.68, 0.78],
+      "d1_d4_reproduction": {
+        "d1": {"s0": 0.958, "s1": 0.970},
+        "d2": {"s0": 0.897, "s1": 0.945},
+        "d3": {"s0": 0.792, "s1": 0.900},
+        "d4": {"s0": 0.753, "s1": 0.880}
+      },
+      "note": "d1-d4 values should reproduce within 2pp of the formal experiment. d5 is the novel prediction."
+    }
+  },
+  "estimated_calls": "27 cells × 5 depths × 2 suffix_counts = 270 calls, ~2 min on Qwen3 CPU",
+  "result_dir": "experiments/results/svb_qwen3_depth5"
+}

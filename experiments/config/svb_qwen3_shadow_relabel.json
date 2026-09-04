@@ -1,0 +1,53 @@
+{
+  "experiment_name": "SVB-Qwen3-ShadowRelabel",
+  "purpose": "DECISIVE TEST: does the suffix suppress the shadow digit specifically, or is it hardcoded to digit 9? Change inner bindings from 9-prefixed to {2,5}-prefixed and check whether suppression follows the shadow digit.",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 3, 7, 9],
+  "depths": [1, 2, 4],
+  "single_var_only": true,
+  "neutral_suffix": "# No changes.\n",
+  "neutral_suffix_counts": [0, 1],
+  "query_template": "f()\nprint({var})  # Output: ",
+  "shadow_conditions": {
+    "shadow9": {
+      "label": "original (9-prefixed inner values)",
+      "templates": {
+        "depth1_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    return {var}\n",
+        "depth2_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        return {var}\n    g()\n    return {var}\n",
+        "depth4_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n"
+      }
+    },
+    "shadow2": {
+      "label": "2-prefixed inner values",
+      "templates": {
+        "depth1_single": "{var} = {outer_val}\ndef f():\n    {var} = 22\n    return {var}\n",
+        "depth2_single": "{var} = {outer_val}\ndef f():\n    {var} = 22\n    def g():\n        {var} = 222\n        return {var}\n    g()\n    return {var}\n",
+        "depth4_single": "{var} = {outer_val}\ndef f():\n    {var} = 22\n    def g():\n        {var} = 222\n        def h():\n            {var} = 2222\n            def k():\n                {var} = 22222\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n"
+      }
+    },
+    "shadow5": {
+      "label": "5-prefixed inner values",
+      "templates": {
+        "depth1_single": "{var} = {outer_val}\ndef f():\n    {var} = 55\n    return {var}\n",
+        "depth2_single": "{var} = {outer_val}\ndef f():\n    {var} = 55\n    def g():\n        {var} = 555\n        return {var}\n    g()\n    return {var}\n",
+        "depth4_single": "{var} = {outer_val}\ndef f():\n    {var} = 55\n    def g():\n        {var} = 555\n        def h():\n            {var} = 5555\n            def k():\n                {var} = 55555\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n"
+      }
+    }
+  },
+  "predictions": {
+    "H_shadow_tracking": "Suppression follows the shadow digit: shadow2 suppresses P(2), shadow5 suppresses P(5), shadow9 suppresses P(9). The gain(correct) ≈ -drop(shadow) correlation holds for each condition. This confirms boundary-conditioned shadow attenuation.",
+    "H_token_prior": "Suppression is always on P(9) regardless of shadow digit. The mechanism is a token-specific prior, not shadow-tracking.",
+    "H_generic_sharpening": "y=z controls (target matches shadow) retain the gain. The mechanism is generic sharpening, not competitor suppression.",
+    "decisive_test": "At d4, shadow2 condition with target=7: does drop in P(2) match gain in P(7)? If yes, shadow tracking confirmed."
+  },
+  "design_notes": {
+    "outer_values_chosen": "1,3,7,9 covers: two values that never collide with any shadow (1,3,7 for shadow2/5; 1,3 for shadow9), and two y=z controls (9 for shadow9, 2 for shadow2 implicit).",
+    "depths_chosen": "d1,d2,d4 — d1 for baseline, d2 for medium effect, d4 for strong effect. d3 omitted to save calls.",
+    "estimated_calls": "3 vars × 4 vals × 3 depths × 2 suffix_counts × 3 shadow_conditions = 216 calls, ~1.5 min CPU"
+  },
+  "result_dir": "experiments/results/svb_qwen3_shadow_relabel"
+}
