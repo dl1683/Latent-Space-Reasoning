@@ -309,16 +309,27 @@ def main():
 
 
 def analyze_composition(observations, cfg):
-    """Analyze composition experiment for noncommutativity."""
+    """Analyze composition experiment for noncommutativity.
+
+    Decisive criterion: cross-role TV(AB,BA) must EXCEED same-role
+    TV(A1A2,A2A1) to rule out recency/position confounds. Same-role
+    pairs are identified by labels containing '_s1' or '_s2'.
+    """
     print("\n=== NONCOMMUTATIVITY TEST ===\n")
 
     pairs = cfg["composition_pairs"]
-    results = {}
+    eps_eq = cfg.get("eps_eq", 0.01)
+    pair_results = {}
+    cross_role_tvs = []
+    same_role_tvs = []
 
     for pi, pair in enumerate(pairs):
         ra, rb = pair["role_a"], pair["role_b"]
         ab_name = f"{ra}_then_{rb}_p{pi}"
         ba_name = f"{rb}_then_{ra}_p{pi}"
+        is_same_role = ("_s1" in ra or "_s2" in ra or
+                        "_s1" in rb or "_s2" in rb)
+        pair_type = "SAME-ROLE" if is_same_role else "CROSS-ROLE"
 
         ab_dists = {}
         ba_dists = {}
@@ -344,7 +355,10 @@ def analyze_composition(observations, cfg):
                 b_dists[ctx] = dist
 
         tv_list = []
-        print(f"  Pair {pi}: {ra} x {rb}")
+        print(f"  Pair {pi} [{pair_type}]: {ra} x {rb}")
+        label_str = pair.get("_label", "")
+        if label_str:
+            print(f"  {label_str}")
         print(f"  {'Context':<25} {'TV(AB,BA)':>10} {'L_AB':>8} {'L_BA':>8} {'L_A':>8} {'L_B':>8} {'L_bl':>8}")
 
         for ctx in sorted(ab_dists.keys()):
@@ -355,7 +369,6 @@ def analyze_composition(observations, cfg):
             tv = 0.5 * np.sum(np.abs(d_ab - d_ba))
             tv_list.append(tv)
 
-            val = ctx[2]
             L_ab = float(d_ab[9])
             L_ba = float(d_ba[9])
             L_a = float(a_dists[ctx][9]) if ctx in a_dists else float('nan')
@@ -366,35 +379,84 @@ def analyze_composition(observations, cfg):
 
         if tv_list:
             tv_arr = np.array(tv_list)
-            print(f"\n  TV(AB, BA) summary:")
-            print(f"    mean={tv_arr.mean():.4f}, max={tv_arr.max():.4f}, "
-                  f"p95={np.percentile(tv_arr, 95):.4f}, min={tv_arr.min():.4f}")
+            print(f"\n  TV(AB,BA) summary: mean={tv_arr.mean():.4f}, "
+                  f"max={tv_arr.max():.4f}, median={np.median(tv_arr):.4f}, "
+                  f"min={tv_arr.min():.4f}")
 
-            eps_eq = 0.01
-            n_noncommutative = np.sum(tv_arr > eps_eq)
-            print(f"\n  Contexts with TV > {eps_eq}: {n_noncommutative}/{len(tv_arr)}")
-
-            print(f"\n  === VERDICT ===\n")
-            if tv_arr.max() > eps_eq and n_noncommutative >= 3:
-                print(f"  -> NONCOMMUTATIVE (max TV={tv_arr.max():.4f}, "
-                      f"{n_noncommutative}/{len(tv_arr)} contexts)")
-                print(f"     Defeats logit-bias, K_a, AND scalar character.")
-                print(f"     Genuine non-scalar monoid structure established.")
-                results["verdict"] = "NONCOMMUTATIVE"
-            elif tv_arr.max() > eps_eq:
-                print(f"  -> MARGINAL ({n_noncommutative}/{len(tv_arr)} contexts)")
-                print(f"     Some noncommutativity but not robust.")
-                results["verdict"] = "MARGINAL"
+            if is_same_role:
+                same_role_tvs.extend(tv_list)
             else:
-                print(f"  -> COMMUTATIVE (max TV={tv_arr.max():.4f} <= {eps_eq})")
-                print(f"     Consistent with scalar models.")
-                results["verdict"] = "COMMUTATIVE"
+                cross_role_tvs.extend(tv_list)
 
-            results["tv_mean"] = float(tv_arr.mean())
-            results["tv_max"] = float(tv_arr.max())
-            results["n_contexts"] = len(tv_list)
-            results["n_noncommutative"] = int(n_noncommutative)
+            pair_results[pi] = {
+                "pair_type": pair_type,
+                "roles": f"{ra} x {rb}",
+                "tv_mean": float(tv_arr.mean()),
+                "tv_max": float(tv_arr.max()),
+                "tv_median": float(np.median(tv_arr)),
+                "n_contexts": len(tv_list),
+                "n_above_eps": int(np.sum(tv_arr > eps_eq)),
+            }
+        print()
 
+    print(f"{'='*60}")
+    print(f"  CROSS-ROLE vs SAME-ROLE COMPARISON")
+    print(f"{'='*60}\n")
+
+    results = {"pair_results": pair_results}
+
+    if cross_role_tvs:
+        cr = np.array(cross_role_tvs)
+        print(f"  Cross-role TV: mean={cr.mean():.4f}, median={np.median(cr):.4f}, "
+              f"max={cr.max():.4f}, n={len(cr)}")
+        results["cross_role_mean"] = float(cr.mean())
+        results["cross_role_median"] = float(np.median(cr))
+        results["cross_role_max"] = float(cr.max())
+    else:
+        print("  Cross-role: no data")
+        cr = np.array([0.0])
+
+    if same_role_tvs:
+        sr = np.array(same_role_tvs)
+        print(f"  Same-role TV:  mean={sr.mean():.4f}, median={np.median(sr):.4f}, "
+              f"max={sr.max():.4f}, n={len(sr)}")
+        results["same_role_mean"] = float(sr.mean())
+        results["same_role_median"] = float(np.median(sr))
+        results["same_role_max"] = float(sr.max())
+    else:
+        print("  Same-role: no data (no recency control pairs)")
+        sr = np.array([0.0])
+
+    print(f"\n  === VERDICT ===\n")
+
+    has_cross = len(cross_role_tvs) > 0
+    has_same = len(same_role_tvs) > 0
+    cross_exceeds_eps = has_cross and np.median(cr) > eps_eq
+    cross_exceeds_same = has_same and has_cross and np.median(cr) > sr.max()
+
+    if has_cross and has_same and cross_exceeds_eps and cross_exceeds_same:
+        print(f"  -> CONTENT-NONCOMMUTATIVE")
+        print(f"     Cross-role median TV ({np.median(cr):.4f}) > same-role max ({sr.max():.4f})")
+        print(f"     Order effect is content-dependent, not recency.")
+        print(f"     Defeats K_a, logit-bias, AND discounted-scalar models.")
+        results["verdict"] = "CONTENT_NONCOMMUTATIVE"
+    elif has_cross and cross_exceeds_eps and not has_same:
+        print(f"  -> NONCOMMUTATIVE (no recency baseline)")
+        print(f"     Cross-role TV > eps_eq but no same-role controls to rule out recency.")
+        results["verdict"] = "NONCOMMUTATIVE_NO_CONTROL"
+    elif has_cross and cross_exceeds_eps and not cross_exceeds_same:
+        print(f"  -> RECENCY-DOMINATED")
+        print(f"     Cross-role TV > eps_eq but within same-role range.")
+        print(f"     Order effect likely from attention decay, not content.")
+        results["verdict"] = "RECENCY_DOMINATED"
+    elif has_cross and not cross_exceeds_eps:
+        print(f"  -> COMMUTATIVE (cross-role median TV {np.median(cr):.4f} <= {eps_eq})")
+        results["verdict"] = "COMMUTATIVE"
+    else:
+        print(f"  -> INCONCLUSIVE (insufficient data)")
+        results["verdict"] = "INCONCLUSIVE"
+
+    results["eps_eq"] = eps_eq
     return results
 
 
