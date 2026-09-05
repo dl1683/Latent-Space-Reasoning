@@ -366,17 +366,21 @@ satisfying CR-7 with these instantiations:
    different write histories can be swapped in a recurrent model without
    behavioral change beyond a declared tolerance. TESTED.
 
-**By construction (not tested):**
-- L1 satisfaction (hard mask on overwritten values)
-- L2 satisfaction (parallel register file)
-- L4 satisfaction (write gate directly sets register value)
+**By construction (commit-seal carrier, revised):**
+- Causal cut at COMMIT (hard seal — only the carrier survives)
 
-**Claim-bearing (tested):**
-- Learned use: the model uses writes for compositional reasoning
+**Claim-bearing (must be learned, not hard-wired):**
+- L1 (overwrite absorption): U learns to produce m+ that makes dead
+  writes causally irrelevant to the registered reader. TESTED via
+  paired erasure. Not hard-wired — U can fail.
+- L4 (write fidelity): U encodes the proposed value in m+. TESTED
+  via visible proposal head and carrier transplant.
+- L2 and L3: not tested at rung 1 (requires multiple addresses).
 - Compression: |Q_H| << |histories|
-- Transfer: structure generalizes across presentations
-- Causal substitution: store-equivalent states are behaviorally equivalent
-- Advantage over ablation: overwrite model outperforms matched append-only
+- Transfer: structure generalizes across presentations (rung 3+)
+- Causal substitution: carrier-equivalent states are behaviorally
+  equivalent under the co-trained reader
+- Advantage over no-seal ablation (SEAL_ADVANTAGE, separate verdict)
 
 ## CR-13. Falsifiers
 
@@ -387,10 +391,12 @@ behavioral quotient as the matched append-only ablation. The write
 boundary doesn't help — the model either ignores it or the benefit
 is zero.
 
-**F2. History leakage.** Despite the hard-masked register, the model
-encodes overwritten values in its hidden state or attention patterns.
-|Q_H| > |S| because the model's behavior depends on write history,
-not just current store contents. The boundary is present but unused.
+**F2. History leakage.** Despite the causal cut at COMMIT, the carrier
+m+ encodes both obsolete and current values. |Q_H| > |S| because
+behavior depends on write history, not just current store contents.
+In the commit-seal design: U fails to learn overwrite, retaining
+dead information in the carrier. (Note: the seal prevents leakage
+through activations; F2 tests whether U itself leaks.)
 
 **F3. No transfer.** Compression holds on training presentations but
 does not transfer to held-out wordings. The quotient is surface-

@@ -1,0 +1,18 @@
+{
+  "experiment_id": "commit_seal_rung1",
+  "description": "CR-14 revised rung 1: commit-seal carrier per Codex design gate. 1 address, 2 values, 2 commits, per-episode output legend. Learned U (GRUCell) is the falsifiable object. 5 seeds, RUNG1_MECHANISM_PASS requires 4/5.",
+  "d_embed": 16,
+  "d_transient": 32,
+  "d_proposal": 16,
+  "d_carrier": 16,
+  "d_addr": 8,
+  "d_bypass": 32,
+  "n_train": 4096,
+  "n_epochs": 200,
+  "lr": 0.003,
+  "batch_size": 64,
+  "weight_decay": 0.0001,
+  "grad_clip": 1.0,
+  "seeds": [11, 23, 37, 53, 71],
+  "notes": "Codex design gate 2026-09-04. 8 factorial cells (2×2×2). Multi-term loss: 0.25 proposal visibility + 0.50 intermediate read + 1.00 final read. Separate RUNG1_MECHANISM_PASS from SEAL_ADVANTAGE_SUPPORTED."
+}
