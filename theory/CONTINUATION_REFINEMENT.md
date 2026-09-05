@@ -517,3 +517,668 @@ achieves |Q_H|=16 (= ∏|V_r| = 4^2; note: the +1 in the general bound
 registers to 0, so no unwritten state exists). Append-only: |Q_H|=20,
 alignment 0.750 (25% history leakage). F4: both compress on simple
 fact-tracking. WB-1 is retained as a mathematical diagnostic.
+
+## CR-15. Selective behavioral reset: representation and uniform certificates
+
+Status: THEOREM SET (analytic round 2, 2026-09-05). Adopted after a
+two-round dialogue with counterexamples; supersedes the informal
+"multiplicative vs additive dead mass" and "gate must saturate" claims of
+the round-1 draft, both withdrawn. No compute was used. Numbered
+equations (15.x) are internal to this section.
+
+*So what:* A model should be able to replace one fact while keeping other facts usable, without obsolete history gradually changing its behavior.
+
+This section derives the exact structure of selective overwrite and sufficient conditions for its approximate realization. It distinguishes behavioral laws from certificates computed using a metric on the carrier. It establishes no learned realization, transfer result, or architectural advantage.
+
+**CR-15.0. Behavioral setting and scope**
+
+Use the registered world of D1–D6:
+\[
+d_\infty(x,y)
+=
+\sup_{w,c}D_c\!\left(r_c(T_wx),r_c(T_wy)\right),
+\qquad
+Q=Z/{\sim},
+\quad
+x\sim y\iff d_\infty(x,y)=0.
+\]
+Write \(\bar d\) for the induced metric on \(Q\). Composition executes the rightmost map first.
+
+Every legal move is nonexpansive:
+\[
+d_\infty(T_ax,T_ay)\le d_\infty(x,y).
+\tag{15.1}
+\]
+Indeed, the continuations beginning with \(a\) form a subset of all legal continuations.
+
+Consequently, being \(1\)-Lipschitz in behavioral distance imposes no additional restriction on a legal write. **Preservation requires a lower bound on a surviving response distinction.**
+
+Let \(R\) be a finite register set, \(V_r\) finite nonempty value sets, and
+\[
+S=\prod_{r\in R}V_r.
+\]
+Registered writes descend to \(F_{r,v}:Q\to Q\). Assume, where explicitly invoked,
+\[
+F_{r,v'}F_{r,v}=F_{r,v'},
+\tag{A1}
+\]
+\[
+F_{r,v}F_{s,u}=F_{s,u}F_{r,v}\quad(r\ne s),
+\tag{A2}
+\]
+and faithful native reads
+\[
+\operatorname{read}_r(F_{r,v}q)=v.
+\tag{A3}
+\]
+The reads must be supplied by the registered response interface and well-defined on \(Q\).
+
+These are behavioral hypotheses. An arbitrary hidden-state decoder cannot establish A3 for the original registered world.
+
+**CR-15.1. Common-kernel representation, including partial writes**
+
+For \(T\subseteq R\), put
+\[
+S_T=\prod_{r\in T}V_r,
+\qquad
+P_{T,\sigma}=\prod_{r\in T}F_{r,\sigma(r)}.
+\]
+For \(T=\varnothing\), \(S_T\) is a singleton and \(P_{T,\sigma}=\mathrm{id}_Q\).
+
+**Theorem.** Under A1–A3, for every fixed \(T\):
+
+1. All maps \(P_{T,\sigma}\) have a common kernel equivalence relation \(K_T\).
+2. With \(B_T=Q/K_T\) and quotient map \(p_T\), there are sections
+   \[
+   s_{T,\sigma}:B_T\to Q
+   \]
+   satisfying
+   \[
+   P_{T,\sigma}=s_{T,\sigma}p_T,
+   \qquad
+   p_Ts_{T,\sigma}=\mathrm{id}_{B_T}.
+   \]
+3. The \(T\)-saturated subset
+   \[
+   Q_T=\bigcup_{\sigma\in S_T}\operatorname{im}P_{T,\sigma}
+   \]
+   is canonically isomorphic to \(B_T\times S_T\). For \(r\in T\),
+   \[
+   F_{r,v}(b,\sigma)=(b,\sigma[r\leftarrow v]).
+   \]
+
+*Proof.* Commuting different-register writes and absorbing earlier same-register writes gives
+\[
+P_{T,\tau}P_{T,\sigma}=P_{T,\tau}.
+\tag{15.2}
+\]
+In particular, these maps are idempotent.
+
+If \(P_{T,\sigma}q=P_{T,\sigma}q'\), apply \(P_{T,\tau}\) and use (15.2) to obtain
+\[
+P_{T,\tau}q=P_{T,\tau}q'.
+\]
+Interchanging \(\sigma,\tau\) proves equality of their kernels.
+
+Define
+\[
+s_{T,\sigma}(p_Tq)=P_{T,\sigma}q.
+\]
+The common-kernel property makes this well-defined. Equation (15.2) gives \(p_TP_{T,\sigma}=p_T\), proving the section identities.
+
+The map
+\[
+(b,\sigma)\longmapsto s_{T,\sigma}(b)
+\]
+is surjective onto \(Q_T\). If two such images coincide, applying \(p_T\) identifies their \(b\)-coordinates. Moving each register’s write to the final position and applying A3 identifies every coordinate of \(\sigma\). Thus the map is injective. Finally,
+\[
+F_{r,v}P_{T,\sigma}=P_{T,\sigma[r\leftarrow v]}
+\]
+proves the action formula. \(\square\)
+
+For \(T=R\), this is the complete-write representation
+\[
+Q_{\mathrm{sat}}\cong B_R\times S.
+\]
+A complete write erases precisely a common kernel, preserves its class \(b\), and chooses the representative carrying the requested store.
+
+For partial writes, the kernels vary with the touched subset. If \(T\subseteq U\), then
+\[
+K_T\subseteq K_U,\qquad Q_U\subseteq Q_T.
+\tag{15.3}
+\]
+The first inclusion follows by completing a \(T\)-write to a \(U\)-write. The second follows because every \(U\)-written state is fixed by the corresponding \(T\)-write. Consequently, there is a canonical surjection
+\[
+B_T\longrightarrow B_U,\qquad [q]_{K_T}\longmapsto[q]_{K_U}.
+\]
+
+These subsets are **not disjoint grades of behavioral states**. In particular, \(Q_\varnothing=Q\). The grading initially belongs to write histories; behavior can identify different grades.
+
+**Corollary: the partial-write monoid and CR-11’s bound.**
+
+Let
+\[
+\mathcal P=\prod_{r\in R}(V_r\sqcup\{\bot\}),
+\]
+where \(\bot\) means “perform no write at this register.” Define
+\[
+(\alpha\star\beta)(r)=
+\begin{cases}
+\alpha(r),&\alpha(r)\ne\bot,\\
+\beta(r),&\alpha(r)=\bot.
+\end{cases}
+\]
+Thus \(\alpha\star\beta\) executes \(\beta\) first, then \(\alpha\). Its identity is the all-\(\bot\) assignment.
+
+Set
+\[
+P_\alpha=\prod_{\alpha(r)\ne\bot}F_{r,\alpha(r)}.
+\]
+A1–A2 give
+\[
+P_\alpha P_\beta=P_{\alpha\star\beta}.
+\tag{15.4}
+\]
+For a fixed initial place \(q_0\), evaluation
+\[
+\alpha\longmapsto P_\alpha q_0
+\]
+is an equivariant surjection onto its write orbit. Therefore
+\[
+\begin{aligned}
+|\operatorname{Orb}_{\mathrm{writes}}(q_0)|
+&\le |\mathcal P|\\
+&=\sum_{T\subseteq R}\prod_{r\in T}|V_r|\\
+&=\prod_{r\in R}(|V_r|+1).
+\end{aligned}
+\tag{15.5}
+\]
+
+For each fixed \(T\), A3 makes the \(|S_T|\) outputs \(P_{T,\sigma}q_0\) distinct. Outputs associated with different \(T\) can coincide. Hence the sum counts tagged normal forms before those identifications.
+
+The bound is attained by the ordinary partial-store world \(\mathcal P\), with native reads exposing \(\bot\) and writes replacing only the addressed coordinate. It need not be attained when untouched status is behaviorally invisible.
+
+Here \(\bot\) is an identity operation, **not a reset-to-bottom write**. Declaring \(F_{r,\bot}=\mathrm{id}\) while imposing A1 with \(\bot\) as an ordinary writable value would require
+\[
+F_{r,\bot}F_{r,v}=F_{r,\bot},
+\]
+and hence \(F_{r,v}=\mathrm{id}\). A genuine reset-to-bottom action therefore defines an enlarged, different write interface.
+
+**Corollary: initialized stores.** If
+\[
+q_0=P_{R,\sigma_0}q
+\]
+for an actual complete write, its write orbit has exactly \(\prod_r|V_r|\) places.
+
+Merely assigning initial numerical values does not establish this premise. An initial “zero, untouched” place can remain distinguishable from “zero, written.” Current-value writes being behavioral no-ops provides an alternative sufficient condition.
+
+The sets \(B_T\) may be infinite. Equation (15.5) bounds a fixed initial place’s write orbit, not the entire predictive carrier.
+
+**CR-15.2. Invariant relations give uniform behavioral guarantees**
+
+Let \(\Lambda\) be an abstract registered transition system with maps \(f_a\) and response laws \(r_c^*\). It may include preserved context, register values, and untouched status.
+
+Let nonempty sets \(K_\lambda\subseteq Z\) cover the declared initial states and their relevant reachable states. Suppose
+\[
+T_a(K_\lambda)\subseteq K_{f_a(\lambda)}
+\quad\text{for every registered action }a,
+\tag{15.6}
+\]
+and
+\[
+D_c(r_c(z),r_c^*(\lambda))\le\eta
+\quad(z\in K_\lambda,\ c\in C).
+\tag{15.7}
+\]
+
+**Theorem.** For every \(z\in K_\lambda\),
+\[
+D_c(r_c(T_wz),r_c^*(f_w\lambda))\le\eta
+\quad\text{for every }w,c.
+\tag{15.8}
+\]
+Consequently,
+\[
+z,z'\in K_\lambda
+\implies d_\infty(z,z')\le2\eta.
+\tag{15.9}
+\]
+More generally, if \(f_u\lambda=f_v\lambda\), then
+\[
+d_\infty(T_uz,T_vz)\le2\eta.
+\tag{15.10}
+\]
+
+*Proof.* Induction using (15.6) gives \(T_wz\in K_{f_w\lambda}\). Apply (15.7) to obtain (15.8). Two realizations of the same abstract state lie within \(\eta\) of the same response law after every continuation; the triangle inequality gives (15.9). Apply that conclusion to the common abstract endpoint of \(u,v\) to obtain (15.10). \(\square\)
+
+Thus abstract absorption and commutation imply concrete L1 and L2 defects at most \(2\eta\). A write history and its partial-store normal form also differ by at most \(2\eta\), independently of history length.
+
+This conclusion comes from transition closure of the relation. It does not follow merely by replacing the equalities in A1–A2 with small local errors.
+
+**Corollary: preservation and fidelity require margins.** If an abstract continuation separates \(\lambda,\mu\) by
+\[
+D_c(r_c^*(f_w\lambda),r_c^*(f_w\mu))\ge\Delta,
+\]
+then their concrete realizations satisfy
+\[
+D_c(r_c(T_wz),r_c(T_wz'))\ge\Delta-2\eta.
+\tag{15.11}
+\]
+For L3, the abstract distinction must survive the addressed write, and its surviving margin must exceed \(2\eta\).
+
+This protects the specified abstract distinctions. It does not promise to preserve every small concrete difference.
+
+A finite family of such sets gives a cover of bounded behavioral diameter. It does not establish a finite exact quotient: arbitrarily small observable distinctions can remain inside each set.
+
+**CR-15.3. Contraction supplies invariant sets, with domain and initialization conditions**
+
+This is a **surgeon certificate** when its metric is supplied on the carrier. Denote that metric by \(\varrho\), reserving D3’s \(\rho\) for immediate response discrepancy.
+
+Let \(M\) be a nonempty complete metric space with
+\[
+U_v:M\to M,\qquad
+\varrho(U_vm,U_vm')\le\kappa\varrho(m,m'),
+\quad 0\le\kappa<1,
+\tag{15.12}
+\]
+uniformly over the finite value set \(V\).
+
+Banach’s theorem gives a unique fixed point \(p_v\in M\) for each \(v\). Put
+\[
+D_*=\max_{u,v}\varrho(p_u,p_v),
+\qquad
+R_*=\frac{\kappa D_*}{1-\kappa}.
+\tag{15.13}
+\]
+
+**Theorem.** For any \(R\ge R_*\), the relative closed balls
+\[
+K_v=\{m\in M:\varrho(m,p_v)\le R\}
+\tag{15.14}
+\]
+satisfy
+\[
+U_{v'}(K_v)\subseteq K_{v'}.
+\tag{15.15}
+\]
+
+*Proof.* For \(m\in K_v\),
+\[
+\begin{aligned}
+\varrho(U_{v'}m,p_{v'})
+&=\varrho(U_{v'}m,U_{v'}p_{v'})\\
+&\le\kappa\varrho(m,p_{v'})\\
+&\le\kappa(R+D_*)\\
+&\le R.
+\end{aligned}
+\]
+\(\square\)
+
+If the fixed points are supplied and verified directly, completeness is unnecessary for this ball argument. Completeness is required for the stated Banach existence route.
+
+Suppose the readers satisfy
+\[
+D_c(r_c(m),r_c(m'))\le L\varrho(m,m').
+\tag{15.16}
+\]
+For abstract laws \(r_c^*(v)=r_c(p_v)\), equation (15.7) holds with \(\eta=LR\).
+
+Defining an abstract law from a fixed point does not by itself establish intended write fidelity. If \(\nu_{c,v}\) are the predeclared desired laws, additionally bound
+\[
+\beta=\sup_{v,c}D_c(r_c(p_v),\nu_{c,v}).
+\]
+Then the certificate’s error is
+\[
+\eta=LR+\beta.
+\tag{15.17}
+\]
+
+For a world whose state-changing actions are these writes, CR-15.2 applies. If other actions are registered, their matching-set invariance must also be proved. Having all outputs pass through the same reader does not prevent an intermediate action from amplifying a carrier difference.
+
+**Initialization is a separate obligation.** The minimal radius \(R_*\) need not contain states after their first write from an arbitrary initialization.
+
+For example, \(U(m)=m/2\) on \(\mathbb R\) has a single fixed point, so \(D_*=R_*=0\). Starting at \(m_0=1\), every finite iterate remains outside \(K=\{0\}\).
+
+For a bounded initial set \(I\), a sufficient radius covering all post-first-write histories is
+\[
+R\ge
+\max\left\{
+R_*,
+\ \kappa\sup_{m\in I,v}\varrho(m,p_v)
+\right\}.
+\tag{15.18}
+\]
+The second term places the first write inside its target ball; (15.15) handles every later write.
+
+Alternatively, choose any reference initial value \(v_0\), and let
+\[
+e_0=\varrho(m_0,p_{v_0}).
+\]
+After \(t\) writes with last value \(v_t\),
+\[
+\varrho(m_t,p_{v_t})
+\le
+\kappa^t e_0+
+R_*(1-\kappa^t).
+\tag{15.19}
+\]
+This follows by iterating \(e_{t+1}\le\kappa(e_t+D_*)\). It gives a transient bound, not automatic finite-time entry into the minimal balls.
+
+**Synchronized forgetting.** Two states subjected to the same sequence of \(k\) writes satisfy
+\[
+\varrho(U_wm,U_wm')\le\kappa^k\varrho(m,m').
+\tag{15.20}
+\]
+This is a statement about a common suffix. A uniform bound over arbitrary earlier histories additionally requires a bound on their starting separation.
+
+**Behavioral form.** On a complete invariant subset of \(Q\), one may take \(\varrho=\bar d\). Then immediate readers are automatically \(1\)-Lipschitz, and contraction and ball diameters are behavioral statements. Establishing that hypothesis, however, requires control of all registered futures; it is not supplied by a short list of continuation tests.
+
+**Correction to the scalar GRU interval argument.** Let
+\[
+U_v(h)=\tfrac12h+\tfrac12\tanh(kh+\ell v)
+\]
+be the earlier exact construction, with
+\[
+A=\operatorname{atanh}(a),\quad
+B=\operatorname{atanh}(3a),\quad
+k=\frac{A-B}{2a},\quad
+\ell=\frac{A+B}{2a},
+\quad 0<a<1/3.
+\]
+It satisfies \(U_a(-a)=U_a(a)=a\). On \([-a,a]\), the argument of \(\tanh\) lies in \([A,B]\subset(0,\infty)\), and
+\[
+U_a''(h)=\tfrac12k^2\tanh''(kh+\ell a)<0.
+\]
+Strict concavity therefore gives
+\[
+U_a(h)>a\qquad(-a<h<a).
+\tag{15.21}
+\]
+Thus \([-a,a]\) is not invariant. A small derivative bound on that interval cannot certify repeated operation there.
+
+The two-point carrier \(\{-a,a\}\) remains invariant, and on that carrier each write has contraction factor zero.
+
+**CR-15.4. Selective contraction: what fails and a sufficient replacement**
+
+Strict contraction in an addressed direction and \(1\)-Lipschitz behavior elsewhere do not imply selective memory.
+
+First,
+\[
+U_{1,v}(x,y)=(v,0)
+\]
+contracts the addressed coordinate completely and is nonexpansive in the other coordinate, while destroying every distinction carried by \(y\).
+
+Second, even exact preservation of the unaddressed coordinate and consistent fixed-point intersections do not imply commutation.
+
+On \(M=[0,1]^2\), for \(v,u\in\{0,1\}\) and \(0<\kappa\le1/2\), define
+\[
+U_{1,v}(x,y)=\bigl(v+\kappa y(x-v),y\bigr),
+\qquad
+U_{2,u}(x,y)=(x,u).
+\tag{15.22}
+\]
+Both maps preserve the unaddressed coordinate. The addressed contraction factors are at most \(\kappa\) and zero. Their fixed sets are
+\[
+\operatorname{Fix}(U_{1,v})=\{v\}\times[0,1],
+\qquad
+\operatorname{Fix}(U_{2,u})=[0,1]\times\{u\},
+\]
+with the unique consistent intersection \((v,u)\).
+
+Nevertheless, the first coordinates of the two write orders differ by
+\[
+\kappa(u-y)(x-v).
+\tag{15.23}
+\]
+At \((x,y)=(1,0)\), \(v=0,u=1\), that difference is \(\kappa\).
+
+This is also a behavioral counterexample. Register the two Bernoulli coordinate readers. The absolute derivative row sum of the first component of \(U_{1,v}\) is
+\[
+\kappa y+\kappa|x-v|\le2\kappa\le1.
+\]
+Both writes are therefore nonexpansive in the maximum metric. Immediate observations attain that metric, so
+\[
+d_\infty((x,y),(x',y'))
+=\max\{|x-x'|,|y-y'|\}.
+\]
+The commutation defect in the displayed example is exactly \(\kappa\).
+
+Consistent fixed points describe the result of settling; they do not specify the error after a finite write.
+
+Conversely, compatible *raw-carrier* fixed sets are unnecessary for behavioral commutation. Attach an unread bit to an exact register store. Let writes to register 1 set it to zero and writes to register 2 set it to one. The corresponding raw fixed sets are disjoint, but their write maps commute exactly on the behavioral quotient.
+
+Thus the proposed “if and only if” is invalid.
+
+**Theorem: a sufficient selective-tube certificate.**
+
+For each preserved context \(b\), suppose a carrier presentation
+\[
+M_b=\prod_{r\in R}M_{b,r}
+\]
+is supplied. Each factor has a metric \(\varrho_{b,r}\). A write preserves \(b\) and every unaddressed coordinate exactly:
+\[
+U_{r,v}(b,m)=
+\bigl(b,m_{-r},G_{b,r,v}(m_r;m_{-r})\bigr).
+\tag{15.24}
+\]
+Assume these are self-maps of the declared carrier.
+
+For each addressed factor, supply anchors \(p_{b,r,v}\) and uniform bounds
+\[
+\varrho_{b,r}(G_{b,r,v}(x;n),G_{b,r,v}(x';n))
+\le\kappa_r\varrho_{b,r}(x,x'),
+\quad \kappa_r<1,
+\tag{15.25}
+\]
+\[
+\varrho_{b,r}(G_{b,r,v}(p_{b,r,v};n),p_{b,r,v})
+\le\xi_r
+\tag{15.26}
+\]
+for every admissible unaddressed state \(n\).
+
+Let
+\[
+D_r=\sup_{b,u,v}\varrho_{b,r}(p_{b,r,u},p_{b,r,v})
+\]
+be finite, and choose finite radii satisfying
+\[
+R_r\ge\frac{\kappa_rD_r+\xi_r}{1-\kappa_r}.
+\tag{15.27}
+\]
+
+Then
+\[
+K_{b,\sigma}
+=
+\prod_r
+\{m_r:\varrho_{b,r}(m_r,p_{b,r,\sigma(r)})\le R_r\}
+\tag{15.28}
+\]
+is invariant under abstract coordinate replacement.
+
+*Proof.* If the previous addressed value is \(u\), then
+\[
+\begin{aligned}
+\varrho_{b,r}(G_{b,r,v}(m_r;m_{-r}),p_{b,r,v})
+&\le
+\kappa_r\varrho_{b,r}(m_r,p_{b,r,v})+\xi_r\\
+&\le
+\kappa_r(R_r+D_r)+\xi_r\\
+&\le R_r.
+\end{aligned}
+\]
+Every other coordinate remains in its previous ball by exact preservation. \(\square\)
+
+Independent component updates \(G_{b,r,v}(m_r)\) are an immediate special case. On complete invariant factors, Banach supplies their anchors and \(\xi_r=0\).
+
+For partially initialized stores, choose initial coordinates \(i_{b,r}\), set
+\[
+K_{b,r,\bot}=\{i_{b,r}\},
+\]
+and additionally require
+\[
+R_r\ge
+\kappa_r\sup_{b,v}\varrho_{b,r}(i_{b,r},p_{b,r,v})+\xi_r.
+\tag{15.29}
+\]
+The same proof covers a register’s first write. Untouched coordinates remain in their singleton sets.
+
+If readers are uniformly \(L\)-Lipschitz in the product maximum metric, and their center calibration error against the intended abstract laws is at most \(\beta\), then
+\[
+\eta=\beta+L\max_rR_r.
+\tag{15.30}
+\]
+Subject to matching-set invariance for every additional registered action, CR-15.2 supplies:
+
+- absorption and commutation defects at most \(2\eta\);
+- history-to-normal-form discrepancy at most \(2\eta\);
+- surviving abstract response margins at least \(\Delta-2\eta\).
+
+This theorem supplies a sufficient metric certificate. It **assumes** a product presentation and preservation conditions; contraction does not derive them. Behavioral invariant relations remain the coordinate-independent conclusion.
+
+At \(\kappa_r=\xi_r=\beta=0\), the written-coordinate sets are singletons and the action becomes exact replacement. With faithful reads, its behavioral quotient falls under CR-15.1. Any unobservable distinctions in the supplied context \(b\) may themselves be quotiented out.
+
+**Corollary: global fading is incompatible with indefinite preservation.**
+
+Suppose two states differ in a live register \(s\), and repeated writes to another register \(r\) preserve a native response separation \(\delta>0\). Those writes cannot have a uniform global behavioral contraction factor \(\kappa<1\), because that would imply
+\[
+0<\delta
+\le d_\infty(U_{r,v}^nx,U_{r,v}^ny)
+\le\kappa^n d_\infty(x,y)
+\longrightarrow0.
+\]
+Selective memory therefore requires selective forgetting; global contraction under every write sequence is too strong.
+
+**CR-15.5. A shared sigmoid gate can realize selective overwrite**
+
+**Theorem.** A gated neural recurrence with a constant, address-independent sigmoid gate can satisfy strict behavioral contraction in the addressed register’s fiber and exact preservation across other registers.
+
+*Construction.* Take
+\[
+M=[-a,a]^2,\qquad V_1=V_2=\{-a,a\},\qquad 0<a<1/3.
+\]
+Choose \(0\le\theta<1\). For a write to address \(r\), let \(q_i=\mathbf1\{i=r\}\). Use the shared gate
+\[
+g=\operatorname{sigmoid}(0)=\tfrac12
+\]
+and candidate
+\[
+C_i(m,r,v)
+=
+m_i+2(1-\theta)q_i(v-m_i).
+\]
+The gated recurrence is
+\[
+U_i=(1-g)m_i+gC_i
+=
+\begin{cases}
+\theta m_i+(1-\theta)v,&i=r,\\
+m_i,&i\ne r.
+\end{cases}
+\tag{15.31}
+\]
+Thus \(M\) is invariant.
+
+This candidate is realizable by a finite ReLU network. For \(|t|\le2a\) and \(q\in\{0,1\}\), define
+\[
+H(q,t)
+=
+\operatorname{ReLU}(t+2aq)
+-\operatorname{ReLU}(t-2aq)-2aq.
+\]
+If \(q=0\), it equals zero; if \(q=1\), it equals \(t\). Hence
+\[
+H(q,t)=qt,
+\]
+and the candidate uses \(H(q_i,v-m_i)\). All weights are finite, and the sole sigmoid gate remains constant.
+
+Register native response channels
+\[
+r_i(m)=\operatorname{Bernoulli}
+\left(\frac{m_i+a}{2a}\right),
+\]
+with total variation distance. Every write is nonexpansive in the maximum metric, and immediate responses attain that metric, so
+\[
+d_\infty(m,m')
+=
+\frac{\|m-m'\|_\infty}{2a}.
+\tag{15.32}
+\]
+For pairs differing only in the addressed register,
+\[
+d_\infty(U_{r,v}m,U_{r,v}m')
+=
+\theta\,d_\infty(m,m').
+\tag{15.33}
+\]
+For pairs differing only in the other register, the distance is preserved exactly.
+
+When \(\theta=0\), writes perform exact coordinate replacement. They satisfy A1–A3 and preserve the unrelated register exactly. \(\square\)
+
+The construction refutes gate dependence as a universal requirement. It is a gated neural cell with a ReLU candidate; it is not an exact-representability result for a stock affine–tanh GRUCell.
+
+Address dependence remains present in the candidate. A useful two-register writer must select an address somewhere in its full transition map. The theorem shows that this selection need not occur in the sigmoid gate.
+
+For \(0<\theta<1\), the construction also demonstrates that strict behavioral contraction is not identical to exact overwrite absorption. Repeated same-value writes continue moving a nonfixed addressed state toward its target.
+
+This is an existence construction, not evidence that training discovers the mechanism.
+
+**CR-15.6. What is used, what is not claimed, and the \(\mathbb R^n\)-trap check**
+
+The invariant-relation argument uses established approximate simulation and bisimulation reasoning. In a deterministic system with matching action labels, transition closure and bounded observation error give uniform trajectory bounds. These are existing foundations, not a novelty claim. [Girard and Pappas, *Approximate Bisimulations for Nonlinear Dynamical Systems*](https://skoge.folk.ntnu.no/prost/proceedings/cdc-ecc05/pdffiles/papers/0712.pdf)
+
+The contraction arguments use Banach’s theorem and familiar forgetting estimates associated with echo-state and fading-memory theory. A uniform one-step contraction factor below one is a sufficient condition; it must not be equated with every form of echo-state behavior. Persistent unaddressed registers also prevent global forgetting under arbitrary input sequences. [Jaeger, *The “Echo State” Approach to Analysing and Training Recurrent Neural Networks*, including the erratum](https://www.ai.rug.nl/minds/uploads/EchoStatesTechRep.pdf)
+
+Hahn’s Lemma 5 bounds single-token influence by \(O(1/n)\) for the specified fixed-depth soft-attention architecture. It supplies relevant prior art for bounded-influence arguments. It does not establish that positive attention to obsolete tokens creates a nonzero behavioral overwrite defect. [Hahn, *Theoretical Limitations of Self-Attention in Neural Sequence Models*](https://aclanthology.org/2020.tacl-1.11.pdf)
+
+The earlier single-pool calculation remains a restricted fidelity obstruction: with one live information route, bounded logits, controlled paired values and weights, and an \(L\)-Lipschitz response map,
+\[
+\Delta-2\eta
+\le LD\,\frac{e^B}{m+e^B}.
+\tag{15.34}
+\]
+Its hypotheses must be established for the actual route before applying it. It is not an architecture-wide absorption theorem.
+
+Nor are contraction and dilution an exhaustive architectural dichotomy. An append-only state space is still a set on which a metric can be defined; variable length alone does not preclude metric arguments. Conversely, behaviorally irrelevant carrier components may expand or rotate without damaging overwrite.
+
+**Explicit trap check:** Are we describing the world’s erased and preserved response distinctions, or merely finding a favorable norm on its arrays?
+
+The exact kernels, partial-write action, invariant behavioral relations, and \(d_\infty\) bounds survive arbitrary bijective recoding with the registered actions and responses transported accordingly. Those are the behavioral objects.
+
+Carrier norms, product charts, Jacobian bounds and Euclidean balls are **surgeon certificates**. They can establish behavioral consequences, but their numerical convenience is not itself a native law. A chosen norm’s contraction does not establish learned register semantics, and failure of that norm’s certificate does not refute behavioral overwrite.
+
+**CR-15.7. Falsifiers and the single cheapest certificate check**
+
+The claims have separate failure conditions:
+
+- **Mathematical theorem:** a system satisfying every stated premise but violating its conclusion would refute the theorem. Violating a premise only prevents its application.
+- **Concrete overwrite claim:** a legal continuation with response discrepancy above the claimed tolerance refutes the full \(d_\infty\) bound. A finite-horizon failure suffices; finite-horizon agreement does not certify the infinite horizon.
+- **Useful selective memory:** loss of the declared live-value or unrelated-register distinction refutes that preservation claim, even if erasure succeeds.
+- **Contraction certificate:** an unverified domain, missing initialization coverage, missing transition closure, or inadequate reader margin prevents certification. A system realizing overwrite without contraction would demonstrate another supplier, not refute a sufficient contraction theorem.
+- **Architectural advantage:** equality between matched sealed and unsealed systems defeats the claimed advantage on that endpoint. It does not refute selective behavioral reset.
+
+A maximum over sampled Jacobian norms is not a uniform contraction certificate. A derivative-based proof requires a bound over the whole relevant domain and justified passage from derivatives to finite distances—for example, integration along segments in a verified convex domain. D7’s local derivative object does not replace those obligations or control unexamined futures.
+
+**Single cheapest check, if later implemented:** verify the shared-gate construction at \(\theta=0\) on the closed four-state carrier
+\[
+M_0=\{-a,a\}^2.
+\]
+There are four states and four write actions: **16 transitions**.
+
+For every transition, check together:
+
+\[
+U_{r,v}(m)\in M_0,\qquad
+U_{r,v}(m)_r=v,\qquad
+U_{r,v}(m)_s=m_s\quad(s\ne r).
+\tag{15.35}
+\]
+
+The expected result is exact coordinate replacement. Closure plus this table proves the write laws for every history length by induction; the registered readers give exact live-value separation. No long-history sampling, fitting, or training is needed.
+
+Checking preservation and fidelity together excludes the cheapest misleading alternatives: global reset can erase history while destroying the other register; identity can preserve the other register while failing to write.
+
+Any incorrect table entry falsifies the implementation of this construction. A passing check verifies this finite constructed realization only. It supplies no evidence of learned discovery or generalization. The principal implementation confound is an address-based overwrite performed outside the gated cell being tested.
+
+The mathematical substitution above already establishes the table analytically. No numerical run is required for this section.

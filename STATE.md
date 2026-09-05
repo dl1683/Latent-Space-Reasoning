@@ -38,8 +38,47 @@ dead history is truly dead."
 
 **Distance from central claim: 0.** This IS the native math artifact.
 
-**Next step:** Codex WB-2 design gate for commit-seal carrier experiment (rung 1
-of staircase). Then implement and run on CPU.
+**Mode since 2026-09-05: analytical (compute-constrained).** Work is
+derivation and proof; runs only for tiny models when a derivation needs a
+concrete check. Rung 1 of the commit-seal staircase ran 2/5 seeds (both arms
+passed every mechanism gate; stale partial deleted, weights not saved) and is
+paused, not closed.
+
+**CR-15 adopted (2026-09-05, theory/CONTINUATION_REFINEMENT.md):**
+- Common-kernel representation: under L1, L2, L4 the T-saturated behavioral
+  places factor canonically as B_T x S_T (preserved context x store), for
+  every touched subset T; writes act by coordinate replacement. The partial-
+  write monoid prod_r (V_r + {bottom}) recovers the prod(|V_r|+1) bound of
+  CR-11 as a count of tagged normal forms.
+- Invariant relations give uniform guarantees: transition-closed sets with
+  eta-accurate response laws bound every history-length-dependent defect
+  (L1, L2, history-to-normal-form) by 2 eta. Small local L1 defects alone do
+  NOT bound long histories (cyclic-counter counterexample). No coarsest
+  tolerance congruence exists in general.
+- Contraction supplies invariant sets (surgeon certificate): per-value
+  contraction with verified invariant domain and initialization coverage
+  gives radius kappa D/(1-kappa) balls; selective-tube version for multiple
+  registers requires exact preservation of unaddressed coordinates and
+  contraction uniform over them. Fibered contraction with consistent fixed
+  points does NOT imply commutation (explicit counterexample).
+- Selective memory requires selective forgetting: a global behavioral
+  contraction under every write is incompatible with indefinite preservation
+  of an unaddressed register.
+- A constant, address-independent sigmoid gate CAN realize exact selective
+  overwrite (address selection in the candidate); keyed gating is not a
+  theorem-level requirement.
+- Withdrawn: "positive attention mass on dead tokens forces a nonzero
+  absorption defect". Surviving restricted obstruction: with one bounded-
+  logit softmax route the LIVE value's influence dilutes like e^B/(m+e^B)
+  (fidelity, not absorption, fails with history).
+
+**Distance from central claim: 0** (the write laws and their certificates
+are the native structure). Measurement-to-artifact ratio this cycle: 0 runs.
+
+**Next step:** fresh unprimed audit of CR-15; then analytic round 3 on the
+denizen-side question (how many continuations certify a behavioral
+contraction, and what it costs).
+
 
 ---
 

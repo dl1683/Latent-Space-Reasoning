@@ -4,6 +4,43 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### CR-15 adopted: selective behavioral reset, representation and certificates (2026-09-05)
+
+Compute-constrained analytic mode began today (directive: derivations and
+proofs, tiny models only, recurring entropy sweeps). Two-round dialogue.
+
+Round 1 lean (mine): make CEG-1/CRC-1 a theorem by bounding absorption
+defect below by attention mass on dead tokens; gated overwrite needs a
+saturated gate. Both refuted with explicit constructions: values and
+projections can annihilate dead mass, and a scalar GRU with gates at 1/2
+overwrites exactly on {-a,a} by candidate cancellation (verified
+numerically). Adopted instead: common-kernel representation Q_sat = B x S,
+and the invariant-set 2-eta theorem.
+
+Counter-round (mine): the invariant-set theorem has no supplier; contraction
+supplies it (CR-15.3); fibered contraction is the approximate shadow of
+B x S (CR-15.4); conjecture that a shared gate cannot do two registers.
+
+Round 2 verdicts: CR-15.3 repaired (the interval [-a,a] is NOT invariant for
+the scalar construction despite |U'| <= 0.11, so a contraction certificate
+needs a verified invariant domain and initialization coverage); CR-15.4
+false as stated (consistent fixed points do not give commutation; defect
+kappa(u-y)(x-v)), replaced by a selective-tube certificate; keyed-gate
+conjecture false (constant gate, address in the candidate). Partial writes
+reconcile the two CR-11 bounds. Corollary: selective memory requires
+selective forgetting.
+
+What this changes: the rung-1 experiment's claim-bearing object is now a
+certificate (invariant domain + contraction + reader margin), not a paired-
+erasure table. Erasure tables can pass for reasons that do not survive
+history length (cyclic-counter counterexample).
+
+Repo entropy sweep also completed today: 98 scripts, 47 configs, 134 result
+dumps removed (manifest kept); STATE 3477->192 lines, NOTEBOOK 14614->845,
+closed theory under theory/closed/, handoffs merged.
+
+---
+
 ### CR-14 revised to commit-seal carrier (2026-09-04)
 
 Codex design gate corrected the original CR-14 hard-register experimental
