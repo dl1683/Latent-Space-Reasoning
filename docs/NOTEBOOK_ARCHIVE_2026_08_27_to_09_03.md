@@ -6251,7 +6251,7 @@ The right handoff is one committed front door, finalized only after audit #39 is
 
 ## 1. Handoff document spec
 
-Create [docs/HANDOFF_2026_08_30.md](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/docs/HANDOFF_2026_08_30.md) with these sections.
+Create [docs/HANDOFFS.md](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/docs/HANDOFFS.md) with these sections.
 
 ### Title and pause banner
 
@@ -6417,7 +6417,7 @@ All three are completed/closed once audit #39 lands; none is a restart instructi
 ### Repository map
 
 - `README.md`: public front door.
-- `docs/HANDOFF_2026_08_30.md`: pause and restart authority.
+- `docs/HANDOFFS.md`: pause and restart authority.
 - `STATE.md`: canonical scientific wording and never-say lists.
 - `docs/STRUCTURED_NEGATIVE_2026_08_29.md`: audited two-day synthesis.
 - `experiments/ledger.jsonl`: append-only run, hash, command, result, and audit provenance.
@@ -6446,7 +6446,7 @@ All three are completed/closed once audit #39 lands; none is a restart instructi
 Replace the header with:
 
 ```md
-## Current statement (2026-08-30, PAUSED; audits #27–#39 adopted; `docs/HANDOFF_2026_08_30.md` is the restart authority; no experiment is running)
+## Current statement (2026-08-30, PAUSED; audits #27–#39 adopted; `docs/HANDOFFS.md` is the restart authority; no experiment is running)
 ```
 
 Insert immediately below it:
@@ -6498,7 +6498,7 @@ Replace the entire run-on Status section with:
 
 Across two days of audited CPU experiments, no tested construction established a transferable causal state or native latent mathematics in a real model; the durable result is a localized set of instrument-validity, source-extraction, actuator, and prompt/output-geometry constraints that any future substrate must satisfy.
 
-The program is paused after `register_bridge_preflight_v1` and audit #39. Start with the [pause handoff](docs/HANDOFF_2026_08_30.md), then the canonical [current state](STATE.md). The audited two-day closeout is [the structured negative](docs/STRUCTURED_NEGATIVE_2026_08_29.md), and append-only run/audit provenance is in the [experiment ledger](experiments/ledger.jsonl).
+The program is paused after `register_bridge_preflight_v1` and audit #39. Start with the [pause handoff](docs/HANDOFFS.md), then the canonical [current state](STATE.md). The audited two-day closeout is [the structured negative](docs/STRUCTURED_NEGATIVE_2026_08_29.md), and append-only run/audit provenance is in the [experiment ledger](experiments/ledger.jsonl).
 ```
 
 ## 5. Newcomer traps
