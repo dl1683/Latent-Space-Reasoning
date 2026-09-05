@@ -166,3 +166,55 @@ after (134 files, 203,556,169 bytes deleted; 103 tracked, 31 git-ignored).
 | `vision_cifar100_dinov2s/cache.npz` | 11574622 | `8de4f0b0c47e1272de8c948c770517a66edd7beff933ccc29d995886c8145791` | tracked |
 | `vision_cifar100_dinov2s/pixels.npz` | 22436403 | `0da05f31cd6ccec4bd4de5f33b4577823278d42c7198f8f983f8630d481ac07d` | tracked |
 | `vision_cifar100_randinit/cache.npz` | 11555340 | `d5bd67d3de5cea77b7a132a2175aab6bd40b4afff3e677ee7306f471b2c079aa` | tracked |
+
+## Deleted configs (2026-09-05)
+
+Removed from `experiments/config/` as configs of closed lines with no remaining runner; each is recoverable at the `git_commit` recorded in its `experiments/ledger.jsonl` entry (last tracked at commit b70c861).
+
+- `experiments/config/commitment_hysteresis_v1.json`
+- `experiments/config/control_cost_v1.json`
+- `experiments/config/coordinate_v1.json`
+- `experiments/config/coordinate_v2.json`
+- `experiments/config/coordinate_v3.json`
+- `experiments/config/endogenous_action_carrier_v1.json`
+- `experiments/config/endogenous_response_quotient_v1.json`
+- `experiments/config/fusion_fission_v1.json`
+- `experiments/config/interchange_v1.json`
+- `experiments/config/interchange_v2.json`
+- `experiments/config/learned_action_carrier_v0.json`
+- `experiments/config/lexical_probe_fresh_v1.json`
+- `experiments/config/lexical_probe_fresh_v2.json`
+- `experiments/config/lexical_probe_fresh_v3.json`
+- `experiments/config/lexical_probe_fresh_v4.json`
+- `experiments/config/lexical_probe_v1.json`
+- `experiments/config/native_bridge_v1.json`
+- `experiments/config/necessary_register_rung1.json`
+- `experiments/config/necessary_register_v1.json`
+- `experiments/config/necessity_navigator_v1.json`
+- `experiments/config/observational_selectivity_quotient_v1.json`
+- `experiments/config/onewrite_recall_rung1.json`
+- `experiments/config/onewrite_recall_v1.json`
+- `experiments/config/onewrite_state_v1.json`
+- `experiments/config/oracle_actuator_rung0.json`
+- `experiments/config/path_fiber_v1.json`
+- `experiments/config/permutation_eligibility_v1.json`
+- `experiments/config/pmo_0r.json`
+- `experiments/config/psq1_d4_8b.json`
+- `experiments/config/psq1_v1.json`
+- `experiments/config/psq1_v1_8b.json`
+- `experiments/config/psq1_v1_8b_instruct.json`
+- `experiments/config/psq2_v1.json`
+- `experiments/config/psq2_v2.json`
+- `experiments/config/psq2_v3.json`
+- `experiments/config/psq2_v3_d4.json`
+- `experiments/config/psq3.json`
+- `experiments/config/psq3_alpha.json`
+- `experiments/config/psq3_micro_cpu.json`
+- `experiments/config/query_port_composition_v1.json`
+- `experiments/config/rcq0_v1.json`
+- `experiments/config/reachability_v1.json`
+- `experiments/config/register_bridge_preflight_v1.json`
+- `experiments/config/s3_qwen3.json`
+- `experiments/config/site_oracle_v1.json`
+- `experiments/config/state_bus_v1.json`
+- `experiments/config/svb_cross_model.json`
