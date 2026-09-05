@@ -20,8 +20,10 @@ equivalent states, (5) advantage over matched append-only ablation.
 
 **Theory:** theory/CONTINUATION_REFINEMENT.md, CR-10 through CR-14. Laws L1-L4
 (overwrite absorption, cross-register commutativity, preservation, write
-fidelity). Last-write normal form theorem (quotient bounded by ∏(|V_r|+1)
-in general, ∏|V_r| for initialized registers; not history length). Five
+fidelity). The last-write normal form bounds the write orbit from one initial
+place by ∏_r(|V_r|+1). With faithful native reads, an actual complete
+initialization gives exactly ∏_r|V_r| places. These statements do not
+bound the entire predictive carrier when preserved context varies. Five
 pre-declared falsifiers.
 
 **CR-14 revised (2026-09-04):** Original hard-register design was EAC
@@ -36,7 +38,11 @@ architecturally tautological. Positive-control staircase: 1 address, 2 values,
 this fact,' then test whether compositional reasoning becomes possible because
 dead history is truly dead."
 
-**Distance from central claim: 0.** This IS the native math artifact.
+**Status relative to the central claim:** CR-15 supplies conditional
+behavioral structure and sufficient certificates. It establishes no learned
+realization, transfer, causal-substitution result in a learned model, or
+advantage over an append-only alternative. Those remain the claim-bearing
+obligations.
 
 **Mode since 2026-09-05: analytical (compute-constrained).** Work is
 derivation and proof; runs only for tiny models when a derivation needs a
@@ -45,16 +51,19 @@ passed every mechanism gate; stale partial deleted, weights not saved) and is
 paused, not closed.
 
 **CR-15 adopted (2026-09-05, theory/CONTINUATION_REFINEMENT.md):**
-- Common-kernel representation: under L1, L2, L4 the T-saturated behavioral
-  places factor canonically as B_T x S_T (preserved context x store), for
-  every touched subset T; writes act by coordinate replacement. The partial-
-  write monoid prod_r (V_r + {bottom}) recovers the prod(|V_r|+1) bound of
-  CR-11 as a count of tagged normal forms.
-- Invariant relations give uniform guarantees: transition-closed sets with
-  eta-accurate response laws bound every history-length-dependent defect
-  (L1, L2, history-to-normal-form) by 2 eta. Small local L1 defects alone do
-  NOT bound long histories (cyclic-counter counterexample). No coarsest
-  tolerance congruence exists in general.
+- Under A1-A3, each T-saturated subset is canonically B_T x S_T as a set
+  equipped with its T-write action. The general write-orbit bound from one
+  initial place is ∏_r(|V_r|+1). An actual complete initialization gives
+  exactly ∏_r|V_r| places. Numerical initialization alone does not imply
+  saturation, and preserved context B_T may be infinite.
+- Transition-closed realization sets with η-accurate registered response
+  laws give a history-independent 2η bound whenever the compared histories
+  have the same abstract endpoint. Preserved abstract distinctions require
+  margins exceeding 2η. Small local absorption errors alone do not provide
+  a vanishing history-uniform error bound (cyclic-counter counterexample in
+  CR-15.2). A greatest tolerance-compatible relation need not be an
+  equivalence relation, and a coarsest tolerance-bounded congruence need
+  not exist (three-state counterexample in CR-15.2).
 - Contraction supplies invariant sets (surgeon certificate): per-value
   contraction with verified invariant domain and initialization coverage
   gives radius kappa D/(1-kappa) balls; selective-tube version for multiple
@@ -72,23 +81,45 @@ paused, not closed.
   logit softmax route the LIVE value's influence dilutes like e^B/(m+e^B)
   (fidelity, not absorption, fails with history).
 
-**Distance from central claim: 0** (the write laws and their certificates
-are the native structure). Measurement-to-artifact ratio this cycle: 0 runs.
+**Status relative to the central claim:** CR-15 supplies conditional
+behavioral structure and sufficient certificates. It establishes no learned
+realization, transfer, causal-substitution result in a learned model, or
+advantage over an append-only alternative. Those remain the claim-bearing
+obligations.
 
-**Next step:** fresh unprimed audit of CR-15; then analytic round 3 on the
-denizen-side question (how many continuations certify a behavioral
-contraction, and what it costs).
+**Accounting:** This is an analytical cycle with no runs. Zero runs does not
+determine the apparatus-to-artifact code-line or round ratio; those
+classifications must be reported separately.
+
+**Audit #39 (2026-09-05): REVISE.** Mathematical core of CR-15 retained
+(15.0, 15.2, 15.3, 15.5, 15.7 ADOPT; 15.1, 15.4, 15.6 REVISE, corrections
+applied verbatim). Withdrawn from every surface: "distance from claim 0"
+and "pretrained transformers lack an endogenous overwrite boundary".
+Licensed sentence: under a fixed registered deterministic interface, exact
+selective-write laws yield a context/store factorization on write-saturated
+states, and a transition-closed, η-accurate realization of an abstract write
+system bounds equal-endpoint histories by 2η under every registered
+continuation; CR-15 supplies sufficient contraction certificates and an
+exact constructed gated-cell example, without establishing learned
+realization, transfer, or architectural advantage.
+
+**Proposed next analytical question:** Determine the sharp state-budget/error
+tradeoff that turns approximate local write laws into a history-uniform
+behavioral store abstraction, without assuming a carrier product or
+invariant tubes. The finite-state premise and preserved response margins
+must be explicit. No compute is queued. (Round 3 in progress.)
 
 
 ---
 
 ## Qwen path-dependence line: CLOSED (2026-09-04)
 
-CEG-1R preserved as a deferred diagnostic only. The line produced one
-transferable finding: pretrained transformers have no endogenous overwrite
-boundary — dead information persists in the append-only carrier, and the
-residual under attention cuts is broadcast context sensitivity, not semantic
-relay. This finding directly motivates the construction program above.
+CEG-1R remains a deferred diagnostic. The tested interfaces did not
+establish a useful overwrite law. CEG-1 supports bounded attention-mediated
+context dependence after a failed competence preflight; it does not prove
+that pretrained transformers lack endogenous behavioral overwrite. The
+construction program investigates whether an explicit write boundary
+provides a useful alternative.
 
 ---
 
@@ -143,8 +174,9 @@ this relay is irreversible."
 (infinite). One-more-test cap is binding.
 
 **Line closed.** CEG-1R skipped (Codex direction dialogue: decision value nil).
-Qwen path-dependence line closed. Transferable finding: no endogenous overwrite
-boundary in pretrained transformers. Construction program opened (CR-10+).
+Qwen path-dependence line closed. Transferable finding: the tested interface did not
+establish behavioral overwrite; the broader architectural question remains
+unresolved. Construction program opened (CR-10+).
 
 ---
 

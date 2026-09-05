@@ -113,8 +113,9 @@ this relay is irreversible."
 
 **Real non-tautological finding:** RELAY-CUT raises accuracy from 83.6% to 100%.
 A hard attention reset at the first live write erases earlier interference and
-recovers every binary answer. This is an architectural hole: the append-only
-carrier lacks an endogenous overwrite boundary.
+recovers every binary answer. This is a strong positional effect in the tested
+interface; it does not by itself prove that the append-only carrier lacks an
+endogenous behavioral overwrite boundary (audit #39 correction, 2026-09-05).
 
 **Next:** CEG-1R (terminal pretrained-Qwen localization test) or close Qwen path.
 

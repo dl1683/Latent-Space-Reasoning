@@ -110,9 +110,9 @@ Theorem (Monotonicity): For any action a and horizon h,
 
     x ≡_{h+1} y  ⟹  T_a x ≡_h T_a y.
 
-Proof: If r_c(T_w(T_a x)) = r_c(T_w(T_a y)) for all |w| ≤ h+1 and
-c, then in particular for all |w| ≤ h, r_c(T_{wa} x) = r_c(T_{wa} y).
-Since |wa| = |w| + 1 ≤ h + 1, and we assumed ≡_{h+1}, this follows.  □
+Proof: For every |w| ≤ h, |wa| ≤ h+1. Therefore x ≡_{h+1} y implies
+r_c(T_{wa} x) = r_c(T_{wa} y) for every c, which is exactly
+T_a x ≡_h T_a y.  □
 
 ## CR-5. Refinement events — definition
 
@@ -133,6 +133,12 @@ Properties:
 - ρ(h) ≥ 1 always (refinement never coarsens)
 - ρ(h) = 1 means level h adds no new distinctions (stabilization)
 - If ρ(h) = 1 for all h ≥ H, the tower has finite depth H
+- Class-count ratios require finite, nonzero cardinalities; equal infinite
+  cardinalities do not establish stabilization. With finite partitions a
+  single plateau already forces all subsequent stabilization (CR-15.7 eq.
+  (9)). Note also that 2^{-d_Sep} (with 2^{-∞} = 0) is an ultrametric on
+  the behavioral quotient, so separation depth is not outside familiar
+  metric theory. (Audit #39.)
 
 A compact predictive calculus exists when the tower stabilizes at
 finite depth H with |Q_H| << |Z|. This is compression: the model's
@@ -212,10 +218,10 @@ The first test is on existing SVB data (zero-call reanalysis):
 
 The congruence experiment found that "equivalent" surfaces (similar
 δ_L) diverge under composition with heavy suffixes (ratio 2.6-13.2×).
-In the refinement language: these surfaces are ≡_0 equivalent (same
-immediate CLR response to leading order) but ≢_1 (a single additional
-suffix operation reveals their difference). The heavy composer IS the
-distinguishing future of length 1.
+In the refinement language, read at finite resolution: these pairs have
+small but nonzero immediate discrepancies, which the heavy continuation
+amplifies. They illustrate finite-resolution sensitivity, not an exact
+refinement event under CR-2 (audit #39 correction).
 
 Zero-call reanalysis results (2026-09-04):
 
@@ -225,7 +231,8 @@ Zero-call reanalysis results (2026-09-04):
 | moderate_assert | 0.0128  | 0.0079 (0.6x)  | 0.0481 (3.8x)  | YES  |
 | misleading      | 0.0247  | 0.0225 (0.9x)  | 0.0644 (2.6x)  | YES  |
 
-The neutral composer ("# No changes.\n") preserves Q_0 equivalence.
+The neutral composer ("# No changes.\n") leaves the immediate discrepancy
+essentially unchanged.
 The heavy composer ("# Reassigning {var} now.\n") is a length-1
 distinguishing future for all 3 pairs. Composition order also matters:
 forward (suffix then composer) produces 2-4x more amplification than
@@ -241,8 +248,10 @@ The fresh experiment will:
 
 ## CR-10. Selective write boundary — axioms
 
-Motivated by CEG-1 (REVISE): pretrained transformers have no endogenous
-overwrite boundary — dead information persists in the append-only carrier.
+Motivated by CEG-1 (REVISE): the tested Qwen3-1.7B interface did not
+establish a behavioral overwrite law. Retained raw history was observed, but
+CEG-1 does not prove that pretrained transformers lack endogenous behavioral
+overwrite (audit #39).
 The construction program asks: if a model is given an internal "replace
 this fact" operation, does compositional reasoning become possible because
 dead history is truly dead?
@@ -342,38 +351,40 @@ length does not grow the predictive state.
 
 ## CR-12. Distance from CR-7 promotion criteria
 
-The write-boundary substrate earns "native mathematics" status by
-satisfying CR-7 with these instantiations:
+The following are required empirical promotion criteria. CR-15 does not
+establish them, and the recorded partial rung-1 run does not establish
+completed staircase validation. The write-boundary substrate would earn
+"native mathematics" status by satisfying CR-7 with these instantiations:
 
 1. **Compression**: |Q_H| ≤ |S| = ∏_r |V_r| << |{distinct write
-   histories}|. TESTED. The quotient compresses write histories into
+   histories}|. REQUIRED EVIDENCE. The quotient compresses write histories into
    live-store states.
 
 2. **Prediction**: The transition table at Q_H (indexed by store
    contents, not history) predicts responses to unseen continuations
-   better than raw text/position baselines. TESTED.
+   better than raw text/position baselines. REQUIRED EVIDENCE.
 
 3. **Transfer**: The compression transfers across held-out surface
    presentations (different wordings of the same write operations)
-   without refitting. TESTED.
+   without refitting. REQUIRED EVIDENCE.
 
 4. **Derivative closure**: Sep(T_a(x), T_a(y)) is predictable from
    the store states σ(x), σ(y) and the action a. That is, knowing
    what's in the registers (not how they got there) suffices to predict
-   which futures distinguish two states. TESTED.
+   which futures distinguish two states. REQUIRED EVIDENCE.
 
 5. **Causal substitution**: States with identical store contents but
    different write histories can be swapped in a recurrent model without
-   behavioral change beyond a declared tolerance. TESTED.
+   behavioral change beyond a declared tolerance. REQUIRED EVIDENCE.
 
 **By construction (commit-seal carrier, revised):**
 - Causal cut at COMMIT (hard seal — only the carrier survives)
 
 **Claim-bearing (must be learned, not hard-wired):**
 - L1 (overwrite absorption): U learns to produce m+ that makes dead
-  writes causally irrelevant to the registered reader. TESTED via
+  writes causally irrelevant to the registered reader. REQUIRED EVIDENCE via
   paired erasure. Not hard-wired — U can fail.
-- L4 (write fidelity): U encodes the proposed value in m+. TESTED
+- L4 (write fidelity): U encodes the proposed value in m+. REQUIRED EVIDENCE
   via visible proposal head and carrier transplant.
 - L2 and L3: not tested at rung 1 (requires multiple addresses).
 - Compression: |Q_H| << |histories|
@@ -455,7 +466,9 @@ A recurrent model with:
 **What the seal guarantees:**
 - If U learns to produce m+ that retains only current values, dead
   information CANNOT leak through other paths
-- This is the guarantee pretrained transformers lack (CEG-1 finding)
+- This is an explicit information-flow guarantee of the proposed carrier;
+  CEG-1 did not establish its absence from every pretrained transformer
+  interface
 
 ### Matched ablation: no-seal recurrent
 
@@ -520,7 +533,8 @@ fact-tracking. WB-1 is retained as a mathematical diagnostic.
 
 ## CR-15. Selective behavioral reset: representation and uniform certificates
 
-Status: THEOREM SET (analytic round 2, 2026-09-05). Adopted after a
+Status: THEOREM SET (analytic round 2, 2026-09-05; audit #39 corrections
+applied 2026-09-05). Adopted after a
 two-round dialogue with counterexamples; supersedes the informal
 "multiplicative vs additive dead mass" and "gate must saturate" claims of
 the round-1 draft, both withdrawn. No compute was used. Numbered
@@ -696,7 +710,7 @@ is an equivariant surjection onto its write orbit. Therefore
 
 For each fixed \(T\), A3 makes the \(|S_T|\) outputs \(P_{T,\sigma}q_0\) distinct. Outputs associated with different \(T\) can coincide. Hence the sum counts tagged normal forms before those identifications.
 
-The bound is attained by the ordinary partial-store world \(\mathcal P\), with native reads exposing \(\bot\) and writes replacing only the addressed coordinate. It need not be attained when untouched status is behaviorally invisible.
+The bound is attained from the all-\(\bot\) state in the partial-store world \(\mathcal P\), with coordinate-replacement writes and registered responses exposing every coordinate, including untouched status. If \(\operatorname{read}_r\) retains codomain \(V_r\), choose a default \(v_r^0\in V_r\) for \(\operatorname{read}_r(\bot)\) and expose untouched status through an additional native response channel. A3 still holds and all partial stores remain behaviorally distinct. The bound need not be attained when untouched status is behaviorally invisible.
 
 Here \(\bot\) is an identity operation, **not a reset-to-bottom write**. Declaring \(F_{r,\bot}=\mathrm{id}\) while imposing A1 with \(\bot\) as an ordinary writable value would require
 \[
@@ -713,6 +727,10 @@ for an actual complete write, its write orbit has exactly \(\prod_r|V_r|\) place
 Merely assigning initial numerical values does not establish this premise. An initial “zero, untouched” place can remain distinguishable from “zero, written.” Current-value writes being behavioral no-ops provides an alternative sufficient condition.
 
 The sets \(B_T\) may be infinite. Equation (15.5) bounds a fixed initial place’s write orbit, not the entire predictive carrier.
+
+This is an isomorphism of sets equipped with the T-write action, not a claimed product decomposition of the behavioral metric. Common kernels and sections require only A1–A2; A3 supplies faithful store labels.
+
+On \(Q_T\), define \(\mathrm{get}(q)=\mathrm{read}_T(q)\) and \(\mathrm{put}(q,\sigma)=P_{T,\sigma}q\). These satisfy PutPut, PutGet, and GetPut: the established very-well-behaved lens laws. The factor \(B_T\) plays the role of a preserved complement. Saturation is important because GetPut need not hold on all of \(Q\). On \(Q_R\), the action formula also preserves every distinction in \(b\) or an unaddressed register. [Foster, *Bidirectional Programming Languages*, §§2.1–2.2 and 6.5](https://www.cs.cornell.edu/~jnfoster/papers/jnfoster-dissertation.pdf).
 
 **CR-15.2. Invariant relations give uniform behavioral guarantees**
 
@@ -769,6 +787,20 @@ For L3, the abstract distinction must survive the addressed write, and its survi
 This protects the specified abstract distinctions. It does not promise to preserve every small concrete difference.
 
 A finite family of such sets gives a cover of bounded behavioral diameter. It does not establish a finite exact quotient: arbitrarily small observable distinctions can remain inside each set.
+
+**Nonvacuity.** A useful certificate must improve on the trivial bound \(d_\infty\le1\) and preserve the declared response margins. Neither a singleton-per-concrete-state abstraction nor a finite cover alone establishes predictive compression.
+
+**Counterexample: local absorption errors can accumulate.** Let \(N\) be even and take states \((s,j)\in\{0,1\}\times\mathbb Z_N\), with writes
+\[
+W_v(s,j)=(v,j+1).
+\]
+Register an exact value response and the nuisance response
+\[
+r(s,j)=\operatorname{Bernoulli}\!\left(\frac{1+\cos(2\pi j/N)}2\right),
+\]
+both with total variation distance. Every absorption comparison \(W_{v'}W_vx\) versus \(W_{v'}x\) has full behavioral discrepancy at most \(\sin(\pi/N)\): the value responses agree, and every common continuation preserves the one-step phase difference. Nevertheless, from \(j=-1\), the histories \(W_v^{N/2+1}\) and \(W_v\) have discrepancy \(1\). Write fidelity remains exact. Thus local absorption error tending to zero does not imply a history-uniform error bound tending to zero without additional assumptions.
+
+**Counterexample: no greatest tolerance-bounded congruence in general.** Take three states with identity actions and Bernoulli response means \(0,\varepsilon,2\varepsilon\), where \(0<\varepsilon\le1/2\). The partitions \(\{0,1\}\mid\{2\}\) and \(\{0\}\mid\{1,2\}\) are transition congruences whose blocks have diameter at most \(\varepsilon\). Any common coarsening merges all three states and violates that bound. This does not preclude a greatest tolerance-compatible relation: \(\{(x,y):d_\infty(x,y)\le\varepsilon\}\) is transition-closed but need not be transitive.
 
 **CR-15.3. Contraction supplies invariant sets, with domain and initialization conditions**
 
@@ -1024,7 +1056,7 @@ R_r\ge
 \]
 The same proof covers a register’s first write. Untouched coordinates remain in their singleton sets.
 
-If readers are uniformly \(L\)-Lipschitz in the product maximum metric, and their center calibration error against the intended abstract laws is at most \(\beta\), then
+If readers are uniformly \(L\)-Lipschitz in the product maximum metric, and their calibration error at every declared center against the intended abstract laws is at most \(\beta\), then (15.30) holds. When untouched tags are included, this calibration includes mixed centers containing both write anchors and untouched initial coordinates. Explicitly,
 \[
 \eta=\beta+L\max_rR_r.
 \tag{15.30}
@@ -1037,7 +1069,7 @@ Subject to matching-set invariance for every additional registered action, CR-15
 
 This theorem supplies a sufficient metric certificate. It **assumes** a product presentation and preservation conditions; contraction does not derive them. Behavioral invariant relations remain the coordinate-independent conclusion.
 
-At \(\kappa_r=\xi_r=\beta=0\), the written-coordinate sets are singletons and the action becomes exact replacement. With faithful reads, its behavioral quotient falls under CR-15.1. Any unobservable distinctions in the supplied context \(b\) may themselves be quotiented out.
+At \(\kappa_r=\xi_r=\beta=0\), choose the admissible minimal radii \(R_r=0\). The written-coordinate sets are then singletons. Independently of that radius choice, equations (15.25)–(15.26) imply \(G_{b,r,v}(x;n)=p_{b,r,v}\) for every admissible \(x,n\), so the transition is exact replacement. With faithful native reads, its behavioral quotient falls under CR-15.1. Unobservable distinctions in \(b\) may be quotiented out.
 
 **Corollary: global fading is incompatible with indefinite preservation.**
 
@@ -1048,7 +1080,7 @@ Suppose two states differ in a live register \(s\), and repeated writes to anoth
 \le\kappa^n d_\infty(x,y)
 \longrightarrow0.
 \]
-Selective memory therefore requires selective forgetting; global contraction under every write sequence is too strong.
+Indefinite preservation rules out uniform global behavioral fading under the corresponding writes. A selective-overwrite implementation must erase the addressed distinctions while allowing preserved distinctions to survive; addressed erasure need not arise from carrier contraction.
 
 **CR-15.5. A shared sigmoid gate can realize selective overwrite**
 
@@ -1116,7 +1148,11 @@ For pairs differing only in the other register, the distance is preserved exactl
 
 When \(\theta=0\), writes perform exact coordinate replacement. They satisfy A1–A3 and preserve the unrelated register exactly. \(\square\)
 
-The construction refutes gate dependence as a universal requirement. It is a gated neural cell with a ReLU candidate; it is not an exact-representability result for a stock affine–tanh GRUCell.
+The choice \(g=1/2\) is not essential. For any fixed \(g\in(0,1)\), the candidate
+\[
+C_i=m_i+\frac{1-\theta}{g}q_i(v-m_i)
+\]
+produces the same transition with finite weights. Thus address selection need not occur in the sigmoid gate. This is a gated neural cell with a ReLU candidate, not an exact-representability result for a stock affine–tanh GRUCell or evidence that training discovers the mechanism.
 
 Address dependence remains present in the candidate. A useful two-register writer must select an address somewhere in its full transition map. The theorem shows that this selection need not occur in the sigmoid gate.
 
@@ -1132,13 +1168,39 @@ The contraction arguments use Banach’s theorem and familiar forgetting estimat
 
 Hahn’s Lemma 5 bounds single-token influence by \(O(1/n)\) for the specified fixed-depth soft-attention architecture. It supplies relevant prior art for bounded-influence arguments. It does not establish that positive attention to obsolete tokens creates a nonzero behavioral overwrite defect. [Hahn, *Theoretical Limitations of Self-Attention in Neural Sequence Models*](https://aclanthology.org/2020.tacl-1.11.pdf)
 
-The earlier single-pool calculation remains a restricted fidelity obstruction: with one live information route, bounded logits, controlled paired values and weights, and an \(L\)-Lipschitz response map,
+**Restricted paired-pool fidelity lemma.** Let
+\[
+y=\sum_{i=0}^{m}\alpha_i a_i,\qquad
+y'=\sum_{i=0}^{m}\alpha_i a_i'
+\]
+use the same softmax weights
+\[
+\alpha_i=\frac{e^{\ell_i}}{\sum_j e^{\ell_j}}.
+\]
+Position \(0\) is live; all \(m\) other values are unchanged. Suppose \(\ell_0-\ell_j\le B\) for \(j\ge1\), and \(\|a_0-a_0'\|\le D_{\mathrm{val}}\). Let the common downstream response map \(\Phi\) be \(L\)-Lipschitz, with all other arguments fixed and no additional changing route.
+
+Then
+\[
+\alpha_0\le\frac{e^B}{m+e^B},
+\qquad
+D_c(\Phi(y),\Phi(y'))
+\le LD_{\mathrm{val}}\frac{e^B}{m+e^B}.
+\]
+If intended response laws have separation at least \(\Delta\), and each realized response is within \(\eta\) of its intended law, the triangle inequality gives
 \[
 \Delta-2\eta
-\le LD\,\frac{e^B}{m+e^B}.
+\le LD_{\mathrm{val}}\frac{e^B}{m+e^B}.
 \tag{15.34}
 \]
-Its hypotheses must be established for the actual route before applying it. It is not an architecture-wide absorption theorem.
+A dilution conclusion as \(m\) grows requires \(B,D_{\mathrm{val}},L\) bounded independently of \(m\) and \(\Delta>2\eta\). Changing weights, distractor values, or another information route introduces terms absent from this bound. This is a fidelity obstruction for the declared pool, not an absorption theorem or an architecture-wide result.
+
+**State tracking and architectural scope.** Fixed-depth log-precision transformers admit simulation by uniform constant-depth threshold circuits under the stated computational model. This is a resource-specific expressivity bound, not a theorem that transformers cannot implement any register update. [Merrill and Sabharwal, *The Parallelism Tradeoff*, Theorem 2 and Corollary 2.1](https://aclanthology.org/2023.tacl-1.31/).
+
+Conversely, transformers have constructive shortcuts for finite-state computation: logarithmic-depth simulations exist generally, and constant-depth constructions cover substantial subclasses. Memory/reset units are explicit ingredients. The constructions’ resources, including weights or width, can depend on sequence length; they do not contradict fixed-resource bounded-influence results. [Liu et al., *Transformers Learn Shortcuts to Automata*, Theorems 1–2 and Appendix C.3](https://arxiv.org/abs/2210.10749).
+
+Input-dependent propagation, forgetting, and boundary reset are already central to selective state-space models. Their existence does not establish CR-15’s exact keyed-write laws or indefinite preservation at finite parameters. [Gu and Dao, *Mamba*, §3.5](https://arxiv.org/html/2312.00752v2).
+
+Nor does a recurrent state representation alone establish general state-tracking ability: the analyzed state-space-model families also have expressivity restrictions under specified precision and architectural assumptions. [Merrill, Petty, and Sabharwal, *The Illusion of State in State-Space Models*](https://arxiv.org/html/2404.08819v2).
 
 Nor are contraction and dilution an exhaustive architectural dichotomy. An append-only state space is still a set on which a metric can be defined; variable length alone does not preclude metric arguments. Conversely, behaviorally irrelevant carrier components may expand or rotate without damaging overwrite.
 

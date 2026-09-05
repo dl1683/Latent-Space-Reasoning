@@ -4,6 +4,33 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Audit #39 on CR-15: REVISE, corrections propagated (2026-09-05)
+
+Fresh unprimed audit. Core retained (15.0, 15.2, 15.3, 15.5, 15.7 ADOPT).
+Revised: 15.1 (untouched-value example typing; the factorization is a
+set-with-action isomorphism, not a metric product; it is a very-well-
+behaved lens, Foster), 15.4 (zero-radius paragraph; calibration at mixed
+centers; "selective forgetting" sentence softened), 15.6 (paired-pool lemma
+now has explicit hypotheses; state-tracking prior art added: Merrill-
+Sabharwal, Liu et al., Mamba, Illusion of State). Also fixed CR-4 proof
+opening, CR-5 cardinality caveat, CR-9 exact-equivalence overreading,
+CR-12 "TESTED" -> "REQUIRED EVIDENCE".
+
+Withdrawn from every surface: "distance from claim 0" and "pretrained
+transformers lack an endogenous overwrite boundary" (CEG-1 failed its
+competence preflight; retained raw history is not retained behavioral
+distinction). STATE, theory CR-10/CR-14, EXPERIMENTS CEG-1 edited.
+
+Program ruling: continue selective behavioral reset; generic contraction
+certification is not the highest-leverage next step. Next question: sharp
+state-budget/error tradeoff turning eps-accurate local write laws into a
+history-uniform store abstraction with no product coordinates or tubes.
+My attempt (loop-cutting in Q x P then rewriting) gives C = O((N|P|)^2),
+lower bound Omega(N) from the cyclic counter; round 3 asks for the sharp
+exponent.
+
+---
+
 ### CR-15 adopted: selective behavioral reset, representation and certificates (2026-09-05)
 
 Compute-constrained analytic mode began today (directive: derivations and
