@@ -4,6 +4,30 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### CR-15.10.7 draft: the analytical deliverables, written solo (2026-09-05)
+
+No Codex (quota). Delivered in theory/ as DRAFT: (1) moduli for seven
+world/family rows; the cyclic counter shows both failure modes in one
+world (consistency failure under immediate reads; exact closure with
+amplification once one extra question is added). (2) Finite-panel
+bounding proposition with proof; the panel modulus lower-bounds the
+domain modulus and never upper-bounds it. (3) Obstruction theorem:
+any finite transcript is consistent with worlds having omega(0) = 0 and
+omega(0) = 1 (countdown branch attached beyond the transcript horizon).
+(4) Three premises for an upper bound: finite orbit (exact enumeration
+at depth N - |Q_0|); contraction + reader Lipschitz + INVERSE
+OBSERVABILITY (rho <= lambda d_{W*}) giving omega <= L kappa lambda t,
+which reproduces the CR-15.9 world's t/2 exactly and names the half the
+certificate lane lacked; closed invariant relations (bounds only pairs in
+a common realization set). Proposition: a denizen certifies lower bounds,
+panel moduli, and refutations; never an upper bound. (5) Refinement
+modulus rho_h(t) = max(t, max_a omega_a^{W_h}(t)).
+
+Review pending (fresh audit when quota allows). Nothing here is a real-
+model finding.
+
+---
+
 ### Direction locked: CR-15.10.6, analytical cycle on finite-question certification (2026-09-05)
 
 Round 3 (locking). Interface AMENDED (actual token positions and typed

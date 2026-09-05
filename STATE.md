@@ -162,6 +162,16 @@ robust-close pairs over five task blocks, affine and length-only rivals
 tested separately by interval-aware infeasibility, verdicts WITNESSED /
 TOLERANCE_PRESERVED_ON_PANEL / INCONCLUSIVE).
 
+**CR-15.10.7 DRAFT delivered (2026-09-05, solo, pending review):** the four
+analytical items of CR-15.10.6: contrast-world moduli (seven rows, including
+the cyclic counter's two failure modes); the finite-panel bounding
+proposition; the obstruction theorem (no finite transcript upper-bounds ω
+over the reachable set); three sufficient premises for an upper bound with
+the transfer inequality ω ≤ Lκλ t under contraction plus inverse
+observability, and the proposition that finite questions certify lower
+bounds, panel moduli, and refutations only. Plus the refinement modulus
+ρ_h(t) as a tolerance-indexed replacement for CR-5's class-count rate.
+
 **Withdrawn en route:** the "P vs R" mechanism dichotomy (not mutually
 exclusive); the CV-of-ratio rival rule (b/d = g + c/d makes spread
 uninformative); "immediate-read family closed under N".
