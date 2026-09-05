@@ -1,3 +1,6 @@
+Status: CLOSED LINE (archived 2026-09-05). Canonical current theory:
+theory/CONTINUATION_REFINEMENT.md, theory/AXIOMS.md.
+
 # HANDLE-μ: Causal Handle Algebra in a Designed Latent World
 
 **Status:** Locked specification (Codex Rounds 1–3b). Distance-1.

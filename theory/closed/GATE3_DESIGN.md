@@ -1,3 +1,6 @@
+Status: CLOSED LINE (archived 2026-09-05). Canonical current theory:
+theory/CONTINUATION_REFINEMENT.md, theory/AXIOMS.md.
+
 # Gate 3: Causal Relay-State Composition
 
 Status: DRAFT — pending Gate 2 results and Codex design gate review.

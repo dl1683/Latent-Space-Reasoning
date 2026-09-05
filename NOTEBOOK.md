@@ -623,7 +623,7 @@ commute (upper-triangular with same diagonal). So noncommutativity defeats BOTH 
 AND K_a simultaneously. If α(u)∘α(v) ≠ α(v)∘α(u), the monoid is genuinely non-scalar.
 
 **Actions:** Analyzer Step 4 rewritten with cross-fitting. Noncommutativity criterion
-added to theory/INTENSIONAL_DESCENT.md. Composition runner (run_composition) added to
+added to theory/closed/INTENSIONAL_DESCENT.md. Composition runner (run_composition) added to
 run_semantic_descent.py. Config svb_qwen3_composition.json created: 120 calls, ~2.5 min.
 Gate 1b ~20 min from completion; composition test runs after.
 
@@ -725,7 +725,7 @@ OBSERVE, BOUNDARY are confounded with their statement types (assignment,
 expression, delimiter). The five-class null-witness claim isn't supportable
 from this design alone.
 
-Codex V2 corrections applied to theory/INTENSIONAL_DESCENT.md:
+Codex V2 corrections applied to theory/closed/INTENSIONAL_DESCENT.md:
 - D10 composition order matched to D1 convention
 - D11 congruence proof: triangle decomposition added
 - Removed residual |I|<|P|
@@ -750,7 +750,7 @@ is the EQUALITY-WITNESS ALGEBRA: the structure of how denotationally null moves
 (things that "do nothing" extensionally) have nontrivial, compositional, causal
 model actions.
 
-Formal framework written: theory/INTENSIONAL_DESCENT.md
+Formal framework written: theory/closed/INTENSIONAL_DESCENT.md
 - D10-D15 extend D1-D7 with external denotational category
 - P → I → D factorization: model factors through intensional quotient but NOT
   through extensional denotation

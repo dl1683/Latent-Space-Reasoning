@@ -1,3 +1,6 @@
+Status: CLOSED LINE (archived 2026-09-05). Canonical current theory:
+theory/CONTINUATION_REFINEMENT.md, theory/AXIOMS.md.
+
 # Shadow-Binding Attenuation: Functional Form Analysis
 
 Status: EMPIRICAL OBSERVATION (one model, one template family, n=27/cell)

@@ -1,3 +1,6 @@
+Status: CLOSED LINE (archived 2026-09-05). Canonical current theory:
+theory/CONTINUATION_REFINEMENT.md, theory/AXIOMS.md.
+
 # Real Causal Quotient (RCQ)
 
 Version: 0.2 (model confirmed, capability screen revised)

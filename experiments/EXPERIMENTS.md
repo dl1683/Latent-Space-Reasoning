@@ -692,7 +692,7 @@ Predictions frozen: commit f95dfb7.
 ## Historical Suffix Action Algebra construction (2026-09-03; interpretation superseded)
 
 Distance from claim: 2 after runtime audit — formal diagnostic, not native-model evidence.
-Files: `theory/SUFFIX_ACTION_ALGEBRA.md`, `theory/suffix_algebra.py`, `theory/frozen_predictions_CP.txt`.
+Files: `theory/closed/SUFFIX_ACTION_ALGEBRA.md`, `theory/suffix_algebra.py`, `theory/frozen_predictions_CP.txt`.
 Ledger: `suffix_action_algebra_construction`.
 
 **What was built:**
@@ -868,7 +868,7 @@ Distance from claim: 2 (the task remains useful, but the recorded cached-state
 result is not faithful hybrid-state evidence).
 Runner: `experiments/run_svb_0.py`. Config: `experiments/config/svb_0.json`.
 Results: `experiments/results/svb_0/`. Ledger: `svb_0_launch`, `svb_0_result`.
-Spec: `theory/SVB_0.md`.
+Spec: `theory/closed/SVB_0.md`.
 
 **Method:** Python lexical scoping as the task family: outer assignment → inner
 function call (shadows variable) → scope closure → query. Falcon-H1-1.5B-Instruct
@@ -915,7 +915,7 @@ recurrent breathing-room, and “strongest positive signal” interpretations.
 Distance from claim: 1 (bounded continuation-distinguishability witness).
 Runner: `experiments/run_pmo_0r.py`. Config: `experiments/config/pmo_0r.json`.
 Results: `experiments/results/pmo_0r/`. Ledger: `pmo_0r_launch`, `pmo_0r_result`.
-Spec: `theory/PMO_0R.md` (Codex R1+R2 locked).
+Spec: `theory/closed/PMO_0R.md` (Codex R1+R2 locked).
 
 **Method:** Corrects two PFC-0 defects (symmetric endpoints, 3-logit renormalization).
 Asymmetric panels (entities end at different locations), 4-bin response law
@@ -1077,7 +1077,7 @@ law is established."
 
 Distance from claim: 0 (the quotient and action law ARE the native math).
 Runner: `experiments/run_rcq0.py`. Config: `experiments/config/rcq0_v1.json`.
-Spec: `theory/REAL_CAUSAL_QUOTIENT.md`. Ledger: `rcq0_substrate_confirmed`,
+Spec: `theory/closed/REAL_CAUSAL_QUOTIENT.md`. Ledger: `rcq0_substrate_confirmed`,
 `rcq0_v1_composition_fail`.
 
 **Substrate selection:**
@@ -1128,7 +1128,7 @@ messaging, 20,927 params), learned-sparse slots (top-2, 20,927), flat GRU (19,93
 historyless (10,207), direct-state oracle. Training: next-obs MSE + next-event CE,
 40 epochs, 3 seeds (42, 137, 2026), 2048 train / 512 val / 1024 test trajectories.
 Seven pre-registered gates. Runner: `experiments/run_handle_mu.py`.
-Spec: `theory/HANDLE_MU.md`. Ledger: `handle_mu_rung1`.
+Spec: `theory/closed/HANDLE_MU.md`. Ledger: `handle_mu_rung1`.
 
 **Prediction metrics (event macro-F1 / status macro-F1):**
 
@@ -1180,7 +1180,7 @@ spec/runner repair justified.
 
 Distance from claim: 1 (engineered-factorization control). Synthetic Z/8×Z/4 POMDP, 16 opaque actions, T=3 episodes, 85/15 confusion matrix. Six architectures: FBA (16/16, 33,664 params), flat GRU (40K), flat-matched (33K), asymmetric split (24/8, 34,688), modular (4×8, 34,688), flat bottleneck (37,760). Three seeds (42, 137, 2026). 2000 epochs, cosine LR (1e-3→1e-5), batch 256. Kill gates: K4 (all train≥0.90), K6 (FBA>best flat≥20pp), K7a (FBA>asym≥15pp), K7b (branch interchange>historyless null with Bonferroni CI), paired effects. Response-class equivalence split: 21/3/8 (train/val/test) from 32 classes. Oracle ceilings: historyless ~72-73%, recurrent ~95-96%.
 
-Runner: `experiments/run_fba_0.py`. Theory: `theory/FBA_BRIDGE.md`. Ledger: `fba0_full_campaign`.
+Runner: `experiments/run_fba_0.py`. Theory: `theory/closed/FBA_BRIDGE.md`. Ledger: `fba0_full_campaign`.
 
 **Test accuracies:**
 

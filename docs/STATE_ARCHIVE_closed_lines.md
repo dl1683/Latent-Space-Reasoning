@@ -20,7 +20,7 @@ classes that are strictly finer than denotational state, strictly coarser than
 token history, compositional across operations, and causally controlling later
 inference.
 
-**Formal framework:** theory/INTENSIONAL_DESCENT.md (D10-D15, extending D1-D7).
+**Formal framework:** theory/closed/INTENSIONAL_DESCENT.md (D10-D15, extending D1-D7).
 Key structure: P →J→ I →q→ D factorization. Model's action factors through
 intensional quotient I but NOT through extensional denotation D.
 
@@ -113,7 +113,7 @@ Noncommutativity is the strongest overall discriminator — defeats K_a too.
 variable-mention effect. Gate 1b adds ASSERT_VAR (true assertions + var mention)
 and MISLEADING_ASSERT_NOVAR (misleading assertions - var mention) to disentangle.
 
-**Kill conditions:** F0-F9 in theory/INTENSIONAL_DESCENT.md. F6 (baseline)
+**Kill conditions:** F0-F9 in theory/closed/INTENSIONAL_DESCENT.md. F6 (baseline)
 requires nested ladder M_state < M_cheap < M_cheap+role per Codex.
 
 **Prior evidence:** SVB suffix ablation (a~0.38 for ASSERT vs b~0.13 reverse
@@ -145,7 +145,7 @@ Six-way comparison: FBA (33,664), flat GRU (40K), flat-matched (33K), asymmetric
 (24/8, 34,688), modular (4×8, 34,688), flat bottleneck (37,760).
 Environment: Z/8 × Z/4 POMDP, 16 opaque actions, T=3, 85/15 confusion matrix.
 Oracle: historyless ~72-73%, recurrent ~95-96%. Split: 21/3/8 response classes.
-Kill gates: K4/K6/K7a/K7b + paired effects. Theory: theory/FBA_BRIDGE.md.
+Kill gates: K4/K6/K7a/K7b + paired effects. Theory: theory/closed/FBA_BRIDGE.md.
 
 **Campaign results (3 seeds, 2000 epochs, 20.1 minutes total):**
 - Seed 42: FBA=0.847, asym=0.924, K7b FAIL (cross=0.630 < null=0.722)
@@ -171,7 +171,7 @@ graph). Behaviorally defined: i→_c j iff paired interventions differing only i
 change j's next-response distribution. Dense typed slots (6x32, all-pairs messaging)
 as primary arm; learned-sparse and flat GRU as controls. Training: next-obs + next-event
 prediction only, no swap/graph supervision. Seven pre-registered gates.
-Spec: theory/HANDLE_MU.md. Runner: experiments/run_handle_mu.py.
+Spec: theory/closed/HANDLE_MU.md. Runner: experiments/run_handle_mu.py.
 
 **V1: FAIL (world too transparent, recurrent lift -0.003). V2: campaign in progress.**
 
@@ -249,7 +249,7 @@ adjudication. Post-seed-42 structural review (3 bugs + pair budget) → 5 fixes 
 db2df73). Post-fix Codex correctness review: NO-GO, 7 additional issues → 8 more fixes
 (c0bb1fe, 5e631a6, 4679c17). Total: 18 evaluator fixes across 6 commits. 4 smoke tests
 passed. Patch boundary spec amendment pending Codex decision.
-Spec: theory/HANDLE_MU_V2.md.
+Spec: theory/closed/HANDLE_MU_V2.md.
 
 Prior V1 rung 1 results: experiments/results/handle_mu/seed_42_rung_1.json.
 V2 results: experiments/results/handle_mu/v2_*.json.
@@ -317,7 +317,7 @@ Runner: experiments/run_path_fiber_v1.py. Results: experiments/results/path_fibe
 ### PMO-0R: Path-Memory Observability Revised (2026-09-02, TASK_POPULATION_VOID)
 
 Distance-from-claim: **1** — bounded continuation-distinguishability witness.
-Spec: theory/PMO_0R.md (Codex R1+R2 locked). Runner: experiments/run_pmo_0r.py.
+Spec: theory/closed/PMO_0R.md (Codex R1+R2 locked). Runner: experiments/run_pmo_0r.py.
 Config: experiments/config/pmo_0r.json.
 
 **Design (correcting PFC-0 defects):** Asymmetric endpoints (entities end at
@@ -358,7 +358,7 @@ Results: experiments/results/pmo_0r/result.json.
 ### RCQ-0: Real Causal Quotient on Finch-3B (2026-09-02, CLOSED — administrative/protocol)
 
 Distance-from-claim: **0** — the quotient and action law ARE the native math.
-Spec: theory/REAL_CAUSAL_QUOTIENT.md. Runner: experiments/run_rcq0.py.
+Spec: theory/closed/REAL_CAUSAL_QUOTIENT.md. Runner: experiments/run_rcq0.py.
 Config: experiments/config/rcq0_v1.json.
 
 **Substrate (confirmed):** RWKV/v6-Finch-3B-HF. Entity discrimination TV=0.43
@@ -606,7 +606,7 @@ gap. The diagnostic prefetched `s0`/`s1` before comparing query chunking and
 retained aggregates only, so the original-segmentation suffix-action gate and
 per-cell equivalence audit remain open.
 
-Spec: theory/SUFFIX_ACTION_ALGEBRA.md. Normalizer: theory/suffix_algebra.py.
+Spec: theory/closed/SUFFIX_ACTION_ALGEBRA.md. Normalizer: theory/suffix_algebra.py.
 
 ### Historical SVB-2 response profile (2026-09-03, AFFECTED BY MAMBA BUG)
 
@@ -691,7 +691,7 @@ This reframes the entire suffix effect from "additional computation" or "dual-pa
 readout" to "boundary-conditioned shadow attenuation": the suffix acts as a boundary
 cue that phase-switches the readout to suppress the dominant shadow competitor.
 
-Theory: theory/SETTLING_TIME_ANALYSIS.md.
+Theory: theory/closed/SETTLING_TIME_ANALYSIS.md.
 Results: experiments/results/svb_qwen3_shadow_relabel/result.json.
 
 ### Qwen suffix-response probes (2026-09-03, DESCRIPTIVE MECHANISM SCREEN)
@@ -842,7 +842,7 @@ Results: experiments/results/svb_1/result.json.
 ### Historical SVB-0 on Falcon-H1-1.5B-Instruct (2026-09-03, AFFECTED BY MAMBA GAP)
 
 Distance-from-claim: **2** — the registered task remains useful, but the cached-state result is not faithful hybrid-state evidence.
-Spec: theory/SVB_0.md. Runner: experiments/run_svb_0.py.
+Spec: theory/closed/SVB_0.md. Runner: experiments/run_svb_0.py.
 
 Python lexical scoping as task family: outer assignment → inner function (shadows) →
 scope closure → query reveals outer value. Falcon-H1-1.5B-Instruct selected for

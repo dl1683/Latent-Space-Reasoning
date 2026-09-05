@@ -1,3 +1,6 @@
+Status: CLOSED LINE (archived 2026-09-05). Canonical current theory:
+theory/CONTINUATION_REFINEMENT.md, theory/AXIOMS.md.
+
 # SVB-0: Scope-Variable Binding Experiment 0
 
 Version: 0.1 (self-reviewed; Codex design gate deferred — credits exhausted)

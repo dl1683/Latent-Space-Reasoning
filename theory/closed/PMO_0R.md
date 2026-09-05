@@ -1,3 +1,6 @@
+Status: CLOSED LINE (archived 2026-09-05). Canonical current theory:
+theory/CONTINUATION_REFINEMENT.md, theory/AXIOMS.md.
+
 # PMO-0R: Path-Memory Observability (Revised)
 
 Version: 1.0 (Codex R1+R2 locked, 2026-09-02)

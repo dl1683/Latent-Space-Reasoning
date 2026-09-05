@@ -497,7 +497,7 @@ detected — multiple live alternatives all converge on the same next action.
 
 **Distance-from-claim: 0 — this IS the central artifact.**
 
-Built `theory/SUFFIX_ACTION_ALGEBRA.md` (formal construction) and
+Built `theory/closed/SUFFIX_ACTION_ALGEBRA.md` (formal construction) and
 `theory/suffix_algebra.py` (symbolic normalizer), following Codex design gate
 recommendations for the measurement-to-construction pivot.
 
@@ -532,7 +532,7 @@ a two-class truth quotient.
 Codex audit gate running on the construction (checking D1 execution order,
 finite-access limits, R^n trap, theorem correctness, notation consistency).
 
-Files: theory/SUFFIX_ACTION_ALGEBRA.md, theory/suffix_algebra.py,
+Files: theory/closed/SUFFIX_ACTION_ALGEBRA.md, theory/suffix_algebra.py,
 theory/frozen_predictions_CP.txt.
 
 ### Historical response-law geometry of the affected suffix runtime (2026-09-03, INTERPRETATION SUPERSEDED)
@@ -1631,7 +1631,7 @@ Codex accepted all four (obj 2 with two-band modification). Added entity interac
 statistic ι = (1/4)||δ_A - δ_B||_1. Locked two-band gates: registered (0.020/0.005)
 and strong (0.050/0.020). Scoped closure to H_PMO only.
 
-**PMO-0R spec locked** (theory/PMO_0R.md, ~230 lines). Key innovations vs PFC-0:
+**PMO-0R spec locked** (theory/closed/PMO_0R.md, ~230 lines). Key innovations vs PFC-0:
 asymmetric endpoints, 4-bin response {kitchen, garden, office, OTHER}, suffix injection
 via saved recurrent states, competence staircase, κ+ι dual observables, 9-method null
 ladder, two-band witness gates, full adjudication tree.
@@ -2258,7 +2258,7 @@ depending on hidden history.
   full spatial layout provides partial disambiguation even without key knowledge
 
 **Codex V2 design gate in progress.** If approved, run seed 42 campaign with
-v2 world. Spec: theory/HANDLE_MU_V2.md.
+v2 world. Spec: theory/closed/HANDLE_MU_V2.md.
 
 
 ## 2026-09-01 — HANDLE-mu seed 42 complete: THREE BLOCKERS, world too transparent
@@ -2366,7 +2366,7 @@ HANDLE-mu (repair protocol) or redesign fundamentally.
 
 **Codex Round 2 completed.** Locked spec for HANDLE-mu: 7x7 key-lock grid, 5 causal
 handles (2 keys, 2 locks, goal; agent excluded as shared control context), partial
-visibility (Manhattan r=2), behaviorally defined causal graph. Spec: theory/HANDLE_MU.md.
+visibility (Manhattan r=2), behaviorally defined causal graph. Spec: theory/closed/HANDLE_MU.md.
 
 **Key design decisions (Codex R2):**
 - Dense typed slots (6 slots, width 32, all-pairs messaging) as PRIMARY arm
@@ -2475,7 +2475,7 @@ requiring either curriculum learning, explicit action probing, or model-based RL
 
 **Codex R20 verdict: NO-GO.** Code fully clean (Clopper-Pearson, MIN_WC_PAIRS,
 disjoint pairs all verified correct). Three remaining overclaims in
-theory/FBA_BRIDGE.md:
+theory/closed/FBA_BRIDGE.md:
 1. "non-recurrent encoder" was broader than the registered historyless null.
    FIXED: Now says "the registered historyless null."
 2. Wrong-channel section claimed swaps rule out redundancy. Both donors share
@@ -2528,7 +2528,7 @@ Yields ~336 matched, ~48 same-loc, ~112 same-state independent pairs.
    lower bounds gated instead of point estimates.
 6. Distance overclassification. FIXED: distance 0→1, docstring updated.
 
-Theory bridge created: theory/FBA_BRIDGE.md with Definitions 1-4 and
+Theory bridge created: theory/closed/FBA_BRIDGE.md with Definitions 1-4 and
 Proposition 1 (response-law equivalence, product factorization, branch
 interchange, wrong-channel controls).
 

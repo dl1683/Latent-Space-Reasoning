@@ -1,3 +1,6 @@
+Status: CLOSED LINE (archived 2026-09-05). Canonical current theory:
+theory/CONTINUATION_REFINEMENT.md, theory/AXIOMS.md.
+
 # Intensional Descent Criterion
 
 Status: THEOREM ATTEMPT (v2) — repaired per Codex review 2026-09-04.
@@ -652,5 +655,5 @@ survive cheap baselines (F6).
    absorbs it entirely (post-gain medians 0.003–0.009). Composition is a structured
    negative: the order effect is positional with context-dependent magnitude.
 6. Gate 3 (causal relay-state composition, requires GPU).
-   Design: theory/GATE3_DESIGN.md.
+   Design: theory/closed/GATE3_DESIGN.md.
 7. Cross-model replication if all gates pass.

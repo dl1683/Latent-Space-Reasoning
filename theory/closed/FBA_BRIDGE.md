@@ -1,3 +1,6 @@
+Status: CLOSED LINE (archived 2026-09-05). Canonical current theory:
+theory/CONTINUATION_REFINEMENT.md, theory/AXIOMS.md.
+
 # FBA Bridge: Product Factorization in Recurrent Belief States
 
 Math-first definitions for the FBA-0 experiment (distance 1 control).

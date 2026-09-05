@@ -248,7 +248,7 @@ readout aliasing deferred to CPA multi-probe test.
 - `experiments/run_execution_mode_invariance.py` — EMI runner (Codex-designed)
 - `experiments/results/execution_mode_invariance/` — output directory
 - `scratchpad/codex_emi_design.txt` — Codex design gate output (182 lines)
-- `theory/SUFFIX_ACTION_ALGEBRA.md` — central constructive artifact
+- `theory/closed/SUFFIX_ACTION_ALGEBRA.md` — central constructive artifact
 - `experiments/results/band2_decisive/` — band2 distributions (backward compat confirmed)
 - `experiments/results/right_continuation/` — right-continuation distributions
 
@@ -326,7 +326,7 @@ readout aliasing deferred to CPA multi-probe test.
 
 - `experiments/run_band2_decisive.py` — band2 test runner
 - `experiments/run_lrb_decisive.py` — prior LRB test runner
-- `theory/SUFFIX_ACTION_ALGEBRA.md` — central constructive artifact
+- `theory/closed/SUFFIX_ACTION_ALGEBRA.md` — central constructive artifact
 - `theory/suffix_algebra.py` — symbolic normalizer (3 modes)
 - `theory/frozen_predictions_CP.txt` — frozen LRB predictions (falsified)
 - `scratchpad/codex_lrb_refute_analysis.txt` — Codex evidence gate output

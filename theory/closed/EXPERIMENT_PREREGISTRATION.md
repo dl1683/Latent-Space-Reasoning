@@ -1,8 +1,11 @@
+Status: CLOSED LINE (archived 2026-09-05). Canonical current theory:
+theory/CONTINUATION_REFINEMENT.md, theory/AXIOMS.md.
+
 # Semantic-Holonomy Crossover: Pre-registration
 
 Status: DRAFT pre-registration. Awaiting Codex review.
 Date: 2026-09-04.
-Tests: Intensional Descent Criterion (theory/INTENSIONAL_DESCENT.md).
+Tests: Intensional Descent Criterion (theory/closed/INTENSIONAL_DESCENT.md).
 
 ## Hypothesis
 

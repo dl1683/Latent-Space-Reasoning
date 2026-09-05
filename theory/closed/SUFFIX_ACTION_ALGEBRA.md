@@ -1,3 +1,6 @@
+Status: CLOSED LINE (archived 2026-09-05). Canonical current theory:
+theory/CONTINUATION_REFINEMENT.md, theory/AXIOMS.md.
+
 # Suffix action algebra — behavioral composition laws in the SVB response world
 
 ## CRITICAL CAVEAT (2026-09-03)

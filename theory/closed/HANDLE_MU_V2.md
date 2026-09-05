@@ -1,8 +1,11 @@
+Status: CLOSED LINE (archived 2026-09-05). Canonical current theory:
+theory/CONTINUATION_REFINEMENT.md, theory/AXIOMS.md.
+
 # HANDLE-mu V2: Latent-Inventory Causal Handles
 
 **Status:** Design gate PASSED. Evidence gate CLEARED.
 **Date:** 2026-09-01 (spec), 2026-09-01 (design + evidence gate repairs + final clearance)
-**Predecessor:** `theory/HANDLE_MU.md` (v1, locked, eligibility FAIL)
+**Predecessor:** `theory/closed/HANDLE_MU.md` (v1, locked, eligibility FAIL)
 **Runner:** `experiments/run_handle_mu.py` with `--v2` flag
 
 ## Relation to V1
