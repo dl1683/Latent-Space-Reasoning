@@ -1244,3 +1244,284 @@ Checking preservation and fidelity together excludes the cheapest misleading alt
 Any incorrect table entry falsifies the implementation of this construction. A passing check verifies this finite constructed realization only. It supplies no evidence of learned discovery or generalization. The principal implementation confound is an address-based overwrite performed outside the gated cell being tested.
 
 The mathematical substitution above already establishes the table analytically. No numerical run is required for this section.
+
+**CR-15.8. Exact behavioral state budgets bound accumulated write-law error**
+
+Status: THEOREM (analytic round 3, 2026-09-05). Answers audit #39's proposed
+question. Adopted pending its own fresh audit. No compute was used.
+
+**Lemma (joint-state loop cutting and linear rewrite count).** The joint-system lemma is correct: Equal joint prefix states \((q_i,\alpha_i)=(q_j,\alpha_j)\) permit deleting the intervening actions while preserving both the concrete endpoint and the final normal form. Repeating gives length at most \(N|\mathcal P|-1\).
+
+An unqualified 'each write is crossed at most once per register' claim is false. In the execution-order word
+\[
+r\,r\,s\,r,
+\]
+eliminating the second \(r\) before the first makes the surviving \(s\) cross two dead \(r\)-writes. The claim needs a specified elimination order; the final canonical sorting also needs accounting.
+
+A clean repair processes the word **right to left**, maintaining a canonically ordered suffix containing at most one write per register. An older write either:
+
+- crosses other-register writes until it meets its later same-register write, then is absorbed; or
+- is inserted into its canonical position if its register is absent.
+
+For a length-\(n\) word touching \(k\) registers, there are \(n-k\) absorptions, at most \((k-1)(n-k)\) swaps associated with them, and at most \(\binom{k}{2}\) insertion swaps. Thus
+\[
+\rho(w)\le k(n-k)+\binom{k}{2}\le kn.
+\]
+This proves a linear rewrite bound, including sorting; combined with joint-state loop cutting it gives a history-uniform bound with a factor |R|·N·|𝒫|. The theorem below makes that count unnecessary for lifetime control.
+
+**Definitions and scope.** Work in CR-15.0’s registered deterministic world, with behavioral quotient \(Q\), metric \(\bar d\le1\), and nonexpansive legal writes \(F_{r,v}\). Fix an initial place \(q_0\).
+
+The **exact finite-state premise** is an independently established bound
+\[
+S_0:=\{F_wq_0:w\text{ is a finite write history}\},
+\qquad |S_0|\le N<\infty.
+\]
+This bounds the entire write orbit, not sampled states, a finite-horizon partition, or a tolerance cover. It must not be inferred by applying CR-11’s exact-law orbit bound to approximate laws.
+
+Assume uniformly for every \(q\in S_0\):
+\[
+\bar d(F_{r,v'}F_{r,v}q,F_{r,v'}q)\le\varepsilon,
+\tag{A1\(_\varepsilon\)}
+\]
+\[
+\bar d(F_{r,v}F_{s,u}q,F_{s,u}F_{r,v}q)\le\varepsilon
+\qquad(r\ne s).
+\tag{A2\(_\varepsilon\)}
+\]
+
+Let
+\[
+\mathcal P=\prod_{r\in R}(V_r\sqcup\{\bot\})
+\]
+be the partial-store monoid of CR-15.1. The map \(\operatorname{nf}\) records each register’s last-written value or untouched status. It is defined syntactically even when the concrete laws are approximate.
+
+Choose a fixed canonical execution order for registers. Let \(P_\alpha\) denote execution of that canonical word for \(\alpha\). **Under approximate laws, \(P_\alpha\) is not assumed to constitute an exact monoid action.**
+
+For each \(\alpha\), define the behavioral realization set
+\[
+K_\alpha
+=
+\{F_wq_0:\operatorname{nf}(w)=\alpha\}.
+\]
+These nonempty sets cover \(S_0\), may overlap, and satisfy write-transition closure:
+\[
+F_{r,v}(K_\alpha)\subseteq K_{\alpha[r\leftarrow v]}.
+\]
+
+**Theorem.** Under the exact finite-state premise and A1\(_\varepsilon\)–A2\(_\varepsilon\),
+\[
+\operatorname{diam}_{\bar d}K_\alpha
+\le
+\min\{1,(|K_\alpha|-1)\varepsilon\}
+\le
+B_N,
+\qquad
+B_N:=\min\{1,(N-1)\varepsilon\}.
+\]
+Consequently,
+\[
+\bar d(F_wq_0,P_{\operatorname{nf}(w)}q_0)\le B_N
+\]
+for every history length. Any two histories with the same normal form satisfy the same bound \(B_N\), without an additional factor of two.
+
+**Proof.**
+
+First consider one absorption or commutation rewrite inside a word. Its unchanged prefix reaches a state in \(S_0\), where the applicable approximate law bounds the discrepancy by \(\varepsilon\). Applying the unchanged suffix cannot increase that discrepancy, since every write is nonexpansive. Therefore one rewrite changes the full word’s endpoint by at most \(\varepsilon\).
+
+The right-to-left normalization procedure above transforms every word into its canonical normal form through finitely many such rewrites. Every intermediate word has the same normal form and reaches a state in \(K_\alpha\).
+
+For histories \(u,v\) with normal form \(\alpha\), concatenate the normalization of \(u\) with the reversed normalization of \(v\). Their endpoints form a finite chain
+\[
+x_0=F_uq_0,\ x_1,\ldots,x_L=F_vq_0,
+\qquad
+\bar d(x_i,x_{i+1})\le\varepsilon,
+\]
+entirely inside \(K_\alpha\).
+
+Whenever a vertex repeats, delete the intervening closed portion of this endpoint walk. The resulting walk has the same endpoints and retains the edge bounds. It contains at most \(|K_\alpha|\) distinct vertices, hence at most \(|K_\alpha|-1\) edges. The triangle inequality gives
+\[
+\bar d(F_uq_0,F_vq_0)
+\le (|K_\alpha|-1)\varepsilon.
+\]
+The ambient bound \(\bar d\le1\) supplies the cap. Taking \(v\) to be the canonical word proves the history-to-normal-form statement. \(\square\)
+
+The shortened endpoint walk need not itself encode a shortened execution history or a syntactic derivation. Only its metric edge bounds are used. This is why no partial-store factor is needed.
+
+**Faithful native reads and preservation.** The metric theorem does not require fidelity; fidelity makes its conclusion a useful store statement.
+
+Suppose a registered native response \(r_r\) has intended laws \(\nu_{r,v}\), with uniform own-write calibration
+\[
+D_r(r_r(F_{r,v}q),\nu_{r,v})\le\beta
+\qquad(q\in S_0).
+\]
+For deterministic faithful reads as in A3, take \(\nu_{r,v}=\delta_v\) and \(\beta=0\).
+
+If \(\alpha(r)=v\), choose a representative word for \(\alpha\) that executes its \(r\)-write last. Its endpoint lies in \(K_\alpha\) and satisfies the calibration condition. Hence every \(q\in K_\alpha\) satisfies
+\[
+D_r(r_r(q),\nu_{r,v})\le B_N+\beta.
+\]
+
+If two intended live-value laws have native separation at least \(\Delta\), their realizations remain separated by at least
+\[
+\Delta-2(B_N+\beta).
+\]
+This also protects their distinction after subsequent writes to other registers, because those writes leave their last-written \(r\)-values unchanged syntactically.
+
+A positive preservation claim therefore requires
+\[
+\Delta>2(B_N+\beta).
+\]
+Untouched registers and arbitrary preserved context require their own declared reference distinctions; they do not inherit semantics merely from the symbol \(\bot\).
+
+**Lower bound with nonvacuous faithful reads.** The following phase presentation is a constructed surgeon certificate for a counterexample, not a claim about discovered latent coordinates.
+
+Let \(m\) be even and take
+\[
+Q=\{0,1\}\times\mathbb Z_m,\qquad
+F_v(s,j)=(v,j+1).
+\]
+Register an exact binary-value response and the nuisance response
+\[
+r(s,j)=\operatorname{Bernoulli}
+\left(\frac{1+a\cos(2\pi j/m)}2\right),
+\qquad 0<a\le1.
+\]
+Use total variation distance.
+
+All \(2m\) exact behavioral places are reachable. Every common continuation preserves phase differences. Consequently,
+\[
+\bar d(F_{v'}F_vq,F_{v'}q)
+\le a\sin(\pi/m).
+\]
+There is one register, so commutation is vacuous. Native value fidelity has margin \(1\).
+
+Starting at phase \(-1\), compare \(F_v\) with \(F_v^{m/2+1}\). Their final phases are \(0\) and \(m/2\); their nuisance response discrepancy is \(a\), despite identical normal forms.
+
+Choose
+\[
+a=\min\left\{1,\frac{\varepsilon}{\sin(\pi/m)}\right\}.
+\]
+The local laws are \(\varepsilon\)-accurate, while lifetime error is
+\[
+\Omega\!\left(\min\{1,N\varepsilon\}\right),
+\qquad N=2m.
+\]
+Thus the linear dependence on the **exact behavioral state budget** is necessary even with \(|R|=1\), \(|\mathcal P|=3\), and faithful native margin \(1\).
+
+**Sharpness status.** The universal upper bound has no register-count or partial-store-count multiplier. Its order
+\[
+\Theta\!\left(\min\{1,N\varepsilon\}\right)
+\]
+is established by the binary example above.
+
+The exact envelope \(\min\{1,(N-1)\varepsilon\}\) is attained over the stated class permitting singleton value sets. To see this, use a constructed scalar surgeon certificate:
+\[
+Q=\{0,\ldots,N-1\},\quad
+A(j)=\min(j+1,N-1),\quad
+B(j)=\max(j-1,0).
+\]
+Let \(A,B\) be writes to two singleton-valued registers. Register the nuisance response \(\operatorname{Bernoulli}(jh)\), where
+\[
+h=\min\{\varepsilon,1/(N-1)\}.
+\]
+Then
+\[
+\bar d(i,j)=h|i-j|,
+\]
+because immediate responses attain this distance and both maps are nonexpansive. Absorption and commutation defects are at most \(h\).
+
+From \(0\), the canonical execution \(A,B\) returns to \(0\), whereas the same-normal-form history \(B,A^{N-1}\) reaches \(N-1\). Its discrepancy is exactly
+\[
+(N-1)h=\min\{1,(N-1)\varepsilon\}.
+\]
+
+Singleton-register fidelity is vacuous. This exact-constant example must therefore accompany, rather than replace, the binary faithful-read example. Optimal constants when every register must have multiple separated values are not established here.
+
+**Why joint-state counting still needs normal-form information.** The error theorem does not imply that the joint system has only \(N\) states.
+
+For \(k\) exact binary registers initialized to zero, there are
+\[
+N=2^k
+\]
+behavioral stores but
+\[
+3^k
+\]
+reachable joint states: each partial-store tag is reachable, and its concrete store fills untouched entries with zero. A concrete zero does not identify whether that register was untouched or explicitly written.
+
+More starkly, \(k\) singleton-valued identity registers give \(N=1\) and \(2^k\) reachable partial-store tags. A history touching all registers needs at least \(k\) actions to preserve its normal form, although its concrete endpoint never changes.
+
+Thus cutting execution loops using \(q\) alone need not preserve \(\operatorname{nf}\). Joint-state cutting must track the normal form or enforce an equivalent preservation condition. **The endpoint-chain proof avoids this obligation; it does not invalidate it.**
+
+**Tolerance-world replacement.** Without an exact finite quotient, the bound \((N-1)\varepsilon\) does not follow from \(N\) resolution cells.
+
+A different theorem survives. Define the packing number using the **full behavioral metric**:
+\[
+\operatorname{pack}_\tau(S_0)
+=
+\sup\{|E|:E\subseteq S_0,\ 
+\bar d(x,y)>\tau\text{ for distinct }x,y\in E\}.
+\]
+If
+\[
+\operatorname{pack}_\tau(S_0)\le N,
+\]
+then
+\[
+\boxed{
+\operatorname{diam}K_\alpha
+\le
+\min\{1,N\tau+(N-1)\varepsilon\}.
+}
+\]
+Here \(N\) is a packing bound, **not an exact-state bound**.
+
+*Proof.* Take the normalization endpoint chain \(x_0,\ldots,x_L\), and put
+\[
+t_i=\bar d(x_0,x_i).
+\]
+Consecutive radii differ by at most \(\varepsilon\).
+
+Starting with radius zero, repeatedly select the first later chain point whose radius exceeds the previously selected radius by \(\tau\). Each new selected radius is at most \(\tau+\varepsilon\) above its predecessor.
+
+If the terminal radius exceeded \(N\tau+(N-1)\varepsilon\), this procedure would select \(N+1\) points. Their radii, and hence their pairwise distances by the reverse triangle inequality, would differ by more than \(\tau\). This contradicts the packing bound. \(\square\)
+
+A cover by \(N\) sets of diameter at most \(\tau\) suffices. A cover by \(N\) balls of radius \(\tau\) instead supplies
+\[
+\min\{1,2N\tau+(N-1)\varepsilon\}.
+\]
+Finite immediate-read bins do not establish either full-behavioral premise.
+
+The resolution floor is unavoidable in general. As a constructed scalar surgeon example, take \([0,D]\), with \(D=N\tau\le1\), Bernoulli response \(\operatorname{Bernoulli}(x)\), and writes
+\[
+A(x)=\min(x+a,D),\qquad B(x)=\max(x-b,0),
+\]
+where \(a,b\le\varepsilon\), \(a/b\) is irrational, and \(a+b<D\). These are singleton-register writes.
+
+Their absorption defects are at most \(a,b\), and their commutation defect is at most \(\min(a,b)\). The behavioral metric is \(|x-y|\). The reachable orbit is infinite: choosing \(A\) when \(x<b\) and \(B\) otherwise implements an irrational rotation on \([0,a+b)\). Nevertheless, its packing number at strict separation \(>\tau\) is at most \(N\).
+
+From zero, \(B,A^n\) eventually reaches \(D\), while the canonical word \(A,B\) reaches \(\max(a-b,0)\). Their discrepancy approaches \(N\tau\) as the steps shrink. Thus fixed-resolution packing cannot generally give a lifetime bound vanishing with \(\varepsilon\).
+
+**Relation to CR-15.2 and CR-15.3; additional suppliers.** CR-15.2 requires transition closure and uniformly accurate response laws. The sets \(K_\alpha\) already have write-transition closure. The exact finite-state theorem derives their small behavioral diameter from approximate local laws plus a state budget. Contraction in CR-15.3 provides a different sufficient certificate for small realization sets.
+
+They are not exhaustive alternatives:
+
+- A transition-closed relation with uniformly bounded response error can be established directly, without finite exact state or contraction.
+- Full-behavioral packing gives the resolution-dependent bound above.
+- If the **registered behavioral metric \(\bar d\) itself is ultrametric**, every finite \(\varepsilon\)-chain has diameter at most \(\varepsilon\), by repeated strong triangle inequalities. The rewrite proof then gives lifetime error at most \(\varepsilon\), without finite state or strict contraction.
+
+CR-5’s separate ultrametric \(2^{-d_{\rm Sep}}\) does **not** establish that the registered \(\bar d\) is ultrametric.
+
+The common requirement is control of the diameter of endpoint sets connected by small rewrite defects. Finite counting, suitable metric structure, and invariant relations supply that control in different ways.
+
+If additional actions are registered, the theorem’s \(\bar d\)-bound already controls all common registered continuations. It does not automatically furnish abstract partial-store transitions for those additional actions; applying CR-15.2 to them still requires matching abstract dynamics and closure.
+
+**Falsifiers and application failures.**
+
+- A system satisfying the exact finite-state premise and every uniform law but exceeding the theorem’s bound would refute the theorem.
+- More than \(N\) reachable exact behavioral places, an excessive local defect, or missing action/domain coverage prevents that finite-state application.
+- A registered continuation exceeding a claimed behavioral tolerance refutes that concrete claim. Finite continuation agreement does not establish the infinite-horizon premises.
+- A bound at or above the available native margin does not certify useful selective memory.
+- None of these results establishes learned realization, transfer, causal substitution in a learned model, or architectural advantage.
+
+The theorem uses registered actions, response distinctions, and exact behavioral counting. It assumes no product coordinates or invariant tubes. Scalar carriers, phase parameterizations, norms, and contraction calculations used to construct or verify examples remain **surgeon certificates**.

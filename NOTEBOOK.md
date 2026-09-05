@@ -4,6 +4,33 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### CR-15.8: state budgets bound accumulated write-law error (2026-09-05)
+
+Round 3 on audit #39's question. My attempt: loop-cut in the joint system
+Q x P, then rewrite; I first counted the rewrites as quadratic, then
+claimed linear via "each write crossed at most once per register". Codex
+verified the loop-cutting lemma, refuted the unqualified crossing claim
+(word r r s r: eliminating the second r first makes s cross two dead
+writes), repaired it with a right-to-left procedure (rho <= k n), and then
+found the stronger theorem: shorten the ENDPOINT CHAIN of the rewrite
+proof, not the execution history. All chain states lie in K_alpha, so
+cutting repeated vertices leaves <= |K_alpha| - 1 edges of size eps:
+diam K_alpha <= min{1, (N-1) eps}. No |R| or |P| factor, no factor 2.
+Lower bound Omega(min{1, N eps}) from the cyclic phase example with
+faithful margin 1; exact (N-1) eps attained by two singleton registers on
+a line. Tolerance version via packing number. Three suppliers of history-
+uniformity: finite exact state, contraction, closed invariant relations.
+
+My secondary lean was corrected on both counts: c_tau = 0 is not a
+characterization of overwrite, and append-only carriers can have exact
+last-write readers. Neither survives; recorded so they are not retried.
+
+Codex round 3 first attempt hung 90+ min on bb_synthesis of the mission
+board (too large); killed and relaunched with synthesis skipped. Memory
+note written. Codex weekly quota at 66% used.
+
+---
+
 ### Audit #39 on CR-15: REVISE, corrections propagated (2026-09-05)
 
 Fresh unprimed audit. Core retained (15.0, 15.2, 15.3, 15.5, 15.7 ADOPT).

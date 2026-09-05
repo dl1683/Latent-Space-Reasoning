@@ -103,11 +103,30 @@ continuation; CR-15 supplies sufficient contraction certificates and an
 exact constructed gated-cell example, without establishing learned
 realization, transfer, or architectural advantage.
 
-**Proposed next analytical question:** Determine the sharp state-budget/error
-tradeoff that turns approximate local write laws into a history-uniform
-behavioral store abstraction, without assuming a carrier product or
-invariant tubes. The finite-state premise and preserved response margins
-must be explicit. No compute is queued. (Round 3 in progress.)
+**CR-15.8 adopted (2026-09-05, pending audit):** Under an independently
+proved bound of N exact reachable behavioral places, uniformly ε-accurate
+absorption and commutation imply discrepancy at most min{1, (N−1)ε} between
+any write histories with the same last-write normal form, under every
+registered continuation; faithful native margins survive when they exceed
+twice this bound, without assuming product coordinates or invariant tubes.
+Sharp in order Θ(min{1, Nε}) (binary phase example with margin 1); exact
+envelope attained by a singleton-register example. Tolerance world: with
+packing number ≤ N at resolution τ in the full behavioral metric, the bound
+is min{1, Nτ + (N−1)ε}, and the τ floor is unavoidable (irrational-rotation
+example). Three suppliers of history-uniformity are now identified: exact
+finite state (CR-15.8), contraction (CR-15.3), and transition-closed
+invariant relations (CR-15.2); an ultrametric registered response metric
+would be a fourth. Corrected en route: "identity cost c_τ = 0" does not
+characterize overwrite (any injective immediate reader has it), and append-
+only storage does not universally violate uniform reader accuracy.
+
+**Next obligation (Codex ruling):** a useful, independently justified state
+budget, behavioral packing bound, or bounded realization relation for a
+real endogenous interface. Without one, CR-15.8 has no application.
+
+**So what:** if a model has a proved limit on its distinct behavioral
+situations, small update mistakes cannot accumulate beyond that limit times
+the local error, even after a million updates.
 
 
 ---
