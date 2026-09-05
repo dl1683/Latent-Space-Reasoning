@@ -103,26 +103,19 @@ continuation; CR-15 supplies sufficient contraction certificates and an
 exact constructed gated-cell example, without establishing learned
 realization, transfer, or architectural advantage.
 
-**CR-15.8 adopted (2026-09-05, pending audit):** Under an independently
-proved bound of N exact reachable behavioral places, uniformly ε-accurate
-absorption and commutation imply discrepancy at most min{1, (N−1)ε} between
-any write histories with the same last-write normal form, under every
-registered continuation; faithful native margins survive when they exceed
-twice this bound, without assuming product coordinates or invariant tubes.
-Sharp in order Θ(min{1, Nε}) (binary phase example with margin 1); exact
-envelope attained by a singleton-register example. Tolerance world: with
-packing number ≤ N at resolution τ in the full behavioral metric, the bound
-is min{1, Nτ + (N−1)ε}, and the τ floor is unavoidable (irrational-rotation
-example). Three suppliers of history-uniformity are now identified: exact
-finite state (CR-15.8), contraction (CR-15.3), and transition-closed
-invariant relations (CR-15.2); an ultrametric registered response metric
-would be a fourth. Corrected en route: "identity cost c_τ = 0" does not
-characterize overwrite (any injective immediate reader has it), and append-
-only storage does not universally violate uniform reader accuracy.
+**CR-15.8 — audit #40: mathematical core ADOPT; parameter and attribution clarifications applied.** Fix one initial behavioral place and the registered deterministic interface. If its entire write orbit contains at most N exact behavioral places and absorption and commutation defects are uniformly at most ε in the full behavioral metric, equal-normal-form histories differ by at most B_N = min{1, (N−1)ε} under every common registered continuation. No additional factor two is required. With native own-write calibration error β, a sufficient live-value separation bound is Δ − 2(B_N + β). The worst-case error has order min{1, Nε}; the binary example preserves its live value exactly while accumulating nuisance-response error. The exact envelope is attained when singleton-valued registers are permitted, with zero cases handled separately. A full-behavioral packing bound gives min{1, Nτ + (N−1)ε}, and Nτ can be attained for arbitrarily small positive defects. Finite state, packing, contraction certificates, invariant relations, and ultrametric behavioral distance provide sufficient routes to uniform bounds; no exhaustive or disjoint classification is claimed. These results establish no learned realization, transfer, or architectural advantage. Corrected en route: \"identity cost c_τ = 0\" does not characterize overwrite, and append-only storage does not universally violate uniform reader accuracy.
 
-**Next obligation (Codex ruling):** a useful, independently justified state
-budget, behavioral packing bound, or bounded realization relation for a
-real endogenous interface. Without one, CR-15.8 has no application.
+**Next obligation
+
+**Next obligation (audits #39-#40):** establish a useful behavioral error
+bound for one fixed learned endogenous write interface, including its native
+reader, initialization, and every registered action. Possible routes include
+an independently justified exact-state or full-behavioral packing budget with
+uniform local-law bounds, or a directly verified realization relation,
+potentially supplied by CR-15.3 contraction. A single bounded CPU certificate
+check on a fixed tiny trained cell is eligible. Finite-horizon agreement, a
+vacuous bound, or an inconclusive sufficient certificate does not establish
+or refute useful behavioral overwrite. Design gate in progress (round 4).
 
 **So what:** if a model has a proved limit on its distinct behavioral
 situations, small update mistakes cannot accumulate beyond that limit times

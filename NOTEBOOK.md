@@ -4,6 +4,31 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Audit #40 on CR-15.8: ADOPT core, REVISE guards and attribution (2026-09-05)
+
+All proofs verified (loop cutting, right-to-left count k(n-k)+C(k,2),
+endpoint chain with no factor two, fidelity corollary, both lower-bound
+constructions, 3^k vs 2^k, packing theorem, irrational floor strengthened
+to exact attainment D = N tau, ultrametric remark). Corrections applied:
+parameter guards (N>=2, eps>0 for the sharpness examples; zero cases
+separate), the binary example keeps its live bit exact (nuisance error
+only), prior art (quantitative algebra: Mardare-Panangaden-Plotkin; metric
+rewriting: Gavazzo-Di Florio; Moore; Girard-Pappas), status line, STATE
+summary and next obligation.
+
+Program ruling: continue; the next step is one useful behavioral error
+bound on one fixed learned endogenous interface. A rigorous interval-
+arithmetic contraction certificate on one trained ~17K-param GRU cell is a
+legitimate "derivation needs a concrete check", becoming a campaign only if
+it searches seeds/models/norms. Conditions: actual learned transition and
+native reader, verified invariant domain and initialization coverage,
+derivative-to-distance passage, reader calibration, every registered
+action; proving kappa < 1 alone is insufficient; a failed certificate is
+inconclusive, not evidence against overwrite. Pointer: Bonassi-Farina-
+Scattolini GRU stability conditions (Lemma 1, Thm 2) to check first.
+
+---
+
 ### CR-15.8: state budgets bound accumulated write-law error (2026-09-05)
 
 Round 3 on audit #39's question. My attempt: loop-cut in the joint system

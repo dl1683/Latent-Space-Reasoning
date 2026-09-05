@@ -1247,10 +1247,13 @@ The mathematical substitution above already establishes the table analytically. 
 
 **CR-15.8. Exact behavioral state budgets bound accumulated write-law error**
 
-Status: THEOREM (analytic round 3, 2026-09-05). Answers audit #39's proposed
-question. Adopted pending its own fresh audit. No compute was used.
+Status: THEOREMS AND CONSTRUCTED SHARPNESS EXAMPLES (analytic round 3,
+2026-09-05). Audit #40 adopts the mathematical core, with explicit parameter
+guards and prior-art attribution applied below. This resolves audit #39's
+state-budget question under the stated full-behavioral premises. No
+learned-interface application is established. No compute was used.
 
-**Lemma (joint-state loop cutting and linear rewrite count).** The joint-system lemma is correct: Equal joint prefix states \((q_i,\alpha_i)=(q_j,\alpha_j)\) permit deleting the intervening actions while preserving both the concrete endpoint and the final normal form. Repeating gives length at most \(N|\mathcal P|-1\).
+**Lemma (joint-state loop cutting and linear rewrite count).** With \(S_0,N,\mathcal P\) as defined below, the deterministic joint transition sends \((q,\alpha)\) to \((F_{r,v}q,\alpha[r\leftarrow v])\). Equal joint prefix states permit deleting the intervening actions while preserving both the final concrete endpoint and the final normal form. Repeated deletion leaves a simple joint-state path of length at most \(N|\mathcal P|-1\).
 
 An unqualified 'each write is crossed at most once per register' claim is false. In the execution-order word
 \[
@@ -1372,6 +1375,8 @@ A positive preservation claim therefore requires
 \Delta>2(B_N+\beta).
 \]
 Untouched registers and arbitrary preserved context require their own declared reference distinctions; they do not inherit semantics merely from the symbol \(\bot\).
+
+**Parameter guards.** Throughout, \(N\) is a positive integer and \(\varepsilon,\tau\) are nonnegative. The binary phase construction assumes even \(m\ge2\) and \(\varepsilon>0\). The nontrivial singleton-register envelope construction assumes \(N\ge2\) and \(\varepsilon>0\). For \(N=1\) or \(\varepsilon=0\), the upper envelope is zero and is attained by a one-place behavioral system; the zero-spacing scalar presentation must be quotiented before counting exact behavioral places. Note that for deterministic native reads with TV distance and \(\beta=0\), \(\varepsilon<1\) already forces every rewrite edge to preserve that read exactly, so the binary phase example below accumulates nuisance-response error while its live bit remains exact; it does not demonstrate corruption of the stored value (audit #40).
 
 **Lower bound with nonvacuous faithful reads.** The following phase presentation is a constructed surgeon certificate for a counterexample, not a claim about discovered latent coordinates.
 
@@ -1496,11 +1501,13 @@ The resolution floor is unavoidable in general. As a constructed scalar surgeon 
 \[
 A(x)=\min(x+a,D),\qquad B(x)=\max(x-b,0),
 \]
-where \(a,b\le\varepsilon\), \(a/b\) is irrational, and \(a+b<D\). These are singleton-register writes.
+Assume \(N\ge1,\tau>0,D=N\tau\le1\), and \(\varepsilon>0\). Choose \(0<a<b\le\varepsilon\) with \(a/b\) irrational and \(a+b<D\). These are singleton-register writes.
 
 Their absorption defects are at most \(a,b\), and their commutation defect is at most \(\min(a,b)\). The behavioral metric is \(|x-y|\). The reachable orbit is infinite: choosing \(A\) when \(x<b\) and \(B\) otherwise implements an irrational rotation on \([0,a+b)\). Nevertheless, its packing number at strict separation \(>\tau\) is at most \(N\).
 
-From zero, \(B,A^n\) eventually reaches \(D\), while the canonical word \(A,B\) reaches \(\max(a-b,0)\). Their discrepancy approaches \(N\tau\) as the steps shrink. Thus fixed-resolution packing cannot generally give a lifetime bound vanishing with \(\varepsilon\).
+From zero, the execution-order word \(A,B\) returns to zero because \(a<b\), while \(B,A^n\) reaches \(D\) whenever \(n\ge\lceil D/a\rceil\). Both words have the same normal form, so their discrepancy is exactly \(D=N\tau\). Such steps exist for every \(\varepsilon>0\). Thus fixed-resolution packing permits a nonzero lifetime error floor as uniform local defects tend to zero; at \(\varepsilon=0\), equal-normal-form histories coincide.
+
+**Prior art (audit #40).** The proof combines established quantitative equational reasoning with an elementary finite-chain diameter bound: nonexpansive contexts preserve rewrite error, triangle inequalities compose errors, and a loop-erased walk on \(M\) vertices has at most \(M-1\) edges. Quantitative algebra and metric rewriting supply direct antecedents [Mardare, Panangaden, Plotkin, *Quantitative Algebraic Reasoning* (2016), Defs. 2.1, 3.1](https://www.cs.mcgill.ca/~prakash/Pubs/lics2016.pdf), [Gavazzo, Di Florio, *Quantitative and Metric Rewriting*](https://arxiv.org/abs/2206.13610); Moore-style behavioral equivalence [Moore (1956)](https://www.cs.cmu.edu/~cdm/resources/Moore1956-gedanken-experiments.pdf) and approximate simulation [Girard, Pappas (2007), Prop. 2, Lemma 5](https://www.georgejpappas.org/wp-content/uploads/2024/04/GP07-TAC.pdf) supply the transition-system background; a transition-closed approximate bisimulation maintains its tolerance along trajectories and should not be described as accumulating error at every step. These citations identify foundations, not a source verified to state this particular sharp selective-write corollary. No priority claim is made.
 
 **Relation to CR-15.2 and CR-15.3; additional suppliers.** CR-15.2 requires transition closure and uniformly accurate response laws. The sets \(K_\alpha\) already have write-transition closure. The exact finite-state theorem derives their small behavioral diameter from approximate local laws plus a state budget. Contraction in CR-15.3 provides a different sufficient certificate for small realization sets.
 
