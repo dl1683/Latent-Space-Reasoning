@@ -1589,3 +1589,226 @@ This answers the specific attacks:
 The argument extends the existing [CR-15.8 proof](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/CONTINUATION_REFINEMENT.md:1248). Its ingredients belong to established quantitative equational reasoning; the generalization should carry no unsupported novelty claim. [Mardare, Panangaden and Plotkin](https://www.cs.mcgill.ca/~prakash/Pubs/lics2016.pdf).
 
 **Finite orbit is sufficient, not necessary.** Take states \((b,x)\in\{0,1\}\times[0,1]\), writes \(F_v(b,x)=(v,x/2)\), an exact bit reader and a nuisance reader \(\mathrm{Bernoulli}(\delta x)\), \(0<\delta\le1\). From \((0,1)\) the exact behavioral orbit is infinite, yet every absorption defect is at most \(\delta/4\), any two nonempty histories with the same final bit differ by at most \(\delta/2\) under every common continuation, and bit fidelity is exact. This world is certified by contraction (CR-15.3), not by counting. The correct summary: local law accuracy alone gives no nontrivial universal lifetime bound over unrestricted worlds; finite orbit (CR-15.8/15.9), contraction (CR-15.3), and transition-closed invariant relations (CR-15.2) are alternative sufficient premises. "Local" means a short equation, not a short observation horizon: each law's \(\varepsilon\) already bounds every registered future, which remains the difficult application premise.
+
+**CR-15.10. Interface-relative interchangeability: erasure is relative to a question family**
+
+Status: DEFINITIONS AND PROPAGATION INEQUALITY (direction dialogue rounds
+1-2, 2026-09-05). Organizing quantity: the modulus \(\omega_a(t)\) below.
+Adopted pending its own fresh audit. Established behavioral mathematics
+(Angluin, Myhill-Nerode, PSRs, OOMs, approximate bisimulation); no novelty
+claim. Value must come from effective predictions about a real model, which
+remain unestablished.
+
+Setting. For a family \(W\subseteq A^*\times C\) of questions (continuation,
+channel) define \(d_W(x,y)=\sup_{(w,c)\in W}D_c(r_c(T_wx),r_c(T_wy))\).
+"The distinction between \(x\) and \(y\) is erased for \(W\)" means
+\(d_W(x,y)\le\tau\). \(d_\infty\) is \(W=\) everything; CR-2's \(\equiv_h\)
+is \(W=\) words of length \(\le h\); CR-9's \(Q_0\) pairs were erased for
+\(W_0=\{(\epsilon,\mathrm{read})\}\). For \(aW=\{(wa,c):(w,c)\in W\}\)
+(\(a\) executes first), the exact identity \(d_W(T_ax,T_ay)=d_{aW}(x,y)\)
+holds with no hypothesis (CR-4's derivative restated for approximate
+distinctions): an erased distinction stays erased under \(a\) for the
+questions \(W\) exactly when it was already erased for the questions \(aW\).
+
+**CR-15.10.1 Propagation inequality and its failure modes**
+
+The identity is exact under [D1’s composition convention](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/AXIOMS.md:132>):
+\[
+T_{wa}=T_w\circ T_a.
+\]
+Consequently, defining \(aW=\{(wa,c):(w,c)\in W\}\),
+\[
+\boxed{d_W(T_ax,T_ay)=d_{aW}(x,y).}
+\]
+“Left-extension” is potentially confusing terminology: the notation \(aW\) appends \(a\) on the **right of the written word**, so that it executes first.
+
+Here is replacement theorem text.
+
+> Let the registered actions be deterministic, and let the response discrepancies be true metrics bounded by one. Equip response profiles with the corresponding supremum metric. Write
+> \[
+> P(x)=(r_c(T_wx))_{(w,c)\in W},\qquad P_a(x)=P(T_ax).
+> \]
+> Suppose, for every action \(a\), a map \(\Phi_a\) defined on \(P(S)\) satisfies
+> \[
+> d_{\mathrm{prof}}\!\left(P_a(x),\Phi_a(P(x))\right)\le\delta_a
+> \quad(x\in S)
+> \]
+> and is \(L_a\)-Lipschitz on \(P(S)\). Then
+> \[
+> d_W(T_ax,T_ay)\le L_a d_W(x,y)+2\delta_a.
+> \]
+> For \(w=a_k\cdots a_1\), provided both concrete trajectories remain in \(S\) at every step where the hypothesis is applied,
+> \[
+> \boxed{
+> d_W(T_wx,T_wy)\le
+> \min\!\left\{1,\,
+> \left(\prod_{i=1}^kL_{a_i}\right)d_W(x,y)
+> +2\sum_{i=1}^k\delta_{a_i}
+>       \prod_{j=i+1}^kL_{a_j}
+> \right\}.}
+> \]
+> Empty products equal one.
+
+The proof is exactly the triangle inequality followed by induction. The ordering of the amplification factors is as displayed. No extension of \(\Phi_a\) to unrealized profiles is necessary, because the induction compares actual trajectories.
+
+The interpretation needs these corrections:
+
+- **Exact closure preserves exact equality.** At \(\delta=0\), successor profiles are determined by current profiles precisely when
+  \[
+  P(x)=P(y)\Longrightarrow P(T_ax)=P(T_ay).
+  \]
+  No Lipschitz assumption is needed.
+- **Exact closure need not preserve positive tolerances.** Take \(Z=[0,1]\), \(r(x)=\operatorname{Bernoulli}(x)\), \(W=\{(\epsilon,r)\}\), and \(T(x)=\min(1,2x)\). The profile determines the state exactly, so closure is exact, but small discrepancies can double.
+- **A sufficient fixed-tolerance condition is**
+  \[
+  L_a\tau+2\delta_a\le\tau
+  \quad\text{for every }a.
+  \]
+  Thus \(L_a\le1,\delta_a=0\) suffices, but is not necessary. With uniform \(L<1\), nonzero defects are compatible with an invariant tolerance whenever \(2\delta\le(1-L)\tau\).
+- With \(L\le1,\delta>0\), the bound \(\tau+2k\delta\) grows with the horizon. It does not establish safe forgetting at the original tolerance indefinitely.
+- Closure established only on roots cannot be iterated through unverified successor states. Partial actions also require common legality or observable failure totalization.
+
+The countdown example has a **factor-of-two error**. If two identical input profiles have successor laws separated by one, condition (C) requires \(\delta\ge\frac12\). For Bernoulli endpoint laws, their midpoint attains \(\delta=\frac12\), if arbitrary probability profiles are permitted as predictions. The successor **diameter** is one; the optimal prediction **radius** need not be one.
+
+I would retain (C) as a certificate and use this definition as the organizing quantity:
+\[
+\boxed{
+\omega_a(t)=
+\sup_{\substack{x,y\in S\\d_W(x,y)\le t}}
+d_W(T_ax,T_ay).
+}
+\]
+
+It gives the precise statements directly:
+
+- Exact profile closure: \(\omega_a(0)=0\).
+- Preservation of tolerance \(\tau\): \(\omega_a(\tau)\le\tau\).
+- the profile-map certificate: \(\omega_a(t)\le L_at+2\delta_a\).
+- Propagation along a word: compose the \(\omega_{a_i}\), subject to domain coverage.
+
+At \(t=0\), this is the maximum successor diameter of exact \(W\)-classes. Class diameter alone cannot control nearby **different** profiles, so it is insufficient for approximate propagation. Moreover, \(d_W\le\tau\) is generally not an equivalence relation; it must not silently become a quotient.
+
+This definition is an exact reformulation, not yet a predictive discovery. Its value must come from obtaining useful bounds without enumerating every pair and future.
+
+**CR-15.10.2 Correspondence with CR-15.2**
+
+The proposed identification is **not generally exact**, and the dividing line is not simply “\(\delta=0,L\le1\).”
+
+Assume \(S\) is action-invariant and \(W\) contains every immediate registered channel. Exact profile closure supplies
+\[
+\Lambda=P(S),\qquad
+K_p=\{x\in S:P(x)=p\},
+\]
+\[
+f_a(p)=P(T_ax),\qquad r_c^*(p)=p(\epsilon,c).
+\]
+The definition of \(f_a\) is independent of the representative precisely because the profile kernel is transition-stable. This gives
+\[
+T_a(K_p)\subseteq K_{f_a(p)}
+\]
+and exact reader agreement: **[CR-15.2](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/CONTINUATION_REFINEMENT.md:735>) with \(\eta=0\)**.
+
+There is no \(L\le1\) requirement. In fact, these hypotheses make equality of \(W\)-profiles equivalent to full registered behavioral equivalence on \(S\), although the numerical distances \(d_W\) and \(d_\infty\) can differ.
+
+The converse needs qualification:
+
+- If the realization sets are specifically the fibers of \(P_W\), their transition closure is equivalent to exact profile factorization.
+- A general CR-15.2 realization system need not use those fibers. Its abstract state may remember distinctions absent from \(W\). Even an exact singleton-state realization of a countdown system does not make its immediate reader sufficient.
+- At \(\eta>0\), CR-15.2 allows overlapping realization sets. Its invariant concrete–abstract relation gives the uniform \(2\eta\) bound. A one-step regression residual \(\delta\) does not construct that relation or inherit its uniform guarantee.
+
+For approximate erasure, the direct relation is
+\[
+R_\tau=\{(x,y):d_W(x,y)\le\tau\}.
+\]
+On invariant \(S\), its greatest transition-invariant subrelation is
+\[
+\boxed{
+R_\tau^{\mathrm{inv}}
+=\{(x,y):\sup_{v\in A^*}d_W(T_vx,T_vy)\le\tau\}.
+}
+\]
+This can fail to be transitive. It expresses the genuine lifetime requirement without promising a canonical approximate quotient.
+
+**CR-15.10.3 What is used (prior art)**
+
+| Prior art | What this draft uses—and what it does not establish |
+|---|---|
+| **Angluin \(L^*\)** | An earlier draft misnamed **consistency** as **closedness**. Consistency says equal rows have equal successor rows. Closedness says every boundary successor row has a representative among the proposed state rows. Both are needed for the finite table construction. A distinguishing pair here resembles a consistency witness; it is not automatically an \(L^*\) equivalence-query counterexample. A bounded neural panel supplies no equivalence oracle. [Angluin, §2.1](https://homepages.math.uic.edu/~lreyzin/papers/angluin87.pdf). |
+| **Myhill–Nerode / Moore coalgebra** | Equality under all future observations, quotient transitions, and distinguishing continuations are established constructions. CR-2’s bounded observations approximate that equivalence. Finite sampled stabilization does not establish a finite global behavioral quotient. The general systems formulation is standard coalgebra. [Rutten](https://ir.cwi.nl/pub/4802/4802D.pdf). |
+| **Predictive state representations** | A profile of future-test predictions serving as sufficient state, with updates determined from that profile, is directly within PSR territory. The present deterministic-action formulation does not establish a small sufficient test set or generalization. [Littman, Sutton and Singh](https://proceedings.neurips.cc/paper/2001/file/1e4d36177d71bbb3558e43af9577d70e-Paper.pdf). |
+| **Observable operator models** | Observable predictions and their recursive updates are established. OOMs additionally supply linear operator structure; the proposed arbitrary Lipschitz maps establish neither that structure nor finite rank. [Jaeger](https://www.ai.rug.nl/minds/uploads/oom_neco00.pdf). |
+| **Approximate simulation/bisimulation** | Output tolerances plus invariant transition relations, and uniform behavioral guarantees derived from them, are established. The exact action-matching and coverage assumptions matter when identifying a particular construction as a bisimulation. [Girard and Pappas](https://www.georgejpappas.org/wp-content/uploads/2024/04/GP07-TAC.pdf). |
+
+**No mathematical novelty is established here.** The propagation proof is elementary stability reasoning. A useful contribution could be a consequential observation family and a validated prediction or substitution rule in a real model. That remains unestablished; using established mathematics is entirely appropriate.
+
+**CR-15.10.4 Real-model anchor (CR-9 data): licensed reading**
+
+The [CR-9 reading](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/CONTINUATION_REFINEMENT.md:215>) is **not licensed as “neutral is closed, heavy is not.”**
+
+A licensed sentence is:
+
+> On the reported Qwen3-1.7B-Base prompt panel, the three pair-family summaries showed small, nonzero discrepancies in the 11-bin immediate response law; these decreased after the neutral comment and increased after the reassignment-announcement comment, demonstrating continuation-dependent amplification at that observation resolution.
+
+The reported heavy amplification is approximately \(2.6\)–\(13.2\times\). These are panel summaries, not uniform bounds over individual states.
+
+The distinctions matter:
+
+- Nonzero input differences cannot disprove exact profile determination. An exact successor function with sufficiently large sensitivity remains compatible with the observations.
+- Pairwise ratios constrain possible \(L,\delta\) combinations; they do not identify a Lipschitz constant or separate amplification from approximation error.
+- Coarse TV is bounded above by full-law TV. Small 11-bin input TV does not establish small full-law input TV.
+- \(H\) is a **comment announcing reassignment**. It is different from CRC-0’s actual reassignment action \(R\).
+- A neutral comment adds tokens and changes the readout context; its wording does not make it an identity action.
+
+Never say:
+
+- “The immediate-read family is closed under \(N\).”
+- “These observations refute exact closure under \(H\).”
+- “\(L_N\approx1\) and \(L_H\approx3\)–\(13\)” as estimated global constants.
+- “The model erased the presentation difference.”
+- “Presentation differences can safely be forgotten across arbitrary neutral steps.”
+- “This proves a general obstacle to structured reasoning or a model-wide algebra.”
+
+The simplest live rival is ordinary lexical/position-dependent readout sensitivity. The evidence does not require a deeper mechanism.
+
+The intervention consequence is conditional: replacing the **complete registered state** by another state within the proved bound preserves the specified observations accordingly. It does not automatically cover a partial activation transplant, unmatched cache positions, or a differently typed prefix swap.
+
+**CR-15.10.5 Existing-data reading and the enlarged-family test**
+
+**For “does adding \(H\) make \(W\) closed under \(N,H\)?”: none from the retained CRC-0 artifact.**
+
+The [save block](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_crc_0.py:562>) stores neither dense nor top-\(k\) laws, nor per-word distance matrices. The result directory contains only the 9,009-byte [summary file](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/crc_0/result.json>). The configuration’s storage description does not match the implementation.
+
+Also, the historical closure loop tests single-action responses already included in the \(Q_1\) definition. It does not test successor \(Q_1\)-profiles. Its actual score of \(1\) means **zero tested cases and zero coverage**.
+
+There is, however, a cheaper **one-sided witness check using retained summaries**.
+
+Use the original \(\tau=0.01\). The runner creates a split event only from a shared \(Q_0\) component; `q0.all_cliques=true` establishes that every such pair had \(d_0<0.01\). Reject preservation of that tolerance under \(H\) if a same-variable event records `worst_action="H"` and post-action TV greater than \(0.01\).
+
+Two stored events already meet this rule:
+
+| Pair | Recorded input bound | Recorded post-\(H\) full-law TV |
+|---|---:|---:|
+| `d4_y_3_P0`, `d4_y_3_P1` | \(<0.01\) | \(0.0280138853\) |
+| `d4_y_5_P0`, `d4_y_5_P1` | \(<0.01\) | \(0.0271364677\) |
+
+These are same-variable comparisons with the same literal action and query. The cross-variable \(R\) witness is unnecessary and introduces action-typing questions.
+
+The licensed conclusion is:
+
+> CRC-0’s recorded full-law witnesses violate preservation of the \(0.01\) immediate-response tolerance under the heavy comment on two same-variable presentation pairs.
+
+That is a reading of existing numerical evidence, not a newly run test or a refutation of exact profile closure.
+
+If the missing distributions were recovered, the minimal enlarged-family test would use
+\[
+W_H=\{(\epsilon,\mathrm{read}),(H,\mathrm{read})\}.
+\]
+For each same-type pair, calculate
+\[
+d=\max(\operatorname{TV}_{\epsilon},\operatorname{TV}_{H}),\qquad
+b_a=\max(\operatorname{TV}_{a},\operatorname{TV}_{Ha}),
+\quad a\in\{N,H\}.
+\]
+At a locked tolerance, a pair with \(d\le\tau\) and \(b_a>\tau\) rejects tolerance invariance on the tested roots. No distinct eligible pairs means **inconclusive**, not pass. Numerical uncertainty must be handled by locked bounds before interpreting borderline cases.
+
+Crucially, the runner stores action tuples in execution order: mathematical \(Ha\) corresponds to tuple **`(a,H)`**. Adding \(H\) to the input profile automatically removes its original witnesses; the substantive checks require the subsequent \(HN\) and \(HH\) responses. Passing them would still establish only a finite-panel result.

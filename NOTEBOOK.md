@@ -4,6 +4,36 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Direction dialogue round 2: propagation inequality kept, "iff" replaced by a modulus (2026-09-05)
+
+Codex round 2 on my rule attempt. Kept: d_W(T_a x, T_a y) = d_{aW}(x,y)
+exactly; the propagation inequality with corrected display. Replaced: my
+"propagates iff closed" with the modulus omega_a(t); exact profile closure
+preserves exact equality but need not preserve positive tolerances (T(x) =
+min(1,2x) doubles small discrepancies); sufficient fixed-tolerance
+condition L_a tau + 2 delta_a <= tau. Correspondence with CR-15.2 is exact
+at eta = 0 on an invariant set with all immediate channels in W, with NO
+L <= 1 requirement; not exact in general (abstract state may remember
+distinctions absent from W). My countdown example had a factor-of-two
+error (radius vs diameter). Angluin: I had misnamed consistency as
+closedness. No mathematical novelty; value must come from real-model
+predictions.
+
+Real-model: my "immediate-read family closed under N, not under H" reading
+is NOT licensed; licensed sentence is continuation-dependent amplification
+at 11-bin resolution. CRC-0 never saved its 36 x 13 laws (runner computes,
+saves summaries; config description mismatches), so the enlarged-family
+test needs a rerun; but two recorded witnesses already reject preservation
+of the 0.01 tolerance under H (d4_y_3, d4_y_5 presentation pairs).
+
+Adopted as CR-15.10. Direction: interface-relative approximate
+interchangeability with omega_a(tau) as organizing quantity. Round 3 must
+settle interface, guarantee, one consequential prediction, cheapest rival
+(lexical/position readout sensitivity), evidence route. Codex weekly quota
+being rationed.
+
+---
+
 ### Re-contextualization round 1: register-free theorem adopted; direction reset (2026-09-05)
 
 Codex counter to my re-contextualization note. Adopted: CR-15.9, the

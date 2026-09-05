@@ -5,6 +5,37 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## CRC-0 witness reading: tolerance preservation under the heavy comment rejected on two pairs (2026-09-05, ZERO-CALL READING)
+
+Distance from claim: reading of existing evidence; no new run.
+
+Question (CR-15.10): is the immediate-response tolerance τ = 0.01 preserved
+under the heavy comment H ("# Reassigning {var} now.") on CRC-0's panel?
+The CRC-0 artifact (`results/crc_0/result.json`) stores only summaries (the
+runner computes but does not save the 36 × 13 response laws), so the
+enlarged-family closure test cannot be run from it. A one-sided witness
+check on the retained summaries is possible: `q0.all_cliques=true` proves
+every Q_0 split-event pair had d_0 < 0.01; a same-variable event with
+`worst_action="H"` and post-action full-law TV > 0.01 rejects preservation.
+
+| Pair | Recorded input bound | Recorded post-H full-law TV |
+|---|---:|---:|
+| d4_y_3_P0 vs d4_y_3_P1 | < 0.01 | 0.0280 |
+| d4_y_5_P0 vs d4_y_5_P1 | < 0.01 | 0.0271 |
+
+**Licensed conclusion (Codex):** CRC-0's recorded full-law witnesses violate
+preservation of the 0.01 immediate-response tolerance under the heavy
+comment on two same-variable presentation pairs. This is a reading of
+existing numerical evidence, not a newly run test, and not a refutation of
+exact profile closure. Never say: "the immediate-read family is closed under
+the neutral comment"; "the model erased the presentation difference";
+estimated global Lipschitz constants for N or H. Cheapest rival: ordinary
+lexical/position-dependent readout sensitivity. Design of the enlarged-
+family test \(W_H=\{(\epsilon,\mathrm{read}),(H,\mathrm{read})\}\) and its
+decision rule: theory/CONTINUATION_REFINEMENT.md CR-15.10.5.
+
+---
+
 ## Commit-Seal Certificate: INCONCLUSIVE; post-hoc contraction-premise failure on the fixed cube (2026-09-05, evidence gate REVISE)
 
 Distance from claim: conditional (audit #39). Compute: one CPU retrain (130 s) + 0.3 s certificate + seconds of diagnostic. Design gate: analytic round 4; eligibility ruled by audit #40.

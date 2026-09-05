@@ -142,6 +142,22 @@ subsequent actions, anchored to the real-model CR-9 examples, with a
 counterexample and an intervention consequence. Discrete-carrier testbed
 deferred; no run.
 
+**CR-15.10 adopted (2026-09-05, pending audit; direction dialogue round 2):**
+interface-relative interchangeability. Erasure of a distinction is relative
+to a question family W; \(d_W(T_a x,T_a y)=d_{aW}(x,y)\) exactly; the
+organizing quantity is the modulus \(\omega_a(t)=\sup\{d_W(T_ax,T_ay):
+d_W(x,y)\le t\}\) (exact profile closure \(\omega_a(0)=0\); tolerance
+preservation \(\omega_a(\tau)\le\tau\)); profile-map certificates give
+\(\omega_a(t)\le L_at+2\delta_a\) and compose along words; exact closure on
+an invariant set with all immediate channels in W is CR-15.2 at η = 0 (no
+Lipschitz requirement); exact closure need not preserve positive tolerances
+(doubling map counterexample). Zero-call reading of CRC-0 summaries: two
+same-variable pairs violate preservation of the 0.01 tolerance under the
+heavy comment; the enlarged-family test cannot be run from the retained
+artifact (laws not saved). Direction dialogue round 3 (final) must settle:
+interface, guarantee type and locked τ, one consequential prediction, the
+cheapest rival, and the evidence route; no implementation before that.
+
 **Next obligation:** a useful behavioral realization remains unestablished.
 The authorized single-cell certificate attempt is complete. The evidence gate
 selects no further run on this cell; the certificate-search lane is closed
