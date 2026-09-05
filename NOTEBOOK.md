@@ -4,6 +4,37 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Direction locked: CR-15.10.6, analytical cycle on finite-question certification (2026-09-05)
+
+Round 3 (locking). Interface AMENDED (actual token positions and typed
+context, not character counts; W_H successors need execution-order tuples
+(a,) and (a,H); P2's `func` vs `f` malformation; dense laws must be saved).
+Guarantee AMENDED (tau = 0.01 locked; five pairs = coverage over five task
+blocks, not statistics; CRC-0's 7e-7 was a 4-sentinel cached-vs-full mean,
+not a replay floor). Prediction REPLACED (P and R are not exclusive; the
+doubling world already shows exact sufficiency with amplification; safety
+prediction P on reserved endpoints + a prospectively reserved disagreement
+set). Rival rule REPLACED (my CV rule is unsound: b/d = g + c/d; use
+interval-aware affine infeasibility with eps_R = 0.002, and a separate
+length-only rival with a position-matched filler). Evidence route REPLACED:
+analytical first; the historical panel has ZERO eligible W_H-close
+same-variable pairs, so the proposed positive gate could not succeed on it;
+1.7B panel deferred and needs explicit approval.
+
+Codex independently derived the same four moduli as my worked-examples
+note (countdown 1; doubling min{1,2t}; CR-15.5 theta t; CR-15.9
+half min{t, delta}); my note adds the cyclic counter's two-mode case and
+the refinement modulus rho_h(t). The substantive analytical gap named:
+turning finitely many questions into an UPPER bound on omega needs an
+observability premise in the other direction (small d_W => small carrier
+separation), which neither CR-15.2 nor CR-15.3 supplies.
+
+Codex weekly quota at 75%; no further Codex calls today. Next: deliver
+the four analytical items of CR-15.10.6 solo as a DRAFT in theory/, for
+review when quota allows.
+
+---
+
 ### Direction dialogue round 2: propagation inequality kept, "iff" replaced by a modulus (2026-09-05)
 
 Codex round 2 on my rule attempt. Kept: d_W(T_a x, T_a y) = d_{aW}(x,y)

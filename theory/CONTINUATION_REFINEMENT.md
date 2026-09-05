@@ -1812,3 +1812,91 @@ b_a=\max(\operatorname{TV}_{a},\operatorname{TV}_{Ha}),
 At a locked tolerance, a pair with \(d\le\tau\) and \(b_a>\tau\) rejects tolerance invariance on the tested roots. No distinct eligible pairs means **inconclusive**, not pass. Numerical uncertainty must be handled by locked bounds before interpreting borderline cases.
 
 Crucially, the runner stores action tuples in execution order: mathematical \(Ha\) corresponds to tuple **`(a,H)`**. Adding \(H\) to the input profile automatically removes its original witnesses; the substantive checks require the subsequent \(HN\) and \(HH\) responses. Passing them would still establish only a finite-panel result.
+
+**CR-15.10.6. Locked direction: finite-question certification of interchangeability**
+
+**Status.** ANALYTICAL_ONLY. Direction dialogue round 3 of 3, 2026-09-05. No model acquisition or runner implementation is authorized by this registration. The next cycle is one bounded analytical construction concerning interface-relative interchangeability. Real-model runs require explicit approval.
+
+**Question and claim.** What can an inhabitant of a registered world certify about
+\[
+\omega_a^W(t)=
+\sup_{\substack{x,y\in S\\d_W(x,y)\le t}}
+d_W(T_ax,T_ay)
+\]
+using finitely many questions? Distinguish a finite enumerated pair panel, a global domain, and all-future interchangeability. Every result declares its domain, legal actions, channels and observation horizon.
+
+**Analytical design.**
+
+1. Derive the moduli for the countdown, doubling, CR-15.5 selective-write and CR-15.9 decaying-nuisance worlds under explicitly stated question families and pair domains. Distinguish exact profile sufficiency, positive-tolerance preservation, and selective preservation.
+2. Prove the finite-panel bounding rule below.
+3. State and prove the finite-observation obstruction for unrestricted deterministic worlds: without exhaustive coverage or additional structural assumptions, a finite transcript cannot exclude unobserved states or delayed distinguishing behavior.
+4. Give one explicit sufficient additional premise permitting a useful upper bound. Identify which part of that premise finite questions establish and which part requires independent justification. Do not infer an invariant domain, inverse observability, or a global behavioral bound from sampled agreement.
+
+For an exhaustive finite pair panel \(\mathcal P\), suppose valid bounds satisfy
+\[
+d_i\in[d_i^-,d_i^+],\qquad
+b_i\in[b_i^-,b_i^+].
+\]
+Then
+\[
+\max_{i:d_i^+\le t}b_i^-
+\;\le\;
+\omega_{a,\mathcal P}^{W}(t)
+\;\le\;
+\max_{i:d_i^-\le t}b_i^+.
+\]
+Empty maxima are zero for this formula. Useful compression or interchangeability still requires distinct-pair nonvacuity. The rule’s validity is conditional on the stated bounds being valid enclosures.
+
+**Deferred real-model interface.** The historical anchor is Qwen3-1.7B-Base, with full next-token-law TV primary and a fixed value-plus-OTHER reduction diagnostic. A 0.6B model is a separate experiment. Any acquisition must pin model and tokenizer revisions, numerical implementation, prompts and token IDs.
+
+The complete carrier is the presented token history with execution and position metadata. Primary presentation comparisons use the same variable and value, compatible structural types, matched actual token positions, and common action/query token sequences. N is the neutral comment; H is the comment announcing reassignment; R is actual reassignment. H and R are not interchangeable action labels.
+
+Use \(W_0=\{\epsilon\}\), \(W_H=\{\epsilon,H\}\), and diagnostic \(W_2=\{w:|w|\le2,\ w\in\{N,H,R\}^*\}\), with the registered read channel understood. In runner execution order,
+\[
+d_{W_H}=\max(D_{()},D_{(H,)}),\qquad
+b_a^{W_H}=\max(D_{(a,)},D_{(a,H)}).
+\]
+Test \(a\in\{N,H\}\). Length-two data do not test successor \(W_2\)-profiles.
+
+The historical 36-root panel is not an acquisition-ready positive test: its retained summaries contain no strictly \(\tau\)-close same-variable \(W_H\) pairs at \(\tau=0.01\). Repairing P2’s outer function name, changing presentations, positions or model defines a new panel with unknown coverage. No historical result transfers automatically to that revision.
+
+**Numerical and usefulness criteria.** Lock \(\tau=0.01\). For any later acquisition, let \(\nu\) be the maximum observed TV discrepancy across registered three-way repeated evaluations and cached-versus-full comparisons. Set
+\[
+m=2\max(10^{-6},\nu).
+\]
+If \(m>\tau/100\), numerical adjudication is INCONCLUSIVE. Otherwise form clipped operational intervals by adding and subtracting \(m\) from each estimated distance. These are empirical reproducibility guards, not certified bounds on exact-arithmetic model probabilities.
+
+A robust witness satisfies \(d_i^+\le\tau\) and \(b_i^->\tau\). One such pair suffices to refute preservation on the declared panel. Positive usefulness requires at least five distinct robust-close pairs spanning at least five \((\mathrm{variable},\mathrm{value})\) task blocks. This is a coverage requirement, not a significance threshold.
+
+Report pair identities, eligible and excluded counts, absolute discrepancies, threshold margins and task-block coverage. Ratios are diagnostic only and are omitted when the denominator is not resolved above the numerical floor. Do not form equivalence classes by transitive closure of tolerance edges.
+
+Any later valid-program acquisition requires at least 95% correct full-vocabulary top-one reads on the 36 roots, declared action competence checks, and valid tokenization boundaries. These next-token-law measurements have no generation-termination statistic. Save dense normalized laws and per-word full-TV matrices; top-k summaries are optional additions.
+
+**Predictions and rivals.** P predicts that every eligible \(W_H\)-close pair preserves the tolerance under N and H. This is a finite-panel safety prediction, not a mechanism claim.
+
+Lock \(\epsilon_R=\tau/5=0.002\). For each declared action/type stratum, the affine rival permits \(g,c\ge0\) with absolute residual at most \(\epsilon_R\). With guarded intervals, reject compatibility only when there is no common \(g,c\) satisfying, for every registered pair,
+\[
+b_i^- -\epsilon_R\le g d_i^+ +c,
+\qquad
+g d_i^-+c\le b_i^+ +\epsilon_R.
+\]
+Do not reject using the coefficient of variation of \(b/d\).
+
+Test the length-only rival separately on the same pairs and input profiles, using filler F matched to H’s actual token increment and resulting positions. Freeze filler selection without inspecting response outcomes. The rival predicts
+\[
+|b_H^W-b_F^W|\le\epsilon_R.
+\]
+A robust violation rejects this restricted account only. Neither restricted rejection establishes a nonlexical mechanism.
+
+A consequential P-versus-rival experiment additionally requires a prospectively reserved disagreement set: P predicts preservation while an independently calibrated rival envelope predicts a split. If no nonvacuous disagreement set exists, do not label the acquisition discriminating.
+
+**Verdicts.**
+
+- `WITNESSED`: at least one valid robust counterexample.
+- `TOLERANCE_PRESERVED_ON_PANEL`: complete valid endpoints, required nonvacuity, and \(b_i^+\le\tau\) for every potentially close pair \(d_i^-\le\tau\). This is an operational finite-panel verdict, not a global or lifetime theorem.
+- `INCONCLUSIVE`: insufficient coverage, unresolved boundaries, invalid interface, inadequate numerical reproducibility, or missing endpoints.
+- Report `AFFINE_RIVAL_REJECTED` and `LENGTH_ONLY_RIVAL_REJECTED` separately. Otherwise report compatibility or inconclusiveness; absence of rejection is not support.
+
+A useful positive result may motivate one bounded question-selector prototype with explicit coverage, question-cost and unused-endpoint prediction obligations. Persistent or mixed witnesses end this empirical refinement attempt without threshold tuning or automatic horizon expansion. No outcome alone licenses a minimal sufficient state, a closed quotient, learned overwrite, or native mathematical novelty.
+
+**Analytical completion criterion.** Deliver the contrast-world derivations, the finite-panel bounding proposition, the unrestricted-world obstruction, and one explicit sufficient certification premise with its evidence obligations. No new empirical apparatus is required for this cycle.

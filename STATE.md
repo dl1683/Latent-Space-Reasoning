@@ -142,31 +142,41 @@ subsequent actions, anchored to the real-model CR-9 examples, with a
 counterexample and an intervention consequence. Discrete-carrier testbed
 deferred; no run.
 
-**CR-15.10 adopted (2026-09-05, pending audit; direction dialogue round 2):**
-interface-relative interchangeability. Erasure of a distinction is relative
-to a question family W; \(d_W(T_a x,T_a y)=d_{aW}(x,y)\) exactly; the
-organizing quantity is the modulus \(\omega_a(t)=\sup\{d_W(T_ax,T_ay):
-d_W(x,y)\le t\}\) (exact profile closure \(\omega_a(0)=0\); tolerance
-preservation \(\omega_a(\tau)\le\tau\)); profile-map certificates give
-\(\omega_a(t)\le L_at+2\delta_a\) and compose along words; exact closure on
-an invariant set with all immediate channels in W is CR-15.2 at η = 0 (no
-Lipschitz requirement); exact closure need not preserve positive tolerances
-(doubling map counterexample). Zero-call reading of CRC-0 summaries: two
-same-variable pairs violate preservation of the 0.01 tolerance under the
-heavy comment; the enlarged-family test cannot be run from the retained
-artifact (laws not saved). Direction dialogue round 3 (final) must settle:
-interface, guarantee type and locked τ, one consequential prediction, the
-cheapest rival, and the evidence route; no implementation before that.
+**Locked direction (direction dialogue rounds 1-3 complete, 2026-09-05):
+CR-15.10.6, ANALYTICAL_ONLY.** Interface-relative interchangeability with the
+modulus ω_a^W(t) as organizing quantity. The next cycle is one bounded
+analytical construction: (1) moduli for the contrast worlds (countdown
+ω = 1 at every finite depth; doubling ω = min{1, 2t}; CR-15.5 selective
+write θt on the addressed fiber; CR-15.9 decaying nuisance ½min{t, δ});
+(2) the finite-panel bounding proposition; (3) the finite-observation
+obstruction for unrestricted deterministic worlds; (4) one explicit
+sufficient premise that lets finitely many questions yield an UPPER bound
+on ω (the substantive gap: CR-15.2 bounds pairs in the same realization set,
+not every W-close pair; CR-15.3 needs an observability premise in the other
+direction, small d_W ⇒ small carrier separation). Real-model panel DEFERRED:
+the historical CRC-0 panel has zero eligible W_H-close same-variable pairs
+at τ = 0.01, P2's presentation is malformed (`func` vs `f`), and no model in
+play is "tiny" under the directive; any acquisition needs explicit approval
+and the locked criteria in CR-15.10.6 (τ = 0.01, numerical guard m, five
+robust-close pairs over five task blocks, affine and length-only rivals
+tested separately by interval-aware infeasibility, verdicts WITNESSED /
+TOLERANCE_PRESERVED_ON_PANEL / INCONCLUSIVE).
 
-**Next obligation:** a useful behavioral realization remains unestablished.
-The authorized single-cell certificate attempt is complete. The evidence gate
-selects no further run on this cell; the certificate-search lane is closed
-(apparatus ratio 5.71:1). Any later direction proposal must justify
-initialization coverage, transition closure, and intended-reader margins; a
-box containing finitely many short histories does not supply those
-guarantees. The program continues through a theory/design proposal for
-behaviorally defined, transition-closed realization sets under CR-15.2
-(re-contextualization round in progress).
+**Withdrawn en route:** the "P vs R" mechanism dichotomy (not mutually
+exclusive); the CV-of-ratio rival rule (b/d = g + c/d makes spread
+uninformative); "immediate-read family closed under N".
+
+**Standing check (Codex):** this is established behavioral mathematics, not
+discovered native vocabulary; value must come from effective predictions
+about a real model. A proven observation hole identifies an inadequate
+interface, not an obstacle to structured reasoning in the model.
+
+**So what:** find which differences between an AI's histories it can safely
+ignore, and which later question makes those differences matter again.
+
+**Closed lanes this cycle:** single-cell contraction certificate (evidence
+gate: no further run; apparatus ratio 5.71:1); commit-seal rung 1 remains
+paused (2/5 seeds, no saved weights); discrete-carrier testbed deferred.
 
 **So what:** if a model has a proved limit on its distinct behavioral
 situations, small update mistakes cannot accumulate beyond that limit times
