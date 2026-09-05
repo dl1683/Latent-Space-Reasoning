@@ -107,29 +107,27 @@ realization, transfer, or architectural advantage.
 
 **Next obligation
 
-**Certificate check run (2026-09-05, evidence gate pending):** one retrained
-rung-1 sealed cell (seed 11; 130 s CPU). CR-15.3 certificate on the pre-fixed
-domain [-1,1]^16, ∞-norm: **INCONCLUSIVE at step 4** (κ̂ = 5.88). Post-hoc
-witness search (diagnostic) confirmed by interval arithmetic that the
-contraction premise genuinely fails on that domain for both values (expansion
-ratios 1.11, 1.17). The cell nevertheless overwrites on the training panel
-(accuracy 1.000, paired-erasure TV 1.4e-8) and is near-contractive at its
-value-0 fixed point (sampled Jacobian ∞-norm 0.987) and contractive at
-value-1 (0.539). Reading: this trained cell is not certified by the fixed-
-cube contraction recipe and is not a global contraction on the cube; whether
-it admits a smaller invariant domain, another norm, or an invariant-relation
-certificate is open and must be pre-registered, not tuned. Nothing here
-refutes behavioral overwrite. Details: experiments/EXPERIMENTS.md.
+**Certificate check (2026-09-05; evidence gate REVISE):** the registered
+single-cell attempt remains CERTIFICATE_INCONCLUSIVE. Separately, the sound
+post-hoc confirmation procedure reports strict expansion for both writes on
+D=[-1,1]^16 in the infinity norm. This is a scoped contraction-premise
+failure, not a behavioral overwrite failure. Verifier defects (fixed after the
+run, not rerun) prevented accepting the implementation as a general PASS
+verifier. The eight-cell training-panel accuracy is 1.000, with maximum
+immediate-read paired TV approximately 1.4e-8. Jacobian norms 0.987 and
+0.539 are numerical diagnostics at 64-step candidates, not certified
+contracting regions. No history-uniform behavioral bound is established.
+Details: experiments/EXPERIMENTS.md.
 
-**Next obligation (audits #39-#40):****Next obligation (audits #39-#40):** establish a useful behavioral error
-bound for one fixed learned endogenous write interface, including its native
-reader, initialization, and every registered action. Possible routes include
-an independently justified exact-state or full-behavioral packing budget with
-uniform local-law bounds, or a directly verified realization relation,
-potentially supplied by CR-15.3 contraction. A single bounded CPU certificate
-check on a fixed tiny trained cell is eligible. Finite-horizon agreement, a
-vacuous bound, or an inconclusive sufficient certificate does not establish
-or refute useful behavioral overwrite. Design gate in progress (round 4).
+**Next obligation:** a useful behavioral realization remains unestablished.
+The authorized single-cell certificate attempt is complete. The evidence gate
+selects no further run on this cell; the certificate-search lane is closed
+(apparatus ratio 5.71:1). Any later direction proposal must justify
+initialization coverage, transition closure, and intended-reader margins; a
+box containing finitely many short histories does not supply those
+guarantees. The program continues through a theory/design proposal for
+behaviorally defined, transition-closed realization sets under CR-15.2
+(re-contextualization round in progress).
 
 **So what:** if a model has a proved limit on its distinct behavioral
 situations, small update mistakes cannot accumulate beyond that limit times

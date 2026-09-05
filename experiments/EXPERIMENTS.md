@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## Commit-Seal Certificate: interval contraction certificate on one trained cell (2026-09-05, COMPLETE — INCONCLUSIVE / PREMISE FAILS ON FIXED DOMAIN)
+## Commit-Seal Certificate: INCONCLUSIVE; post-hoc contraction-premise failure on the fixed cube (2026-09-05, evidence gate REVISE)
 
 Distance from claim: conditional (audit #39). Compute: one CPU retrain (130 s) + 0.3 s certificate + seconds of diagnostic. Design gate: analytic round 4; eligibility ruled by audit #40.
 
@@ -23,32 +23,44 @@ outward interval arithmetic (mpmath.iv); no seed/norm/domain search.
 | 1 interface | write(0), write(1), read; bypass zero; proposals enclosed to width 3e-38 |
 | 2 domain | H = 1.0 (||m0||_inf = 0.22) |
 | 3 invariance U_v(D) ⊆ D | PASS (gates in [0,1], candidate in [-1,1], hull in box) |
-| 4 contraction κ̂ (interval Jacobian, ∞-norm, full box) | **5.88 ≥ 1 → INCONCLUSIVE** (v=0: 5.79, v=1: 5.88) |
-| 5 fixed points | candidates converge; residuals 3.9e-8, 2.7e-8 (enclosure needs κ̂<1) |
-| 7 reader Lipschitz L̂ on D | 78.3 (SiLU; conservative) |
-| 8-9 | skipped (no contraction certificate) |
+| 4 contraction | Reported interval-Jacobian estimate 5.88; no contraction certificate. The row-maximum implementation required endpoint-safe comparison (fixed after the run, not rerun). |
+| 5 fixed points | After 64 float32 iterations, reported interval residual bounds approximately 3.9e-8 and 2.7e-8. No certified location or uniqueness of a nearby fixed point. |
+| 6 | Initialization and tube closure skipped: contraction was not established. |
+| 7 reader | Reported reader estimate 78.3; not accepted as a certified bound because fixed offsets were computed outside interval arithmetic (fixed after the run, not rerun). |
+| 8–9 | Calibration and usefulness skipped. The saved beta_hat=0.0 is a placeholder. No history-uniform response bound established. |
 
 Diagnostics (not certificate): two-write accuracy 1.000; paired erasure max
 TV 1.4e-8 on the panel.
 
-Post-hoc witness search (diagnostic; refutation direction only, same domain
-and norm): 20,000 random pairs per value, best pair confirmed by interval
-arithmetic. **Expansion confirmed for both values** (ratios 1.11 and 1.17,
-local pairs). So the contraction premise fails on D in the ∞-norm; the
-interval bound was not merely loose. Sampled Jacobian ∞-norm at the fixed
-points: 0.987 (v=0), 0.539 (v=1); at m0: 1.19, 0.55.
+The registered certificate remains CERTIFICATE_INCONCLUSIVE. Separately, the
+post-hoc search reports interval-confirmed expansion for both writes on
+D=[-1,1]^16 in the infinity norm. The confirmation logic is sound and
+supports failure of that specific contraction premise. The reported 1.11 and
+1.17 ratios are float32 search statistics. Expansion does not establish
+tightness of the global interval estimate. Exact witness coordinates and
+witness-specific provenance were not saved in this run (the runner now saves
+them).
 
-**What this licenses:** the fixed-domain, ∞-norm common-radius contraction
-recipe does not certify this trained cell, and the premise is genuinely
-violated on the unit cube. It does not refute behavioral overwrite (audit
-#40 never-say): the cell overwrites on the training panel; a smaller
-invariant domain, another norm, or an invariant-relation certificate
-(CR-15.2) may still apply. The cell is near-contractive at its value-0
-fixed point (0.987) and clearly contractive at value-1 (0.54).
+On the eight factorial training cells, recorded two-write accuracy is 1.000
+and maximum immediate-reader TV across obsolete-first-write counterfactuals
+is approximately 1.4e-8. These are finite-panel floating-point diagnostics,
+not evidence of carrier erasure or arbitrary-history fidelity. Jacobian norms
+0.987 and 0.539 concern 64-step numerical candidates; they do not certify
+fixed-point neighborhoods or switching between values. No behavioral
+overwrite failure is established.
 
 **What it does not license:** any statement about address selection, two
-registers, unseen wording, seal advantage, floating-point inference, or a
-pretrained model.
+registers, unseen wording, seal advantage, any uniform guarantee for
+floating-point inference, or a pretrained model.
+
+**Evidence gate (Codex): REVISE wording; no follow-up run on this cell.**
+Apparatus/model line ratio 451:79 = 5.71:1 in this lane; the certificate-
+search lane closes. Licensed sentence: on the eight factorial training cells,
+the saved run reports perfect two-write accuracy and maximum immediate-reader
+paired TV about 1.4e-8; its sound post-hoc interval-confirmation procedure
+reports contraction-premise failure for both writes on the unit cube in the
+infinity norm, while arbitrary-history behavioral overwrite remains
+unestablished and unrefuted.
 
 Config: `config/commit_seal_certificate.json`. Result: `results/commit_seal_certificate/result.json` (weights inside). Runner: `run_commit_seal.py` (mode `single_cell_certificate`, flag `--witness-search`).
 

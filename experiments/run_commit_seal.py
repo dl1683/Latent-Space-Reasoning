@@ -963,7 +963,7 @@ class _CellIV:
         sd_r = [_sigd_range(iv, u) for u in p["pre_r"]]
         sd_z = [_sigd_range(iv, u) for u in p["pre_z"]]
         td_n = [_tanhd_range(iv, u) for u in p["pre_n"]]
-        worst = iv.mpf(0)
+        worst_b = iv.mpf(0).b
         for i in range(H):
             # rows of J_r, J_z restricted as needed
             row = []
@@ -973,11 +973,12 @@ class _CellIV:
                 Jn_ij = td_n[i] * (p["r"][i] * _I(iv, self.H_n[i, j]) + p["t"][i] * Jr_ij)
                 JU_ij = (p["z"][i] if i == j else iv.mpf(0)) \
                     + (m[i] - p["n"][i]) * Jz_ij + (1 - p["z"][i]) * Jn_ij
-                row.append(_sup_abs(JU_ij))
-            s = sum(row)
-            if s > worst:
-                worst = iv.mpf(s)
-        return worst.b
+                row.append(iv.mpf(_sup_abs(JU_ij)))   # interval so the sum rounds outward
+            s = sum(row, iv.mpf(0))
+            # endpoint-safe comparison (mpmath interval comparisons are three-valued)
+            if s.b > worst_b:
+                worst_b = s.b
+        return worst_b
 
 
 def _reader_iv(iv, model, m, legend):
@@ -991,14 +992,16 @@ def _reader_iv(iv, model, m, legend):
     A = W1[:, :dc]
     W_addr = W1[:, dc + db:dc + db + da]
     W_cand = W1[:, dc + db + da:]
-    addr = model.addr_embed.weight[0].detach().double().numpy()
+    addr = _ivec(iv, model.addr_embed.weight[0].detach().double().numpy())
     Am = _matvec(iv, A, m)
-    consts, pre = [], []
+    c_addr = _matvec(iv, W_addr, addr)
+    pre = []
     for j in range(2):
-        cand = model.value_embed.weight[legend[j]].detach().double().numpy()
-        c = W_addr @ addr + W_cand @ cand + b1
-        consts.append(c)
-        pre.append([Am[i] + _I(iv, c[i]) for i in range(len(c))])
+        cand = _ivec(iv, model.value_embed.weight[legend[j]].detach().double().numpy())
+        c_cand = _matvec(iv, W_cand, cand)
+        # fixed offsets enclosed in interval arithmetic (evidence-gate fix)
+        c = [c_addr[i] + c_cand[i] + _I(iv, b1[i]) for i in range(len(b1))]
+        pre.append([Am[i] + c[i] for i in range(len(c))])
     scores = []
     for j in range(2):
         acc = iv.mpf(b2)
@@ -1028,6 +1031,10 @@ def single_cell_certificate(model, config, device="cpu"):
 
     cell = _CellIV(iv, model)
     H = cell.H
+    if not all(bool(torch.isfinite(p).all()) for p in model.parameters()):
+        unmet("1", "non-finite coefficient")
+    rep["reporting_note"] = ("reported floats are round-to-nearest images of 128-bit endpoints; "
+                             "inequalities were decided on the 128-bit endpoints, not on these floats")
     # Step 1: interface, inputs, intended laws
     xs, props = {}, {}
     for v in range(N_VALUES):
@@ -1060,12 +1067,13 @@ def single_cell_certificate(model, config, device="cpu"):
         hull_ok = True
         for i in range(H):
             zi, ni = p["z"][i], p["n"][i]
-            ext = []
+            ext = []   # endpoint triples evaluated in interval arithmetic (outward)
             for zz in (zi.a, zi.b):
                 for xx in (-Hbox_iv, Hbox_iv):
                     for yy in (ni.a, ni.b):
-                        ext.append(zz * xx + (1 - zz) * yy)
-            if min(ext) < -Hbox_iv or max(ext) > Hbox_iv:
+                        ext.append(iv.mpf(zz) * xx + (1 - iv.mpf(zz)) * iv.mpf(yy))
+            lo = min(e_.a for e_ in ext); hi = max(e_.b for e_ in ext)
+            if lo < -Hbox_iv.a or hi > Hbox_iv.b:
                 hull_ok = False
         inv[v] = {"gates_in_unit": ok, "hull_in_box": hull_ok,
                   "z_range_min_max": [min(a for a, _ in zr), max(b for _, b in zr)],
@@ -1161,7 +1169,11 @@ def single_cell_certificate(model, config, device="cpu"):
     cal = {}
     if kappa_hat < 1:
         for v in range(N_VALUES):
-            Pv = [iv.mpf([q[v][i] - float(e[v]), q[v][i] + float(e[v])]) for i in range(H)]
+            # enclosure endpoints in interval arithmetic, intersected with D (evidence-gate fix)
+            Pv = [iv.mpf([max((_I(iv, q[v][i]) - iv.mpf(e[v])).a, -Hbox_iv.a),
+                          min((_I(iv, q[v][i]) + iv.mpf(e[v])).b, Hbox_iv.b)]) for i in range(H)]
+            if any(abs(q[v][i]) > Hbox for i in range(H)):
+                unmet("8", f"fixed-point candidate for v={v} outside D")
             for legend in ([0, 1], [1, 0]):
                 p0, _, _ = _reader_iv(iv, model, Pv, legend)
                 idx = legend.index(v)
@@ -1316,9 +1328,11 @@ def witness_search(path, n_pairs=20000, seed=0):
             num_lo = max(num_lo, iv.mpf(0).a)
             den_hi = max(_sup_abs(xi[i] - yi[i]) for i in range(d))
             confirmed = bool(num_lo > den_hi)
-            out["witness"][v] = {"best_sampled_ratio": best, "confirmed_expansion": confirmed,
+            out["witness"][v] = {"best_sampled_ratio_float32": best, "confirmed_expansion": confirmed,
                                  "interval_num_lower": float(num_lo), "interval_den_upper": float(den_hi),
-                                 "pair_index": k, "local_pair": bool(k >= n_pairs // 2)}
+                                 "pair_index": k, "local_pair": bool(k >= n_pairs // 2),
+                                 "x_hex": X[k].numpy().tobytes().hex(), "y_hex": Y[k].numpy().tobytes().hex(),
+                                 "search_seed": seed}
             # sampled Jacobian norms at fixed point and m0 (descriptive)
             def jn(m):
                 m = m.clone().requires_grad_(True)
@@ -1327,9 +1341,13 @@ def witness_search(path, n_pairs=20000, seed=0):
             m = model.m0.detach().clone()
             for _ in range(64):
                 m = model._update(m.unsqueeze(0), p, addr)[0]
-            out["sampled_jacobian_inf_norm"][v] = {"at_fixed_point": jn(m.detach()), "at_m0": jn(model.m0.detach())}
+            out["sampled_jacobian_inf_norm"][v] = {"at_64step_candidate": jn(m.detach()), "at_m0": jn(model.m0.detach())}
+    import hashlib
+    with open(__file__, "rb") as f:
+        out["source_sha256"] = hashlib.sha256(f.read()).hexdigest()
     res["post_hoc_diagnostics"] = {"witness_search": out,
-                                   "note": "post hoc; descriptive; not part of the certificate"}
+                                   "note": "post hoc; descriptive; not part of the certificate; "
+                                           "a confirmed pair disproves nonexpansiveness on D in the inf-norm"}
     with open(path, "w") as f:
         json.dump(res, f, indent=2, default=str)
     print(json.dumps(out, indent=1, default=str))

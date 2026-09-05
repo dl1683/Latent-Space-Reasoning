@@ -8,13 +8,18 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 Design gate GO (round 4) with a ten-step protocol; my Claim 1 (CR-15.8
 vacuous on continuous carriers) refuted in its strong form by a dense-orbit
-example with packing number 1; my Claim 3 corrected (bounded foreign-write
-drift accumulates unless the foreign write contracts, a_s < 1).
+example with packing number 1; my Claim 3 corrected: a bare positive per-step foreign-write drift bound
+does not prove arbitrary-history preservation. Contraction with a sufficient
+radius is one remedy; direct invariant-tube containment is another and does
+not require foreign-write contraction.
 
 Implemented the certificate in run_commit_seal.py (mode
 single_cell_certificate; mpmath.iv 128-bit outward arithmetic; PyTorch
 GRUCell gate convention; SiLU reader gradient enclosed). Smoke test on a
-one-epoch cell: pipeline correct, kappa_hat 5.1 as expected.
+one-epoch cell exercised the inconclusive path only; it did not validate the
+general PASS path. The evidence gate later identified endpoint-comparison,
+reader-offset, fixed-point-enclosure, and serialization defects (fixed after
+the run; not rerun).
 
 Real run: seed 11 sealed, 200 epochs, 130 s. acc 1.000, erasure 1.4e-8.
 Invariance PASS. kappa_hat over the full cube = 5.88 -> INCONCLUSIVE.
@@ -23,13 +28,13 @@ expansion pairs for both values (1.11, 1.17). So this is a genuine premise
 failure on [-1,1]^16 in the inf-norm, not interval conservatism. Sampled
 Jacobian inf-norm at fixed points: 0.987 (v=0), 0.539 (v=1).
 
-Reading (pre-gate): the trained cell overwrites on the panel WITHOUT being
-a global contraction on the cube. Consistent with Codex's round-2 point
-that exact overwrite can come from candidate cancellation, and with audit
-#40's warning that a failed sufficient certificate is inconclusive. The
-natural next certificate is a reachable-set domain (smallest box containing
-the orbit from m0 under short write words, with margin) — but that must be
-pre-registered as a rule, not chosen after seeing this. Evidence gate next.
+Evidence gate (REVISE): the finite-panel result coexists with reported
+interval-confirmed expansion on the fixed cube. Candidate cancellation is
+compatible with these observations but was not demonstrated. Expansion does
+not eliminate conservatism in the reported 5.88 estimate. A box enclosing
+short histories, even with a margin, is not an invariant-domain certificate.
+This attempt closes without another run; the wider behavioral-realization
+question remains open. Apparatus ratio in this lane 5.71:1 -> lane closed.
 
 ---
 
