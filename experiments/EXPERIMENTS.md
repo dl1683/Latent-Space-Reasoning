@@ -5,6 +5,55 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Commit-Seal Certificate: interval contraction certificate on one trained cell (2026-09-05, COMPLETE — INCONCLUSIVE / PREMISE FAILS ON FIXED DOMAIN)
+
+Distance from claim: conditional (audit #39). Compute: one CPU retrain (130 s) + 0.3 s certificate + seconds of diagnostic. Design gate: analytic round 4; eligibility ruled by audit #40.
+
+Question: does a TRAINED rung-1 sealed update cell (17,195 params) satisfy the
+CR-15.3 contraction certificate on a pre-fixed domain, giving a proved
+history-uniform overwrite bound for a learned artifact?
+
+Protocol (fixed before the run): seed 11, sealed arm, identical training to
+rung 1; weights saved inside result.json before certification; domain
+D = [-H,H]^16 with H = max(1, ||m0||_inf) = 1; infinity norm; 128-bit
+outward interval arithmetic (mpmath.iv); no seed/norm/domain search.
+
+| Step | Result |
+|---|---|
+| 1 interface | write(0), write(1), read; bypass zero; proposals enclosed to width 3e-38 |
+| 2 domain | H = 1.0 (||m0||_inf = 0.22) |
+| 3 invariance U_v(D) ⊆ D | PASS (gates in [0,1], candidate in [-1,1], hull in box) |
+| 4 contraction κ̂ (interval Jacobian, ∞-norm, full box) | **5.88 ≥ 1 → INCONCLUSIVE** (v=0: 5.79, v=1: 5.88) |
+| 5 fixed points | candidates converge; residuals 3.9e-8, 2.7e-8 (enclosure needs κ̂<1) |
+| 7 reader Lipschitz L̂ on D | 78.3 (SiLU; conservative) |
+| 8-9 | skipped (no contraction certificate) |
+
+Diagnostics (not certificate): two-write accuracy 1.000; paired erasure max
+TV 1.4e-8 on the panel.
+
+Post-hoc witness search (diagnostic; refutation direction only, same domain
+and norm): 20,000 random pairs per value, best pair confirmed by interval
+arithmetic. **Expansion confirmed for both values** (ratios 1.11 and 1.17,
+local pairs). So the contraction premise fails on D in the ∞-norm; the
+interval bound was not merely loose. Sampled Jacobian ∞-norm at the fixed
+points: 0.987 (v=0), 0.539 (v=1); at m0: 1.19, 0.55.
+
+**What this licenses:** the fixed-domain, ∞-norm common-radius contraction
+recipe does not certify this trained cell, and the premise is genuinely
+violated on the unit cube. It does not refute behavioral overwrite (audit
+#40 never-say): the cell overwrites on the training panel; a smaller
+invariant domain, another norm, or an invariant-relation certificate
+(CR-15.2) may still apply. The cell is near-contractive at its value-0
+fixed point (0.987) and clearly contractive at value-1 (0.54).
+
+**What it does not license:** any statement about address selection, two
+registers, unseen wording, seal advantage, floating-point inference, or a
+pretrained model.
+
+Config: `config/commit_seal_certificate.json`. Result: `results/commit_seal_certificate/result.json` (weights inside). Runner: `run_commit_seal.py` (mode `single_cell_certificate`, flag `--witness-search`).
+
+---
+
 ## WB-1: Write-Boundary Construction v1 (2026-09-04, COMPLETE — F4 / TASK TOO SIMPLE)
 
 Distance from claim: 0. First constructed artifact.

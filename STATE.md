@@ -107,7 +107,21 @@ realization, transfer, or architectural advantage.
 
 **Next obligation
 
-**Next obligation (audits #39-#40):** establish a useful behavioral error
+**Certificate check run (2026-09-05, evidence gate pending):** one retrained
+rung-1 sealed cell (seed 11; 130 s CPU). CR-15.3 certificate on the pre-fixed
+domain [-1,1]^16, ∞-norm: **INCONCLUSIVE at step 4** (κ̂ = 5.88). Post-hoc
+witness search (diagnostic) confirmed by interval arithmetic that the
+contraction premise genuinely fails on that domain for both values (expansion
+ratios 1.11, 1.17). The cell nevertheless overwrites on the training panel
+(accuracy 1.000, paired-erasure TV 1.4e-8) and is near-contractive at its
+value-0 fixed point (sampled Jacobian ∞-norm 0.987) and contractive at
+value-1 (0.539). Reading: this trained cell is not certified by the fixed-
+cube contraction recipe and is not a global contraction on the cube; whether
+it admits a smaller invariant domain, another norm, or an invariant-relation
+certificate is open and must be pre-registered, not tuned. Nothing here
+refutes behavioral overwrite. Details: experiments/EXPERIMENTS.md.
+
+**Next obligation (audits #39-#40):****Next obligation (audits #39-#40):** establish a useful behavioral error
 bound for one fixed learned endogenous write interface, including its native
 reader, initialization, and every registered action. Possible routes include
 an independently justified exact-state or full-behavioral packing budget with

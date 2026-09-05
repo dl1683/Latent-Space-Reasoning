@@ -1,0 +1,21 @@
+{
+  "experiment_id": "commit_seal_certificate",
+  "mode": "single_cell_certificate",
+  "description": "CR-15.3 interval-arithmetic contraction certificate on ONE retrained rung-1 sealed cell (seed 11). Design gate: analytic round 4 (2026-09-05). Same architecture, data, loss, optimizer, epochs as commit_seal_rung1. Sealed arm only; no ablation; no seed/norm/domain search. Weights saved inside result.json before certification.",
+  "d_embed": 16,
+  "d_transient": 32,
+  "d_proposal": 16,
+  "d_carrier": 16,
+  "d_addr": 8,
+  "d_bypass": 32,
+  "n_train": 4096,
+  "n_epochs": 200,
+  "lr": 0.003,
+  "batch_size": 64,
+  "weight_decay": 0.0001,
+  "grad_clip": 1.0,
+  "seeds": [11],
+  "certificate_fixed_point_iters": 64,
+  "certificate_time_limit_s": 60,
+  "notes": "Verdicts: CERTIFICATE_PASS iff every obligation (invariance, kappa<1, fixed-point enclosure, initialization coverage, tube closure, reader Lipschitz, calibration, 2*eta<1) is certified; otherwise CERTIFICATE_INCONCLUSIVE (not a refutation). Real-arithmetic network with saved binary weights; floating-point inference not certified."
+}

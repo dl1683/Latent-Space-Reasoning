@@ -4,6 +4,35 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Certificate check: INCONCLUSIVE, premise fails on the fixed cube (2026-09-05)
+
+Design gate GO (round 4) with a ten-step protocol; my Claim 1 (CR-15.8
+vacuous on continuous carriers) refuted in its strong form by a dense-orbit
+example with packing number 1; my Claim 3 corrected (bounded foreign-write
+drift accumulates unless the foreign write contracts, a_s < 1).
+
+Implemented the certificate in run_commit_seal.py (mode
+single_cell_certificate; mpmath.iv 128-bit outward arithmetic; PyTorch
+GRUCell gate convention; SiLU reader gradient enclosed). Smoke test on a
+one-epoch cell: pipeline correct, kappa_hat 5.1 as expected.
+
+Real run: seed 11 sealed, 200 epochs, 130 s. acc 1.000, erasure 1.4e-8.
+Invariance PASS. kappa_hat over the full cube = 5.88 -> INCONCLUSIVE.
+Witness search (refutation direction only, same domain/norm): confirmed
+expansion pairs for both values (1.11, 1.17). So this is a genuine premise
+failure on [-1,1]^16 in the inf-norm, not interval conservatism. Sampled
+Jacobian inf-norm at fixed points: 0.987 (v=0), 0.539 (v=1).
+
+Reading (pre-gate): the trained cell overwrites on the panel WITHOUT being
+a global contraction on the cube. Consistent with Codex's round-2 point
+that exact overwrite can come from candidate cancellation, and with audit
+#40's warning that a failed sufficient certificate is inconclusive. The
+natural next certificate is a reachable-set domain (smallest box containing
+the orbit from m0 under short write words, with margin) — but that must be
+pre-registered as a rule, not chosen after seeing this. Evidence gate next.
+
+---
+
 ### Audit #40 on CR-15.8: ADOPT core, REVISE guards and attribution (2026-09-05)
 
 All proofs verified (loop cutting, right-to-left count k(n-k)+C(k,2),
