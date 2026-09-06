@@ -4,6 +4,22 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Q4 reading: N preserves, H witnesses, on the archived congruence panel (2026-09-06)
+
+Zero model calls. The svb_qwen3_congruence table (24 cells x 3 presentation
+pairs x composers N/H, 11-bin laws) contains exactly the CR-15.10
+quantities D0, DN, DH for forward order. At tau = 0.01: strong_assert
+24/24 close, N preserves on all (max 0.0064), H witnesses 23/24 (max
+0.116); moderate_assert 8/24 close, N preserves (max 0.00999, borderline),
+H witnesses 6/8; misleading 1 close pair, split under both. Reduced
+channel: H witnesses are valid full-law witnesses; N's preservation is
+reduced-channel only. Decision candidate: the deferred panel's root family
+should be assert-type presentation pairs (>= 24 close pairs vs CRC-0's
+zero), N as the plausible preserved action, H as the witnessing action.
+Evidence gate next (one Codex call).
+
+---
+
 ### Audit #42 on CR-16: RESTATEMENT; rotate to Q4 (2026-09-06)
 
 Audit #42: RESTATEMENT; CR-16 requires corrections. Fixed-token causal site invariance and, with consecutive positions, the appended-token offset identity are retained. The exact two-route decomposition, content-independent prefix re-weighting, filler-effect subtraction and identification with CEG-1 RELAY-CUT are withdrawn. CR-15.10.6 already requires matched positions, valid tokenization boundaries and the registered H-versus-F rival. Close Q1 and rotate to one bounded Q4 reading of existing audited response tables under their original interface and claim limits, with no runs or new acquisition.

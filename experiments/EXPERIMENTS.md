@@ -5,6 +5,74 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Q4 reading: tolerance preservation under the neutral and heavy comments on the archived congruence panel (2026-09-06, ZERO-CALL READING, evidence gate pending)
+
+Distance from claim: reading of existing audited evidence; no model calls.
+Source: `results/svb_qwen3_congruence/result.json` (Qwen3-1.7B-Base,
+float32 CPU, 2026-09-04; sha256 54d2b20afdf496db…). Reading script
+`internal/q4_reading_congruence.py` (git-ignored; sha256 806971037a766d7d…);
+exact rows in `internal/q4_reading_congruence_out.json`.
+
+**Interface of the archived table (its original limits apply).** 24 cells
+(depth 4; variables x, y, z; outer values 1–8), three presentation pairs
+(a, a′) of the same semantic role, actions c0 = neutral comment
+`# No changes.` and c1 = heavy comment `# Reassigning {var} now.`, in
+forward order (surface then composer). Channel: the 11-bin reduced law
+(digits 0–9 + OTHER), NOT the full next-token law. Reduced-channel TV is a
+lower bound on full-law TV: a split at 11 bins is a valid full-law witness;
+closeness at 11 bins does not imply full-law closeness. τ = 0.01 (the
+table's eps_eq); guard 1e-6.
+
+CR-15.10 quantities per pair: D0 = TV(a, a′) after the surface (the W_0
+question); DN = TV(a·c0, a′·c0); DH = TV(a·c1, a′·c1). A pair is W_0-close
+if D0 ≤ τ − guard; a witness against tolerance preservation under action
+c is a close pair with D_c > τ + guard.
+
+| Pair type | W_0-close cells / 24 | Under N: witnesses, max DN on close | Under H: witnesses, max DH on close |
+|---|---|---|---|
+| strong_assert (`# State unchanged.` vs `# {var} is unchanged.`) | 24 (all x, y, z) | 0, 0.0064 | 23, 0.1162 |
+| moderate_assert (`# Values preserved.` vs `# {var} is still intact.`) | 8 | 0, 0.0100 | 6, 0.0705 |
+| misleading (`# Changing {var}.` vs `# Updating to a new value.`) | 1 | 1, 0.0678 | 1, 0.1180 |
+
+Panel verdicts (CR-15.10.6 definitions, applied at the 11-bin channel):
+- strong_assert, N: **TOLERANCE_PRESERVED_ON_PANEL** (24 close pairs = 24
+  (variable, value) blocks; max DN 0.0064 < 0.01). Reduced channel only.
+- strong_assert, H: **WITNESSED** (23 of 24 close pairs split; DH up to
+  0.116; the one non-witness is d4_x_1; d4_z_1 splits marginally at
+  DH = 0.0121). Full-law
+  witnesses (valid lower bounds).
+- moderate_assert, N: TOLERANCE_PRESERVED_ON_PANEL (8 close pairs over 3
+  variables; max DN 0.00999, within the guard of τ: borderline, reported).
+- moderate_assert, H: WITNESSED (6 of 8).
+- misleading: 1 close pair (d4_z_1), split under both N (0.068) and H
+  (0.118): WITNESSED for both actions; coverage 1, so no preservation
+  statement is possible for this pair type.
+
+**What the rows support (pre-gate wording):** on this archived 24-cell
+Qwen3-1.7B-Base panel, at the 11-bin channel, the neutral comment preserved
+the 0.01 tolerance on all 32 W_0-close assert-type presentation pairs
+across all three variables and all eight values, while the heavy comment
+split 29 of those 32 (full-law witnesses). The single close misleading pair
+split under both comments.
+
+**What they do not support:** full-law preservation under N (reduced
+channel); anything about carrier erasure; global moduli; any mechanism;
+reverse-order (composer-first) questions, which are a different family and
+were not read here; length-matched filler comparisons (the multifiller
+table uses different arms and was not read).
+
+**Program decision this reading supports (for the evidence gate to
+confirm or reject):** the deferred CR-15.10.6 panel should use assert-type
+presentation pairs (this table's pair families) as its root family rather
+than CRC-0's 36 roots, because they supply ≥ 24 W_0-close pairs over 24
+task blocks (CRC-0 supplied zero), and should register the neutral comment
+N as the action on which TOLERANCE_PRESERVED is plausible and the heavy
+comment H as the action expected to witness; the open question the full-law
+rerun would decide is whether N's preservation survives at full resolution
+(reduced-channel closeness does not imply full-law closeness).
+
+---
+
 ## CRC-0 witness reading: tolerance preservation under the heavy comment rejected on two pairs (2026-09-05, ZERO-CALL READING)
 
 Distance from claim: reading of existing evidence; no new run.
