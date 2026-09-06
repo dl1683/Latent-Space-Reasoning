@@ -2075,22 +2075,20 @@ For the sealed reader at fixed address and zero bypass, reversing the legend swa
 
 ## CR-16. Architectural restrictions of the transformer world and their consequences for registered questions
 
-Status: DRAFT (question-rotation block 1, 2026-09-06; one solo block, one
-audit). Every claim carries its domain, positional scheme, normalization
+Status: AUDITED BACKGROUND / RESTATEMENT (audit #42, 2026-09-06). Corrected
+identities clarify existing controls. No substantive change to the locked
+interface or new real-model result was established. Every claim carries its domain, positional scheme, normalization
 and epsilon, arithmetic model, and observation scope. Textbook facts are
 cited, not claimed. The block passes only if at least one consequence below
 changes the registered question families \(W_0,W_H,W_2\) of CR-15.10.6.
 
 **Objects.** A presented history is a token-ID sequence with position IDs
 and execution metadata. The registered channel is the next-token law at
-the final position. A transformation \(g\) of presentations yields full
-behavioral equivalence only if the reader is invariant, \(r(gx)=r(x)\), and
-\(g\) commutes with every registered append, \(gT_a=T_ag\), with common
-legality; equality of one internal component is never sufficient.
+the final position. Reader invariance \(r(gx)=r(x)\), commutation with every registered append \(gT_a=T_ag\), and common legality are sufficient for equality of all registered future responses. Literal commutation on the carrier is not necessary: corresponding successors may instead be behaviorally equivalent. Equality of one internal component alone establishes neither condition.
 
 **16.1 Origin relabeling under rotary attention (exact; known).** For
 fixed-frequency RoPE on queries and keys, \((R_{p_i+s}q_i)^\top R_{p_j+s}k_j
-=q_i^\top R_{p_j-p_i}k_j\) (Su et al., RoFormer). Hence a common translation
+=q_i^\top R_{p_j-p_i}k_j\) (Su et al., RoFormer, eq. (16); the whole-stack invariance is a conditional corollary). Hence a common translation
 of all position IDs preserves the complete forward output, provided tokens,
 order, attended set, masks and biases are translation-compatible, values and
 residual inputs carry no absolute-position channel, positionwise operations
@@ -2099,9 +2097,7 @@ arithmetic is exact. Scope: origin relabeling only; it says nothing about
 prepending tokens or moving content relative to BOS; additive absolute
 embeddings break it; dynamic position scaling, position-dependent value
 maps, and origin-anchored cache or window rules need separate analysis;
-floating point does not guarantee bitwise equality. On a carrier of token
-strings with canonical positions the two presentations are the same input
-already. Consequence for CR-15.10.6: none beyond removing a presentation
+floating point does not guarantee bitwise equality. On a carrier with canonical positions, independent origin relabelings are not distinct admissible presentations; this supplies no additional history identification. Consequence for CR-15.10.6: none beyond removing a presentation
 redundancy that the locked interface never used.
 
 **16.2 Causal site-locality (exact).** With prefix-local input
@@ -2117,20 +2113,16 @@ a later query determines that the write is dead; appending changes the
 read position, so old-site invariance does not imply next-token-law
 invariance.
 
-**16.3 Normalization (local identities; no history quotient).**
-\(\mathrm{RMSNorm}_\epsilon(cx)=\gamma\odot x/\sqrt{\|x\|^2/d+\epsilon/c^2}\):
-positive scaling is invisible only at \(\epsilon=0\). LayerNorm is
-translation-invariant along \(\mathbf 1\) for every \(\epsilon\) and scale-
-invariant only at \(\epsilon=0\). A pre-norm sublayer \(B(x)=x+f(N(x))\)
-satisfies \(B(cx)=cx+f(N(x))\), which is neither equal nor proportional to
-\(B(x)\), so later normalized inputs distinguish the scales. One exact
-whole-stack symmetry exists: in a pure pre-LayerNorm stack with a final
-LayerNorm before the sole reader, per-token shifts \(b_i\mathbf 1\)
-propagate along residual paths unchanged and are removed at the output;
-this does not hold for RMSNorm and does not show that distinct reachable
-histories realize the shifted states. Consequence for CR-15.10.6: do not
-quotient presented histories along rays; no normalization-based question
-redundancy is licensed.
+**16.3 Normalization: local identities, no licensed history quotient.** For \(c>0\), wherever defined,
+\[
+\mathrm{RMSNorm}_\epsilon(cx)
+=\gamma\odot x/\sqrt{\|x\|^2/d+\epsilon/c^2}.
+\]
+Positive scaling is a general symmetry at \(\epsilon=0\) on nonzero inputs, but not generally at positive epsilon. LayerNorm is invariant under shifts along \(\mathbf1\) wherever defined; its general positive-scale symmetry likewise requires zero epsilon and nonzero variance.
+
+For \(B(x)=x+f(N(x))\), the general identity is \(B(cx)=cx+f(N(cx))\). If \(N(cx)=N(x)\), this becomes \(cx+f(N(x))\), which need not equal or be proportional to \(B(x)\). Thus local normalization symmetry does not imply whole-stack scale symmetry or guarantee that later observations distinguish scales.
+
+In a pure pre-LayerNorm stack, with every non-residual branch using normalized inputs, unchanged masks and metadata, and a final LayerNorm before the sole reader, per-token shifts \(b_i\mathbf1\) propagate unchanged through residual paths and disappear at the reader. This does not establish distinct reachable histories realizing those shifts. No ray quotient of presented histories is licensed.
 
 **16.4 Attention aggregation (exact identity; no sequence-level
 identification).** At a fixed query, \(A(q)=\sum_je^{s_j}v_j/\sum_je^{s_j}\)
@@ -2140,74 +2132,35 @@ already encode ordered prefix information; equal attention outputs do not
 give equal residuals, caches, or futures; a multiset of (token, position)
 pairs with distinct positions already fixes the placement. Without
 positions and without a causal mask, unmasked self-attention is permutation-
-equivariant (Yun et al.); a causal mask breaks general permutation symmetry.
+equivariant (Yun et al., Claim 1 and Appendix A; their formal architecture omits normalization, and shared positionwise normalization preserves equivariance by a separate elementary argument; unmasked equivariance does not imply invariance of a fixed final-position read); a causal mask breaks general permutation symmetry.
 Consequence: no license to collapse reordered histories, paraphrases,
 \(N/H\), or \(H/R\).
 
 **16.5 Resource-bounded blindness (cite; scope separately).** Exact
 indistinguishability, vanishing response separation, and computational
-complexity are three different statements. Hahn (2020, Lemma 5) bounds
-single-token influence by \(O(1/n)\) for fixed-resource soft attention with
-uniformly Lipschitz updates and readout, in real arithmetic, normalized over
-all positions; the rate does not transfer to a causal stack without proof,
-and small probability differences do not preclude correct argmax with
-vanishing margin. Merrill and Sabharwal (2023) place fixed-depth log-
-precision transformers in uniform \(\mathrm{TC}^0\); parity is in
-\(\mathrm{TC}^0\), so this bound excludes nothing about parity; fixed
-precision, log precision, and exact arithmetic must not be conflated. Liu
-et al. (2022) supply the constructive counterweight (log-depth simulations
-of automata; constant depth for solvable automata; resources may grow with
-length). The project's own restricted obstruction is the paired-pool
-fidelity lemma (CR-15.6, eq. 15.34); it is not a prohibition on last-write
-computation. Conditional fidelity bound for a question family: if every
-registered question separates a task-opposite pair by at most \(\delta_n\)
-while the intended laws differ by \(\Delta\), then uniform TV error \(\eta\)
-requires \(\Delta\le2\eta+\delta_n\) (triangle inequality); the content
-would be an architecture-specific \(\delta_n\), not proved here.
+complexity are three different statements. Hahn’s Lemma 5 bounds the change of the final activation by \(O(1/n)\) when one input symbol at \(i<n\) is changed, under its fixed soft-attention setting, bounded input and positional representations, bounded logits, Lipschitz updates, and normalization over all positions. A uniformly Lipschitz law-valued readout transfers the bound to response laws. This is not an append-operation bound or a bound for changing the final input symbol; its rate requires separate justification for causal stacks. Vanishing separation does not preclude correct argmax with vanishing margin.
 
-**16.6 The one consequence for \(W_0,W_H,W_2\) that this block can prove
-(appended-block offset effect).** Combine 16.1 and 16.2. Let \(x\) be a
-history of length \(n\) and let \(B\) be any appended block of \(k\) tokens
-(\(N\), \(H\), or a content-free filler \(F\) of the same length). Under the
-16.1 hypotheses, every attention score from the final query position to a
-prefix site \(j\le n\) is a function of \((\text{query content},\ \text{site
-content},\ n+k-j)\): the offset to every frozen prefix site grows by exactly
-\(k\), for every prefix site, independently of the block's content. By
-16.2 the prefix sites themselves are unchanged. Therefore the response to
-the \(B\)-question differs from the immediate response through exactly two
-routes and no other: (a) the query's attention over the frozen prefix is
-re-weighted by the common offset increase \(k\) and by the presence of the
-\(k\) new keys in the softmax normalization; (b) the \(k\) new sites carry
-prefix-conditioned representations that the query attends to. Route (a) is
-present for every block of length \(k\), including content-free fillers;
-route (b) is the only content-specific route.
+Merrill and Sabharwal’s Theorem 2 and Corollary 2.1 place transformers in their fixed-depth, log-precision computational model within logspace-uniform \(\mathrm{TC}^0\). Parity belongs to \(\mathrm{TC}^0\), so this upper bound supplies no parity impossibility; neither does it establish parity capability for a particular transformer. Fixed precision, log precision and exact arithmetic are distinct assumptions.
 
-Consequences, each of which changes the locked design:
+Liu et al. construct length-\(T\) simulators with \(O(\log T)\) depth for arbitrary finite semiautomata and depth independent of \(T\) for solvable semiautomata. Their constructions permit length-dependent resources, including width and weight magnitudes; they do not establish unbounded-length success of one fixed pretrained checkpoint.
 
-(i) The length-only rival of CR-15.10.6 is not a straw man: route (a)
-exists by architecture, so a position-matched filler \(F\) is a mandatory
-control, and its effect must be subtracted from any \(H\)-witness before
-content is credited. (ii) A witness pair for \(W_H\) that is \(W_0\)-close
-can arise from route (a) alone: two prefixes whose frozen sites are read
-identically at offset profile \(\{n-j\}\) but differently at \(\{n+k-j\}\).
-Hence \(W_H\)-splits of \(W_0\)-close pairs do not, by themselves, indicate
-that \(H\)'s content revealed a hidden distinction; the discriminating
-comparison is \(H\) versus \(F\) on the same pair (already the second
-rival test), and the block supplies the reason it is decisive rather than
-optional. (iii) Intervention consequence: cutting the query's attention to
-the \(k\) new sites removes route (b) exactly and leaves route (a) (this is
-CEG-1's RELAY-CUT geometry, now derived rather than designed); cutting the
-new sites' attention to the prefix makes route (b) prefix-independent.
-Thus "where suffix-conditioned change can occur" is answered exactly:
-never at old sites; only in the query's re-weighting of old sites and in
-the new sites. (iv) Question economy: two questions whose appended blocks
-have equal length and whose new sites are attended identically differ only
-through route (b); question families should therefore be stratified by
-appended length, and the offset term should be treated as a nuisance
-shared across the stratum.
+The project's own restricted obstruction is the paired-pool fidelity lemma (CR-15.6, eq. 15.34); it is not a prohibition on last-write computation. If, for the same registered question \(w\), the intended laws at \(x,y\) have TV separation \(\Delta\), the model laws have separation at most \(\delta_n\), and each endpoint has TV error at most \(\eta\), then \(\Delta\le2\eta+\delta_n\). No architecture-specific \(\delta_n\) for the locked interface is established here.
 
-**What this block does not establish.** No learned use, transfer, or
-discovery claim; no quantitative size of route (a) versus (b) (that is a
-measurement); no statement that route (a) is small or large for Qwen3-1.7B.
-Origin relabeling (16.1) and the local identities (16.3, 16.4) are
-background. The substantive output is 16.6 (i)-(iv).
+**16.6 Appended-token offset identity: rationale for existing controls (audit #42 replacement).** Assume token-ID concatenation preserves the prefix, position IDs are consecutive with unit spacing, positional configuration is fixed and prefix-local, and evaluation is deterministic and causal under the hypotheses of 16.2. For every earlier site \(j\le n\) and layer \(\ell\),
+\[
+h_j^\ell(xB)=h_j^\ell(x),\qquad
+(p_{n+k}-p_j)-(p_n-p_j)=k.
+\]
+The second equality is an index identity, independent of the appended token identities. It does not imply a nonzero or content-independent attention or response effect.
+
+Attention can be partitioned into sums over earlier and new sites at each head. Both sums generally depend on appended content through the new query and softmax denominator. New-position residual and MLP paths also contribute. This partition is not an independent causal decomposition of the full stack.
+
+For a common appended read template, use actual serialized token increments and positions; recomputed query-template sites are not frozen prefix sites. Raw-text boundary changes and positional reconfiguration require separate treatment.
+
+Retain CR-15.10.6’s existing H/F comparison on the same pairs and input profiles, with matched actual token increments and positions and response-independent filler selection. Rejection excludes only the registered restricted rival; subtracting scalar TV effects does not identify a semantic mechanism. A \(W_H\) split of a \(W_0\)-close pair alone does not identify H-specific semantics.
+
+An attention intervention establishes independence only when it blocks every relevant directed path from the varied inputs to the reader, with remaining inputs and metadata matched. Masking does not generally preserve the original weights on unmasked sites. Historical CEG-1 RELAY-CUT blocks attention from positions at or after `live_start` to `dead_span`; its audited pairwise zero was already explained by graph disconnection.
+
+Match or stratify actual increments and positions, but do not treat equal length as a shared additive response component. These observations explain existing controls and change none of \(W_0,W_H,W_2\). The substantive-consequence gate is not met.
+
+**Licensed sentence (audit #42).** With fixed tokenization, consecutive positions and prefix-local causal evaluation, appending \(k\) tokens preserves earlier activations and increases final-query-to-prefix offsets by \(k\); these facts justify already-registered matching controls but neither decompose content effects nor establish new behavioral identifications or native latent mathematics.

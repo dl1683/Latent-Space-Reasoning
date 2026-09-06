@@ -4,6 +4,23 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Audit #42 on CR-16: RESTATEMENT; rotate to Q4 (2026-09-06)
+
+Audit #42: RESTATEMENT; CR-16 requires corrections. Fixed-token causal site invariance and, with consecutive positions, the appended-token offset identity are retained. The exact two-route decomposition, content-independent prefix re-weighting, filler-effect subtraction and identification with CEG-1 RELAY-CUT are withdrawn. CR-15.10.6 already requires matched positions, valid tokenization boundaries and the registered H-versus-F rival. Close Q1 and rotate to one bounded Q4 reading of existing audited response tables under their original interface and claim limits, with no runs or new acquisition.
+
+Why the two-route decomposition failed: tokenization can change prefix
+IDs; 'exactly k' needs consecutive position IDs; the new keys' softmax
+contribution is content-dependent; the final query state is new and
+content-dependent through earlier layers; residual/MLP paths at the read
+position contribute even with zero attention output projections; new-site
+information changes the later query which changes its weighting of old
+sites, so the routes overlap causally. Historical RELAY-CUT blocks
+live_start.. -> dead_span attention, not query -> appended block. Program:
+continue; 'not working as a route to a real-model artifact'; Q4 is one
+bounded evidence-to-decision map, then a decision or close.
+
+---
+
 ### Question rotation block 1: CR-16 architectural restrictions (2026-09-06)
 
 Devansh: never stop; rotate questions; spare the machine. Proposed five
@@ -14,7 +31,7 @@ evidence). Codex corrections to my five statements: (1) rotary symmetry =
 origin relabeling of all position IDs, not prefix-length changes; cite
 RoFormer; (2) causality exact but site-local; appending changes the read
 position; (3) RMSNorm eps > 0 is NOT scale-invariant; pre-norm residual
-breaks ray invariance; only a pure pre-LayerNorm stack has a whole-stack
+breaks ray invariance; a pure pre-LayerNorm stack under the stated final-reader conditions has a whole-stack
 shift symmetry; my ray quotient withdrawn; (4) multiset identification
 withdrawn (I had already withdrawn it); (5) parity is in TC0, Hahn's rate
 is for non-causal attention; scope separately.

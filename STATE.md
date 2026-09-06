@@ -178,19 +178,14 @@ rank bound and both dimension extrapolations, the cyclic parity claim.
 
 **Question rotation (Devansh, 2026-09-06: never idle; rotate to a different
 analytical question when a line closes).** Block 1 = CR-16, architectural
-restrictions of the transformer world (Codex chose it from five candidates
-with a strict consequence gate). Draft written; audit pending. Corrections
-adopted from the direction round: rotary symmetry is origin relabeling
-only; RMSNorm with positive epsilon is not scale-invariant (ray quotient
-withdrawn); multiset identification withdrawn; parity is in TC0 (blindness
-example withdrawn). Candidate consequence: the appended-block offset effect
-(16.6): any appended block of length k shifts the query's offset to every
-frozen prefix site by exactly k regardless of content, so the length-only
-filler control is architecturally mandatory, W_H-splits of W_0-close pairs
-can arise from offsets alone, and suffix-conditioned change can occur only
-in the query's re-weighting of old sites or in the new sites, never at old
-sites. If the audit rules this a restatement, rotate to Q4 (readings of
-existing evidence).
+restrictions of the transformer world. Audit #42: RESTATEMENT; CR-16 requires corrections. Fixed-token causal site invariance and, with consecutive positions, the appended-token offset identity are retained. The exact two-route decomposition, content-independent prefix re-weighting, filler-effect subtraction and identification with CEG-1 RELAY-CUT are withdrawn. CR-15.10.6 already requires matched positions, valid tokenization boundaries and the registered H-versus-F rival. Close Q1 and rotate to one bounded Q4 reading of existing audited response tables under their original interface and claim limits, with no runs or new acquisition.
+
+**Block 2 (Q4, in progress):** one bounded evidence-to-decision map over the
+audited response tables (svb_qwen3_congruence, composition_v2_multifiller,
+gate1b, ceg_1, crc_1): which contain \(D_{()},D_H,D_a,D_{aH}\), which channels
+and pairs, whether they support a witness, a panel bound, or only an
+inconclusive result; ends with one concrete program decision supported by
+exact rows, or closes as non-discriminating. No runs.
 
 **Program ruling (audit #41):** the analytical cycle CR-15.10.6 STOPS after
 this consolidation pass; wait for approval of an empirical step capable of
