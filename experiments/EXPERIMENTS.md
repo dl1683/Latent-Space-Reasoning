@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## Block 3 reading: length-only rival rejected, but the heavy comment is not distinguishable from an arbitrary equal-length comment (2026-09-06, ZERO-CALL READING, evidence gate pending)
+## Block 3 reading: length-only rival conditionally rejected at the 11-bin channel; the equal-length-comment reference scale is confounded (2026-09-06, ZERO-CALL READING, evidence gate REVISE)
 
 Distance from claim: reading of existing audited evidence; no model calls.
 Source: `results/svb_qwen3_composition_v2_multifiller/result.json`
@@ -35,43 +35,63 @@ discrepancies differing by at most ε_R = 0.002. Read here with input pair
 | pair2 | 24/24 | 0.034 / 0.033 | 8/24 | 24/24 | 0.077 / 0.052 |
 | pair3 | 23/24 | 0.041 / 0.016 | 24/24 | 24/24 | 0.069 / 0.134 |
 
-**Reference scale: between-filler spread.** For each root, the three
-fillers give three values of the filler-successor discrepancy; their range
-is the scale of "an arbitrary equal-length comment".
+**Reference scale: between-filler spread (evidence gate: CONFOUNDED).** For
+each root, the three filler PAIRS give three values B(i,i) of the filler-
+successor discrepancy; each pair changes both the input pair's filler_A (i)
+and the successor filler_M. Their range mixes input-pair variation with
+successor variation (B(i,i) − B(k,k) = [B(i,i) − B(k,i)] + [B(k,i) − B(k,k)])
+and does not isolate successor-filler variation; the needed off-diagonal
+endpoints B(i,j), i ≠ j, are absent from the archive. The numbers below are
+therefore a mixed spread, not the scale of "an arbitrary equal-length
+comment on a fixed input".
 
 | Order | median between-filler spread | median content-vs-filler deviation (pair1, pair2, pair3) | roots where content deviation exceeds the filler spread |
 |---|---|---|---|
 | 1 (successor M vs F_M) | 0.0975 | 0.0167, 0.0263, 0.0272 | 0, 0, 1 of 24 |
 | 2 (successor A vs F_A) | 0.0840 | 0.0247, 0.0329, 0.0689 | 0, 2, 6 of 24 |
 
-**What the rows support (pre-gate wording).** (1) The length-only rival
-is rejected on this archive at the 11-bin channel: equal-length, position-
-matched blocks do not produce equal successor discrepancies (violations in
-≥ 23 of 24 roots for every filler and both orders), and the sign of the
-deviation depends on the filler. (2) The heavy comment M is not
-distinguishable from an arbitrary equal-length comment: its deviation from
-its matched filler (median 0.017–0.027) is smaller than the spread among
-the fillers themselves (median 0.08–0.10), and exceeds that spread in at
-most 1 of 24 roots (order 1) and at most 6 of 24 for one filler (order 2).
-Equal-length comments differ from each other more than the "reassignment"
-comment differs from any of them.
+**Licensed sentence (evidence gate):** on the archived 24-root panel, using
+11-bin immediate-read TV and assuming an adequate numerical floor, H and its
+matched successor filler violate the 0.002 length-only prediction on 24,
+24, and 23 roots across three filler/input-pair variants; this conditionally
+rejects the restricted channel-specific rival (counts survive even the
+largest admissible guard, threshold 0.0022), but does not determine whether
+H is exceptional among equal-length successors. Under the locked interface
+the unqualified verdict is INCONCLUSIVE (floor unmeasured; revisions
+unpinned; single-suffix endpoints absent, so initial closeness unknown;
+successor W_H profiles incomplete; reduced-TV differences do not bound
+full-law differences; the affine rival cannot be tested without initial
+d_i). Order 2 compares surface A, which is neither the registered H nor N.
+The source preregistered the residual-order contrast, not this reading.
+Withdrawn: "H is not distinguishable from an arbitrary equal-length
+comment"; "content-specific H is disfavored"; "fillers vary more on
+identical inputs".
 
 **What they do not support.** Initial-pair closeness (unknown; no single-
 suffix arms), so no tolerance-preservation or witness verdict; full-law
 statements (differences of reduced TVs do not bound full-law differences);
 any mechanism; any claim about the neutral comment N (not in this table).
 
-**Program decision this reading supports (for the evidence gate).** For the
-deferred CR-15.10.6 panel: (a) a single position-matched filler is an
-inadequate control; the H-versus-F test must use at least three independent
-fillers and report H's deviation against the between-filler spread; (b) on
-this archive the content-specific reading of H ("reassignment announcement
-reveals hidden distinctions") is disfavored: H's effect lies within generic
-equal-length-comment variation, which is the "lexical/context-dependent
-readout sensitivity" rival in quantitative form; the deferred panel's
-discriminating value against that rival is therefore low as designed, and
-its P-versus-rival disagreement set should be built from between-filler
-variation, not from H alone.
+**Program decision (evidence gate: AMENDED).** For any future panel: use
+several response-independently selected SUCCESSOR fillers on each identical
+input pair (fixed input, varied successor), with a prospectively specified
+comparison; three is a practical minimum, not a threshold this archive
+establishes, and hand-chosen fillers are not independent population
+samples. Generic readout sensitivity remains unexcluded, not confirmed. The
+deferred panel's discrimination against that rival is unestablished (no
+calibrated rival envelope, no reserved disagreement set). Decision-relevant:
+it changes which controls must be acquired (the missing fixed-input filler
+control) and prevents a misleading interpretation.
+
+**Ruling (evidence gate):** stop zero-call rotation pending compute approval;
+the one prioritized acquisition is a small, time-capped CPU position-matched,
+full-law, eligibility-first panel on repaired strong-assert pairs spanning
+at least five task blocks: first measure empty and H profiles and
+reproducibility; if five robust W_H-close pairs exist, acquire the N/H
+successor profiles and three matched successor fillers on those same pairs;
+if coverage fails, stop without relaxing the threshold. Decision it answers:
+do genuinely close real-model histories exist here, and which matched
+continuations separate them?
 
 ---
 

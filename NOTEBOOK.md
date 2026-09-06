@@ -4,6 +4,31 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Evidence gate on block 3: REVISE; reference scale confounded; rotation ruling (2026-09-06)
+
+Arithmetic reproduced exactly (72 rows; 576 concatenations token-matched;
+480 laws valid). Length-only rival conditionally rejected at the 11-bin
+W_0 channel (24/24/23; survives the largest admissible guard). My reference
+scale was confounded: each filler PAIR changes both the input pair's
+filler_A and the successor filler_M, so the "between-filler spread" mixes
+input-pair and successor variation; the fixed-input successor range
+B(i,j) over j is what is needed and its off-diagonal endpoints are absent.
+Withdrawn: "H not distinguishable from an arbitrary comment", "content-
+specific H disfavored". Order 2 compares A (neither H nor N). No affine
+rival test possible (no initial d_i). Decision amended: fixed-input,
+response-independent successor fillers, prospectively specified.
+
+Ruling: rotation blocks 1-3 produced useful decisions (corrected
+architectural claims; strong-assert prioritized; the missing fixed-input
+filler control exposed) but no artifact; stop zero-call rotation pending
+compute approval. Named acquisition: position-matched full-law
+eligibility-first panel on repaired strong-assert pairs (five blocks; floor
+measured; five robust W_H-close pairs; N/H successors; three fixed-input
+successor fillers). Devansh's standing rule is never idle and rotate: so
+the next block is analytical preparation that does not reopen closed lines.
+
+---
+
 ### Block 3 reading: fillers differ from each other more than H differs from a filler (2026-09-06)
 
 Zero model calls. Multifiller table (Gate 2 v2 repair data): surfaces and
