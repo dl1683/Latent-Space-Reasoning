@@ -1901,71 +1901,174 @@ A useful positive result may motivate one bounded question-selector prototype wi
 
 **Analytical completion criterion.** Deliver the contrast-world derivations, the finite-panel bounding proposition, the unrestricted-world obstruction, and one explicit sufficient certification premise with its evidence obligations. No new empirical apparatus is required for this cycle.
 
-**CR-15.10.7. DRAFT — analytical deliverables of CR-15.10.6 (pending review)**
+**CR-15.10.7. Analytical deliverables of CR-15.10.6 (audit #41 corrections applied)**
 
-Status: DRAFT (2026-09-05, written solo under the compute and review-budget
-constraint; every statement below awaits a fresh review before promotion).
+Status: REVISED after audit #41 (2026-09-05). Retained: finite-panel enclosures (2), corrected declared-domain moduli (1), the refinement identity (5), and the conditional routes in (4). Withdrawn: the original obstruction theorem, the saturation impossibility claim, the global rank/inverse bound and both dimension extrapolations. Every result below is established mathematics on declared domains; none is a real-model finding.
 Notation as in CR-15.10: \(d_W\), \(\omega_a^W(t)\), reachable set \(S\), TV
 on Bernoulli laws equals \(|p-q|\).
 
-**(1) Moduli of the contrast worlds.** Each row states the world, the
-question family, and the exact modulus on the reachable set.
+**(1) Moduli of the contrast worlds.** Each row declares its action-invariant comparison domain and question family. These are not automatically the reachable states from one fixed initial state. Restricting a domain to a smaller orbit can lower its modulus. Below, \(0\le t\le1\).
 
-| World | Family \(W\) | \(\omega(0)\) | \(\omega(t)\), small \(t\) | Reading |
-|---|---|---|---|---|
-| Exact coordinate replacement on \(B\times S\) (CR-15.1) | all immediate reads | 0 | \(\le t\); \(=0\) on pairs differing only at the addressed register | reference: tolerance preserved, addressed fiber erased |
-| Decaying nuisance \(F_v(b,x)=(v,x/2)\) (CR-15.9) | bit read, \(\mathrm{Bern}(\delta x)\) | 0 | \(\tfrac12\min\{t,\delta\}\) | tolerance preserved with strict contraction of the modulus; infinite orbit |
-| Doubling \(T(x)=\min\{1,2x\}\) | \(\{(\epsilon,\mathrm{Bern}(x))\}\) | 0 | \(\min\{1,2t\}\) | exact sufficiency, positive-tolerance amplification |
-| Countdown \((s,k)\mapsto(s,k-1)\), reveal reader at \(k=0\) | words of length \(\le h\), any finite \(h\) | 1 | 1 | consistency failure at every finite depth |
-| Cyclic counter \(W_v(s,j)=(v,j+1)\), nuisance \(\mathrm{Bern}((1+\cos(2\pi j/m))/2)\) (CR-15.2) | \(W_0\) = immediate reads | \(>0\) | order 1 | consistency failure: \((s,\cos j)\) fixes \(j\) only up to sign |
-| same | \(W_1=W_0\cup\{(W_v,\text{nuisance})\}\) | 0 (even \(m\ge4\)) | unbounded near turning points of \(\cos\) | exact closure, amplification failure |
-| CR-15.5 selective write, \(\theta\in[0,1)\) | both immediate reads | 0 | \(t\) globally; \(\theta t\) on pairs differing only in the addressed register | selective preservation |
+| World and declared domain | Questions | Correct modulus |
+|---|---|---|
+| Coordinate replacement with an **additional product-max response metric assumption** | Coordinate-factor immediate reads | \(\omega(0)=0,\ \omega(t)\le t\); addressed fiber erased exactly |
+| Decaying nuisance on \(\{0,1\}\times[0,1]\), \(0<\delta\le1\) | Bit and \(\mathrm{Bern}(\delta x)\) | \(\omega(t)=\frac12\min(t,\delta)\) |
+| Doubling on all of \([0,1]\) | \(\mathrm{Bern}(x)\) | \(\omega(t)=\min(1,2t)\) |
+| Countdown on all \(\{0,1\}\times\mathbb N_0\), step totalized at zero | All questions through finite depth \(h\) | \(\omega(t)=1\) |
+| Cyclic counter on \(\{0,1\}\times\mathbb Z_m,\ m\ge3\) | \(W_0\) | Exact finite maximum below; \(\omega(0)>0\), but only \(O(1/m)\) |
+| Same cyclic counter | \(W_1\) | \(\omega(0)=0\) for **every \(m\ge3\)**; \(\omega(t)\le\min(1,3t)\) |
+| CR-15.5 on its full invariant square | Both immediate reads | \(\omega(t)=t\) globally; \(\theta t\) on the addressed fiber |
 
-Derivations. Doubling: \(|\min\{1,2x\}-\min\{1,2y\}|\le2|x-y|\) with equality below \(1/2\). Countdown: the pair \((0,h+1),(1,h+1)\) has \(d_{W_h}=0\) and its successors \((0,h),(1,h)\) are separated by the depth-\(h\) question, so \(\omega^{W_h}_{\text{step}}(0)=1\). Cyclic, \(W_0\): take \(j'=-j\bmod m\), \(s=s'\); then \(d_{W_0}=0\) but after one write the phases \(j+1,-j+1\) have different cosines unless \(j\in\{0,m/2\}\). Cyclic, \(W_1\): the ordered pair \((c_j,c_{j+1})\) determines \(j\) unless \(c_j=c_{j+1}\), i.e. \(2j\equiv-1\pmod m\), which has a solution only for odd \(m\); so \(W_1\) is exactly closed for even \(m\ge4\) and fails at exactly one phase pair for odd \(m\); the induced map \((c_j,c_{j+1})\mapsto(c_{j+1},c_{j+2})\) has unbounded local Lipschitz constant where \(c_j\) is stationary in \(j\) but \(c_{j+2}\) is not, so \(\omega^{W_1}(\tau)\) is of order 1 for small \(\tau\) on such pairs. The last two rows exhibit, in one world, the two failure modes that \(\omega\) separates: \(\omega(0)>0\) (consistency) and \(\omega(0)=0,\ \omega(\tau)>\tau\) (amplification).
+The first row does **not** follow from CR-15.1 alone: that section establishes a product of sets with an action, not a product metric. Counterexample: \(b,s\in\{0,1\}\), overwrite \(s\), readers \(r_1(b,s)=\mathrm{Bern}(s)\), \(r_2(b,s)=\mathrm{Bern}((1-s)b)\). States \((0,1),(1,1)\) have identical immediate profiles; overwriting \(s\leftarrow0\) separates them by one. Addressed-fiber erasure remains true; general immediate-profile nonexpansiveness does not.
+
+Put \(\alpha=2\pi/m\), \(c_j=(1+\cos(j\alpha))/2\), and
+\[
+C_k(j,\ell)=|c_{j+k}-c_{\ell+k}|.
+\]
+Since the input bits can be chosen equal and the common write overwrites them,
+\[
+\omega^{W_0}(t)=\max_{C_0(j,\ell)\le t}C_1(j,\ell),
+\]
+\[
+\omega^{W_1}(t)=
+\max_{\max(C_0,C_1)\le t}\max(C_1,C_2).
+\]
+For \(m\ge3\),
+\[
+\omega^{W_0}(0)
+=\sin\alpha\max_j|\sin(j\alpha)|>0.
+\]
+In particular this is at most \(\sin\alpha\), so it is not bounded below by an order-one constant as \(m\) grows.
+>
+Two consecutive cosines determine the phase for every \(m\ge3\), because
+\[
+\sin(j\alpha)=
+\frac{\cos(j\alpha)\cos\alpha-\cos((j+1)\alpha)}
+{\sin\alpha}.
+\]
+There is no odd/even obstruction. When \(2j\equiv-1\pmod m\), the proposed symmetry sends \(j\) to itself, not to a distinct indistinguishable phase.
+>
+Furthermore,
+\[
+c_{j+2}=2\cos\alpha\,c_{j+1}-c_j+1-\cos\alpha,
+\]
+hence
+\[
+\omega^{W_1}(t)
+\le\min\{1,(1+2|\cos\alpha|)t\}
+\le\min(1,3t).
+\]
+Thus the gain is bounded, including near cosine turning points. Amplification nevertheless occurs: for \(m=6\), equal-bit states with phases \(0,5\) have input distance \(1/4\) and successor distance \(1/2\).
+
+The other derivations survive on their declared domains. Doubling attains its bound using \(0\) and \(\min(t,1/2)\). Countdown uses \((0,h+1),(1,h+1)\). CR-15.5 attains the global bound by varying the preserved coordinate and the fiber bound by varying the addressed coordinate.
+
+For decaying nuisance, the post-write distance is exactly \(\delta|x-y|/2\). The full interval supplies every required separation. A single initial-state orbit has dyadic nuisance coordinates and need not attain the continuous formula.
 
 **(2) Finite-panel bounding proposition.** Let \(\mathcal P\) be a finite set of pairs with valid enclosures \(d_i\in[d_i^-,d_i^+]\) of \(d_W(x_i,y_i)\) and \(b_i\in[b_i^-,b_i^+]\) of \(d_W(T_ax_i,T_ay_i)\). Define the panel modulus \(\omega_{a,\mathcal P}^W(t)=\max\{b_i:d_i\le t\}\) (empty max \(=0\)). Then
 \[
 \max_{i:\,d_i^+\le t}b_i^-\ \le\ \omega_{a,\mathcal P}^W(t)\ \le\ \max_{i:\,d_i^-\le t}b_i^+ .
 \]
 Proof. Every pair with \(d_i^+\le t\) is eligible, so its true \(b_i\ge b_i^-\) is a lower bound. Every eligible pair has \(d_i\le t\), hence \(d_i^-\le t\), and its true \(b_i\le b_i^+\). \(\square\)
-The panel modulus lower-bounds the domain modulus: \(\omega_{a,\mathcal P}^W(t)\le\omega_a^W(t)\) whenever \(\mathcal P\subseteq S\times S\). Nothing in the proposition bounds \(\omega_a^W\) from above.
+The panel modulus lower-bounds the domain modulus: \(\omega_{a,\mathcal P}^W(t)\le\omega_a^W(t)\) whenever \(\mathcal P\subseteq S\times S\). Nothing in the proposition bounds \(\omega_a^W\) from above; valid intervals bound a panel modulus, they do not necessarily determine it exactly (audit #41).
 
-**(3) Obstruction theorem (unrestricted deterministic worlds).** A transcript is a finite set of observed states \(S_{\mathrm{obs}}\) and the recorded responses \(r_c(T_wx)\) for \(x\in S_{\mathrm{obs}}\) and all words \(w\) of length \(\le D\) (the transcript depth) on the registered channels. Say a world is *consistent* with the transcript if it contains states realizing exactly those responses; it may contain further states. Then: (i) for every family \(W\) of depth \(\le D\) and action \(a\), there are two consistent worlds whose reachable sets extend \(S_{\mathrm{obs}}\), with \(\omega_a^W(0)=0\) in one and \(\omega_a^W(0)=1\) in the other; (ii) no transcript certifies that \(S_{\mathrm{obs}}\) is the whole reachable set.
-Proof. World one: the prefix tree of observed words with recorded responses and a constant law elsewhere; states with equal recorded \(W\)-profiles are identified, and no further states are reachable, so \(\omega_a^W(0)=0\). World two: add to world one an unobserved root \(z\) reachable by an unrecorded word, and two states \(x',y'\) reachable from \(z\) whose \(W\)-profiles coincide but whose successors under \(a\) carry countdown branches revealing distinct bits after exactly \(D'\) further steps, where \(D'\) is the depth of some question in \(W\) (take \(D'=0\) if \(W\) contains an immediate channel: then the successors themselves differ on that channel). All recorded responses are untouched because \(z\) is unobserved, \(d_W(x',y')=0\), and \(d_W(T_ax',T_ay')=1\), so \(\omega_a^W(0)=1\). Claim (ii) is the same construction: the unobserved root exists in a consistent world. \(\square\)
-Consequence. No finite transcript upper-bounds \(\omega_a^W\) over the reachable set without a premise on the world (exhaustiveness of \(S_{\mathrm{obs}}\), or a structural premise as in (4)). Finite questions establish lower bounds (witnesses) and panel consistency; they never establish the premise. The countdown of row 4 is the same phenomenon inside a fixed world: the separating question lies one level beyond every finite family.
+**(3) Finite response-transcript obstruction.** Fix finite nonempty action and channel sets, with total deterministic actions and unconstrained Bernoulli response laws. Let \(W\) be a finite nonempty question family. A realizable finite response-only transcript specifies finitely many rooted response trees, supplies no independently verified state identities or exhaustive transition table, and permits extensions beyond the observations.
+
+For each action \(a\), there exists a consistent completion with additional reachable states and \(\omega_a^W(0)=1\). Consequently such a transcript cannot certify a global upper bound below one or exhaustive reachability. It need not admit a completion with \(\omega_a^W(0)=0\).
+
+**Proof.** Unroll the observed trees without identifying response-equal nodes. Beyond all recorded observations, choose two reachable nodes with disjoint response neighborhoods covering \(W\cup aW\); for a unary alphabet, choose sufficiently separated positions on one path. Choose a longest question \((w,c)\in W\). Then \((wa,c)\in aW\setminus W\). Assign equal laws to the two nodes on every question in \(W\), and opposite Bernoulli endpoint laws at \((wa,c)\). Complete unspecified transitions and responses arbitrarily. The transcript is unchanged, while the new pair has input discrepancy zero and successor discrepancy one. \(\square\)
+
+This states the obstruction without the withdrawn zero-world assertion (audit #41: a depth-one transcript recording \(r(x)=r(y)=\mathrm{Bern}(0)\), \(r(T_ax)=\mathrm{Bern}(0)\), \(r(T_ay)=\mathrm{Bern}(1)\) forces \(\omega_a^W(0)=1\) in every consistent world). Empty families, restricted channels, independently known finite state identities, and structurally restricted worlds require separate statements. This is established finite-observation underdetermination (Angluin §2.1, Theorem 1; Rutten).
 
 **(4) Three sufficient premises for an upper bound, and what finite questions contribute to each.**
 
-(4a) *Finite exact orbit* (CR-15.8/15.9). Premise: an independently justified bound \(|S|\le N\). Then all reachable places are behaviorally separated by words of length \(\le N-|Q_0|\) (CR-15.7 eq. (10)); with EXACT responses (not finite stochastic samples, audit #40) a panel that is closed under the actions at that depth, equality decided at that depth, is the whole orbit, and \(\omega_a^W\) is computed exactly on it by (2) with tight enclosures. Finite questions establish: the transcript and the closure of the enumerated panel at depth \(N-|Q_0|\). Independent justification needed: \(N\) itself (e.g. finite state bits with exact transition arithmetic). The bound is exact but useless once \(N\) is large enough that depth \(N-|Q_0|\) questions are unaffordable.
+(4a) *Finite exact orbit* (CR-15.8/15.9). Suppose the orbit for the same registered action alphabet has at most \(N\) exact behavioral states. Let \(q\) be the number of its immediate-response classes. Horizon equivalence is full behavioral equivalence by depth \(N-q\): every strict refinement increases the class count, while equality of consecutive partitions implies permanent stabilization.
 
-(4b) *Contraction with two-sided observability* (surgeon route). Premise: a carrier metric \(\varrho\) on an action-invariant set \(S\) with (i) \(\varrho(T_ax,T_ay)\le\kappa_a\varrho(x,y)\); (ii) reader Lipschitz \(D_c(r_c(x),r_c(y))\le L\varrho(x,y)\) for the questions in \(W\); (iii) inverse observability: a finite family \(W_*\subseteq W\) and \(\lambda\) with \(\varrho(x,y)\le\lambda\,d_{W_*}(x,y)\) on \(S\). Then
+A representative set containing the initial state and closed under every action modulo this proved equivalence exhausts the behavioral orbit. Finite actions and channels, exact response evaluation, and decidable equality permit this finite check, including successor profiles. For finite \(W\), evaluating every representative pair computes its modulus exactly.
+
+A known lower bound \(\underline q\le q\) gives the safe depth \(N-\underline q\). Exhaustion here is of behavioral states, not necessarily concrete carrier states. The state bound and exact-evaluation assumptions require independent justification.
+
+A bound on a write-only orbit does not cover an enlarged action alphabet automatically.
+
+(4b) *Contraction with two-sided observability* (surgeon route). Premise: a carrier metric \(\varrho\) on an action-invariant set \(S\) with (i) \(\varrho(T_ax,T_ay)\le\kappa_a\varrho(x,y)\); (ii) full-profile Lipschitz control: for every \((w,c)\in W\) and \(u,v\in S\), \(D_c(r_c(T_wu),r_c(T_wv))\le L\varrho(u,v)\), equivalently \(d_W(u,v)\le L\varrho(u,v)\) (immediate-reader Lipschitz control is not enough); (iii) inverse observability: a finite family \(W_*\subseteq W\) and \(\lambda\) with \(\varrho(x,y)\le\lambda\,d_{W_*}(x,y)\) uniformly on \(S\). Then
 \[
 d_W(T_ax,T_ay)\le L\varrho(T_ax,T_ay)\le L\kappa_a\varrho(x,y)\le L\kappa_a\lambda\,d_{W_*}(x,y)\le L\kappa_a\lambda\,d_W(x,y),
 \]
-so \(\omega_a^W(t)\le L\kappa_a\lambda\,t\), and tolerance \(\tau\) is preserved when \(L\kappa_a\lambda\le1\). Finite questions establish: nothing of (i)-(iii); they can only refute (iii) (a pair with small \(d_{W_*}\) and large carrier separation) or refute the conclusion (a witness). All three are surgeon certificates on the carrier, and (iii) is the premise CR-15.3 lacked: CR-15.3 turns small carrier separation into small responses; (iii) turns small responses into small carrier separation. Without (iii), CR-15.3 bounds only pairs inside one realization ball, never every \(W\)-close pair. The displayed chain requires \(S\) to be action-invariant so that (ii) applies at \(T_ax,T_ay\). For the CR-15.9 world, take \(\varrho((b,x),(b',x'))=\max\{[b\ne b'],|x-x'|\}\), \(W_*=\) both immediate reads, so \(d_{W_*}=\max\{[b\ne b'],\delta|x-x'|\}\) and \(\lambda=\max\{1,1/\delta\}\); \(\kappa=1/2\) on the nuisance coordinate and \(\kappa=0\) on the bit after any write; \(L=\delta\) on the nuisance channel and \(1\) on the bit channel. On pairs with equal bits (the only pairs with \(d_{W_*}<1\)) the chain gives \(d_W(T_ax,T_ay)\le\delta\cdot\tfrac12\cdot\tfrac1\delta\,d_{W_*}(x,y)=\tfrac12 d_{W}(x,y)\), matching row 2 of the table for \(t<1\).
+so \(\omega_a^W(t)\le\min\{1,L\kappa_a\lambda\,t\}\), and \(L\kappa_a\lambda\le1\) is sufficient for tolerance preservation. All constants must hold uniformly on the declared domain. Finite questions establish none of (i)-(iii); carrier measurements can refute (i), (ii) or (iii), and witnesses can refute the conclusion. (iii) is the premise CR-15.3 lacked: CR-15.3 turns small carrier separation into small responses; (iii) turns small responses into small carrier separation. Without (iii), CR-15.3 bounds only pairs inside one realization ball, never every \(W\)-close pair.
 
-(4c) *Closed invariant relation* (CR-15.2). Premise: transition-closed sets \(K_\lambda\) with \(\eta\)-accurate abstract laws. Conclusion: \(d_\infty\le2\eta\) inside each \(K_\lambda\); hence \(\omega_a^W(t)\le2\eta\) restricted to pairs in a common \(K_\lambda\), for every \(W\) and \(t\). Finite questions establish: membership of finitely many states in their sets (by response); not closure. Coverage of every \(W\)-close pair requires additionally that \(d_W(x,y)\le t\) forces a common \(K_\lambda\), which is again an observability premise of type (iii).
+For \(0<\delta\le1\), globally valid scalar constants in the product-max carrier metric are
+\[
+\kappa=\tfrac12,\qquad L=1,\qquad
+\lambda=\max(1,1/\delta)=1/\delta.
+\]
+Their generic product gives the loose coefficient \(1/(2\delta)\). The sharper channel-specific calculation is
+\[
+d_W(F_v(b,x),F_v(b',y))
+=\tfrac{\delta}{2}|x-y|
+\le\tfrac12d_W((b,x),(b',y)).
+\]
+On equal-bit pairs this is equality before domain clipping. On the full product domain it yields
+\(\omega(t)=\frac12\min(t,\delta)\).
 
-Proposition (what a denizen can certify). For every deterministic registered world, finitely many questions certify (a) lower bounds \(\omega_a^W(t)\ge b\) by witnesses, (b) exact panel moduli by (2), and (c) refutations of any of the premises (4a)-(4c) that entail a \(W\)-observable consequence. They cannot certify an upper bound on \(\omega_a^W\) over the reachable set (theorem (3)). Therefore every positive interchangeability claim has the form "panel modulus plus a named premise", and the premise is the object a review must audit.
+(4c) *Closed invariant relation* (CR-15.2). Independently established membership in a common realization set, uniform abstract-reader accuracy, and transition closure imply successor discrepancy at most \(\min(1,2\eta)\). Agreement on finitely many responses alone does not establish membership. A global modulus bound additionally requires every eligible \(W\)-close pair to belong to a common certified realization set. That coverage requirement is a sufficient observability condition, but is not automatically equivalent to the metric inequality in (iii).
+
+Proposition (what a denizen can certify). For finite \(W\), exact response access determines finite-panel moduli; valid enclosures give the bounds in item (2). Witnesses supply global lower bounds and can refute specified observable implications of candidate premises. Response-only finite transcripts cannot establish a nontrivial global upper bound over the unrestricted completion class of item (3). Conditional upper bounds remain possible with independently justified completeness or structural premises, as in (4a)–(4c). Finite stochastic samples need not determine exact response laws or exact panel moduli.
 
 **(5) Refinement modulus (definition, proposal).** For the tower \(W_h\) of words of length \(\le h\),
 \[
 \rho_h(t)=\sup\{d_{W_{h+1}}(x,y):x,y\in S,\ d_{W_h}(x,y)\le t\}.
 \]
-Since \(W_{h+1}=W_h\cup\bigcup_a aW_h\) and \(d_{W}(T_ax,T_ay)=d_{aW}(x,y)\), writing \(E_t=\{(x,y):d_{W_h}(x,y)\le t\}\) one has \(\rho_h(t)=\max\{\sup_{E_t}d_{W_h},\ \max_a\omega_a^{W_h}(t)\}\), so the tower's quantitative refinement rate is the worst action modulus at that level (up to the trivial first term, which is \(\le t\)). Level \(h\) is exactly consistent iff \(\rho_h(0)=0\) and preserves tolerance \(\tau\) iff \(\rho_h(\tau)\le\tau\). This replaces CR-5's class-count rate (which needs finite cardinalities, audit #39) by a tolerance-indexed rate defined for every world. On a finite orbit of \(N\) places, \(\rho_h(0)=0\) for \(h\ge N-|Q_0|\); tolerance stabilization is not implied (cyclic counter at \(W_1\)).
+Since \(W_{h+1}=W_h\cup\bigcup_a aW_h\) and \(d_{W}(T_ax,T_ay)=d_{aW}(x,y)\), writing \(E_t=\{(x,y):d_{W_h}(x,y)\le t\}\) one has \(\rho_h(t)=\max\{\sup_{E_t}d_{W_h},\ \max_a\omega_a^{W_h}(t)\}\), so the tower's quantitative refinement rate is the worst action modulus at that level (up to the trivial first term, which is \(\le t\)). Level \(h\) is exactly consistent iff \(\rho_h(0)=0\) and preserves tolerance \(\tau\) iff \(\rho_h(\tau)\le\tau\). This replaces CR-5's class-count rate (which needs finite cardinalities, audit #39) by a tolerance-indexed rate defined for every world. On a finite orbit of \(N\) places, \(\rho_h(0)=0\) for \(h\ge N-|Q_0|\); tolerance stabilization is not implied at the same level (cyclic counter, \(m=6\): equal-bit phases \(0,5\) have input distance \(1/4\) and successor distance \(1/2\)). This does not mean a finite world can avoid numerical stabilization forever: its unordered-pair transition system is finite, so a sufficiently large finite horizon attains \(d_\infty\), after which every tolerance is preserved. The modulus is a useful classical definition, not a new latent-space structure.
 
 **Completion status against CR-15.10.6.** Items (1)-(4) delivered in draft; the sufficient premise chosen for (4) is (4b), because it is the one whose missing half (inverse observability) is exactly what the certificate lane lacked, and it reproduces the constructed-world moduli. Evidence obligations for any future use of (4b): \(\kappa_a\), \(L\), \(\lambda\) as surgeon certificates on a verified invariant set; the denizen contributes witnesses and panel consistency only. Stated plainly, (ii)+(iii) say the registered reader is bi-Lipschitz on the invariant set, which is surgeon-only and is expected to FAIL for readers with argmax or saturating softmax outputs; this is where the premise is most likely to break on learned cells. Nothing here is a real-model finding. Self-critique of this draft: internal/codex_transcripts/cr15107_self_critique.md.
 
-**(6) Saturation destroys inverse observability (draft proposition, 2026-09-05).** Let a registered binary channel be \(p(m)=\sigma(g(m))\) with \(g\) \(L_g\)-Lipschitz on the invariant set in the carrier metric \(\varrho\), and TV distance on the channel. Upper Lipschitz: \(|p(m)-p(m')|\le\tfrac14|g(m)-g(m')|\le\tfrac14L_g\varrho(m,m')\). Inverse observability from this channel alone requires \(\varrho(m,m')\le\lambda|p(m)-p(m')|\). On the region \(|g|\ge G\), \(\sigma'\le\sigma'(G)<e^{-G}\), so \(|p(m)-p(m')|\le e^{-G}|g(m)-g(m')|\) and any valid \(\lambda\) satisfies \(\lambda\ge e^{G}/L_g\) whenever two states in that region are separated along the level sets of \(g\) at all (and \(\lambda=\infty\) along a level set). Consequently the transfer constant of premise (4b) satisfies \(L\kappa\lambda\ge\kappa e^{G}/4\) (using \(L\ge\) the channel's own sensitivity is not needed; the point is \(\lambda\)), which exceeds 1 for every \(\kappa>e^{-G}\cdot4\). A confidently read panel therefore cannot supply an immediate-read certificate of interchangeability: the reader compresses carrier differences by a factor of order \(e^{-G}\), and small response discrepancies on saturated states are almost uninformative about carrier separation. This is the quantitative form of the "reader hides retained history" explanation retained by the certificate evidence gate.
+**(6) Saturation and inverse conditioning (audit #41 replacement).** Let \(p=\sigma\circ g\), with \(g\) \(L_g\)-Lipschitz and \(L_g>0\). Globally,
+\[
+|\Delta p|\le\tfrac14L_g\varrho.
+\]
+If both compared logits lie in the same half-line \([G,\infty)\) or \((-\infty,-G]\), then
+\[
+|\Delta p|\le\sigma'(G)|\Delta g|
+\le e^{-G}L_g\varrho.
+\]
+On a nontrivial same-sided domain, any valid finite inverse constant therefore satisfies
+\[
+\lambda\ge e^G/L_g.
+\]
+Distinct states with identical logits preclude a finite inverse constant. Finite saturation alone does not.
 
-Application to the recorded certificate run (analytical only; no new evaluation authorized). The saved run reports correct-slot probabilities within \(10^{-8}\) of 1 on the eight training cells, so \(|g|\approx18\) there and \(e^{G}\approx6.6\times10^{7}\). The recorded paired-erasure TV of \(1.4\times10^{-8}\) between obsolete-first-write counterfactuals is therefore compatible with carrier separations \(\varrho(m_2(0,v),m_2(1,v))\) of order \(1.4\times10^{-8}\cdot e^{18}/L_g\), i.e. potentially order one. The tiny erasure TV does not indicate small carrier retention; it indicates a saturated reader. Pre-registered check (if a diagnostic on the saved weights is ever authorized; seconds, no training): compute \(\|m_2(0,v)-m_2(1,v)\|_\infty\) for \(v\in\{0,1\}\) from the weights stored in `results/commit_seal_certificate/result.json`; a value above \(10^{-2}\) confirms that the panel erasure was reader-side, a value below \(10^{-6}\) refutes this proposition's relevance to that cell. Either outcome changes nothing about the closed certificate lane; it selects between two of the four live explanations.
+The lower bound on \(\lambda\) does not establish an intrinsic lower bound \(L\kappa\lambda\ge\kappa e^G/4\), because \(L_g/4\) is an available upper bound on reader sensitivity, not a lower bound on its best Lipschitz constant.
 
-Consequence for the locked direction (CR-15.10.6). Any question family used to certify interchangeability on a real model must contain questions whose responses are NOT saturated on the panel (intermediate-confidence continuations), otherwise \(\lambda=\infty\) and no premise of type (4b) can hold; and any witness-based lower bound is unaffected (witnesses need no \(\lambda\)). This gives a concrete design criterion for the deferred panel: choose continuations by their response entropy, not by their semantics.
+The same-sided condition matters: logits \(-G,+G\) do not satisfy the exponential secant bound. Counterexample to any impossibility reading: \(S=[0,1]\), \(g(x)=G+x\), \(T(x)=x/4\); then \(L=\sigma'(G)\), \(\lambda=1/\sigma'(G+1)\), \(\kappa=1/4\), and \(L\kappa\lambda<e/4<1\): the reader can be arbitrarily saturated while the transfer certificate remains useful.
 
-**(7) Inverse observability is a rank condition on the question family (draft proposition, 2026-09-05).** Let the carrier be a \(d\)-dimensional invariant set \(S\subseteq\mathbb R^d\) with a metric \(\varrho\), and let a finite question family \(W_*=\{(w_k,c_k)\}_{k=1}^K\) with binary channels define the response map \(P:S\to[0,1]^K\), \(P_k(m)=\sigma(g_k(m))\) with \(g_k\) differentiable. Premise (iii) of (4b), \(\varrho(m,m')\le\lambda\,d_{W_*}(m,m')\), requires \(P\) to be injective on \(S\); locally this requires the Jacobian \(J_P(m)=\operatorname{diag}(\sigma'(g_k(m)))\,J_g(m)\) to have rank \(d\), hence \(K\ge d\): a single scalar channel (\(K=1\)) can never be inverse-observable on a carrier of dimension \(d\ge2\), saturated or not. Quantitatively, on a convex invariant set where \(P\) is injective, \(\lambda\le1/\inf_{m\in S}s_{\min}(J_P(m))\) (mean-value inequality along segments; a surgeon certificate), and \(s_{\min}(J_P)\le\max_k\sigma'(g_k)\cdot s_{\min}(J_g)\le e^{-G}s_{\min}(J_g)\) when every question is saturated at level \(G\); so (6) and (7) combine: inverse observability needs at least \(d\) questions, unsaturated, with a well-conditioned question Jacobian.
+The saved floating-point aggregates report nearly saturated reads and paired TV about \(1.4\times10^{-8}\). They do not certify per-state logits or carrier distances. Both small and substantial retained carrier differences remain possible; saturation or a many-to-one reader is an explanation, not an established mechanism. No diagnostic is authorized or queued by this analysis.
 
-Reading in the native vocabulary. The number \(d\) that matters is not the raw carrier dimension but the number of independent directions in which the carrier influences registered futures (the rank of the map from carrier to all-future responses on \(S\)); questions beyond that rank are redundant, questions below it leave the carrier unobservable. A question family attaining that rank with bounded \(\lambda\) is a sufficient test set in the sense of predictive state representations (core tests, Littman-Sutton-Singh) and observable operator models (Jaeger); its size is the PSR dimension. Discovering it from behavior alone is the PSR discovery problem, which is exactly the "question-family learner" that CR-15.10.6 permits only after a positive panel. Prior art is used, not claimed.
+Useful questions must separate relevant distinctions with adequate conditioning on the declared domain. Unsaturated responses are neither necessary nor sufficient: a constant probability \(1/2\) has maximal entropy and supplies no state information. Entropy alone is not a question-selection criterion.
 
-Consequence for the deferred real-model panel. With \(K=2\) questions (\(W_H\)) on a transformer whose carrier is the presented history, premise (4b) is unattainable in principle, so the panel can produce witnesses and panel moduli only, never an upper bound on \(\omega\) beyond the panel; this is consistent with CR-15.10.6's verdict definitions (TOLERANCE_PRESERVED_ON_PANEL is operational, not global) and sharpens why: the family is rank-deficient by construction. A real-model upper bound would need a question family of rank equal to the behaviorally effective dimension of the history on that interface, which is unknown and is itself the object to discover.
+Order-one carrier separation is mathematically compatible with TV of that scale (\(g(x)=18+x\), \(x\in\{0,1\}\) gives separation one and probability difference about \(9.6\times10^{-9}\)); that example does not identify the actual cell's separation. No distance threshold is a mechanism-confirmation rule.
 
-Consequence for the closed certificate lane. The rung-1 reader had \(K=2\) legend orders of ONE scalar score difference \(g\) on a 16-dimensional carrier: rank one. Independently of saturation and of contraction, no immediate-read family on that cell could have supplied inverse observability; the certificate recipe could at best have certified pairs inside one realization ball (CR-15.3), never every response-close pair. This is a second, structural reason the lane could not have produced a global interchangeability statement, and it was visible from the architecture alone before any run.
+**(7) Rank: a local necessary condition only (audit #41 replacement).** Assume \(P\) is continuously differentiable, the carrier domain contains an open \(d\)-dimensional set, and \(\varrho(x,y)=\|x-y\|_2\). For scalar binary questions,
+\[
+d_{W_*}(x,y)=\|P(x)-P(y)\|_\infty.
+\]
+Uniform inverse observability implies, at every interior point,
+\[
+\|J_P(m)v\|_\infty\ge\|v\|_2/\lambda.
+\]
+Hence \(J_P(m)\) has rank \(d\) and \(K\ge d\). On a smooth lower-dimensional carrier, the corresponding statement concerns its tangent dimension. Arbitrary metrics or discrete sets do not justify this inference.
+
+Injectivity alone does not imply full differential rank. Full differential rank alone does not supply a global inverse bound. Define
+\[
+\beta=\inf_{x\ne y\in S}
+\frac{\|P(x)-P(y)\|_\infty}{\|x-y\|_2}.
+\]
+Finite global inverse observability holds precisely when \(\beta>0\), with optimal constant \(1/\beta\).
+
+Injectivity with a uniformly bounded-below Euclidean least singular value does not bound the inverse constant: \(P(t)=(\tfrac12+\tfrac14\cos t,\tfrac12+\tfrac14\sin t)\) on \([0,2\pi-\varepsilon]\) is injective with least singular value \(1/4\) everywhere, yet its endpoints are \(\approx2\pi\) apart with response distance \(O(\varepsilon)\). The pointwise inequality \(s_{\min}(J_P)\le\max_k\sigma'(g_k)\,s_{\min}(J_g)\le e^{-G}s_{\min}(J_g)\) holds under pointwise saturation (Euclidean singular values) as an inequality; finite logits leave the diagonal factors positive, so saturation alone does not change exact rank. The nonlinear observability rank condition (Hermann-Krener, Thm 3.1) is local and uses derivatives of output continuations; it is not a global inverse-Lipschitz theorem.
+
+Linear PSR/OOM dimension is the rank of the history-by-test matrix, equivalently the dimension of the appropriate predictor-function span. A core test set supplies a basis from which all test predictions can be recovered. This is different from local Jacobian rank or nonlinear carrier dimension. An arbitrary locally full-rank family need not be globally sufficient, linearly spanning, or uniformly well-conditioned. Additional questions can improve conditioning or resolve distant ambiguities. No equality between these dimensions is established here. (Littman-Sutton-Singh §1; Singh-James-Rudary §§4-5; Jaeger §5.)
+
+The deferred \(W_H\) family contains two full next-token-distribution questions, not two scalar binary observations. A distribution over \(V\) outcomes can supply up to \(V-1\) scalar coordinates. Moreover, presented histories form a discrete, variable-length domain whose relevant smooth dimension has not been established. Therefore question count alone proves no rank deficiency or impossibility of premise (4b). The registered panel supports only its stated finite-panel conclusions because global coverage and structural premises remain unproved.
+
+For the sealed reader at fixed address and zero bypass, reversing the legend swaps the same two candidate scores. Its immediate profile therefore depends on one scalar score difference and has differential rank at most one, with rank one wherever that score difference has nonzero gradient. This rules out carrier-metric inverse observability on an open 16-dimensional domain. It does not rule it out on every finite or lower-dimensional reachable set, nor rule out richer continuation families or global behavioral guarantees through CR-15.2/15.3 realization sets. Recovering behaviorally irrelevant carrier coordinates is unnecessary for behavioral overwrite.
+
+**Audit #41 summary (applies to this whole subsection).** Finite-panel enclosures, corrected declared-domain moduli, and the refinement identity are retained. Response-only finite transcripts cannot establish a nontrivial global bound over unrestricted extensions; independently justified completeness or structural premises can. The contraction route requires Lipschitz control of full question profiles and a uniform inverse bound on the declared carrier domain. Saturation can degrade conditioning without making inversion impossible. Local rank does not establish a global inverse bound or PSR dimension. Neither the saved cell's retained-history mechanism nor \(W_H\)'s rank has been established. No new learned realization, generalization result, or native mathematical novelty follows.

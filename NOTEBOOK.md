@@ -4,6 +4,42 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Audit #41 on CR-15.10.7: REVISE; analytical cycle stops (2026-09-05)
+
+Fresh audit of the seven draft items plus my self-critique. Retained: (2)
+finite-panel enclosures, (5) refinement identity, corrected moduli (1) and
+conditional routes (4). Withdrawn or replaced: the obstruction theorem
+(a depth-one transcript can force omega(0)=1 in EVERY consistent world, so
+the "zero-modulus completion" claim was false; replaced by a finite
+response-transcript obstruction that asserts only the unit-modulus
+completion); the cyclic parity claim (two consecutive cosines determine the
+phase for every m >= 3 via sin(j a) = (cos(j a)cos a - cos((j+1)a))/sin a;
+gain bounded by 1 + 2|cos a| <= 3, not unbounded); the coordinate-
+replacement row (needs a product-max response metric; counterexample
+given); (4b) needs FULL-PROFILE Lipschitz control, not immediate readers;
+the saturation impossibility (lambda >= e^G/L_g on same-sided domains
+survives as a conditioning statement; an arbitrarily saturated reader can
+still give L kappa lambda < e/4 < 1); the rank proposition (local
+necessary condition K >= d survives; the global s_min bound is false, with
+a circle counterexample; Jacobian rank is not PSR dimension; W_H is two
+FULL-LAW questions, not two scalars, so no rank deficiency follows; the
+rung-1 reader is rank one on an open 16-dim domain, which rules out
+carrier-metric inverse observability there but not behavioral guarantees).
+Also: the saved certificate result stores mean probabilities, not per-cell
+logits, so |g| ~ 18 was not established; "order-one carrier separation" is
+compatible, not indicated.
+
+My self-critique was only partly resolved (4 of 6), and one of my "fixes"
+(parity) was itself wrong. Lesson recorded in memory: hour-by-hour solo
+derivations without review accumulate errors; audit before extending.
+
+Ruling: one correction-and-consolidation pass (this), then STOP the
+analytical cycle and wait for approval of an empirical step that can change
+a program decision. "This is not working as a route to a real-model
+artifact." Program remains open.
+
+---
+
 ### Inverse observability is a rank condition (2026-09-05, heartbeat addendum)
 
 Continuing (6): premise (4b) needs the question family's response map to
@@ -54,7 +90,7 @@ which reproduces the CR-15.9 world's t/2 exactly and names the half the
 certificate lane lacked; closed invariant relations (bounds only pairs in
 a common realization set). Proposition: a denizen certifies lower bounds,
 panel moduli, and refutations; never an upper bound. (5) Refinement
-modulus rho_h(t) = max(t, max_a omega_a^{W_h}(t)).
+modulus rho_h(t) = max(sup_{eligible} d_{W_h}, max_a omega_a^{W_h}(t)) (corrected per audit #41).
 
 Review pending (fresh audit when quota allows). Nothing here is a real-
 model finding.

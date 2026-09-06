@@ -162,15 +162,26 @@ robust-close pairs over five task blocks, affine and length-only rivals
 tested separately by interval-aware infeasibility, verdicts WITNESSED /
 TOLERANCE_PRESERVED_ON_PANEL / INCONCLUSIVE).
 
-**CR-15.10.7 DRAFT delivered (2026-09-05, solo, pending review):** the four
-analytical items of CR-15.10.6: contrast-world moduli (seven rows, including
-the cyclic counter's two failure modes); the finite-panel bounding
-proposition; the obstruction theorem (no finite transcript upper-bounds ω
-over the reachable set); three sufficient premises for an upper bound with
-the transfer inequality ω ≤ Lκλ t under contraction plus inverse
-observability, and the proposition that finite questions certify lower
-bounds, panel moduli, and refutations only. Plus the refinement modulus
-ρ_h(t) as a tolerance-indexed replacement for CR-5's class-count rate.
+**CR-15.10.7 (audit #41: REVISE, corrections applied):** finite-panel
+enclosures, corrected declared-domain moduli, and the refinement identity
+are retained. Response-only finite transcripts cannot establish a
+nontrivial global bound over unrestricted extensions; independently
+justified completeness or structural premises can. The contraction route
+requires Lipschitz control of full question profiles and a uniform inverse
+bound on the declared carrier domain. Saturation can degrade conditioning
+without making inversion impossible. Local rank does not establish a global
+inverse bound or PSR dimension. Neither the saved cell's retained-history
+mechanism nor W_H's rank has been established. No new learned realization,
+generalization result, or native mathematical novelty follows. Withdrawn:
+the original obstruction theorem, the saturation impossibility, the global
+rank bound and both dimension extrapolations, the cyclic parity claim.
+
+**Program ruling (audit #41):** the analytical cycle CR-15.10.6 STOPS after
+this consolidation pass; wait for approval of an empirical step capable of
+changing a program decision. Further solo theory expansion is not the
+highest-leverage work; "this is not working as a route to a real-model
+artifact." The valid mathematical residue is retained; the wider program
+remains open.
 
 **Withdrawn en route:** the "P vs R" mechanism dichotomy (not mutually
 exclusive); the CV-of-ratio rival rule (b/d = g + c/d makes spread
@@ -307,27 +318,18 @@ Codex design: `.codex_post_crc1.txt`.
 
 ---
 
-## CRC-0 result: FAIL — no compression (2026-09-04)
+## CRC-0 result (2026-09-04; interpretation revised by audit #41, 2026-09-05)
 
-**CRC-0 (Codex-designed, decisive):** 36 roots, 3 typed actions, exhaustive
-words through length 2, full 151K-token distribution. Q_1 = 36 classes (one
-per root state). No compression, no closure, no transfer. The model maintains
-36 behaviorally distinct states — every (variable, value, presentation)
-triple is unique after one action. Tower stabilizes trivially at the identity
-partition. Verdict stable across tolerances 0.005–0.02. Clean negative:
-apparatus works, model doesn't compress on this task family. Min D_1 = 0.0165,
-just 65% above primary tolerance — the model is ALMOST compressible but not
-quite. Q_0 had 33 classes (some presentation equivalence) but all split at Q_1.
-
-**Implication:** The CRC framework on the SVB variable-scoping task family
-produces a clean but trivial result. The refinement tower exists but is the
-identity. This closes the SVB task family as a substrate for finding compact
-native structure in Qwen3-1.7B-Base.
-
-**What remains open:** Whether a different task family (one where the model
-genuinely compresses — i.e., distinct histories produce equivalent futures)
-would yield nontrivial CRC structure. The framework itself is not falsified;
-the task family is exhausted.
+The historical CRC-0 panel (Qwen3-1.7B-Base, 36 roots, words ≤ 2 over
+{N, H, R}; numbers in experiments/EXPERIMENTS.md and
+docs/STATE_ARCHIVE_closed_lines.md) had no distinct same-variable
+W_H-close pairs at τ = 0.01, giving no positive preservation evidence. The
+recorded closure score had zero coverage and did not test successor W_H
+profiles. Two retained same-variable witnesses violate immediate-tolerance
+preservation under H. These finite numerical summaries establish neither
+exact quotient stabilization nor absence of compact structure elsewhere.
+Earlier wording ("no closure", "tower stabilizes", "apparatus works",
+"almost compressible", task family exhausted) is withdrawn.
 
 ## Archived claims
 
