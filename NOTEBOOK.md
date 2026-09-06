@@ -4,6 +4,22 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Saturation destroys inverse observability (2026-09-05, heartbeat addendum)
+
+Item 6 of my self-critique, derived: for a sigmoid/softmax channel, on the
+region |g| >= G the response compresses carrier differences by e^{-G}, so
+the inverse-observability constant lambda >= e^G / L_g and premise (4b)
+cannot hold from saturated immediate reads. Applied analytically to the
+recorded certificate run: correct-slot probabilities within 1e-8 of 1 mean
+|g| ~ 18, so the 1.4e-8 erasure TV is compatible with ORDER-ONE carrier
+separation between obsolete-write counterfactuals; the panel erasure may
+be entirely reader-side. Pre-registered seconds-long check on the saved
+weights written down but NOT run (evidence gate: no follow-up on that
+cell). Design consequence for the deferred real-model panel: choose
+continuations by response entropy so that some questions are unsaturated.
+
+---
+
 ### CR-15.10.7 draft: the analytical deliverables, written solo (2026-09-05)
 
 No Codex (quota). Delivered in theory/ as DRAFT: (1) moduli for seven
