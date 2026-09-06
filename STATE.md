@@ -176,6 +176,22 @@ generalization result, or native mathematical novelty follows. Withdrawn:
 the original obstruction theorem, the saturation impossibility, the global
 rank bound and both dimension extrapolations, the cyclic parity claim.
 
+**Question rotation (Devansh, 2026-09-06: never idle; rotate to a different
+analytical question when a line closes).** Block 1 = CR-16, architectural
+restrictions of the transformer world (Codex chose it from five candidates
+with a strict consequence gate). Draft written; audit pending. Corrections
+adopted from the direction round: rotary symmetry is origin relabeling
+only; RMSNorm with positive epsilon is not scale-invariant (ray quotient
+withdrawn); multiset identification withdrawn; parity is in TC0 (blindness
+example withdrawn). Candidate consequence: the appended-block offset effect
+(16.6): any appended block of length k shifts the query's offset to every
+frozen prefix site by exactly k regardless of content, so the length-only
+filler control is architecturally mandatory, W_H-splits of W_0-close pairs
+can arise from offsets alone, and suffix-conditioned change can occur only
+in the query's re-weighting of old sites or in the new sites, never at old
+sites. If the audit rules this a restatement, rotate to Q4 (readings of
+existing evidence).
+
 **Program ruling (audit #41):** the analytical cycle CR-15.10.6 STOPS after
 this consolidation pass; wait for approval of an empirical step capable of
 changing a program decision. Further solo theory expansion is not the

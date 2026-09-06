@@ -4,6 +4,33 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Question rotation block 1: CR-16 architectural restrictions (2026-09-06)
+
+Devansh: never stop; rotate questions; spare the machine. Proposed five
+compute-free questions; Codex ranked Q1 (forced identifications of the
+transformer world) first with a strict gate: it counts only if it yields a
+nontrivial consequence for W_0/W_H/W_2, else rotate to Q4 (existing
+evidence). Codex corrections to my five statements: (1) rotary symmetry =
+origin relabeling of all position IDs, not prefix-length changes; cite
+RoFormer; (2) causality exact but site-local; appending changes the read
+position; (3) RMSNorm eps > 0 is NOT scale-invariant; pre-norm residual
+breaks ray invariance; only a pure pre-LayerNorm stack has a whole-stack
+shift symmetry; my ray quotient withdrawn; (4) multiset identification
+withdrawn (I had already withdrawn it); (5) parity is in TC0, Hahn's rate
+is for non-causal attention; scope separately.
+
+Drafted CR-16 with the one consequence I can prove from 16.1 + 16.2: the
+appended-block offset effect. Any appended block of length k increases the
+final query's offset to EVERY frozen prefix site by exactly k, content-
+free; so the B-question differs from the immediate read through exactly
+two routes: (a) re-weighting of frozen sites (present for fillers too) and
+(b) the new sites' prefix-conditioned representations. Consequences: the
+length-only filler is mandatory, not a straw man; W_H-splits of W_0-close
+pairs can be offset effects; RELAY-CUT geometry is derived; question
+families should be stratified by appended length. One audit next.
+
+---
+
 ### Audit #41 on CR-15.10.7: REVISE; analytical cycle stops (2026-09-05)
 
 Fresh audit of the seven draft items plus my self-critique. Retained: (2)
