@@ -180,6 +180,20 @@ rank bound and both dimension extrapolations, the cyclic parity claim.
 analytical question when a line closes).** Block 1 = CR-16, architectural
 restrictions of the transformer world. Audit #42: RESTATEMENT; CR-16 requires corrections. Fixed-token causal site invariance and, with consecutive positions, the appended-token offset identity are retained. The exact two-route decomposition, content-independent prefix re-weighting, filler-effect subtraction and identification with CEG-1 RELAY-CUT are withdrawn. CR-15.10.6 already requires matched positions, valid tokenization boundaries and the registered H-versus-F rival. Close Q1 and rotate to one bounded Q4 reading of existing audited response tables under their original interface and claim limits, with no runs or new acquisition.
 
+**Block 3 reading (2026-09-06, evidence gate pending):** on the archived
+multifiller panel (24 roots, positions matched by construction, three
+independent fillers, both orders, 11-bin channel), the length-only rival is
+rejected (equal-length blocks give unequal successor discrepancies in ≥ 23
+of 24 roots for every filler), but the heavy comment's deviation from its
+matched filler (median 0.017–0.027) is smaller than the spread among the
+fillers themselves (median 0.08–0.10) and exceeds it in at most 1 of 24
+roots (order 1). Equal-length comments differ from each other more than the
+"reassignment" comment differs from any of them. Candidate decision: the
+deferred panel needs ≥ 3 fillers with the between-filler spread as the
+reference scale, and the content-specific reading of H is disfavored on
+this archive (generic readout sensitivity rival compatible). Details:
+experiments/EXPERIMENTS.md.
+
 **Block 2 (Q4) reading, evidence gate REVISE (2026-09-06):** on the archived
 unequal-position svb_qwen3_congruence panel (Qwen3-1.7B-Base, 24 cells,
 11-bin TV, assumed numerical guard), the neutral comment keeps all 32

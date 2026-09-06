@@ -5,6 +5,76 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Block 3 reading: length-only rival rejected, but the heavy comment is not distinguishable from an arbitrary equal-length comment (2026-09-06, ZERO-CALL READING, evidence gate pending)
+
+Distance from claim: reading of existing audited evidence; no model calls.
+Source: `results/svb_qwen3_composition_v2_multifiller/result.json`
+(Qwen3-1.7B-Base, float32 CPU, 2026-09-04; sha256 898aff900864d3d2…).
+Reading script `internal/q5_reading_multifiller.py` (git-ignored; sha256
+e21aac988fcedd86…); exact rows in `internal/q5_reading_multifiller_out.json`.
+
+**Interface of the archived table.** 24 roots (depth 4; x, y, z; values
+1–8), surface A `# {var} is unchanged.` (5 tokens) and surface M
+`# Reassigning {var} now.` (7 tokens), three independent filler pairs
+(F_A: 5 tokens; F_M: 7 tokens; Qwen3 tokenizer, verified locally), eight
+two-suffix arms per root: AM, MA, AF_M, F_MA, MF_A, F_AM, F_AF_M, F_MF_A.
+Token counts and hence positions are matched by construction. Channel:
+11-bin reduced law. No single-suffix arms, so the initial closeness of the
+input pairs is unknown; numerical floor assumed (deterministic replay was
+recorded for this stack in other runs, not in this table).
+
+**The registered length-only rival (CR-15.10.6):** on identical input
+pairs, token-length- and position-matched H and filler F produce successor
+discrepancies differing by at most ε_R = 0.002. Read here with input pair
+(r·A, r·F_A) and successors M versus F_M (order 1), and input pair
+(r·M, r·F_M) with successors A versus F_A (order 2):
+
+| Filler pair | Order 1: roots with |b_M − b_F| > 0.002 | median b_M / b_F | sign of b_M − b_F (positive roots) | Order 2: roots with |b_A − b_FA| > 0.002 | median b_A / b_FA |
+|---|---|---|---|---|---|
+| pair1 | 24/24 | 0.136 / 0.119 | 21/24 | 24/24 | 0.070 / 0.072 |
+| pair2 | 24/24 | 0.034 / 0.033 | 8/24 | 24/24 | 0.077 / 0.052 |
+| pair3 | 23/24 | 0.041 / 0.016 | 24/24 | 24/24 | 0.069 / 0.134 |
+
+**Reference scale: between-filler spread.** For each root, the three
+fillers give three values of the filler-successor discrepancy; their range
+is the scale of "an arbitrary equal-length comment".
+
+| Order | median between-filler spread | median content-vs-filler deviation (pair1, pair2, pair3) | roots where content deviation exceeds the filler spread |
+|---|---|---|---|
+| 1 (successor M vs F_M) | 0.0975 | 0.0167, 0.0263, 0.0272 | 0, 0, 1 of 24 |
+| 2 (successor A vs F_A) | 0.0840 | 0.0247, 0.0329, 0.0689 | 0, 2, 6 of 24 |
+
+**What the rows support (pre-gate wording).** (1) The length-only rival
+is rejected on this archive at the 11-bin channel: equal-length, position-
+matched blocks do not produce equal successor discrepancies (violations in
+≥ 23 of 24 roots for every filler and both orders), and the sign of the
+deviation depends on the filler. (2) The heavy comment M is not
+distinguishable from an arbitrary equal-length comment: its deviation from
+its matched filler (median 0.017–0.027) is smaller than the spread among
+the fillers themselves (median 0.08–0.10), and exceeds that spread in at
+most 1 of 24 roots (order 1) and at most 6 of 24 for one filler (order 2).
+Equal-length comments differ from each other more than the "reassignment"
+comment differs from any of them.
+
+**What they do not support.** Initial-pair closeness (unknown; no single-
+suffix arms), so no tolerance-preservation or witness verdict; full-law
+statements (differences of reduced TVs do not bound full-law differences);
+any mechanism; any claim about the neutral comment N (not in this table).
+
+**Program decision this reading supports (for the evidence gate).** For the
+deferred CR-15.10.6 panel: (a) a single position-matched filler is an
+inadequate control; the H-versus-F test must use at least three independent
+fillers and report H's deviation against the between-filler spread; (b) on
+this archive the content-specific reading of H ("reassignment announcement
+reveals hidden distinctions") is disfavored: H's effect lies within generic
+equal-length-comment variation, which is the "lexical/context-dependent
+readout sensitivity" rival in quantitative form; the deferred panel's
+discriminating value against that rival is therefore low as designed, and
+its P-versus-rival disagreement set should be built from between-filler
+variation, not from H alone.
+
+---
+
 ## Q4 reading: tolerance preservation under the neutral and heavy comments on the archived congruence panel (2026-09-06, ZERO-CALL READING, evidence gate REVISE)
 
 Distance from claim: reading of existing audited evidence; no model calls.

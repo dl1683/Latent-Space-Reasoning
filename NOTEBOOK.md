@@ -4,6 +4,23 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Block 3 reading: fillers differ from each other more than H differs from a filler (2026-09-06)
+
+Zero model calls. Multifiller table (Gate 2 v2 repair data): surfaces and
+fillers token-matched by construction (5/5 and 7/7). Length-only rival
+(|b_H - b_F| <= 0.002 on identical input pairs) violated in >= 23/24 roots
+for all three fillers and both orders; sign of the deviation filler-
+dependent. Reference scale: between-filler spread median 0.098 (order 1),
+0.084 (order 2), versus content-vs-filler deviation medians 0.017-0.027
+and 0.025-0.069; content exceeds the filler spread in 0/0/1 roots (order
+1) and 0/2/6 (order 2). Reading: any 7-token comment perturbs pair
+discrepancies about as much as the "reassignment" comment; the content-
+specific H hypothesis is disfavored; the deferred panel needs >= 3 fillers
+and the between-filler spread as reference. Limits: initial closeness
+unknown, 11-bin, floor assumed. Evidence gate next.
+
+---
+
 ### Evidence gate on Q4: REVISE; decision amended; next block = multifiller (2026-09-06)
 
 Codex recovered the deleted runner from git (c2465ba^) to confirm arm
