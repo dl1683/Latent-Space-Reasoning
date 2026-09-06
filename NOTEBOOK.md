@@ -4,6 +4,23 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Inverse observability is a rank condition (2026-09-05, heartbeat addendum)
+
+Continuing (6): premise (4b) needs the question family's response map to
+be injective on the invariant set, hence at least d questions for a
+d-dimensional carrier, with a well-conditioned question Jacobian; lambda
+<= 1 / inf s_min(J_P), and saturation multiplies s_min by e^{-G}. The
+relevant d is the behaviorally effective dimension (rank of carrier ->
+all-future responses), i.e. the PSR dimension; a family attaining it is a
+core test set (PSR/OOM prior art, used not claimed). Consequences: the
+deferred W_H panel (K = 2) can never give an upper bound on omega beyond
+the panel (rank-deficient by construction; witnesses and panel moduli
+only); the rung-1 reader was rank ONE on a 16-dim carrier, so no
+immediate-read family could have supplied inverse observability there,
+a structural reason visible before any run.
+
+---
+
 ### Saturation destroys inverse observability (2026-09-05, heartbeat addendum)
 
 Item 6 of my self-critique, derived: for a sigmoid/softmax channel, on the
