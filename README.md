@@ -29,13 +29,19 @@ In one Qwen3-1.7B prompt family, deeply nested bindings were less likely to be r
 
 1. **Content-driven, not surface-driven.** A 2×2 crossover experiment separating semantic content from surface features shows content drives 6.3× more effect than variable-mention confounds. The model distinguishes what a comment *means*, not just its syntactic form.
 
-2. **Well-defined operators on a probability simplex.** Lumpability analysis (R² = 0.79–0.98 across 7 role types) demonstrates that suffix operations act as approximately well-defined transformations on the (correct-digit, shadow-digit, residual) probability simplex. This is the coordinate system native to the model's computation.
+2. **No stable operator algebra on the response simplex.** Lumpability of the (correct-digit, shadow-digit, residual) projection was high (R² = 0.79–0.98 across 7 role types), but the fitted stochastic-matrix operator did not survive composition: behavioral equivalence between surfaces was not preserved under a second suffix (amplification 2.6–13×), and a scalar logit-bias model fit the single-suffix data as well. The simplex operators are a diagnostic, not a native coordinate system.
 
 3. **Single-count maximum with depth scaling.** Among tested suffix counts {0, 1, 2, 4}, suffix count 1 yields the highest σ at all depths d2–d4. The absolute gain rises from 1.2 pp at d1 to 12.6 pp at d4.
 
-4. **Operator algebra is finer than semantic role.** Different surface texts within the same semantic class produce detectably different operators (within-class coefficient of variation 0.33–0.51). The model distinguishes paraphrases that humans consider equivalent.
+4. **Responses are surface-specific, not role-specific.** Different surface texts within the same semantic class produce detectably different response shifts (within-class coefficient of variation 0.33–0.51). The model distinguishes paraphrases that humans consider equivalent; no role-level operator was established.
 
-5. **Order effects are positional, not compositional.** Applying suffix A then suffix M produces a measurably different output distribution than M then A (median TV = 0.068). Controlled experiments with three independent token-matched filler pairs confirm the order effect is real and consistent (cross-pair correlation 0.69–0.92), but a scalar gain fit fully absorbs it — the effect direction is positional and the magnitude is context-dependent. This rules out genuine noncommutative content interaction while revealing that position effects in latent space have a nonlinear gain structure worth studying.
+5. **Order effects are positional, not compositional.** Applying suffix A then suffix M produces a measurably different output distribution than M then A (median TV = 0.068). Controlled experiments with three independent token-matched filler pairs confirm the order effect is real and consistent (cross-pair correlation 0.69–0.92), but a scalar gain fit absorbs it: the effect direction is positional and the magnitude is context-dependent. A later reading of the same filler data showed that equal-length, position-matched blocks do not produce equal effects either (differences above 0.002 in at least 23 of 24 roots for every filler), so "position" here means the relative offsets to earlier content together with the content of the appended block, not token count alone.
+
+6. **Presentation differences survive a neutral continuation and are exposed by a reassignment announcement.** On a 24-cell panel with three same-meaning surface pairs, the neutral comment `# No changes.` kept all 32 initially close pairs within 0.01 total variation on the 11-bin readout, while the comment `# Reassigning {var} now.` separated 29 of them. This is a reduced-readout, unmatched-position observation about which continuations reveal which distinctions; it establishes nothing about erasure or about the full next-token law.
+
+## Current direction: which distinctions can a model safely forget?
+
+The program now studies interchangeability of histories relative to a family of future questions: two histories are interchangeable for a question family if every question in the family answers the same, and the organizing quantity is how much a later action can re-separate histories that were interchangeable before it. Results so far are mathematical and conditional: exact selective overwrite has a lens structure (preserved context times store); transition-closed realization sets give history-length-independent error bounds; a finite behavioral state budget of N places turns local update errors of size ε into a lifetime error of at most (N−1)ε, sharp; contraction is a sufficient but not necessary certificate. A trained 17K-parameter overwrite cell realized perfect fact replacement on its training panel without being a contraction on its state cube, which closed the coordinate-certificate route. No real-model artifact has been established; the open empirical question is whether genuinely close real-model histories exist on a matched-position, full-law interface and which matched continuations separate them.
 
 ## Nine Breakpoints: Design Constraints for Native Mathematics
 
@@ -64,17 +70,17 @@ Python lexical scoping as a probe for latent-space depth structure. Nested `def`
 ## Repository structure
 
 ```
-theory/               Axioms, breakpoint registry, formal constructions
-experiments/           All experiment code
-  run_svb_0.py         SVB runner (ModelAdapter for transformer/SSM/hybrid)
+theory/               Axioms, breakpoint registry, continuation-refinement calculus (CR-1 to CR-16)
+  closed/             Theory of closed lines (archived, headers mark status)
+experiments/           Six canonical runners (svb_0, crc_0, crc_1, ceg_1, write_boundary, commit_seal)
   config/              Experiment configurations (JSON)
-  results/             Raw outputs, checkpoints
+  results/             Result files (small; every result.json kept; bulk dumps listed in MANIFEST.md)
   ledger.jsonl         Machine-readable experiment log
-  EXPERIMENTS.md       Human-readable experiment summaries
-docs/                  Handoff documents
+  EXPERIMENTS.md       Human-readable experiment summaries, newest first
+docs/                  Archived state, notebook, and handoffs
 legacy/                Prior program (archived)
 STATE.md               Canonical current state of all claims
-NOTEBOOK.md            Reverse-chronological running log
+NOTEBOOK.md            Reverse-chronological running log (recent); older entries in docs/
 ```
 
 ## Methodology

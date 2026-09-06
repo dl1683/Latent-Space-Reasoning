@@ -4,6 +4,23 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### README propagation and theory status index (2026-09-06)
+
+README still claimed "well-defined operators on a probability simplex ...
+the coordinate system native to the model's computation" (K_A framework
+recorded DEAD on 2026-09-04) and "operator algebra finer than semantic
+role". Propagated the audited wording: no stable operator algebra
+(congruence failure 2.6-13x; logit-bias rival); surface-specific
+responses; the filler reading (equal-length blocks unequal); the neutral-
+vs-reassignment reading with its reduced-readout, unmatched-position
+limits; a "current direction" paragraph with conditional mathematical
+results and the open empirical question; repository structure updated to
+the six runners. Added a status index at the top of the theory document.
+Codex quota at 92% (resets 2026-09-10): no audits possible; no new theory
+claims will be added until then.
+
+---
+
 ### Evidence gate on block 3: REVISE; reference scale confounded; rotation ruling (2026-09-06)
 
 Arithmetic reproduced exactly (72 rows; 576 concatenations token-matched;

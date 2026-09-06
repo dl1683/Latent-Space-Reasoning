@@ -1,5 +1,27 @@
 # Continuation-Refinement Calculus
 
+## Status index (2026-09-06; read this before the body)
+
+| Section | Status | One line |
+|---|---|---|
+| CR-1 to CR-9 | ADOPTED (definitions) | Complete response tree, horizon tower, separating languages, derivative, typed positions; CR-9 corrected by audit #39 (finite-resolution sensitivity, not exact refinement) |
+| CR-10, CR-11 | ADOPTED | Selective write laws; last-write normal form; orbit bound ∏(|V_r|+1), exactly ∏|V_r| after a complete initialization (audit #39 wording) |
+| CR-12 | REQUIRED EVIDENCE | Promotion criteria; none established |
+| CR-13, CR-14 | ADOPTED (design) | Falsifiers; commit-seal carrier; rung 1 paused (2/5 seeds) |
+| CR-15.0 to 15.5 | ADOPTED, audited #39 | Common-kernel (lens) representation; invariant relations 2η; contraction certificate; selective-tube certificate; constant-gate construction |
+| CR-15.6, 15.7 | ADOPTED, audited #39 | Prior art and paired-pool fidelity lemma; falsifiers; 16-transition check |
+| CR-15.8 | ADOPTED, audited #40 | Finite exact orbit N: lifetime error ≤ min{1,(N−1)ε}, sharp in order |
+| CR-15.9 | ADOPTED (pending audit) | Register-free form; finite orbit sufficient, not necessary |
+| CR-15.10 to 15.10.5 | ADOPTED (dialogue rounds 1-2) | Interface-relative interchangeability; modulus ω; licensed CR-9 reading; CRC-0 witness reading |
+| CR-15.10.6 | LOCKED | Analytical cycle and deferred panel rules |
+| CR-15.10.7 | REVISED, audited #41 | Retained: panel enclosures, declared-domain moduli, refinement identity, conditional routes. Withdrawn: original obstruction theorem, saturation impossibility, global rank bound |
+| CR-16 | RESTATEMENT, audited #42 | Architectural identities as background; two-route decomposition withdrawn |
+
+Zero-call readings of archived tables (2026-09-06) are recorded in
+experiments/EXPERIMENTS.md, not here. The prioritized next acquisition
+(eligibility-first strong-assert panel) is pre-registered in draft and
+awaits review and compute approval.
+
 Status: THEOREM ATTEMPT (v1). Builds on D1-D6. Replaces metric/Finsler
 extensions (D7). Motivated by SVB structured negatives and Codex
 post-SVB pivot (2026-09-04).
