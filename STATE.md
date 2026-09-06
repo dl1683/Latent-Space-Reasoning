@@ -180,18 +180,21 @@ rank bound and both dimension extrapolations, the cyclic parity claim.
 analytical question when a line closes).** Block 1 = CR-16, architectural
 restrictions of the transformer world. Audit #42: RESTATEMENT; CR-16 requires corrections. Fixed-token causal site invariance and, with consecutive positions, the appended-token offset identity are retained. The exact two-route decomposition, content-independent prefix re-weighting, filler-effect subtraction and identification with CEG-1 RELAY-CUT are withdrawn. CR-15.10.6 already requires matched positions, valid tokenization boundaries and the registered H-versus-F rival. Close Q1 and rotate to one bounded Q4 reading of existing audited response tables under their original interface and claim limits, with no runs or new acquisition.
 
-**Block 2 (Q4) reading done (2026-09-06, evidence gate pending):** on the
-archived svb_qwen3_congruence panel (Qwen3-1.7B-Base, 24 cells, 11-bin
-reduced channel, τ = 0.01), the neutral comment preserved the tolerance on
-all 32 W_0-close assert-type presentation pairs (24 + 8, over all three
-variables and eight values; max DN 0.0064 and 0.0100), while the heavy
-comment split 29 of 32 (full-law witnesses, DH up to 0.116); the one close
-misleading pair split under both. Reduced channel: N's preservation is not
-a full-law statement; H's witnesses are. Candidate program decision: use
-assert-type presentation pairs as the deferred panel's root family (CRC-0
-supplied zero eligible pairs; this family supplies ≥ 24), with N as the
-plausible TOLERANCE_PRESERVED action and H as the witnessing action; the
-full-law rerun would decide whether N's preservation survives resolution.
+**Block 2 (Q4) reading, evidence gate REVISE (2026-09-06):** on the archived
+unequal-position svb_qwen3_congruence panel (Qwen3-1.7B-Base, 24 cells,
+11-bin TV, assumed numerical guard), the neutral comment keeps all 32
+initially close assert-type presentation pairs below 0.01 while the heavy
+comment separates 29 (arithmetic verified exactly by the gate). Under the
+locked CR-15.10.6 interface the verdict is INCONCLUSIVE (surfaces of a pair
+differ by 1-3 tokens, so positions are unmatched; floor unmeasured; no
+pinned revisions). Decision (amended): prioritize strong-assert as the
+candidate family for a NEW position-matched full-law eligibility panel;
+moderate-assert as boundary diagnostic; N-preservation and H-separation are
+W_0-level hypotheses; the deferred panel is not replaced (only three
+W_H-close pairs over two blocks exist in the archive). Q4 ruled decision-
+relevant. Next block (Codex): the multifiller table's filler-versus-surface
+comparison on its own roots, after verifying token matching and endpoint
+availability; if non-actionable, rotation stops pending compute approval.
 Details: experiments/EXPERIMENTS.md.
 
 **Program ruling (audit #41):** the analytical cycle CR-15.10.6 STOPS after

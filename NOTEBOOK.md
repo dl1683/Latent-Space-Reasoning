@@ -4,6 +4,28 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Evidence gate on Q4: REVISE; decision amended; next block = multifiller (2026-09-06)
+
+Codex recovered the deleted runner from git (c2465ba^) to confirm arm
+semantics (_c0/_c1 = surface -> composer -> query; _c0r/_c1r reversed),
+reproduced all 72 rows with zero discrepancy, and found: (i) "full-law
+witnesses" overstated: an 11-bin split proves post-H full-law separation,
+not a counterexample to full-law preservation (initial full-law closeness
+unknown); (ii) the guard is assumed (no replay data in this table); (iii)
+the two surfaces of each pair differ in token count (4/5, 4/6, 4/7), so
+composer/query positions are unmatched: under the locked interface the
+verdict is INCONCLUSIVE; (iv) my positive-verdict branch was too weak in
+general (must bound every potentially close pair) though the counts stand;
+(v) median bug (upper-middle), fixed. Decision amended: strong-assert as
+candidate family for a NEW position-matched full-law eligibility panel; do
+not replace the deferred panel (CRC-0 lacked W_H-close pairs; Q4 supplies
+W_0-close pairs; only three W_H-close pairs exist here over two blocks).
+Q4 is decision-relevant. Next: multifiller reading, TV(AM, F_AM) vs
+TV(AF_M, F_AF_M) on the same roots, beyond 0.002, after verifying token
+matching; if non-actionable, stop rotation pending compute approval.
+
+---
+
 ### Q4 reading: N preserves, H witnesses, on the archived congruence panel (2026-09-06)
 
 Zero model calls. The svb_qwen3_congruence table (24 cells x 3 presentation
