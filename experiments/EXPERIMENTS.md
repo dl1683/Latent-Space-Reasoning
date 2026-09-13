@@ -1,5 +1,24 @@
 # Experiments Log
 
+## Conditional-port compatibility: bounded panel (2026-09-13; AUDITED)
+
+[S21](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) locked four real-encoder
+conditional rectangles after two independent design-dialogue rounds.
+[Runner](run_conditional_port_probe.py), [result](results/conditional_port_v1/result.json).
+Eight CPU forward calls, 32 rows, no fitting, 60.27 seconds including startup.
+Isolated minimum worst-edge corrections range 0.000207–0.028143 nats; all four
+are below primary 0.1 and sensitivity 0.05/0.2 tolerances. Repeat/shared-input
+checks agree exactly, which does not bound systematic numerical error.
+Audited scope: no isolated incompatibility exceeding declared tolerances;
+no global consistency, reasoning, biological quality or acquisition claim.
+Fresh real Codex CLI audit e1021 upheld conditioning/arithmetic and identified
+a post-hoc additive null: one constant preference per site fits all observed
+edges within 0.0722242 nats, below primary tolerance. The fixed-reference null
+instead has maximum error 0.1444484. These are calculations on recorded data,
+not prospective held-out predictors. Practical significance remains unvalidated.
+No expanded search selected; next define a task requiring useful updates.
+Session apparatus/artifact: 217/0 code lines, two probe rounds, zero construction.
+
 ## Strategy checkpoint: contribution and inference contracts (2026-09-13; NO MODEL RUN)
 
 Canonical S16–S20 record analytical examples, primary-source reading and bounded

@@ -1,5 +1,20 @@
 # NOTEBOOK
 
+### One bounded encoder-port diagnostic closes (2026-09-13, 20:59 UTC)
+
+S21 compared two concrete resources. Video exports were rejected for this step
+because observation access differed and no fixed trained receiver was available.
+Two design dialogues selected a four-rectangle conditional-preference diagnostic
+on a cached small encoder. Eight CPU forward calls, no fitting, 60.27 seconds.
+All isolated potential corrections fall below registered tolerances. Fresh real
+Codex CLI audit upheld arithmetic but found a post-hoc additive preference class
+also fits the primary tolerance. No useful conditional mechanism, global law or
+acquisition is established. Close the diagnostic without searching for dramatic
+cases. Next ask which independently scored task would benefit from updating
+preferences over fixed-reference, additive and direct-use controls. Canonical
+S21 holds the exact result, qualifications and audit e1021 provenance. Session
+apparatus/artifact: 217/0 lines, two probes, zero construction; strategy mode.
+
 ### Strategy checkpoint: contribution before interface sophistication (2026-09-13, 20:45 UTC)
 
 Canonical S16–S20 examine closer frozen-donor precedents, distinguish ordinal

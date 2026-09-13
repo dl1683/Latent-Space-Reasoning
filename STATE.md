@@ -65,6 +65,22 @@ surveying has diminishing value. Session apparatus/artifact: 98/0 code lines,
 one integrity probe and zero construction rounds; strategy-only authorization
 governs. First periodic adversarial review remains due around 21:45 UTC.
 
+**20:59 UTC bounded diagnostic (audited):** S21 selected one existing
+small encoder conditional port after two design-dialogue rounds. CPU run:
+eight forward calls, 32 input rows, 60.27 seconds including startup, no fitting.
+Four fixed rectangles require isolated worst-edge corrections of 0.000207–0.028143
+nats, below all predeclared 0.05/0.1/0.2 tolerances. No isolated incompatibility
+exceeding those tolerances was identified. Practical significance is unvalidated.
+Fresh real Codex CLI audit e1021 upheld arithmetic and conditioning, but found a
+post-hoc additive preference class also fits the entire panel within primary
+tolerance (0.0722242 nats). No global potential, quality, biological or acquisition
+result. No panel expansion or further model run selected. Next specify an
+independently scored task where updating preferences can improve a competent
+receiver over fixed-reference, additive and direct donor use.
+Session apparatus/artifact now 217/0 lines, two probe rounds and zero building
+rounds; explicit strategy mode governs. Earlier zero-model checkpoints above
+remain dated history of this session.
+
 ## Historical state below
 
 The following dated record preserves the prior direction and audit decisions.

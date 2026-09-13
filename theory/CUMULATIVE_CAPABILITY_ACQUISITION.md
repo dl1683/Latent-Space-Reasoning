@@ -1158,3 +1158,122 @@ well-defined. They can share donor knowledge while requiring very different
 training and runtime resources. No route is selected merely because it avoids
 autoregressive text output. Independent task quality must validate any learned
 energy or verifier; optimizing its own score is not the quality endpoint.
+
+### S21. Two concrete interfaces and one conditional-preference question
+
+| Candidate | Accessible resource | Missing or confounded element | Strategy disposition |
+|---|---|---|---|
+| Real-video feature exchange | Two small tracked spring-video exports at S18's pinned repository commit | Static encoder sees one frame, temporal encoder sees 16; object-name sequences match but unique trial IDs/revisions are absent; no competent trained receiver export | Do not run a new supervised probe just because the tensors are small |
+| Small protein encoder's masked prediction port | Locally complete ESM2-8M revision `c731040fcd8d73dceaa04b0a8e6329b345b0f5df`, including prediction weights and tokenizer | Predictive value does not identify an inference algorithm, composable updates or a transferred capability | Consider one bounded operational diagnostic of the existing conditional port; no alignment or training |
+
+Independent source/metadata review by /root/cache_integrity_review identified
+`features[206,8,1024]`, object names and masses in the temporal export, versus
+`features[206,384]` and object names in the static export. There are 26 objects;
+matching name sequences do not prove trial pairing when extraction independently
+skips failures. [Pinned extraction source](https://github.com/TomekKaszynski/emergent-physics-comm/blob/ca36be0b86eee76425f6aad3f37c634cdbcc8a0f/_phase87_phys101.py#L160).
+Mass is assigned by object; a trial split would also risk identity memorization.
+No tensor was deserialized. This candidate remains a possible control resource,
+not a selected acquisition experiment.
+
+The second candidate has independent predictive precedent: ProteinGym's
+[pinned summary](https://github.com/OATML-Markslab/ProteinGym/blob/144fe22b07dfaeec2b366f2346203a9838a55b4c/benchmarks/DMS_zero_shot/substitutions/Spearman/Summary_performance_DMS_substitutions_Spearman.csv)
+reports average Spearman 0.226 for its 8M model. This is external benchmark
+evidence, not a local replication or evidence of reasoning. Its
+[scoring implementation](https://github.com/OATML-Markslab/ProteinGym/blob/144fe22b07dfaeec2b366f2346203a9838a55b4c/proteingym/baselines/esm/compute_fitness.py#L240)
+adds mutation log-odds measured in the reference context; that chosen additive
+scorer should not be mistaken for proof that context-dependent updates share an
+objective. The [original model release](https://github.com/facebookresearch/esm)
+exposes the masked-prediction interface. No biological application is selected.
+
+**Definition/proposition attempt, before any model run.** Hold a sequence's
+context fixed except at two sites, each with two possible symbols. At each edge
+of their four-state rectangle, mask only the updated site and take the within-
+call logit difference of its destination and origin symbols. Orient the four
+differences around the rectangle and call their sum C. If all four differences
+equal differences of one scalar potential, C=0 by telescoping. If every edge
+differs from such a potential by at most epsilon, then `abs(C) <= 4*epsilon`.
+Thus `abs(C)/4` is a lower bound on the largest necessary edge correction. It
+is attained for one isolated rectangle: subtract C/4 from every oriented edge,
+then the corrected edges sum to zero and integrate to vertex potentials. This
+does not establish a joint optimum over multiple overlapping rectangles. This
+is ordinary discrete potential mathematics applied to an operational question:
+does the same destination have path-independent preference change?
+
+**Locked bounded panel, not yet run:** one 76-residue human ubiquitin
+reference sequence, four preselected one-based site pairs (10,30), (20,40),
+(30,50), (40,60); each alternative is A, or G when the reference is already A.
+No search for a strong witness. Four single-mask inputs per rectangle, repeated
+unchanged to measure numerical variation; CPU float32, evaluation mode, two CPU
+threads, no fitting. Pin sequence, tokenizer, checkpoint and implementation.
+Primary prospective edge tolerance is 0.1 natural-log units (about a 1.105 odds
+factor); report 0.05/0.2 sensitivity and all raw edges rather than selecting a
+threshold after seeing the values. This tolerance is an interface approximation
+choice, not a validated biological-utility threshold.
+
+**Expectation and interpretations:** masked training does not enforce this
+potential condition, so measurable circulation is plausible but its magnitude
+is unknown. A bound above tolerance would require explicit reconciliation before
+treating these edges as one objective. A bound below tolerance would support only
+these rectangles; neither result chooses a whole reasoning architecture or proves
+quality. A discrepancy near repeat noise is inconclusive. A substantial raw
+cycle can still be small relative to the moves, so report edge magnitudes too.
+
+**Moot-making confound:** inconsistent conditioning. Every edge must preserve all
+other tokens, use the proper corner's other-site symbol and exactly one mask.
+Do not substitute a double-mask query or compare different token positions.
+Within-call logit differences avoid probability underflow. This is a local port
+diagnostic, not a grafting result, inference demonstration or global certificate.
+The independent second dialogue selected this one diagnostic with those limits.
+Check shared identical masked inputs across overlapping pairs using the already
+collected calls. Assert residue/token offsets, legal alternatives and one mask.
+Reference is the first 76 residues of [UniProt P0CG47](https://rest.uniprot.org/uniprotkb/P0CG47.fasta),
+retrieved before the run: `MQIFVKTLTGKTITLEVEPSDTIENVKAKIQDKEGIPPDQQRLIFAGKQLEDGRTLSDYNIQKESTLHLVLRLRGG`.
+No outcome is yet known at this lock.
+
+**Observed result, independently audited:** the locked CPU run
+completed with eight forward calls / 32 input rows, no training, in 60.27 seconds
+including startup. [Runner](../experiments/run_conditional_port_probe.py) and
+[durable result](../experiments/results/conditional_port_v1/result.json).
+
+| Sites | Oriented circulation (nats) | Isolated minimum worst-edge correction | Mean absolute edge (nats) |
+|---|---:|---:|---:|
+| 10,30 | 0.1125717 | 0.0281429 | 2.7736793 |
+| 20,40 | 0.0038663 | 0.0009666 | 0.4396586 |
+| 30,50 | 0.0771118 | 0.0192780 | 2.0189845 |
+| 40,60 | 0.0008296 | 0.0002074 | 0.7473513 |
+
+All four isolated corrections are below the primary 0.1 tolerance and both
+predeclared 0.05/0.2 sensitivities. Repeated identical inputs and two shared-input
+checks agree exactly in this execution. Repeat agreement measures repeatability,
+not a bound on systematic floating-point error or cross-platform variation.
+There is one checkpoint and one declared sequence; no seed/generalization claim.
+
+**Audited interpretation:** this panel finds no isolated incompatibility exceeding the declared
+approximation scale. Exact nonzero circulations are diagnostics, not a negative
+verdict over a learned continuous model. Nor does this small local compatibility
+check validate a globally consistent or biologically useful objective. Do not
+expand the panel to seek a failure. Return to what operation and independent
+task objective would make the existing port useful. Practical significance of
+the tolerance was not validated. Saved values are within-call logit differences,
+not complete destination/reference logits. The timestamped pre-run ledger entry
+documents chronology but is not a cryptographically sealed protocol.
+
+**Post-hoc cheapest null, discovered in the independent audit:** ignore the
+other edited site's state and use one constant preference per site. For a site's
+observed edge values, their midpoint has maximum error half their range. Across
+all measured sites, the largest such error is 0.0722242 nats, below the primary
+0.1 tolerance. This additive class therefore fits the whole observed panel at
+that tolerance. It exceeds the 0.05 sensitivity at site 50. Keeping exactly the
+reference-context preferences instead gives maximum error 0.1444484; do not
+conflate that narrower null with the best additive class. These are post-hoc
+calculations from retained observations, not trained predictors, prospective
+held-out controls or evidence of reduced inference cost.
+
+Fresh real Codex CLI audit session `01a09c8d-6c38-7ea2-9abd-cc7b87cd13ae`
+independently reconstructed token inputs and potentials, upheld the arithmetic,
+and required the additive-null qualification. Verdict relayed by root to audit
+board e5a4e16f entry e1021 under the single-writer custody workaround. Audit
+synthesis completed; this is separate from the scheduled two-hour approach audit.
+**Next question:** what independently scored task requires updating conditional
+preferences, and would those updates improve a competent receiver over fixed-
+reference scoring, additive scoring and direct donor use at matched cost?

@@ -47,6 +47,16 @@ do not require Shannon novelty for every acquisition. Next compare no more than
 two concrete eligible donor–receiver interfaces. No additional model compute,
 construction or scientific result; session apparatus/artifact remains 98/0.
 
+At 20:59 UTC, S21's one bounded small-encoder CPU probe is complete and audited.
+Eight forwards / 32 rows, no fitting; four isolated conditional-potential
+corrections are below all registered tolerances. Fresh real Codex CLI audit
+e1021 found a post-hoc additive class also fits the primary tolerance. This is
+a local interface diagnostic, not reasoning, biological quality or acquisition.
+No expanded panel selected. Next define an independently scored task where
+updating preferences could beat fixed-reference, additive and direct-use
+controls. Session apparatus/artifact is now 217/0 lines, two probes and zero
+construction rounds. Canonical S21 and the ledger preserve exact provenance.
+
 ## Earlier handoffs (historical)
 
 The dated records below preserve the path to the present project. Their runtime,
