@@ -78,19 +78,62 @@ def ranks(values):
         while end < len(ordered) and values[ordered[end]] == values[ordered[start]]:
             end += 1
         for index in ordered[start:end]:
-            result[index] = (start+end-1)/2/(len(values)-1)
+            result[index] = start+end-1  # Doubled midrank: preserve exact ties before aggregation.
         start = end
     return result
 
 
 def spearman(a, b):
+    if len(set(a)) < 2 or len(set(b)) < 2:
+        return None  # Undefined correlation, never classify as zero or a loss.
     return statistics.correlation(ranks(a), ranks(b))
+
+
+def scores(retained):
+    target = [float(x['DMS_score']) for x in retained]
+    donors = [[float(x[c]) for x in retained] for c in DONORS]
+    single = [spearman(x, target) for x in donors]
+    # Positive common scaling cannot affect ordering; avoid floating-point tie splitting.
+    average = [a+b for a, b in zip(*(ranks(x) for x in donors))]
+    combined = spearman(average, target)
+    eligible = combined is not None and all(x is not None for x in single)
+    return {'individual_spearman': dict(zip(DONORS, single)), 'combined_spearman': combined,
+            'correlation_status': 'defined' if eligible else 'undefined_constant_column',
+            'gain_vs_each': dict(zip(DONORS, [combined-x if combined is not None and x is not None else None for x in single])),
+            'gain_vs_retrospective_better': combined-max(single) if eligible else None}
+
+
+def recalculate(directory):
+    path = directory/'result.json'
+    original = path.read_bytes()
+    result = json.loads(original)
+    assert result['status'] == 'complete' and 'numerical_correction' not in result
+    result['numerical_correction'] = {
+        'original_result_sha256': sha(original), 'original_runner_sha256': result['runner_sha256'],
+        'reason': 'Preserve mathematical ties using integer doubled-midrank sums',
+        'source_commit': '0f61942', 'network_requests': 0, 'model_calls': 0}
+    for assay in result['assays']:
+        data = Path(assay['subset_path']).read_bytes()
+        assert sha(data) == assay['subset_sha256']
+        rows = list(csv.DictReader(io.StringIO(data.decode('utf-8'))))
+        assay['original_combined_spearman'] = assay['combined_spearman']
+        assay.update(scores(rows))
+    result['runner_sha256'] = sha(Path(__file__).read_bytes())
+    temporary = directory/'result.tmp'
+    temporary.write_text(json.dumps(result, indent=2, allow_nan=False)+'\n', encoding='utf-8')
+    temporary.replace(path)
+    print(json.dumps([{k: row[k] for k in ['assay', 'combined_spearman', 'gain_vs_retrospective_better']}
+                      for row in result['assays']]))
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--output-dir', type=Path, required=True)
+    parser.add_argument('--recalculate', action='store_true', help='Apply reviewed tie correction offline to retained data')
     args = parser.parse_args()
+    if args.recalculate:
+        recalculate(args.output_dir)
+        return
     assert not args.output_dir.exists(), 'Preserve prior attempts'
     start = time.monotonic()
     indices = [member_index(a) for a in ARCHIVES]
@@ -134,11 +177,7 @@ def main():
             assert math.isclose(values[0], target, rel_tol=0, abs_tol=1e-7), 'Mismatched measured endpoint'
             retained.append({c: row[c] for c in FIELDS})
         assert len(retained) >= 10, 'Insufficient common support'
-        target = [float(x['DMS_score']) for x in retained]
-        donors = [[float(x[c]) for x in retained] for c in DONORS]
-        single = [spearman(x, target) for x in donors]
-        average = [(a+b)/2 for a, b in zip(*(ranks(x) for x in donors))]
-        combined = spearman(average, target)
+        metrics = scores(retained)
         stream = io.StringIO(newline='')
         writer = csv.DictWriter(stream, fieldnames=FIELDS, lineterminator='\n')
         writer.writeheader()
@@ -151,9 +190,7 @@ def main():
             'common_identity_rows': len(common), 'joint_finite_rows': len(retained),
             'invalid_common_rows': invalid, 'truth_without_prediction': len(set(truth_map)-set(pred_map)),
             'prediction_without_truth': len(set(pred_map)-set(truth_map)),
-            'individual_spearman': dict(zip(DONORS, single)), 'combined_spearman': combined,
-            'gain_vs_each': dict(zip(DONORS, [combined-x for x in single])),
-            'gain_vs_retrospective_better': combined-max(single),
+            **metrics,
             'subset_path': subset_path.as_posix(), 'subset_sha256': sha(subset),
             'truth_provenance': truth_prov, 'prediction_provenance': pred_prov,
         })

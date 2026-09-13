@@ -30,7 +30,12 @@ the donor advantage and receiver competence need eligible, matched evidence.
 (S6). The closest inspected external onboarding implementation lacks the
 replacement-contribution null and a matched baseline receiver (S18). Neither
 finding establishes that pretrained donors cannot contribute. Neither artifact
-currently answers the decisive question without new work.
+currently answers the decisive question without new work. The bounded real-
+encoder diagnostic in S21 admits an additive explanation at its primary
+tolerance; the fixed cached-output combination in S22 loses to the better
+individual donor on all four selected assays. These are local screens, not
+evidence against the broader mission. S23 sharpens the remaining question:
+are the promised joint answers identified by what the donors actually expose?
 
 The mathematical aim is an economical operational language for identity,
 substitution, extension and effort. Ordinary mathematics is useful scaffolding.
@@ -1334,17 +1339,17 @@ independent dialogue rounds selected this one bounded screen, with no model
 loading or training. It cannot establish sequential retention, internal transfer,
 biological intervention benefit or generalization beyond the panel.
 
-**Observed, independent audit pending:** the screen completed in 23.86 seconds,
+**Observed, independently audited and numerically corrected:** the screen completed in 23.86 seconds,
 including bounded retrieval, with 8,610 jointly scored variants and no exclusions
 or identity/endpoint mismatches. No model calls or training. The fixed average
 lost to the retrospectively better donor on all four assays.
 
 | Assay | First donor Spearman | Second donor Spearman | Fixed average | Difference from better donor |
 |---|---:|---:|---:|---:|
-| AMFR | -0.208771 | -0.194402 | -0.205581 | -0.011179 |
-| ARGR | 0.331586 | 0.266615 | 0.313553 | -0.018034 |
-| BBC1 | 0.331119 | 0.113237 | 0.238013 | -0.093106 |
-| CBX4 | -0.271018 | -0.320185 | -0.301895 | -0.030877 |
+| AMFR | -0.208771 | -0.194402 | -0.205586 | -0.011184 |
+| ARGR | 0.331586 | 0.266615 | 0.313539 | -0.018047 |
+| BBC1 | 0.331119 | 0.113237 | 0.238012 | -0.093106 |
+| CBX4 | -0.271018 | -0.320185 | -0.301905 | -0.030887 |
 
 Donor order is the locked column order above. Negative signs were investigated
 after calculation: individual values agree to reported precision with the
@@ -1361,6 +1366,25 @@ and [runner](../experiments/run_cached_donor_screen.py) make this bounded screen
 reproducible without any donor runtime. Its next consequence is to require
 task-specific competence and a reason to expect complementary value before
 selecting an expensive interface, not to tune this panel until it wins.
+
+Fresh real Codex CLI audit `01a09c9c-3c7b-7eb3-b9bd-327d54eb9bb5`, relayed as
+audit e5a4e16f e1022, upheld this bounded negative and required a numerical
+correction. Floating-point percentile normalization split mathematical ties in
+the summed ranks. Integer doubled-midrank sums preserve the specified ordering;
+the largest correlation change is 0.00001343, with no verdict change. Corrected
+offline from retained CSVs, then independently checked with SciPy. Constant
+columns are explicitly undefined rather than assigned zero correlation or a loss.
+Original source/result are preserved in commit `0f61942`; current result carries
+original hashes and values. No new network or model calls were needed.
+
+The audit validates the retained subsets and calculations, not independent
+authentication of discarded complete archive members. Source-support and
+endpoint agreement are the recorded runner's checks, with bounded retrieval,
+CRCs and hashes. Preregistration hashes support local chronology, not an
+independently timestamped seal. Byte-preserving Git attributes protect these
+hash-bound inputs, results and runners from platform newline conversion.
+Close this screen. Its failure neither establishes nor excludes exploitable
+complementarity, and is not a reason to tune weights or swap donors on this panel.
 
 ### S23. Pairwise compatibility does not establish a composable growing system
 

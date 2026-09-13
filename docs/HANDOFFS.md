@@ -1,61 +1,54 @@
 # Session handoff — 2026-09-13
 
-## Direction and philosophy
+## Current routing
 
 Read [README](../README.md), [STATE](../STATE.md), and the
-[canonical direction](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) first.
-The user explicitly distinguishes the enduring philosophy of native latent
-mathematics from the current direction of cumulative capability acquisition.
-Preserve the denizen framing and research history; do not collapse the mission
-into a particular architecture or benchmark.
+[canonical direction and decision map](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md).
+Preserve the enduring denizen philosophy—identity, moves, effort, maps and laws—
+and its history. Cumulative capability acquisition is the current direction:
+combine useful contributions from successive pretrained models while retaining
+prior capabilities. Connected growth and assimilation after donor removal are
+separate branches. No cumulative capability or cost advantage is established.
 
-The new direction explores capability grafting, reasoning over multiple encoders,
-and integrating representations/computation from successive pretrained donors.
-Connected growth and assimilation after donor removal are distinct endpoints.
-No new capability is claimed. A subsequent bounded cached-data integrity probe
-found retained legacy exports unsuitable for plan-transfer analysis; see S6 and
-the experiment log. No model was loaded. Old locked panels are
-supporting options, not restart instructions. First propose a bounded acquisition
-interface and falsifiers; choose donors, tasks and budgets only after review.
+**Mode:** autonomous strategy/discovery, including definitions, source study and
+small bounded CPU probes, without system-building or large-model loading.
+Research began at 19:45 UTC; first periodic adversarial approach review is due
+around 21:45 UTC after consolidation. Challenge approach, never mission. GPU
+approval remains per run. Old locked panels and paused lines are not restart
+instructions; no further model run or architecture is selected.
 
-**Subsequent authorization: strategy/discovery is active.** The user confirmed
-autonomous sustained research, analytical work and bounded small CPU probes,
-without system-building or large-model loading. Started 2026-09-13 19:45 UTC;
-first periodic adversarial approach review due around 21:45 UTC, after research
-consolidation/cleanup. Initial bounded review is recorded on audit board
-e5a4e16f e954–e956; it is not the two-hour audit. Its main correction separates
-contribution from deployment and makes donor removal a branch. The canonical
-direction's strategy notebook carries the current definitions, sources and
-questions. Historical result files, runners and negatives remain preserved;
-per-run GPU approval and paused old lines remain in force.
+## Evidence and next boundary
 
-Current focus is canonical S14–S15: donor improvement through an unchanged
-receiver operation, then extension of usable distinctions. Query-only readouts
-do not establish reusable updates. Root is now the sole blackboard writer:
-separate reviewer MCP sessions reused IDs and overwrote integrity entries.
-Integrity verdict restored as audit e1011–e1012; scientific result unchanged.
-Reviewers return findings for root to relay with provenance. Mission synthesis
-remains skipped under the known large-board hang workaround; audit synthesis
-completed. No new model pair or experiment was selected by these dialogues.
+Canonical S6 records ineligible legacy plan exports, upheld by integrity audit
+e1011–e1012. S21 records four local conditional rectangles below registered
+tolerances; fresh real Codex CLI audit e1021 found an additive class also fits the
+primary tolerance. This does not establish useful updating or a global law.
+S22's cached two-donor rank average loses to the retrospectively better donor on
+all four assays. Fresh real Codex CLI audit e1022 identified exact tie handling;
+the correction is in the retained result and independently validated, without
+changing the negative direction. No conclusion about all combinations follows.
+S23 supplies proof-only joint compatibility and identification cautions, not a
+new empirical result or construction proposal.
 
-At the 20:45 UTC checkpoint, canonical S16–S20 and its opening decision map
-organize the remaining questions. Source inspection of a close onboarding
-precedent exposed missing contribution controls, not evidence of impossible
-transfer. Available summary JSONs do not support the proposed alternative-reader
-replay. Distinguish missing information, useful computation and reduced cost;
-do not require Shannon novelty for every acquisition. Next compare no more than
-two concrete eligible donor–receiver interfaces. No additional model compute,
-construction or scientific result; session apparatus/artifact remains 98/0.
+Next identify task-specific donor advantage, a competent receiver operation and
+the coupling evidence needed for joint tasks. Distinguish information novelty,
+usable computation and reduced cost. Do not select an expensive interface merely
+because donor representations exist, expand the conditional panel, or tune the
+screened assays until they win. Detailed decisions and dated checkpoints live in
+[NOTEBOOK](../NOTEBOOK.md), the canonical document and the
+[experiment record](../experiments/EXPERIMENTS.md).
 
-At 20:59 UTC, S21's one bounded small-encoder CPU probe is complete and audited.
-Eight forwards / 32 rows, no fitting; four isolated conditional-potential
-corrections are below all registered tolerances. Fresh real Codex CLI audit
-e1021 found a post-hoc additive class also fits the primary tolerance. This is
-a local interface diagnostic, not reasoning, biological quality or acquisition.
-No expanded panel selected. Next define an independently scored task where
-updating preferences could beat fixed-reference, additive and direct-use
-controls. Session apparatus/artifact is now 217/0 lines, two probes and zero
-construction rounds. Canonical S21 and the ledger preserve exact provenance.
+Session totals: 421 apparatus / 0 artifact-bearing code lines (98 + 119 + 204),
+three probes / zero building rounds, eight model forwards, no GPU or training.
+The user's strategy-only mandate governs; construction is not required to repair
+the ratio. Preserve retained results, source subsets, provenance and negatives.
+
+Root is the sole blackboard writer after cross-session ID collisions; reviewers
+read boards and return findings for root to record with provenance. Integrity
+entries were restored as e1011–e1012. Skip mission synthesis under the documented
+large-board hang workaround; use fresh real Codex CLI sessions for result audits.
+This consolidated routing replaces repeated current-session checkpoints only;
+all earlier handoffs below remain historical evidence.
 
 ## Earlier handoffs (historical)
 

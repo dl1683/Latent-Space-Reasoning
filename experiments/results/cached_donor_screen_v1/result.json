@@ -1,7 +1,7 @@
 {
   "screen": "cached_donor_screen_v1",
   "status": "complete",
-  "runner_sha256": "9c71128085a62f3727d38527370b62d6a6dfadf59d5645746ec76215701370fb",
+  "runner_sha256": "0b5e47b9147bf55b4874f9ddb932246272816df8eb09c04aaf792cce874d7d5a",
   "model_calls": 0,
   "training_runs": 0,
   "donor_columns": [
@@ -26,14 +26,14 @@
       "prediction_without_truth": 0,
       "individual_spearman": {
         "ESM2_8M": -0.20877050779961523,
-        "CARP_600K": -0.19440165050312425
+        "CARP_600K": -0.19440165050312422
       },
-      "combined_spearman": -0.2055808860838056,
+      "combined_spearman": -0.20558570524835662,
       "gain_vs_each": {
-        "ESM2_8M": 0.0031896217158096374,
-        "CARP_600K": -0.011179235580681346
+        "ESM2_8M": 0.0031848025512586087,
+        "CARP_600K": -0.011184054745232402
       },
-      "gain_vs_retrospective_better": -0.011179235580681346,
+      "gain_vs_retrospective_better": -0.011184054745232402,
       "subset_path": "experiments/results/cached_donor_screen_v1/AMFR_HUMAN_Tsuboyama_2023_4G3O.csv",
       "subset_sha256": "20f0688dc628f11cc944ce79e109fc91bb73ca08a9683cc7362f61ab4b7b3f99",
       "truth_provenance": {
@@ -59,7 +59,9 @@
         "archive_etag": "\"71e83e47-633cd6a03f0f6\"",
         "compressed_sha256": "228c1a69d0d3c73a2db71a6b740a92b4b5a9e73104933da7af41cbcf3998b9d3",
         "uncompressed_sha256": "73f613cd2b29fee0d9c9f4321bc1567e7be4d82f99f2a12feb4f0193fff86e78"
-      }
+      },
+      "original_combined_spearman": -0.2055808860838056,
+      "correlation_status": "defined"
     },
     {
       "assay": "ARGR_ECOLI_Tsuboyama_2023_1AOY",
@@ -71,15 +73,15 @@
       "truth_without_prediction": 0,
       "prediction_without_truth": 0,
       "individual_spearman": {
-        "ESM2_8M": 0.3315864044446099,
+        "ESM2_8M": 0.33158640444460985,
         "CARP_600K": 0.2666149918330593
       },
-      "combined_spearman": 0.3135528545814482,
+      "combined_spearman": 0.3135394302090749,
       "gain_vs_each": {
-        "ESM2_8M": -0.01803354986316169,
-        "CARP_600K": 0.0469378627483889
+        "ESM2_8M": -0.018046974235534974,
+        "CARP_600K": 0.046924438376015565
       },
-      "gain_vs_retrospective_better": -0.01803354986316169,
+      "gain_vs_retrospective_better": -0.018046974235534974,
       "subset_path": "experiments/results/cached_donor_screen_v1/ARGR_ECOLI_Tsuboyama_2023_1AOY.csv",
       "subset_sha256": "d456b5e596c932371f39f162789b482a828ad2be6ca465544106264bdecc5591",
       "truth_provenance": {
@@ -105,7 +107,9 @@
         "archive_etag": "\"71e83e47-633cd6a03f0f6\"",
         "compressed_sha256": "abd1b9085612d4c15f0ce61cfdf620c43b77a9fd6d539bca06acb4baa1bbf4e4",
         "uncompressed_sha256": "8dd39c17e974796d6e101e74e12bf3e08178361b3130fa22516b52376df834bb"
-      }
+      },
+      "original_combined_spearman": 0.3135528545814482,
+      "correlation_status": "defined"
     },
     {
       "assay": "BBC1_YEAST_Tsuboyama_2023_1TG0",
@@ -118,14 +122,14 @@
       "prediction_without_truth": 0,
       "individual_spearman": {
         "ESM2_8M": 0.3311189087896386,
-        "CARP_600K": 0.1132366390124074
+        "CARP_600K": 0.11323663901240738
       },
-      "combined_spearman": 0.23801316005019,
+      "combined_spearman": 0.23801242060615116,
       "gain_vs_each": {
-        "ESM2_8M": -0.09310574873944863,
-        "CARP_600K": 0.1247765210377826
+        "ESM2_8M": -0.09310648818348746,
+        "CARP_600K": 0.12477578159374378
       },
-      "gain_vs_retrospective_better": -0.09310574873944863,
+      "gain_vs_retrospective_better": -0.09310648818348746,
       "subset_path": "experiments/results/cached_donor_screen_v1/BBC1_YEAST_Tsuboyama_2023_1TG0.csv",
       "subset_sha256": "cf8e8bbddb924fd15c9981523acd8675f283bd164638b0acaf62969d9af4e9b0",
       "truth_provenance": {
@@ -151,7 +155,9 @@
         "archive_etag": "\"71e83e47-633cd6a03f0f6\"",
         "compressed_sha256": "0e927a854c02706b247d3d05801ac4284de20663f0d9b8b490e4922e9f506b1d",
         "uncompressed_sha256": "cb1d2f3372e522a0bd82816fa8d6e28ef87b8e83c2811bf90ca6d68d8712e3cf"
-      }
+      },
+      "original_combined_spearman": 0.23801316005019,
+      "correlation_status": "defined"
     },
     {
       "assay": "CBX4_HUMAN_Tsuboyama_2023_2K28",
@@ -164,14 +170,14 @@
       "prediction_without_truth": 0,
       "individual_spearman": {
         "ESM2_8M": -0.27101807010346457,
-        "CARP_600K": -0.32018525905479084
+        "CARP_600K": -0.3201852590547909
       },
-      "combined_spearman": -0.3018948465151955,
+      "combined_spearman": -0.30190510851093905,
       "gain_vs_each": {
-        "ESM2_8M": -0.030876776411730922,
-        "CARP_600K": 0.018290412539595347
+        "ESM2_8M": -0.030887038407474476,
+        "CARP_600K": 0.018280150543851847
       },
-      "gain_vs_retrospective_better": -0.030876776411730922,
+      "gain_vs_retrospective_better": -0.030887038407474476,
       "subset_path": "experiments/results/cached_donor_screen_v1/CBX4_HUMAN_Tsuboyama_2023_2K28.csv",
       "subset_sha256": "e224843da3c2bf7ffee68b4436294ca9975c00c40a993118f9a164ac3a387639",
       "truth_provenance": {
@@ -197,8 +203,18 @@
         "archive_etag": "\"71e83e47-633cd6a03f0f6\"",
         "compressed_sha256": "49664413f717c451a949a85a22d6a800c55d02acd3fb1d94936dc16f4ca44819",
         "uncompressed_sha256": "832f0625b0f7fe2601d36b6fe63d87c1ae317ea125c46ecf2d91ce6107b0d0bf"
-      }
+      },
+      "original_combined_spearman": -0.3018948465151955,
+      "correlation_status": "defined"
     }
   ],
-  "wall_seconds": 23.85860410000896
+  "wall_seconds": 23.85860410000896,
+  "numerical_correction": {
+    "original_result_sha256": "09a0f2d23985c5b179f05a2a886fb40a515769131c076f5620f0764536697b19",
+    "original_runner_sha256": "9c71128085a62f3727d38527370b62d6a6dfadf59d5645746ec76215701370fb",
+    "reason": "Preserve mathematical ties using integer doubled-midrank sums",
+    "source_commit": "0f61942",
+    "network_requests": 0,
+    "model_calls": 0
+  }
 }

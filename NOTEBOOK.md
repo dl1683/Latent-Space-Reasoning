@@ -1,5 +1,27 @@
 # NOTEBOOK
 
+### Output screen closes; joint questions need coupling evidence (2026-09-13)
+
+S22's predeclared equal-rank combination of two published prediction columns
+lost to the retrospectively better donor on each of four short-protein assays.
+The 8,610 variants share exact source identity and finite support. The screen
+took 23.86 seconds including bounded retrieval, no model calls or fitting.
+Fresh real Codex CLI audit e1022 required exact integer rank sums to preserve
+ties; corrected offline and checked independently with SciPy. Maximum correlation
+correction 0.00001343; verdict unchanged. Source/result history is preserved,
+and Git attributes now preserve exact evidence bytes. Do not generalize this
+rule's failure to absence of complementarity or feasibility of latent grafts.
+
+S23's independent analytical dialogue distinguishes compatible completion from
+identified joint answers. Pairwise-consistent donor laws can be jointly
+inconsistent; even a compatible tree completion may leave cross-cluster questions
+underdetermined. A future port must expose relevant coupling evidence or declare
+the extra assumption/uncertainty. This is a conditional strategy obligation,
+not a new model result or mandate for one global world model. Next choose a task
+with verified receiver competence and a demonstrably useful donor distinction.
+Session apparatus/artifact: 421/0 lines, three probe rounds, zero construction;
+eight total local model forwards, no GPU or training. Strategy-only mode continues.
+
 ### One bounded encoder-port diagnostic closes (2026-09-13, 20:59 UTC)
 
 S21 compared two concrete resources. Video exports were rejected for this step

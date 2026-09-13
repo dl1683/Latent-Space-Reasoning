@@ -1,0 +1,7 @@
+# Preserve exact bytes for hash-bound strategy-probe evidence on every platform.
+/experiments/run_acquisition_probe.py -text
+/experiments/run_conditional_port_probe.py -text
+/experiments/run_cached_donor_screen.py -text
+/experiments/results/acquisition_cache_integrity_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/experiments/results/conditional_port_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/experiments/results/cached_donor_screen_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

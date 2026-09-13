@@ -1,5 +1,28 @@
 # Experiments Log
 
+## Cached donor output screen: fixed rule loses (2026-09-13; AUDITED)
+
+S22 prespecified four assays, two columns and an equal within-assay midrank
+average before outcome calculation. [Runner](run_cached_donor_screen.py),
+[result and subset provenance](results/cached_donor_screen_v1/result.json).
+All 8,610 variants share finite identity-matched support; no exclusions. Initial
+screen 23.86 seconds including bounded archive retrieval, zero model calls or
+training. Corrected combination correlations: -0.205586, 0.313539, 0.238012,
+-0.301905; each is below the retrospectively better individual score. Individual
+signed correlations match the official per-assay summaries to reported precision.
+
+Fresh real Codex CLI audit e1022 upheld the bounded negative and caught split
+mathematical ties from floating normalization. Integer doubled-midrank sums
+correct the largest correlation by 0.00001343, without changing the verdict.
+Offline correction matches independent SciPy recomputation. Original source and
+result remain in commit 0f61942, hashes retained in the corrected result/ledger.
+Source agreement is the recorded runner check; audit independently checked the
+retained subsets, not discarded full archive members. No tuning or new run.
+This is failure of one fixed rule on four descriptive units, not proof of no
+complementarity, internal transfer limits, generalization or biological utility.
+Session apparatus/artifact: 421/0 lines, three probes, zero construction. No
+further averaging/grafting of this pair is selected.
+
 ## Conditional-port compatibility: bounded panel (2026-09-13; AUDITED)
 
 [S21](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) locked four real-encoder
