@@ -1,5 +1,23 @@
 # NOTEBOOK
 
+### Worked growth episode: where the binding comes from (2026-09-13)
+
+S24 traces an actual released table illustration through a proposed growing page
+representation. OCR supplies text/locations; a structure donor supplies boxes;
+existing geometric postprocessing supplies cell binding; an explicit executor
+supplies later query operations. Two-round dialogue rejected attributing fixed
+binding rules to the donor and rejected a hard-table-only structured baseline.
+Independent source inspection verified the pinned pipeline's inputs, outputs and
+serialization losses. No pipeline, OCR model or training was run.
+
+This is a worked information-and-learning account, not model competence evidence
+or a selected document product. The actual page anchors the fields and later
+query; removing final-answer training still leaves a specified route to its
+answer, conditional on correct text and structure. Whether the added donor beats
+coordinate grouping or direct source extraction is unmeasured. The episode now
+makes repair concrete: future donors can change token identity, crop coordinates
+and header conventions, so old uses may need translation or revalidation.
+
 ### Task-first block resolves its first candidate (2026-09-13)
 
 Traced the documented PFN1 case through public data and pinned curation/evaluation

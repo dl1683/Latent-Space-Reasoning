@@ -1,5 +1,16 @@
 # Experiments Log
 
+## Worked growth episode: source inspection only (2026-09-13)
+
+Canonical S24 uses a released table illustration to assign successive donor
+contributions and the source of joint-use relationships. OCR supplies text;
+structure predictions and fixed binding rules supply cells; an existing executor
+supplies later queries. Two-round design dialogue and independent code reading
+corrected the attribution of binding and strengthened the structured comparator.
+No OCR/table pipeline, training or benchmark was run. Metadata confirms exposed
+component resources only, not task competence. Source image hash and code/model
+revisions are in the ledger. Session model/probe accounting remains unchanged.
+
 ## Specialist task contract: documented case is not discriminating (2026-09-13)
 
 Source inspection, not a new model experiment. At pinned public data revision

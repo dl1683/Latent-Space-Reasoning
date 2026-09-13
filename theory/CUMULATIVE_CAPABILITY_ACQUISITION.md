@@ -184,11 +184,13 @@ dataset or model run is selected. The task-first block recommended by periodic
 audit e1027 closed its PFN1 candidate early (S8): the example's disease endpoint
 admits exact-question lookup and lacks independent effect contrasts, receiver
 role evidence and a verified usable receiver. No full-benchmark verdict follows.
-Next work through one complete acquisition episode on paper: where does each
-needed distinction and cross-donor relationship come from, what must acquisition
-learn, and what earlier use must survive the next donor? No model run or
-reproduction follows automatically. S14/S15 remain interchange and extension
-contracts, sharpened by S23's joint-answer ambiguity.
+S24 now works through one complete acquisition episode on paper, assigning text,
+structure, binding and later query computation to distinct sources. This is not
+a model-result or product-selection milestone. Next make the growth obligation
+precise: what changes when another donor alters token identity, coordinate or
+scope conventions, and which earlier uses can survive without full repair?
+No model run or reproduction follows automatically. S14/S15 remain interchange
+and extension contracts, sharpened by S23's joint-answer ambiguity.
 
 The earlier strong-assert panel is a deferred supporting option, not the
 automatic next experiment. Select work by the decision it changes about this
@@ -1650,3 +1652,97 @@ that pairwise adapters function. A next space might expose overlap identity,
 scope and unresolved coupling; it need not impose one global world model on all
 donors. Do not build a generic consistency harness without an actual interface
 that requires it.
+
+### S24. One worked acquisition episode: adding structure to a persistent page
+
+**Purpose and definition.** This is an on-paper account of where joint-use
+knowledge comes from, not an implementation, selected application, or model
+result. Let a persistent page representation retain source identity, recognized
+tokens and their locations. Acquisition extends the operations or relations
+available over that same page, before later questions arrive. Retention concerns
+declared earlier uses, while correction of erroneous tokens follows an explicit
+policy. The broader project remains native latent mathematics and cumulative
+model contributions; this concrete episode exposes a simple serious baseline.
+
+**Actual page.** The Table Transformer repository's
+[illustration](https://user-images.githubusercontent.com/10793386/139559159-cd23c972-8731-48ed-91df-f3f27e9f4d79.jpg)
+shows Table 4 on page 6 of Popoola et al.,
+[BMC Oral Health 17:8](https://link.springer.com/article/10.1186/s12903-016-0236-6).
+We visually inspected that released illustration, not a new model output.
+A later literal table query is: among rows under socioeconomic status, which
+have a printed numeric P value above 0.9? The displayed middle category has
+0.95, the low category 0.68, and the high category a dash; the answer is the
+middle category only. This is a transcription/query example, not a medical or
+statistical interpretation of the article.
+
+| Episode | Distinction or operation | Its source and learning attribution |
+|---|---|---|
+| Initial receiver | Filter typed records, follow declared relations, compare numbers, count | Existing explicit executor; it must be checked on correctly supplied records, not assumed competent because it is code |
+| First donor acquisition | Word identities, numeric strings, locations and reading order | A pretrained OCR interface; alternatively direct PDF text extraction if the deployment input permits it |
+| Second donor acquisition | Table rows, columns, spanning cells and header regions | Pretrained structure model consumes the page/table image; no final query answer is supplied to it |
+| Cross-donor coupling | Which word belongs to which cell; which row/column the cell belongs to | Shared page/crop coordinates plus explicit postprocessing rules, not a relation magically inferred from matching latent vectors |
+| Later joint question | Scope selection, numeric comparison and output | The existing executor uses the acquired text and structure; any new scope rule or schema conversion must be counted as receiver work |
+| Retained uses | Locate earlier words and read isolated values | Preserve token identity/provenance through structural additions, and test read behavior; copying old records alone is not evidence of all retention |
+
+Removing final-answer supervision does not remove this example's identifying
+relationships: the declared structural interpretation and executor determine
+the answer. But that is conditional on correct text, correct structure and a
+valid interpretation of the section header. Removing the structure leaves an
+open empirical question, not a guaranteed failure: simple coordinate grouping
+may recover the same relations. Removing text leaves boxes without the required
+labels/values unless some other permitted input supplies them.
+
+**Available component interfaces, inspected without loading weights.**
+[Tesseract's documented TSV/hOCR output](https://tesseract-ocr.github.io/tessdoc/Command-Line-Usage.html)
+supplies words, locations, reading-order fields and confidence; ordinary TSV is
+not a distribution over alternative readings. The English fast trained-data
+file is exposed at revision `87416418657359cb625c412a48b6e1d6d41c29bd`
+(4,113,088 bytes). This establishes availability, not competence on the page.
+
+At Table Transformer code revision `16d124f616109746b7785f03085100f1f6247575`,
+[recognize](https://github.com/microsoft/table-transformer/blob/16d124f616109746b7785f03085100f1f6247575/src/inference.py#L756)
+passes the image to the structure model and receives OCR/PDF tokens separately.
+The pipeline does not itself perform OCR. Model output supplies structural boxes;
+fixed rules intersect rows/columns, resolve spans and assign each token to a cell
+by geometric overlap. Header conventions and conflict removal are also explicit
+code. Independent source inspection verified this division of labor. A public
+structure checkpoint exists at `bsmock/TATR-v1.1-All` revision
+`30e6112ea20d72cc9fb8f443e34ca119d497cfe6`; no weights were downloaded or executed.
+These are learned structural predictions plus an existing binding procedure,
+not demonstrated transplantation of that procedure.
+
+**A port choice that has concrete consequences.** The inspected pipeline's cell
+records retain locations, row/column membership, spans and header flags. HTML
+and CSV omit some of those fields; CSV additionally flattens headers and repeats
+spanning-cell text. The pipeline does not expose a joint distribution over
+alternative assignments. Omission of a field does not alone prove that a later
+query becomes impossible: it may be reconstructible. Compare actual retained
+distinctions and queries before declaring an interface inadequate.
+
+The strong structured alternative can preserve multiple readings, alternative
+parses and coupled assignment constraints. It is not limited to one hard table
+or independent confidence scores. Such a schema and inference procedure would
+require work and cost accounting; do not assume they come free. A richer learned
+port earns investigation if a specific useful distinction or efficient operation
+is lost by a comparably funded explicit interface, not because explicit ports
+are intrinsically incapable of uncertainty.
+
+**Growth and access boundaries.** Keeping callable donors supports new pages;
+keeping this page's annotations only supports later questions about this page.
+The question arrives after representation acquisition, so a cached answer to it
+is not the proposed persistent artifact. The source HTML/annotations are for
+inspection and evaluation; if they are available to the deployed receiver, direct
+use is the first comparator. An image-only contract must be stated rather than
+silently hiding a cheaper available source. Later donor updates may change crop
+coordinates, tokenization or scope conventions; those changes create actual
+repair obligations even if neither backbone is trained again.
+
+**Decision from the episode.** It is possible to assign the joint-use relations
+to concrete resources without postulating one universal latent space. Whether
+these particular donors add value on this page is unmeasured. The next scientific
+question is which part of a growing interface must change when a donor adds a
+new distinction, and what earlier operations can remain meaningful. Token/cell
+identity, scope, correction and continuation are useful vocabulary here; pixel
+geometry and fixed table rules remain ordinary scaffolding. This episode is not
+a demonstration of new mathematics or latent-model structure. No OCR, table
+pipeline, acquisition training, benchmark or uncertainty system is queued.

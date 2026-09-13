@@ -52,12 +52,12 @@ resources: independent effect contrasts, receiver role competence and a usable
 original receiver. The candidate closed early; no full-benchmark score or claim
 that the trained model ignores DNA. Source and independent checks are in the ledger.
 
-**Next question:** where does the relationship needed to combine successive
-donors come from? Work through one complete acquisition episode on paper,
-assigning every distinction and cross-donor relationship to an existing donor,
-retained operation, supplied reference or new learning. Specify the second
-addition and repair of old uses. This is strategy, not construction. Conditional
-value need not include standalone superiority; receiver adaptation is valid when
+**Worked episode and next question:** S24 assigns text, structure, binding and
+later query computation to explicit sources on an actual table illustration.
+This is an on-paper growth contract, not a model result or document product.
+Next specify what changes when a donor changes token identity, coordinates or
+scope, and which earlier uses can survive without full repair. Conditional value
+need not include standalone superiority; receiver adaptation is valid when
 attributed. No model run, panel expansion or reproduction project is selected.
 
 **Session accounting:** 421 apparatus / 0 artifact-bearing code lines
