@@ -1,5 +1,24 @@
 # NOTEBOOK
 
+### Pre-review synthesis: resource contracts and legal interventions (2026-09-13)
+
+Integrated the conditional route-choice table into the canonical direction:
+typed ports, learned receiving interfaces, shared state/atlas, compact exports
+and co-designed spaces require different evidence; none is selected. S10.3
+extends the reusable-export counting example to approximate binary answers with
+recipient side information. This separates retained new information from overlap
+and computation accessibility; it is not a model-size lower bound. S8's targeted
+source follow-up records what a specialist-encoder bridge receives and learns.
+Sequence-only swaps can contradict variant-identifying text, so legal input
+consistency must precede that intervention. No further compute or new model claim.
+
+Independent entropy sweep consolidated STATE/HANDOFF while preserving historical
+sections. Deposited scoped methodological residue in the closed capability-
+translation sibling (commit 57f8623) and refreshed only the LSR row/lesson in the
+unversioned portfolio index. Its closure and the other portfolio rows remain
+unreassessed. This prepares the current record for the first periodic approach
+audit around 21:45 UTC; result audits already completed are not replacements.
+
 ### Output screen closes; joint questions need coupling evidence (2026-09-13)
 
 S22's predeclared equal-rank combination of two published prediction columns

@@ -176,13 +176,47 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 ## Next-work boundary
 
-Direction and documentation are adopted; no donor, architecture, dataset or
-model run is selected. Next investigate the S14 interchange contract and S15
-extension criterion against available evidence, including strong structured-port
-baselines. The earlier strong-assert panel is
-a deferred supporting option, not the automatic next experiment. Select work by
-the decision it changes about this direction while preserving the broader
-philosophy and its other possible applications.
+Direction and documentation are adopted. The three bounded screens in S6/S21/S22
+are closed with their qualifications; no further donor pair, architecture,
+dataset or model run is selected. Next identify an independently verified donor
+advantage, an already competent receiver operation, and the coupling evidence
+needed by the promised joint task. Do not promote general benchmark competence
+to competence on that particular task. S14/S15 remain candidate interchange and
+extension contracts, sharpened by S23's joint-answer ambiguity.
+
+The earlier strong-assert panel is a deferred supporting option, not the
+automatic next experiment. Select work by the decision it changes about this
+direction while preserving the broader philosophy and its other applications.
+
+## Conditional route choices
+
+These are research branches, not a construction plan or a required ladder. The
+same task and access contract must control comparisons; otherwise the route with
+more information or supervision can appear to have a better latent language.
+
+| Route | Evidence that would make it appropriate | What must be worked out |
+|---|---|---|
+| Typed donor ports with an explicit executor | Existing callable outputs supply the needed distinctions and a competent executor can use them | Scope, units, uncertainty, arbitration and total donor-call cost; direct use is a serious baseline and can be a useful endpoint |
+| Frozen donors with learned receiving interfaces | Donor advantage is verified, but current receiver access loses it; calibration-only supervision can plausibly repair that mismatch | Attribute learning to donor, adapter and receiver separately; show preservation under a new use rather than only the fitted task |
+| Persistent shared state or an atlas of ports | Joint tasks need retained intermediate distinctions and reusable operations that the cheaper interface cannot economically support | Identify legal writes, old-operation preservation, new distinctions, coupling evidence and growth cost; a common coordinate chart alone is insufficient |
+| Compact donor-independent export | Deployment requires removal of donor runtime, with an explicit future question family and acceptable loss | Compare caches, distillation and reusable exports; count all retained donor-derived information and validate questions beyond stored answers |
+| Co-designed next latent space | Repeated, localized, task-relevant interface failures identify a missing structure that simpler remedies do not restore | Build only the needed distinction or operation and test its causal contribution; failure of one adapter or diagnostic does not prove an architectural hole |
+
+**Learning accounting:** list which component receives paired examples, task
+labels, teacher answers, inference-time evidence and updates. Generic paired
+alignment data can legitimately teach an interface; task-answer supervision can
+legitimately teach capability. Neither should be silently attributed to knowledge
+already exposed by the frozen donor. A randomized-donor or uninformed-feature
+control is useful when it tests that attribution, with input, labels, trainable
+capacity and budget matched. It is not a universal control that every experiment
+must run regardless of its claim.
+
+**Near-term strategy deliverable:** one task-specific contract with a competent
+direct route, a named useful missing distinction, an obtainable donor port,
+declared acquisition information, and one result that would change the chosen
+route. The recent probes do not yet supply that contract. More diagnostics are
+not a substitute for it. No route above is licensed to claim a new kind of
+reasoning merely because it omits autoregressive text output.
 
 
 ## Strategy notebook
@@ -573,6 +607,31 @@ backbones and learning the integration. Neither sequential donor addition nor
 donor-independent assimilation is demonstrated. Explanatory prose is not by
 itself evidence that the stated intermediate causal mechanism drove the answer.
 
+**Targeted attribution follow-up:** in the examined KEGG methods and tables,
+questions include variant/gene/network context. A question-only or randomized-
+encoder comparison was not identified there. This is a control gap, not proof
+that the encoder is unnecessary. At official code commit
+`684ff7c09eb1d65e70925c114a7a05a1fcc0403f`, the
+[formatter](https://github.com/bowang-lab/BioReason/blob/684ff7c09eb1d65e70925c114a7a05a1fcc0403f/bioreason/dataset/kegg.py#L21)
+sends raw sequences plus the question to the text baseline, versus separate
+sequence fields plus the original question to the integrated route; supervised
+targets include reasoning and answer. The
+[training setup](https://github.com/bowang-lab/BioReason/blob/684ff7c09eb1d65e70925c114a7a05a1fcc0403f/train_dna_qwen.py#L100)
+supports freezing DNA weights, adapting language-model weights and training the
+projection. The existence of this mechanism does not isolate what pretraining,
+the bridge or supplied context contributed.
+
+**Our control correction after dialogue:** swapping DNA alone is not a clean
+task intervention when unchanged text specifies the original variant; it can
+create contradictory inputs. Use naturally matched valid examples whose text
+does not disclose the difference, replace all dependent fields coherently with a
+corresponding text-only arm, or explicitly define a new task that removes the
+revealing fields consistently. A gene/pathway match alone is insufficient.
+Variant metadata plus an accessible reference can determine the sequence, making
+the encoder's benefit one of accessibility rather than Shannon novelty. Preserve
+that legitimate benefit while comparing supplied-field prediction or declared
+reference lookup against the integrated route. No new experiment is selected.
+
 **A relevant negative:** Azevedo and Loures, *Can LLMs Use Relational Transformer
 Embeddings?*, August 2026, [§§3–4](https://arxiv.org/html/2609.00457).
 Frozen relational embeddings, a learned projection and LoRA/SFT/RL language-model
@@ -657,6 +716,28 @@ models; structure, approximate answers and restricted queries can reduce cost.
 Finite precision matters: a real number with unbounded precision is not a
 one-bit message. Model weights, indices, adapters and caches are all information
 storage when they depend on the donor.
+
+**Approximate extension S10.3, analytical only.** Let X be N binary answers,
+S the recipient's existing retained information, and M a fixed-length B-bit
+export available before the queried coordinate is known. Suppose answers
+computed from (S,M) have mean bit error at most epsilon <= 1/2. For the binary
+entropy function h2, the ordinary information bound is
+`B >= H(X|S) - N*h2(epsilon)` (or zero if the right-hand side is negative).
+For each coordinate, its error flag determines the true bit given the predicted
+bit; hence `H(X_i|S,M) <= h2(error_i)`. Conditional entropy is subadditive,
+and concavity of h2 bounds the sum by N*h2(epsilon). Subtract from H(X|S) and
+use `I(X;M|S) <= H(M|S) <= B`. No model experiment is needed for this argument.
+
+This makes the role of overlap explicit. Truly unpredictable additional answers
+require retained information at fixed error; redundant answers can be compressed.
+If answers are generated by a short reusable rule, their joint entropy need not
+grow like the number of queries. When the donor merely makes information already
+in S easier to compute, the bound can be vacuous; S19's accessibility and total-
+cost questions then matter. The bound applies to this stated binary query family,
+not model parameter counts, all pretrained knowledge or an unknown future workload.
+An API that recomputes an answer after seeing the query uses a different resource
+contract. Do not compare its one-answer message size with a query-independent
+release while ignoring the retained donor computation.
 
 **Native interpretation:** every new kind of question can require splitting
 places the old world treated as identical. The persistent system need not keep
