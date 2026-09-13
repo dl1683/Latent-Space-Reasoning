@@ -92,7 +92,7 @@ preserve composition before selecting an alignment objective. This is a proposed
 definition/proposition attempt, not a new theorem. The governing order remains
 math first, intuition second, compute third.
 
-## Candidate evidence progression
+## Candidate evidence branches
 
 1. Establish a competent base on A and a competent donor on B; measure the base's
    B deficit and avoid ceiling effects.
@@ -100,9 +100,12 @@ math first, intuition second, compute third.
    acquisition and A retention with proximal causal controls.
 3. Test held-out tasks requiring A and B together. Removal or replacement controls
    must distinguish joint use from one contributor solving the task alone.
-4. Remove donor runtime access and measure what remains.
-5. Introduce a second donor and retest retention and cross-donor composition.
-   One integration does not establish cumulative growth.
+4. Branch by deployment: retain, selectively call, cache, distill, or remove the
+   donor. Removal tests assimilation; it is not a required graduation from useful
+   connected growth.
+5. Introduce further donors and retest retention, acquisition-order effects and
+   cross-donor composition. One integration does not establish cumulative growth;
+   two integrations do not establish an indefinitely extensible system.
 
 Compare against the cheapest direct remedy and relevant budget-matched controls:
 base alone, donor alone, simple routing or text-mediated combination, retrieval
@@ -139,3 +142,500 @@ review its falsifiers before implementation. The earlier strong-assert panel is
 a deferred supporting option, not the automatic next experiment. Select work by
 the decision it changes about this direction while preserving the broader
 philosophy and its other possible applications.
+
+
+## Strategy notebook
+
+Status: active autonomous strategy/discovery, authorized 2026-09-13. No system
+building. This section is a working problem map, with propositions explicitly
+labeled as attempts until checked. Small CPU experiments may discriminate
+hypotheses; no large-model acquisition or massive compute is planned.
+
+### S0. Initial decomposition and questions
+
+The contribution from a donor could be (a) facts or associations, (b) a reusable
+operation, (c) a representation that makes existing operations cheaper or easier,
+or (d) ongoing access to donor computation. These are candidate categories, not
+a claim of exhaustiveness or mutual exclusion. Each needs separate endpoints.
+
+Questions to resolve first:
+
+- What distinguishes knowledge transfer from learning the same answers from
+  donor-produced examples, and when is that distinction useful rather than cosmetic?
+- Which interfaces expose executable operations, rather than snapshots?
+- Can two donor interfaces be aligned observationally while disagreeing under
+  interventions or new compositions? What extra evidence resolves the ambiguity?
+- Does a persistent system need a common space, a family of translated spaces,
+  or an expandable typed state? Which observation would favor one?
+- What is the minimum useful donor-independent artifact, and what must it retain?
+- What incremental advantage should survive a router, text channel, retrieval,
+  direct distillation and equally funded new learning?
+- Which parts of the shape can be resolved analytically or from existing data
+  before any model is loaded?
+
+Initial strategy expectation: useful representation similarity will often be
+insufficient for operation transfer. Counterexamples should identify exactly
+which missing assumption matters; they do not imply real models cannot transfer.
+A second expectation is that factual acquisition and computational acquisition
+need different controls. We will revise either expectation if the evidence does.
+
+### S1. Access before architecture (initial approach review, 2026-09-13)
+
+Review recorded on audit board e5a4e16f, entries e954–e956. The mission remains
+fixed. The correction is to separate contribution (information, operation,
+accessibility, cheaper realization) from deployment (retained, called, cached,
+distilled, removed). Donor removal is one research branch. Knowledge learned
+from examples remains useful acquisition if its generalization and costs justify
+it; hidden-state transfer is not inherently a higher form of learning.
+
+**So what:** a future system could keep learning useful things from new models
+without discarding what it already knows or rebuilding everything each time.
+
+**Definition attempt S1.1 — acquisition experiment.** Specify a tuple
+`(R, D, E, U, V_old, V_new, V_joint, B)`: recipient R; donor D; permitted export
+interface E; acquisition procedure U; old, new and joint task/continuation
+families V; and resource budget B. E includes what can be queried, on which
+inputs, with which interventions, how often, and whether access survives
+acquisition. The retained artifact is `R' = U(R, transcript(E,D))`; this notation
+includes a connected system whose transcript grants continuing donor access.
+For a donor-independent artifact, future D calls are explicitly absent.
+
+This separates three questions: does E expose the required distinction; can U
+make it usable within B; and does the resulting behavior remain useful after
+later acquisitions? Failure of the second is not evidence against the first.
+
+**Proposition attempt S1.2 — access ambiguity.** Let two possible donors D0 and
+D1 induce the same distribution of every transcript obtainable under the
+declared acquisition protocol. Suppose the desired donor-relative binary answer
+on one held-out query is 0 for D0 and 1 for D1. A donor-independent acquisition
+algorithm with no other distinguishing information cannot guarantee success
+above 1/2 on both donors on that query. Proof: its output law is the same in both
+worlds. If it answers 1 with probability p, the two success probabilities are
+1-p and p, whose minimum is at most 1/2. With equally likely worlds, their mean
+is 1/2. Abstention cannot increase unconditional correctness. This elementary
+identifiability argument is not a new mathematical result or a claim that actual
+models form such a pair.
+
+**Concrete operational witness.** Both donors expose states s0 and s1 with the
+same coordinates and current readout 0. A third state s2 has readout 1. All
+observed calibration actions loop at s0. An unqueried action a at s1 loops to s1
+in D0 but moves to s2 in D1. Paired static embeddings can match perfectly,
+including s2, while the answer after a differs. Querying a at s1 resolves this
+particular ambiguity. Passive alignment alone does not. This is a logical
+counterexample, not a toy-world capability experiment.
+
+The escape is a justified restriction or additional access: covered transitions,
+a known operation family, a restricted reachable domain, or tested regularity.
+Finite observations need not be hopeless: they can identify a finite known
+family. Conversely, more adapter parameters do not supply missing information.
+For an adaptive protocol the premise concerns its whole transcript law, not
+merely the initial calibration set.
+
+**Question generated:** what is the weakest task-relative equivalence that
+permits joint use without forcing the recipient to imitate the donor's internal
+algorithm? State/action conjugacy would be sufficient in some settings but is
+likely unnecessarily strong for acquisition.
+
+### S2. Growing the questions, not just the coordinates
+
+**Definition attempt S2.1 — conservative interface extension.** An old interface
+I has legal queries/actions and responses. An extended interface I' includes a
+meaning-preserving embedding of old queries/actions and admits new ones. On a
+declared distribution or reachable domain, old response laws change by at most
+epsilon under the embedded old interactions. New tasks are evaluated separately.
+For generative interfaces the response includes termination/abstention and the
+declared output interpretation. No universal numerical epsilon is assumed.
+
+Old observational equality need not survive the new questions: two states that
+previously answered every available question alike can become distinguishable.
+Therefore extending a fixed old quotient can require splitting a class. Adding
+coordinates without adding usable queries need not add an accessible capability.
+Conversely, an expanded query language may expose distinctions already encoded.
+Neither case alone establishes new information acquired from a donor.
+
+**Three independent retention obligations:** (i) an old path remains executable;
+(ii) that path still behaves adequately; (iii) the deployed selector still uses
+it appropriately. Freezing old weights addresses only part of these obligations.
+Adding a router can degrade deployed performance with every old module intact.
+
+**Growth bookkeeping, not a lower bound on learning complexity.** N directed
+donor-to-donor adapters require at most N(N-1) pair interfaces if all pairs are
+implemented separately. A fixed hub needs at most 2N directed adapters, but this
+does not guarantee constant integration effort or semantic compatibility. A hub
+update can invalidate earlier maps; a fixed hub may fail to express a genuinely
+new distinction. Candidate alternatives include stable typed ports, a versioned
+hub with old semantics preserved, and an atlas of partially overlapping spaces.
+No choice has been made. The next discriminant is which obligations change when
+one donor with a new distinction arrives, not which diagram looks simplest.
+
+### S3. Primary-source map: what can already be reused?
+
+Read on 2026-09-13. These are externally reported results, not project
+replications. Rows distinguish demonstrated mechanism from our inference about
+its relevance. A paper's use of "latent" does not establish the project's full
+acquisition contract. Section/table locators make the reading reproducible.
+
+| Primary source | Mechanism and evidence read | Strategic implication / limit |
+|---|---|---|
+| Moschella et al., *Relative representations enable zero-shot latent space communication*, 2022/ICLR 2023, [paper](https://arxiv.org/html/2209.15430), §§3,5,6 | Coordinates are similarities to corresponding anchors. Exact cosine invariance covers angle-preserving transformations, not arbitrary shifts. Frozen pretrained encoders can feed classifiers trained on relative representations; reconstruction experiments train relative interfaces end to end. Table 6 shows substantial variation across encoder/decoder pairs. | Anchor-relative interfaces are a concrete reuse baseline. "Zero-shot" stitching does not mean the receiving readout never learned this interface. Arbitrary acquired operations and cumulative retention remain separate questions. |
+| Rusu et al., *Progressive Neural Networks*, 2016, [paper](https://arxiv.org/html/1606.04671), §§2,5 and Appendix B | Add a new trainable column with lateral access to frozen old columns. Sequential reinforcement-learning experiments examine transfer. The basic construction grows hidden units linearly and parameters quadratically with columns. | Connected growth with frozen earlier computation has a concrete precedent. Its bookkeeping and old-task selection requirements belong in our baselines; it does not assimilate arbitrary independently trained donors for free. |
+| BehnamGhader et al., *LLM2Vec*, 2024, [paper](https://arxiv.org/html/2404.05961), method and Appendix A | Decoder backbones become embedding models through bidirectional attention, masked next-token adaptation and contrastive learning. The limitations discuss model and index size. | Supports decoder-to-encoder adaptation as a candidate export. The retained backbone is not a tiny standalone embedding table, and embedding quality does not establish preservation of donor reasoning. |
+| LCM team et al., *Large Concept Models: Language Modeling in a Sentence Representation Space*, December 2024, [paper](https://arxiv.org/html/2412.08821), §§2.4,3,6 | Learn a next-sentence model over SONAR representations. Initial 1.6B models use about 1.3T tokens; the 7B version about 2.7T. Limitations include fragile numbers/code, local geometry versus global prediction, and encoder mismatch. | Reasoning/generation over an encoder space is a real research route, but this precedent trains substantial new computation. It does not establish that a cheap reasoner is already recoverable from embeddings. Encoder, transition and decoder costs all matter. |
+| Liu et al., *The Vision Wormhole*, February 2026, version 2 May 2026, [paper](https://arxiv.org/html/2602.15382), Appendices C,D | Train per-model codecs through a visual-token interface using text teacher behavior; align universal tokens with paired anchors. Frozen backbones still execute read/think/write cycles. Appendix D presents a shared-semantics affine model as an explanatory hypothesis; scope depends on compatible visual interfaces. | A hub with learned ports is relevant to connected growth. Interface count is not proof of semantic extensibility; the paper's hypothesis is not a general theorem about arbitrary donors. |
+| Chen et al., *See What I See, Know What I Think*, June 2026, [paper](https://arxiv.org/html/2606.13594), §§4,5 | Cache reconstruction followed by receiver-style supervised reasoning trains a communication module. Six directions among three sizes of one model family; context-aware and context-unaware evaluation. Inference FLOPs use a parameters-per-token estimator. | Dense context transfer and auxiliary steering are distinct uses. This is trained inter-model communication with donor runtime, not demonstrated permanent acquisition of its parametric knowledge. Broader architectural and repeated-acquisition claims need additional evidence. |
+| Liu et al., *Dual-Cache Latent Space Communication between Heterogeneous Language Models*, August 2026, [paper](https://arxiv.org/html/2608.20617), §§3–5 and Tables 5,22–24 | Frozen sharer/receiver models get partitioned evidence; learned cache pooling, joint memory and residual injection train on answer cross-entropy. Three families, nine ordered pairs, five tasks; paper reports one run on an A100 and a 64-token receiver cap. Text baseline generates a message. | Particularly close to complementary-context composition. A direct evidence-forwarding baseline matters because generating a summary is not always the cheapest text channel. Reported wins do not establish termination gates, repeated acquisition or donor removal. We do not import their efficiency headline as a project claim. |
+| Gröger, Wen and Brbić, *Revisiting the Platonic Representation Hypothesis: An Aristotelian View*, February 2026, version 2 June 2026, [paper](https://arxiv.org/html/2602.14486), §§4–7 | Calibrate similarity against sample permutations and calibrate the actual layer-selection aggregate. In tested settings, local neighbor agreement survives better than global spectral/distance agreement. Guarantees require exchangeability; clustered samples need restricted permutations. | Geometric correspondence is an uncertain empirical ingredient. Use matched dimensionality/search nulls when geometry is investigated; even calibrated correspondence does not establish causal transfer. |
+
+**Pending source, not fully assessed:** Smith, Mannering and Marcu,
+*Functional Alignment Can Mislead: Examining Model Stitching*, ICML 2025,
+[proceedings](https://proceedings.mlr.press/v267/smith25a.html). Abstract reports
+successful stitching across different biases/modalities and clustered noise.
+Full PDF access failed through the available web fetches. Do not infer its exact
+noise construction, supervision or controls from the abstract. Its central
+interpretive concern also follows independently from S1's access argument.
+
+**Synthesis so far (our inference):** available components make connected
+communication plausible enough to investigate, while pretrained spaces may
+discard distinctions required for exact downstream tasks. The sharper open
+problem is acquiring *reusable, compatible contributions under bounded new
+learning*, not merely constructing another shared chart. This is a working
+research emphasis within the mission, not a claim of novelty or architecture
+selection.
+
+### S4. Cheap-trick controls arise from the information path
+
+For partitioned-context tasks, a message-producing language model is not the
+cheapest text baseline. Forward the already available source evidence verbatim
+(within a matched context budget), retrieve the relevant span, or send a compact
+structured field. A latent channel winning against generated prose could be
+avoiding unnecessary generation rather than transferring inaccessible knowledge.
+This is our proposed control, not a claim that the cited methods fail it.
+
+For donor facts unavailable in the recipient, record where acquisition labels
+came from. If the correct answers supervise an adapter, an equally funded
+learner with those answers has received part of the very contribution being
+attributed to the donor. This does not invalidate supervised transfer; it changes
+the baseline needed to establish incremental value from internal representations.
+
+For repeated tasks, compare cached answers/retrieval before maintaining a whole
+donor. For new operations, hold out *uses of the operation* and joint
+compositions, not just names in a fixed answer table. For cheaper realization,
+match quality and termination before comparing recurring cost, and include the
+one-time acquisition bill. For verbosity reduction, direct decoding/prompting
+controls come before a supposed verbosity subspace.
+
+**Proposition attempt S4.1 — break-even accounting.** If acquisition adds cost A
+and changes mean per-query cost from c0 to c1 at an accepted quality level,
+then after n queries the net compute saving is `n(c0-c1)-A`. For c1<c0 it turns
+positive only above `A/(c0-c1)` queries. If c1>=c0 there is no compute break-even
+under this stationary model. This accounting does not value higher quality,
+latency constraints or privacy; report those separately. For donor-selective
+runtime, c1 must include call probability and donor prefill/computation. Storage
+and integration repair across versions need their own totals.
+
+**Existing-data check:** the current `experiments/results` tree contains no
+retained `.npz/.npy/.pt/.safetensors/.parquet` arrays/checkpoints in the checked
+extensions (including ignored files). Several representation directories retain
+manifests or summary JSON rather than paired activations. Large donor checkpoints
+and old scorer artifacts exist under `legacy`; they were not loaded. This does
+not prove no useful numerical data exists inside JSON or elsewhere. Next inspect
+specific retained response tables only if a new question can be answered; do not
+repeat an old congruence calculation merely to produce a compute receipt.
+
+### S5. Contextual substitution instead of algorithm imitation
+
+Reviewer dialogue sharpened the S1 question. A recipient may implement the same
+useful operation through a completely different internal algorithm. Requiring a
+global bijection or step-for-step donor simulation would exclude valid reuse.
+
+**Definition attempt S5.1 — task-port substitution.** A port specifies accepted
+inputs, outputs, session/reset semantics and legal interaction histories. Let C
+be a declared family of downstream contexts: procedures that can call this port,
+combine its results with other contributors, and produce an observable result.
+Ports P and Q are epsilon-substitutable relative to C if, for every included
+context and initial condition, the final response laws differ by at most epsilon
+in the declared metric. With total variation, every bounded [0,1] output score
+changes in expectation by at most epsilon. This is a behavioral definition, not
+an efficiently checkable certificate. A small tested C licenses only that scope.
+
+**Sufficient-condition attempt S5.2.** For contexts making at most k adaptive
+calls, suppose P and Q have conditional output kernels within epsilon_i in total
+variation at call i on every common reachable interaction history. Suppose the
+same context receives no other distinguishing side channel and its own random
+choices can be shared. Then final-response TV is at most
+`min(1, sum_i epsilon_i)`. Couple each next port output maximally while histories
+agree. A union bound controls the first disagreement; if none occurs, all
+subsequent context computation and the final answer can agree. No correspondence
+between internal hidden states or algorithms is needed. Kernel coverage is the
+substantive assumption, not something supplied by a small calibration sample.
+Timing, errors and termination must be included among responses when contexts
+can observe them. General continuous spaces require the usual measurable kernel
+and coupling conditions; the elementary proof here is for finite outputs.
+
+**Why marginal tests fail.** P samples one fair bit per session and returns that
+same bit on every call. Q samples a new independent fair bit per call. Every
+single-call marginal is identical. A context asking twice and checking equality
+returns true with probabilities 1 and 1/2. Once the first response is known,
+the second-call kernels differ. A snapshot export that loses session identity
+can therefore pass isolated-query tests and fail composition.
+
+**Why this matters for the denizen:** a usable imported tool must continue to
+mean the same thing when used again, chained with another tool, or applied after
+an intervening action. A static chart cannot specify those obligations alone.
+The native vocabulary candidates are typed ports, continuation-sensitive
+identity, admissible contexts and extension laws. Existing mathematical language
+is welcome; the contribution must be useful structure discovered in real spaces.
+
+### S6. Candidate cached-data eligibility (before numerical fitting)
+
+Read-only metadata inspection found two small legacy latent bundles, each about
+55 MB, under `legacy/checkpoints/latent_scorer/`: unsuffixed
+`gemini_training_merged_latents.pt` and the `_qwen3_4b_1024.pt` variant. Their
+pickle metadata names different encoder models and stores query/plan latents,
+scores and metadata. We inspected archive metadata without deserializing tensors.
+These may permit a tiny cross-model probe, but filenames are not paired-data
+provenance.
+
+**Expectation before an integrity check:** genuine paired representations should
+have matching record identities/targets and nonidentical query/plan tensor
+storage. Identical feature storage would void their use as independent donor
+views. Different storage plus matching scores is necessary but insufficient:
+row identity, pooling/projection and source-task leakage still need checking.
+The simplest confound is duplicated or misaligned records, so inspect archive
+shapes/metadata/storage hashes first; do not fit a bridge yet. No model loading,
+training or capability comparison is authorized by mere cache existence.
+
+**Integrity result, 2026-09-13:** both archives describe 13,464 rows, 1,024
+dimensions, layer -4 and mean pooling. Feature storage hashes differ; score
+storage hashes match exactly. Unsuffixed query/plan SHA256:
+`8871c1cf0c3220d88b0036780b4b80fa41fe28db3162778d5855c478b02a903f`,
+`1be832e90a61499881e68a75fdab145a2ab4000f9cd96ad5080732b5d56b18d4`.
+Suffixed query/plan SHA256:
+`3344f26688c68b00473ff26fc355bc992453df312b01c1d54bf82d2398d27748`,
+`7d9941cdb6bd05374a9ca1c7810e78ba6bd299dd52ac200cd5c129f52a31857a`.
+Common scores SHA256:
+`3c07f300e63211de975b5a57b03064ca693b9a41a61f82fa6e3417848cddecec`.
+This eliminates exact feature-file duplication, not row misalignment or shared
+projection confounding. No row identifiers appear in inspected metadata. These
+are legacy quality-scorer targets, not ground-truth reasoning-capability labels.
+
+**Next integrity question, predeclared:** do repeated query-row partitions agree
+between bundles? Identical repeat groupings would strengthen, but not establish,
+row correspondence. Different groupings could reflect batching/precision or
+misalignment and would require provenance before analysis. Hash exact row bytes;
+do not interpret equality as a semantic equivalence relation. Inspect only these
+two roughly 55 MB bundles; no model or fitting. The surviving encoder code
+(`legacy/src/latent_reasoning/core/encoder.py`, `_init_latent_projection`) initializes
+dimension reduction by retaining the first coordinates, not a learned universal
+map. The cache metadata does not pin that implementation revision, so treat this
+as a provenance concern, not established cache-generation behavior.
+
+**Full bounded integrity probe:**
+[`run_acquisition_probe.py`](../experiments/run_acquisition_probe.py),
+[result](../experiments/results/acquisition_cache_integrity_v1/result.json).
+Initial scan completed in under one second; after schema hardening the final
+scan took about 1.23 seconds. No model calls, tensor deserialization or training. Unsuffixed queries: 2,906/13,464 rows wholly nonfinite. Unsuffixed
+plans: all 13,464 rows wholly nonfinite and byte-identical. Suffixed queries and
+plans are finite, but plans have only 79 distinct rows; 13,386 rows are the all-zero vector.
+Among 10,558 mutually finite query rows, exact repeat partitions agree on 9,823
+row representatives. Exact partitions are integrity diagnostics, not semantic
+identities. Unknown batching/precision and missing IDs prevent a stronger pairing
+claim.
+
+**Decision:** do not use these bundles for cross-model plan transfer or
+capability attribution. The failure is in the retained export's eligibility;
+it does not prove either underlying model lacks useful structure. The finite
+query subset might support a narrowly scoped representation exercise after
+provenance recovery, but that is lower leverage than the current strategy
+questions. No source caches were modified or discarded. Their original creation
+failure is not diagnosed here, and historical capability claims are not inferred
+from this old scorer material.
+
+**S6 review closeout:** independent audit e962–e963 upheld scoped export
+ineligibility and independently confirmed NaNs and zero vectors. The runner now
+pins the reviewed metadata hashes, shape and byte order. No source repair or
+query-subset alignment is selected. Final result and runner hashes are in the
+ledger review event.
+
+### S7. Adequacy, substitution and justified correction
+
+The reviewer follow-up (audit board e957–e960) adds a necessary qualification to
+S5: there is no unique weakest contract until permitted tests are specified.
+Comparing only declared task payoffs is weaker than comparing all output laws.
+More fundamentally, acquisition should satisfy the task, not reproduce every
+mistake of an imperfect donor. The S1 impossibility claim is deliberately
+donor-relative; it does not limit a recipient with a better independent source.
+
+Keep three levels separate:
+
+1. Desired outcome: task-relative adequacy, retention and useful joint use.
+2. Possible certificate: conditional port-error bounds on covered histories.
+3. Possible implementation: translated representations and preserved operations.
+
+A successful system may satisfy the first through a route other than the third.
+A finite test of the second is evidence on its support, not a proof over every
+future context. If at most eta probability mass encounters uncovered histories
+under a justified reference/coupling analysis, the bound needs an additional eta
+term. An empirically small calibration failure rate is not such a guarantee.
+
+**Retention must allow declared correction.** Successive donors can disagree.
+If new evidence corrects an old factual answer, exact preservation of that answer
+would conflict with the acquisition objective. Before evaluation, separate old
+competencies whose specifications stay fixed from questions intentionally revised
+by the acquisition. Measure interference on the former and correction quality on
+the latter. Do not relabel regressions as corrections after seeing results.
+
+This creates another native requirement: a growing space may need to retain
+source, scope, uncertainty and revision meaning, not merely blend two numerical
+representations. Keeping incompatible claims distinguishable can be more useful
+than forcing them into one average. Whether this metadata must live in a latent
+state, an explicit interface, or both remains open.
+
+### S8. What "reasoning over an encoder" could mean
+
+The phrase covers substantially different programs. The following is a candidate
+taxonomy, not a claim that each route is already demonstrated or equally useful.
+
+| Route | What supplies the next reasoning step? | Principal question |
+|---|---|---|
+| Retrieval over an embedding index | An external reasoner consuming retrieved items | Does retrieval expose the needed evidence, and is the missing capability really retrieval? |
+| Specialist readout plus reasoner | A small decoder extracts entities/relations/uncertainty; existing reasoning composes them | Which task-relevant distinctions survive a reusable structured readout? |
+| Rich representations injected into a reasoner | An existing backbone plus learned input/interface adaptation | Is the richer channel useful across changing questions beyond equally funded structured extraction? |
+| Repeated encoder calls with explicit state | A controller chooses new inputs, masks or updates | Is useful computation reused, or does the controller learn the task from scratch? |
+| Learned transitions directly over representations | A newly learned recurrent/transition model | Does donor pretraining reduce the data/compute needed to learn valid transitions? |
+| Encoder as verifier/energy signal | Search proposes candidates; encoder-derived score ranks or rejects | Does the score track real task quality under optimization, beyond its training distribution? |
+
+The project history makes the last row especially cautionary: a learned latent
+score is guidance, not independent quality evidence. Selecting candidates with
+the same score used to claim improvement does not answer the question.
+
+A static vector export, a callable contextual encoder, and a backbone with
+legal intervention/readout operations are different resources. A callable
+encoder can respond to new inputs; a finite index cannot generate missing
+representations without another model. A token-embedding table does not retain
+the backbone's contextual computation. Decoder-to-encoder adaptation can supply
+a callable export, but its reasoning preservation must be tested separately.
+Diffusion donors add another interface possibility: the masked/noisy state,
+conditioning and refinement schedule are part of their computation. A final
+embedding alone need not retain that process. For a concrete masked-token
+reverse-process example, see Nie et al., *Large Language Diffusion Models*,
+2025, [method and sampling](https://arxiv.org/html/2502.09992).
+
+**Closest specialized-encoder precedent:** Fallahpour et al., *BioReason*, May
+2025, version 2 October 2025, [§§3–6](https://arxiv.org/html/2505.23579).
+Frozen DNA backbones export token representations; a learned projection and
+LoRA-adapted language model train on supervised reasoning, with selected GRPO
+runs. DNA-only and text/sequence language-model baselines are included. Reported
+benefits vary across donor/backbone/task combinations. This supports the
+feasibility of useful specialist-plus-reasoner integration, while retaining both
+backbones and learning the integration. Neither sequential donor addition nor
+donor-independent assimilation is demonstrated. Explanatory prose is not by
+itself evidence that the stated intermediate causal mechanism drove the answer.
+
+**A relevant negative:** Azevedo and Loures, *Can LLMs Use Relational Transformer
+Embeddings?*, August 2026, [§§3–4](https://arxiv.org/html/2609.00457).
+Frozen relational embeddings, a learned projection and LoRA/SFT/RL language-model
+adaptation did not reliably improve the standalone relational model in the
+reported tasks. Serialization, context budget and masking mattered. This is
+evidence against assuming a generic soft-token bridge is sufficient, not against
+reasoning over relational encoders in general. It makes an explicit interface
+competence preflight more valuable than immediately scaling training.
+
+**Function references are not self-contained implementations:** Todd et al.,
+*Function Vectors in Large Language Models*, 2023/ICLR 2024,
+[§§2–3 and Table 7](https://arxiv.org/html/2310.15213), identify compact activations
+that trigger tasks in an existing model. Some tested vector compositions work
+and others fail. The authors explicitly distinguish the vector's task reference
+from the computation executing it. Consequently, moving a function vector need
+not move its implementation; an unfamiliar recipient may need compatible
+computation already present. A gain after steering can be valuable elicitation
+without proving a newly imported algorithm.
+
+**Theory reuse:** Lorenz and Tull, *Causal and Compositional Abstraction*,
+February 2026, [§6, Definition 46/Proposition 47](https://arxiv.org/pdf/2602.16612),
+distinguish query-level abstraction from stronger component-level compatibility.
+This reinforces separating task contracts from mechanism-preserving realizations.
+We have read the relevant definition and implication, not verified every theorem
+in the 71-page work. S5's finite coupling argument is an elementary independent
+certificate candidate, not a claimed new version of this theory.
+
+### S9. Information gain versus new internal algorithm
+
+The third reviewer dialogue distinguishes three candidate probes:
+
+| Probe family | What a positive result could establish | Cheapest serious rival |
+|---|---|---|
+| A. Partitioned evidence | A live channel contributes otherwise unavailable information | Verbatim evidence forwarding or structured fields |
+| B. Reusable operation and new compositions | Donor-conditioned operational gain under a declared budget | Bounded recipient elicitation, then learning from the same supervision |
+| C. Specialist encoder with an existing reasoner | Useful access to distinctions through a reusable interface | A small structured readout followed by the same reasoner |
+
+No family is selected yet. A is cleanest about information provenance but often
+permits an easy text solution. B is close to the ambition but hard to identify as
+an *internal algorithm* transfer. C is promising when specialist evidence is
+hard to express compactly before the downstream question is known.
+
+Even a post-freeze random rule does not settle B's attribution. A recipient may
+already implement a general interpreter; acquisition supplies a new program,
+not a new interpreter. One bit can select between two existing operations.
+Thus donor dependence, frozen recipient weights and novel held-out uses together
+still do not prove that the underlying algorithm was absent before acquisition.
+The measurable initial endpoint is **new usable behavior under a declared
+elicitation, learning and resource budget**. This is a legitimate objective;
+algorithm-transplantation language requires additional causal identification.
+
+The question that now seems most discriminating is: **which export remains
+useful when the downstream question changes, and how cheaply can that export be
+extended when a new donor adds a distinction?** This connects encoder reuse to
+the original continuation-based mathematics without requiring a fixed universal
+geometry or an unnecessarily strong simulation of donor internals.
+
+### S10. A reusable export pays for questions it has not yet seen
+
+**Definition attempt S10.1 — question-relative sufficiency.** Let x be source
+evidence, q a downstream question, and y the desired response. An export E(x)
+is sufficient for a question family Q if the desired response law can be
+recovered from `(E(x),q)` throughout the declared support. Operational
+sufficiency additionally restricts the reader's learning and inference budget;
+existence of an arbitrarily expensive decoder is not enough. For interacting
+systems replace q by the permitted continuation/context family from S5.
+
+An export E(x,q) computed after seeing q solves a different problem. It can omit
+information irrelevant to that question. Success of query-conditioned cache
+communication does not establish a reusable query-independent knowledge store.
+Conversely, a store that supports arbitrary future queries may need more space
+or retained donor access. This distinction cuts across text and latent channels.
+
+**Elementary counting attempt S10.2.** Suppose x is any N-bit string, an export
+is a deterministic B-bit message computed before the query, and a decoder must
+answer every coordinate query `q=i` exactly, with no other x-dependent resource.
+Then B>=N: if B<N, two distinct x values share a message; they differ at some
+coordinate i, where the same decoder input would need two different answers.
+If q is known before export, sending the requested bit needs only one bit. This
+is a worst-case exact illustration, not an empirical verdict on compressed
+models; structure, approximate answers and restricted queries can reduce cost.
+Finite precision matters: a real number with unbounded precision is not a
+one-bit message. Model weights, indices, adapters and caches are all information
+storage when they depend on the donor.
+
+**Native interpretation:** every new kind of question can require splitting
+places the old world treated as identical. The persistent system need not keep
+all raw evidence, but it must either preserve the distinctions that future
+questions need, recover them through continued access, or accept a stated loss.
+"Constantly adding knowledge" therefore requires a policy for the growth of
+distinctions and their cost, not just another alignment matrix.
+
+Related existing theory should be reused rather than renamed. Banerjee and
+Montúfar, *The Variational Deficiency Bottleneck*, 2018, version 3 November
+2020, [§§II–III](https://arxiv.org/html/1810.11677), develop channel approximation
+and its decision-risk interpretation. Our extra research obligations are
+restricted executable readers, changing questions, repeated acquisition and
+causal usability in actual model interfaces. We have not established that these
+obligations require a new theorem rather than a suitable application/extension
+of existing theory.
+
+**Discriminating test design, not a selected run:** compare a query-conditioned
+export, a fixed reusable export, and retained on-demand encoder access on the
+same source items. Change the downstream question family after acquisition.
+Match information access and account for the conditional export's recomputation.
+A reusable export holding up on new questions is stronger evidence for the
+growing-space ambition than a channel optimized only for the final answer.

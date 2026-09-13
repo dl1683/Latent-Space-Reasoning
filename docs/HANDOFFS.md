@@ -12,13 +12,22 @@ into a particular architecture or benchmark.
 The new direction explores capability grafting, reasoning over multiple encoders,
 and integrating representations/computation from successive pretrained donors.
 Connected growth and assimilation after donor removal are distinct endpoints.
-No new capability is claimed and no compute was launched. Old locked panels are
+No new capability is claimed. A subsequent bounded cached-data integrity probe
+found retained legacy exports unsuitable for plan-transfer analysis; see S6 and
+the experiment log. No model was loaded. Old locked panels are
 supporting options, not restart instructions. First propose a bounded acquisition
 interface and falsifiers; choose donors, tasks and budgets only after review.
 
-Scope of this update: documentation and direction only. Historical result files,
-runners and prior negative results are preserved. No experiment restart, donor
-access, API spend or GPU authorization follows from this handoff.
+**Subsequent authorization: strategy/discovery is active.** The user confirmed
+autonomous sustained research, analytical work and bounded small CPU probes,
+without system-building or large-model loading. Started 2026-09-13 19:45 UTC;
+first periodic adversarial approach review due around 21:45 UTC, after research
+consolidation/cleanup. Initial bounded review is recorded on audit board
+e5a4e16f e954–e956; it is not the two-hour audit. Its main correction separates
+contribution from deployment and makes donor removal a branch. The canonical
+direction's strategy notebook carries the current definitions, sources and
+questions. Historical result files, runners and negatives remain preserved;
+per-run GPU approval and paused old lines remain in force.
 
 ## Earlier handoffs (historical)
 

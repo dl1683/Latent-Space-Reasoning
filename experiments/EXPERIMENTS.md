@@ -1,12 +1,37 @@
 # Experiments Log
 
+## Acquisition cache eligibility: retained exports unsuitable (2026-09-13)
+
+Small read-only CPU probe of two legacy 55 MB latent bundles; no models loaded,
+no fitting, no capability evaluation. [Runner](run_acquisition_probe.py),
+[result](results/acquisition_cache_integrity_v1/result.json), predeclared question
+and interpretation in canonical strategy notebook S6. Unsuffixed bundle has
+2,906 wholly nonfinite query rows and 13,464/13,464 wholly nonfinite plan rows.
+The suffixed bundle is finite, but 13,386/13,464 plan rows are the zero vector.
+Both score arrays match byte-for-byte. Missing row IDs/provenance prevent a
+strong pairing claim. These exports are ineligible for the proposed cross-model
+plan-transfer probe; this says nothing about the underlying models' capabilities.
+Sources preserved. Independent bit-level/schema audit e962–e963 upheld the
+scoped finding. Runner pins reviewed metadata/shape/byteorder; final scan ~1.23s.
+
+## Strategy discovery opened (2026-09-13; NO MODEL RUN)
+
+User authorized sustained autonomous strategy research at 19:45 UTC, including
+bounded informative CPU probes. Initial approach review separates contribution
+from deployment; donor removal is a branch, not a mandatory ladder. Definitions,
+an analytical access-ambiguity counterexample, extension obligations and primary
+source reading live in the canonical direction's strategy notebook. No empirical
+cross-model result, training or model calls. Initial added code apparatus/artifact
+is 0/0 (undefined ratio); theory/reading blocks are strategy work, not construction.
+
 ## Direction update — cumulative capability acquisition (2026-09-13; NO RUN)
 
 User-directed documentation update, not an experimental result. The enduring
 native-mathematics philosophy is preserved; the current exploration direction
 is [cumulative capability acquisition](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md).
-Candidate progression: A, acquire B, retain A, compose A+B, remove donor, add
-another donor. No donors, tasks, thresholds or runs are selected. Earlier
+Initial progression proposed A, acquire B, retain A, compose A+B, donor removal
+and further donors. The subsequent strategy review makes donor removal a separate
+assimilation branch. No donors, tasks, thresholds or runs are selected. Earlier
 experiments remain historical supporting evidence, and old next-step language
 does not override [current state](../STATE.md).
 

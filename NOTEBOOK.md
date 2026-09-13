@@ -1,5 +1,17 @@
 # NOTEBOOK
 
+### Autonomous strategy discovery begins (2026-09-13, 19:45 UTC)
+
+User explicitly confirmed sustained strategy work: math, questions, primary
+literature and small informative probes, without system-building or large runs.
+Initial approach review places access/identifiability and complementary value
+before architecture. Donor retention/removal is a deployment axis. The canonical
+strategy notebook now contains definition attempts, a static-alignment/action
+counterexample, conservative interface extension and growth bookkeeping, a source
+matrix, and controls derived from the information path. No model calls or new
+empirical claims. Next sharpen task-relative composition and inspect precedents
+for reasoning over specialized encoders; avoid another chart-fitting detour.
+
 ### Philosophy preserved; cumulative acquisition direction adopted (2026-09-13)
 
 The user clarified the practical ambition: map and graft capabilities, reason

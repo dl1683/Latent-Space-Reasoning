@@ -16,7 +16,7 @@ This is the current application of the philosophy, not a replacement for it. We 
 
 **Connected growth** retains donor models at runtime. **Assimilated growth** retains an acquired capability after donor removal. Neither alignment nor adding models establishes useful growth by itself. A token embedding table is not a model's contextual knowledge and computation; exporting a backbone does not automatically make it small or cheap.
 
-The candidate progression is A in a base system, B in a donor, acquisition of B with A retained, held-out tasks requiring both, donor removal, and another acquisition. Relevant controls include simple routing, text-mediated combination, retrieval and matched learning budgets. Acquisition and recurring inference costs are counted separately.
+Candidate evidence starts with A in a base system, B in a donor, acquisition of useful B behavior with A retained, and held-out tasks requiring both. Further acquisitions test cumulative growth; donor removal is a separate assimilation branch. Relevant controls include simple routing, direct evidence forwarding, structured readouts, retrieval and matched learning budgets. Acquisition and recurring inference costs are counted separately. Current work is autonomous strategy/discovery; definitions, sources and bounded probe results live in the canonical direction's strategy notebook.
 
 **Status: exploratory direction.** No cross-model grafting, cumulative acquisition or encoder-reasoning artifact has been established. Start with the [canonical direction](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) and [current state](STATE.md). Earlier findings below remain supporting evidence with their original limits.
 

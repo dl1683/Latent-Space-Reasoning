@@ -1,0 +1,86 @@
+{
+  "probe": "cached_export_integrity_v1",
+  "model_calls": 0,
+  "schema_validation": "reviewed pickle metadata hashes and byteorder pinned",
+  "rows": 13464,
+  "dimension": 1024,
+  "archives": [
+    {
+      "path": "legacy/checkpoints/latent_scorer/gemini_training_merged_latents.pt",
+      "bytes": 55204976,
+      "metadata_sha256": "dee40062149055b2eb933961246ff64f4b5bb9010a49d77c7ac7917291af898e",
+      "fields": {
+        "query": {
+          "storage_sha256": "8871c1cf0c3220d88b0036780b4b80fa41fe28db3162778d5855c478b02a903f",
+          "finite_rows": 10558,
+          "any_nonfinite_rows": 2906,
+          "all_nonfinite_rows": 2906,
+          "all_zero_rows": 0,
+          "unique_exact_rows": 4119,
+          "largest_exact_group": 2906,
+          "finite_unique_exact_rows": 4118
+        },
+        "plan": {
+          "storage_sha256": "1be832e90a61499881e68a75fdab145a2ab4000f9cd96ad5080732b5d56b18d4",
+          "finite_rows": 0,
+          "any_nonfinite_rows": 13464,
+          "all_nonfinite_rows": 13464,
+          "all_zero_rows": 0,
+          "unique_exact_rows": 1,
+          "largest_exact_group": 13464,
+          "finite_unique_exact_rows": 0
+        },
+        "score": {
+          "storage_sha256": "3c07f300e63211de975b5a57b03064ca693b9a41a61f82fa6e3417848cddecec",
+          "finite_rows": 13464,
+          "any_nonfinite_rows": 0,
+          "all_nonfinite_rows": 0,
+          "all_zero_rows": 0,
+          "unique_exact_rows": 30,
+          "largest_exact_group": 2847,
+          "finite_unique_exact_rows": 30
+        }
+      }
+    },
+    {
+      "path": "legacy/checkpoints/latent_scorer/gemini_training_merged_latents_qwen3_4b_1024.pt",
+      "bytes": 55205166,
+      "metadata_sha256": "86077fc43515ff5df0bdaf9c44e6e80d5f7342c942268ac7d7fbad1a83c22162",
+      "fields": {
+        "query": {
+          "storage_sha256": "3344f26688c68b00473ff26fc355bc992453df312b01c1d54bf82d2398d27748",
+          "finite_rows": 13464,
+          "any_nonfinite_rows": 0,
+          "all_nonfinite_rows": 0,
+          "all_zero_rows": 0,
+          "unique_exact_rows": 5260,
+          "largest_exact_group": 20,
+          "finite_unique_exact_rows": 5260
+        },
+        "plan": {
+          "storage_sha256": "7d9941cdb6bd05374a9ca1c7810e78ba6bd299dd52ac200cd5c129f52a31857a",
+          "finite_rows": 13464,
+          "any_nonfinite_rows": 0,
+          "all_nonfinite_rows": 0,
+          "all_zero_rows": 13386,
+          "unique_exact_rows": 79,
+          "largest_exact_group": 13386,
+          "finite_unique_exact_rows": 79
+        },
+        "score": {
+          "storage_sha256": "3c07f300e63211de975b5a57b03064ca693b9a41a61f82fa6e3417848cddecec",
+          "finite_rows": 13464,
+          "any_nonfinite_rows": 0,
+          "all_nonfinite_rows": 0,
+          "all_zero_rows": 0,
+          "unique_exact_rows": 30,
+          "largest_exact_group": 2847,
+          "finite_unique_exact_rows": 30
+        }
+      }
+    }
+  ],
+  "both_finite_query_rows": 10558,
+  "matching_repeat_partition_rows_on_shared_finite": 9823,
+  "scope": "Integrity only; no row identity, semantic or capability claim."
+}
