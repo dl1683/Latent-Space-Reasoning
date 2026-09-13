@@ -46,6 +46,12 @@ The test is whether these definitions predict interventions and expose missing
 structure in actual learned spaces; another successful coordinate alignment
 would not by itself answer that question.
 
+**Current mathematical inquiry:** can acquired structure predict which future
+computations a correction applies to, and their responses, without being supplied
+each affected answer? S24's worked identification problem separates possible
+dependency, correction scope and realized answer change. Its arithmetic is ordinary
+scaffolding; the eventual claim must concern predictions of learned-model behavior.
+
 ## Philosophy and direction
 
 The enduring philosophy is to take latent space as a world. What would a
@@ -1850,6 +1856,77 @@ decision and independent reference before varying contextual evidence. A typed
 record system that economically supports such revision is a valid cumulative
 acquisition endpoint. It leaves the broader mathematical question open rather
 than disqualifying the direction. No new experiment follows from this dialogue.
+
+**Worked identification problem after two fresh design-dialogue rounds.** A separate
+hypothetical purchasing case makes the missing evidence precise. Assume independent
+groups A/B, whole-carton ordering, and an authoritative correction replacing the
+old size only in its stated scope. Both groups initially use 12 items/carton.
+The acquired port reports `items/carton = 10` but omits scope. Two exhaustive
+interpretations are A-only, giving sizes (10,12), and A+B, giving (10,10).
+For a request of q items from group g, the stipulated task is `ceil(q/size_g)`.
+
+| Later use | Before | A-only correction | A+B correction |
+|---|---:|---:|---:|
+| A, 30 items | 3 | 3 | 3 |
+| B, 30 items | 3 | 3 | 3 |
+| A, 36 items | 3 | 4 | 4 |
+| B, 36 items | 3 | 3 | 4 |
+
+A's 30-item calculation depends on size even though this particular correction
+leaves its answer unchanged. Keep three things distinct: dependence on a variable,
+applicability of this correction, and realized change in a chosen answer. A map
+of observed answer changes alone cannot identify the first two.
+
+Within these stipulated noiseless hypotheses, one reliable distinction resolves
+the ambiguity: does the correction cover B? An authoritative statement, a clear
+scope boundary under declared conventions, or a trusted B-size observation can
+supply it. The B/30 answer cannot. A trusted B/36 answer can, but then it becomes
+acquisition evidence and cannot also demonstrate an unqueried consequence.
+Asking an uncertain receiver does not make its response authoritative. Until the
+distinction is supplied, retain both alternatives. This instantiates S1/S23's
+existing information argument; a typed scope field is a sufficient repair here.
+
+**Permissions and scientific bridge.** Acquisition may use scope-bearing evidence
+and declared calibration labels, with S2.2's fixed procedure and budget. Withhold
+later answer labels and manually enumerated affected-use lists; then test fresh
+quantities and compositions after freezing acquisition. Charge continuing donor
+calls and give structured/direct-forwarding alternatives matching information.
+If an explicit executor supplies every dependency and consequence, success is
+useful integration. A learned operational claim instead requires a relation
+inferred from donor/receiver behavior to predict later response changes and
+preservation before those responses are examined. Controlled changes to the
+scope evidence should selectively alter those predictions, across new cases,
+without caller-installed dependency routing supplying the claimed model law.
+
+The new decision is where to place identifying evidence and what to reserve for
+evaluation. Dependency graphs and program slicing are established scaffolding;
+renaming them would not advance the native-mathematics mission. No purchasing
+page, model, new benchmark, or compute run is selected. The bounded empirical
+question is whether a useful learned dependency can be discovered economically
+and predict fresh uses, alongside the valid typed-integration alternative.
+
+**Existing causal-abstraction bridge.** The historical
+[intensional-descent note](closed/INTENSIONAL_DESCENT.md) already names this
+foundation. [Geiger et al., Causal Abstractions of Neural Networks, 2021](https://papers.nips.cc/paper/2021/file/4f5c422f4d49a5a807eda27434231040-Paper.pdf),
+§§3–5, separates a proposed symbolic causal model, alignment search, and source/base
+activation swaps whose consequences the neural model computes. The symbolic model
+supplies the comparison target. Its MQNLI case derives candidate structure from
+the data generator and fine-tunes with aligned phrase-relation targets. Alignment
+analysis tests the resulting network; it does not train it using interchange
+targets. Empirical correspondence is scoped to tested examples and alignments;
+the paper's exhaustive pair/clique procedure is not a small experiment to copy.
+This is a standard bridge for testing whether a learned model realizes a rule,
+distinct from having an external executor produce the answer. The source does not
+demonstrate structure in an untouched pretrained model or cumulative grafting.
+
+Our remaining discovery question is which task-useful revision rule predicts the
+learned system's consequences, including failures, before we train it to obey that
+rule. A proposed symbolic rule can be an evaluation hypothesis without supplying
+the model's computation. If its intervention targets instead train that computation,
+attribute the acquired realization to that supervision. The possible contribution
+is discovering and using an informative operational structure, not renaming the
+causal-abstraction test. This preserves the project's earlier causal motivation
+while keeping cumulative acquisition's integration and retention obligations.
 
 ### S25. Revision: importing facts and acquiring their consequences
 

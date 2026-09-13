@@ -46,7 +46,11 @@ S25 separates target editing from acquiring useful consequences; correction can
 legitimately revise prior answers. Before further models, select a useful revision
 and fresh-input reuse obligation, name the donor's contribution and the old uses
 that should survive. Conditional contribution need not include standalone
-superiority; attribute integration learning explicitly. S12's conditional tied-head
+superiority. S24's analytical scope example separates dependency from realized
+answer change; the inquiry is to predict learned revision consequences before
+teaching the proposed rule. Its causal-abstraction bridge is established prior art,
+and the caller executing a rule does not establish its realization in a model.
+Attribute integration learning explicitly. S12's conditional tied-head
 calculation supplies parameter bookkeeping, not demonstrated compression or speed.
 No run, artifact, architecture or reproduction project is selected.
 Details live in

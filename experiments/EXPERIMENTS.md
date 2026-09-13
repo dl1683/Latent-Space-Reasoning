@@ -1,5 +1,19 @@
 # Experiments Log
 
+## Revision consequence identification (2026-09-13; no compute)
+
+Two fresh real Codex CLI design-dialogue rounds produced S24's hypothetical
+purchasing example and corrected conflation of dependency with observed answer
+change. The example identifies a missing scope distinction and keeps acquisition
+evidence separate from later consequence tests. It instantiates prior information
+arguments and does not establish a learned law. Typed repair is sufficient under
+the stipulated two-hypothesis contract. A future learned-structure claim must
+predict actual model behavior without caller-supplied propagation supplying it.
+No new model call, runner, benchmark, artifact or selected run. Dialogue receipts
+are in the ledger; this does not replace the scheduled periodic approach review.
+The existing Geiger2021 causal-abstraction framework now supplies the explicit
+method bridge in S24, with its task/phrase supervision and sampled scope qualified.
+
 ## Acquisition reuse and revision precedents (2026-09-13; strategy only)
 
 Canonical S2.2 specifies a reusable acquisition procedure whose learned outputs may

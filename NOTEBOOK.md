@@ -1,5 +1,30 @@
 # NOTEBOOK
 
+### Predicting revision consequences: fresh design dialogue (2026-09-13)
+
+Two fresh real Codex CLI sessions sharpened the mathematical inquiry. Procedure
+reuse is useful but supplies no explanatory structure by itself. S24 now works
+through a separate hypothetical scope-identification problem: a 12-to-10 carton
+size correction leaves a 30-item answer unchanged but changes a 36-item answer.
+Possible dependency, scope of this correction and realized answer change differ.
+One reliable B-applicability distinction resolves the stipulated two-world case;
+a typed field suffices, and using a later answer to infer scope makes that answer
+acquisition evidence. This is an instance of existing S1/S23, not a new theorem.
+
+The empirical bridge would be an economically discovered relation predicting
+learned-model behavior under new uses and scope interventions. If caller dependency
+routing supplies the law, the result is integration. The fresh dialogue explicitly
+rejects another generic impossibility statement or renamed program-slicing scheme.
+No model, purchasing page or experiment selected; session compute unchanged.
+Prompt/output receipts and hashes are in the ledger; boards remained read-only
+during both CLI sessions under the custody workaround. Periodic audit cadence is
+unchanged: these were design dialogue, not the next two-hour approach review.
+Independent source follow-up and root verification locate the existing Geiger2021
+causal-abstraction bridge. A symbolic hypothesis supplies the test target while
+the intervened neural model computes consequences; its MQNLI evidence follows
+task and phrase-relation supervision. Testing that realization differs from an
+external executor producing answers. This is prior art, not a new method claim.
+
 ### What should persist across acquisitions? (2026-09-13)
 
 Two-round independent dialogue selects the reusable object: the acquisition

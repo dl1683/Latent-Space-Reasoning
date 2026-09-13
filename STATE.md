@@ -64,6 +64,11 @@ alternatives. S25's lifelong-editing precedents separate acquiring an answer fro
 acquiring its consequences; correction may legitimately change old answers.
 Before further models, select a useful revision and fresh-input reuse obligation,
 identify the donor's contribution and specify which old uses should survive.
+S24's fresh design dialogue now separates dependency, correction scope and actual
+answer change. Its hypothetical identification case is analytical only. The
+mathematical inquiry is to predict learned revision consequences before training
+the model to obey the proposed rule; causal-abstraction testing is existing
+scaffolding, and caller-executed propagation supplies no learned-model law.
 Conditional value need not include standalone superiority; attribute new learning
 to the component that performs it. S12's conditional tied-head calculation shows
 why a contextual export need not save unique parameters or be cheap; no actual
