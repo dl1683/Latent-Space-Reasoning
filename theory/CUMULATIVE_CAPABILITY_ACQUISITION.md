@@ -1908,25 +1908,20 @@ and predict fresh uses, alongside the valid typed-integration alternative.
 **Existing causal-abstraction bridge.** The historical
 [intensional-descent note](closed/INTENSIONAL_DESCENT.md) already names this
 foundation. [Geiger et al., Causal Abstractions of Neural Networks, 2021](https://papers.nips.cc/paper/2021/file/4f5c422f4d49a5a807eda27434231040-Paper.pdf),
-§§3–5, separates a proposed symbolic causal model, alignment search, and source/base
-activation swaps whose consequences the neural model computes. The symbolic model
-supplies the comparison target. Its MQNLI case derives candidate structure from
-the data generator and fine-tunes with aligned phrase-relation targets. Alignment
-analysis tests the resulting network; it does not train it using interchange
-targets. Empirical correspondence is scoped to tested examples and alignments;
-the paper's exhaustive pair/clique procedure is not a small experiment to copy.
-This is a standard bridge for testing whether a learned model realizes a rule,
-distinct from having an external executor produce the answer. The source does not
-demonstrate structure in an untouched pretrained model or cumulative grafting.
+§§3–5, proposes a symbolic model, searches alignments, then swaps source/base
+activations. The neural model computes consequences; the symbolic model supplies
+test targets. MQNLI candidate structure comes from its generator, with task and
+phrase-relation fine-tuning before analysis. Interchange targets do not train that
+network. The empirical scope is sampled examples and alignments, with an exhaustive
+pair/clique procedure unsuitable for a small probe. This is causal-abstraction
+testing, not untouched-pretraining or cumulative-grafting evidence.
 
 Our remaining discovery question is which task-useful revision rule predicts the
 learned system's consequences, including failures, before we train it to obey that
 rule. A proposed symbolic rule can be an evaluation hypothesis without supplying
-the model's computation. If its intervention targets instead train that computation,
-attribute the acquired realization to that supervision. The possible contribution
-is discovering and using an informative operational structure, not renaming the
-causal-abstraction test. This preserves the project's earlier causal motivation
-while keeping cumulative acquisition's integration and retention obligations.
+the model's computation. If intervention targets teach it, attribute that learning.
+The possible contribution is discovering and using an informative operational
+structure while satisfying acquisition and retention obligations.
 
 ### S25. Revision: importing facts and acquiring their consequences
 

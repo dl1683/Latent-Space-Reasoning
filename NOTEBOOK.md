@@ -1,242 +1,159 @@
 # NOTEBOOK
 
-### Predicting revision consequences: fresh design dialogue (2026-09-13)
+## Strategy/discovery checkpoint and history — 2026-09-13
 
-Two fresh real Codex CLI sessions sharpened the mathematical inquiry. Procedure
-reuse is useful but supplies no explanatory structure by itself. S24 now works
-through a separate hypothetical scope-identification problem: a 12-to-10 carton
-size correction leaves a 30-item answer unchanged but changes a 36-item answer.
-Possible dependency, scope of this correction and realized answer change differ.
-One reliable B-applicability distinction resolves the stipulated two-world case;
-a typed field suffices, and using a later answer to infer scope makes that answer
-acquisition evidence. This is an instance of existing S1/S23, not a new theorem.
+The enduring question is what a denizen of latent space needs for identity,
+movement, effort, maps and reusable laws. Cumulative capability acquisition is
+one direction within that philosophy. Connected growth and assimilation after
+donor removal are separate branches. User authorization at 19:45 UTC permits
+sustained strategy, source research and bounded CPU probes, not system-building.
+No cumulative artifact, causal graft, encoder-reasoning or cost advantage is
+established. Closed prior lines stay closed; no run follows from documentation.
 
-The empirical bridge would be an economically discovered relation predicting
-learned-model behavior under new uses and scope interventions. If caller dependency
-routing supplies the law, the result is integration. The fresh dialogue explicitly
-rejects another generic impossibility statement or renamed program-slicing scheme.
-No model, purchasing page or experiment selected; session compute unchanged.
-Prompt/output receipts and hashes are in the ledger; boards remained read-only
-during both CLI sessions under the custody workaround. Periodic audit cadence is
-unchanged: these were design dialogue, not the next two-hour approach review.
-Independent source follow-up and root verification locate the existing Geiger2021
-causal-abstraction bridge. A symbolic hypothesis supplies the test target while
-the intervened neural model computes consequences; its MQNLI evidence follows
-task and phrase-relation supervision. Testing that realization differs from an
-external executor producing answers. This is prior art, not a new method claim.
+**Current inquiry:** discover an economical relation that predicts a learned
+model's revision consequences under new uses and scope interventions, including
+failures, before teaching it the desired law. Procedure reuse alone is not an
+explanation. Typed ports, explicit fact import and receiver adaptation remain
+legitimate alternatives; attribute the source of every learned capability.
+No further model, dataset, page, architecture or experiment is selected.
 
-### What should persist across acquisitions? (2026-09-13)
+**Accounting and custody:** 421 apparatus / 0 artifact-bearing code lines
+(98 + 119 + 204), three probes / zero construction rounds; eight model forwards,
+no GPU or training. Strategy authorization supersedes construction to repair the
+ratio. Root alone writes boards after stale-session ID collisions; integrity
+entries restored as e1011–e1012. Mission synthesis retains its hang workaround.
+Fresh real CLI result audits and design dialogues have distinct receipts below;
+next periodic approach audit is due around 23:42 UTC after consolidation.
+Detailed mathematics/source readings live in
+[canonical theory](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md); exact results,
+corrections and receipt hashes remain in the [ledger](experiments/ledger.jsonl)
+and [experiment log](experiments/EXPERIMENTS.md).
 
-Two-round independent dialogue selects the reusable object: the acquisition
-procedure, including its permitted learning, evidence and resource rule, should
-handle later donors without an unreported new hand-engineered recipe. S2.2 distinguishes
-this from fixed adapter weights, which are not required. Fresh inputs and new
-combinations of declared operations distinguish retained capability from old
-annotations. Connected calls remain allowed; assimilation adds donor withdrawal.
+### Later strategy: procedure reuse and predicting revision consequences
 
-S12 works out a conditional export-cost point: removing an output projection tied
-to retained input embeddings saves no unique weights. A contextual feature release
-can avoid generation work without automatically becoming a small model. This is
-bookkeeping, not a proprietary architecture claim or runtime measurement.
+Two-round dialogue specified S2.2's reusable acquisition procedure: its recipe,
+evidence permissions and budget rule persist across donors, while adapters and
+receiver weights may learn. New hand-engineered recipes are method revisions;
+fresh inputs and new operation combinations distinguish capability from cached
+annotations. S12's tied-head calculation saves no unique weights when the input
+embedding remains; contextual encoding can avoid generation without becoming
+small. This is conditional bookkeeping, not a proprietary or runtime claim.
 
-S25 fills a source-map gap with lifelong editing: corrected-target import is already
-a substantive growth route. MEMOIR supplies sequential learned correction and mask
-routing; RippleEdits supplies explicit downstream consequence tests; StableEdit
-supplies a stabilization mechanism with qualified assumptions and reported sequence
-results. None is replicated here. Independent review confirms selected dependency
-rules and correction policies need their own semantics; grammar/type validity alone
-does not establish entailment. Orthogonal updates alone do not preserve task reads.
-These precedents sharpen the source-of-capability question instead of selecting
-another benchmark or making a new architecture claim. No additional model compute.
+S25 incorporates lifelong editing rather than excluding text exports: MEMOIR's
+learned correction and mask routing, RippleEdits' consequence tests, and
+StableEdit's qualified stabilization evidence. None is replicated. Dependency
+rules need explicit semantics/correction policies; types alone do not establish
+entailment, and orthogonal updates alone do not preserve reads. Answer import
+and acquisition of useful consequences are different legitimate branches.
 
-### Useful grafts, learned correspondence and revision (2026-09-13)
+Two fresh real CLI design rounds then sharpened S24's hypothetical 12-to-10
+carton correction: the 30-item answer stays fixed, the 36-item answer changes.
+Possible dependency, correction applicability and actual answer change differ.
+One trusted applicability distinction resolves the stipulated two-world case;
+a typed field suffices. A later answer used to infer scope is acquisition evidence,
+not an unqueried consequence test. This instantiates S1/S23, not a new theorem.
+Caller dependency routing supplies integration behavior, not a discovered learned
+law. The dialogue rejected another generic impossibility or renamed program slice.
 
-The full official stitching paper is now accessible; S3 replaces its abstract-only
-placeholder. Shared class centres make the noise construction class-informative,
-and supervised stitches can learn correspondence. Useful acquisition does not
-by itself demonstrate preserved donor computation. Adapter learning remains valid
-when attributed; intervention preservation needs its own operational claim.
+Geiger2021's existing causal-abstraction bridge separates a symbolic test target
+from consequences computed by the intervened neural model. Its MQNLI models
+receive task and phrase-relation supervision; the source is not evidence of a
+new method or pretrained cumulative graft. Root and independent reader verified
+this boundary; no exhaustive pair/clique procedure was imported.
+Receipts: ledger events `acquisition_reuse_revision_precedents_20260913`,
+`revision_consequence_design_dialogue_20260913` (fresh sessions
+01a09ced-ed65-7ab0-809e-c9c8353d18f7 and 01a09cf2-0c79-77b2-8c58-03082c4518e0),
+and `causal_abstraction_strategy_bridge_20260913`. Both CLI sessions kept boards
+read-only; design dialogue does not replace the periodic approach audit.
 
-S24's coordinate repair is a caller-side convention, not a latent-space hole.
-Two-round dialogue also declined a crop-replacement experiment: crop independence
-and annotated identities would supply most of its algebra. The more useful question
-is which later decision needs revision from newly supplied context, and what earlier
-uses remain valid. Competent typed revision is a valid endpoint. No further model
-run, architecture or document product is selected; accounting remains 421/0 code
-lines, three/zero probe/build rounds and eight model forwards.
+### After 21:42 UTC: task eligibility, worked episode and attribution
 
-README's historical 6.3× claim now names the measured contrast rather than asserting
-general semantic control; the number remains unchanged. The experiment log retains
-the dated qualification and the original historical interpretation.
+The task-first PFN1 candidate closed before its 90-minute limit. Test row 125
+and training rows 375/440/910/936 share the exact question/disease answer despite
+verified sequence edits. Exact-question lookup suffices for this endpoint;
+there is no whole-benchmark score or claim that the trained model ignores DNA.
+The final formatter omits nucleotide changes, so these pairs do not instantiate
+the earlier contradictory-text swap concern. Shared labels make the proposed
+functional contrast unmeasurable. The loader combines 146 test and 144 validation
+rows, explaining 290 without proving historical selection protocol. No usable
+original receiver was verified on scoped official surfaces. Missing resources:
+independent answer-changing effect labels, receiver role competence and its
+artifact. S8 and ledger retain revisions, row locators, hashes and independent
+checks; no replacement system was trained to manufacture eligibility.
 
-### Worked growth episode: where the binding comes from (2026-09-13)
+S24's actual released table illustration assigns text/locations to OCR, boxes
+to the structure donor, binding to geometric postprocessing, and late queries
+to an explicit executor. Two-round dialogue and pinned source inspection rejected
+crediting fixed binding rules to the donor or weakening the structured comparator
+to a hard table. No OCR/pipeline/training ran. The conditional route to an answer
+is explicit, but superiority over grouping or direct source extraction is
+unmeasured. Token identity, crop coordinates and header conventions can require
+translation/revalidation. Coordinate repair is caller work, not a latent hole;
+a later two-round dialogue declined crop replacement because wrapper independence
+would supply its laws. This is an on-paper episode, not a document product.
 
-S24 traces an actual released table illustration through a proposed growing page
-representation. OCR supplies text/locations; a structure donor supplies boxes;
-existing geometric postprocessing supplies cell binding; an explicit executor
-supplies later query operations. Two-round dialogue rejected attributing fixed
-binding rules to the donor and rejected a hard-table-only structured baseline.
-Independent source inspection verified the pinned pipeline's inputs, outputs and
-serialization losses. No pipeline, OCR model or training was run.
+The full S3 stitching source replaced its abstract-only placeholder: class-centre
+noise is informative and supervised adapters can learn correspondence. Useful
+acquisition does not establish preservation of donor computation; learning is
+valid when attributed. README's historical 6.3× contrast was qualified without
+changing its value; the experiment log preserves the historical interpretation.
+Receipts: `table_growth_episode_20260913` and
+`graft_interpretation_revision_contract_20260913` in the ledger.
 
-This is a worked information-and-learning account, not model competence evidence
-or a selected document product. The actual page anchors the fields and later
-query; removing final-answer training still leaves a specified route to its
-answer, conditional on correct text and structure. Whether the added donor beats
-coordinate grouping or direct source extraction is unmeasured. The episode now
-makes repair concrete: future donors can change token identity, crop coordinates
-and header conventions, so old uses may need translation or revalidation.
+### 21:42 UTC: first periodic approach review
 
-### Task-first block resolves its first candidate (2026-09-13)
+Fresh CLI 01a09cb3-77b6-7840-a52e-a5b0099e7822 reviewed consolidated HEAD 0a93fb7
+and retained evidence, with audit-board synthesis; root relayed e1027. Continue
+the direction, but availability-led diagnostics are not working as route selection.
+Adopt one specialist-encoder/KEGG eligibility block of at most 90 minutes: trace
+an actual answer, roles, coupling, ports, later growth and an old use to preserve;
+return a populated contract or exact missing resource, not another diagnostic.
+Independent two-round dialogue also corrected two restrictive assumptions:
+role competence need not mean standalone end-task superiority, and frozen-receiver
+interchange is narrower than acquisition. A failed average does not rule out richer
+useful distinctions. No architectural hole or acquisition was established.
 
-Traced the documented PFN1 case through public data and pinned curation/evaluation
-code. Test row 125 and training rows 375/440/910/936 have exactly the same question
-and disease answer despite different sequences; independent reviewer verified
-actual center-base edits and hashes. Exact-question lookup is sufficient for
-this one endpoint. No whole-benchmark score or claim that a trained model ignores
-DNA. The final formatter omits nucleotide changes, so these matched pairs do not
-instantiate the previously warned-about contradictory-text swap. The shared
-disease label instead makes the desired functional distinction unmeasurable here.
+### Before 21:42 UTC: three bounded probes and their consequences
 
-The evaluation loader explicitly combines 146 test and 144 validation rows;
-that explains 290 without establishing historical selection protocol. No verified
-original receiver checkpoint was found in the scoped official surfaces. End this
-candidate before the 90-minute limit with precise missing resources: independent
-effect labels that change the required answer, receiver role competence and its
-usable artifact. Do not manufacture eligibility by training a new system. S8
-contains the populated eligibility contract; ledger preserves dataset revision,
-row locators, hashes and independent source inspections. No new model execution.
+| Probe | Preserved outcome and qualification | Corrected evidence / review |
+|---|---|---|
+| S6, retained exports | Legacy plan exports nonfinite or overwhelmingly zero; ineligible for proposed plan-transfer analysis, not a test of model capability | [result](experiments/results/acquisition_cache_integrity_v1/result.json); restored audit e1011–e1012 |
+| S21, conditional port, 20:59 checkpoint | Four fixed rectangles below all registered tolerances; eight CPU forwards, 60.27 seconds, no fitting. Post-hoc additive preferences also fit primary tolerance: no useful updating mechanism or global law | [result](experiments/results/conditional_port_v1/result.json); fresh CLI audit e1021, exact arithmetic and scope in S21 |
+| S22, cached output screen | Locked two-column equal-rank average loses to retrospectively better donor on four assays / 8,610 matched finite variants; 23.86 seconds including retrieval, no model calls. No absence-of-complementarity or graft-feasibility conclusion | [result](experiments/results/cached_donor_screen_v1/result.json); fresh CLI audit e1022 required integer rank sums for exact ties. Offline correction independently checked with SciPy, maximum correlation change 0.00001343, direction unchanged; original source/result history and byte-preserving Git attributes retained |
 
-### First periodic approach review: choose the task first (2026-09-13, 21:42 UTC)
+Two design dialogues selected S21 after video resources lacked matched observation
+access and a fixed receiver; the diagnostic closed without searching for dramatic
+cases. S23's independent analytical dialogue separated pairwise from joint
+compatibility and compatible completion from identified answers. Joint use needs
+coupling evidence or declared assumptions/uncertainty, not necessarily one global
+world model. The three probes remain closed, with no automatic panel expansion.
 
-Fresh real Codex CLI 01a09cb3-77b6-7840-a52e-a5b0099e7822 reviewed consolidated
-HEAD 0a93fb7 and the retained evidence, with audit-board synthesis. Root relayed
-the verdict as e1027. Continue the direction, but availability-led diagnostics
-are not working as route selection. No architectural hole or acquisition is
-established. Adopt one specialist-encoder/KEGG task eligibility block, at most
-90 minutes: trace a real example, roles, coupling and answer-determining fields;
-compare structured and richer ports; specify later growth and an old use to
-preserve. Return a populated contract or exact missing resource, not another
-general diagnostic or reproduction project. No further run is selected.
+At the 20:45 checkpoint, S16–S20 separated ordinal messages, calibrated quantities,
+information novelty and usable computation. Pinned onboarding source lacked an
+initial/replacement-content control and compared pooled with single receivers;
+its speed headline cannot establish donor contribution, but donor nonuse is not
+proved. Three JSON summaries lacked frozen example-level messages/labels for an
+alternative-reader replay. Encoder use also needs an inference schedule and
+cross-donor calibration. No external model or training script was executed.
 
-Corrected current routing to agree with S13/S14: independent role competence
-does not require standalone end-task superiority, and a frozen receiver tests
-interchange rather than all acquisition. A failed cheap average is not a gate
-against richer distinctions. Independent two-round design dialogue also reached
-this correction. Next periodic approach review around 23:42 UTC, with prior
-consolidation. Accounting unchanged: 421/0 code lines, three probes/zero building,
-eight local model forwards, no GPU or training.
+Earlier S11–S15 distinguished observability/writeability, exports, conditional
+value, interchange and extension. Scene/assignment runs were declined; a fixed
+hub can preserve donor-specific information, so alignment is not itself a
+bottleneck proof. S10.3's approximate export count includes recipient side
+information and is not a model-size lower bound. S8 initially flagged that a
+sequence-only swap may contradict variant-identifying text; the later PFN1
+formatter inspection above resolves that concern for its specific example.
 
-### Pre-review synthesis: resource contracts and legal interventions (2026-09-13)
+### Opening and consolidation continuity
 
-Integrated the conditional route-choice table into the canonical direction:
-typed ports, learned receiving interfaces, shared state/atlas, compact exports
-and co-designed spaces require different evidence; none is selected. S10.3
-extends the reusable-export counting example to approximate binary answers with
-recipient side information. This separates retained new information from overlap
-and computation accessibility; it is not a model-size lower bound. S8's targeted
-source follow-up records what a specialist-encoder bridge receives and learns.
-Sequence-only swaps can contradict variant-identifying text, so legal input
-consistency must precede that intervention. No further compute or new model claim.
-
-Independent entropy sweep consolidated STATE/HANDOFF while preserving historical
-sections. Deposited scoped methodological residue in the closed capability-
-translation sibling (commit 57f8623) and refreshed only the LSR row/lesson in the
-unversioned portfolio index. Its closure and the other portfolio rows remain
-unreassessed. This prepares the current record for the first periodic approach
-audit around 21:45 UTC; result audits already completed are not replacements.
-
-### Output screen closes; joint questions need coupling evidence (2026-09-13)
-
-S22's predeclared equal-rank combination of two published prediction columns
-lost to the retrospectively better donor on each of four short-protein assays.
-The 8,610 variants share exact source identity and finite support. The screen
-took 23.86 seconds including bounded retrieval, no model calls or fitting.
-Fresh real Codex CLI audit e1022 required exact integer rank sums to preserve
-ties; corrected offline and checked independently with SciPy. Maximum correlation
-correction 0.00001343; verdict unchanged. Source/result history is preserved,
-and Git attributes now preserve exact evidence bytes. Do not generalize this
-rule's failure to absence of complementarity or feasibility of latent grafts.
-
-S23's independent analytical dialogue distinguishes compatible completion from
-identified joint answers. Pairwise-consistent donor laws can be jointly
-inconsistent; even a compatible tree completion may leave cross-cluster questions
-underdetermined. A future port must expose relevant coupling evidence or declare
-the extra assumption/uncertainty. This is a conditional strategy obligation,
-not a new model result or mandate for one global world model. Next choose a task
-with verified receiver competence and a demonstrably useful donor distinction.
-Session apparatus/artifact: 421/0 lines, three probe rounds, zero construction;
-eight total local model forwards, no GPU or training. Strategy-only mode continues.
-
-### One bounded encoder-port diagnostic closes (2026-09-13, 20:59 UTC)
-
-S21 compared two concrete resources. Video exports were rejected for this step
-because observation access differed and no fixed trained receiver was available.
-Two design dialogues selected a four-rectangle conditional-preference diagnostic
-on a cached small encoder. Eight CPU forward calls, no fitting, 60.27 seconds.
-All isolated potential corrections fall below registered tolerances. Fresh real
-Codex CLI audit upheld arithmetic but found a post-hoc additive preference class
-also fits the primary tolerance. No useful conditional mechanism, global law or
-acquisition is established. Close the diagnostic without searching for dramatic
-cases. Next ask which independently scored task would benefit from updating
-preferences over fixed-reference, additive and direct-use controls. Canonical
-S21 holds the exact result, qualifications and audit e1021 provenance. Session
-apparatus/artifact: 217/0 lines, two probes, zero construction; strategy mode.
-
-### Strategy checkpoint: contribution before interface sophistication (2026-09-13, 20:45 UTC)
-
-Canonical S16–S20 examine closer frozen-donor precedents, distinguish ordinal
-messages from calibrated measurements, and separate information novelty from
-usable computation. Source inspection of the pinned WMCP onboarding code found
-no initial/replacement-content control and a pooled-versus-single receiver
-baseline mismatch. This prevents adopting its speed headline as demonstrated
-donor contribution; it does not show that the donor is unused. Three tracked
-JSONs contain summaries, not frozen messages and labels for a new reader test.
-Encoder inference also needs a declared update/search rule and cross-donor
-calibration. Independent strategy synthesis recommends narrowing to at most two
-actual interfaces with competent receivers. Added a compact opening decision
-map rather than another architecture survey. No models or external training
-scripts executed. Next investigate eligibility and discriminating interventions.
-
-### Strategy refinement: usable ports and growing distinctions (2026-09-13)
-
-Canonical S11–S15 separate observability from writeability, specify donor exports,
-work through conditional acquisition value and conflicting retention demands,
-and refine the next question to component interchange and interface extension.
-Independent dialogue rejected new scene/assignment runs for now; neither earns
-its apparatus cost. A fixed hub can preserve donor-specific information, so
-alignment alone is not evidence of a bottleneck. No further compute. The one
-cache-integrity result remains scoped and upheld. Corrected its audit references
-after observing stale MCP writers; root now serializes board updates. Next compare
-actual eligible interfaces against the new contract, with structured ports as
-serious baselines and no automatic restart of old interchange experiments.
-
-### Autonomous strategy discovery begins (2026-09-13, 19:45 UTC)
-
-User explicitly confirmed sustained strategy work: math, questions, primary
-literature and small informative probes, without system-building or large runs.
-Initial approach review places access/identifiability and complementary value
-before architecture. Donor retention/removal is a deployment axis. The canonical
-strategy notebook now contains definition attempts, a static-alignment/action
-counterexample, conservative interface extension and growth bookkeeping, a source
-matrix, and controls derived from the information path. No model calls or new
-empirical claims. Next sharpen task-relative composition and inspect precedents
-for reasoning over specialized encoders; avoid another chart-fitting detour.
-
-### Philosophy preserved; cumulative acquisition direction adopted (2026-09-13)
-
-The user clarified the practical ambition: map and graft capabilities, reason
-over encoder representations, and let a persistent system grow by integrating
-successive pretrained models. They explicitly required preserving the wider
-latent-mathematics philosophy and the history of its development.
-
-Documented the distinction between philosophy, current direction and candidate
-experiment. Connected growth and donor-independent assimilation have separate
-requirements. The new direction has no demonstrated artifact. No model run,
-training, acquisition or scientific re-adjudication took place. Current entry
-points now route to theory/CUMULATIVE_CAPABILITY_ACQUISITION.md; earlier results
-remain evidence with their original qualifications. Next work is a bounded
-mathematical/interface proposal, not automatic resumption of an old panel.
+The 19:45 authorization and initial review placed access, identifiability and
+complementary usefulness before architecture. Initial definitions included
+access ambiguity and conservative interface extension; the philosophy and
+historical evidence were preserved, with no model result from adopting direction.
+Independent sweeps consolidated current routing without deleting historical
+sections. Scoped methodological residue went to the closed capability-translation
+sibling (commits 57f8623 and 41aaab7) and the LSR row/lesson in the unversioned
+portfolio index; no other portfolio claims or sibling closure were reassessed.
 
 Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
