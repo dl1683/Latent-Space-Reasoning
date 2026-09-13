@@ -4,6 +4,40 @@ Status: current exploration direction, adopted by user instruction on 2026-09-13
 The working definitions and evaluation progression below are proposals, not
 established theorems, demonstrated capabilities or an approved run specification.
 
+## Current decision map (strategy checkpoint, 2026-09-13)
+
+The immediate problem is to find a **usable contribution that survives an
+interface change and can participate in further computation**. No single shared
+geometry, donor pair or architecture has been selected. These distinctions
+organize the notebook; they are not a compulsory sequence of experiments.
+
+| Decision | What must be known | What would change the approach |
+|---|---|---|
+| What can the donor supply? | Actual callable/exported resource and permitted inputs, S1/S10/S12 | Saved vectors cover particular inputs; new questions can require a callable model or a newly learned export |
+| Why is the contribution useful? | Missing information, more accessible computation or cheaper realization, S13/S18/S19 | Different benefits require different controls; information novelty is not required for every acquisition |
+| What can the receiver do with it? | Competent read, update, comparison, verification or other declared operation, S8/S11/S14 | Readout success does not establish reusable state changes; the inference procedure may carry the reasoning |
+| What makes two ports interchangeable? | Preserved task-relative responses and legal continuations within declared tolerances, S5/S7/S14 | Matching geometry alone cannot decide operational substitution |
+| What changes when the system grows? | New distinctions, calibration and compatibility with old operations, S2/S15/S17/S20 | A fixed interface may need extension; incompatible demands need an explicit policy rather than a retention promise |
+| What is retained, and at what cost? | Old and joint task behavior, donor dependencies, acquisition and recurring costs, S4/S13/S19 | Keeping a donor and removing it are separate branches; retention by snapshots has a resource cost |
+
+**Decisive empirical unknown:** can a donor's independently verified advantage
+reach an already competent receiver operation through an affordable interface,
+and be used with an existing capability? An answer for one interface is local
+evidence, not a universal law or a finished cumulative system. Before that test,
+the donor advantage and receiver competence need eligible, matched evidence.
+
+**Current evidence boundary:** retained local plan exports fail basic integrity
+(S6). The closest inspected external onboarding implementation lacks the
+replacement-contribution null and a matched baseline receiver (S18). Neither
+finding establishes that pretrained donors cannot contribute. Neither artifact
+currently answers the decisive question without new work.
+
+The mathematical aim is an economical operational language for identity,
+substitution, extension and effort. Ordinary mathematics is useful scaffolding.
+The test is whether these definitions predict interventions and expose missing
+structure in actual learned spaces; another successful coordinate alignment
+would not by itself answer that question.
+
 ## Philosophy and direction
 
 The enduring philosophy is to take latent space as a world. What would a
@@ -888,3 +922,239 @@ would confound the test with unmeasured hub information.
 Independent reviewer /root/cache_integrity_review developed this distinction
 and falsifier after reading the primary source; root records the finding to
 avoid concurrent blackboard writes. No model or new data run was selected.
+
+
+### S16. Closer precedents sharpen the missing evidence
+
+**Another decoder donor can improve a fixed visual operation.** Ruthardt et al.,
+*Better Language Models Exhibit Higher Visual Alignment*, TMLR 2026,
+[§§3–5 and appendices](https://jonaruthardt.github.io/assets/pdf/ShareLockPaper.pdf),
+freeze vision/language backbones and separately train projections for language
+variants. Their controlled study holds out alignment classes; ShareLock uses a
+larger caption-trained projection. The visual computation and cosine decision
+rule stay fixed, but the donor-specific adapter changes. Reported projection
+training time excludes substantial feature extraction; fixed label caches only
+amortize repeated label sets. Their compositional evaluation remains weak.
+Independent source review: /root/cache_integrity_review. This is a useful S14
+classification precedent, not evidence of sequential retention or state updates.
+The next question is complementary usable gains versus simply selecting a better
+single donor or combining scores, not reproducing another alignment table.
+
+**Operator names do not establish reasoning laws.** Huang, *DODR*, September
+2026, [§§7.2, 7.6, 11.1, 19.1](https://arxiv.org/html/2609.04782), uses frozen
+DistilBERT snapshots, supervised matrix operators and candidate-snapshot cosine
+retrieval. The small self-built evaluation uses one seed and lacks controlled
+baseline systems. Independent source triage: /root/strategy_questions_review.
+This supplies a supervised operator baseline idea, not cumulative acquisition.
+Our logical check: determinism alone cannot guarantee correctness; a deterministic
+map can consistently give the wrong answer. No broader proof audit is needed to
+reject that inference.
+
+**Learned discrete ports over frozen features are relevant.** Kaszynski,
+*Emergent Compositional Communication for Latent World Properties*, 2026,
+[§§3–5](https://arxiv.org/html/2604.03266), trains senders and receivers on
+property-comparison tasks over frozen visual/video features. Factored messages,
+receiver resets and property-specific comparison supervision shape the protocol.
+The work includes new receivers over frozen messages, action-conditioned outcome
+prediction and real-video validation. These are useful learned-interface
+precedents. They do not establish a transplanted pretrained reasoner, unchanged
+receiver transfer to every new task, or sequential donor retention. Zeroing a
+message tests influence; it alone does not prove a legal, selective replacement
+operation. The paper's failed single-message bin classifier motivates S17's
+anchor diagnostic rather than a conclusion that absolute information is absent.
+
+The linked repository has later onboarding claims beyond the paper. Treat those
+as separate versioned evidence, inspected at commit
+`ca36be0b86eee76425f6aad3f37c634cdbcc8a0f`; do not conflate its newer protocol with
+the paper's experimental setup. Code inspection and saved-result interpretation
+are ongoing; no external script has been executed or model loaded.
+
+### S17. A relative code may admit an absolute reader with anchors
+
+**Proposition attempt S17.1.** Let a property take ordered values
+`v1 < ... < vm`. Retain a labeled anchor message ai at each vi for i<m.
+Suppose a deployed comparator receives only query message z, ai and a fixed
+property specification, and correctly computes the strict predicate `v(z)>vi`.
+Then `rank(v(z)) = 1 + sum_i 1[v(z)>vi]`. Thus a correct finite order interface
+plus labeled anchors gives a rank reader. Numerical values additionally require
+the labeled dictionary. This is a constructive accessibility diagnostic, not a
+new theorem or evidence that any particular model meets the premises.
+
+If threshold error Ei occurs with probability epsilon_i under the actual
+anchor/query deployment law, rank error is at most `sum_i epsilon_i` by a union
+bound; independence is unnecessary. Errors can cancel, so the bound is sufficient,
+not necessary. Average accuracy on randomly paired examples does not establish
+these anchor-specific errors. A comparator that excludes ties has not shown the
+required strict-threshold behavior when the query equals an anchor value.
+
+Stored-anchor compatibility matters: jointly encoded pairs, changed context or
+shared session randomness may invalidate reuse. Count anchor labels/storage,
+comparator weights and calls. The construction distinguishes representational
+absence from expensive accessibility; it does not beat a cheap learned reader
+merely by existing. Independent dialogue with /root/strategy_questions_review
+checked these qualifications. No empirical anchor test is selected.
+
+**Cross-property calibration is an extra resource.** Independent increasing
+transformations preserve each property's within-property comparisons but may
+change comparisons between properties. For example, shifting every value of A
+by ten leaves A's ordering intact while changing whether A exceeds B. Therefore
+within-property agreement alone does not identify cross-property meaning.
+Shared units, contextual anchors or new supervision can supply calibration;
+cross-property receiver training should be counted as such rather than silently
+attributed to an already universal code.
+
+For the denizen, an ordering, a measuring scale and a shared unit are different
+tools. This offers a concrete vocabulary for donor interfaces: which relations
+are retained, which calibration is missing, and how much work makes it usable.
+It does not require discovering a special vector geometry.
+
+### S18. Onboarding must establish a contribution from the new sender
+
+The external WMCP repository is inspected at commit
+`ca36be0b86eee76425f6aad3f37c634cdbcc8a0f`. Its
+[Phase 104 implementation](https://github.com/TomekKaszynski/emergent-physics-comm/blob/ca36be0b86eee76425f6aad3f37c634cdbcc8a0f/_phase103_106.py#L429)
+replaces slot 1 of four senders, freezes the others and one receiver, and trains
+the new sender on the same mass-comparison task. Evaluation first occurs at loop
+index 50; all ten [saved curves](https://github.com/TomekKaszynski/emergent-physics-comm/blob/ca36be0b86eee76425f6aad3f37c634cdbcc8a0f/results/phase104_onboarding.json)
+contain only that observation. There is no step-zero, constant or shuffled-new-
+sender arm in this function. The base score pools three receivers, while the
+replacement uses receiver 0. Some loop iterations skip optimizer updates.
+
+The [onboarding demo](https://github.com/TomekKaszynski/emergent-physics-comm/blob/ca36be0b86eee76425f6aad3f37c634cdbcc8a0f/protocol-spec/examples/onboard_new_encoder.py#L81)
+prints a literal curve in dry-run mode; it does not load those saved results.
+Its intermediate values therefore cannot fill the missing step-zero control.
+The demo also uses a different training/evaluation procedure. Root and independent
+reviewer /root/cache_integrity_review verified these source distinctions. No
+external script was executed and no model was loaded.
+
+**Our inference:** recovering a fraction of full-system accuracy does not by
+itself establish that the replacement sender contributes. Remaining senders can
+carry the task. This is not a finding that the replacement is unused; it identifies
+the simplest unrun null needed before adopting that interpretation. Observations
+at index 50 show performance by that check, not the earliest learning time or an
+exact count of optimizer updates.
+
+**Carry into S14:** evaluate the same receiver and paired items before calibration,
+with a constant or appropriately shuffled replacement, and after calibration.
+Establish useful task behavior under the declared interface and resource budget.
+The contribution may be additional information, improved accessibility of existing
+information, or a cheaper realization. Removing a message tests dependence on that
+interface, not unique knowledge; off-distribution ablations need qualification.
+If the null already meets the endpoint and no other declared benefit changes,
+that endpoint does not identify acquisition. Establish contribution before
+interpreting onboarding speed; count donor computation, calibration, storage and
+recurring receiver cost separately. Preserve source/task groups for statistics,
+not independent significance claims from repeatedly sampled pairs. S19 records
+the distinction between oracle information and usable computation.
+
+The complete tracked tree includes small real-video feature exports, but the
+required CLIP feature tensor and matching Phase 104 trained receiver checkpoint
+were not identified. The advertised demo is therefore not a currently eligible
+zero-model replay from the inspected files. Do not start feature extraction or
+base training merely to reproduce its headline. The exact missing resources and
+the contribution-null question are more useful strategy outcomes at this stage.
+
+A complete recursive inspection of the three tracked JSON artifacts
+`results/phase58b_cross_property.json`, `results/phase95_realvideo.json`, and
+`results/phase96_clip.json` found metrics/configuration summaries, not per-example
+message exports with labels. Git blob IDs, respectively:
+`1e1a0e245d661a04ba7af7c492d5c467abcb646b`,
+`45fbbe131486283c904637335cb056046fb2827a`, and
+`a2710dc0b2fd2845fc1dcc2aacb347352fd88564` at the pinned commit above.
+Thus these three files cannot support S17's proposed alternative-reader test.
+This is a bounded artifact-eligibility finding, not an absence claim about the
+entire repository or the information in its trained messages. No tensor was
+loaded and no new scientific experiment was run.
+
+### S19. Useful computation need not add Shannon information
+
+**Finite decision-theory calculation.** For existing information X, donor message
+M and target Y, unrestricted Bayes prediction under log loss has risks
+`H(Y|X)` and `H(Y|X,M)`. Their difference is `I(Y;M|X)`. This assumes an
+unrestricted predictor knowing the relevant distribution, not an affordable
+deployed reader. Positive conditional information can leave optimal accuracy
+unchanged: equally likely posterior probabilities 0.8 and 1.0 have mean 0.9,
+and both predict the same class. Log loss improves; accuracy stays 0.9.
+
+Conversely, let X contain n independent fair bits and let Y be their parity.
+A reader allowed to inspect at most n-1 bits cannot exceed half accuracy. A
+donor supplying parity enables a correct one-bit read, although `I(Y;M|X)=0`:
+M is already a deterministic function of X. Donor computation must still be
+counted; this illustrates accessibility, not a total-cost advantage. This
+analytical example is not a proposed toy benchmark.
+
+Reuse the relevant existing theory. Xu et al., *A Theory of Usable Information
+under Computational Constraints*, ICLR 2020,
+[Definitions 1–3, §3 and Appendix F](https://arxiv.org/html/2002.10689), define
+predictive V-information relative to an allowed predictor family. Preprocessing
+can increase this usable quantity; ordinary Shannon identities need not all
+survive. Hewitt et al., *Conditional probing*, 2021,
+[§2 and Appendix A](https://arxiv.org/html/2109.09234), extend the formulation to
+condition explicitly on a baseline. Neither gives a free causal acquisition
+certificate. A trained probe only approximates the within-family optimization,
+and our sequential operational/retention requirements remain additional.
+
+**Practical contract:** report improvement of the actual fixed receiver, then
+compare with an inexpensive competent alternative under the declared training
+and inference budget. These are different claims. Additional information,
+accessible computation and cheaper realization are all legitimate contributions.
+Use an information-novelty control only for a novelty claim; use a matched total-
+cost comparison for an efficiency claim. Do not fit high-dimensional mutual
+information estimators merely to screen donors.
+
+The distinction also prevents a misleading retention theorem. An optimal reader
+family that can ignore a new port can retain its old optimum, but a particular
+learned receiver may deteriorate. Ignoring the port must be executable within
+the real memory and compute budget; preserving an old weight snapshot is not
+free. Strategy should discover how to retain usable operations, not assume it
+from an oracle's optional choice.
+
+### S20. An encoder-based reasoning engine still needs a rule for inference
+
+The frozen encoder can supply observations or conditional predictions. Something
+must decide which candidate states to consider, which operation to apply next,
+how to combine donors and when to stop. S8's readout, transition and verifier
+routes put that computation in different places. The representation itself does
+not supply an inference algorithm merely by being rich.
+
+**Existing route using pretrained masked models:** Goyal, Dyer and
+Berg-Kirkpatrick, *Exposing the Implicit Energy Networks behind Masked Language
+Models via Metropolis–Hastings*, ICLR 2022,
+[§§2–3 and Appendix J](https://arxiv.org/html/2106.02736), distinguish a declared
+sequence energy from independently learned masked conditionals. Their sampler
+uses the conditionals as proposals with an acceptance correction. Repeated full
+sequence scoring is costly, and their limitations leave optimality of the
+derived energy unresolved. This is evidence that pretrained encoders can support
+iterative generation; it does not demonstrate cheap cumulative reasoning.
+
+**Different route requiring new training:** *Energy-Based Transformers are
+Scalable Learners and Thinkers*, 2025,
+[§§3–4](https://arxiv.org/html/2507.02092), learns energy functions through
+unrolled prediction optimization. Its experiments pretrain the proposed models
+from scratch; this is not an extraction method for arbitrary existing encoders.
+Inference involves gradients and candidate search, so forward-call counts alone
+are not a complete compute comparison. Treat this as a constructive next-space
+design precedent, not evidence that existing embeddings already expose a usable
+energy landscape.
+
+**Composition obligation:** separately reasonable donor conditionals need not
+belong to one common joint model. Alternating their updates can still define an
+algorithm, but the update schedule becomes part of its meaning. Convergence to
+a distribution, if established, is distinct from satisfying every donor's
+conditional predictions. Finite-run order effects alone do not prove global
+inconsistency; even compatible updates can mix at different rates.
+
+**Score calibration obligation:** independently meaningful rankings do not
+identify a meaningful sum of scores. On two candidates, let E1=(0,1) and
+E2=(2,0). Their sum chooses the second; replacing E1 by 10*E1 chooses the first,
+although neither donor's own ranking changed. A shared utility, calibrated
+probability/temperature, explicit constraint policy or learned arbitration must
+supply the missing scale. The same issue reappears when adding each new donor.
+
+This gives three concrete research forks: use existing callable conditionals
+with a declared inference schedule; learn a reusable operation over frozen
+features; or co-design a new latent space whose legal updates and readouts are
+well-defined. They can share donor knowledge while requiring very different
+training and runtime resources. No route is selected merely because it avoids
+autoregressive text output. Independent task quality must validate any learned
+energy or verifier; optimizing its own score is not the quality endpoint.

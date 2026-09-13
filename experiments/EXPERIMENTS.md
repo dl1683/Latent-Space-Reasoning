@@ -1,5 +1,17 @@
 # Experiments Log
 
+## Strategy checkpoint: contribution and inference contracts (2026-09-13; NO MODEL RUN)
+
+Canonical S16–S20 record analytical examples, primary-source reading and bounded
+external artifact eligibility checks. Pinned onboarding source lacks a matched
+receiver baseline and replacement-contribution controls. Three inspected result
+JSONs have no per-example messages/labels for an alternative-reader replay.
+No external script, model or tensor was loaded; these are source assessments,
+not a reproduction or a new model result. Added the current decision map and
+narrowed next work to at most two actual interfaces. Session apparatus/artifact
+remains 98/0 lines; one integrity probe, zero construction rounds. Explicit
+strategy-only mandate governs. References and precise scope live in S18.
+
 ## Strategy refined: interchange and extension (2026-09-13; NO MODEL RUN)
 
 Canonical strategy S11–S15 records operational port contracts, conditional bounds

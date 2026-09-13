@@ -1,5 +1,20 @@
 # NOTEBOOK
 
+### Strategy checkpoint: contribution before interface sophistication (2026-09-13, 20:45 UTC)
+
+Canonical S16–S20 examine closer frozen-donor precedents, distinguish ordinal
+messages from calibrated measurements, and separate information novelty from
+usable computation. Source inspection of the pinned WMCP onboarding code found
+no initial/replacement-content control and a pooled-versus-single receiver
+baseline mismatch. This prevents adopting its speed headline as demonstrated
+donor contribution; it does not show that the donor is unused. Three tracked
+JSONs contain summaries, not frozen messages and labels for a new reader test.
+Encoder inference also needs a declared update/search rule and cross-donor
+calibration. Independent strategy synthesis recommends narrowing to at most two
+actual interfaces with competent receivers. Added a compact opening decision
+map rather than another architecture survey. No models or external training
+scripts executed. Next investigate eligibility and discriminating interventions.
+
 ### Strategy refinement: usable ports and growing distinctions (2026-09-13)
 
 Canonical S11–S15 separate observability from writeability, specify donor exports,

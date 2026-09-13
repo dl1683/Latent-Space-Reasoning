@@ -52,6 +52,19 @@ serious alternatives; no symbolic-versus-latent separation is presumed. Scene
 and scoped-assignment probes were considered but not selected. The next step is
 evidence eligibility and contract comparison, not another model run.
 
+**20:45 UTC strategy checkpoint:** canonical S16–S20 qualify closer precedents,
+separate usable computation from Shannon information, and identify calibration
+and inference-schedule obligations for combining encoders. Pinned external
+onboarding source lacks the replacement-contribution null and a matched baseline
+receiver. Three inspected JSON summaries contain no example-level messages for
+an alternative-reader replay; this is a bounded eligibility finding. No model
+was loaded and no external training script was executed. The canonical document
+now opens with a compact decision map. Next compare at most two obtainable
+interfaces, competent receivers and discriminating interventions; broad literature
+surveying has diminishing value. Session apparatus/artifact: 98/0 code lines,
+one integrity probe and zero construction rounds; strategy-only authorization
+governs. First periodic adversarial review remains due around 21:45 UTC.
+
 ## Historical state below
 
 The following dated record preserves the prior direction and audit decisions.

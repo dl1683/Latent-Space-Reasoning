@@ -38,6 +38,15 @@ Reviewers return findings for root to relay with provenance. Mission synthesis
 remains skipped under the known large-board hang workaround; audit synthesis
 completed. No new model pair or experiment was selected by these dialogues.
 
+At the 20:45 UTC checkpoint, canonical S16–S20 and its opening decision map
+organize the remaining questions. Source inspection of a close onboarding
+precedent exposed missing contribution controls, not evidence of impossible
+transfer. Available summary JSONs do not support the proposed alternative-reader
+replay. Distinguish missing information, useful computation and reduced cost;
+do not require Shannon novelty for every acquisition. Next compare no more than
+two concrete eligible donor–receiver interfaces. No additional model compute,
+construction or scientific result; session apparatus/artifact remains 98/0.
+
 ## Earlier handoffs (historical)
 
 The dated records below preserve the path to the present project. Their runtime,
