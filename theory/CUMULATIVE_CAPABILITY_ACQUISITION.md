@@ -187,29 +187,16 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 ## Next-work boundary
 
-Direction and documentation are adopted. The three bounded screens in S6/S21/S22
-are closed with their qualifications; no further donor pair, architecture,
-dataset or model run is selected. The task-first block recommended by periodic
-audit e1027 closed its PFN1 candidate early (S8): the example's disease endpoint
-admits exact-question lookup and lacks independent effect contrasts, receiver
-role evidence and a verified usable receiver. No full-benchmark verdict follows.
-S24 now works through one complete acquisition episode on paper, assigning text,
-structure, binding and later query computation to distinct sources. This is not
-a model-result or product-selection milestone. Coordinate repair is caller work;
-crop-independent replacement would largely test our wrapper. S2.2 now specifies
-reuse of the acquisition procedure across donors. The second periodic review
-(e1039-e1040) demanded an operation and a decision served by prediction. S24's
-bounded purchasing contract closes with explicit scoped record import sufficient
-under its assumptions. No learned revision predictor has a useful role there;
-a producer-side accept-versus-recheck question lacks an actual scoped source and
-semantic port. Stop extending this example. Select the next inquiry by a real
-available intervention or acquisition choice, not response prediction alone.
-No model run or reproduction follows automatically. S14/S15 remain interchange
-and extension contracts, sharpened by S23's joint-answer ambiguity.
-
-The earlier strong-assert panel is a deferred supporting option, not the
-automatic next experiment. Select work by the decision it changes about this
-direction while preserving the broader philosophy and its other applications.
+The S6/S21/S22 screens and S24 purchasing contract are closed with their stated
+limits. S24 selects typed scoped import for its stipulated operation; no learned
+receiver is invented to make that case harder. Two subsequent fresh real CLI
+direction rounds selected **one S26 CPU continuation diagnostic**, after a locked
+mathematical statement and source check. It asks whether a model's own first
+guess helps its next conditional computation. It is self-composition, not a
+heterogeneous acquisition experiment. No new model, training, large run, exporter
+or learned interface is selected. Execute once within its seven-forward/180-second
+cap; audit once and follow its declared decision boundary, without panel expansion.
+The prior strong-assert option and paused/closed lines are not restart instructions.
 
 ## Conditional route choices
 
@@ -2034,3 +2021,92 @@ S7/S13 correction policy. The decision-changing question is whether the donor
 supplies a new answer, an already usable relation, or evidence from which the
 integration procedure must learn that relation. Keep the source of that learning
 explicit before attributing a new reasoning capability to the growing space.
+
+
+### S26. Locked bounded question: autonomous conditional continuation
+
+**Definition/proposition attempt, before compute.** On a reference construct x,
+conceal sites i<j. Let M(x with i,j masked) supply independent amino-acid argmax
+predictions a,b. The autonomous move writes a at i and queries j again; the
+caller supplies this schedule, and the pretrained model supplies each conditional.
+The empirical hypothesis is that the generated intermediate improves both-site
+and second-site reference recovery enough to pursue this direct callable procedure.
+There is no theorem that conditioning on a model's own guess improves accuracy.
+The useful decision is whether to investigate this existing callable continuation
+before paying to learn a receiving interface. This is self-composition of one
+encoder, not cross-model acquisition, biological fitness or a reasoning result.
+**So what:** can this model use its first guess to improve its second?
+
+Two fresh real CLI direction rounds revised and adopted this single diagnostic;
+the competing exporter-emulation proposal lacked a concrete reason to approximate
+this inexpensive port. No result here decides whether to retain donors generally.
+The expected failure modes are incorrect intermediate proposals, an insensitive
+continuation, or order dependence. An oracle intermediate is diagnostic only and
+is not a guaranteed upper bound for a misspecified model.
+
+**Locked support and permissions.** Reverse declared substitutions in every row of
+S22's four retained CSVs, checking destination residues, indexing, and agreement
+on one reference per assay. The source inspection passed all 8,610 rows: construct
+lengths 47, 69, 64 and 50. They are assay reference constructs, not independently
+verified natural or pretraining-held-out sequences. Use no assay scores or cached
+prediction scores. For length L, choose the eight distinct one-based positions
+`floor(k*(L+1)/9)`, k=1..8; pair consecutive selected positions. Thus four
+nonoverlapping pairs per construct, 16 pairs total, selected without outcomes or
+residue-dependent filtering. No replacement pairs, expansion or tuning after runs.
+Only visible residues, mask locations and model predictions enter autonomous
+inputs. Concealed reference tokens enter scoring and isolated oracle arms.
+
+**Arms and cheapest confound.** Use the already cached S21 snapshot, revision
+`c731040fcd8d73dceaa04b0a8e6329b345b0f5df`, CPU float32/eager, two threads,
+eval mode, no training or downloads. Restrict choices to the fixed 20 standard
+amino acids in alphabetic order; ties take the first. Seven batches of 16 rows:
+
+1. Doubly masked independent predictions at both positions.
+2. Identical-input repeat: report probability noise and argmax agreement.
+3. Increasing-position autonomous continuation, inserting its own prediction.
+4. Decreasing-position autonomous continuation, locked order sensitivity.
+5. Increasing-position oracle continuation, inserting the true first residue.
+6. Decreasing-position oracle continuation, isolated diagnostic.
+7. Increasing-position content control: cycle the initial first-site predictions
+   so pair k receives pair (k+1) mod 4 within each construct; insert at first sites.
+
+The installed `modeling_esm.py` lines 265-272 rescales embeddings according to
+observed mask fraction; snapshot `token_dropout=true`. The content control keeps
+one mask and the within-construct marginal of inserted predictions, addressing
+mask-count scaling and generic unmasking. Record coincident own/control insertions;
+compare **second-site** recovery for attribution, not both-site accuracy penalized
+by deliberately misplaced first guesses. This is a targeted control, not a proof
+against every presentation effect. Do not change the model's normalization.
+
+The cheapest serious equal-call scheduling alternative is confidence-first: choose
+which position to fill first using the larger top-two probability margin from the
+initial call, ties increasing-position. Assemble its trajectory from the measured
+two orders; no extra forwards and no reference-based winner selection. Report
+actual experimental cost separately from the policy's two-call deployment cost.
+No efficiency advantage is established by comparing to the unchanged-input repeat.
+
+**Locked approximate continuation criterion.** Primary always means increasing-
+position autonomous continuation; confidence-first never replaces it. Second-site
+comparisons use j for increasing order, i for reverse, and whichever site the
+confidence-first policy leaves second against its corresponding initial prediction.
+All must hold: parent-macro gain
+of at least .10 in both-site recovery and .10 in second-site recovery versus
+independent completion; positive both-site gain on at least two parents and none
+negative; reverse-order aggregate both-site change at least -.0625; primary
+second-site gain versus the equal-mask content control at least .10. These are
+resource-allocation thresholds for a conspicuous local signal, not statistical
+reliability or theorem gates. Report per-parent numerators, corrected/spoiled
+predictions, probabilities, oracle and confidence-first results. Probability
+improvement cannot rescue failed recovery criteria. Repeat argmax disagreement,
+nonfinite outputs, malformed support or timeout makes the probe inconclusive.
+
+Cap wall execution at 180 seconds including startup with an enforceable deadline
+and per-batch checkpoints. Seven model forwards / 112 rows maximum; no GPU.
+Timeout is incomplete, not a negative result; do not extend or silently rerun.
+A passing result licenses only local autonomous continuation on this support.
+Oracle-only improvement suggests proposal quality as an obstacle; no gain closes
+this procedure on this panel, not the encoder-reasoning mission. Four parent
+clusters permit descriptive spread, not pair-level significance or generalization.
+The preserved mathematical question is when a learned operation's output remains
+usable by another operation. No discovered latent-space law is claimed from the
+caller-defined token substitution or scheduling alone.

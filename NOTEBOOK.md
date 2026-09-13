@@ -1,5 +1,15 @@
 # NOTEBOOK
 
+**Latest selection (23:25 UTC):** S26 locks one CPU-only autonomous masked-
+completion diagnostic: four verified assay reference constructs, 16 pairs, seven
+batched forwards, 180-second deadline, no training/download/GPU. Two fresh real
+CLI direction rounds and an independent design check completed. The equal-mask
+content control addresses the installed embedding rescaling confound. Primary
+increasing-position policy and all thresholds are fixed before results. This is
+one model's self-composition, not cumulative acquisition. Earlier “no run selected”
+statements below describe the preceding strategy checkpoint; S26 is the sole
+new selection and does not reopen closed or paused lines.
+
 ## Strategy/discovery checkpoint and history — 2026-09-13
 
 The enduring question is what a denizen of latent space needs for identity,

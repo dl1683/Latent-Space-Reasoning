@@ -1,5 +1,18 @@
 # Experiments Log
 
+## Autonomous conditional continuation — design locked, 2026-09-13
+
+Canonical S26 specifies one bounded CPU strategy diagnostic after two fresh real
+CLI direction rounds. All retained variant rows consistently reconstruct four
+assay reference constructs (lengths 47/69/64/50); no fitness scores select pairs.
+Sixteen fixed pairs test independent, autonomous, reverse, repeat, two oracle and
+cyclic-content conditions. Confidence-first scheduling uses no extra forwards.
+Installed mask-dropout normalization requires the equal-mask control. Seven
+forwards / 112 rows maximum, 180 seconds including startup; timeout is incomplete.
+Recovery thresholds are local allocation criteria, not significance or general
+reasoning evidence. Result pending. Ledger `autonomous_continuation_design_20260913`.
+
+
 ## Second periodic approach review — 2026-09-13, 23:03 UTC
 
 Fresh real CLI review of `f83ce4b` recommends continuing strategy but ending
