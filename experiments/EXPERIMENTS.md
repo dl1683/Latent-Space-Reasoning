@@ -1,5 +1,15 @@
 # Experiments Log
 
+## Strategy refined: interchange and extension (2026-09-13; NO MODEL RUN)
+
+Canonical strategy S11–S15 records operational port contracts, conditional bounds
+and independent approach dialogues. Scene/assignment runs were not selected;
+structured interfaces remain serious alternatives. No further compute or
+capability result. Session apparatus/artifact remains 98/0 lines, one integrity
+probe and zero construction rounds; the explicit strategy-only mandate governs.
+Integrity audit references corrected to e1011–e1012 after a stale-writer collision;
+the append-only ledger preserves the correction and root now serializes writes.
+
 ## Acquisition cache eligibility: retained exports unsuitable (2026-09-13)
 
 Small read-only CPU probe of two legacy 55 MB latent bundles; no models loaded,
@@ -11,7 +21,7 @@ The suffixed bundle is finite, but 13,386/13,464 plan rows are the zero vector.
 Both score arrays match byte-for-byte. Missing row IDs/provenance prevent a
 strong pairing claim. These exports are ineligible for the proposed cross-model
 plan-transfer probe; this says nothing about the underlying models' capabilities.
-Sources preserved. Independent bit-level/schema audit e962–e963 upheld the
+Sources preserved. Independent bit-level/schema audit e1011–e1012 upheld the
 scoped finding. Runner pins reviewed metadata/shape/byteorder; final scan ~1.23s.
 
 ## Strategy discovery opened (2026-09-13; NO MODEL RUN)

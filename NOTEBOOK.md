@@ -1,5 +1,18 @@
 # NOTEBOOK
 
+### Strategy refinement: usable ports and growing distinctions (2026-09-13)
+
+Canonical S11–S15 separate observability from writeability, specify donor exports,
+work through conditional acquisition value and conflicting retention demands,
+and refine the next question to component interchange and interface extension.
+Independent dialogue rejected new scene/assignment runs for now; neither earns
+its apparatus cost. A fixed hub can preserve donor-specific information, so
+alignment alone is not evidence of a bottleneck. No further compute. The one
+cache-integrity result remains scoped and upheld. Corrected its audit references
+after observing stale MCP writers; root now serializes board updates. Next compare
+actual eligible interfaces against the new contract, with structured ports as
+serious baselines and no automatic restart of old interchange experiments.
+
 ### Autonomous strategy discovery begins (2026-09-13, 19:45 UTC)
 
 User explicitly confirmed sustained strategy work: math, questions, primary

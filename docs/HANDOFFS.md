@@ -29,6 +29,15 @@ direction's strategy notebook carries the current definitions, sources and
 questions. Historical result files, runners and negatives remain preserved;
 per-run GPU approval and paused old lines remain in force.
 
+Current focus is canonical S14–S15: donor improvement through an unchanged
+receiver operation, then extension of usable distinctions. Query-only readouts
+do not establish reusable updates. Root is now the sole blackboard writer:
+separate reviewer MCP sessions reused IDs and overwrote integrity entries.
+Integrity verdict restored as audit e1011–e1012; scientific result unchanged.
+Reviewers return findings for root to relay with provenance. Mission synthesis
+remains skipped under the known large-board hang workaround; audit synthesis
+completed. No new model pair or experiment was selected by these dialogues.
+
 ## Earlier handoffs (historical)
 
 The dated records below preserve the path to the present project. Their runtime,

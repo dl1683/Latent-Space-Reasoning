@@ -85,12 +85,13 @@ mechanisms, not cumulative reasoning or lossless knowledge extraction.
 | Retention | What established behavior survives later acquisitions |
 | Cost | Acquisition, storage and recurring computation required for each contribution |
 
-The first analytical task is to formulate acquisition-preserving response
-relations, distinguishing representational correspondence, operation preservation
-and useful behavior. Include a counterexample where good alignment fails to
-preserve composition before selecting an alignment objective. This is a proposed
-definition/proposition attempt, not a new theorem. The governing order remains
-math first, intuition second, compute third.
+The strategy notebook develops acquisition-preserving response relations,
+distinguishing correspondence, operation preservation and useful behavior.
+S1/S5 give counterexamples where observed agreement fails to preserve later
+behavior. S14/S15 now ask which usable port can transmit donor improvement and
+extend its distinctions. These are conditional analytical proposals, not a
+demonstrated interface. The governing order remains math first, intuition second,
+compute third.
 
 ## Candidate evidence branches
 
@@ -137,8 +138,9 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 ## Next-work boundary
 
 Direction and documentation are adopted; no donor, architecture, dataset or
-compute run is selected. Develop one bounded mathematical/interface proposal and
-review its falsifiers before implementation. The earlier strong-assert panel is
+model run is selected. Next investigate the S14 interchange contract and S15
+extension criterion against available evidence, including strong structured-port
+baselines. The earlier strong-assert panel is
 a deferred supporting option, not the automatic next experiment. Select work by
 the decision it changes about this direction while preserving the broader
 philosophy and its other possible applications.
@@ -451,7 +453,7 @@ questions. No source caches were modified or discarded. Their original creation
 failure is not diagnosed here, and historical capability claims are not inferred
 from this old scorer material.
 
-**S6 review closeout:** independent audit e962–e963 upheld scoped export
+**S6 review closeout:** independent audit e1011–e1012 upheld scoped export
 ineligibility and independently confirmed NaNs and zero vectors. The runner now
 pins the reviewed metadata hashes, shape and byte order. No source repair or
 query-subset alignment is selected. Final result and runner hashes are in the
@@ -639,3 +641,250 @@ same source items. Change the downstream question family after acquisition.
 Match information access and account for the conditional export's recomputation.
 A reusable export holding up on new questions is stronger evidence for the
 growing-space ambition than a channel optimized only for the final answer.
+
+### S11. Observing a state does not make it writable
+
+The obvious next idea is to use future-test predictions as coordinates. This
+has already been examined in [CR-15.10](CONTINUATION_REFINEMENT.md), including
+PSR/OOM prior art, finite-panel limits, inverse observability and conditioning.
+Repeating that theory or fitting a Hankel matrix without a new acquisition
+decision would be a return to old measurement apparatus.
+
+For orientation, Ayache, Eyraud and Goudian, *Explaining Black Boxes on Sequential
+Data using Weighted Automata*, 2019, [§§2–3](https://proceedings.mlr.press/v93/ayache19a/ayache19a.pdf),
+extract weighted-automaton approximations through queries to a sequential black
+box. This supplies a relevant model-extraction baseline; it does not provide a
+general graft into a different frozen recipient. A finite empirical matrix's
+low rank is not proof that it spans all future queries.
+
+**Missing acquisition obligation:** even perfect knowledge of a desired response
+profile does not imply that any allowed recipient intervention can realize it.
+Observability concerns distinguishing states. Writeability concerns reaching a
+state or constructing a component that produces the required behavior while
+preserving designated old behavior. They are separate. A response predictor can
+be excellent while the recipient has no usable input port for its prediction.
+
+**Definition attempt S11.1 — feasible acquired behavior.** For an allowed
+integration family U and budget B, let `F(R,U,B)` be the set of task-context
+response laws realizable by integrating with recipient R. A proposed donor
+contribution must be adequately approximable within this set while meeting the
+retention contract. This definition isolates the question; it is not a tractable
+test or a claim that unsuccessful optimization characterizes the whole set.
+
+Two acquisition routes can satisfy it differently: add an executable external
+component, or modify/inject a recipient state through a learned port. The former
+can work even if the latter is infeasible. Neither requires all donor internals
+to share the recipient's geometry. A small response-test basis becomes useful
+only if it lowers the cost of selecting, learning, or validating such a usable
+interface. Otherwise it remains a measurement surface.
+
+**Reviewer refinement (audit e962–e963):** a new question is recoverable from a
+profile P precisely when its response is constant on P's fibers over the declared
+domain; an affordable reader is an additional requirement. An action requires
+the successor profile `P(T_a(x))` to factor through P as well. New donor support
+can break these properties even when the question names stay unchanged.
+Questions that change the state require resets or independent copies before
+their answers can be treated as one profile.
+
+For a linear approximation `f_q = c_q^T P + r`, coordinate error at most delta
+and residual at most eta give error at most `||c_q||_1 delta + eta`. Small rank
+does not imply stable or cheap use. More generally, an L-Lipschitz reader with
+error eta requires target separation between two items to be at most
+`L * profile_distance + 2 eta`. Violating this refutes that declared reader
+contract, not every possible representation. This is familiar mathematical
+scaffolding. The operational question is which necessary distinction or move
+it diagnoses. Choose the useful receiver operation before collecting a basis.
+
+### S12. What a model provider would actually export
+
+The user's retired-model example motivates an access contract, not a prediction
+of any provider's release policy. "The embedding space" is underspecified until
+the callable map, input domain, observations and retained computation are named.
+
+| Export | What it permits | What remains absent unless separately supplied |
+|---|---|---|
+| Token embedding table | Map known token IDs to their input vectors | Contextual backbone computation, reasoning dynamics, usable output behavior |
+| Finite paired input/vector bank | Learn/use correspondences on stored support | Fresh contextual encoding of arbitrary inputs and unobserved operations |
+| Callable contextual encoder API | Encode new inputs with donor computation retained remotely | Weight access, internal restart/intervention, offline independence |
+| Frozen contextual backbone weights | Reproduce its supported forward computations locally | Automatic small size, a compatible recipient port, proof of retained task behavior after conversion |
+| Distilled encoder or compact executable component | Reuse behavior within a trained export contract | Lossless preservation of all donor knowledge; free creation of the export |
+| Typed capability API with response examples | Invoke declared operations and test their meanings | General access to unexposed capabilities or donor-independent execution |
+
+A useful research export should declare revision, tokenizer/preprocessing,
+layer/pooling or output semantics, precision, input support, query/session/reset
+behavior, and which observations/interventions are available. Paired records
+need stable identities. The cache probe shows why these are scientific
+requirements: finite numbers and matching shapes do not establish faithful
+representations, and matching score files do not establish row semantics.
+
+This contract does not dictate a format or implementation. It lets us ask a
+concrete question of each possible donor: **what new useful behavior could this
+export make available, what would integrating it require, and what information
+would no longer be recoverable if the original donor disappeared?**
+
+
+### S13. Growth is a sequence of usable extensions, not a donor count
+
+**Definition attempt S13.1 — conditional acquisition value.** Fix evaluation
+contexts C, a utility functional V, and a resource accounting convention. For
+an integration procedure I and already acquired donor set S, define the measured
+conditional gain of D as `V(I(S + D)) - V(I(S))`, with matched recipient access,
+training evidence and evaluation contexts. This quantity depends on the
+procedure, budgets, ordering and task distribution. It is not an intrinsic
+number of knowledge units inside D. Storage and ongoing execution are reported
+separately rather than hidden in a single unmotivated utility weight.
+
+A donor can have zero standalone gain but positive conditional gain: one source
+may supply an identifier and another the information indexed by it. Conversely,
+two individually useful donors can be redundant. Thus a screen that rejects
+every donor with zero individual gain can discard useful combinations. A
+factorial baseline (neither, A, B, A+B) establishes conditional contributions on
+the declared tasks, but even a positive interaction does not prove an internal
+algorithm was transplanted. A text or structured-data join may explain it.
+
+**Proposition attempt S13.2 — incompatible retention demands.** At the same
+unqualified context, suppose old and new contracts demand output laws p and q.
+If the acquired system's law r must be within TV tolerances epsilon_old and
+epsilon_new respectively, the triangle inequality requires
+`TV(p,q) <= epsilon_old + epsilon_new`. If this fails, no integration method can
+meet both contracts. The remedy may be a qualified context (source, time, scope),
+an explicit correction, or revised tolerances. It is not necessarily better
+alignment. This concerns contradictory specifications, distinct from parameter
+interference between compatible tasks.
+
+The denizen's world therefore needs not only distinctions and moves but the
+scope in which a distinction is valid. Retaining an old answer after discovering
+it was wrong is not the same objective as retaining an old skill. S7's declared
+correction policy prevents an impossible preservation contract from being
+misdiagnosed as failure of acquisition.
+
+**Order is an experimental variable.** Compare A then B with B then A only after
+matching total examples, replay access, optimization and retained resources.
+Permutation-invariant final weights are unnecessary; test the required behavior
+and repair cost instead. If later evidence intentionally supersedes earlier
+evidence, order-independence is not even the intended law. For a third donor,
+the question is whether extending the existing interfaces needs bounded local
+repair or effectively relearning all earlier integrations. Two-donor success
+alone cannot answer that scaling question.
+
+**Relevant baseline, narrower than heterogeneous-model grafting:** Hitit,
+Girrbach and Akata, *A Systematic Study of In-the-Wild Model Merging for Large
+Language Models*, version 2 March 2026,
+[§§3–5 and Appendix F](https://arxiv.org/html/2511.21437v2), study fine-tunes of a
+shared base separately for each base family. They compare sampled subsets of
+increasing size, finding modest average improvements from simple task arithmetic
+under their evaluation. This does not test arbitrary cross-architecture donors,
+sequential repair cost, or newly joint operations. Their evaluation omits
+model-specific chat templates; gains over that protocol should not automatically
+be treated as gains over each model's best inexpensive elicitation. Shared-base
+weight merging remains a serious baseline when that access regime applies.
+
+
+### S14. A usable port before a new universal space
+
+The operation dialogue considered identity-preserving scene updates and scoped
+assignment updates. Neither presently earns a model run: the former adds
+perception/data construction uncertainty; the latter overlaps closed temporal
+memory work and may be fully served by an explicit structured delta. They are
+worked examples of obligations, not newly selected benchmarks or results.
+Historical `interchange_v1` failed its baseline before a swap arm;
+`interchange_v2` failed its fixed single-anchor construction. S14 is a new
+contract question, not authorization to reopen those closed runs; see the
+[closure inventory](../docs/HANDOFFS.md#durable-findings-from-the-frozen-model-line).
+
+The material question is stronger than changing readouts: **does an imported
+distinction remain usable after a receiver operation, so that a later operation
+can use the resulting state?** Static feature banks with separate question heads
+can pass readout tests without supporting this requirement.
+
+**Definition attempt S14.1 — component interchange contract.** Start with an
+independently competent receiver operation consuming a specified port. D1/E1
+supplies that port. Replace it by D2/E2 while keeping the receiver operation
+fixed and declaring a calibration budget for E2. Evaluate both old supported
+behavior and cases where D2 has a verified useful advantage. Measure whether
+that advantage reaches the unchanged operation. Calibration must not simply
+teach E2 all decisive held-out answers; a frozen receiver alone does not rule
+out task learning inside the adapter.
+
+Replacement tests a stable interface. Extension admits a previously unavailable
+distinction or operation. Interchange can clarify extension, but it is not a
+mandatory staircase: a genuinely new modality may have no old equivalent port.
+Likewise an ordinary external component can be the best realization; an internal
+latent injection is not required by the acquisition objective.
+
+| Observation under matched access and budgets | Next question |
+|---|---|
+| Structured port preserves operation and transmits donor improvement | Can this inexpensive port extend while retaining earlier uses? |
+| Old operation survives, donor improvement does not | Did export discard it, or can the receiver not act on it? |
+| Rich export transmits more improvement than matched alternatives | Which extra usable distinction explains the gain? |
+| Neither port enables the proximal operation | Is donor competence, calibration, or receiver access inadequate? |
+
+**No artificial symbolic-versus-latent contest.** Unrestricted structured fields
+can contain programs, distributions, features or original evidence. Every finite
+precision latent export can be serialized as bits. A narrow hand-picked schema
+failing is not a general separation. Compare actual interfaces under the same
+source access, acquisition budget, storage, recurring compute and required
+operations. A representation can offer an important practical advantage without
+being impossible to encode in text. Serialization alone, in turn, does not make
+the recipient capable of interpreting it cheaply.
+
+Before compute, find an actual donor pair and an already usable receiver port
+that populate this contract. If none is available, identify the missing evidence
+and examine published interchange cases. Do not rehabilitate invalid cached
+pairs or create another apparatus project simply to force an experiment.
+
+
+### S15. A fixed hub need not mean a fixed set of distinctions
+
+**Concrete precedent:** Girdhar et al., *ImageBind*, CVPR 2023,
+[§§3–6](https://arxiv.org/html/2305.05665), freeze image/text encoders and train
+other modality encoders through image-paired contrastive supervision. They test
+cross-modal classification/retrieval and illustrate audio exports driving
+existing detection/generation interfaces. This demonstrates useful interface
+reuse, not arbitrary donor grafting or sequential retention. Their discussion
+identifies task adaptation and additional pairing sources as further work.
+
+**Conditional obstruction S15.1.** Let H(x) be the old hub observation and Z(x)
+the complete permitted source-dependent deployment resource. Assume its channel
+law factors through H, with no other source-dependent side channel. If two
+situations have the same H but desired output laws separated by TV distance
+Delta, every downstream reader has worst-case TV error at least Delta/2. Both
+situations induce the same reader law; apply the triangle inequality. Include
+source-dependent adapters, caches, session state and retained donor calls in Z.
+Leaving an information path out would invalidate the premise.
+
+More generally, if the two complete resource laws have TV distance at most
+delta, data processing and the triangle inequality imply
+`Delta <= 2 epsilon + delta` for a common reader with error at most epsilon on
+both. Nearby vectors in cosine/Euclidean distance do not establish this TV
+premise. In particular, two distinct deterministic vectors can have TV distance
+one regardless of their small geometric separation.
+
+**Why this is not a no-go for fixed-dimensional alignment:** a donor exporting
+into the same ambient vector space need not compute its export from H(x).
+It can retain distinctions unused by old readers. A contrastive objective alone
+does not imply hub-only factorization. Whether extra distinctions survive
+training, finite precision and affordable decoding is a separate empirical
+question. Do not turn a conditional information bound into a verdict against
+ImageBind or shared spaces.
+
+**Operational extension criterion:** P' should admit an interpretation preserving
+old P interactions, distinguish new situations sufficiently for an affordable
+reader, and preserve successor information needed after updates. Old places may
+split into new places with a forgetting map back to their old meaning. Extra
+coordinates are optional; extra usable distinctions are essential. This is an
+operational constraint on acquisition, not a newly claimed mathematical theorem.
+
+**Conditional small falsifier, not a selected run:** use cases with identical
+actual hub input but different competent donor evidence requiring different
+answers. Compare donor export, replacement by the hub export, an explicit donor
+readout, and donor evidence swapped within matched pairs. Split source groups;
+create export before the changed question. Donor-swap-sensitive success beyond
+the hub-only arm refutes hub-only factorization for the tested interface. It
+alone does not establish reusable updates or cumulative reasoning. Failed
+readout does not prove information loss. Merely selecting nearby hub vectors
+would confound the test with unmeasured hub information.
+
+Independent reviewer /root/cache_integrity_review developed this distinction
+and falsifier after reading the primary source; root records the finding to
+avoid concurrent blackboard writes. No model or new data run was selected.
