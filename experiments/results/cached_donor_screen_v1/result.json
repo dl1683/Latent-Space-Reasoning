@@ -1,0 +1,204 @@
+{
+  "screen": "cached_donor_screen_v1",
+  "status": "complete",
+  "runner_sha256": "9c71128085a62f3727d38527370b62d6a6dfadf59d5645746ec76215701370fb",
+  "model_calls": 0,
+  "training_runs": 0,
+  "donor_columns": [
+    "ESM2_8M",
+    "CARP_600K"
+  ],
+  "score_orientation": [
+    1,
+    1
+  ],
+  "rule": "Equal average of within-assay ascending midrank percentiles; Spearman endpoint",
+  "scope": "Four descriptive assay units; no retention, internal acquisition, biological intervention or cost claim",
+  "assays": [
+    {
+      "assay": "AMFR_HUMAN_Tsuboyama_2023_4G3O",
+      "truth_rows": 2972,
+      "prediction_rows": 2972,
+      "common_identity_rows": 2972,
+      "joint_finite_rows": 2972,
+      "invalid_common_rows": 0,
+      "truth_without_prediction": 0,
+      "prediction_without_truth": 0,
+      "individual_spearman": {
+        "ESM2_8M": -0.20877050779961523,
+        "CARP_600K": -0.19440165050312425
+      },
+      "combined_spearman": -0.2055808860838056,
+      "gain_vs_each": {
+        "ESM2_8M": 0.0031896217158096374,
+        "CARP_600K": -0.011179235580681346
+      },
+      "gain_vs_retrospective_better": -0.011179235580681346,
+      "subset_path": "experiments/results/cached_donor_screen_v1/AMFR_HUMAN_Tsuboyama_2023_4G3O.csv",
+      "subset_sha256": "20f0688dc628f11cc944ce79e109fc91bb73ca08a9683cc7362f61ab4b7b3f99",
+      "truth_provenance": {
+        "name": "DMS_ProteinGym_substitutions/AMFR_HUMAN_Tsuboyama_2023_4G3O.csv",
+        "offset": 10098290,
+        "compressed_bytes": 51598,
+        "bytes": 232242,
+        "crc32": 2555144813,
+        "method": 8,
+        "archive_url": "https://marks.hms.harvard.edu/proteingym/ProteinGym_v1.3/DMS_ProteinGym_substitutions.zip",
+        "archive_etag": "\"2907348-6329ff6970941\"",
+        "compressed_sha256": "726b8b4b87c1911d1c865b4a0caf355fa50b013954a28b8c6b3f11be193ae5e3",
+        "uncompressed_sha256": "dd911d925eca79329a496eb6cb7b181ab448e15db244daf1c1f9c01e8a704c2a"
+      },
+      "prediction_provenance": {
+        "name": "AMFR_HUMAN_Tsuboyama_2023_4G3O.csv",
+        "offset": 65542256,
+        "compressed_bytes": 2295448,
+        "bytes": 5264233,
+        "crc32": 1835879668,
+        "method": 8,
+        "archive_url": "https://marks.hms.harvard.edu/proteingym/ProteinGym_v1.3/zero_shot_substitutions_scores.zip",
+        "archive_etag": "\"71e83e47-633cd6a03f0f6\"",
+        "compressed_sha256": "228c1a69d0d3c73a2db71a6b740a92b4b5a9e73104933da7af41cbcf3998b9d3",
+        "uncompressed_sha256": "73f613cd2b29fee0d9c9f4321bc1567e7be4d82f99f2a12feb4f0193fff86e78"
+      }
+    },
+    {
+      "assay": "ARGR_ECOLI_Tsuboyama_2023_1AOY",
+      "truth_rows": 1287,
+      "prediction_rows": 1287,
+      "common_identity_rows": 1287,
+      "joint_finite_rows": 1287,
+      "invalid_common_rows": 0,
+      "truth_without_prediction": 0,
+      "prediction_without_truth": 0,
+      "individual_spearman": {
+        "ESM2_8M": 0.3315864044446099,
+        "CARP_600K": 0.2666149918330593
+      },
+      "combined_spearman": 0.3135528545814482,
+      "gain_vs_each": {
+        "ESM2_8M": -0.01803354986316169,
+        "CARP_600K": 0.0469378627483889
+      },
+      "gain_vs_retrospective_better": -0.01803354986316169,
+      "subset_path": "experiments/results/cached_donor_screen_v1/ARGR_ECOLI_Tsuboyama_2023_1AOY.csv",
+      "subset_sha256": "d456b5e596c932371f39f162789b482a828ad2be6ca465544106264bdecc5591",
+      "truth_provenance": {
+        "name": "DMS_ProteinGym_substitutions/ARGR_ECOLI_Tsuboyama_2023_1AOY.csv",
+        "offset": 31337619,
+        "compressed_bytes": 22677,
+        "bytes": 124147,
+        "crc32": 3706486579,
+        "method": 8,
+        "archive_url": "https://marks.hms.harvard.edu/proteingym/ProteinGym_v1.3/DMS_ProteinGym_substitutions.zip",
+        "archive_etag": "\"2907348-6329ff6970941\"",
+        "compressed_sha256": "4a167bc62a81588930d4c7f2b63756dd821527a931c7c5427cb53542b6256dc5",
+        "uncompressed_sha256": "894695a2c624ebb4d5d8378f7096f97043260c882ebf3051f1e2ea02c8bf4f88"
+      },
+      "prediction_provenance": {
+        "name": "ARGR_ECOLI_Tsuboyama_2023_1AOY.csv",
+        "offset": 76200556,
+        "compressed_bytes": 990569,
+        "bytes": 2298327,
+        "crc32": 2530297663,
+        "method": 8,
+        "archive_url": "https://marks.hms.harvard.edu/proteingym/ProteinGym_v1.3/zero_shot_substitutions_scores.zip",
+        "archive_etag": "\"71e83e47-633cd6a03f0f6\"",
+        "compressed_sha256": "abd1b9085612d4c15f0ce61cfdf620c43b77a9fd6d539bca06acb4baa1bbf4e4",
+        "uncompressed_sha256": "8dd39c17e974796d6e101e74e12bf3e08178361b3130fa22516b52376df834bb"
+      }
+    },
+    {
+      "assay": "BBC1_YEAST_Tsuboyama_2023_1TG0",
+      "truth_rows": 2069,
+      "prediction_rows": 2069,
+      "common_identity_rows": 2069,
+      "joint_finite_rows": 2069,
+      "invalid_common_rows": 0,
+      "truth_without_prediction": 0,
+      "prediction_without_truth": 0,
+      "individual_spearman": {
+        "ESM2_8M": 0.3311189087896386,
+        "CARP_600K": 0.1132366390124074
+      },
+      "combined_spearman": 0.23801316005019,
+      "gain_vs_each": {
+        "ESM2_8M": -0.09310574873944863,
+        "CARP_600K": 0.1247765210377826
+      },
+      "gain_vs_retrospective_better": -0.09310574873944863,
+      "subset_path": "experiments/results/cached_donor_screen_v1/BBC1_YEAST_Tsuboyama_2023_1TG0.csv",
+      "subset_sha256": "cf8e8bbddb924fd15c9981523acd8675f283bd164638b0acaf62969d9af4e9b0",
+      "truth_provenance": {
+        "name": "DMS_ProteinGym_substitutions/BBC1_YEAST_Tsuboyama_2023_1TG0.csv",
+        "offset": 29553856,
+        "compressed_bytes": 36814,
+        "bytes": 194166,
+        "crc32": 947890924,
+        "method": 8,
+        "archive_url": "https://marks.hms.harvard.edu/proteingym/ProteinGym_v1.3/DMS_ProteinGym_substitutions.zip",
+        "archive_etag": "\"2907348-6329ff6970941\"",
+        "compressed_sha256": "61f320daff11e19d67ddacc315a589f4f4adf8b1515f59e2127606d37b165994",
+        "uncompressed_sha256": "d258240a3ab7088f5ac331abf661611369d9a6a06cf7778ab4ae285b824cfdab"
+      },
+      "prediction_provenance": {
+        "name": "BBC1_YEAST_Tsuboyama_2023_1TG0.csv",
+        "offset": 77319809,
+        "compressed_bytes": 1587888,
+        "bytes": 3686600,
+        "crc32": 1609197020,
+        "method": 8,
+        "archive_url": "https://marks.hms.harvard.edu/proteingym/ProteinGym_v1.3/zero_shot_substitutions_scores.zip",
+        "archive_etag": "\"71e83e47-633cd6a03f0f6\"",
+        "compressed_sha256": "0e927a854c02706b247d3d05801ac4284de20663f0d9b8b490e4922e9f506b1d",
+        "uncompressed_sha256": "cb1d2f3372e522a0bd82816fa8d6e28ef87b8e83c2811bf90ca6d68d8712e3cf"
+      }
+    },
+    {
+      "assay": "CBX4_HUMAN_Tsuboyama_2023_2K28",
+      "truth_rows": 2282,
+      "prediction_rows": 2282,
+      "common_identity_rows": 2282,
+      "joint_finite_rows": 2282,
+      "invalid_common_rows": 0,
+      "truth_without_prediction": 0,
+      "prediction_without_truth": 0,
+      "individual_spearman": {
+        "ESM2_8M": -0.27101807010346457,
+        "CARP_600K": -0.32018525905479084
+      },
+      "combined_spearman": -0.3018948465151955,
+      "gain_vs_each": {
+        "ESM2_8M": -0.030876776411730922,
+        "CARP_600K": 0.018290412539595347
+      },
+      "gain_vs_retrospective_better": -0.030876776411730922,
+      "subset_path": "experiments/results/cached_donor_screen_v1/CBX4_HUMAN_Tsuboyama_2023_2K28.csv",
+      "subset_sha256": "e224843da3c2bf7ffee68b4436294ca9975c00c40a993118f9a164ac3a387639",
+      "truth_provenance": {
+        "name": "DMS_ProteinGym_substitutions/CBX4_HUMAN_Tsuboyama_2023_2K28.csv",
+        "offset": 42530461,
+        "compressed_bytes": 39558,
+        "bytes": 182963,
+        "crc32": 1770293552,
+        "method": 8,
+        "archive_url": "https://marks.hms.harvard.edu/proteingym/ProteinGym_v1.3/DMS_ProteinGym_substitutions.zip",
+        "archive_etag": "\"2907348-6329ff6970941\"",
+        "compressed_sha256": "fc042744b9c60f44e57c0af095c16156e3f67d369e16ba7d339ceb4427cbc550",
+        "uncompressed_sha256": "3ffc9405e5f6e7467cedffb845e91f17baba09862dbb6d1750f54230c8ad3a0d"
+      },
+      "prediction_provenance": {
+        "name": "CBX4_HUMAN_Tsuboyama_2023_2K28.csv",
+        "offset": 159101541,
+        "compressed_bytes": 1737250,
+        "bytes": 4049289,
+        "crc32": 2752825308,
+        "method": 8,
+        "archive_url": "https://marks.hms.harvard.edu/proteingym/ProteinGym_v1.3/zero_shot_substitutions_scores.zip",
+        "archive_etag": "\"71e83e47-633cd6a03f0f6\"",
+        "compressed_sha256": "49664413f717c451a949a85a22d6a800c55d02acd3fb1d94936dc16f4ca44819",
+        "uncompressed_sha256": "832f0625b0f7fe2601d36b6fe63d87c1ae317ea125c46ecf2d91ce6107b0d0bf"
+      }
+    }
+  ],
+  "wall_seconds": 23.85860410000896
+}

@@ -1277,3 +1277,157 @@ synthesis completed; this is separate from the scheduled two-hour approach audit
 **Next question:** what independently scored task requires updating conditional
 preferences, and would those updates improve a competent receiver over fixed-
 reference scoring, additive scoring and direct donor use at matched cost?
+
+### S22. A bounded screen for useful output complementarity
+
+**Definition before calculation.** For each assay's common finite variant support,
+replace each donor's scores by its ascending midrank percentile, with tied values
+receiving their mean rank and endpoints normalized by n-1. The receiver score is
+the equal average of the two percentiles. Evaluate Spearman correlation with the
+independent measured assay score, reranking the averaged score with the same tie
+rule. The rule uses no target labels, but is batch-relative: it needs the declared
+assay's score distribution. No oracle selects a donor for each item. There is no
+general theorem that this average must beat either donor.
+
+**Why this question:** S21 did not identify useful updates. Before looking for
+richer interfaces, ask whether two actual pretrained output ports offer any
+exploitable complementarity through the simplest declared receiver. This is an
+eligibility screen for further research, not a demonstration of latent reasoning
+or cumulative internal acquisition. Nonadditivity in a biological assay alone
+would not establish a need for iterative reasoning; a fixed nonlinear predictor
+could capture it. Independent dialogue favored this output screen over a separate
+epistasis investigation for its closer connection to adding contributors.
+
+**Locked selection before outcome inspection:** ProteinGym v1.3 merged columns
+`ESM2_8M` and `CARP_600K`, both positive score orientation in the pinned config;
+four short, accessible assay records: `AMFR_HUMAN_Tsuboyama_2023_4G3O`,
+`ARGR_ECOLI_Tsuboyama_2023_1AOY`, `BBC1_YEAST_Tsuboyama_2023_1TG0`, and
+`CBX4_HUMAN_Tsuboyama_2023_2K28`. Selection used reference metadata and archive
+entry availability/sizes, not assay performance. These are four descriptive units
+from one assay family, not representative coverage or four independent research
+replications. Source protocol: [official resources](https://github.com/OATML-Markslab/ProteinGym/blob/144fe22b07dfaeec2b366f2346203a9838a55b4c/README.md#resources).
+
+The official server supports byte ranges. Archive lengths/ETags checked before
+fetch: DMS 43,021,128 bytes / `2907348-6329ff6970941`; merged predictions
+1,911,045,703 bytes / `71e83e47-633cd6a03f0f6`. Fetch only the central directory,
+selected local headers and compressed members (about 7 MB), never whole archives.
+Validate member names, sizes and CRCs; retain hashes and only relevant columns.
+The first prediction member's header was inspected for eligibility; no outcome
+calculation or model invocation preceded this lock.
+
+**Primary confound/control:** different variant support or score orientation.
+Verify variant identity and sequences against the independent assay member;
+report duplicate/invalid/missing exclusions and use the same joint finite support
+for both donors and the average. Verify measured scores agree across files.
+Report each donor's correlation, the fixed average, and differences versus each
+donor and the retrospectively better donor. The last comparator is diagnostic,
+not an executable selector trained without labels. No per-variant significance,
+new tuning, post-hoc donor replacement or inference-cost claim.
+
+**Expectations and decisions:** improved ordering over both individual scores on
+some assays would motivate examining the complementary distinctions there.
+Matching or losing to the better donor does not justify a richer interface for
+this pair/rule yet. Mixed effects motivate explicit task/calibration requirements;
+they do not authorize tuning these same four outcomes into a prospective result.
+No direction depends on a claimed improvement before the result exists. Two
+independent dialogue rounds selected this one bounded screen, with no model
+loading or training. It cannot establish sequential retention, internal transfer,
+biological intervention benefit or generalization beyond the panel.
+
+**Observed, independent audit pending:** the screen completed in 23.86 seconds,
+including bounded retrieval, with 8,610 jointly scored variants and no exclusions
+or identity/endpoint mismatches. No model calls or training. The fixed average
+lost to the retrospectively better donor on all four assays.
+
+| Assay | First donor Spearman | Second donor Spearman | Fixed average | Difference from better donor |
+|---|---:|---:|---:|---:|
+| AMFR | -0.208771 | -0.194402 | -0.205581 | -0.011179 |
+| ARGR | 0.331586 | 0.266615 | 0.313553 | -0.018034 |
+| BBC1 | 0.331119 | 0.113237 | 0.238013 | -0.093106 |
+| CBX4 | -0.271018 | -0.320185 | -0.301895 | -0.030877 |
+
+Donor order is the locked column order above. Negative signs were investigated
+after calculation: individual values agree to reported precision with the
+[official pinned per-assay table](https://github.com/OATML-Markslab/ProteinGym/blob/144fe22b07dfaeec2b366f2346203a9838a55b4c/benchmarks/DMS_zero_shot/substitutions/Spearman/DMS_substitutions_Spearman_DMS_level.csv).
+The official metric implementation uses signed Spearman, not absolute correlation.
+Do not flip a donor after seeing these test outcomes. Broad average benchmark
+performance did not establish competent prediction on each chosen assay.
+
+This pair and fixed rule do not supply a positive gate toward richer grafting
+here. The result does not exclude complementarity under another justified rule,
+other donors or other tasks; it gives no bound on latent information. Retained
+[subset data and provenance](../experiments/results/cached_donor_screen_v1/result.json)
+and [runner](../experiments/run_cached_donor_screen.py) make this bounded screen
+reproducible without any donor runtime. Its next consequence is to require
+task-specific competence and a reason to expect complementary value before
+selecting an expensive interface, not to tune this panel until it wins.
+
+### S23. Pairwise compatibility does not establish a composable growing system
+
+**Definition/proposition attempt.** Suppose a donor port exports constraints over
+shared, explicitly identified binary variables. Three ports assert A=B, B=C,
+and A!=C respectively. Every pair of ports has a satisfying assignment; all three
+together do not. Thus testing each incoming donor against each existing donor
+separately cannot certify that their combined requirements remain realizable.
+For any cycle length, equalities along a path plus one inequality between its
+endpoints give the same obstruction: every proper subset is satisfiable. This is
+ordinary constraint mathematics, not a finding about any real model. It identifies
+a missing requirement in a naive pairwise acquisition protocol.
+
+The probabilistic version is stronger: each equality/inequality port places
+uniform mass on its two satisfying pairs. All shared singleton marginals agree,
+yet the three pair laws have no common joint. Every assignment violates at least
+one relation, so any candidate joint has summed violation probabilities at least
+one. At least one prescribed pair law must therefore change by TV at least 1/3.
+This gives the counterexample tolerance meaning without an exact-only verdict.
+
+The denizen needs to know when individually usable imported rules can be obeyed
+together. S13 already separates inconsistent requirements from weight interference;
+this example adds that the inconsistency may only become visible at joint use.
+Agreement on familiar tasks or two-donor tests can miss it. A language for latent
+interfaces should identify their overlapping distinctions and the scope of each
+rule, rather than treating every successful pairwise chart as a universal map.
+
+**Conditional constructive alternative.** For finite variables, organize ports
+as a tree of clusters, with one normalized distribution per cluster. Require
+agreement on neighboring overlap marginals and the running-intersection property:
+every variable's clusters form a connected subtree. A joint distribution can
+then be constructed by sampling the root cluster, followed by each child's
+private variables conditional on the already sampled overlap. Marginal agreement
+ensures the child's overlap has the required law; the tree property ensures no
+earlier assignment outside that overlap is silently changed. Induction preserves
+every cluster marginal. At a zero-probability overlap, the conditional can be
+chosen arbitrarily because that event is never reached under the exact joint.
+
+**Existence is not identification.** Let AB and BC both be uniform independent
+binary pairs. Their laws permit A=C with B independent, A!=C with B independent,
+or complete independence. The construction chooses one Markov completion; it
+does not infer which world produced the marginals. To answer a new joint question
+such as whether A=C, justify conditional independence, collect coupling evidence,
+or report the range over admissible completions. Combining separately competent
+ports does not automatically supply knowledge of their cross-domain interaction.
+
+This is an existence construction under strong explicit assumptions, not a cheap
+inference result or a proposed architecture. Representing/calibrating the overlap
+law can be expensive. Learned ports may not expose shared variables, their
+confidence scores may not be calibrated distributions, and constraints may be
+inconsistent. Approximate or partial agreement needs its own reachable-support
+and error accounting; do not import the exact construction as an approximate
+certificate. S5's conditional-kernel bounds apply only after those conditions
+are established.
+
+**Strategy consequence:** distinguish two ambitions. An ensemble may use an
+explicit arbitration or update schedule without representing one consistent
+world model. A composable shared-state system needs additional compatibility
+structure or a rule for resolving joint contradictions. Neither is automatically
+the correct destination. Before measuring N-to-N alignment, ask what overlap
+information and joint-use obligations the intended system actually exposes.
+No compute is proposed for this analytical counterexample.
+
+Independent dialogue with /root/cache_integrity_review supplied the identification
+qualification and approximate triangle bound. The decision-changing obligation
+is that promised joint queries must be identified or adequately tested, not just
+that pairwise adapters function. A next space might expose overlap identity,
+scope and unresolved coupling; it need not impose one global world model on all
+donors. Do not build a generic consistency harness without an actual interface
+that requires it.
