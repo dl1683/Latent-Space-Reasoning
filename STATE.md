@@ -18,8 +18,9 @@ a fixed shared vector space, training-free transfer or proprietary access.
 19:45 UTC. Definitions, primary literature and bounded CPU probes should resolve
 decision-changing questions. No system-building, large-model loading or sustained
 compute; per-run GPU approval remains. Consolidate before approximately two-hour
-adversarial approach reviews; the first is due around 21:45 UTC. The reviewer
-challenges approach and question selection, never the mission.
+adversarial approach reviews. The first completed around 21:42 UTC (audit e1027);
+the next is due around 23:42 UTC after consolidation. The reviewer challenges
+approach and question selection, never the mission.
 
 **Evidence status:** no cumulative acquisition, transferable graft, encoder
 reasoning artifact, donor-independent assimilation or cost advantage is established.
@@ -44,13 +45,15 @@ and canonical S6/S21/S22. S23 is proof-only: pairwise compatibility need not
 imply joint compatibility, and compatible marginals need not identify new joint
 answers. It is an obligation for applicable interfaces, not a selected architecture.
 
-**Next question:** what independently verified donor advantage can an already
-competent receiver use, and what additional coupling evidence is needed for joint
-old-and-new tasks? Separate missing information, accessible computation and
-cheaper realization. Establish task-specific competence and a reason to expect
-complementary value before selecting richer interfaces. No further model run,
-expanded panel or architecture is selected; do not tune the four screened assays
-into a prospective positive claim. Structured ports remain serious alternatives.
+**Next block, audit e1027:** trace one documented specialist-encoder/KEGG joint
+example and its answer-determining fields, role competence and coupling evidence.
+Compare a structured port with a richer representation; specify a later donor
+and old use to preserve. Stop this candidate after a populated contract, exact
+missing-resource verdict, or 90 minutes. Availability-led diagnostics are not
+working as route selection. Do not require standalone donor superiority or a
+frozen receiver for every acquisition: conditional value and declared adaptation
+are valid. Separate information, accessible computation and cheaper realization.
+No model run, expanded panel, reproduction project or architecture is selected.
 
 **Session accounting:** 421 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 runner lines); three probe rounds / zero building rounds.

@@ -20,11 +20,13 @@ organize the notebook; they are not a compulsory sequence of experiments.
 | What changes when the system grows? | New distinctions, calibration and compatibility with old operations, S2/S15/S17/S20 | A fixed interface may need extension; incompatible demands need an explicit policy rather than a retention promise |
 | What is retained, and at what cost? | Old and joint task behavior, donor dependencies, acquisition and recurring costs, S4/S13/S19 | Keeping a donor and removing it are separate branches; retention by snapshots has a resource cost |
 
-**Decisive empirical unknown:** can a donor's independently verified advantage
-reach an already competent receiver operation through an affordable interface,
-and be used with an existing capability? An answer for one interface is local
-evidence, not a universal law or a finished cumulative system. Before that test,
-the donor advantage and receiver competence need eligible, matched evidence.
+**Decisive empirical unknown:** can a donor's useful distinction or operation
+contribute to a joint task through an affordable interface while established
+uses remain adequate? Check each component's competence in its assigned role;
+the donor need not outperform the receiver on the whole task alone (S13).
+Receiver adaptation is allowed when declared and attributed. A frozen receiver
+tests strict interchange, not all acquisition. Evidence for one interface is
+local, not a universal law or a finished cumulative system.
 
 **Current evidence boundary:** retained local plan exports fail basic integrity
 (S6). The closest inspected external onboarding implementation lacks the
@@ -178,10 +180,14 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 Direction and documentation are adopted. The three bounded screens in S6/S21/S22
 are closed with their qualifications; no further donor pair, architecture,
-dataset or model run is selected. Next identify an independently verified donor
-advantage, an already competent receiver operation, and the coupling evidence
-needed by the promised joint task. Do not promote general benchmark competence
-to competence on that particular task. S14/S15 remain candidate interchange and
+dataset or model run is selected. Fresh periodic approach audit e1027 recommends
+one task-first eligibility block: trace a documented specialist-encoder/KEGG
+example, its answer-determining fields, component roles and coupling evidence.
+Compare a structured contribution with a richer port; identify a subsequent
+donor and an old use that must survive. Stop after this candidate or 90 minutes,
+with either a populated contract or an exact missing-resource verdict. No model
+run or reproduction project follows automatically. General benchmark competence
+does not establish role competence on this task. S14/S15 remain interchange and
 extension contracts, sharpened by S23's joint-answer ambiguity.
 
 The earlier strong-assert panel is a deferred supporting option, not the
@@ -197,7 +203,7 @@ more information or supervision can appear to have a better latent language.
 | Route | Evidence that would make it appropriate | What must be worked out |
 |---|---|---|
 | Typed donor ports with an explicit executor | Existing callable outputs supply the needed distinctions and a competent executor can use them | Scope, units, uncertainty, arbitration and total donor-call cost; direct use is a serious baseline and can be a useful endpoint |
-| Frozen donors with learned receiving interfaces | Donor advantage is verified, but current receiver access loses it; calibration-only supervision can plausibly repair that mismatch | Attribute learning to donor, adapter and receiver separately; show preservation under a new use rather than only the fitted task |
+| Frozen donors with learned receiving interfaces | A useful donor distinction is supported, but current receiver access loses it; declared learning can plausibly repair or extend the interface | Attribute learning to donor, adapter and receiver separately; show preservation under a new use rather than only the fitted task |
 | Persistent shared state or an atlas of ports | Joint tasks need retained intermediate distinctions and reusable operations that the cheaper interface cannot economically support | Identify legal writes, old-operation preservation, new distinctions, coupling evidence and growth cost; a common coordinate chart alone is insufficient |
 | Compact donor-independent export | Deployment requires removal of donor runtime, with an explicit future question family and acceptable loss | Compare caches, distillation and reusable exports; count all retained donor-derived information and validate questions beyond stored answers |
 | Co-designed next latent space | Repeated, localized, task-relevant interface failures identify a missing structure that simpler remedies do not restore | Build only the needed distinction or operation and test its causal contribution; failure of one adapter or diagnostic does not prove an architectural hole |
@@ -217,6 +223,16 @@ declared acquisition information, and one result that would change the chosen
 route. The recent probes do not yet supply that contract. More diagnostics are
 not a substitute for it. No route above is licensed to claim a new kind of
 reasoning merely because it omits autoregressive text output.
+
+**Selection correction after periodic review:** a cheap baseline is a comparator,
+not a universal prerequisite for investigating a richer port. Failure of an
+output average cannot exclude a useful distinction the outputs discard. Require
+competence on assigned component roles; standalone superiority is needed only
+for a claimed better replacement. Measure conditional contribution on the joint
+task. Record what the receiver already does and what acquisition newly teaches it.
+The reviewer independently identified this narrowing error; a separate two-round
+design dialogue reached the same correction. Further generic diagnostics and
+architecture surveys now have diminishing returns; the named task controls work.
 
 
 ## Strategy notebook
@@ -659,6 +675,29 @@ We have read the relevant definition and implication, not verified every theorem
 in the 71-page work. S5's finite coupling argument is an elementary independent
 certificate candidate, not a claimed new version of this theory.
 
+**Two further precedents delimit where computation is learned.**
+[SIMPLE, August 2026 v1](https://arxiv.org/html/2608.19115v1), method and
+Appendices B–C, pretrains a new 125M-parameter inference model on synthetic
+multi-view tasks. It consumes labeled support examples and frozen projected
+views; its frozen and adapter-calibrated variants must be distinguished. The
+separate cross-domain experiment learns a target linear classifier. Fixed
+Gaussian projection is input normalization, not discovered native structure.
+The examined paper/abstract links expose no project-specific checkpoint or code;
+independent bounded link inspection agrees, without asserting no release exists
+elsewhere. This makes reusable inference a serious competing investment, not a
+ready local artifact or a reason to pretrain a replacement here.
+
+[TransNAR, June 2024 v1](https://arxiv.org/html/2406.09308v1), sections 3–4,
+connects a pretrained graph algorithmic reasoner's node/edge representations to
+a 70M text model through trained cross-attention. The graph reasoner stays
+frozen while the text model learns. Both solver-ready graph and corresponding
+text inputs are supplied; the latter is deterministically rendered from the
+former. The paper explicitly excludes hard-coded tools from its baselines.
+Consequently, it supports investigating access to pretrained computation, not
+the superiority of a latent port over using an available solver directly.
+Reported output-shape gains and residual index failures reinforce the need to
+identify the receiver operation being helped. No local reproduction is selected.
+
 ### S9. Information gain versus new internal algorithm
 
 The third reviewer dialogue distinguishes three candidate probes:
@@ -844,6 +883,22 @@ would no longer be recoverable if the original donor disappeared?**
 
 
 ### S13. Growth is a sequence of usable extensions, not a donor count
+
+**Close assimilation precedent, bounded source follow-up:**
+[Roth et al., Fantastic Gains, ICLR 2024](https://arxiv.org/html/2310.17653v2),
+sections 3–5.2, studies distillation between already pretrained ImageNet models.
+Its retention method partitions examples between donor targets and a frozen
+copy of the initial student, using confidence or label-based selection. Three
+sequential teachers improve tested students, with diminishing returns and
+forgetting. Positive prediction flips are their task-specific complementarity
+measure, not knowledge units or guaranteed extractability. Shared labels and
+transfer inputs supply correspondence; this is a substantive baseline for
+cumulative assimilation, not heterogeneous operation composition or training-free
+grafting. The official repository at
+[ec9ab8ca38af651b290759fd0a168b467617109d](https://github.com/ExplainableML/General-Knowledge-Transfer/tree/ec9ab8ca38af651b290759fd0a168b467617109d)
+contains only README and LICENSE, with no releases in the checked official
+surface. Independent source inspection confirmed this bounded availability
+verdict. Retain the precedent; do not start a reproduction project.
 
 **Definition attempt S13.1 — conditional acquisition value.** Fix evaluation
 contexts C, a utility functional V, and a resource accounting convention. For

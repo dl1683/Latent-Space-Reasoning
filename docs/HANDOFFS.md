@@ -12,8 +12,9 @@ separate branches. No cumulative capability or cost advantage is established.
 
 **Mode:** autonomous strategy/discovery, including definitions, source study and
 small bounded CPU probes, without system-building or large-model loading.
-Research began at 19:45 UTC; first periodic adversarial approach review is due
-around 21:45 UTC after consolidation. Challenge approach, never mission. GPU
+Research began at 19:45 UTC; first periodic approach review completed around
+21:42 UTC (e1027); next due around 23:42 UTC after consolidation. Challenge
+approach, never mission. GPU
 approval remains per run. Old locked panels and paused lines are not restart
 instructions; no further model run or architecture is selected.
 
@@ -30,11 +31,13 @@ changing the negative direction. No conclusion about all combinations follows.
 S23 supplies proof-only joint compatibility and identification cautions, not a
 new empirical result or construction proposal.
 
-Next identify task-specific donor advantage, a competent receiver operation and
-the coupling evidence needed for joint tasks. Distinguish information novelty,
-usable computation and reduced cost. Do not select an expensive interface merely
-because donor representations exist, expand the conditional panel, or tune the
-screened assays until they win. Detailed decisions and dated checkpoints live in
+Next execute one task-first eligibility block, at most 90 minutes: trace a real
+specialist-encoder/KEGG example, role competence and coupling; compare structured
+and richer ports, name a later donor and an old use to preserve. Return a populated
+contract or the exact missing resource. Conditional contribution does not require
+standalone donor superiority; declared receiver adaptation is valid. Stop choosing
+diagnostics by data availability. No panel expansion, assay tuning or reproduction
+project. Detailed decisions and dated checkpoints live in
 [NOTEBOOK](../NOTEBOOK.md), the canonical document and the
 [experiment record](../experiments/EXPERIMENTS.md).
 

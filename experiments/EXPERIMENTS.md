@@ -1,5 +1,18 @@
 # Experiments Log
 
+## Periodic strategy review: task-first selection (2026-09-13; no run)
+
+Fresh real Codex CLI review of HEAD 0a93fb7, audit e1027, finds diminishing
+returns from availability-led diagnostics. Continue strategy with one documented
+specialist-encoder joint-task eligibility block, at most 90 minutes; compare
+structured and richer ports without building either. Require competence in each
+assigned role, not standalone superiority for all donors. Receiver adaptation
+must be declared rather than universally banned. S22 stays closed; its failed
+average does not bar a separately justified richer interface. See the
+[canonical next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+No new empirical result. Session accounting remains 421/0 apparatus/artifact
+lines, three probes/zero building rounds, eight CPU model forwards.
+
 ## Cached donor output screen: fixed rule loses (2026-09-13; AUDITED)
 
 S22 prespecified four assays, two columns and an equal within-assay midrank

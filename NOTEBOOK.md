@@ -1,5 +1,25 @@
 # NOTEBOOK
 
+### First periodic approach review: choose the task first (2026-09-13, 21:42 UTC)
+
+Fresh real Codex CLI 01a09cb3-77b6-7840-a52e-a5b0099e7822 reviewed consolidated
+HEAD 0a93fb7 and the retained evidence, with audit-board synthesis. Root relayed
+the verdict as e1027. Continue the direction, but availability-led diagnostics
+are not working as route selection. No architectural hole or acquisition is
+established. Adopt one specialist-encoder/KEGG task eligibility block, at most
+90 minutes: trace a real example, roles, coupling and answer-determining fields;
+compare structured and richer ports; specify later growth and an old use to
+preserve. Return a populated contract or exact missing resource, not another
+general diagnostic or reproduction project. No further run is selected.
+
+Corrected current routing to agree with S13/S14: independent role competence
+does not require standalone end-task superiority, and a frozen receiver tests
+interchange rather than all acquisition. A failed cheap average is not a gate
+against richer distinctions. Independent two-round design dialogue also reached
+this correction. Next periodic approach review around 23:42 UTC, with prior
+consolidation. Accounting unchanged: 421/0 code lines, three probes/zero building,
+eight local model forwards, no GPU or training.
+
 ### Pre-review synthesis: resource contracts and legal interventions (2026-09-13)
 
 Integrated the conditional route-choice table into the canonical direction:
