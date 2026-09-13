@@ -1,5 +1,29 @@
 # NOTEBOOK
 
+### What should persist across acquisitions? (2026-09-13)
+
+Two-round independent dialogue selects the reusable object: the acquisition
+procedure, including its permitted learning, evidence and resource rule, should
+handle later donors without an unreported new hand-engineered recipe. S2.2 distinguishes
+this from fixed adapter weights, which are not required. Fresh inputs and new
+combinations of declared operations distinguish retained capability from old
+annotations. Connected calls remain allowed; assimilation adds donor withdrawal.
+
+S12 works out a conditional export-cost point: removing an output projection tied
+to retained input embeddings saves no unique weights. A contextual feature release
+can avoid generation work without automatically becoming a small model. This is
+bookkeeping, not a proprietary architecture claim or runtime measurement.
+
+S25 fills a source-map gap with lifelong editing: corrected-target import is already
+a substantive growth route. MEMOIR supplies sequential learned correction and mask
+routing; RippleEdits supplies explicit downstream consequence tests; StableEdit
+supplies a stabilization mechanism with qualified assumptions and reported sequence
+results. None is replicated here. Independent review confirms selected dependency
+rules and correction policies need their own semantics; grammar/type validity alone
+does not establish entailment. Orthogonal updates alone do not preserve task reads.
+These precedents sharpen the source-of-capability question instead of selecting
+another benchmark or making a new architecture claim. No additional model compute.
+
 ### Useful grafts, learned correspondence and revision (2026-09-13)
 
 The full official stitching paper is now accessible; S3 replaces its abstract-only

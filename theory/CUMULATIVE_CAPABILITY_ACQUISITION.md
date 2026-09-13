@@ -18,6 +18,7 @@ organize the notebook; they are not a compulsory sequence of experiments.
 | What can the receiver do with it? | Competent read, update, comparison, verification or other declared operation, S8/S11/S14 | Readout success does not establish reusable state changes; the inference procedure may carry the reasoning |
 | What makes two ports interchangeable? | Preserved task-relative responses and legal continuations within declared tolerances, S5/S7/S14 | Matching geometry alone cannot decide operational substitution |
 | What changes when the system grows? | New distinctions, calibration and compatibility with old operations, S2/S15/S17/S20 | A fixed interface may need extension; incompatible demands need an explicit policy rather than a retention promise |
+| What is reused across acquisitions? | The integration procedure, permitted new supervision and fresh-input obligation, S2.2 | Reusing a learned acquisition method differs from engineering a new connector for every donor; either may be useful but they support different scaling claims |
 | What is retained, and at what cost? | Old and joint task behavior, donor dependencies, acquisition and recurring costs, S4/S13/S19 | Keeping a donor and removing it are separate branches; retention by snapshots has a resource cost |
 
 **Decisive empirical unknown:** can a donor's useful distinction or operation
@@ -136,8 +137,9 @@ compute third.
 
 ## Candidate evidence branches
 
-1. Establish a competent base on A and a competent donor on B; measure the base's
-   B deficit and avoid ceiling effects.
+1. Establish each component's competence in its assigned role and a useful
+   conditional donor contribution; standalone superiority on the whole task is
+   unnecessary. Avoid a joint-task ceiling that hides any possible contribution.
 2. Integrate one frozen donor under a declared budget; measure held-out B
    acquisition and A retention with proximal causal controls.
 3. Test held-out tasks requiring A and B together. Removal or replacement controls
@@ -186,9 +188,10 @@ admits exact-question lookup and lacks independent effect contrasts, receiver
 role evidence and a verified usable receiver. No full-benchmark verdict follows.
 S24 now works through one complete acquisition episode on paper, assigning text,
 structure, binding and later query computation to distinct sources. This is not
-a model-result or product-selection milestone. Next make the growth obligation
-precise: what changes when another donor alters token identity, coordinate or
-scope conventions, and which earlier uses can survive without full repair?
+a model-result or product-selection milestone. Coordinate repair is caller work;
+crop-independent replacement would largely test our wrapper. S2.2 now specifies
+reuse of the acquisition procedure across donors. Next identify a useful decision
+revised by newly supplied context and which established uses should survive.
 No model run or reproduction follows automatically. S14/S15 remain interchange
 and extension contracts, sharpened by S23's joint-answer ambiguity.
 
@@ -205,6 +208,7 @@ more information or supervision can appear to have a better latent language.
 | Route | Evidence that would make it appropriate | What must be worked out |
 |---|---|---|
 | Typed donor ports with an explicit executor | Existing callable outputs supply the needed distinctions and a competent executor can use them | Scope, units, uncertainty, arbitration and total donor-call cost; direct use is a serious baseline and can be a useful endpoint |
+| Explicit knowledge import with a reusable editor | Donor-derived facts or corrected targets supply the desired new information | Source reliability, dependent consequences, retention, routing and comparison with keeping those facts in context or retrieval; this need not transfer the donor's computation |
 | Frozen donors with learned receiving interfaces | A useful donor distinction is supported, but current receiver access loses it; declared learning can plausibly repair or extend the interface | Attribute learning to donor, adapter and receiver separately; show preservation under a new use rather than only the fitted task |
 | Persistent shared state or an atlas of ports | Joint tasks need retained intermediate distinctions and reusable operations that the cheaper interface cannot economically support | Identify legal writes, old-operation preservation, new distinctions, coupling evidence and growth cost; a common coordinate chart alone is insufficient |
 | Compact donor-independent export | Deployment requires removal of donor runtime, with an explicit future question family and acceptable loss | Compare caches, distillation and reusable exports; count all retained donor-derived information and validate questions beyond stored answers |
@@ -360,6 +364,35 @@ new distinction. Candidate alternatives include stable typed ports, a versioned
 hub with old semantics preserved, and an atlas of partially overlapping spaces.
 No choice has been made. The next discriminant is which obligations change when
 one donor with a new distinction arrives, not which diagram looks simplest.
+
+**Working target S2.2 — reusable acquisition procedure.** Let a declared procedure
+`A(S, D, E, B)` produce an updated persistent system from its current state S,
+donor D, permitted integration evidence E and budget B. A may train an adapter,
+adapt the receiver, allocate new state or register typed operations. Reusing A
+does not mean freezing its learned outputs. Its recipe, evidence permissions and
+budget rule remain fixed across the evaluated donor sequence. Inventing a new
+manual rule or training recipe later is a revision of A, not evidence that the
+old procedure handled that donor. Revisions remain legitimate research progress.
+Known donors can support exploratory design; evidence of procedure generalization
+needs donors or acquisition cases not used to invent or select that recipe.
+Available metadata and calibration examples remain declared inputs to A.
+
+After each integration, evaluate fresh inputs and new combinations of declared
+operations without further task-specific fitting. Continuing donor calls are
+allowed and charged. Adding a new operation type is a different challenge from
+adding another provider of an existing type; report which occurred. A first
+short sequence could use three acquisitions to expose repeated integration, not
+because three proves scalability. Old behavior, joint usefulness and integration
+burden must be followed across the sequence. Receiver training during acquisition
+remains permitted. Assimilation additionally requires fresh-input use after donor
+withdrawal; keeping answers for previously seen inputs is not that capability.
+
+This selects the intended reusable object, not a task or a queued run. S24 still
+lacks a demonstrated useful relation for its proposed second donor. A stable typed
+acquisition procedure may satisfy this target; a growing collection of bespoke
+integrations may be useful while leaving procedure reuse unestablished. The
+native question is whether a common operational language makes the next addition
+less costly without losing distinctions or invalidating established uses.
 
 ### S3. Primary-source map: what can already be reused?
 
@@ -951,6 +984,24 @@ This contract does not dictate a format or implementation. It lets us ask a
 concrete question of each possible donor: **what new useful behavior could this
 export make available, what would integrating it require, and what information
 would no longer be recoverable if the original donor disappeared?**
+
+**Conditional size calculation, not a claim about a proprietary model.** Suppose
+a contextual backbone has P unique parameters excluding a vocabulary embedding
+matrix E of shape V by d. If its output projection is tied to E, retaining the
+input embedding and backbone still retains `P + V*d` unique parameters after
+the output projection operation is removed. There is no unique-weight saving
+from deleting that tied head. With a separate output matrix, removing that matrix
+saves its parameters, while the contextual backbone remains. This is parameter
+bookkeeping, not a runtime benchmark or a lower bound on possible compression.
+
+Computing contextual features once can avoid repeated autoregressive generation
+and the output projection, but does not remove the attention/feed-forward work
+needed to encode a fresh input. Architecture, sequence length, cache use and the
+receiving computation decide total cost. "Release the embedding space" can thus
+mean a useful contextual feature service or backbone release without making the
+model small. A smaller executable export requires an actual compression or
+distillation result on a declared future-use contract. No architecture or release
+policy is inferred for the user's retired-model example.
 
 
 ### S13. Growth is a sequence of usable extensions, not a donor count
@@ -1799,3 +1850,64 @@ decision and independent reference before varying contextual evidence. A typed
 record system that economically supports such revision is a valid cumulative
 acquisition endpoint. It leaves the broader mathematical question open rather
 than disqualifying the direction. No new experiment follows from this dialogue.
+
+### S25. Revision: importing facts and acquiring their consequences
+
+Lifelong knowledge editing is substantive prior art for the user's growing-
+knowledge ambition. It should not be omitted because its exports can be text.
+The following source readings are not replications or a selected editing project.
+
+**Corrected-target acquisition.** [MEMOIR, v4](https://arxiv.org/html/2506.07899v4),
+§3, Appendix A.2/A.4.3 and Table 14, learns a fixed-size residual FFN matrix from
+prompt–target pairs while storing a growing database of activation masks. Frozen
+upstream features determine masks; nearest-mask Hamming matching gates inference.
+Thus fixed parameter count does not mean fixed total storage or lookup burden.
+The sequential procedure uses fixed per-model training settings and prefix
+augmentation. Paraphrase tests differ from its Temporal test of another
+continuation for the same entity prefix. On the filtered 100-edit RippleEdits
+POPULAR subset, reported reliability is .98, logical generalization .20 and
+specificity .59. These endpoints separate remembering targets from propagating
+their consequences. This is a useful cumulative-learning baseline, not a donor-
+computation transfer demonstration. Independent reviewer read methods and
+experiments; root cross-checked the source table and retrieval equation.
+
+**A concrete revision contract already exists.**
+[Cohen et al., RippleEdits, TACL 2024](https://aclanthology.org/2024.tacl-1.16.pdf),
+§§3–5, tests logical consequences, two-hop composition, aliases, preservation of
+other objects and relation specificity. The benchmark uses Wikidata plus manually
+specified dependency rules and language templates. Its filtering conditions
+evaluation on successful edits and prerequisite query competence, so conditional
+scores and eligible coverage must be distinguished. A direct in-context edit is
+an explicit comparator. The source's dependency rule and counterfactual convention
+are part of the target semantics; type-correct questions alone do not validate
+every entailment. We should audit the selected rule before calling its violation
+a failure of reasoning. A stipulated convention can be coherent; its prompt and
+correction policy must convey that convention. This supplies a task language, not
+an automatic reason to run its full benchmark or import its results as ours.
+
+**Positive sequence evidence with conditional mathematics.**
+[Ma et al., StableEdit, v1](https://arxiv.org/html/2605.11836v1),
+§§2–5, Appendix A/B.4, studies repeated labeled edits using running gradient
+statistics, whitening and ridge-regression updates. It reports long-sequence
+editing and general-task retention tests. The analysis assumes smooth bounded
+gradients, nondegenerate covariance, trackable drift and moment bounds under a
+working statistical model. Theorem 3.8(c) retains a cross-step conditional-direction
+correlation term; near-orthogonality is qualified for unrelated edits, not every
+possible sequence. Whitening also incurs width-dependent matrix work. These are
+relevant stabilization mechanisms and reported behavioral results, not a theorem
+of arbitrary capability retention or heterogeneous grafting. No full proof audit,
+implementation validation or replication has been performed here.
+
+**Our analytical caution and synthesis.** Orthogonal parameter updates alone do
+not preserve an old read: for `f(w)=w1+w2`, updates `(1,0)` and `(0,1)` are orthogonal
+but both change f. This is a counterexample to that bare implication, not to the
+papers' algorithms or experimental results. Geometric stability can be scaffolding;
+the operational question is which actual reads and subsequent revisions survive.
+
+Answer import is a valid acquisition branch. A stronger branch acquires a useful
+dependency or operation that makes new consequences computable. Neither can promise
+all old answers remain fixed when a correction changes their premises; reuse the
+S7/S13 correction policy. The decision-changing question is whether the donor
+supplies a new answer, an already usable relation, or evidence from which the
+integration procedure must learn that relation. Keep the source of that learning
+explicit before attributing a new reasoning capability to the growing space.

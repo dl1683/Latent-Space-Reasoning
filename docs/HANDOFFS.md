@@ -39,11 +39,16 @@ score or trained-model attribution. S24 now works through an actual table
 illustration on paper, assigning text, structure, binding and later queries to
 their sources. No model performance or product selection is implied. Coordinate
 repair is a caller obligation; crop-independent intervention laws would largely
-test our wrapper. Next identify a useful decision revised by new donor context
-and the old uses that should survive. S3 now has the full stitching source;
-adapter-acquired usefulness does not identify preserved donor computation.
-Conditional contribution need not include standalone
-superiority; declared receiver adaptation is valid. No new run or reproduction.
+test our wrapper. S2.2 now specifies reuse of the acquisition procedure's recipe,
+evidence permissions and budget rule, allowing new learned adapters and receiver
+adaptation. Typed ports and explicit fact import remain serious alternatives.
+S25 separates target editing from acquiring useful consequences; correction can
+legitimately revise prior answers. Before further models, select a useful revision
+and fresh-input reuse obligation, name the donor's contribution and the old uses
+that should survive. Conditional contribution need not include standalone
+superiority; attribute integration learning explicitly. S12's conditional tied-head
+calculation supplies parameter bookkeeping, not demonstrated compression or speed.
+No run, artifact, architecture or reproduction project is selected.
 Details live in
 [NOTEBOOK](../NOTEBOOK.md), the canonical document and the
 [experiment record](../experiments/EXPERIMENTS.md).

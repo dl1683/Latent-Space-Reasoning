@@ -56,12 +56,19 @@ that the trained model ignores DNA. Source and independent checks are in the led
 later query computation to explicit sources on an actual table illustration.
 This is an on-paper growth contract, not a model result or document product.
 Source tracing classifies coordinate repair as caller work. A crop-replacement
-test was declined because wrapper independence would supply its laws. Next identify
-a useful decision that new donor context revises and the old uses that should
-survive. S3's full stitching source separates useful acquisition from preserved
-donor computation; supervised interface learning is legitimate. Conditional value
-need not include standalone superiority; receiver adaptation is valid when
-attributed. No model run, panel expansion or reproduction project is selected.
+test was declined because wrapper independence would supply its laws. S2.2 names
+the reusable object: an acquisition procedure with a declared recipe, evidence
+permissions and budget rule across additions, permitting learned adapters and
+receiver adaptation. Typed ports and explicit fact import are substantive
+alternatives. S25's lifelong-editing precedents separate acquiring an answer from
+acquiring its consequences; correction may legitimately change old answers.
+Before further models, select a useful revision and fresh-input reuse obligation,
+identify the donor's contribution and specify which old uses should survive.
+Conditional value need not include standalone superiority; attribute new learning
+to the component that performs it. S12's conditional tied-head calculation shows
+why a contextual export need not save unique parameters or be cheap; no actual
+compression or runtime advantage follows. No run, artifact, architecture, panel
+expansion or reproduction project is selected.
 
 **Session accounting:** 421 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 runner lines); three probe rounds / zero building rounds.

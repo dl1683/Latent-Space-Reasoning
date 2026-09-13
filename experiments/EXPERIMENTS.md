@@ -1,5 +1,16 @@
 # Experiments Log
 
+## Acquisition reuse and revision precedents (2026-09-13; strategy only)
+
+Canonical S2.2 specifies a reusable acquisition procedure whose learned outputs may
+change, with declared evidence/budgets and fresh-input use. S12 adds conditional
+tied-head parameter bookkeeping; no proprietary model or measured runtime claim.
+S25 records full-method source readings of MEMOIR v4, RippleEdits TACL2024 and
+StableEdit v1. These establish relevant published approaches and task contracts,
+not project replications. Independent reviews distinguish sequential target learning
+from donor-computation transfer and qualify the semantics of dependency rules.
+No selected experiment, new runner, model load or training; accounting unchanged.
+
 ## Source interpretation and interface repair (2026-09-13; no run)
 
 S3 now incorporates the full official stitching paper: its clustered noise has
