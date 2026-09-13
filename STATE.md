@@ -55,8 +55,11 @@ that the trained model ignores DNA. Source and independent checks are in the led
 **Worked episode and next question:** S24 assigns text, structure, binding and
 later query computation to explicit sources on an actual table illustration.
 This is an on-paper growth contract, not a model result or document product.
-Next specify what changes when a donor changes token identity, coordinates or
-scope, and which earlier uses can survive without full repair. Conditional value
+Source tracing classifies coordinate repair as caller work. A crop-replacement
+test was declined because wrapper independence would supply its laws. Next identify
+a useful decision that new donor context revises and the old uses that should
+survive. S3's full stitching source separates useful acquisition from preserved
+donor computation; supervised interface learning is legitimate. Conditional value
 need not include standalone superiority; receiver adaptation is valid when
 attributed. No model run, panel expansion or reproduction project is selected.
 

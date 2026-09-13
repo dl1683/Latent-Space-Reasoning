@@ -379,13 +379,23 @@ acquisition contract. Section/table locators make the reading reproducible.
 | Liu et al., *Dual-Cache Latent Space Communication between Heterogeneous Language Models*, August 2026, [paper](https://arxiv.org/html/2608.20617), §§3–5 and Tables 5,22–24 | Frozen sharer/receiver models get partitioned evidence; learned cache pooling, joint memory and residual injection train on answer cross-entropy. Three families, nine ordered pairs, five tasks; paper reports one run on an A100 and a 64-token receiver cap. Text baseline generates a message. | Particularly close to complementary-context composition. A direct evidence-forwarding baseline matters because generating a summary is not always the cheapest text channel. Reported wins do not establish termination gates, repeated acquisition or donor removal. We do not import their efficiency headline as a project claim. |
 | Gröger, Wen and Brbić, *Revisiting the Platonic Representation Hypothesis: An Aristotelian View*, February 2026, version 2 June 2026, [paper](https://arxiv.org/html/2602.14486), §§4–7 | Calibrate similarity against sample permutations and calibrate the actual layer-selection aggregate. In tested settings, local neighbor agreement survives better than global spectral/distance agreement. Guarantees require exchangeability; clustered samples need restricted permutations. | Geometric correspondence is an uncertain empirical ingredient. Use matched dimensionality/search nulls when geometry is investigated; even calibrated correspondence does not establish causal transfer. |
 
-**Pending source, not fully assessed:** Smith, Mannering and Marcu,
+**Full-source update, 2026-09-13:** Smith, Mannering and Marcu,
 *Functional Alignment Can Mislead: Examining Model Stitching*, ICML 2025,
-[proceedings](https://proceedings.mlr.press/v267/smith25a.html). Abstract reports
-successful stitching across different biases/modalities and clustered noise.
-Full PDF access failed through the available web fetches. Do not infer its exact
-noise construction, supervision or controls from the abstract. Its central
-interpretive concern also follows independently from S1's access argument.
+[official PDF](https://raw.githubusercontent.com/mlresearch/v267/main/assets/smith25a/smith25a.pdf),
+§§2,4,5,7 and Appendix A/B.2, is now accessible. Frozen sender prefixes and receiver
+suffixes are joined by supervised 1×1 convolution stitches with batch normalization.
+Correlated-MNIST train/test cues agree, so accuracy does not identify the cue used.
+Clustered noise is class-informative: train and test perturb the same random
+class centres, not independent label-free noise. Changed input tasks and circular
+label remapping show that stitch training can supply correspondence. Failed
+stitches remain ambiguous because optimization or competence may fail.
+
+**Our inference:** successful supervised compatibility can be useful acquisition;
+it does not identify preserved donor computation. Declare what the adapter learns
+and which donor interventions/compositions should survive. No causal correspondence,
+cumulative retention or donor-independent acquisition follows from final accuracy.
+This resolves the earlier abstract-only limitation without turning acquisition
+into a requirement that adapters learn nothing.
 
 **Synthesis so far (our inference):** available components make connected
 communication plausible enough to investigate, while pretrained spaces may
@@ -1746,3 +1756,46 @@ identity, scope, correction and continuation are useful vocabulary here; pixel
 geometry and fixed table rules remain ordinary scaffolding. This episode is not
 a demonstration of new mathematics or latent-model structure. No OCR, table
 pipeline, acquisition training, benchmark or uncertainty system is queued.
+
+**Repair made concrete, without a wrapper project.** In the inspected
+[`objects_to_crops`](https://github.com/microsoft/table-transformer/blob/16d124f616109746b7785f03085100f1f6247575/src/inference.py#L252)
+path, the crop's token list contains the original token dictionaries and their
+boxes are rewritten in place into crop coordinates. Rotation rewrites them
+again. Crop records retain image and tokens, not an explicit inverse transform;
+`extract` returns crop-local outputs. Multiple crops can share those dictionaries.
+Independent review and root code reading confirm this source-level dataflow;
+its occurrence on the illustrated page was not run. Crop-local coordinates can
+be a legitimate API convention. The path simply does not, without caller work,
+satisfy our proposed immutable page-coordinate contract.
+
+Apply the existing S5/S13 distinctions rather than inventing another general
+theorem: known coordinate conventions need deterministic translation and
+provenance; splitting/merging tokens must be judged by the old reads it preserves;
+new semantic relations need their actual evidence or learning source; changed
+facts need a correction policy. A merged token can preserve old reads if it
+retains constituent identities and locations. Keeping page records and view
+transforms addresses this wrapper obligation without changing learned spaces.
+This is a prerequisite correction, not the next scientific artifact.
+
+The remaining learned-interface question is specific: which relation needed by
+a later query is inadequately supplied by OCR plus a declared cheap grouping
+rule, yet supplied by the frozen structure port? The illustrated page provides
+no measured such contrast. Its section membership may be recoverable by simple
+grouping; a schema field's presence or omission alone does not resolve that.
+Do not run another convenience-selected page to obtain an attractive failure.
+An eligible test needs the relation, its independent reference, the donor field
+that supplies it, and comparable receiver inputs. Only then can intervention
+separate a useful learned contribution from wrapper repair or ordinary grouping.
+
+**Second dialogue: choose the useful revision before the intervention.** A proposed
+cell-crop replacement test was not selected: independent crop processing, annotated
+cell identity and an explicit executor would supply most of its locality and
+composition laws. It could validate an interface without discovering learned
+structure. The sharper question is which useful later decision requires revising
+an earlier interpretation using context supplied by a new donor, and which old
+uses should survive. Header membership is an example only; this page has not
+established a discriminating ambiguity or donor competence. Choose the actual
+decision and independent reference before varying contextual evidence. A typed
+record system that economically supports such revision is a valid cumulative
+acquisition endpoint. It leaves the broader mathematical question open rather
+than disqualifying the direction. No new experiment follows from this dialogue.

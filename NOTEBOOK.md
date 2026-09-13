@@ -1,5 +1,25 @@
 # NOTEBOOK
 
+### Useful grafts, learned correspondence and revision (2026-09-13)
+
+The full official stitching paper is now accessible; S3 replaces its abstract-only
+placeholder. Shared class centres make the noise construction class-informative,
+and supervised stitches can learn correspondence. Useful acquisition does not
+by itself demonstrate preserved donor computation. Adapter learning remains valid
+when attributed; intervention preservation needs its own operational claim.
+
+S24's coordinate repair is a caller-side convention, not a latent-space hole.
+Two-round dialogue also declined a crop-replacement experiment: crop independence
+and annotated identities would supply most of its algebra. The more useful question
+is which later decision needs revision from newly supplied context, and what earlier
+uses remain valid. Competent typed revision is a valid endpoint. No further model
+run, architecture or document product is selected; accounting remains 421/0 code
+lines, three/zero probe/build rounds and eight model forwards.
+
+README's historical 6.3× claim now names the measured contrast rather than asserting
+general semantic control; the number remains unchanged. The experiment log retains
+the dated qualification and the original historical interpretation.
+
 ### Worked growth episode: where the binding comes from (2026-09-13)
 
 S24 traces an actual released table illustration through a proposed growing page

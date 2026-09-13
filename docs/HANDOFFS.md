@@ -37,9 +37,12 @@ effect contrast, receiver role evidence and usable receiver needed for the
 proposed joint-contribution test. This is one source example, not a benchmark
 score or trained-model attribution. S24 now works through an actual table
 illustration on paper, assigning text, structure, binding and later queries to
-their sources. No model performance or product selection is implied. Next make
-donor-induced changes to token identity, coordinates and scope explicit, with
-old-use repair obligations. Conditional contribution need not include standalone
+their sources. No model performance or product selection is implied. Coordinate
+repair is a caller obligation; crop-independent intervention laws would largely
+test our wrapper. Next identify a useful decision revised by new donor context
+and the old uses that should survive. S3 now has the full stitching source;
+adapter-acquired usefulness does not identify preserved donor computation.
+Conditional contribution need not include standalone
 superiority; declared receiver adaptation is valid. No new run or reproduction.
 Details live in
 [NOTEBOOK](../NOTEBOOK.md), the canonical document and the

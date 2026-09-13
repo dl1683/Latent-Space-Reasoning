@@ -1,5 +1,20 @@
 # Experiments Log
 
+## Source interpretation and interface repair (2026-09-13; no run)
+
+S3 now incorporates the full official stitching paper: its clustered noise has
+shared class centres across train/test, and stitch supervision can learn output
+correspondence. Functional acquisition and preserved donor computation are distinct
+claims. S24 traces crop-local mutation and missing inverse-coordinate metadata in
+the pinned table pipeline. These create caller obligations for a persistent page
+contract, not evidence of a defective latent space or a selected wrapper project.
+
+README's old "content-driven, not surface-driven" wording is narrowed to the
+measured assertion-versus-misleading and variable-mention contrasts. The 6.3×
+number is unchanged; this does not isolate semantics from all surface differences.
+The historical Gate 1b interpretation below is qualified accordingly. No new
+model run, training or apparatus; session accounting is unchanged.
+
 ## Worked growth episode: source inspection only (2026-09-13)
 
 Canonical S24 uses a released table illustration to assign successive donor
@@ -894,6 +909,12 @@ Results: `experiments/results/svb_qwen3_composition/result.json`
 ---
 
 ## Gate 1b — Confound Control (2×2 ANOVA + lumpability + surface equivalence) (2026-09-04, COMPLETE)
+
+**Interpretation qualification, 2026-09-13:** the content factor is the tested
+assertion-versus-misleading text contrast, not an intervention on meaning with
+every surface feature controlled. Its 6.3× ratio excludes variable mention alone
+on this panel. Historical "proves" and native-coordinate language below is also
+superseded by the later failed composition and scalar logit-bias findings.
 
 Distance from claim: 0 (this IS the native math claim).
 

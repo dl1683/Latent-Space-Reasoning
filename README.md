@@ -47,7 +47,7 @@ In one Qwen3-1.7B prompt family, deeply nested bindings were less likely to be r
 
 ### Key findings
 
-1. **Content-driven, not surface-driven.** A 2×2 crossover experiment separating semantic content from surface features shows content drives 6.3× more effect than variable-mention confounds. The model distinguishes what a comment *means*, not just its syntactic form.
+1. **The tested content contrast exceeds the variable-mention contrast.** In a 2×2 crossover, the assertion-versus-misleading contrast was 6.3× the variable-mention effect. This rules out variable mention alone as the explanation on that panel; it does not isolate meaning from every surface feature. Responses also differed between paraphrases, as described below.
 
 2. **No stable operator algebra on the response simplex.** Lumpability of the (correct-digit, shadow-digit, residual) projection was high (R² = 0.79–0.98 across 7 role types), but the fitted stochastic-matrix operator did not survive composition: behavioral equivalence between surfaces was not preserved under a second suffix (amplification 2.6–13×), and a scalar logit-bias model fit the single-suffix data as well. The simplex operators are a diagnostic, not a native coordinate system.
 
@@ -92,7 +92,7 @@ Python lexical scoping as a probe for latent-space depth structure. Nested `def`
 ```
 theory/               Axioms, breakpoint registry, continuation-refinement calculus (CR-1 to CR-16)
   closed/             Theory of closed lines (archived, headers mark status)
-experiments/           Six canonical runners (svb_0, crc_0, crc_1, ceg_1, write_boundary, commit_seal)
+experiments/           Core experiment runners and bounded strategy probes
   config/              Experiment configurations (JSON)
   results/             Result files (small; every result.json kept; bulk dumps listed in MANIFEST.md)
   ledger.jsonl         Machine-readable experiment log
