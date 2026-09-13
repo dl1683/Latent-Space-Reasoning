@@ -180,15 +180,15 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 Direction and documentation are adopted. The three bounded screens in S6/S21/S22
 are closed with their qualifications; no further donor pair, architecture,
-dataset or model run is selected. Fresh periodic approach audit e1027 recommends
-one task-first eligibility block: trace a documented specialist-encoder/KEGG
-example, its answer-determining fields, component roles and coupling evidence.
-Compare a structured contribution with a richer port; identify a subsequent
-donor and an old use that must survive. Stop after this candidate or 90 minutes,
-with either a populated contract or an exact missing-resource verdict. No model
-run or reproduction project follows automatically. General benchmark competence
-does not establish role competence on this task. S14/S15 remain interchange and
-extension contracts, sharpened by S23's joint-answer ambiguity.
+dataset or model run is selected. The task-first block recommended by periodic
+audit e1027 closed its PFN1 candidate early (S8): the example's disease endpoint
+admits exact-question lookup and lacks independent effect contrasts, receiver
+role evidence and a verified usable receiver. No full-benchmark verdict follows.
+Next work through one complete acquisition episode on paper: where does each
+needed distinction and cross-donor relationship come from, what must acquisition
+learn, and what earlier use must survive the next donor? No model run or
+reproduction follows automatically. S14/S15 remain interchange and extension
+contracts, sharpened by S23's joint-answer ambiguity.
 
 The earlier strong-assert panel is a deferred supporting option, not the
 automatic next experiment. Select work by the decision it changes about this
@@ -647,6 +647,65 @@ Variant metadata plus an accessible reference can determine the sequence, making
 the encoder's benefit one of accessibility rather than Shannon novelty. Preserve
 that legitimate benefit while comparing supplied-field prediction or declared
 reference lookup against the integrated route. No new experiment is selected.
+
+**Task-first contract inspection, 2026-09-13 (following audit e1027).**
+The proposed joint task was to import a sequence-dependent functional distinction
+B into a receiver's pathway-to-consequence operation A, then preserve that use
+when another donor adds context. We traced the documented PFN1 example instead
+of assuming that its disease prediction requires A+B. At dataset revision
+`9f0ef941a362f0e308e11861ed82c36338e23586`, test row 125 asks about a chromosome-17
+PFN1 allele in the monomeric-actin/PFN1/filamentous-actin pathway. Its exact
+question and disease answer also occur in training rows 375, 440, 910 and 936.
+The disease is amyotrophic lateral sclerosis. The test's sequence differs from
+those training sequences; train 440 shares its reference sequence. An exact
+question-to-answer dictionary can answer this one example without DNA. This is
+a source-level witness, not a benchmark score or evidence the trained model
+ignores DNA. No other test examples were scored.
+
+Independent verification checked the actual strings: all five pairs have length
+4001 and exactly one reference-to-variant edit at zero-based position 2000.
+Test 125 changes C to G; train 440 changes C to A on the same reference.
+The other three changes are A to C, A to G and T to C. Equality of the disease
+label does not imply biological equivalence of these alleles.
+
+| Contract component | What the inspected example supplies | Eligibility consequence |
+|---|---|---|
+| Old receiver operation A | A disease-labeled gene/pathway question | Existing mechanistic execution competence is not isolated by a correct disease answer |
+| Donor distinction B | Reference and variant DNA; generated reasoning describes a particular substitution | The scored disease label does not distinguish these five variants; independently annotated functional effects are missing from these records |
+| Coupling A+B | A generated explanatory path grounded in disease annotations | Plausible text is not independent validation of a sequence-dependent causal intermediate |
+| Cheap structured route | Exact matching question with a training answer | This documented case cannot establish a need for a richer port |
+| Future growth and retention | Proposed additional context donor and continued old pathway use | Not supplied as an evaluated workload; requires a distinct contract |
+
+The [pinned curation notebook](https://github.com/bowang-lab/BioReason/blob/684ff7c09eb1d65e70925c114a7a05a1fcc0403f/data/KEGG_Data_3.ipynb),
+zero-based cell 11, constructs questions from chromosome, network, genes and
+variant-gene name, omitting variant coordinates and nucleotide change. It takes
+the first disease label from the generated structured record. The generation
+prompt in `BioReasoning_DataCuration_KEGG.ipynb`, cells 6/12, already receives
+associated disease information. This describes target provenance, not label
+leakage into the model's test inputs. The actual PFN1 question does not specify
+the nucleotide change, so the earlier contradictory-input warning is conditional
+and does not prohibit swapping these naturally matched sequence pairs. Their
+shared disease label simply supplies no answer-changing contrast.
+
+The public data contain train/test/validation counts 1159/146/144. The
+[evaluation loader](https://github.com/bowang-lab/BioReason/blob/684ff7c09eb1d65e70925c114a7a05a1fcc0403f/eval_kegg_dna_vllm.py#L27)
+combines test and validation, explaining a 290-example evaluation. The inspected
+curation notebooks export a single training collection; they do not establish
+the released split algorithm or the exact historical model-selection protocol.
+Do not infer those from split names. The pinned README promises future original
+checkpoints; the checked official collection contains three datasets. An
+author-model search returned later protein/cell systems, not a verified original
+KEGG receiver. This bounded search does not prove no checkpoint exists elsewhere.
+
+**Disposition:** this example is ineligible for demonstrating the proposed joint
+donor contribution. The missing resources are a task-relevant effect contrast
+with independent labels, demonstrated receiver competence on its assigned
+operation, and a usable corresponding receiver artifact. Do not build a new
+receiver or benchmark to hide this absence during strategy. The useful native-
+math question is now concrete: which distinctions does the current question
+erase, and what later question would require retaining them? This applies the
+response-relative identity lens to the task; it demonstrates no latent-space
+structure in a model. Source revisions, row locators and hashes are in the ledger.
 
 **A relevant negative:** Azevedo and Loures, *Can LLMs Use Relational Transformer
 Embeddings?*, August 2026, [§§3–4](https://arxiv.org/html/2609.00457).

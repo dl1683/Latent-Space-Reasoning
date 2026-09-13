@@ -45,15 +45,20 @@ and canonical S6/S21/S22. S23 is proof-only: pairwise compatibility need not
 imply joint compatibility, and compatible marginals need not identify new joint
 answers. It is an obligation for applicable interfaces, not a selected architecture.
 
-**Next block, audit e1027:** trace one documented specialist-encoder/KEGG joint
-example and its answer-determining fields, role competence and coupling evidence.
-Compare a structured port with a richer representation; specify a later donor
-and old use to preserve. Stop this candidate after a populated contract, exact
-missing-resource verdict, or 90 minutes. Availability-led diagnostics are not
-working as route selection. Do not require standalone donor superiority or a
-frozen receiver for every acquisition: conditional value and declared adaptation
-are valid. Separate information, accessible computation and cheaper realization.
-No model run, expanded panel, reproduction project or architecture is selected.
+**Task-first block outcome:** S8 traces the documented PFN1 case. Its exact
+question and disease label repeat in training despite different variants, so
+this example does not establish a sequence-specific joint contribution. Missing
+resources: independent effect contrasts, receiver role competence and a usable
+original receiver. The candidate closed early; no full-benchmark score or claim
+that the trained model ignores DNA. Source and independent checks are in the ledger.
+
+**Next question:** where does the relationship needed to combine successive
+donors come from? Work through one complete acquisition episode on paper,
+assigning every distinction and cross-donor relationship to an existing donor,
+retained operation, supplied reference or new learning. Specify the second
+addition and repair of old uses. This is strategy, not construction. Conditional
+value need not include standalone superiority; receiver adaptation is valid when
+attributed. No model run, panel expansion or reproduction project is selected.
 
 **Session accounting:** 421 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 runner lines); three probe rounds / zero building rounds.

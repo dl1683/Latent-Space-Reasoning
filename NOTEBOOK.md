@@ -1,5 +1,25 @@
 # NOTEBOOK
 
+### Task-first block resolves its first candidate (2026-09-13)
+
+Traced the documented PFN1 case through public data and pinned curation/evaluation
+code. Test row 125 and training rows 375/440/910/936 have exactly the same question
+and disease answer despite different sequences; independent reviewer verified
+actual center-base edits and hashes. Exact-question lookup is sufficient for
+this one endpoint. No whole-benchmark score or claim that a trained model ignores
+DNA. The final formatter omits nucleotide changes, so these matched pairs do not
+instantiate the previously warned-about contradictory-text swap. The shared
+disease label instead makes the desired functional distinction unmeasurable here.
+
+The evaluation loader explicitly combines 146 test and 144 validation rows;
+that explains 290 without establishing historical selection protocol. No verified
+original receiver checkpoint was found in the scoped official surfaces. End this
+candidate before the 90-minute limit with precise missing resources: independent
+effect labels that change the required answer, receiver role competence and its
+usable artifact. Do not manufacture eligibility by training a new system. S8
+contains the populated eligibility contract; ledger preserves dataset revision,
+row locators, hashes and independent source inspections. No new model execution.
+
 ### First periodic approach review: choose the task first (2026-09-13, 21:42 UTC)
 
 Fresh real Codex CLI 01a09cb3-77b6-7840-a52e-a5b0099e7822 reviewed consolidated

@@ -1,5 +1,24 @@
 # Experiments Log
 
+## Specialist task contract: documented case is not discriminating (2026-09-13)
+
+Source inspection, not a new model experiment. At pinned public data revision
+9f0ef941a362f0e308e11861ed82c36338e23586, the documented PFN1 test example
+(row 125) has the exact question and answer of four training rows. Independent
+verification checked sequence edits, question equality and source hashes. A
+question dictionary answers this example without DNA; no full-benchmark score
+or trained-model attribution follows. The curation formatter omits nucleotide
+changes from questions, and the evaluation loader combines 146 test and 144
+validation rows. The latter explains the paper's 290-example table without
+establishing historical model-selection details.
+
+Close this candidate for the proposed joint-contribution demonstration: missing
+independent effect contrasts, receiver role-competence evidence and a verified
+usable original receiver. No new harness, model load or reproduction. The
+[canonical S8 contract](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#s8-what-reasoning-over-an-encoder-could-mean)
+and ledger retain the exact scope, row locators and hashes. Probe accounting is
+unchanged; bounded source reads are not additional model experiments.
+
 ## Periodic strategy review: task-first selection (2026-09-13; no run)
 
 Fresh real Codex CLI review of HEAD 0a93fb7, audit e1027, finds diminishing

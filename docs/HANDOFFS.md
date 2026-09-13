@@ -31,13 +31,15 @@ changing the negative direction. No conclusion about all combinations follows.
 S23 supplies proof-only joint compatibility and identification cautions, not a
 new empirical result or construction proposal.
 
-Next execute one task-first eligibility block, at most 90 minutes: trace a real
-specialist-encoder/KEGG example, role competence and coupling; compare structured
-and richer ports, name a later donor and an old use to preserve. Return a populated
-contract or the exact missing resource. Conditional contribution does not require
-standalone donor superiority; declared receiver adaptation is valid. Stop choosing
-diagnostics by data availability. No panel expansion, assay tuning or reproduction
-project. Detailed decisions and dated checkpoints live in
+The first task-first block closed early: the PFN1 case in S8 has a repeated
+training question/answer despite distinct DNA variants. It lacks the independent
+effect contrast, receiver role evidence and usable receiver needed for the
+proposed joint-contribution test. This is one source example, not a benchmark
+score or trained-model attribution. Next work through one acquisition episode
+on paper: assign every needed distinction and cross-donor relationship to its
+actual information or learning source, including a second addition and old-use
+repair. Conditional contribution need not include standalone superiority;
+declared receiver adaptation is valid. No new run or reproduction. Details live in
 [NOTEBOOK](../NOTEBOOK.md), the canonical document and the
 [experiment record](../experiments/EXPERIMENTS.md).
 
