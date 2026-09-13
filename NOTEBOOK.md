@@ -1,5 +1,20 @@
 # NOTEBOOK
 
+### Philosophy preserved; cumulative acquisition direction adopted (2026-09-13)
+
+The user clarified the practical ambition: map and graft capabilities, reason
+over encoder representations, and let a persistent system grow by integrating
+successive pretrained models. They explicitly required preserving the wider
+latent-mathematics philosophy and the history of its development.
+
+Documented the distinction between philosophy, current direction and candidate
+experiment. Connected growth and donor-independent assimilation have separate
+requirements. The new direction has no demonstrated artifact. No model run,
+training, acquisition or scientific re-adjudication took place. Current entry
+points now route to theory/CUMULATIVE_CAPABILITY_ACQUISITION.md; earlier results
+remain evidence with their original qualifications. Next work is a bounded
+mathematical/interface proposal, not automatic resumption of an old panel.
+
 Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 

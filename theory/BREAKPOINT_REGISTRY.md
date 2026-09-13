@@ -1,5 +1,14 @@
 # Philosophy Breakpoint Registry
 
+## How to read this history (2026-09-13)
+
+These themes motivate questions for the broader native-mathematics philosophy;
+they are not universal architectural impossibility results. Later audited
+qualifications in [STATE](../STATE.md) and the experiment log outrank early
+interpretations below. The [current direction](CUMULATIVE_CAPABILITY_ACQUISITION.md)
+uses this history to ask what acquisition interfaces must preserve, how operations
+compose and what prevents usable transfer. The historical record is retained.
+
 What existing math assumed, where it broke in latent space, and what
 each break tells us about native structure. These are clues, not
 conclusions. Each breakpoint is a constraint on what native math must

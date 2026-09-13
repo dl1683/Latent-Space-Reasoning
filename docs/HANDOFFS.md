@@ -1,3 +1,30 @@
+# Session handoff — 2026-09-13
+
+## Direction and philosophy
+
+Read [README](../README.md), [STATE](../STATE.md), and the
+[canonical direction](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) first.
+The user explicitly distinguishes the enduring philosophy of native latent
+mathematics from the current direction of cumulative capability acquisition.
+Preserve the denizen framing and research history; do not collapse the mission
+into a particular architecture or benchmark.
+
+The new direction explores capability grafting, reasoning over multiple encoders,
+and integrating representations/computation from successive pretrained donors.
+Connected growth and assimilation after donor removal are distinct endpoints.
+No new capability is claimed and no compute was launched. Old locked panels are
+supporting options, not restart instructions. First propose a bounded acquisition
+interface and falsifiers; choose donors, tasks and budgets only after review.
+
+Scope of this update: documentation and direction only. Historical result files,
+runners and prior negative results are preserved. No experiment restart, donor
+access, API spend or GPU authorization follows from this handoff.
+
+## Earlier handoffs (historical)
+
+The dated records below preserve the path to the present project. Their runtime,
+quota, active-task and restart instructions describe those sessions, not this one.
+
 # Handoff 2026-09-03f
 
 # Session Handoff — 2026-09-03f

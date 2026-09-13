@@ -1,5 +1,21 @@
 # Native latent mathematics — living axioms
 
+## Philosophy and current application (2026-09-13)
+
+The denizen's world remains the enduring philosophy. Identity, moves, effort,
+maps and laws should arise from behaviorally meaningful structure, independently
+of chosen coordinates. Existing mathematics is welcome; usefulness is the test.
+The [current application](CUMULATIVE_CAPABILITY_ACQUISITION.md) is cumulative
+capability acquisition across pretrained models. It grounds this philosophy
+without exhausting its meaning or changing the status of the theorems below.
+Future-response identity, operation preservation and causal substitution are
+candidate foundations for acquisition interfaces, not evidence of transfer.
+
+Historical experimental interpretations below must be read with later audit
+corrections in [STATE](../STATE.md). In particular, the Falcon SVB grounding
+paragraph predates the documented cache-continuation defect and does not establish
+settling or native access cost; see [runtime correction](../docs/HANDOFFS.md).
+
 ## Navigation requirements (what must exist before theorem)
 
 A denizen must first define:

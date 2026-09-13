@@ -1,5 +1,15 @@
 # Experiments Log
 
+## Direction update — cumulative capability acquisition (2026-09-13; NO RUN)
+
+User-directed documentation update, not an experimental result. The enduring
+native-mathematics philosophy is preserved; the current exploration direction
+is [cumulative capability acquisition](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md).
+Candidate progression: A, acquire B, retain A, compose A+B, remove donor, add
+another donor. No donors, tasks, thresholds or runs are selected. Earlier
+experiments remain historical supporting evidence, and old next-step language
+does not override [current state](../STATE.md).
+
 Reverse chronological. Only gate-passed conclusions are stated as confirmed.
 Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIMENTS.md`.
 

@@ -2,7 +2,27 @@
 
 > *Every neural network has a vast mathematical world inside it. We treat it as ordinary vector space and apply linear algebra. But what if it has its own mathematics — structure that exists, that the model uses, and that our standard tools literally cannot see?*
 
-This project builds the **native mathematics of latent spaces** — not porting existing math onto embeddings, but discovering what math the space itself demands.
+This project explores the **native mathematics of latent spaces**: take the space as a world and ask what a denizen would need to invent to navigate it. What constitutes identity, a move, effort, a map or a reusable law? Native means coordinate-independent and effective for the medium; existing mathematics is a foundation to use. This philosophy is broader than any one research direction.
+
+## Current direction: cumulative capability acquisition
+
+**Can a persistent AI system acquire capabilities from successive pretrained models, combine them, and preserve what it already knows?**
+
+This is the current application of the philosophy, not a replacement for it. We are exploring:
+
+- **Capability mapping and grafting:** identify useful computations and their interfaces, then investigate combining language, domain and multimodal capabilities across models. Capabilities need not occupy isolated regions. Reducing unnecessary verbosity is another application when quality is preserved and total cost falls.
+- **Reasoning over encoders:** use pretrained representations through reusable updates and composition, separating the encoder's contribution from what newly attached reasoning machinery learns.
+- **Growth across model generations:** integrate additional encoders and representations from decoder-only models, with diffusion and multimodal donors as prospective extensions. The persistent representation may itself expand rather than force every contribution into one fixed vector space.
+
+**Connected growth** retains donor models at runtime. **Assimilated growth** retains an acquired capability after donor removal. Neither alignment nor adding models establishes useful growth by itself. A token embedding table is not a model's contextual knowledge and computation; exporting a backbone does not automatically make it small or cheap.
+
+The candidate progression is A in a base system, B in a donor, acquisition of B with A retained, held-out tasks requiring both, donor removal, and another acquisition. Relevant controls include simple routing, text-mediated combination, retrieval and matched learning budgets. Acquisition and recurring inference costs are counted separately.
+
+**Status: exploratory direction.** No cross-model grafting, cumulative acquisition or encoder-reasoning artifact has been established. Start with the [canonical direction](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) and [current state](STATE.md). Earlier findings below remain supporting evidence with their original limits.
+
+## Research history and continuity
+
+The [prior program](legacy/README.md) explored latent perturbation, diffusion repair and aggregation, including the permanent arithmetic-claim correction. The native-mathematics program then investigated frozen-encoder geometry, residual dynamics, causal interventions, learned carriers, behavioral quotients and continuation laws. Its conditional mathematics, bounded positive findings and structured negatives remain part of the foundation; closed lines are not silently reopened. [Experiment history](experiments/EXPERIMENTS.md) · [Mathematical foundation](theory/AXIOMS.md) · [Structured negative](docs/STRUCTURED_NEGATIVE_2026_08_29.md)
 
 ## A Depth-Dependent Readout Effect
 
@@ -39,13 +59,13 @@ In one Qwen3-1.7B prompt family, deeply nested bindings were less likely to be r
 
 6. **Presentation differences survive a neutral continuation and are exposed by a reassignment announcement.** On a 24-cell panel with three same-meaning surface pairs, the neutral comment `# No changes.` kept all 32 initially close pairs within 0.01 total variation on the 11-bin readout, while the comment `# Reassigning {var} now.` separated 29 of them. This is a reduced-readout, unmatched-position observation about which continuations reveal which distinctions; it establishes nothing about erasure or about the full next-token law.
 
-## Current direction: which distinctions can a model safely forget?
+## Supporting foundation: which distinctions can a model safely forget?
 
-The program now studies interchangeability of histories relative to a family of future questions: two histories are interchangeable for a question family if every question in the family answers the same, and the organizing quantity is how much a later action can re-separate histories that were interchangeable before it. Results so far are mathematical and conditional: exact selective overwrite has a lens structure (preserved context times store); transition-closed realization sets give history-length-independent error bounds; a finite behavioral state budget of N places turns local update errors of size ε into a lifetime error of at most (N−1)ε, sharp; contraction is a sufficient but not necessary certificate. A trained 17K-parameter overwrite cell realized perfect fact replacement on its training panel without being a contraction on its state cube, which closed the coordinate-certificate route. No real-model artifact has been established; the open empirical question is whether genuinely close real-model histories exist on a matched-position, full-law interface and which matched continuations separate them.
+The supporting theory studies interchangeability of histories relative to a family of future questions: two histories are interchangeable for a question family if every question in the family answers the same, and the organizing quantity is how much a later action can re-separate histories that were interchangeable before it. Results so far are mathematical and conditional: exact selective overwrite has a lens structure (preserved context times store); transition-closed realization sets give history-length-independent error bounds; a finite behavioral state budget of N places turns local update errors of size ε into a lifetime error of at most (N−1)ε, sharp; contraction is a sufficient but not necessary certificate. A trained 17K-parameter overwrite cell realized perfect fact replacement on its training panel without being a contraction on its state cube, which closed the coordinate-certificate route. No real-model artifact has been established; the open empirical question is whether genuinely close real-model histories exist on a matched-position, full-law interface and which matched continuations separate them.
 
 ## Nine Breakpoints: Design Constraints for Native Mathematics
 
-Across 50 audited Phase 1 experiments, we catalogued nine places where standard vector-space mathematics fails in latent space. Each constrains what native math must look like.
+The first nine breakpoint themes summarize constraints from the Phase 1 experiments. They are clues about tested interfaces and constructions, not universal failures of vector mathematics. The registry also contains later themes; the underlying audited records control their scope.
 
 | # | Breakpoint | What it means |
 |---|-----------|---------------|

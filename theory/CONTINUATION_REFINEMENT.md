@@ -1,5 +1,14 @@
 # Continuation-Refinement Calculus
 
+## Role in the current direction (2026-09-13)
+
+[Cumulative capability acquisition](CUMULATIVE_CAPABILITY_ACQUISITION.md) is the
+current exploration direction within the broader native-mathematics philosophy.
+This calculus supplies candidate language for preserving distinctions and
+operations across acquisition interfaces. Its definitions and conditional bounds
+do not establish cross-model transfer, assimilation or cumulative reasoning.
+The historical status index and proof record below remain in force as evidence.
+
 ## Status index (2026-09-06; read this before the body)
 
 | Section | Status | One line |
@@ -18,9 +27,9 @@
 | CR-16 | RESTATEMENT, audited #42 | Architectural identities as background; two-route decomposition withdrawn |
 
 Zero-call readings of archived tables (2026-09-06) are recorded in
-experiments/EXPERIMENTS.md, not here. The prioritized next acquisition
-(eligibility-first strong-assert panel) is pre-registered in draft and
-awaits review and compute approval.
+experiments/EXPERIMENTS.md, not here. The formerly prioritized acquisition
+(eligibility-first strong-assert panel) remains a deferred draft requiring review
+and compute approval. It is not the automatic next step under the new direction.
 
 Status: THEOREM ATTEMPT (v1). Builds on D1-D6. Replaces metric/Finsler
 extensions (D7). Motivated by SVB structured negatives and Codex
