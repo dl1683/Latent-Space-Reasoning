@@ -19,7 +19,8 @@ a fixed shared vector space, training-free transfer or proprietary access.
 decision-changing questions. No system-building, large-model loading or sustained
 compute; per-run GPU approval remains. Consolidate before approximately two-hour
 adversarial approach reviews. The first completed around 21:42 UTC (audit e1027);
-the next is due around 23:42 UTC after consolidation. The reviewer challenges
+the second completed around 23:03 UTC (e1039-e1040). The next is due around
+01:03 UTC on September 14 after consolidation. The reviewer challenges
 approach and question selection, never the mission.
 
 **Evidence status:** no cumulative acquisition, transferable graft, encoder
@@ -74,6 +75,17 @@ to the component that performs it. S12's conditional tied-head calculation shows
 why a contextual export need not save unique parameters or be cheap; no actual
 compression or runtime advantage follows. No run, artifact, architecture, panel
 expansion or reproduction project is selected.
+
+**Second-review outcome:** S24's bounded purchasing contract selects external
+record revision through its stipulated typed interface. Authoritative scoped
+import and the specified calculator supply the useful operation; no learned
+revision predictor improves that decision. The candidate closes without compute.
+Predicting a producer's uncertain interpretation might support rechecking, but
+requires an actual scoped source, semantic port and alternative observation.
+Do not extend this hypothetical case or invent a learned receiver to make it hard.
+The next inquiry must connect a learned relation to an available acquisition,
+intervention or reuse choice. This is a scoped route choice, not a general verdict
+that explicit records solve the user's broader capability-composition ambition.
 
 **Session accounting:** 421 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 runner lines); three probe rounds / zero building rounds.

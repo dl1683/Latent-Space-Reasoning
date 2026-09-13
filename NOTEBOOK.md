@@ -10,12 +10,14 @@ sustained strategy, source research and bounded CPU probes, not system-building.
 No cumulative artifact, causal graft, encoder-reasoning or cost advantage is
 established. Closed prior lines stay closed; no run follows from documentation.
 
-**Current inquiry:** discover an economical relation that predicts a learned
-model's revision consequences under new uses and scope interventions, including
-failures, before teaching it the desired law. Procedure reuse alone is not an
-explanation. Typed ports, explicit fact import and receiver adaptation remain
-legitimate alternatives; attribute the source of every learned capability.
-No further model, dataset, page, architecture or experiment is selected.
+**Current inquiry:** second-review bounded contract closed: S24's purchasing
+stipulation needs external-record revision with authoritative scope; its specified
+calculator already supplies fresh consequences and B retention. Explicit import
+is sufficient for that contract, so no learned revision predictor is selected.
+An independent check's strongest alternative concerns producer reliability and
+accept-versus-recheck, but no actual scoped source/semantic port is available in
+this case. Do not extend it or invent a learned receiver. Select the next inquiry
+by an available acquisition/intervention/use choice. No run is selected.
 
 **Accounting and custody:** 421 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204), three probes / zero construction rounds; eight model forwards,
@@ -23,7 +25,8 @@ no GPU or training. Strategy authorization supersedes construction to repair the
 ratio. Root alone writes boards after stale-session ID collisions; integrity
 entries restored as e1011–e1012. Mission synthesis retains its hang workaround.
 Fresh real CLI result audits and design dialogues have distinct receipts below;
-next periodic approach audit is due around 23:42 UTC after consolidation.
+second periodic review completed around 23:03 UTC (e1039-e1040); next due
+around 01:03 UTC on September 14 after consolidation.
 Detailed mathematics/source readings live in
 [canonical theory](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md); exact results,
 corrections and receipt hashes remain in the [ledger](experiments/ledger.jsonl)

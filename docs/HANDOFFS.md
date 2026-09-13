@@ -13,7 +13,8 @@ separate branches. No cumulative capability or cost advantage is established.
 **Mode:** autonomous strategy/discovery, including definitions, source study and
 small bounded CPU probes, without system-building or large-model loading.
 Research began at 19:45 UTC; first periodic approach review completed around
-21:42 UTC (e1027); next due around 23:42 UTC after consolidation. Challenge
+21:42 UTC (e1027), and the second around 23:03 UTC (e1039-e1040). Next due
+around 01:03 UTC on September 14 after consolidation. Challenge
 approach, never mission. GPU
 approval remains per run. Old locked panels and paused lines are not restart
 instructions; no further model run or architecture is selected.
@@ -56,6 +57,17 @@ No run, artifact, architecture or reproduction project is selected.
 Details live in
 [NOTEBOOK](../NOTEBOOK.md), the canonical document and the
 [experiment record](../experiments/EXPERIMENTS.md).
+
+**Second-review outcome:** S24's bounded purchasing contract selects external
+record revision through its stipulated typed interface. Authoritative scoped
+import and the specified calculator supply the useful operation; no learned
+revision predictor improves that decision. The candidate closes without compute.
+Predicting a producer's uncertain interpretation might support rechecking, but
+requires an actual scoped source, semantic port and alternative observation.
+Do not extend this hypothetical case or invent a learned receiver to make it hard.
+The next inquiry must connect a learned relation to an available acquisition,
+intervention or reuse choice. This is a scoped route choice, not a general verdict
+that explicit records solve the user's broader capability-composition ambition.
 
 Session totals: 421 apparatus / 0 artifact-bearing code lines (98 + 119 + 204),
 three probes / zero building rounds, eight model forwards, no GPU or training.

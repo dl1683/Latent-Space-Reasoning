@@ -1,5 +1,25 @@
 # Experiments Log
 
+## Second periodic approach review — 2026-09-13, 23:03 UTC
+
+Fresh real CLI review of `f83ce4b` recommends continuing strategy but ending
+unspecified revision prediction and generic vocabulary expansion as the default.
+Its decision question is what acquisition or use improves because a revision
+relation is learned. Next block: at most 45 minutes, one concrete operation,
+donor evidence, receiver interface and retained use; conclude typed import is
+sufficient, specify a decision-bearing empirical contrast, or close on an exact
+missing dependency. No competence proof is required before a probe measuring it.
+This is an approach review, not a new experiment. Audit entries e1039-e1040;
+receipt and hash: ledger `strategy_periodic_approach_review_2_20260913`.
+The subsequent bounded contract closed with outcome 1: S24's authoritative
+scoped external-record import and stipulated calculator supply the useful
+operation. No learned predictor is needed there; no real purchasing donor or
+receiver is asserted. Independent strategy check agreed. Mission e1041 and ledger
+`scoped_revision_contract_closeout_20260913` retain the scoped result.
+Accounting remains 421 apparatus / 0 artifact-bearing lines, three probes /
+zero construction rounds, eight model forwards, no GPU or training.
+
+
 ## Revision consequence identification (2026-09-13; no compute)
 
 Two fresh real Codex CLI design-dialogue rounds produced S24's hypothetical

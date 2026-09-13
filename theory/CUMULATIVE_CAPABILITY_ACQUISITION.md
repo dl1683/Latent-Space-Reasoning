@@ -46,11 +46,12 @@ The test is whether these definitions predict interventions and expose missing
 structure in actual learned spaces; another successful coordinate alignment
 would not by itself answer that question.
 
-**Current mathematical inquiry:** can acquired structure predict which future
-computations a correction applies to, and their responses, without being supplied
-each affected answer? S24's worked identification problem separates possible
-dependency, correction scope and realized answer change. Its arithmetic is ordinary
-scaffolding; the eventual claim must concern predictions of learned-model behavior.
+**Current mathematical inquiry:** find an economical operational relation that
+changes an available acquisition, intervention or reuse decision. S24's correction
+example separates dependency, scope and realized answer change, but its completed
+contract needs only scoped record import. Learned behavior prediction is a broader
+research option; it is not automatically progress on this acquisition direction.
+The next selection must name the real operation and choice it would improve.
 
 ## Philosophy and direction
 
@@ -196,8 +197,13 @@ S24 now works through one complete acquisition episode on paper, assigning text,
 structure, binding and later query computation to distinct sources. This is not
 a model-result or product-selection milestone. Coordinate repair is caller work;
 crop-independent replacement would largely test our wrapper. S2.2 now specifies
-reuse of the acquisition procedure across donors. Next identify a useful decision
-revised by newly supplied context and which established uses should survive.
+reuse of the acquisition procedure across donors. The second periodic review
+(e1039-e1040) demanded an operation and a decision served by prediction. S24's
+bounded purchasing contract closes with explicit scoped record import sufficient
+under its assumptions. No learned revision predictor has a useful role there;
+a producer-side accept-versus-recheck question lacks an actual scoped source and
+semantic port. Stop extending this example. Select the next inquiry by a real
+available intervention or acquisition choice, not response prediction alone.
 No model run or reproduction follows automatically. S14/S15 remain interchange
 and extension contracts, sharpened by S23's joint-answer ambiguity.
 
@@ -1904,6 +1910,51 @@ renaming them would not advance the native-mathematics mission. No purchasing
 page, model, new benchmark, or compute run is selected. The bounded empirical
 question is whether a useful learned dependency can be discovered economically
 and predict fresh uses, alongside the valid typed-integration alternative.
+
+**Decision-bearing revision contract: typed route retained.** The
+second periodic review asked which acquisition decision a learned revision
+predictor would improve. For the purchasing stipulation, the answer is none:
+
+- Later decision: how many whole cartons to order for a fresh quantity in A or B.
+- Revision operation: replace the external size record for the authoritative
+  scope. Do not edit model weights, hidden states, or an input prompt implicitly.
+- Evidence: the corrected value, its unit, affected group identities and the
+  authority to supersede the old value. These are stipulated inputs here, not
+  outputs demonstrated by the table model or a real purchasing document.
+- Receiving interface: `size[group]` read by the already specified ceiling
+  executor. This is the existing *on-paper* interface, not an installed receiver
+  or a verified learned model. Acquisition changes records; the executor stays.
+- Retention: under A-only correction, every valid B quantity uses its old size;
+  A quantities use the new size even where the resulting integer stays fixed.
+  Preserve provenance of the replaced record separately from current truth.
+- Acquisition decision: accept the authorized, identified correction; if scope
+  remains ambiguous, retain both possibilities or obtain identifying evidence.
+  A prediction of an unrelated learned receiver's answer changes none of this.
+
+Under these assumptions, explicit scoped import supplies the complete useful
+operation. No implementation or model experiment is needed to establish that
+conditional conclusion. No arbitrary-scope, unreliable-source or economically
+superior deployment claim follows. In particular, the actual table source does
+not export an authoritative `applies_to_B` field. Inferring one from boxes would
+be an additional semantic operation requiring its own evidence.
+
+An independent approach check identified the strongest remaining role for
+learned-response prediction: predicting when a *producer's interpretation* is
+unreliable could change accept-versus-recheck decisions before typed import.
+That would require a real independently scoped correction, a callable port that
+attempts that interpretation, and an available additional observation whose cost
+can be compared with prediction. The selected illustration supplies none of this
+contrast. Replacing its executor with an unverified learned receiver would only
+manufacture a harder problem. Close this purchasing candidate as an on-paper
+success for scoped import. Retain typed import as the leading route for this
+contract; do not generalize it to all capability acquisition.
+
+The transferable boundary is operational: a learned map earns a job when it
+changes an available choice of acquisition, intervention or reuse at acceptable
+error and effort. A map that only forecasts behavior can still inform the broader
+native-mathematics program, but that alone does not advance cumulative acquisition.
+The current contract's identity, revision and preservation laws are supplied by
+its interface; they are not discovered properties of a learned latent space.
 
 **Existing causal-abstraction bridge.** The historical
 [intensional-descent note](closed/INTENSIONAL_DESCENT.md) already names this
