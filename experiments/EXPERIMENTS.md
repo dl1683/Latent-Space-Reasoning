@@ -10,7 +10,17 @@ cyclic-content conditions. Confidence-first scheduling uses no extra forwards.
 Installed mask-dropout normalization requires the equal-mask control. Seven
 forwards / 112 rows maximum, 180 seconds including startup; timeout is incomplete.
 Recovery thresholds are local allocation criteria, not significance or general
-reasoning evidence. Result pending. Ledger `autonomous_continuation_design_20260913`.
+reasoning evidence. The single run completed in 10.1455 seconds, seven CPU
+forwards / 112 rows. Primary both-site recovery 0/16 matches independent 0/16;
+second-site recovery 2/16 matches independent 2/16 and trails cyclic control
+3/16. All 16 fixed-position cases complete per arm. Initial first guesses are
+correct only 1/16, bounding achievable pair recovery below the locked threshold.
+Close this procedure locally; no strong negative about competent composition.
+Fresh real CLI audit e1044-e1045 independently reproduced every count and checked
+source/custody/code paths; root and auditor read all 16 decoded predictions.
+Reverse/confidence-first each correct one and spoil one. Timing is from main,
+excluding interpreter startup; raw audit runtime typo is corrected in the ledger. Exact arrays
+and provenance are in `results/encoder_continuation_v1/result.json`. Ledger `autonomous_continuation_design_20260913`.
 
 
 ## Second periodic approach review — 2026-09-13, 23:03 UTC

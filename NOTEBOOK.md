@@ -1,15 +1,5 @@
 # NOTEBOOK
 
-**Latest selection (23:25 UTC):** S26 locks one CPU-only autonomous masked-
-completion diagnostic: four verified assay reference constructs, 16 pairs, seven
-batched forwards, 180-second deadline, no training/download/GPU. Two fresh real
-CLI direction rounds and an independent design check completed. The equal-mask
-content control addresses the installed embedding rescaling confound. Primary
-increasing-position policy and all thresholds are fixed before results. This is
-one model's self-composition, not cumulative acquisition. Earlier “no run selected”
-statements below describe the preceding strategy checkpoint; S26 is the sole
-new selection and does not reopen closed or paused lines.
-
 ## Strategy/discovery checkpoint and history — 2026-09-13
 
 The enduring question is what a denizen of latent space needs for identity,
@@ -20,17 +10,18 @@ sustained strategy, source research and bounded CPU probes, not system-building.
 No cumulative artifact, causal graft, encoder-reasoning or cost advantage is
 established. Closed prior lines stay closed; no run follows from documentation.
 
-**Current inquiry:** second-review bounded contract closed: S24's purchasing
-stipulation needs external-record revision with authoritative scope; its specified
-calculator already supplies fresh consequences and B retention. Explicit import
-is sufficient for that contract, so no learned revision predictor is selected.
-An independent check's strongest alternative concerns producer reliability and
-accept-versus-recheck, but no actual scoped source/semantic port is available in
-this case. Do not extend it or invent a learned receiver. Select the next inquiry
-by an available acquisition/intervention/use choice. No run is selected.
+**Current checkpoint:** S26's single CPU continuation run is complete, with
+independent audit complete: e1044-e1045. Primary and independent pair recovery were both 0/16;
+second-site recovery was 2/16 for both, versus cyclic content control 3/16.
+The first prediction was correct on only 1/16, capping unrevised pair recovery
+below the locked .10 gain threshold even with a perfect second step. Close this
+procedure on this panel; this weak-proposal result does not exclude composition
+with competent inputs or establish that a learned exporter helps. No rerun,
+threshold change or new selection follows. [Raw result](experiments/results/encoder_continuation_v1/result.json)
+retains probabilities, counts and hashes; audit receipt will follow in the ledger.
 
-**Accounting and custody:** 421 apparatus / 0 artifact-bearing code lines
-(98 + 119 + 204), three probes / zero construction rounds; eight model forwards,
+**Accounting and custody:** 628 apparatus / 0 artifact-bearing code lines
+(98 + 119 + 204 + 207), four probes / zero construction rounds; 15 model forwards,
 no GPU or training. Strategy authorization supersedes construction to repair the
 ratio. Root alone writes boards after stale-session ID collisions; integrity
 entries restored as e1011–e1012. Mission synthesis retains its hang workaround.
@@ -41,6 +32,21 @@ Detailed mathematics/source readings live in
 [canonical theory](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md); exact results,
 corrections and receipt hashes remain in the [ledger](experiments/ledger.jsonl)
 and [experiment log](experiments/EXPERIMENTS.md).
+
+### 23:03–23:34 UTC: typed-contract closure and one continuation probe
+
+The second review closed S24's purchasing contract: authoritative scoped import
+and its specified calculator already supply fresh consequences and B retention.
+Producer reliability/rechecking would need an actual scoped source and semantic
+port; do not invent a learned receiver or extend this hypothetical case.
+Two fresh CLI direction rounds then selected S26's one-model self-composition
+probe, with independent design review and locked controls for mask-count scaling.
+Seven forwards / 112 rows over four reference constructs completed in 10.1455s;
+repeat probability drift was zero. Root read all 16 decoded pairs. These are
+reference recoveries, not biological quality, held-out generalization or acquisition.
+Receipts: ledger `autonomous_continuation_design_20260913` (fresh CLI sessions
+01a09d0d-bee5-7ee2-b682-f5a9a17c59b8 and 01a09d11-6b92-7fe3-96ee-c260c44cf46c),
+`encoder_continuation_v1_intent` and `encoder_continuation_v1_result`.
 
 ### Later strategy: procedure reuse and predicting revision consequences
 
@@ -159,10 +165,8 @@ formatter inspection above resolves that concern for its specific example.
 
 ### Opening and consolidation continuity
 
-The 19:45 authorization and initial review placed access, identifiability and
-complementary usefulness before architecture. Initial definitions included
-access ambiguity and conservative interface extension; the philosophy and
-historical evidence were preserved, with no model result from adopting direction.
+Initial review placed access, identifiability and complementary usefulness before
+architecture; access ambiguity and conservative extension framed the first questions.
 Independent sweeps consolidated current routing without deleting historical
 sections. Scoped methodological residue went to the closed capability-translation
 sibling (commits 57f8623 and 41aaab7) and the LSR row/lesson in the unversioned

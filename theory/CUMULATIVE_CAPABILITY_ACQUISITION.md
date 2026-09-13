@@ -187,16 +187,18 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 ## Next-work boundary
 
-The S6/S21/S22 screens and S24 purchasing contract are closed with their stated
-limits. S24 selects typed scoped import for its stipulated operation; no learned
-receiver is invented to make that case harder. Two subsequent fresh real CLI
-direction rounds selected **one S26 CPU continuation diagnostic**, after a locked
-mathematical statement and source check. It asks whether a model's own first
-guess helps its next conditional computation. It is self-composition, not a
-heterogeneous acquisition experiment. No new model, training, large run, exporter
-or learned interface is selected. Execute once within its seven-forward/180-second
-cap; audit once and follow its declared decision boundary, without panel expansion.
-The prior strong-assert option and paused/closed lines are not restart instructions.
+S6/S21/S22 and S24's scoped-record contract are closed. S26's single CPU
+continuation diagnostic is also closed after independent audit e1044-e1045:
+weak first proposals limit this task; no useful autonomous gain was demonstrated.
+Do not extend pairs, swap in a larger model or fit an exporter to rescue it.
+Two successive convenience-access diagnostics have not selected a positive
+acquisition direction. Return to task/interface analysis of an already identified
+positive hybrid: distinguish the whole donor port's contribution from the effect
+of its pretraining, structured inputs and receiving-interface learning. S8 records
+the bounded source case; no reproduction, source hunt or next run is selected.
+Direct callable use remains a valid endpoint. A richer learned interface needs
+a specific additional purpose. Preserve the broader mathematical program and
+its native operations question; closed/paused lines are not restart instructions.
 
 ## Conditional route choices
 
@@ -790,16 +792,34 @@ independent bounded link inspection agrees, without asserting no release exists
 elsewhere. This makes reusable inference a serious competing investment, not a
 ready local artifact or a reason to pretrain a replacement here.
 
-[TransNAR, June 2024 v1](https://arxiv.org/html/2406.09308v1), sections 3–4,
-connects a pretrained graph algorithmic reasoner's node/edge representations to
-a 70M text model through trained cross-attention. The graph reasoner stays
-frozen while the text model learns. Both solver-ready graph and corresponding
-text inputs are supplied; the latter is deterministically rendered from the
-former. The paper explicitly excludes hard-coded tools from its baselines.
-Consequently, it supports investigating access to pretrained computation, not
-the superiority of a latent port over using an available solver directly.
-Reported output-shape gains and residual index failures reinforce the need to
-identify the receiver operation being helped. No local reproduction is selected.
+[TransNAR, June 2024 v1](https://arxiv.org/html/2406.09308v1), §§3–4, trains
+cross-attention and a 70M text receiver around a frozen graph reasoner. Text and
+solver-ready graph convey the same problem; the hybrid receives both. Reported
+improvements include Transformer-held-out sizes, but size 14 lies below the
+reasoner's pretraining size ceiling of 16. Random initialization ablates the
+**Transformer**, not the reasoner. The paper reports no random-reasoner,
+raw-graph-only, cardinality-only, matched-extra-capacity, shape-constrained or
+symbolic-tool comparator. Invalid output shape forces task score to zero, so
+better shape recovery contributes to the gain. Fusion variants did not improve
+its original combination. Although §3 equations depict evolving graph states,
+§4.1 describes every cross-attention layer reading final reasoner states and
+suggests stepwise access as future work; the paper alone leaves that presentation
+ambiguity unresolved. This is positive evidence for the trained hybrid's usefulness
+over its Transformer comparator, not an isolated causal effect of algorithmic
+pretraining, direct-tool superiority, preserved interventions or cumulative donors.
+Root and an independent reader checked this scoped version; no reproduction.
+
+**Specific attribution question, not a new theorem:** distinguish the useful
+contribution of the whole port from the contribution of its pretraining. For a
+learned receiving procedure, matched graph access and training budget matter:
+replacing the reasoner while freezing an interface specialized to it can test
+interchangeability but cannot by itself tell whether equivalent useful learning
+was available from the alternative port. Conversely, relearning the interface
+changes what effort was required. Decide which of these acquisition choices is
+the target before choosing the control. Shape support is useful behavior; isolating
+content accuracy must not redefine that usefulness away. This source case is a
+place to work out contribution and acquisition effort, not a queued large training
+run or another search for convenient downloadable artifacts.
 
 ### S9. Information gain versus new internal algorithm
 
@@ -2110,3 +2130,31 @@ clusters permit descriptive spread, not pair-level significance or generalizatio
 The preserved mathematical question is when a learned operation's output remains
 usable by another operation. No discovered latent-space law is claimed from the
 caller-defined token substitution or scheduling alone.
+
+
+**Observed result; independently audited (e1044-e1045).** The single run completed in
+10.1455 seconds: seven CPU forwards, 112 rows, all 16 cases completed in each
+measured arm, no training/GPU. Identical-input probability drift was zero.
+Primary and independent both-site recovery were 0/16; primary second-site
+recovery was 2/16 versus independent 2/16 and cyclic control 3/16. Reverse and
+confidence-first also recovered 0/16 pairs. Oracle second-site recovery was 3/16
+in increasing order and 1/16 in reverse, versus corresponding independent
+baselines 2/16 and 1/16. These are fixed-position recoveries, not open-ended
+termination or biological quality scores. Root manually checked all 16 decoded
+residue pairs against the recorded targets. A fresh real CLI audit independently
+reproduced every count, source reconstruction and custody/code-path check.
+Reverse and confidence-first each correct one and spoil one prediction. Reported
+wall time starts in main, excluding interpreter startup; the external supervised
+180-second wait returned exit 0. The audit prose mistakenly says 100.15 seconds;
+the raw result is 10.145497100020293. Its receipt and correction are in the ledger.
+
+The registered continuation criterion fails; close this procedure on this panel.
+A post-run diagnostic explains an important limit: the initial increasing-order
+first guess was correct on only 1/16 cases. Since this policy never revises that
+guess, its both-site recovery cannot exceed 1/16 even with a perfect second step.
+Thus the locked .10 gain threshold was unattainable with these proposals. This
+is evidence of weak proposals in the chosen setting, not a strong exclusion of
+composition given competent inputs. Do not lower the threshold, change pairs,
+claim absence of conditional structure, or infer that a learned exporter helps.
+Raw probabilities, parent counts, source/runner/snapshot hashes and timings are
+in [the result](../experiments/results/encoder_continuation_v1/result.json).

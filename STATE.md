@@ -1,15 +1,5 @@
 # STATE
 
-**Latest selection (23:25 UTC):** S26 locks one CPU-only autonomous masked-
-completion diagnostic: four verified assay reference constructs, 16 pairs, seven
-batched forwards, 180-second deadline, no training/download/GPU. Two fresh real
-CLI direction rounds and an independent design check completed. The equal-mask
-content control addresses the installed embedding rescaling confound. Primary
-increasing-position policy and all thresholds are fixed before results. This is
-one model's self-composition, not cumulative acquisition. Earlier “no run selected”
-statements below describe the preceding strategy checkpoint; S26 is the sole
-new selection and does not reopen closed or paused lines.
-
 ## Current direction: cumulative capability acquisition (2026-09-13)
 
 Read the [canonical direction and decision map](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md).
@@ -35,7 +25,7 @@ approach and question selection, never the mission.
 
 **Evidence status:** no cumulative acquisition, transferable graft, encoder
 reasoning artifact, donor-independent assimilation or cost advantage is established.
-Three bounded probes sharpen the evidence requirements:
+Four bounded probes sharpen the evidence requirements (S26 below):
 
 - **S6, retained exports:** legacy plan bundles are nonfinite or overwhelmingly
   zero and unsuitable for the proposed transfer analysis. Underlying model
@@ -97,9 +87,25 @@ The next inquiry must connect a learned relation to an available acquisition,
 intervention or reuse choice. This is a scoped route choice, not a general verdict
 that explicit records solve the user's broader capability-composition ambition.
 
-**Session accounting:** 421 apparatus / 0 artifact-bearing code lines
-(98 + 119 + 204 runner lines); three probe rounds / zero building rounds.
-Eight total model forwards, no GPU or training. The explicit strategy mandate
+**S26 result, independently audited (e1044-e1045):** the single autonomous-continuation probe
+completed in 10.1455 seconds, seven CPU forwards / 112 rows, on 16 fixed pairs
+nested in four assay reference constructs. All fixed-position cases completed;
+repeat probability drift was zero. Primary and independent pair recovery were
+both 0/16; second-site recovery both 2/16, versus cyclic content control 3/16.
+The primary first proposal was correct only 1/16, bounding attainable pair recovery
+below the locked .10 gain threshold. Close this procedure on this support; weak
+proposals prevent a strong conclusion against competent composition. No parameter
+fitting, new model, GPU or panel extension. Root read all 16 decoded outputs;
+the fresh real CLI audit independently reproduced all counts and code-path checks.
+Reverse and confidence-first each correct one prediction and spoil one; primary
+corrects/spoils none. The 10.1455-second timing starts at main, excluding interpreter
+startup; an external 180-second process wait also returned normally. Exact receipts
+and the correction of the audit prose's runtime transcription are in the ledger.
+No next run is selected. Preserve the broader capability-composition objective.
+
+**Session accounting:** 628 apparatus / 0 artifact-bearing code lines
+(98 + 119 + 204 + 207 runner lines); four probe rounds / zero building rounds.
+Fifteen total model forwards, no GPU or training. The explicit strategy mandate
 supersedes construction merely to change this ratio.
 
 **Continuity and custody:** commit-seal rung 1 stays paused; closed lines stay
