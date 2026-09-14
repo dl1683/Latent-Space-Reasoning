@@ -1,5 +1,30 @@
 # Experiments Log
 
+## Candidate proposal decision — 2026-09-14, deferred
+
+S34 now specifies 32 possible fixed candidates, accessible generator/object/scene
+interfaces, supported truncation control and resource ceilings; no weights acquired
+or models loaded. Design round 1 added scene-swap and uniform-selection controls,
+paired object spoils, practical primary thresholds and a 45-minute total-effort cap.
+Fresh round 2 and root defer execution: uncertain endpoint/compatibility effort
+outweighs a narrow interface result with no concrete next use. An authenticated source-image reader
+opened the image but mislocalized colors: file access works, endpoint reliability
+is unproved. Root and an independent reader cross-checked the figure. This separate
+source-image call adds no local probe forwards. Receipts and hashes are in
+`candidate_proposal_dialogue_r1_20260914` and `source_image_judge_readiness_20260914`.
+
+## Fourth periodic approach review — 2026-09-14, 02:40 UTC
+
+Fresh real CLI reviewed consolidated e72f83d after a separate entropy sweep:
+continue, revise evidence allocation. Prepare one concrete bounded candidate-data
+proposal with accessible interfaces, independent coverage/selection judgments,
+direct controls and resource ceilings; no execution. Low coverage does not choose
+guidance over other remedies; provider replacement differs from capability growth.
+Corrections propagated to canonical/current surfaces. Audit e1086-e1087, root
+synthesis complete; `strategy_periodic_approach_review_4_20260914` preserves receipt.
+No numerical correction or new local behavioral result. Accounting remains four
+probes, 15 CPU forwards, 628:0 code lines. Next review around 04:40 UTC.
+
 ## Third periodic approach review — 2026-09-14, 00:54 UTC
 
 Fresh real CLI inspected consolidated 89b34ae and recommends continuing while

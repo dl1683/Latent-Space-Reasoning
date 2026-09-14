@@ -15,7 +15,8 @@ small bounded CPU probes, without system-building or large-model loading.
 Research began at 19:45 UTC; first periodic approach review completed around
 21:42 UTC (e1027), second around 23:03 UTC (e1039-e1040), and third around
 00:54 UTC on September 14 (e1061-e1062), after consolidation at 89b34ae.
-Next due around 02:54 UTC after consolidation. Challenge approach, never mission. GPU
+Fourth review completed around 02:40 UTC (e1086-e1087), after e72f83d and a
+separate entropy review. Next due around 04:40 UTC. Challenge approach, never mission. GPU
 approval remains per run. Old locked panels and paused lines are not restart
 instructions; no further model run or architecture is selected.
 
@@ -57,13 +58,11 @@ and the correction of the audit prose's runtime transcription are in the ledger.
 No next run is selected. Preserve the broader capability-composition objective.
 
 **Active decision:** follow the [canonical Next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-S34 consolidates one provisional acquisition lifecycle after source inspection and
-three fresh dialogues. Its dependency/cost account now favors completed-candidate coverage and useful
-clean evaluation before trajectory guidance; select a bounded evidence acquisition.
-Published starting composition is distinct from the proposed new acquisition.
-Completed source scopes, mathematical constraints and exact receipts remain
-canonical and ledger-linked.
-No implementation or new compute is selected.
+S34's bounded image proposal is deferred after two fresh design dialogues. Its
+controls are retained; no weights or model execution were purchased. Compatibility,
+judging and an unspecified next use make the investment unattractive. Return to
+what a subsequent acquisition inherits from prior preparation; no replacement
+image-bank hunt or generic proposal round. Canonical routing controls.
 
 Session totals: 628 apparatus / 0 artifact-bearing code lines (98 + 119 + 204 + 207),
 four probes / zero building rounds, fifteen model forwards, no GPU or training.

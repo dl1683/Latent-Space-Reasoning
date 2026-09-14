@@ -21,7 +21,8 @@ compute; per-run GPU approval remains. Consolidate before approximately two-hour
 adversarial approach reviews. The first completed around 21:42 UTC (audit e1027);
 the second completed around 23:03 UTC (e1039-e1040), and the third around
 00:54 UTC on September 14 (e1061-e1062), after consolidation at 89b34ae.
-Next periodic review is due around 02:54 UTC after another consolidation.
+Fourth review completed around 02:40 UTC (e1086-e1087), after e72f83d and a
+separate entropy review. Next periodic review around 04:40 UTC after consolidation.
 The reviewer challenges approach and question selection, never the mission.
 
 **Evidence status:** no cumulative acquisition, transferable graft, encoder
@@ -72,13 +73,11 @@ and the correction of the audit prose's runtime transcription are in the ledger.
 No next run is selected. Preserve the broader capability-composition objective.
 
 **Active decision:** follow the [canonical Next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-S34 consolidates one provisional acquisition lifecycle after source inspection and
-three fresh dialogues. Its dependency/cost account now favors completed-candidate coverage and useful
-clean evaluation before trajectory guidance; select a bounded evidence acquisition.
-Published starting composition is distinct from the proposed new acquisition.
-Completed source scopes, mathematical constraints and exact receipts remain
-canonical and ledger-linked.
-No implementation or new compute is selected.
+S34's bounded image proposal is deferred after two fresh design dialogues. Its
+controls are retained; no weights or model execution were purchased. Compatibility,
+judging and an unspecified next use make the investment unattractive. Return to
+what a subsequent acquisition inherits from prior preparation; no replacement
+image-bank hunt or generic proposal round. Canonical routing controls.
 
 **Session accounting:** 628 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207 runner lines); four probe rounds / zero building rounds.

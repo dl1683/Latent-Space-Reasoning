@@ -20,11 +20,12 @@ with competent inputs or establish that a learned exporter helps. No rerun,
 threshold change or new selection follows. [Raw result](experiments/results/encoder_continuation_v1/result.json)
 retains probabilities, counts and hashes; the completed audit receipt is in the ledger.
 
-**Current paper checkpoint:** S34 consolidates one provisional acquisition
-lifecycle after a primary source and three fresh direction dialogues. The completed dependency/cost account favors candidate coverage and clean evaluation
-before trajectory guidance. Next select one bounded evidence acquisition; participation,
-repeated use and inherited acquisition preparation remain distinct.
-No new model, implementation or numerical experiment is selected.
+**Current paper checkpoint:** S34's concrete image proposal is deferred after two
+fresh design dialogues. No weights or local model execution were purchased.
+Retain coverage/selection controls and the scoped range-only selective-execution
+argument. Return to what a subsequent acquisition actually inherits; no replacement
+image-bank hunt, judge-calibration program or extra proposal round is selected.
+
 
 **Accounting and custody:** 628 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207), four probes / zero construction rounds; 15 model forwards,
@@ -32,10 +33,10 @@ no GPU or training. Strategy authorization supersedes construction to repair the
 ratio. Root alone writes boards after stale-session ID collisions; integrity
 entries restored as e1011–e1012. Mission synthesis retains its hang workaround.
 Fresh real CLI result audits and design dialogues have distinct receipts below;
-third periodic review completed around 00:54 UTC on September 14 (e1061-e1062);
-next due around 02:54 UTC after consolidation. The review says caution is crowding
-out constructive acquisition; the completed dialogue selected S28's receiving
-procedure while closing S27's refresh proposal.
+fourth periodic review completed around 02:40 UTC on September 14 (e1086-e1087)
+after consolidation at e72f83d and a separate entropy review. Next due around
+04:40 UTC. Its proposal requirement is now complete and the proposed run deferred; the
+canonical next-work boundary controls further strategy.
 Detailed mathematics/source readings live in
 [canonical theory](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md); exact results,
 corrections and receipt hashes remain in the [ledger](experiments/ledger.jsonl)
