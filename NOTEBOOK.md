@@ -10,7 +10,7 @@ sustained strategy, source research and bounded CPU probes, not system-building.
 No cumulative artifact, causal graft, encoder-reasoning or cost advantage is
 established. Closed prior lines stay closed; no run follows from documentation.
 
-**Latest empirical checkpoint:** S26's single CPU continuation run is complete, with
+**Latest scored empirical checkpoint:** S26's single CPU continuation run is complete, with
 independent audit complete: e1044-e1045. Primary and independent pair recovery were both 0/16;
 second-site recovery was 2/16 for both, versus cyclic content control 3/16.
 The first prediction was correct on only 1/16, capping unrevised pair recovery
@@ -20,24 +20,33 @@ with competent inputs or establish that a learned exporter helps. No rerun,
 threshold change or new selection follows. [Raw result](experiments/results/encoder_continuation_v1/result.json)
 retains probabilities, counts and hashes; the completed audit receipt is in the ledger.
 
-**Current paper checkpoint:** S36's two fresh dialogues complete application and
-initial-route selection: scientific evidence-finding across encoder releases,
-favoring query-side compatibility conditionally while retaining expansion, rebuilding
-and no acquisition as alternatives. The general strategy picture is complete at this
-selection level; feasibility, attribution, retention and total value are unproven.
-No generic framing round, model download or experiment is queued. S34 remains deferred.
+**Current priority reassessment:** S36's compatibility-first selection is
+superseded. Fresh review first preferred S28's evidence-selection comparison;
+the second round accepted S37's objectively scored causal-teaching preflight.
+That round could not read local files because its shell failed. The third review
+read the lock and runner and issued conditional GO after supervisor enforcement,
+complete tokenizer/alignment assertions, per-batch checkpoints and reporting fixes.
+S37 then made two bounded execution attempts, both with zero scored forwards:
+a 180 s compute-phase timeout and an HTTP-compression download bug at metadata
+alignment. Raw attempts and diagnostic hashes are retained. Downloader and owned
+cache metadata are corrected offline; no third run occurs in this allocation.
+No donor competence, recipient headroom or intervention result exists. Two fresh real CLI audit attempts could not read files; their audits are incomplete.
+Separate collaboration custody checks verified raw counts and hashes; ordinary/text-counterfactual teaching remains
+the required comparator if a future eligible preflight funds teaching. Receipts
+live in internal/codex_transcripts, exact failures in the ledger and canonical S37.
+S34 and previously closed scientific probes remain deferred/closed.
 
-
-**Accounting and custody:** 628 apparatus / 0 artifact-bearing code lines
-(98 + 119 + 204 + 207), four probes / zero construction rounds; 15 model forwards,
+**Accounting and custody:** 958 apparatus / 0 artifact-bearing code lines
+(98 + 119 + 204 + 207 + 330), five probe blocks / zero construction rounds;
+S37 has two failed attempts and zero scored forwards; 15 total scored forwards,
 no GPU or training. Strategy authorization supersedes construction to repair the
 ratio. Root alone writes boards after stale-session ID collisions; integrity
 entries restored as e1011–e1012. Mission synthesis retains its hang workaround.
 Fresh real CLI result audits and design dialogues have distinct receipts below;
 fourth periodic review completed around 02:40 UTC on September 14 (e1086-e1087)
 after consolidation at e72f83d and a separate entropy review. Strategy map review completed around 03:34 UTC
-(e1095–e1096); retain the two-hour cadence during subsequent substantive research. S36 resolves its application-selection requirement; the canonical next-work
-boundary controls further empirical design.
+(e1095–e1096); retain the two-hour cadence during subsequent substantive research. The user-requested S37 reassessment supersedes S36 priority; the canonical
+next-work boundary controls execution readiness.
 Detailed mathematics/source readings live in
 [canonical theory](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md); exact results,
 corrections and receipt hashes remain in the [ledger](experiments/ledger.jsonl)

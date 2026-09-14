@@ -1,0 +1,30 @@
+{
+  "status": "inconclusive_execution_failure",
+  "scope": "forced-choice local preflight, not acquisition",
+  "forwards": 0,
+  "row_presentations": 0,
+  "models": {
+    "recipient": {
+      "model": "TinyStories-1M",
+      "revision": "77f1b168e219585646439073245fe87e56b3023e",
+      "weight_sha256": "07f9609ea882b8163ff3b23d40e2b82cb715d409631beb15c84b164f3877dae7"
+    },
+    "donor": {
+      "model": "TinyStories-8M",
+      "revision": "8612e3b15c66ffa94eaa6ee0de5c96edd2d630af",
+      "weight_sha256": "22c355bfabebc1f6c861b3f5d7a801e96c7f6da4af4bb0f7780096ab82ea6716"
+    }
+  },
+  "started_utc": "2026-09-14T08:04:58.676910+00:00",
+  "phase": "compute",
+  "phase_started_epoch": 1789373118.7988179,
+  "wall_seconds": 200.42207340005552,
+  "downloaded_bytes": 163329006,
+  "supervisor": {
+    "peak_rss_bytes": 592384000,
+    "poll_seconds": 0.1,
+    "exit_code": 1,
+    "abort_reason": "supervisor phase deadline: compute"
+  },
+  "supervisor_error": "supervisor phase deadline: compute"
+}

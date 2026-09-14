@@ -9,8 +9,8 @@ established theorems, demonstrated capabilities or an approved run specification
 The target is **repeated useful acquisition with established capabilities retained**.
 Reusing prior preparation is one important approach and potential benefit; learning
 to make later admissions easier is a stronger optional claim. A usable contribution must survive its
-interface and participate in the intended computation. No single shared geometry,
-donor pair or architecture has been selected. These distinctions organize the
+interface and participate in the intended computation. No single shared geometry or cumulative architecture has been selected; S37
+names a pair only for a bounded teaching-access preflight. These distinctions organize the
 notebook; they are not a compulsory sequence of experiments.
 
 | Decision | What must be known | What would change the approach |
@@ -62,10 +62,12 @@ laws or demonstrated holes in a learned space. Current routing is below.
 
 ## Empirical frontier and intended uses
 
-The general problem map and a first application are selected. S36 targets better
-scientific evidence-finding through a new encoder while preserving established
-searches, initially investigating query-side compatibility. Expansion, replacement
-and no acquisition remain real outcomes. Scientific feasibility and value are unproven.
+The general problem map remains a foundation, while the user-requested S37
+reassessment supersedes S36's compatibility-first allocation. Scientific evidence-
+finding remains a possible application. One bounded causal-teaching feasibility
+preflight was justified, but two execution attempts failed before inference.
+The downloader bug and owned metadata are corrected; no third run occurs in this
+allocation. No competence, intervention or cumulative acquisition result exists.
 
 | Remaining uncertainty | Evidence that would change the investment |
 |---|---|
@@ -278,25 +280,35 @@ judge-calibration program or proposal round. Reopening requires a material chang
 arising through other work, not an assigned search for one. Preserve its controls
 and resource analysis as transferable strategy evidence.
 
-S35 closes the inheritance framing. The 03:34 UTC strategy-map audit identified
-application selection as unfinished; S36's two fresh application dialogues now
-resolve it. **Selected:** recurring scientific evidence-finding that distinguishes
-mechanism-testing and contrary evidence from topical similarity, while preserving
-established searches. **Initial route hypothesis:** a new encoder improves question
-interpretation through a query-side interface to retained document representations.
-Prefer expansion, rebuilding or no acquisition when their useful behavior and total
-work warrant it. Neither fixed coordinates nor lower cost is a universal requirement.
+S35 closes the inheritance framing. S36's scientific evidence-finding proposal
+remains historical strategy, but its compatibility-first priority is superseded
+by the user's S37 reassessment. The first review preferred S28 evidence selection;
+the second accepted the objective number-agreement teaching preflight while
+explicitly unable to read local files. The third review inspected the final lock
+and runner and conditionally justified one bounded CPU execution after concrete
+supervisor, tokenizer/alignment, checkpointing and reporting corrections.
 
-The strategy-discovery picture is complete at the application-selection level, not
-at the scientific-validation or run-readiness level. Further generic definitions,
-reconstruction examples and catalogs are not the next work. A subsequent empirical
-block must select competent concrete resources and lock gain/loss, inspection,
-teaching and compute budgets; test the cheapest current-path remedy and distinguish
-newcomer contribution from learning supplied by relevance labels. No model download,
-implementation or run is queued. The original philosophy and broader chimera,
-encoder-reasoning and successive-growth ambitions remain open. Last consolidated
-adversarial review: 03:34 UTC, e1095–e1096; retain the approximately two-hour cadence
-when substantive research continues.
+**Current allocation:** S37's fixed was/were panel remains scientifically untested.
+Two bounded execution attempts ended before any scored forward: the first at its
+compute deadline, the second at metadata alignment due to un-decoded HTTP compression.
+This is not donor incompetence or a failed causal address. Downloader and owned
+cache metadata are corrected offline; no third run occurs in this allocation.
+Two fresh real CLI result-audit attempts could not read files and remain incomplete.
+Separate collaboration custody checks verify recorded counts and hashes. The next
+allocation first requires verified read-only CLI access and a completed evidence
+audit. The locked controls and
+finite funding criteria remain intact: natural counterfactual, lexical, identity
+and repeat; competence and recipient headroom before teaching. No cross-model
+vector copying, fitting, address search or training rescue is authorized here.
+
+This tests access to a possible teaching channel, not cumulative acquisition,
+causal transfer already achieved or native mathematics discovered by vector
+patching. Behavioral consequences and eventual teachability are the operational
+objects. Preserve broader chimera, encoder-reasoning and successive-growth aims;
+S34 and earlier closed probes are not reopened. The user-requested priority and actual-file design reviews completed around
+08:00 UTC on September 14; subsequent result-audit access failures are not
+completed audits. Retain the approximately two-hour cadence during substantive research. Canonical S37 and the three retained review receipts supply
+the detailed lock and limitations.
 
 ## Conditional route choices
 
@@ -3707,6 +3719,9 @@ These are dimensions of the problem, not three compulsory preliminary experiment
 
 ### S36. Select a useful acquisition episode: a persistent scientific collection
 
+**Historical priority, superseded by S37.** Preserve this proposal and its
+dialogues as history; query-side compatibility is no longer the first allocation.
+
 **Decision attempt before direction dialogue.** The intended recurring request is:
 find evidence relevant to a scientific question in a collection that remains useful
 across encoder releases. An acquisition should make previously poorly served
@@ -3797,3 +3812,165 @@ that can favor expansion, not a reason to avoid choosing the investigation. Rece
 feasibility, attribution, retention and deployment value remain unproven. One future
 successful admission would establish a bounded result for this operation, not a
 chimera, general cumulative growth or a discovered latent-space law.
+
+
+### S37. User-requested priority reassessment
+
+The user explicitly challenges whether S36 is the best approach and authorizes
+execution only after renewed review. Three independent assessments agree that
+query compatibility has no established first-priority justification. The presumed
+old index is hypothetical and query interpretation has not been located as the
+bottleneck. Scientific evidence finding remains a legitimate possible use; the
+compatibility-first preference and selection-level closeout are reopened.
+
+The reviews disagree constructively on the next purchase. The fresh real CLI favors
+S28's fixed-candidate donor-dependent evidence selection, with direct native donor
+competence before any compatibility map. An independent mission review favors S33's
+intervention-response teaching against targeted ordinary counterfactual examples.
+The feasibility reviewer likewise rejects adapter training before native contribution
+is shown. These are priority judgments, not predictions of model failure.
+
+**Root response before decision round 2.** Prefer a bounded S33 teaching-access
+feasibility comparison because it directly addresses causal acquisition and can use
+small pretrained models with objective linguistic outputs. S28's scientific panel
+still needs credible mechanism-sensitive donors and new relevance judgments; its
+lower nominal implementation burden does not yet mean lower epistemic cost.
+The proposed operation is grammatical number agreement under a distracting noun,
+not a new reasoning algorithm or a whole language capability. This is a new task,
+not a restart of the closed protein, SVB or write-boundary probes.
+
+Primary public configuration metadata (no weights acquired) identifies two
+TinyStories GPT-Neo releases: recipient 1M, revision
+`77f1b168e219585646439073245fe87e56b3023e`, hidden64/eight blocks; donor 8M, revision
+`8612e3b15c66ffa94eaa6ee0de5c96edd2d630af`, hidden256/eight blocks. Both expose the
+same declared 50,257-token vocabulary and zero configured dropout. Actual tokenizer
+identity, parameter count, competence and CPU compatibility remain unverified.
+These small model names are not total parameter or byte guarantees.
+
+**Claim attempt before compute.** For fixed grammatical base/source prefixes,
+compare the donor's valid-input number counterfactual with replacement of its own
+subject-token state after the first block. The same-number different-noun source
+is the lexical control; identical-source replacement is the mechanical identity
+control. The replacement should shift was/were preference toward the source number
+more than the same-number control if it exposes useful number-dependent teaching.
+A competent donor plus a receiver gap is needed before spending on distillation.
+Failure of the single declared address closes that teaching-channel candidate at
+this budget, not causal acquisition or the model's grammar competence. Replacing
+all residual states would trivially reproduce an ordinary source pass and is not
+a useful claim-bearing intervention here.
+
+A prospective first block is CPU-only forced-choice scoring of a small fixed panel,
+with no generation/termination claim and no training. It would select whether
+intervention teaching is worth a separately bounded comparison against targeted
+ordinary teaching; it would not itself demonstrate acquisition. Before running,
+lock rows, outcomes, confounds and resource ceilings. Round 2 must adjudicate this
+choice against S28 rather than allow another generic strategy loop.
+
+
+**Decision round 2 and prospective lock.** The fresh CLI changes its S28-first
+preference to one S33 preflight, conditional on fixed alignment, bidirectional
+contrasts, natural counterfactuals, actual recipient errors and a finite decision
+rule. Its shell failed, so it reviewed the supplied proposal, not S37 on disk;
+round 3 must inspect this concrete lock and runner before execution.
+
+Use past-tense **was/were**, chosen before inference because these story-trained
+models see past-tense narration. Four lexical families (dog, cat, boy, girl), each
+crossed with singular/plural subject and singular/plural distractor, give 16
+prefixes: `Yesterday, the {subject} near the {distractor}`. Distractor is the next
+family cyclically. Eight plain prefixes omit `near the {distractor}` and establish
+an old-use reference. Opposite-number sources change only the subject's number;
+lexical sources use the family two positions ahead, retaining subject number and
+distractor. Both directions and all four number cells are retained. No rows are
+selected by model score. All noun forms and both scored continuations must occupy
+one token at matched positions/lengths; otherwise stop for structural ineligibility.
+
+Intervene after GPT-Neo block index0: replace only the subject-position state with
+that model's own source state and recompute every later block. Other first-block
+states already contain original-subject information, so this is one remaining
+causal route, not a total number replacement. Identity swap must reproduce the
+base; same-number lexical swap tests arbitrary noun change. The natural opposite
+prefix is already part of the baseline panel and is the cheapest meaningful remedy.
+No model-to-model vector copying or address search occurs.
+
+Let L=log P(were)-log P(was). For each base, orient shifts by +1 for a plural
+source and -1 for a singular source. Primary effect is mean oriented L change;
+subtract the equivalently oriented lexical-control change for specificity. Report
+both directions, all four lexical-family means, conditional binary probabilities,
+unconditional was/were mass and actual decoded choices. Four lexical families are
+the descriptive dependence blocks, not 16 independent population samples.
+
+Predeclared practical funding criteria: donor correct on at least12/16, at least
+3/4 in each subject/distractor-number cell, mean unconditional verb mass >=0.05;
+recipient correct on at least6/8 plain items; at least two donor-correct/recipient-
+wrong complex items; primary patch effect >=0.5 log units, each direction >=0.25,
+and mean patch-minus-lexical effect >=0.25. Source-following accuracy is diagnostic.
+Identity and fixed-input repeats must differ by <=1e-5 in scored logit margins;
+failure voids interpretation. These are local allocation thresholds, not population
+significance or a universal exact certificate. Report lexical spread with the effects.
+
+CPU float32/eval/eager attention, batch8, two threads, no CUDA, cache=False. At most
+16 model forwards/128 row presentations across baseline, lexical source, plain,
+identity, opposite/lexical patch and repeats. Remote release tree reports weight
+bodies 48,578,813 and112,405,309 bytes; cap all acquired files at192MiB, download
+wall time120s, loading+inference180s, peak process RSS3GiB, total operator block30min.
+No environment upgrades, model search or training in this lock. Weight sha256:
+1M `07f9609ea882b8163ff3b23d40e2b82cb715d409631beb15c84b164f3877dae7`;
+8M `22c355bfabebc1f6c861b3f5d7a801e96c7f6da4af4bb0f7780096ab82ea6716`.
+Pin/tokenizer-check both releases; count actual parameters rather than marketing names.
+
+If all practical criteria hold, fund the already specified bounded intervention-
+teaching versus ordinary/text-counterfactual comparison. Competent donor but failed
+patch closes this address; failed donor/headroom closes this pairing/task; matched
+lexical effect denies number specificity. No training rescue or localization sweep.
+All outcomes remain about this panel and accessible teaching channel, not cumulative
+acquisition. This preflight is not a generation-quality test and makes no termination
+or fluent-language claim. Exact rows and receipts will be retained.
+
+S37 final design review inspected the actual lock and runner and gives conditional GO.
+Before execution the runner now checks both tokenizers and exact single-subject-token
+pair differences, checkpoints each completed batch, and runs under an independent
+100 ms polling CPU process supervisor (120 s acquisition, 180 s compute, 3 GiB
+peak resident memory; enforcement granularity is one poll, not an OS hard quota).
+Streaming reads are bounded by remaining byte allowance. Execution, structural,
+loading and mechanical failures are inconclusive, not scientific negatives.
+Source-following choices are diagnostic. Review receipt:
+`internal/codex_transcripts/agreement_teaching_preflight_design_review.md`.
+
+**Attempt 1 execution receipt.** The supervisor terminated the 180 s compute
+phase after 200.42 s total; zero scored forwards, peak RSS 592,384,000 bytes.
+Both pinned weight hashes passed; 163,329,006 bytes acquired. No competence or
+causal-channel conclusion is licensed. A 30 s import-only diagnostic observed
+optional device-backend package enumeration during torch import (16.31 s to
+finish torch), then did not finish all transformer imports within its cap.
+One execution repair is permitted: disable optional backend autoload for the
+CPU-only process using the installed library switch, save import-stage checkpoints,
+and retry the identical panel under unchanged resource ceilings. Preserve attempt1
+separately. No model/address/panel/threshold search, package change or budget growth.
+A second execution failure defers this local setup, rather than triggering repair loops.
+
+**Attempt 2: harness failure, not tokenizer incompatibility.** The identical-panel
+retry ended after 84.57 s at tokenizer alignment, with zero scored forwards and
+peak RSS 734,183,424 bytes. It passed imports but the downloader had saved compressed
+HTTP payloads as metadata: seven gzip files and one Brotli configuration file.
+Decompressed tokenizer JSONs are byte-identical (sha256
+f6ed3d307010c244c22aeffbde05f419cf277c23e64cf98b673cac5449cfeff5).
+This is an implementation error, not a model-level structural failure. The downloader
+now requests identity encoding and explicitly decodes bounded response reads; owned
+cache metadata was normalized with before/after hashes and all JSON parsed without
+model inference. No package or model change occurred. There is no third run in this
+allocation. Scientific competence, headroom and intervention effects remain unmeasured.
+A fresh audit must decide the justified next allocation; do not claim the pair failed.
+
+**Review boundary.** Independent collaboration custody review verified recorded
+counts, both reconstructed executed-source hashes, current weight/metadata hashes,
+and byte accounting. It did not replay the historical compressed payloads (not
+retained) or the root localhost regression. Two real CLI result-audit attempts
+could not read files and explicitly remain incomplete; brief invocation access
+checks also failed. These are distinct evidence tiers, not an audited scientific
+negative. This allocation has no third model run. S37 may not advance or be called
+audited until a real CLI session first demonstrates actual file access and completes
+its result review. Broader strategy work remains authorized. The next scientific
+purchase, if justified after that review, remains the unchanged competence/headroom/
+intervention panel; only positive accessible teaching evidence funds the ordinary-
+versus-counterfactual-teaching comparison. No claim of an absolute best route or
+of complete understanding is supported.

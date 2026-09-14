@@ -20,7 +20,7 @@ separate entropy review. Strategy map review completed around 03:34 UTC
 (e1095–e1096); retain the two-hour cadence during subsequent substantive research.
 Challenge approach, never mission. GPU
 approval remains per run. Old locked panels and paused lines are not restart
-instructions; no further model run or architecture is selected.
+instructions; no third S37 run or architecture construction is queued.
 
 ## Evidence and next boundary
 
@@ -57,19 +57,25 @@ Reverse and confidence-first each correct one prediction and spoil one; primary
 corrects/spoils none. The 10.1455-second timing starts at main, excluding interpreter
 startup; an external 180-second process wait also returned normally. Exact receipts
 and the correction of the audit prose's runtime transcription are in the ledger.
-No next run is selected. Preserve the broader capability-composition objective.
+This completed probe is not reopened. Preserve the broader capability-composition objective.
 
 **Active decision:** follow the [canonical Next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-S36's two fresh dialogues select scientific evidence-finding across encoder
-releases: mechanism-testing and contrary evidence beyond topical similarity,
-with old searches retained. Initial route: query-side compatibility; expansion,
-rebuilding and no acquisition remain real alternatives. Strategy selection is
-complete; scientific validation and concrete run readiness remain unfinished.
-No model download, implementation or experiment is queued. S34 remains deferred.
+The user-requested reassessment demotes S36's compatibility-first priority.
+S37's reviewed causal-teaching preflight produced two execution failures and zero
+scored forwards: a setup deadline, then a downloader compression bug. Owned cache
+metadata and the downloader are corrected, but no third run occurs in this
+allocation. Donor competence, recipient headroom and intervention effects remain
+unmeasured; the pair and causal route have not failed a scientific test.
+Two real CLI result-audit attempts could not read files and remain incomplete.
+Independent collaboration custody checks verified counts and source/file hashes;
+this does not substitute for the required real CLI audit. Restore verified
+read-only audit access before advancing S37 or calling its result audited. No address
+search, training rescue or reopening of closed probes follows.
 
-
-Session totals: 628 apparatus / 0 artifact-bearing code lines (98 + 119 + 204 + 207),
-four probes / zero building rounds, fifteen model forwards, no GPU or training.
+Session totals: 958 apparatus / 0 artifact-bearing code lines
+(98 + 119 + 204 + 207 + 330), five probe blocks / zero building rounds; S37 has
+two failed attempts, zero scored forwards. Fifteen total scored model forwards,
+no GPU or training.
 The user's strategy-only mandate governs; construction is not required to repair
 the ratio. Preserve retained results, source subsets, provenance and negatives.
 

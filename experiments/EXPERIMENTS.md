@@ -1,5 +1,33 @@
 # Experiments Log
 
+## S37 execution outcome — 2026-09-14
+
+Two bounded attempts, **zero scored forwards**, no scientific result. Attempt 1
+hit the 180 s compute deadline (200.42 s total, peak RSS 592,384,000 bytes).
+Attempt 2 reached alignment in 84.57 s (peak RSS 734,183,424 bytes), then failed
+because the downloader saved HTTP-compressed metadata without decoding it.
+Seven gzip files and one Brotli configuration were normalized offline; decoded
+tokenizers are byte-identical. This is a harness error, not incompatible models.
+Downloader corrected; no third run in this allocation. Exact raw attempts, hashes,
+diagnosis and cache correction are in ledger entries
+`agreement_teaching_preflight_attempt1_20260914` and
+`agreement_teaching_preflight_attempt2_20260914`. Two real CLI audit attempts remain incomplete because file reads failed; separate
+collaboration custody checks verified counts, reconstructed sources and normalized
+metadata, not a scientific result or independently replayed decompression.
+
+Accounting: five probe blocks (two execution attempts in S37), 15 total scored
+CPU forwards, 958 apparatus / 0 artifact-bearing lines, zero building rounds,
+no GPU or training. Scientific competence/headroom/intervention claims untested.
+
+## S37 preflight locked — 2026-09-14
+
+User-requested renewed reviews demote S36 query compatibility as first priority.
+One fixed CPU-only agreement intervention preflight is justified after actual-file
+design review and resource/alignment/checkpoint corrections. No training or
+generation. Lock, receipts and hashes: `agreement_teaching_preflight_lock_20260914`.
+Execution failures are inconclusive. Result pending; historical selections below
+are superseded by this reassessment.
+
 ## Application selected — 2026-09-14, 03:42 UTC
 
 Two fresh dialogues select S36's scientific evidence-finding use and initial

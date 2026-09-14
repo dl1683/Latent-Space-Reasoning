@@ -72,20 +72,25 @@ Reverse and confidence-first each correct one prediction and spoil one; primary
 corrects/spoils none. The 10.1455-second timing starts at main, excluding interpreter
 startup; an external 180-second process wait also returned normally. Exact receipts
 and the correction of the audit prose's runtime transcription are in the ledger.
-No next run is selected. Preserve the broader capability-composition objective.
+This completed probe is not reopened. Preserve the broader capability-composition objective.
 
 **Active decision:** follow the [canonical Next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-S36's two fresh dialogues select scientific evidence-finding across encoder
-releases: mechanism-testing and contrary evidence beyond topical similarity,
-with old searches retained. Initial route: query-side compatibility; expansion,
-rebuilding and no acquisition remain real alternatives. Strategy selection is
-complete; scientific validation and concrete run readiness remain unfinished.
-No model download, implementation or experiment is queued. S34 remains deferred.
+The user-requested reassessment demotes S36's compatibility-first priority.
+S37's reviewed causal-teaching preflight produced two execution failures and zero
+scored forwards: a setup deadline, then a downloader compression bug. Owned cache
+metadata and the downloader are corrected, but no third run occurs in this
+allocation. Donor competence, recipient headroom and intervention effects remain
+unmeasured; the pair and causal route have not failed a scientific test.
+Two real CLI result-audit attempts could not read files and remain incomplete.
+Independent collaboration custody checks verified counts and source/file hashes;
+this does not substitute for the required real CLI audit. Restore verified
+read-only audit access before advancing S37 or calling its result audited. No address
+search, training rescue or reopening of closed probes follows.
 
-
-**Session accounting:** 628 apparatus / 0 artifact-bearing code lines
-(98 + 119 + 204 + 207 runner lines); four probe rounds / zero building rounds.
-Fifteen total model forwards, no GPU or training. The explicit strategy mandate
+**Session accounting:** 958 apparatus / 0 artifact-bearing code lines
+(98 + 119 + 204 + 207 + 330 runner lines); five probe blocks / zero building rounds.
+S37 has two failed execution attempts and zero scored forwards. Fifteen total
+scored model forwards, no GPU or training. The explicit strategy mandate
 supersedes construction merely to change this ratio.
 
 **Continuity and custody:** commit-seal rung 1 stays paused; closed lines stay
