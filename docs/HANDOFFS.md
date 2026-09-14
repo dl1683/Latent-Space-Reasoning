@@ -78,14 +78,17 @@ the latter aims to retain learned contributions after donor retirement. Publishe
 precedents support exploring both, but no cumulative local advantage is established.
 The S43 slice contains one verified answer correction and is closed; it does not
 select training. S44-S45 define a worked evidence-retrieval operation and a
-prospective unfamiliar-record relevance reversal. No competent endpoint, empirical
-panel or training run is selected; fresh donor access is a separate comparison.
+prospective unfamiliar-record relevance reversal. S47 now supplies a bounded real
+structured-query panel: lexical/RESULTS filtering selected adequate evidence8/8,
+with one mixed-quality tie. Close that panel without a model probe or expansion;
+this is direct-method behavior, not acquired capability.
 S46 prioritizes direct preference teaching as the comparator to response embeddings;
-a dictionary cannot hide an unproven semantic interpreter. See the [canonical next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+a dictionary cannot hide an unproven semantic interpreter. S48 inspects portable
+steering operations as a separate branch. See the [canonical next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 S37 stays parked; no inaccessible-reviewer repair loop or new apparatus is queued.
 
-Session totals: 958 apparatus / 0 artifact-bearing code lines
-(98 + 119 + 204 + 207 + 330), five probe blocks / zero building rounds; S37 has
+Session totals: 1065 apparatus / 0 artifact-bearing code lines
+(98 + 119 + 204 + 207 + 330 + 107), six probe blocks / zero building rounds; S37 has
 two failed attempts, zero scored forwards. Fifteen total scored model forwards,
 no GPU or training. S43 separately inspects32 published responses on16 matched
 queries without new local inference.

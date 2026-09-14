@@ -39,9 +39,13 @@ def sentences(abstract, full_text):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--panel", required=True)
+    parser.add_argument("--output", required=True)
     parser.add_argument("--source-cache")
     args = parser.parse_args()
     path = Path(args.panel)
+    output = Path(args.output)
+    if output.resolve() == path.resolve():
+        raise ValueError("Output must differ from the reviewed input panel")
     panel = json.loads(path.read_text(encoding="utf-8"))
     cached = {}
     if args.source_cache:
@@ -83,9 +87,18 @@ def main():
                          "arm": arm, "candidate_count": len(pool), "top_score": best,
                          "selected": tied[0], "top_ties": tied,
                          "manual_adequacy": None})
-    panel["diagnostic"] = {"rows": rows, "model_forwards": 0,
+    catalog = {}
+    for row in rows:
+        ids = []
+        for sentence in row.pop("top_ties"):
+            key = f"{row['pmcid']}:{sentence['start']}:{sentence['end']}"
+            catalog[key] = {k: v for k, v in sentence.items() if k != "overlap_score"}
+            ids.append(key)
+        row.pop("selected")
+        row["selected_candidate_id"], row["top_tied_candidate_ids"] = ids[0], ids
+    panel["diagnostic"] = {"rows": rows, "sentences": catalog, "model_forwards": 0,
                            "status": "scored; manual evidence adequacy review required"}
-    path.write_text(json.dumps(panel, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    output.write_text(json.dumps(panel, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"queries": len(panel["queries"]), "scored_rows": len(rows),
                       "model_forwards": 0, "status": "manual review required"}))
 

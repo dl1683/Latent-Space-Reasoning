@@ -15,7 +15,11 @@ embedding-teacher and predictor roles; conditional prefix reuse is checked but
 not implemented. S43 read32 published answers on16 matched queries, finding one
 clean correction amid shared errors and unfinished targets. Slice closed without
 expansion; no training or model run selected.
-No new model calls, runner or acquired artifact. Older checkpoints below are
+S44-S46 clarified conditional evidence selection and direct teaching. S47 ran a
+107-line lexical diagnostic on four usable pairs among five selected reports:
+7/8 adequate whole-abstract selections,8/8 with RESULTS filtering, one mixed-quality
+tie remaining. Closed without model probe or expansion. No acquired artifact.
+S48 asks about portable intervention operations. Older checkpoints below are
 historical where they conflict with this current allocation.
 
 The enduring question is what a denizen of latent space needs for identity,
@@ -26,7 +30,7 @@ sustained strategy, source research and bounded CPU probes, not system-building.
 No cumulative artifact, causal graft, encoder-reasoning or cost advantage is
 established. Closed prior lines stay closed; no run follows from documentation.
 
-**Latest scored empirical checkpoint:** S26's single CPU continuation run is complete, with
+**Earlier model-forward checkpoint:** S26's single CPU continuation run is complete, with
 independent audit complete: e1044-e1045. Primary and independent pair recovery were both 0/16;
 second-site recovery was 2/16 for both, versus cyclic content control 3/16.
 The first prediction was correct on only 1/16, capping unrevised pair recovery

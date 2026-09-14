@@ -1,5 +1,22 @@
 # Experiments Log
 
+## S47 real evidence selection and direct remedy — 2026-09-14
+
+Fixed five report pairs, ten prompts; four pairs semantically usable with an exact
+source-bound annotation per question. One ratio/denominator mismatch excluded
+without replacement; one malformed offset retained alongside an exact alternative.
+Fifteen of sixteen abstract annotation rows match exclusive-end indexing, including
+duplicates. On eight eligible structured outcome queries, ordinary lexical matching
+selects adequate evidence for7/8 across full abstracts and8/8 with supplied RESULTS
+filtering; paired adequacy3/4 versus4/4. One mixed-quality top tie remains in the
+RESULTS arm. Root and independent reviewer read every selected sentence and tie.
+CPU-only subprocess0.3406s from cached sources, excluding preparation; no model.
+Canonical storage/I-O replay preserves all16 decisions and input custody. Panel
+closed without learned model, expansion or acquisition claim. One runner107 lines,
+one result JSON. Totals: six local probe blocks,15 scored model forwards,1065
+apparatus /0 artifact-bearing physical code lines; S43 external inspection separate.
+See canonical S47 and ledger `s47_evidence_selection_null_result_20260914`.
+
 ## S46 direct operation teaching comparator — 2026-09-14
 
 Two-round independent dialogue prioritizes direct conditional preference teaching

@@ -305,7 +305,10 @@ amid shared errors and incomplete targets. The slice is closed; the correction
 is not a training selection. S44 fixes evidence retrieval as one worked operation;
 S45 develops a prospective conditional-relevance comparison. Neither establishes
 a competent endpoint or selects training. S46 prioritizes direct task-specific
-teaching as the comparator to full response representations. Keep useful cumulative behavior as endpoint. Independent strategy reviewers
+teaching as the comparator to full response representations. S47 found a sufficient
+lexical/section remedy on a fixed real-data panel and closes it without a model
+probe. S48 asks about portable intervention operations as a separate branch.
+Keep useful cumulative behavior as endpoint. Independent strategy reviewers
 can challenge this work without being mislabeled real CLI auditors. Do not restart
 an inaccessible-reviewer loop or require its repair before unrelated research.
 
@@ -4899,3 +4902,68 @@ declared selection and ordinary evidence communication, with competence establis
 first. An aggregate of separate tasks is not a mixed-use task. Neither this data
 inspection nor successful retrieval would settle contextual compatibility of
 acquired moves or donor-independent cumulative reasoning.
+
+**Observed data eligibility.** Five fixed training-report pairs were selected, with
+ten structured queries and no replacements. Four pairs are semantically usable if
+at least one exact source-bound annotation is available per question. Three pairs
+also have every checked abstract annotation exact. Of sixteen abstract annotation
+rows, fifteen match exclusive-end slicing and one matches neither convention;
+duplicates are included in these counts. The release's inclusive-end description
+does not match those fifteen rows. Report 30713 has an already supplied exact
+broader annotation alongside the malformed offset. Report 29047 is rejected:
+its question asks about FIO2 but the evidence concerns a PaO2/FIO2 ratio. Do not
+repair it or infer a denominator change from a ratio change. These are study
+reports; not every selected report describes randomized allocation.
+
+**Predeclared direct-remedy check and result.** The 60-second-bounded CPU process
+finished in 0.3406 seconds using cached source text, excluding preparation. It used
+no model. Outcome-field token intersection ranks source-bound abstract sentences;
+the second arm restricts candidates to the supplied RESULTS section. Ties choose
+the first source occurrence. Root and independent reviewer
+`resumed_frontier_adversary` read every selected sentence and tied alternative.
+
+| Diagnostic | Whole abstract | RESULTS only |
+|---|---:|---:|
+| Adequate selected evidence | 7/8 queries | 8/8 queries |
+| Both questions adequate, with distinct appropriate selections | 3/4 pairs | 4/4 pairs |
+| Queries with adequate and inadequate alternatives tied at the top | 2/8 | 1/8 |
+
+The whole-abstract failure selects a background statement about triglycerides;
+RESULTS filtering selects the reported study finding. For sputum volume, the
+correct CLR passage comes first among three tied sentences; the other two concern
+added P&PD and a subgroup. Thus the observed success is not unambiguous lexical
+discrimination. Supplied article identity, structured query roles and section
+headings substantially assist this operation. No uncertainty/significance claim
+is made from four selected reports. No generation or termination endpoint applies.
+
+**Decision.** A direct remedy suffices on this inspected panel under its fixed
+tie-break. Close it without a learned encoder, training, panel expansion or rescue.
+This is positive task behavior of a simple method, not acquisition, cost superiority,
+mechanism discovery or a hole in a model's space. The conserved distinction is
+which outcome and comparison a passage actually reports, not common terminology.
+The richer acquisition/operation-composition questions remain open.
+
+**Custody.** One [result artifact](../experiments/results/evidence_selection_null_v1/result.json)
+retains eligibility failures, source hashes, annotation references, sentence-level
+decisions, ties and manual-review provenance. One 107-line canonical runner
+reproduces the scores. Root replayed its final storage/I-O change and verified all
+sixteen scores, selections and tied sets unchanged while preserving the reviewed
+input. This was verification, not another experiment. Independent review assessed
+semantics, not a timing replay, and is not a real CLI audit. Local totals are six
+probe blocks, fifteen scored model forwards, and 1,065 apparatus / zero artifact-
+bearing physical code lines. S43's external-output inspection remains separate.
+
+### S48. Can a transported move remain useful alongside another move?
+
+**Definition/question before source inspection.** Treat an intervention as a move
+identified by useful changed and preserved responses over declared contexts, not
+by its vector coordinates. A transport procedure should preserve that role in a
+different model; composition asks whether a separately prepared second move still
+works after that change. One successful transported steering effect would be a
+bounded precedent, not cumulative acquisition or knowledge-module grafting.
+
+Inspect one primary cross-model activation-steering case for actual behavior and
+its preparation bill. Compare target-side contrast examples/learning, direct
+prompting and native target steering where the source permits. Style or refusal
+changes must not become factual/reasoning acquisition claims. No local generation,
+verbosity line, model loading or new apparatus is selected by this source question.

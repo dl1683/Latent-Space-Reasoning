@@ -97,6 +97,37 @@
           "exact_inclusive": false,
           "exact_exclusive": true
         }
+      ],
+      "full_source_receipt": {
+        "url": "https://raw.githubusercontent.com/jayded/evidence-inference/a661e8c14f973398380c8865cf2f27a535aaaf6d/annotations/txt_files/PMC29047.txt",
+        "bytes": 25481,
+        "sha256": "7663569e704c26a2d8833847039b5f3737c8dfc00696c29f79bbddfeb4d3f8b2"
+      },
+      "excluded_questions": [
+        {
+          "PromptID": "11553",
+          "PMCID": "29047",
+          "Outcome": "respiratory rates, oxygen saturations, arterial pH and arterial partial carbon dioxide tension (PaCO2)",
+          "Intervention": "dexmedetomidine",
+          "Comparator": "placebo"
+        },
+        {
+          "PromptID": "11554",
+          "PMCID": "29047",
+          "Outcome": "fractional inspired oxygen (FIO2)",
+          "Intervention": "dexmedetomidine",
+          "Comparator": "placebo"
+        }
+      ],
+      "evidence_excerpts": [
+        {
+          "prompt_id": "11553",
+          "text": "There were no differences in respiratory rates, oxygen saturations, arterial pH and arterial partial carbon dioxide tension (PaCO2) between the groups"
+        },
+        {
+          "prompt_id": "11554",
+          "text": "Interestingly the arterial partial oxygen tension (PaO2) : fractional inspired oxygen (FIO2) ratios were statistically significantly higher in the dexmedetomidine group."
+        }
       ]
     },
     {
@@ -170,7 +201,12 @@
           "exact_inclusive": false,
           "exact_exclusive": true
         }
-      ]
+      ],
+      "full_source_receipt": {
+        "url": "https://raw.githubusercontent.com/jayded/evidence-inference/a661e8c14f973398380c8865cf2f27a535aaaf6d/annotations/txt_files/PMC30713.txt",
+        "bytes": 24131,
+        "sha256": "fd0634844095fb51980369f7f68678fe28433cabb198e3c44a0c3a9c9bf3a0a4"
+      }
     },
     {
       "pmcid": "57751",
@@ -251,7 +287,12 @@
           "exact_inclusive": false,
           "exact_exclusive": true
         }
-      ]
+      ],
+      "full_source_receipt": {
+        "url": "https://raw.githubusercontent.com/jayded/evidence-inference/a661e8c14f973398380c8865cf2f27a535aaaf6d/annotations/txt_files/PMC57751.txt",
+        "bytes": 33694,
+        "sha256": "7bc048520ccf4039ecde631d19d3436599267665d92bc979769d0981122fc245"
+      }
     },
     {
       "pmcid": "58836",
@@ -332,7 +373,12 @@
           "exact_inclusive": false,
           "exact_exclusive": true
         }
-      ]
+      ],
+      "full_source_receipt": {
+        "url": "https://raw.githubusercontent.com/jayded/evidence-inference/a661e8c14f973398380c8865cf2f27a535aaaf6d/annotations/txt_files/PMC58836.txt",
+        "bytes": 20048,
+        "sha256": "7f8c8b012444973e4b5aaa7b6988453d2a06516f30fcbbb28c4b87c894391ab8"
+      }
     },
     {
       "pmcid": "59899",
@@ -405,7 +451,12 @@
           "exact_inclusive": false,
           "exact_exclusive": true
         }
-      ]
+      ],
+      "full_source_receipt": {
+        "url": "https://raw.githubusercontent.com/jayded/evidence-inference/a661e8c14f973398380c8865cf2f27a535aaaf6d/annotations/txt_files/PMC59899.txt",
+        "bytes": 10084,
+        "sha256": "2564fd62d52941ef88e8c79893f2d1e9320fe15ff9f8284dbbd042c8b5acc106"
+      }
     }
   ],
   "articles": [
@@ -472,7 +523,7 @@
       "reference": {
         "start": 1682,
         "end_exclusive": 2058,
-        "text": "There was a tendency for the ratio of partial pressure of arterial oxygen to fractional inspired oxygen concentration (PaO2/FIO2) to increase (174 ± 31 versus 188 ± 36; P = 0.068) and for the ratio of deadspace to tidal volume (Vd/Vt) to decrease (0.62 ± 0.18 versus 0.59 ± 0.18; P = 0.19) during periods of CLR, but these differences did not achieve statistical significance."
+        "text_sha256": "82b9c4af0a55a307f9e974b7d0cf1dc63d1b0a795e92f595f5631e607eb2f58b"
       }
     },
     {
@@ -484,7 +535,7 @@
       "reference": {
         "start": 2059,
         "end_exclusive": 2149,
-        "text": "There were statistically significant increases in sputum volume during the periods of CLR."
+        "text_sha256": "78bedc31aa066636fb8e285c266af8b3324a8327ff0e2df0b28c698be04c231b"
       }
     },
     {
@@ -496,7 +547,7 @@
       "reference": {
         "start": 1094,
         "end_exclusive": 1167,
-        "text": "Bezafibrate significantly reduced total cholesterol by approximately 8.0%"
+        "text_sha256": "d05ca1769fde665f2037eb57ad5ea4cea59232133a8c3878f70756e0b81182c1"
       }
     },
     {
@@ -508,7 +559,7 @@
       "reference": {
         "start": 1362,
         "end_exclusive": 1448,
-        "text": "Triglycerides were significantly reduced by about 23.0% and fibrinogen by about 14.0%."
+        "text_sha256": "af043647630459774b464fcfdab5f7336b84154cec604fd3f51aaface63c3470"
       }
     },
     {
@@ -520,7 +571,7 @@
       "reference": {
         "start": 960,
         "end_exclusive": 1126,
-        "text": "Presenting cardiovascular risk as either an AR or NNT had no impact reducing cardiovascular risk at 12 month follow up, adjusted odds ratio 1.53 (95%CI 0.76 to 3.08)."
+        "text_sha256": "e9e622f1940420f9df491d41c689690c9ad35ed261f85232f4971b2da99d1b93"
       }
     },
     {
@@ -532,7 +583,7 @@
       "reference": {
         "start": 1341,
         "end_exclusive": 1453,
-        "text": "Intensity of prescribing of blood pressure lowering drugs was not significantly different between the two groups"
+        "text_sha256": "dc7e7c9c17c56194f4d14166a3330a54bfb61900ac13350302f575c0f0ceaa8d"
       }
     },
     {
@@ -544,7 +595,7 @@
       "reference": {
         "start": 1208,
         "end_exclusive": 1273,
-        "text": "No postoperative morbidity or mortality occurred in either group."
+        "text_sha256": "73aca3b2b7e1a73205b30be01e53586efae6f5de0d909b9019b5a2b535464147"
       }
     },
     {
@@ -556,7 +607,7 @@
       "reference": {
         "start": 1274,
         "end_exclusive": 1355,
-        "text": "The needlescopic group had a significantly shorter mean operative time (p = 0.02)"
+        "text_sha256": "c673b907d439353059c35dee9940bbb204276d0c889c9d05916d1b27ed312cf1"
       }
     }
   ],
@@ -572,5 +623,391 @@
     "grading": "root and independent manual adequacy, not any span overlap; report adequate/inadequate tied alternatives; paired retrieval differs from distinct selection",
     "expectation": "lexical overlap may already make this narrow operation adequate; no model will be loaded just to repeat success",
     "scope": "structured question roles, fixed report, supplied section structure; not corpus search, arbitrary question interpretation, medical correctness, or acquisition"
+  },
+  "diagnostic": {
+    "rows": [
+      {
+        "prompt_id": "11169",
+        "pmcid": "30713",
+        "arm": "all_abstract",
+        "candidate_count": 16,
+        "top_score": 9,
+        "manual_adequacy": true,
+        "selected_candidate_id": "30713:1682:2058",
+        "top_tied_candidate_ids": [
+          "30713:1682:2058"
+        ],
+        "top_tie_manual_adequacies": [
+          true
+        ],
+        "manual_reason": "Contains the requested reported outcome; report context supplies the fixed intervention and comparator."
+      },
+      {
+        "prompt_id": "11169",
+        "pmcid": "30713",
+        "arm": "results_only",
+        "candidate_count": 7,
+        "top_score": 9,
+        "manual_adequacy": true,
+        "selected_candidate_id": "30713:1682:2058",
+        "top_tied_candidate_ids": [
+          "30713:1682:2058"
+        ],
+        "top_tie_manual_adequacies": [
+          true
+        ],
+        "manual_reason": "Contains the requested reported outcome; report context supplies the fixed intervention and comparator."
+      },
+      {
+        "prompt_id": "11170",
+        "pmcid": "30713",
+        "arm": "all_abstract",
+        "candidate_count": 16,
+        "top_score": 2,
+        "manual_adequacy": true,
+        "selected_candidate_id": "30713:2059:2149",
+        "top_tied_candidate_ids": [
+          "30713:2059:2149",
+          "30713:2150:2227",
+          "30713:2228:2346"
+        ],
+        "top_tie_manual_adequacies": [
+          true,
+          false,
+          false
+        ],
+        "manual_reason": "Selected CLR report is adequate in fixed study context; other ties concern added P&PD and subgroup, not this stipulated contrast."
+      },
+      {
+        "prompt_id": "11170",
+        "pmcid": "30713",
+        "arm": "results_only",
+        "candidate_count": 7,
+        "top_score": 2,
+        "manual_adequacy": true,
+        "selected_candidate_id": "30713:2059:2149",
+        "top_tied_candidate_ids": [
+          "30713:2059:2149",
+          "30713:2150:2227",
+          "30713:2228:2346"
+        ],
+        "top_tie_manual_adequacies": [
+          true,
+          false,
+          false
+        ],
+        "manual_reason": "Selected CLR report is adequate in fixed study context; other ties concern added P&PD and subgroup, not this stipulated contrast."
+      },
+      {
+        "prompt_id": "11281",
+        "pmcid": "57751",
+        "arm": "all_abstract",
+        "candidate_count": 15,
+        "top_score": 2,
+        "manual_adequacy": true,
+        "selected_candidate_id": "57751:1094:1361",
+        "top_tied_candidate_ids": [
+          "57751:1094:1361"
+        ],
+        "top_tie_manual_adequacies": [
+          true
+        ],
+        "manual_reason": "Contains the requested reported outcome; report context supplies the fixed intervention and comparator."
+      },
+      {
+        "prompt_id": "11281",
+        "pmcid": "57751",
+        "arm": "results_only",
+        "candidate_count": 7,
+        "top_score": 2,
+        "manual_adequacy": true,
+        "selected_candidate_id": "57751:1094:1361",
+        "top_tied_candidate_ids": [
+          "57751:1094:1361"
+        ],
+        "top_tie_manual_adequacies": [
+          true
+        ],
+        "manual_reason": "Contains the requested reported outcome; report context supplies the fixed intervention and comparator."
+      },
+      {
+        "prompt_id": "11284",
+        "pmcid": "57751",
+        "arm": "all_abstract",
+        "candidate_count": 15,
+        "top_score": 1,
+        "manual_adequacy": false,
+        "selected_candidate_id": "57751:213:365",
+        "top_tied_candidate_ids": [
+          "57751:213:365",
+          "57751:1362:1448"
+        ],
+        "top_tie_manual_adequacies": [
+          false,
+          true
+        ],
+        "manual_reason": "First-occurrence background statement is not the requested study finding; tied RESULTS sentence is adequate."
+      },
+      {
+        "prompt_id": "11284",
+        "pmcid": "57751",
+        "arm": "results_only",
+        "candidate_count": 7,
+        "top_score": 1,
+        "manual_adequacy": true,
+        "selected_candidate_id": "57751:1362:1448",
+        "top_tied_candidate_ids": [
+          "57751:1362:1448"
+        ],
+        "top_tie_manual_adequacies": [
+          true
+        ],
+        "manual_reason": "Contains the requested reported outcome; report context supplies the fixed intervention and comparator."
+      },
+      {
+        "prompt_id": "11369",
+        "pmcid": "58836",
+        "arm": "all_abstract",
+        "candidate_count": 10,
+        "top_score": 8,
+        "manual_adequacy": true,
+        "selected_candidate_id": "58836:960:1126",
+        "top_tied_candidate_ids": [
+          "58836:960:1126"
+        ],
+        "top_tie_manual_adequacies": [
+          true
+        ],
+        "manual_reason": "Contains the requested reported outcome; report context supplies the fixed intervention and comparator."
+      },
+      {
+        "prompt_id": "11369",
+        "pmcid": "58836",
+        "arm": "results_only",
+        "candidate_count": 3,
+        "top_score": 8,
+        "manual_adequacy": true,
+        "selected_candidate_id": "58836:960:1126",
+        "top_tied_candidate_ids": [
+          "58836:960:1126"
+        ],
+        "top_tie_manual_adequacies": [
+          true
+        ],
+        "manual_reason": "Contains the requested reported outcome; report context supplies the fixed intervention and comparator."
+      },
+      {
+        "prompt_id": "11371",
+        "pmcid": "58836",
+        "arm": "all_abstract",
+        "candidate_count": 10,
+        "top_score": 7,
+        "manual_adequacy": true,
+        "selected_candidate_id": "58836:1341:1478",
+        "top_tied_candidate_ids": [
+          "58836:1341:1478"
+        ],
+        "top_tie_manual_adequacies": [
+          true
+        ],
+        "manual_reason": "Contains the requested reported outcome; report context supplies the fixed intervention and comparator."
+      },
+      {
+        "prompt_id": "11371",
+        "pmcid": "58836",
+        "arm": "results_only",
+        "candidate_count": 3,
+        "top_score": 7,
+        "manual_adequacy": true,
+        "selected_candidate_id": "58836:1341:1478",
+        "top_tied_candidate_ids": [
+          "58836:1341:1478"
+        ],
+        "top_tie_manual_adequacies": [
+          true
+        ],
+        "manual_reason": "Contains the requested reported outcome; report context supplies the fixed intervention and comparator."
+      },
+      {
+        "prompt_id": "11375",
+        "pmcid": "59899",
+        "arm": "all_abstract",
+        "candidate_count": 12,
+        "top_score": 2,
+        "manual_adequacy": true,
+        "selected_candidate_id": "59899:1208:1273",
+        "top_tied_candidate_ids": [
+          "59899:1208:1273"
+        ],
+        "top_tie_manual_adequacies": [
+          true
+        ],
+        "manual_reason": "Contains the requested reported outcome; report context supplies the fixed intervention and comparator."
+      },
+      {
+        "prompt_id": "11375",
+        "pmcid": "59899",
+        "arm": "results_only",
+        "candidate_count": 4,
+        "top_score": 2,
+        "manual_adequacy": true,
+        "selected_candidate_id": "59899:1208:1273",
+        "top_tied_candidate_ids": [
+          "59899:1208:1273"
+        ],
+        "top_tie_manual_adequacies": [
+          true
+        ],
+        "manual_reason": "Contains the requested reported outcome; report context supplies the fixed intervention and comparator."
+      },
+      {
+        "prompt_id": "11376",
+        "pmcid": "59899",
+        "arm": "all_abstract",
+        "candidate_count": 12,
+        "top_score": 3,
+        "manual_adequacy": true,
+        "selected_candidate_id": "59899:1274:1528",
+        "top_tied_candidate_ids": [
+          "59899:1274:1528"
+        ],
+        "top_tie_manual_adequacies": [
+          true
+        ],
+        "manual_reason": "Contains the requested reported outcome; report context supplies the fixed intervention and comparator."
+      },
+      {
+        "prompt_id": "11376",
+        "pmcid": "59899",
+        "arm": "results_only",
+        "candidate_count": 4,
+        "top_score": 3,
+        "manual_adequacy": true,
+        "selected_candidate_id": "59899:1274:1528",
+        "top_tied_candidate_ids": [
+          "59899:1274:1528"
+        ],
+        "top_tie_manual_adequacies": [
+          true
+        ],
+        "manual_reason": "Contains the requested reported outcome; report context supplies the fixed intervention and comparator."
+      }
+    ],
+    "model_forwards": 0,
+    "status": "completed and manually reviewed; closed without model probe or expansion",
+    "summary": {
+      "all_abstract": {
+        "adequate_selected": 7,
+        "queries": 8,
+        "both_questions_adequate_pairs": 3,
+        "distinct_adequate_selection_pairs": 3,
+        "pairs": 4,
+        "mixed_quality_top_tie_queries": [
+          "11170",
+          "11284"
+        ]
+      },
+      "results_only": {
+        "adequate_selected": 8,
+        "queries": 8,
+        "both_questions_adequate_pairs": 4,
+        "distinct_adequate_selection_pairs": 4,
+        "pairs": 4,
+        "mixed_quality_top_tie_queries": [
+          "11170"
+        ]
+      }
+    },
+    "review": {
+      "root": "Read all16 selected sentences, all top ties, all valid annotation content and relevant full-source context.",
+      "independent_reviewer": "resumed_frontier_adversary",
+      "independent_scope": "All16 selections/ties and source context; semantic assessment, not independent runner replay or timing measurement. Available independent agent review, not real CLI audit.",
+      "licensed_claim": "Fixed lexical matching selected adequate study evidence for7/8 structured outcome queries across whole abstracts and8/8 under supplied RESULTS-only filtering. One query retains a mixed-quality tie. Scoped direct remedy, not learned competence or acquisition."
+    },
+    "execution": {
+      "timestamp_recorded_utc": "2026-09-14T14:15:57.286752+00:00",
+      "subprocess_wall_seconds": 0.3405969000305049,
+      "supervisor_timeout_seconds": 60,
+      "source_preparation_included": false,
+      "source_cache_used": true,
+      "python_version": "3.13.7",
+      "requests_version": "2.34.2",
+      "replay_command": "python experiments/run_evidence_selection_null.py --panel experiments/results/evidence_selection_null_v1/result.json --output internal/evidence_selection_null_replay.json",
+      "replay_note": "Canonical runner preserves input; repeated sentence strings are interned. Root verified all16 scores, selections and tied alternatives reproduce exactly after this storage/I-O change. Default replay fetches hash-checked sources;0.3405969s initial timing excluded source preparation.",
+      "gpu": false,
+      "training": false,
+      "model_forwards": 0,
+      "executed_initial_runner_sha256": "37b850eb1d23b1401d13fc328f48c573100411a5ab283262555fd822220b0f62",
+      "canonical_runner_sha256": "5009c33c2b410007e3b14e80cc2057ae4b302f243deb114dec6761dbdee1f809"
+    },
+    "sentences": {
+      "30713:1682:2058": {
+        "section": "RESULTS",
+        "start": 1682,
+        "end": 2058,
+        "text": "There was a tendency for the ratio of partial pressure of arterial oxygen to fractional inspired oxygen concentration (PaO2/FIO2) to increase (174 ± 31 versus 188 ± 36; P = 0.068) and for the ratio of deadspace to tidal volume (Vd/Vt) to decrease (0.62 ± 0.18 versus 0.59 ± 0.18; P = 0.19) during periods of CLR, but these differences did not achieve statistical significance."
+      },
+      "30713:2059:2149": {
+        "section": "RESULTS",
+        "start": 2059,
+        "end": 2149,
+        "text": "There were statistically significant increases in sputum volume during the periods of CLR."
+      },
+      "30713:2150:2227": {
+        "section": "RESULTS",
+        "start": 2150,
+        "end": 2227,
+        "text": "The addition of P&PD did not increase sputum volume for the group as a whole."
+      },
+      "30713:2228:2346": {
+        "section": "RESULTS",
+        "start": 2228,
+        "end": 2346,
+        "text": "However, in the four patients producing more than 40 ml of sputum per day, P&PD increased sputum volume significantly."
+      },
+      "57751:1094:1361": {
+        "section": "RESULTS",
+        "start": 1094,
+        "end": 1361,
+        "text": "Bezafibrate significantly reduced total cholesterol by approximately 8.0% and low-density lipoprotein (LDL)-cholesterol by approximately 9.0%, and increased high-density lipoprotein (HDL)-cholesterol by approximately 11.0% initially, falling to about 6.0% at 3 years."
+      },
+      "57751:213:365": {
+        "section": "BACKGROUND",
+        "start": 213,
+        "end": 365,
+        "text": "Raised levels of both triglycerides and fibrinogen, each of which are reduced by bezafibrate, may contribute to lower extremity arterial disease (LEAD)."
+      },
+      "57751:1362:1448": {
+        "section": "RESULTS",
+        "start": 1362,
+        "end": 1448,
+        "text": "Triglycerides were significantly reduced by about 23.0% and fibrinogen by about 14.0%."
+      },
+      "58836:960:1126": {
+        "section": "RESULTS",
+        "start": 960,
+        "end": 1126,
+        "text": "Presenting cardiovascular risk as either an AR or NNT had no impact reducing cardiovascular risk at 12 month follow up, adjusted odds ratio 1.53 (95%CI 0.76 to 3.08)."
+      },
+      "58836:1341:1478": {
+        "section": "RESULTS",
+        "start": 1341,
+        "end": 1478,
+        "text": "Intensity of prescribing of blood pressure lowering drugs was not significantly different between the two groups at six months follow up."
+      },
+      "59899:1208:1273": {
+        "section": "RESULTS",
+        "start": 1208,
+        "end": 1273,
+        "text": "No postoperative morbidity or mortality occurred in either group."
+      },
+      "59899:1274:1528": {
+        "section": "RESULTS",
+        "start": 1274,
+        "end": 1528,
+        "text": "The needlescopic group had a significantly shorter mean operative time (p = 0.02), reduced postoperative narcotics requirements (p = 0.05), shorter hospital stay (p = 0.04), and quicker return to work (p = 0.03) when compared with the laparoscopic group."
+      }
+    },
+    "storage": "Sentence payloads stored once by pmcid:start:end; rows reference them. Source-bound reference excerpts identified by offsets and hashes."
   }
 }
