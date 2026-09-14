@@ -1,7 +1,7 @@
 # STATE
 
 **Research resumed — user direction, 2026-09-14.** Keep the mission fixed and
-pivot approaches around roadblocks. Source evidence reaches S63; S58 completed an
+pivot approaches around roadblocks. Source evidence reaches S64; S58 completed an
 independently reproduced CPU teaching precursor. Correct specialist pseudo-labels
 improved a frozen-feature species head; soft targets offered no advantage over
 hard labels under the locked recipe. The [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary)
@@ -21,6 +21,11 @@ S63 identifies an external temporal-service precedent and its attribution bounda
 object association, persistent extent, memory and trained consumers are distinct
 contributions. Compare joint preparation against separate contributors with the
 same useful consumer. The source inquiry is complete; no large local reproduction.
+
+S64 rejects unmotivated temporal-state migration and distinguishes recovery from
+composite segmentation gains. Existing-weight memory/search is a serious direct
+remedy; retrospective trajectory selection is not an immediate decision contract.
+The source selection is closed without local tracking reproduction.
 
 The shared-predictor branch needs useful second-donor acquisition evidence; its
 isolation and conditional cache arguments are already worked out. Connected use,

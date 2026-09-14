@@ -269,7 +269,7 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 ## Next-work boundary
 
-**Active allocation, through S63:** strategy/discovery for useful successive
+**Active allocation, through S64:** strategy/discovery for useful successive
 acquisition and composition. S58 completed a bounded species-teaching precursor:
 correct hard pseudo-labels improve a frozen-feature recipient head after donor
 removal; richer soft targets offer no advantage under this recipe. Preserve that
@@ -294,6 +294,19 @@ object association while memory and a trained decoder maintain identity and exte
 The remaining acquisition comparison is against separately retained contributors
 with the same competent temporal consumer. Its bounded source read is closed;
 no unavailable-endpoint search or local tracking reproduction is selected.
+
+S64 declines temporal-state migration before a useful upgrade is bound. A bounded
+source comparison separates added-feature segmentation gains from recovery-specific
+evidence, and identifies memory/search using existing weights as a direct remedy.
+Retrospective trajectory selection and immediate decisions need different timing
+contracts. Close this source selection without a local tracking reproduction.
+
+Next selection: revisit S25's two-hop factual-revision precursor. Bind one valid
+relation rule, a small fixed panel and an affordable existing consumer. Compare
+direct authoritative fact delivery with omission, reporting prerequisites and
+composition separately. This is consumer competence before a learned donor or
+assimilation step, not a cross-model acquisition claim. Do not demand that this
+precursor simultaneously demonstrate the whole cumulative mission.
 
 The next empirical decision must identify what an established system does, what a
 new donor contributes, and an intended use whose result changes the investment.
@@ -320,12 +333,13 @@ S53's reaction-model access check and S55's concept-consumer lookup are closed f
 this allocation. Their broader scientific questions remain open. No unavailable
 real CLI reviewer needs repair; available independent reviews have explicit provenance.
 
-Local accounting remains six probe blocks, fifteen scored model forwards,
-1,065 apparatus lines and zero artifact-bearing lines under the declared strategy
-classification. No strategy-phase training or GPU work. A ratio with zero artifact
+Local accounting is eight probe blocks, 555 forward calls (15 earlier batched
+calls and 540 single-image calls), 2400 head optimization steps and 45 ridge-reader
+preparations. There are 1573 apparatus lines and zero reusable artifact-bearing
+lines under the declared strategy classification. No GPU work. A ratio with zero artifact
 lines is undefined; constructing something merely to improve it is prohibited by
 the user's strategy instruction. Source and manual calculations are not model runs.
-Detailed decisions, evidence and historical routing remain in S0–S63 and the ledger.
+Detailed decisions, evidence and historical routing remain in S0–S64 and the ledger.
 
 ## Conditional route choices
 
@@ -6655,3 +6669,70 @@ Thus the concrete acquisition uncertainty is the value of the combined contribut
 inside a fixed useful temporal service, with later consumer learning charged.
 No checkpoint hunt or large reproduction follows. Close the bounded source read;
 do not reinterpret oracle-mask diagnostics as universal latent-space holes.
+
+### S64. Recovery after ambiguity — select contribution before migration
+
+**Definition and direction challenge.** For an established object reference and
+requested extent, recovery means resuming the correct reference after an ambiguous
+interval. A contributor's value is its incremental improvement in this operation
+over an equally prepared existing service, with memory, reference access and
+legitimate consumer learning available to both. Initial mask quality, association,
+memory selection and recovery are distinct possible sources of improvement.
+The so-what is: teach a system to find the same object again without silently
+switching to a similar object or changing which part was requested.
+
+Root considered migrating temporal state across providers. Independent direction
+reviewer `s62_periodic_frontier` rejected selecting that work before binding a
+useful provider improvement: raw-reference reuse and reader repair already appear
+in S14 and S28–S34. Root accepts the correction. The next bounded source contrast
+checks an added representation (EntitySAM) against a direct memory/search remedy
+(SAM2Long), asking which operation each actually improves. No model reproduction,
+checkpoint hunt or new apparatus is selected. A contributor-specific recovery
+ablation would justify sharper acquisition design; improvement explained only by
+initial segmentation or memory policy would redirect the question accordingly.
+The simplest confound is attributing a better consumer's use of existing evidence
+to additional representational knowledge. Cosine alignment remains scaffolding;
+the target is preserved operational reference, not matching vector geometry.
+
+**Bounded primary-source contrast.** [SAM2Long v3](https://arxiv.org/html/2410.16268v3),
+sections 3.2–3.3 and Table 6, changes memory/search without new weights. Three
+paths versus the reported one-path baseline improve SA-V/LVOS scores from
+76.3/83.0 to 80.8/85.4, with throughput 22 to 19 FPS and memory 5.1 to 5.3 GB
+on an RTX 3090. This is a direct remedy, not free inference. Its final output
+selects the highest-scoring trajectory after the final frame. Its description
+therefore does not by itself establish the same gain for irrevocable online
+decisions. Multiple-hypothesis tracking is explicit prior art, not a newly
+discovered native law. Aggregate ablations do not prove every occlusion is solved.
+
+Independent reviewer `alignment_contribution_review` read the
+[final EntitySAM paper](https://openaccess.thecvf.com/content/CVPR2025/papers/Ye_EntitySAM_Segment_Everything_in_Video_CVPR_2025_paper.pdf),
+sections 3.3–4.1 and Tables 2/5/8/9. Adding DINO features raises video entity
+quality 50.2 to 51.8, but that ablation lacks recovery-specific attribution or
+controlled initial masks. Enhanced features feed learned prompts on every frame;
+the gain cannot be assigned exclusively to initialization either. Preparation
+includes 40k image and 10k pseudo-video iterations; SAM2 encoder/memory are frozen
+while fusion/prompt/decoder components learn. The inspected prose leaves DINO
+backbone freezing ambiguous. Better initial prompts are a strong comparator;
+composite segmentation quality and tracking quality can move differently.
+
+**Decision and transferable residue.** The sources concern different tasks and
+systems; their numbers are not a head-to-head comparison. An existing model can
+support a better temporal operation when its consumer retains alternatives instead
+of committing early. Added features can help a learned segmentation service, but
+this pair of sources does not isolate an added recovery ability. Keep evidence
+availability, proposal generation, selection, memory contamination and decision
+timing distinct when attributing a future contributor's effect. Missing attribution
+is not negative evidence about the donor. Do not turn the distinction into another
+generic proof or construct a tracking benchmark without a bounded acquisition
+hypothesis. Close this source selection; no model work or new runner lines.
+
+**Second direction exchange.** `s62_periodic_frontier` agrees with closure but
+identifies selection avoidance: demanding a perfect donor-specific recovery case
+would repeat the earlier mistake of disallowing useful modest precursors. Root
+accepts its S25 two-hop revision recommendation. Next bind one semantically valid
+relation family, compare direct authoritative record delivery with omission and
+report prerequisite competence beside composition and eligible coverage. A possible
+employer-to-headquarters relation is only an illustration until the actual rule
+is inspected. No error-driven case replacement, weight editing or second model
+is needed for the first consumer test. It does not yet demonstrate learned-donor
+acquisition. Board entries e1169/e1170 retain reviewer provenance.

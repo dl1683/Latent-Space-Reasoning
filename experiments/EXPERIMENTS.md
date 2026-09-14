@@ -1,5 +1,13 @@
 # Experiments Log
 
+## S64 recovery attribution and direction check — 2026-09-14
+
+Temporal-state migration is not selected before a useful upgrade. The bounded
+source contrast separates added-feature segmentation quality from recovery-specific
+evidence and identifies memory/search without new weights as a direct comparator.
+Final-trajectory selection differs from immediate decisions. Canonical S64 and
+ledger preserve sources and reviewer provenance. No new probe, forward or apparatus.
+
 ## S63 temporal-operation source check — 2026-09-14
 
 One primary source and independent review identify contributed features inside

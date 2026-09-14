@@ -11,6 +11,12 @@ attempts.
 
 ## Current routing
 
+S64 closes a bounded temporal contribution selection: do not migrate provider state
+without a useful upgrade or infer recovery ability from aggregate segmentation.
+Memory/search using existing weights is a serious alternative. Match whether
+decisions are immediate or may be revised after later observations. No tracking
+reproduction is queued; continue useful acquisition selection from the canonical map.
+
 Read [README](../README.md), [STATE](../STATE.md), and the
 [canonical direction and decision map](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md).
 Preserve the enduring denizen philosophy—identity, moves, effort, maps and laws—
