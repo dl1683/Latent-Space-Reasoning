@@ -2,11 +2,18 @@
 
 ## Strategy/discovery checkpoint and history — 2026-09-14
 
+S51 defines a useful category/depth pixel selection and verifies one raw depth
+interface. No learned alignment is required to express the direct route. A limited
+source check did not bind the actual trained AB endpoint, so local execution of
+that exact acquisition episode closes. Keep source findings; pivot the approach.
+
 S50 now supplies the concrete reference episode: semantic acquisition into a
 spatial model, old-task evaluations and useful joint behavior. Attribution is
 limited by unmatched guidance, semantic comparator and resolution. The next
-question concerns retaining the achieved interaction during another admission;
-original-input retention alone does not settle that. No local reproduction.
+question was retaining the achieved interaction during another admission; S50's
+worked replay proposal now records that dependency, and S51 closes this exact
+local episode after its endpoint check. Original-input retention alone does not
+settle interaction retention. No local reproduction.
 
 **Latest user restart, 2026-09-14:** mission fixed, approach flexible. S37 and its
 unavailable CLI audit are parked. S38 now separates donor target construction,

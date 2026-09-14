@@ -3,12 +3,9 @@
 **Research resumed — latest user direction, 2026-09-14.** Keep the mission
 fixed and pivot around roadblocks. S37 and its incomplete real CLI result audit
 are parked; they do not block independent strategy or other research. Continue
-from S38 teaching pathways and S39 heterogeneous communication into S40
-separately prepared contributor composition. S41 attention algebra stays diagnostic;
-useful joint behavior and prior-use retention are unresolved. S42 separates
-response-derived teaching from reusable latent reasoning. S43 found one
-clean correction in a fixed released-data slice, alongside shared errors and
-incomplete targets. The slice is closed; it does not select training. No S37 rerun or
+from the current canonical boundary after S50/S51's concrete acquisition reference,
+replay-source proposal and scoped endpoint closure. Earlier S38–S49 source and
+probe findings retain their recorded limits; no closed slice is reopened. No S37 rerun or
 inaccessible-reviewer loop. No acquired capability or
 scientific negative is established by the failed attempts.
 
@@ -72,8 +69,9 @@ startup; an external 180-second process wait also returned normally. Exact recei
 and the correction of the audit prose's runtime transcription are in the ledger.
 This completed probe is not reopened. Preserve the broader capability-composition objective.
 
-**Active decision:** S50 supplies a concrete semantic/spatial acquisition reference;
-next examine retaining its achieved interaction through another admission. The current
+**Active decision:** S50/S51 retain a concrete acquisition reference, replay proposal
+and depth-selection use. Exact local execution is closed after a limited endpoint
+check did not bind the trained combined model; pivot without an extended search. The current
 source alternatives and closed branches are consolidated in the [live boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 Memory reuse alone does not establish successive capability acquisition. Useful
 information, computation, accessibility and effort are legitimate benefits; new

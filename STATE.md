@@ -1,10 +1,12 @@
 # STATE
 
 **Research resumed — latest user direction, 2026-09-14.** Keep the mission
-fixed and pivot around roadblocks. Current source work reaches S50: a published
+fixed and pivot around roadblocks. Current source work reaches S51: a published
 semantic/spatial merger supplies a concrete acquisition reference with original-task
 evaluations and joint use. Its attribution limits and the next interaction-retention
-question are recorded in the canonical direction. No local reproduction is selected.
+question are recorded in the canonical direction. A depth-selection extension is
+expressible, but checked sources do not bind the trained combined-model endpoint.
+Local execution of this reference episode is closed; continue strategy elsewhere.
 The S47 real-data panel is closed with a sufficient direct lexical remedy.
 S37 and its incomplete real CLI audit remain parked; neither blocks strategy.
 No new model run, acquired capability or intrinsic latent-space failure is claimed.
@@ -84,9 +86,10 @@ startup; an external 180-second process wait also returned normally. Exact recei
 and the correction of the audit prose's runtime transcription are in the ledger.
 This completed probe is not reopened. Preserve the broader capability-composition objective.
 
-**Active decision:** use S50's semantic/spatial acquisition as the reference episode
-and investigate preservation of its achieved interaction during another admission.
-Old-operation prompts and prompts produced by the acquired operation need separate
+**Active decision:** retain S50/S51 as source and operational evidence, then pivot
+to an independently supported acquisition opportunity. No trained AB endpoint was
+bound in the limited source check; do not extend the hunt or train a substitute.
+Old-operation prompts and prompts produced by an acquired operation need separate
 coverage. Repeated questions over one memory are not successive acquisition.
 S40 supplies a connected-use precedent; S49 supplies a later-question memory
 consumer and a complete trained-reasoning comparator. Their unresolved combination

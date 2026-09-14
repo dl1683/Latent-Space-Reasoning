@@ -1,5 +1,15 @@
 # Experiments Log
 
+## S51 depth-selection interface and endpoint boundary — 2026-09-14
+
+A raw relative-depth interface makes category/depth pixel selection expressible
+without learned alignment. This is source/code analysis, not demonstrated quality.
+A limited check did not bind the specific trained semantic/spatial endpoint;
+local execution of that exact episode closes without extending the search or
+substituting a new model under old claims. Independent two-round dialogue favored
+the complete-episode dependency check over a standalone depth demonstration.
+No new empirical block, model forward or runner; accounting remains unchanged.
+
 ## S50 concrete acquisition reference — 2026-09-14
 
 Source study of a semantic/spatial merger identifies original-operation retention
