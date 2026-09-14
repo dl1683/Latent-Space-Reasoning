@@ -1,5 +1,13 @@
 # NOTEBOOK
 
+### Strategy routing consolidation — 2026-09-14
+
+S53's consumer/access distinction, S54's admission-history analysis and S55's
+global-editing/resource check are complete in canonical theory and the ledger.
+The current next-work boundary now indexes remaining empirical decisions and
+completed arguments rather than repeating chronological routing. No result or
+closure is changed; no new computation is counted.
+
 ## Strategy/discovery checkpoint and history — 2026-09-14
 
 S53 selects reaction-sensitive structural requests as a concrete candidate. Source
@@ -1581,15 +1589,3 @@ Next: suffix content sensitivity (P2), nested vs flat control (P3), Codex
 follow-up on predictive-state transducer framework.
 
 Older entries (2026-08-27 through 2026-09-03) were moved verbatim to docs/NOTEBOOK_ARCHIVE_2026_08_27_to_09_03.md.
-
-S53 consumer review separates graph-label verification from latent-interface access.
-The finite one-query comparison is specified; exact source endpoint binding remains
-unresolved after a bounded access check. No model run or package installation.
-
-S54 returns to successive acquisition after the isolated-reader precursor. The
-canonical source analysis separates endpoint order effects, admission-relative
-retention and joint use. Streaming merges are serious baselines; no run is queued.
-
-S55 closes a bounded empirical-resource and concept-consumer lookup. Global policy
-edits are a distinct contribution route; source evidence does not validate local
-attribute correction or cumulative acquisition. No new model computation.

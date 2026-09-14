@@ -1,25 +1,15 @@
 # STATE
 
-**Research resumed — latest user direction, 2026-09-14.** Keep the mission
-fixed and pivot around roadblocks. Current source and analytical work reaches S55: a published
-semantic/spatial merger supplies a concrete acquisition reference with original-task
-evaluations and joint use. Its attribution limits and the next interaction-retention
-question are recorded in the canonical direction. A depth-selection extension is
-expressible, but checked sources do not bind the trained combined-model endpoint.
-Local execution of this reference episode is closed; continue strategy elsewhere.
-S52 clarifies assimilated ports and later-use objectives: marginal answer matching
-does not establish a persistent analysis, and ordinary sufficient records are a
-serious reusable comparator. Selection now concerns a concrete useful operation.
-S53 selects reaction-sensitive structural requests for source/data-contract study.
-A manually checked example separates changed and unchanged connectivity; no model
-or parser run. The next consumer comparison must credit decode-once graph reuse.
-S54 returns to admission histories: source evidence separates endpoint order
-robustness from retention; independently classified tasks do not establish joint use.
-S55 distinguishes global policy edits from per-input attribute corrections.
-No trained local concept consumer was bound; its limited lookup is closed.
-The S47 real-data panel is closed with a sufficient direct lexical remedy.
-S37 and its incomplete real CLI audit remain parked; neither blocks strategy.
-No new model run, acquired capability or intrinsic latent-space failure is claimed.
+**Research resumed — user direction, 2026-09-14.** Keep the mission fixed and
+pivot approaches around roadblocks. Current evidence reaches S55; no new run is
+selected. The [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary)
+is authoritative for active allocation and closed/deferred episodes.
+
+The shared-predictor branch needs useful second-donor acquisition evidence; its
+isolation and conditional cache arguments are already worked out. Connected use,
+structured consequence records and global policy revisions remain distinct routes.
+No cumulative acquisition, local concept-correction consumer or intrinsic latent
+space failure is established. Source-access failures do not establish model failure.
 
 ## Current direction: cumulative capability acquisition (2026-09-13)
 
@@ -525,8 +515,3 @@ word as written in each section header):
 - Closed toy program — licensed wording (Rounds 36–37; ENDED 2026-08-29)
 - NLM-007 — CLOSED (2026-08-29; audit #22 closing statement, verbatim)
 - NLM-007 — adoption-order record (Rounds 1–34; superseded orders kept verbatim), including the NLM-001 through NLM-006b verdict/lock sections, Rounds 10–33, audits #2–#20, and the four-cell evidence gate (2026-08-27 — 2026-08-29)
-
-S53 follow-up: the reviewed first question is conditional access for one late
-request, not persistent cross-request consistency. Exact local execution is
-deferred after a bounded source-access check; no dependency repair is queued.
-The canonical S53 records attribution controls and the retained-product convention.

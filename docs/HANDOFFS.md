@@ -3,11 +3,10 @@
 **Research resumed — latest user direction, 2026-09-14.** Keep the mission
 fixed and pivot around roadblocks. S37 and its incomplete real CLI result audit
 are parked; they do not block independent strategy or other research. Continue
-from the current canonical boundary after S50/S51's concrete acquisition reference,
-replay-source proposal and scoped endpoint closure. Earlier S38–S49 source and
-probe findings retain their recorded limits; no closed slice is reopened. No S37 rerun or
-inaccessible-reviewer loop. No acquired capability or
-scientific negative is established by the failed attempts.
+from the current routing below. Earlier source and probe findings retain their
+recorded limits; no closed slice is reopened. No S37 rerun or inaccessible-reviewer
+loop. No acquired capability or scientific negative is established by the failed
+attempts.
 
 
 ## Current routing
@@ -69,24 +68,14 @@ startup; an external 180-second process wait also returned normally. Exact recei
 and the correction of the audit prose's runtime transcription are in the ledger.
 This completed probe is not reopened. Preserve the broader capability-composition objective.
 
-**Active decision:** S50/S51 retain a concrete acquisition reference, replay proposal
-and depth-selection use. Exact local execution is closed after a limited endpoint
-check did not bind the trained combined model; pivot without an extended search.
-The fresh periodic review around 15:30 UTC asks for a specific testable benefit of
-sharing or assimilation. Unchanged connected extension creates no parameter
-forgetting by itself; do not manufacture shared training merely to test replay.
-The next question family is cumulative assimilation of fresh-input operations,
-using existing teaching recipes, with connected growth as a legitimate alternative.
-S52 resolves marginal-versus-shared-analysis evaluation and credits a direct learner's
-reusable record. Select a useful operation; do not extend this into another proof
-or correlation campaign. No model run is queued.
-S53 now selects reaction-sensitive structural requests for source/data-contract
-work. Its four-case example was checked manually, not through a parser or model.
-Define consumer competence and attribution before fitting; charge decode-once reuse.
-Source alternatives and closed branches are consolidated in the [live boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-Memory reuse alone does not establish successive capability acquisition. Useful
-information, computation, accessibility and effort are legitimate benefits; new
-information is not required. No new model run or apparatus is queued.
+**Current research allocation:** investigate useful successive acquisition, with
+ordinary teaching, reusable records and connected growth as serious alternatives.
+S50/S51's exact local episode is closed; S53's reaction-request execution is
+deferred after its bounded access check. S52 retains the later-use distinction,
+and S54/S55's source lookups are closed with their evidence limits preserved.
+These findings do not establish cumulative acquisition or a cost advantage.
+No model run or dependency-repair campaign is queued. Follow the
+[current strategy boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 
 Session totals: 1065 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207 + 330 + 107), six probe blocks / zero building rounds; S37 has
@@ -779,17 +768,3 @@ Verbatim from `docs/STRUCTURED_NEGATIVE_2026_08_29.md` ("Findings that survive a
 - `legacy/` is historical; its older NEXT/queue language is not authorization.
 - Hash-bearing completed configs and runners are evidence; editing them destroys reproducibility.
 - ~~This program is CLOSED.~~ **REOPENED 2026-08-31.** Phase 1 experiments below are closed results; Phase 2 uses non-R^n approaches. Do not reopen Phase 1's R^n-based repair ladders or measurement sweeps.
-
-
-S53 follow-up: the reviewed first question is conditional access for one late
-request, not persistent cross-request consistency. Exact local execution is
-deferred after a bounded source-access check; no dependency repair is queued.
-The canonical S53 records attribution controls and the retained-product convention.
-
-S54 returns to successive acquisition after the isolated-reader precursor. The
-canonical source analysis separates endpoint order effects, admission-relative
-retention and joint use. Streaming merges are serious baselines; no run is queued.
-
-S55 closes a bounded empirical-resource and concept-consumer lookup. Global policy
-edits are a distinct contribution route; source evidence does not validate local
-attribute correction or cumulative acquisition. No new model computation.

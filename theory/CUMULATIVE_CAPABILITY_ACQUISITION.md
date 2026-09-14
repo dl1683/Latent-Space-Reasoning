@@ -266,115 +266,42 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 ## Next-work boundary
 
-S6/S21/S22/S26 are closed empirical probes; do not rescue them with more pairs,
-a larger model or a fitted exporter. S24 and S27 close their stipulated episodes
-through sufficient typed connected use. S8.1/S8.2/S14/S11 retain completed
-continuation, composition-retention and refinement constraints; no further finite
-benchmark or duplicate theorem follows. The third periodic review (e1061-e1062)
-corrected caution becoming the agenda, followed by two genuine direction rounds.
+**Active allocation, through S55:** strategy/discovery for useful successive
+acquisition and composition. No experiment is currently selected. A donor may add
+information, make useful computation accessible, or justify its cost through better
+quality. Connected use and ordinary teaching remain valid; donor removal is the
+selected resource-motivated assimilation branch, not a universal mission gate.
 
-S28 is the constructive target: reuse a receiving inference procedure across
-successive contributors, preserving prior uses and charging all new teaching and
-contextual work. Its selected source-dependency inspection is complete. S28.1
-strengthens the baseline with incremental/warm-start fitting and separates support
-statistics from fresh-query access. No cost or quality advantage is established.
-The 00:55 UTC paper block has selected this target and closed refresh scheduling;
-it does not select pretraining or an implementation.
+The next empirical decision must identify what an established system does, what a
+new donor contributes, and an intended use whose result changes the investment.
+Allow recipient learning and small CPU preparation, charge both, and give direct
+comparators the same legitimate prior preparation. Do not require a released packet
+or demonstrated superiority before investigating a plausible bounded hypothesis.
+An unavailable artifact is a resource limit, not a scientific negative.
 
-S29–S33 have worked operation reuse, grafting, retained interpretation, migration
-and own-state intervention teaching. The selected causal-distillation source and
-two direction rounds are complete. Teaching-only interventions are distinct from
-promised operations; protocol reuse does not make new correspondence free.
+| Existing question or route | Completed work to read before proposing more | Remaining decision |
+|---|---|---|
+| Shared frozen predictor with separate acquired ports | S42 conditional prefix/gradient reuse and implementation boundary; S52 isolation and later-use objectives | Useful second-donor teaching at charged effort versus separate students allowed to share features. Another cache proof does not supply acquisition evidence. |
+| Prepared contribution used in a joint computation | S29 typed operation reuse; S40 separate preparation/joint-use source; S50–S51 semantic/spatial/depth trace | Demonstrated useful contribution and retained achieved uses. The existing depth example has a sufficient direct interface; do not rediscover a missing handoff there. |
+| Consequence retained for later requests | S49 consumer dependency; S52 marginal versus shared-analysis contract; S53 one-query attribution comparison | A competent, affordable consumer of the intended consequence. Credit decode-once structured records. One late query does not establish cross-request consistency. |
+| Changing an accumulated system | S13 admission order; S32 corrections; S50 replay dependency; S54 order/retention source | Useful new behavior and effects on established uses under actual admission histories. Final order robustness, admission-relative BWT and joint retention are different. |
+| Contributed policy revision | S55 global concept-weight edits versus local attribute corrections | Useful held-out edits and collateral effects through a competent consumer. The reviewed source is not a trained local endpoint or a new-specialist acquisition result. |
 
-S34's source, lifecycle and bounded candidate-data proposal are complete. Two
-fresh proposal dialogues end in **deferral without execution**: unresolved judging
-and compatibility cost outweigh the narrow benefit of retaining an interface with
-no concrete downstream use. Do not reopen through another bank hunt, new model,
-judge-calibration program or proposal round. Reopening requires a material change
-arising through other work, not an assigned search for one. Preserve its controls
-and resource analysis as transferable strategy evidence.
+**Closed or deferred execution boundaries remain binding.** S37 has two failed
+attempts and no third run queued. S43's response slice and S47's direct-remedy panel
+are closed. S34 is deferred; only material evidence arising through other work can
+justify reconsideration, not a new bank hunt or proposal loop. S40's joint-run
+metadata search, S49's small-checkpoint check, S51's exact combined-model endpoint,
+S53's reaction-model access check and S55's concept-consumer lookup are closed for
+this allocation. Their broader scientific questions remain open. No unavailable
+real CLI reviewer needs repair; available independent reviews have explicit provenance.
 
-S35 closes the inheritance framing. S36's scientific evidence-finding proposal
-remains historical strategy, but its compatibility-first priority is superseded
-by the user's S37 reassessment. The first review preferred S28 evidence selection;
-the second accepted the objective number-agreement teaching preflight while
-explicitly unable to read local files. The third review inspected the final lock
-and runner and conditionally justified one bounded CPU execution after concrete
-supervisor, tokenizer/alignment, checkpointing and reporting corrections.
-
-**Current allocation after S51 interface review.** The concrete reference episode
-combines spatial masking A and semantic recognition B into category-conditioned
-segmentation. Original-task evaluations and joint behavior make this an acquisition
-precedent; teacher, prompt and resolution mismatches limit attribution. S50 resolves
-a proposed achieved-service replay target; S51 defines useful depth-conditioned
-selection through a direct interface. Local execution of that exact episode is
-closed because checked sources do not bind the trained AB endpoint. Pivot to an
-independently motivated acquisition question: what useful limitation of separate
-computations could sharing or assimilation improve? The fresh periodic review
-rejects selecting another endpoint merely for availability. A substitute cannot
-inherit these source results. No local model run or reproduction is selected. Repeated
-questions over one saved export remain distinct from successive acquisition.
-
-The selected next question family is **cumulative assimilation of fresh-input
-computation**: after acquiring one useful operation, can a persistent receiver
-acquire another donor's operation, preserve earlier achieved/joint uses and perform
-the new operation after that donor is removed? This is a chosen resource-motivated
-branch, not a universal requirement for growth. Use existing S30/S42/S49 teaching
-recipes to define an informative episode before selecting compute. Ordinary direct
-teaching can be the successful acquisition route; if only connected runtime works
-adequately, that remains a legitimate alternative.
-
-S52 resolves the next contract distinction: independent ports can assimilate without
-modifying old ports, and per-request distillation need not preserve a shared analysis
-across later uses. Favor objectively assessable consequences over imitation of
-teacher randomness. Task selection must credit a direct learner's reusable sufficient
-record; two anticipated answer heads alone do not establish a reusable operation.
-S53 selects reaction-sensitive structural requests as a concrete source/data-contract
-candidate. A manually checked source illustration contains changed and unchanged
-predicates; it is not a model result. The limited consumer/attribution comparison
-against decoding once is now defined: one late request tests conditional access,
-not cross-request consistency or localization of reaction computation. Exact local
-execution is deferred after a bounded source-access check. The donor encoder would
-remain at runtime, so this precursor would not establish assimilation. No additional
-contract work or dependency repair is queued for this episode.
-
-S54 returns to successive admissions. A bounded primary-source inspection
-separates final order robustness from retained behavior and identifies streaming
-merge baselines. It does not establish jointly composed use; no new run is selected.
-
-S55 finds no immediately usable teaching arrays in the checked historical vision
-caches and narrows a concept-bottleneck precedent to global policy edits. Its local
-consumer lookup is closed; contributed policy revisions remain a possible form of
-acquisition, distinct from contributed features or answers. No run is selected.
-
-The recent investigations change three choices:
-
-- **Connected use:** S40 supplies a separate-preparation/joint-use precedent.
-  Exact joint-run linkage and item-level retention remain unresolved in the checked
-  release. This supports the route, not reopening that provenance search.
-- **Compact retained exports:** S49 identifies a prepared later-question consumer,
-  but response prediction plus that consumer remains an untested combination.
-  Useful contribution may be information, computation, accessibility or effort;
-  it need not be new Shannon information. Credit direct teaching, saved text and
-  reusable baseline preparation equally.
-- **Trained continuous reasoning:** S49 identifies a complete recipe and a
-  no-alignment multitask control retaining rationale access. Its traced targets
-  are dynamic shared-model states, not an established external hidden-target port.
-  Its small-checkpoint availability branch is closed without download or inference.
-
-The missing evidence is therefore not another isolated alignment, reconstruction
-or recurrence result. It is a justified acquisition episode: what established A
-continues to do, what B changes, and why their joint use is useful. Component
-competence, prepared consumer compatibility and prior-use retention are different
-questions; one cannot silently stand in for another. A quality benefit can justify
-extra cost, and additional teaching is allowed when its work is counted.
-
-S43's stored-response slice and S47's direct-remedy panel remain closed. S37 stays
-parked; unavailable real CLI audits do not block independent strategy reviews.
-Do not reopen closed probes, add a theorem section or construct a new apparatus
-merely to fill the missing episode. Preserve the full acquisition objective while
-making the next candidate decision concrete. Source/decision chronology remains
-in S38-S51, NOTEBOOK and the ledger; this boundary controls live allocation.
+Local accounting remains six probe blocks, fifteen scored model forwards,
+1,065 apparatus lines and zero artifact-bearing lines under the declared strategy
+classification. No strategy-phase training or GPU work. A ratio with zero artifact
+lines is undefined; constructing something merely to improve it is prohibited by
+the user's strategy instruction. Source and manual calculations are not model runs.
+Detailed decisions, evidence and historical routing remain in S0–S55 and the ledger.
 
 ## Conditional route choices
 

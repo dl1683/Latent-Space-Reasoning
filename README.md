@@ -18,16 +18,13 @@ This is the current application of the philosophy, not a replacement for it. We 
 
 Candidate evidence starts with A in a base system, B in a donor, acquisition of useful B behavior with A retained, and held-out tasks requiring both. Further acquisitions test cumulative growth; donor removal is a separate assimilation branch. Relevant controls include simple routing, direct evidence forwarding, structured readouts, retrieval and matched learning budgets. Acquisition and recurring inference costs are counted separately. Current work is autonomous strategy/discovery; definitions, sources and bounded probe results live in the canonical direction's strategy notebook.
 
-**Current research allocation:** select a useful operation for successive
-assimilation into a persistent receiver. Ordinary teaching, reusable structured
-records and connected growth remain serious alternatives. S50/S51 supply an external
-acquisition reference and operational lessons; that exact local episode is closed
-after its limited endpoint check. S52 clarifies what later uses a predicted
-consequence must support. S53 selects reaction-sensitive structural requests as a
-concrete source-study candidate, with decode-once graph queries as the direct route.
-These source precedents and analytical constraints do
-not establish cumulative acquisition. A donor can add useful information, make
-computation accessible or reduce effort. No new run is selected. See the
+**Current research allocation:** investigate useful successive acquisition, with
+ordinary teaching, reusable records and connected growth as serious alternatives.
+S50/S51's exact local episode is closed; S53's reaction-request execution is
+deferred after its bounded access check. S52 retains the later-use distinction,
+and S54/S55's source lookups are closed with their evidence limits preserved.
+These findings do not establish cumulative acquisition or a cost advantage.
+No model run or dependency-repair campaign is queued. Follow the
 [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 
 **Status: exploratory direction.** No cross-model grafting, cumulative acquisition or encoder-reasoning artifact has been established. Start with the [canonical direction](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) and [current state](STATE.md). Earlier findings below remain supporting evidence with their original limits.
@@ -124,16 +121,3 @@ NOTEBOOK.md            Reverse-chronological running log (recent); older entries
 ## License
 
 MIT
-
-S53 follow-up: the reviewed first question is conditional access for one late
-request, not persistent cross-request consistency. Exact local execution is
-deferred after a bounded source-access check; no dependency repair is queued.
-The canonical S53 records attribution controls and the retained-product convention.
-
-S54 returns to successive acquisition after the isolated-reader precursor. The
-canonical source analysis separates endpoint order effects, admission-relative
-retention and joint use. Streaming merges are serious baselines; no run is queued.
-
-S55 closes a bounded empirical-resource and concept-consumer lookup. Global policy
-edits are a distinct contribution route; source evidence does not validate local
-attribute correction or cumulative acquisition. No new model computation.
