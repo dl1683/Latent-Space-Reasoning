@@ -1,5 +1,28 @@
 # Experiments Log
 
+## S43 bounded teaching-target inspection — 2026-09-14
+
+Read 32 published responses for a fixed first16 identical queries; row-service
+revision headers match dataset commit, ids/text match, no transport truncation.
+Generation finish metadata is absent and many stored answers visibly stop early.
+One complete counting correction is independently verified:136 versus76; shared
+errors and partial answers make whole donor responses unreliable as gold. No
+comparative accuracy, termination, acquisition or latent-transfer claim. Fixed slice
+closed without expansion. One retained result JSON; no new runner/model inference.
+Local totals remain five probe blocks and15 scored CPU forwards; this external-
+output inspection is counted separately. Ledger: s43_teaching_target_slice_20260914.
+
+## S42 response-derived teaching and computation reuse — 2026-09-14
+
+Primary-source and independent strategy reviews distinguish answer generator,
+embedding teacher and predictive backbone. A pooled retrieval vector differs from
+a decodable soft-prompt sequence; latent chaining remains future work. Smaller
+cache adapters need not make total fitting cheap. A causal-prefix reuse argument
+is independently checked, with isolated-branch, frozen-policy and generation-
+vocabulary qualifications. This supports an ordinary teaching comparator and
+conditional shared-predictor idea, not a build or local acquisition claim. See
+canonical S42 and ledger. Source/code reads only; empirical totals unchanged.
+
 ## S40–S41 separate preparation and joint use — 2026-09-14
 
 Primary source and pinned implementation review find a constructive precedent for

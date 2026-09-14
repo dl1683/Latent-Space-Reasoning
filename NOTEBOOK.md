@@ -10,7 +10,11 @@ then found actual cross-model communication implementations and a concrete
 receiver-prompt confound. S40 identifies a constructive separately prepared/joint
 use precedent, with unbound exact joint-run provenance in the checked release.
 S41 one-read attention algebra is independently checked but kept diagnostic; it
-does not justify a new measurement program. No run selected.
+does not justify a new measurement program. S42 separates response-generator,
+embedding-teacher and predictor roles; conditional prefix reuse is checked but
+not implemented. S43 read32 published answers on16 matched queries, finding one
+clean correction amid shared errors and unfinished targets. Slice closed without
+expansion; no training or model run selected.
 No new model calls, runner or acquired artifact. Older checkpoints below are
 historical where they conflict with this current allocation.
 

@@ -5,7 +5,10 @@ fixed and pivot around roadblocks. S37 and its incomplete real CLI result audit
 are parked; they do not block independent strategy or other research. Continue
 from S38 teaching pathways and S39 heterogeneous communication into S40
 separately prepared contributor composition. S41 attention algebra stays diagnostic;
-useful joint behavior and prior-use retention are the unresolved questions. No S37 rerun or
+useful joint behavior and prior-use retention are unresolved. S42 separates
+response-derived teaching from reusable latent reasoning. S43 found one
+clean correction in a fixed released-data slice, alongside shared errors and
+incomplete targets. The slice is closed; it does not select training. No S37 rerun or
 inaccessible-reviewer loop. No acquired capability or
 scientific negative is established by the failed attempts.
 

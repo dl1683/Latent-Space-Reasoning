@@ -298,7 +298,12 @@ implementations. S40 finds a constructive separate-preparation/joint-use precede
 with released interfaces; exact joint-run linkage and item-level retention remain
 unresolved in the checked material. S41 derives one-read attention composition but
 independent review keeps it diagnostic: useful joint behavior takes priority over
-new attention apparatus. Keep useful cumulative behavior as endpoint. Independent strategy reviewers
+new attention apparatus. S42 identifies response-derived embedding teaching as a
+concrete comparator and a possible shared-predictor assimilation route. Prefix reuse
+is conditional computation reuse, not demonstrated acquisition. S43 inspected a fixed first-16 teaching slice and found one clean correction
+amid shared errors and incomplete targets. The slice is closed; the correction
+is not a training selection. Consolidate the connected-composition and shared-
+predictor teaching choices before committing to another empirical direction. Keep useful cumulative behavior as endpoint. Independent strategy reviewers
 can challenge this work without being mislabeled real CLI auditors. Do not restart
 an inaccessible-reviewer loop or require its repair before unrelated research.
 
@@ -4445,3 +4450,197 @@ separate one-read reweighting from changed queries or later trajectories; testin
 the identity alone earns no capability claim. Useful separate/joint/selection
 evidence takes priority. No synthetic benchmark, model loading or new runner is selected. The formula is a
 conditional prediction for a candidate intervention, not a reason to build apparatus.
+
+
+### S42. Can a decoder contribute an answer representation without answering aloud?
+
+The denizen's useful object may be the consequence of an input, rather than a
+summary of its wording. This directly connects the user's decoder-to-encoder idea
+to a candidate acquisition role. Earlier LLM2Vec evidence (S1) changes an encoding
+backbone; S39–S40 distinguish repeated donor computation from prompt-state sharing.
+
+**Question before source interpretation.** Let a donor answer distribution be
+P_D(Y|x), and let E be an explicitly chosen consumer representation. A learned
+fixed-length export R_D(x) might predict an E-representation of a donor completion
+without generating that completion at inference. Ask what training target it uses,
+which donor computation remains at runtime, whether useful task behavior survives,
+and whether another contributor can use the export without new pairwise teaching.
+S8 already shows why an average representation need not support arbitrary nonlinear
+continuation; do not re-prove that here. Avoid identifying input encoding, predicted
+answer encoding and reusable reasoning state as the same resource.
+
+A second concrete uncertainty is admission cost: reducing cache-fuser parameters
+need not reduce the frozen-model forward work required for fitting them. Review
+these resource choices before claiming that either export makes the growing system
+small or inexpensive. Primary candidates under review: LLM2Vec-Gen (2026) and Latent
+Cache Flow. No run, architecture selection or new apparatus follows from the search.
+
+
+**Source result and interface distinction.** [LLM2Vec-Gen v3, 29 July 2026,
+§§3–5 and Appendices C/D/H](https://arxiv.org/html/2603.10913v3) trains suffix tokens
+and projections with a frozen decoder, using generated responses and an embedding
+teacher. Retrieval uses a pooled projection; reconstruction uses a soft-prompt
+sequence. Inference still runs the backbone once. Cross-family embedding teachers
+and different response generators are tested; a same-backbone teacher is preferred,
+not mathematically required. Alignment-only nearly matches full embedding performance
+but loses coherent decoding. Latent chaining and agent communication are future
+work. Training uses 160,000 queries with response truncation at 512 tokens. Root
+and independent reviewer `alignment_contribution_review` read v3 after root's
+initial v1 reading; do not carry forward v1's thought/compression split or numbers.
+
+[Latent Cache Flow v2, §§4–5 and B/E](https://arxiv.org/html/2605.22863v2) reduces
+C2C's trainable fuser substantially, but reports 52 versus 66 seconds per training
+step because frozen-model processing dominates. Its early-stopped/pruned results
+are compared with C2C's full-schedule checkpoint. The shared-context endpoint uses
+logits. Cross-context tests use two copies of one checkpoint and task-specific
+training; they do not demonstrate successive donors. Two training-time descriptions
+conflict. Independent reviewer `intervention_value_review` and root checked these
+limits. Smaller adapters are credible; proportional admission savings are not shown.
+
+**Three roles, not one donor.** Separate the model generating training answers,
+the embedding teacher defining the target interface, and the frozen backbone
+predicting that target. Better retrieval than the embedding teacher alone does not
+isolate new knowledge from the answer generator. Cross-generator aggregate results
+also do not show that a particular new donor's useful competence was acquired.
+The most direct acquisition contrast holds receiving system, embedding target and
+teaching budget fixed, then replaces own-answer targets with donor-answer targets
+on a predeclared useful distinction. Ordinary answer-derived teaching is a positive
+candidate route and the required comparator for a privileged internal-access claim.
+
+**Candidate sharing idea, not an implementation.** A common frozen predictor could
+carry separate learned suffixes/projections prepared from successive donors' answers.
+The original donors would then be needed for teaching, not necessarily runtime.
+This would be assimilation only if useful donor behavior survives on new cases;
+fitting teacher embeddings alone does not establish it. Keeping separate interfaces
+preserves access to prior predictors, not the combined system's achieved behavior.
+A fixed target encoder makes coordinates common; it does not make the same future
+operations valid. The paper's cross-teacher ablation permits exploring a common
+target, but does not demonstrate this cumulative arrangement.
+
+**Cost question before any run.** Frozen weights do not imply fixed activations:
+learned input suffixes change the frozen network's output each optimizer step, and
+a learned cache update changes the receiver computation used for its loss. Reusing
+a fixed prompt prefix might still remove part of this work under causal attention.
+Work out precisely which subcomputation is independent of the trained variables;
+include cache preparation, memory and remaining gradients. Do not infer cheap
+training from a small count of updated parameters.
+
+**Native-math and holes check.** The proposed operational object is a predictable
+response consequence that a later consumer can use. Coordinate MSE and pooling are
+scaffolding, not that meaning. A readout can succeed while a further operation fails:
+the pooled retrieval vector and the decodable soft-prompt sequence must not be
+interchanged. No new model run, weight download or cumulative result in S42.
+
+
+**Conditional reuse proposition, independently checked.** Suppose F is a deterministic
+causal decoder with frozen ordinary-token parameters and identical positional rules,
+masks and query-prefix tokens across interfaces. Interface d appends trainable
+suffix s_d and reads its hidden states through trainable head h_d. Every prefix
+layer state and KV entry depends only on earlier prefix tokens, by induction over
+layers. Therefore its cache C_F(x) is independent of every s_d and h_d and may be
+reused across their updates. Suffix activations remain parameter-dependent and must
+be recomputed; frozen network operations on the suffix still carry gradients.
+This is an architectural conditional argument, not a verified optimized code path.
+
+If a shared prefix costs C_p and an isolated suffix branch costs C_s, M separately
+queried interfaces cost M(C_p+C_s), versus C_p+M C_s with reuse, excluding cache
+transfer/storage and batching effects. The arithmetic is not a timing claim.
+Keep each branch isolated: appending A then B under an ordinary causal mask makes
+B see A and changes the interface. A single pooled embedding cannot replace the
+prefix cache without a further sufficiency argument. Task-specific prefix changes,
+backbone tuning, bidirectional dependence, changed position rules or unaccounted
+stochasticity invalidate this reuse argument. Finite-precision replay needs a
+numerical tolerance if an implementation is later evaluated.
+
+For training, cacheable prefix activations do not eliminate the response-target
+preparation or a reconstruction pass conditioned on changing soft prompts. Reusing
+all frozen activations would generally change the training objective. This locates
+one genuine reuse opportunity without promising that acquisition is cheap.
+
+Independent reviewer `alignment_contribution_review` confirmed the prefix argument:
+detaching a prefix independent of the learned variables preserves their gradients.
+Isolated old readout preservation additionally requires all shared normalization,
+calibration, tokenization, target-encoder and position policies to remain fixed.
+Adding vocabulary entries can change generation softmax normalization even when old
+embedding rows are unchanged; preserving an external embedding readout is narrower
+than preserving generation. This is modular ordinary distillation with shared
+computation, not newly discovered compositional mathematics.
+
+**Pinned implementation boundary.** Root read [official code revision
+fdec758db27029b33d60d44c3c79c76fbaadf63f](https://github.com/McGill-NLP/llm2vec-gen/tree/fdec758db27029b33d60d44c3c79c76fbaadf63f).
+The encoder call processes the supplied sequence and selects the suffix states;
+reconstruction and alignment projections expose different outputs
+(`modeling_encoder_decoder.py:510–560`). Default training uses selected trainable
+token embeddings (`scripts/train.py:434–450`). The inspected encoding entrypoint
+does not implement the proposed cross-interface prefix reuse. Source inspection
+supports the dependency distinction, not a measured saving. File hashes live in
+the ledger; no fetched source was imported or executed.
+
+
+### S43. Does the available teaching data contain a useful donor correction?
+
+A denizen needs a tool that changes a useful decision, not merely another message.
+S42's source comparisons leave the actual contribution target unspecified. Before
+fitting an interface, inspect a small fixed slice of the official released response
+data, if accessible through bounded metadata/row requests. This is a data eligibility
+inspection, not a new model run, representative accuracy estimate or acquisition test.
+
+**Expectation and decision rule before viewing rows.** Different released generators
+may answer identical queries differently. A clearly correct donor answer where the
+candidate receiver is wrong supplies a possible teaching distinction, not proof it
+can be learned. If no such case appears, do not claim donor incompetence: close this
+small data slice and choose a different source of evidence. Match exact query text
+and generation metadata before comparison. Censored/truncated responses, unequal
+instructions, task ambiguity and style differences can make apparent corrections
+meaningless. Prefer objective checkable content; no external judge API or model.
+No weights download, new runner or latent-state measurement is authorized by this
+inspection. Record exact row-selection rule and hashes if usable data is obtained.
+
+
+**Pre-row selection, 2026-09-14:** official `McGill-NLP/llm2vec-gen-tulu`;
+first 16 rows of the published training split, comparing the smallest available
+response generator with the largest same-family response generator represented
+on those exact queries. Determine field/config names from metadata only. If this
+slice has no objectively checkable correction, close it without expanding the
+panel or claiming a general result. Bounded row API payloads only; no full dataset,
+weights or parquet sweep. Treat provenance honestly if the row service cannot
+bind its output to an immutable revision. No model execution or training.
+
+
+**Observed slice, closed without expansion.** Both row-service revision headers
+match dataset commit `2d6b5a99c2bc2521dc4ded3c66c91052245869ab`. All 16 ids and
+query strings match; neither response is marked partial and no cells are service-
+truncated. This is separate from model generation: several stored answers end
+abruptly, and weight revisions, chat templates and finish reasons are absent.
+Root read all 32 answers; independent reviewer `intervention_value_review` read
+both answers for rows 8–15. This manual reading is necessary because text transport
+integrity does not establish target correctness or completeness.
+
+The clean example is row 10: of 15 pizzas, four are small and five medium, leaving
+six large. The donor computes `4*6 + 5*8 + 6*12 = 136`; the smaller generator invents
+one large pizza and answers 76. Both stored answers visibly finish this calculation.
+Other rows prevent treating the donor's full responses as gold: row 6 identifies
+primes correctly but falsely says their reciprocal series converges; row 8 misses
+an available legacy stack-depth query; several multi-part answers never finish.
+[Official reference for the technical check](https://raw.githubusercontent.com/KhronosGroup/OpenGL-Refpages/main/gl2.1/glGet.xml).
+
+Raw selected rows, request URLs, revision headers, decoded-response hashes,
+row-by-row notes and arithmetic checks are retained together in
+[the single result artifact](../experiments/results/teaching_target_slice_v1/result.json).
+No model was run. This is one bounded external-output data inspection, separate
+from the five local probe blocks and their 15 scored CPU forwards. No new runner.
+
+**Decision.** One usable correction exists, so the teaching proposal is no longer
+purely abstract. It is not enough to select a training run: a one-off omission may
+be fixed by a short direct instruction, ordinary calculation or answer checking.
+Those are real alternatives, not proof that the donor adds no value. A future
+acquisition claim needs persistent held-out improvement through the proposed
+interface at a declared total cost; no such claim follows here. Close this fixed
+slice. Do not expand it into a target-quality benchmark or reopen S37.
+
+**Transferable residue.** Distinguish three failures: wrong donor content, a valid
+correction lost by the export, and a preserved correction not usable by the
+consumer. Target supervision must make them distinguishable. A correct subclaim
+inside an erroneous response does not license embedding the whole response as a
+correct teaching target. This concerns operational meaning, not vector geometry;
+no learned-space hole or new latent law has been demonstrated.

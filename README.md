@@ -24,6 +24,9 @@ training and pretrained contribution. S39 examines whether live latent
 communication actually works across distinct pretrained contributors. S40 finds a
 published example of jointly using separately trained interfaces; S41 keeps the
 attention calculation subordinate to useful composition and retained behavior.
+S42 connects decoder-derived response embeddings to a concrete teaching comparator;
+S43 finds one concrete donor correction in a bounded released-data slice, together
+with shared errors and unfinished answers. No training run follows.
 This informs capability grafting without requiring every interface to be linear. No local acquisition
 result is established. See the [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 
