@@ -32,7 +32,7 @@ tests strict interchange, not all acquisition. Evidence for one interface is
 local, not a universal law or a finished cumulative system.
 
 **Current evidence boundary:** source and implementation studies now extend
-through S53. They supply concrete trained reasoning, compressed-context reading,
+through S54. They supply concrete trained reasoning, compressed-context reading,
 stitching and separately prepared contributor interfaces. None of the inspected
 results establishes the full repeated-acquisition contract below. Published
 precedents, local results and untested combinations must remain separate.
@@ -331,10 +331,16 @@ teacher randomness. Task selection must credit a direct learner's reusable suffi
 record; two anticipated answer heads alone do not establish a reusable operation.
 S53 selects reaction-sensitive structural requests as a concrete source/data-contract
 candidate. A manually checked source illustration contains changed and unchanged
-predicates; it is not a model result. Next define the limited consumer and attribution
-comparison against decoding/retaining a graph once. The donor encoder would remain
-at runtime in that precursor question, so it is not full assimilation. No new compute
-is queued.
+predicates; it is not a model result. The limited consumer/attribution comparison
+against decoding once is now defined: one late request tests conditional access,
+not cross-request consistency or localization of reaction computation. Exact local
+execution is deferred after a bounded source-access check. The donor encoder would
+remain at runtime, so this precursor would not establish assimilation. No additional
+contract work or dependency repair is queued for this episode.
+
+S54 returns to successive admissions. A bounded primary-source inspection
+separates final order robustness from retained behavior and identifies streaming
+merge baselines. It does not establish jointly composed use; no new run is selected.
 
 The recent investigations change three choices:
 
@@ -5904,3 +5910,43 @@ do not turn it into a legacy-environment repair or substitute-checkpoint campaig
 Execution is deferred, while the conditional-access comparison and its attribution
 limits remain usable. Further strategy should resolve a consequential question
 rather than add more contract machinery for this currently unbound local episode.
+
+### S54. Admission history: endpoint stability versus retaining earlier use
+
+**Question before source inspection.** Return from S53's single-reader precursor
+to S13's existing order question: does adding C require adapting to the acquired
+A/B system, or can retained preparation support an economical incremental update?
+The denizen cares about executable uses after acquisition histories, not equality
+of final coordinates. Independent two-round review selects one sequential-merging
+source with shuffled admissions; no new order theory or checkpoint search.
+
+**Bounded primary evidence.** [Merging on the Fly, final NeurIPS 2025 paper](https://papers.nips.cc/paper_files/paper/2025/file/7611a3cb5d733e628081431445cb01fd-Paper-Conference.pdf),
+sections 3/4/6.1 and Appendices C/D, merges same-base vision experts sequentially,
+retaining fixed task heads. OPCM uses accumulated parameters, projections and
+scaling rather than replaying earlier experts. Ten shuffled orders use threshold
+0.5. Table 1 reports small final-accuracy spread alongside negative backward
+transfer. Evaluation covers separate classifications, not a jointly composed use.
+Continual fine-tuning has one order; it is not an equally repeated order control.
+Task Arithmetic's coefficient is selected over a grid, so preparation differs.
+
+Appendix D explicitly supplies streaming averaging and Task Arithmetic. Their
+constant-sized parameter accumulators undermine any claim that order independence
+requires retaining every expert. This is algorithmic parameter storage, not measured
+total deployment memory; the task-head bank remains separate. A coefficient chosen
+using the full task set is not prospectively calibrated admission of unknown tasks.
+Figure 12's stage matrices concern averaging, not OPCM. No local execution follows.
+
+**Interpretation that changes the decision.** BWT subtracts each task's performance
+when admitted; shuffling changes those reference states and which last task is
+excluded. Thus BWT can vary even with the same final model. Small final-score
+spread establishes neither high quality nor retention. Compare fixed task endpoints
+for order effects, and each actual deployed stage for subsequent regressions;
+do not replace either with aggregate BWT alone.
+
+This source supports a feasible incremental assimilation mechanism within a shared
+base family, not arbitrary grafting. It does not choose a joint-composition
+mechanism for us. Geometric orthogonality is scaffolding, not proof that a useful
+operation survives. The research choice remains whether a proposed shared update
+adds enough useful behavior to justify measured damage or repair of established
+uses, against retaining separate callable paths. Stop the one-source inspection;
+no source expansion, projection implementation or model-loading task is selected.

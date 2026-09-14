@@ -1,7 +1,7 @@
 # STATE
 
 **Research resumed — latest user direction, 2026-09-14.** Keep the mission
-fixed and pivot around roadblocks. Current source and analytical work reaches S53: a published
+fixed and pivot around roadblocks. Current source and analytical work reaches S54: a published
 semantic/spatial merger supplies a concrete acquisition reference with original-task
 evaluations and joint use. Its attribution limits and the next interaction-retention
 question are recorded in the canonical direction. A depth-selection extension is
@@ -13,6 +13,8 @@ serious reusable comparator. Selection now concerns a concrete useful operation.
 S53 selects reaction-sensitive structural requests for source/data-contract study.
 A manually checked example separates changed and unchanged connectivity; no model
 or parser run. The next consumer comparison must credit decode-once graph reuse.
+S54 returns to admission histories: source evidence separates endpoint order
+robustness from retention; independently classified tasks do not establish joint use.
 The S47 real-data panel is closed with a sufficient direct lexical remedy.
 S37 and its incomplete real CLI audit remain parked; neither blocks strategy.
 No new model run, acquired capability or intrinsic latent-space failure is claimed.

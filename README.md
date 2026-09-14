@@ -129,3 +129,7 @@ S53 follow-up: the reviewed first question is conditional access for one late
 request, not persistent cross-request consistency. Exact local execution is
 deferred after a bounded source-access check; no dependency repair is queued.
 The canonical S53 records attribution controls and the retained-product convention.
+
+S54 returns to successive acquisition after the isolated-reader precursor. The
+canonical source analysis separates endpoint order effects, admission-relative
+retention and joint use. Streaming merges are serious baselines; no run is queued.

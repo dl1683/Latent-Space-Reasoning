@@ -4270,3 +4270,8 @@ access check, recorded as `s53_consumer_attribution_access_20260914`. Reference 
 queries verify answers, not neural-reader competence. Three matched feature arms
 are proposed for one late request. Box inspection failed and revision API returned
 504; endpoint absence is not inferred. Execution deferred, no new empirical block.
+
+S54: one primary sequential-merging source inspected after two-round direction
+review. Endpoint order robustness and stage-relative retention are different;
+classification-only evidence does not establish joint composition. Ledger
+`s54_admission_order_source_20260914`; zero new empirical blocks or model forwards.
