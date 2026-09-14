@@ -27,7 +27,9 @@ S58 adds a bounded local positive: correct specialist pseudo-labels improve a
 species head over frozen recipient features after donor removal. Soft targets
 do not beat hard labels under the locked recipe. These findings do not establish
 new backbone knowledge, cumulative acquisition or a cost advantage.
-No model run or dependency-repair campaign is queued. Follow the
+S62 completed its later-attribute comparison and does not justify preferring
+specialist internal features over full logits or existing recipient features on
+that small, annotation-limited panel. The panel is closed. Follow the
 [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 
 **Status: exploratory direction.** No cross-model grafting, cumulative acquisition or encoder-reasoning artifact has been established. Start with the [canonical direction](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) and [current state](STATE.md). Earlier findings below remain supporting evidence with their original limits.

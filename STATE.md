@@ -10,10 +10,12 @@ is authoritative for active allocation and closed/deferred episodes.
 S59 declines an unmotivated hierarchical-classifier comparison. S60 adds external
 evidence for a jointly taught representation supporting later trained readers.
 S61 closes that source inquiry with behavioral coverage evidence and charged-reader
-repair requirements. S62 selects a bounded later-attribute comparison: retained
-specialist features versus full species logits, with recipient-feature context.
-Training support is independently verified and the test-pair/reader design frozen;
-feature extraction, reader fitting and test-attribute inspection remain unrun.
+repair requirements. S62 completed the later-attribute comparison: mean pair scores
+.631 for specialist features, .607 for full logits and .690 for existing recipient
+features on fourteen pairs. Predictions were independently reproduced. Selected
+visual checks qualify the labels' visibility. Close this panel; it does not justify
+requiring specialist features, nor prove general logit sufficiency. Next identify
+a useful contribution beyond existing recipient access and matched teaching.
 
 The shared-predictor branch needs useful second-donor acquisition evidence; its
 isolation and conditional cache arguments are already worked out. Connected use,
@@ -52,7 +54,7 @@ The reviewer challenges approach and question selection, never the mission.
 donor removal. No cumulative acquisition, transferable graft, encoder reasoning
 artifact, new backbone knowledge or cost advantage is established.
 The earlier four bounded probes sharpen the evidence requirements (S26 below);
-current seven-block accounting is reported separately:
+current eight-block accounting is reported separately:
 
 - **S6, retained exports:** legacy plan bundles are nonfinite or overwhelmingly
   zero and unsuitable for the proposed transfer analysis. Underlying model
@@ -117,11 +119,12 @@ See the [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.
 S37 stays parked, S43/S47 stay closed, and the S49 small-checkpoint branch is closed
 without download or execution. No new model run or apparatus is queued.
 
-**Session accounting:** 1351 apparatus / 0 artifact-bearing code lines
-(98 + 119 + 204 + 207 + 330 + 107 + 286 runner lines); seven probe blocks / zero building rounds.
-S37 has two failed execution attempts and zero scored forwards. There are 375 total
-image/item-level backbone forwards, including S58's 360. S58 separately fits twelve
-candidate linear heads in 2400 optimization steps; no GPU. No reusable acquisition
+**Session accounting:** 1573 apparatus / 0 reusable artifact-bearing code lines
+(98 + 119 + 204 + 207 + 330 + 107 + 286 + 222 runner lines); eight probe blocks / zero building rounds.
+S37 has two failed execution attempts and zero scored forwards. There are 555 forward
+calls, including fifteen earlier batched calls and 540 single-image S58/S62 calls.
+S58 fits twelve candidate linear heads in 2400 optimization steps; S62 prepares
+45 ridge readers (36 nonconstant and nine constants). No GPU. No reusable acquisition
 component was built. S43 separately inspects32 published
 responses on16 matched queries; it adds no local model inference. The explicit strategy mandate
 supersedes construction merely to change this ratio.

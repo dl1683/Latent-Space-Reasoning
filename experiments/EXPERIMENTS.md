@@ -1,5 +1,27 @@
 # Experiments Log
 
+## S62 later-attribute interface comparison — 2026-09-14 (completed)
+
+On fourteen disjoint qualifying test pairs / 31 color questions, mean within-pair
+annotation-agreement scores are .630952 for specialist features, .607143 for all
+raw logits and .690476 for existing recipient features. Features beat logits on
+two pairs, lose on two and tie on ten. Independent audit exactly reproduces all
+predictions, vote aggregation, spectra and scores. Thirty-six readers attain 15
+slope degrees of freedom; nine are deliberate constants. These are same-family
+supervised readers, not zero-shot later questions.
+
+Selected visual review finds body-region/visibility ambiguity in three pairs.
+No exclusions or rescoring: retain dataset-agreement scope, not verified color
+perception. This panel does not justify requiring specialist features; no universal
+logit sufficiency or intrinsic representation-hole result. Close without tuning.
+
+New cost: 180 CPU forward calls, 19.627 supervised extraction seconds; 45 reader
+preparations, 5.464 supervised fitting seconds; 4,686,432 test-annotation bytes.
+All reproduced logits match the previous cache exactly. Runner 222 apparatus lines;
+session eight blocks, 555 forward calls (fifteen earlier batched), 1573/0 code lines.
+No GPU or new weights. Raw votes, design, attempts, extraction and result are in
+`results/attribute_comparison_v1/`; S62 holds full qualifications and timing scopes.
+
 ## S61 source resolution and S62 annotation feasibility — 2026-09-14
 
 S61 distinguishes useful resolution repair from matched-effort causal attribution

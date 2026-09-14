@@ -46,8 +46,9 @@ precedents, local results and untested combinations must remain separate.
 | Retire a donor while retaining useful fresh-input behavior | S58: correct pseudo-labels improve a frozen-feature head on held-out images after teacher removal; external recipes S30/S42/S49 | Broader operations, new backbone knowledge and successive acquisitions; S58 is a limited species readout |
 | Discover effective native latent mathematics | Conditional operational constraints and scoped empirical diagnostics | A law predicting useful interventions or composition in real learned spaces beyond the tested scaffolding |
 
-Local accounting is seven probe blocks, 375 backbone forwards and 2400 linear-head
-optimization steps; no GPU. S58 is a bounded teaching positive with independently
+Local accounting is eight probe blocks, 555 forward calls (including fifteen
+earlier batched calls), 2400 linear-head optimization steps and 45 S62 ridge-reader
+preparations; no GPU. S58 is a bounded teaching positive with independently
 reproduced predictions. S6/S21/S22/S26 are scoped negatives; S37 has
 two failed attempts and zero scored forwards. S47 demonstrates a sufficient direct
 lexical/section remedy on its small structured panel, then closes without a model
@@ -279,11 +280,14 @@ selected resource-motivated assimilation branch, not a universal mission gate.
 
 S59 declines a hierarchical classifier comparison without a material admission
 benefit. S60–S61 supply representation-teaching and operational-coverage precedents;
-their bounded source inquiry is closed. S62 now selects a bounded comparison of
-retained features versus full terminal outputs for later within-species attribute
-questions. Training annotation support and reader design are independently reviewed;
-the frozen test-pair manifest precedes test-label extraction. No feature extraction
-or reader fitting has run yet. No large reproduction or species-task tuning is queued.
+their bounded source inquiry is closed. S62 completed the bounded comparison of
+retained features versus terminal outputs for within-species attribute questions.
+It supplies no persuasive reason to prefer specialist internal features over
+full logits or the existing recipient features under the fixed reader budget.
+The panel is closed; annotation visibility also limits physical-color claims.
+Next identify a useful acquisition beyond what the recipient and matched teaching
+already provide, independently of this panel's errors. No readout-tuning sequence,
+large reproduction or species-task extension is queued.
 
 The next empirical decision must identify what an established system does, what a
 new donor contributes, and an intended use whose result changes the investment.
@@ -315,7 +319,7 @@ Local accounting remains six probe blocks, fifteen scored model forwards,
 classification. No strategy-phase training or GPU work. A ratio with zero artifact
 lines is undefined; constructing something merely to improve it is prohibited by
 the user's strategy instruction. Source and manual calculations are not model runs.
-Detailed decisions, evidence and historical routing remain in S0–S57 and the ledger.
+Detailed decisions, evidence and historical routing remain in S0–S62 and the ledger.
 
 ## Conditional route choices
 
@@ -6418,7 +6422,7 @@ before and after permitted repair. An inexpensive repaired reader is a valid
 acquisition outcome; a fixed-reader failure alone does not reject the route.
 Another generic protocol elaboration adds little without a concrete admission.
 
-### S62. Later questions versus retained terminal answers — selected bounded probe
+### S62. Later questions versus retained terminal answers — completed bounded probe
 
 **Question and definition before data binding.** Does retaining a specialist's
 internal representation allow useful later questions that its ordinary prediction
@@ -6530,3 +6534,66 @@ It fixes all thirty test pairs before their attribute labels are extracted. Next
 implement one bounded runner, retain selected test votes, extract at most 180
 specialist feature packets, fit the fixed readers, and independently audit the
 result. No code or model execution is represented as completed by this checkpoint.
+
+**Completed result, independently reproduced.** The frozen thirty test pairs yield
+fourteen qualifying disjoint pairs and 31 color questions. Mean color-question
+scores within each pair, then means across pairs, are:
+
+| Retained input to prepared reader | Mean pair score |
+|---|---:|
+| 512 specialist features | 0.630952 |
+| All 200 raw species logits | 0.607143 |
+| 576 existing recipient features | 0.690476 |
+
+Specialist features versus logits: two pair wins, two losses, ten ties; mean paired
+difference .023810. The six species supply 3/2/4/1/3/1 pairs, not independent broad
+replications. This descriptive contrast does not establish significant superiority
+or general equivalence. The recipient comparator has the highest aggregate score.
+Full logits retain image-dependent graded information; the hard species identity
+tie baseline (.5) cannot establish that logits are inadequate.
+
+`cache_integrity_review` independently reproduced every saved prediction exactly
+from cached inputs/readers, verified raw-vote aggregation, all pair scores and
+training-only normalization/spectra. Thirty-six nonconstant readers attain 15 slope
+degrees of freedom; attributes 109/115/119 produce nine deliberate constants.
+This is independently checked ordinary supervised access under one reader family,
+not zero-shot questions, unseen attribute types or reasoning acquired without
+reader preparation. Equal degrees of freedom does not equalize inductive bias.
+
+**Annotation qualification, without rescoring.** Root and independent reviewer
+`alignment_contribution_review` inspected images 6164/6160, 7027/7015 and
+10047/10042 because confidence does not verify body-region visibility. The first
+pair includes a visible white front strip in an image labeled white-absent; the
+second does not plainly verify the claimed iridescence; the third changes which
+body regions are exposed. These selected diagnostics do not estimate annotation
+error prevalence or replace labels. Keep all locked pairs and original scores.
+The outcome is agreement with retained annotations, not independently established
+visible breast-color discrimination. Do not interpret individual errors as proven
+perceptual failures.
+
+**Cost and custody.** Test annotation extraction: 4,686,432 bytes / 2.000 seconds.
+Feature extraction: 180 CPU forward calls, 18.401 seconds internally and 19.627
+supervised seconds; maximum logit discrepancy from S58 is zero. Fitting: 45 reader
+preparations, 4.464 seconds internally and 5.464 supervised seconds. Both attempts
+completed within their external 120-second deadlines; no GPU or new weights.
+Float32 payload per image is 2048 bytes for specialist features versus 800 for
+logits, excluding serialization overhead. This storage comparison alone is not
+an end-to-end cost claim. Runner: 222 apparatus lines; session totals 1573 apparatus
+/ zero reusable artifact-bearing code lines, eight probe blocks / zero building
+rounds. S58/S62 add 540 single-image forward calls to fifteen earlier batched calls.
+
+**Reviewed interface decision.** This panel does not justify requiring specialist
+internal features. Retain full logits and existing recipient features as serious
+comparators; no universal sufficiency or latent-information impossibility follows.
+The R^n readers are scaffolding for a useful-interface decision. No new native law,
+cumulative acquisition or reasoning-model advance is established. Close this panel
+without tuning, attribute search or error-selected expansion. The next acquisition
+must have an independently motivated useful contribution beyond existing recipient
+access and legitimate matched teaching.
+
+**Periodic review completed around 17:32 UTC**, after consolidation at 526a5ab
+and a separate entropy check. Fresh `s62_periodic_frontier` endorsed this bounded
+step and warned against a sequence of readout benchmarks. It distinguished later
+than species pretraining from unseen question types, and made the recipient control
+binding for the acquisition decision. Audit entry e1164; independent tool-assisted
+review, not a real CLI audit. Continue the broader program.

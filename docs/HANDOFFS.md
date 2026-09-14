@@ -80,13 +80,16 @@ S50/S51's exact local episode is closed; S53's reaction-request execution is
 deferred after its bounded access check. S52 retains the later-use distinction,
 and S54/S55's source lookups are closed with their evidence limits preserved.
 These findings do not establish cumulative acquisition or a cost advantage.
-No model run or dependency-repair campaign is queued. Follow the
+S62 completed its later-attribute comparison and does not justify preferring
+specialist internal features over full logits or existing recipient features on
+that small, annotation-limited panel. The panel is closed. See the
 [current strategy boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 
-Session totals: 1065 apparatus / 0 artifact-bearing code lines
-(98 + 119 + 204 + 207 + 330 + 107), six probe blocks / zero building rounds; S37 has
-two failed attempts, zero scored forwards. Fifteen total scored model forwards,
-no GPU or training. S43 separately inspects32 published responses on16 matched
+Session totals: 1573 apparatus / 0 reusable artifact-bearing code lines
+(98 + 119 + 204 + 207 + 330 + 107 + 286 + 222), eight probe blocks / zero building
+rounds. S37 has two failed attempts, zero scored forwards. There are 555 forward
+calls (including fifteen earlier batched calls), 2400 S58 head optimization steps
+and 45 S62 ridge-reader preparations. No GPU. S43 separately inspects32 published responses on16 matched
 queries without new local inference.
 The user's strategy-only mandate governs; construction is not required to repair
 the ratio. Preserve retained results, source subsets, provenance and negatives.

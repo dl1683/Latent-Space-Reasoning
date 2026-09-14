@@ -1,0 +1,1 @@
+[{"phase":"extract","status":"complete","started_unix":1789407118.1391943,"deadline_seconds":120,"pid":33072,"exit_code":0,"wall_seconds":19.626522600010503},{"phase":"fit","status":"complete","started_unix":1789407169.8116148,"deadline_seconds":120,"pid":42180,"exit_code":0,"wall_seconds":5.46359429997392}]
