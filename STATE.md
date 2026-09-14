@@ -1,7 +1,7 @@
 # STATE
 
 **Research resumed — user direction, 2026-09-14.** Keep the mission fixed and
-pivot approaches around roadblocks. Current evidence reaches S55; no new run is
+pivot approaches around roadblocks. Current evidence reaches S56; no new run is
 selected. The [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary)
 is authoritative for active allocation and closed/deferred episodes.
 

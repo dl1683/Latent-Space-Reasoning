@@ -1,5 +1,14 @@
 # Experiments Log
 
+## S56 feature-to-operation source check — 2026-09-14
+
+One primary report and pinned implementation distinguish behavioral modulation
+from executable grafting. Independent review checks the offered-name scorer,
+live paired-model input and the masked recipient write path. A static wrong-tool
+counterexample is not a model failure rate. No model run, scorer execution, new
+probe block or runner; six blocks/fifteen forwards and1065/0 lines unchanged.
+The canonical S56 section and ledger hold provenance and qualifications.
+
 ## S55 prediction-resource resolution — 2026-09-14
 
 A bounded check identifies a small published species predictor and accessible

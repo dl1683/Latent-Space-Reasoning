@@ -32,7 +32,7 @@ tests strict interchange, not all acquisition. Evidence for one interface is
 local, not a universal law or a finished cumulative system.
 
 **Current evidence boundary:** source and implementation studies now extend
-through S55. They supply concrete trained reasoning, compressed-context reading,
+through S56. They supply concrete trained reasoning, compressed-context reading,
 stitching and separately prepared contributor interfaces. None of the inspected
 results establishes the full repeated-acquisition contract below. Published
 precedents, local results and untested combinations must remain separate.
@@ -266,7 +266,7 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 ## Next-work boundary
 
-**Active allocation, through S55:** strategy/discovery for useful successive
+**Active allocation, through S56:** strategy/discovery for useful successive
 acquisition and composition. No experiment is currently selected. A donor may add
 information, make useful computation accessible, or justify its cost through better
 quality. Connected use and ordinary teaching remain valid; donor removal is the
@@ -286,6 +286,7 @@ An unavailable artifact is a resource limit, not a scientific negative.
 | Consequence retained for later requests | S49 consumer dependency; S52 marginal versus shared-analysis contract; S53 one-query attribution comparison | A competent, affordable consumer of the intended consequence. Credit decode-once structured records. One late query does not establish cross-request consistency. |
 | Changing an accumulated system | S13 admission order; S32 corrections; S50 replay dependency; S54 order/retention source | Useful new behavior and effects on established uses under actual admission histories. Final order robustness, admission-relative BWT and joint retention are different. |
 | Contributed policy revision | S55 global concept-weight edits versus local attribute corrections | Useful held-out edits and collateral effects through a competent consumer. The reviewed source is not a trained local endpoint or a new-specialist acquisition result. |
+| Mapped feature used as an operation | S56 tool-feature scorer and live-input/write-port trace | Requested-action evidence through an actual recipient write port; feature localization and offered-name emission do not establish executable acquisition. |
 
 **Closed or deferred execution boundaries remain binding.** S37 has two failed
 attempts and no third run queued. S43's response slice and S47's direct-remedy panel
@@ -301,7 +302,7 @@ Local accounting remains six probe blocks, fifteen scored model forwards,
 classification. No strategy-phase training or GPU work. A ratio with zero artifact
 lines is undefined; constructing something merely to improve it is prohibited by
 the user's strategy instruction. Source and manual calculations are not model runs.
-Detailed decisions, evidence and historical routing remain in S0–S55 and the ledger.
+Detailed decisions, evidence and historical routing remain in S0–S56 and the ledger.
 
 ## Conditional route choices
 
@@ -5996,3 +5997,72 @@ negative experiment or a prohibition on ordinary readouts in a justified joint u
 The resource check adds zero empirical blocks, forwards or runner lines. The next
 allocation must address a useful operation directly; returning to S42 cannot mean
 repeating its completed cache proof or another generic teaching-target discussion.
+
+### S56. Does a mapped feature transfer an executable operation?
+
+**Question before source inspection.** Return to the user's capability-mapping
+ambition through a concrete proposed operation: making a correct tool call.
+Let R be an established recipient, D a trained tool-use donor, and C an adapter
+learned from their activations. An intervention is not fully specified by a
+feature name or direction: record which model supplies the feature activation,
+where it is written, and whether D is executed on each new request. A joint
+encoder C(h_R(x),h_D(x)) retains donor computation; a prepared recipient-only
+operation C_R(h_R(x)) is a different acquisition claim. Both may be useful.
+
+Inspect one primary report of crosscoder-mediated tool use. The decision is
+whether its tested intervention transfers an executable behavior, merely changes
+formatting, or depends on live donor computation. Test the cheapest confound
+first: donor information entering through the crosscoder's encoder. Compare
+correct execution with valid syntax; inspect prompt/template controls and retained
+recipient uses before interpreting a feature as a modular capability. No new
+model run or generic sparse-feature harness is selected. Geometric dictionaries
+are scaffolding; the denizen needs a move with a demonstrated useful consequence.
+
+
+**One-source result.** [Localizing RL-Induced Tool Use to a Single Crosscoder
+Feature, v1](https://arxiv.org/html/2606.26474v1), sections 3/5/6/7, distinguishes
+steering the already-trained tool model from reconstruction into the base model.
+It reports no format gain in the latter. The authors acknowledge an unoptimized
+prompting baseline and no fresh-sample confirmation of selected steering settings.
+Its reported behavior is not verified execution of requested tools. This source
+supports investigating behavioral modulation, not demonstrated donor-independent
+acquisition or a complete tool-use capability localized to one feature.
+
+**Pinned implementation resolution.** In [sweep_eval.py](https://github.com/Antebe/model_diffing_crosscoders/blob/31a4d3ee09286f5b62536c99d1d399897304d7d1/sweep_eval.py),
+lines 531–538 extract both models' activations on each input before reconstructing
+both streams. This inspected path retains live donor computation. Lines 413–463
+score membership in the offered tool-name list, using substring matching; neither
+intent, arguments, execution nor termination is tested. The two inspected result
+files contain aggregates, not per-prompt continuations permitting corrected grading.
+This is a limit on those artifacts, not a claim that no raw outputs exist elsewhere.
+
+Independent reviewer `alignment_contribution_review` traces a decisive static
+counterexample: with weather and email tools offered, an email name receives the
+maximum score even when weather was requested and arguments/closing tag are absent.
+This is an analytical code trace, not a model output or measured failure frequency.
+It does not show that all observed gains are errors.
+
+**Conditional write-port identity.** Let f be the already selected sparse feature
+vector, M the decoder mask, and d_i^B the recipient decoder direction. The decoded
+recipient is b_B + sum_i f_i M_iB d_i^B. For a donor-exclusive i, the inspected mask
+has M_iB=0. Scaling any such f_i, using valid nonnegative feature indices, after feature
+selection cannot change that decoded recipient. This is an exact implementation diagnostic, not an all-or-none verdict
+on learned behavior. Re-selecting features, changing the mask or teaching a new
+recipient direction would define different operations.
+
+The corresponding code scales post-selection features and decodes the recipient;
+the paper's strong targeted-steering result instead concerns the tool-trained
+model. Do not confuse that within-model intervention with the zero-write path.
+The encoder does not reapply its stored input mask at encoding; the exclusive
+label alone therefore does not establish donor-only feature input. A mapping can
+reveal a donor-associated distinction while deliberately providing no recipient
+write port for it. Shared reconstruction can still affect recipient
+behavior and can still carry live donor information.
+
+**Allocation consequence.** Capability mapping remains a useful research route,
+but nominate a usable read/write operation before adopting a feature's name as a
+graft. A bounded future comparison must measure requested actions and keep the
+prompting remedy, donor runtime and recipient-only alternative explicit. Do not
+reproduce the offered-name metric, build a zero-mask toy, or launch this large
+model pair. No new local probe, forward, training or runner line. No native law
+or intrinsic latent-space hole is established by this source inspection.
