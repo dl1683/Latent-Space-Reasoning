@@ -395,6 +395,139 @@ integrations may be useful while leaving procedure reuse unestablished. The
 native question is whether a common operational language makes the next addition
 less costly without losing distinctions or invalidating established uses.
 
+**Worked allocation after two fresh direction rounds.** Consider a declared
+same-operation replacement: given a graph and source, return minimum unweighted
+hop distances with agreed node correspondence and unreachable convention. This
+is an analytical specialization, not an operation/second-provider replacement
+verified in TransNAR. Equal tensor shapes would not identify this semantic contract.
+Fresh uses are new graphs/sources and declared downstream uses; no implementation
+or clean interpretation module is assumed.
+
+| Recurring obligation | Frozen receiver, new adapter | Receiver adaptation under reusable recipe | Direct structured use |
+|---|---|---|---|
+| Teaching | Charge task labels and paired donor states; state pairs are teacher supervision and require both providers' calls | Charge new targets, teacher calls, replay and selection queries | No answer supervision intrinsically needed **if** a ready adequate decoded port exists; otherwise charge decoder learning |
+| Learning work | Charge all adapter optimization, including backpropagation through a frozen receiver; the adapter can relearn task computation | Charge receiver/adapter updates; reused initialization is a potential saving, not free learning | Charge conversion, calibration and any learned formatting/consumption |
+| Preservation | Recheck selection, indexing, normalization and old/joint uses; charge repairs or retained paths | Same obligations plus update interference and replay | Isolation can preserve old paths, but shared routing/joint uses still require checks |
+| Continuing use | Donor, transfer, adapter/fusion and receiver calls | Donor and adapted hybrid calls | Donor, decoding and downstream computation |
+
+Preserved receiving weights establish parameter reuse, not reuse of interpretation.
+The first dialogue's stronger wording was withdrawn in the second. All adapter
+learning counts; paired hidden states are not supervision-free. Separately report
+initial integration investment and reused donor pretraining, charging new donor
+training when it occurs. A route saves acquisition effort if, on provider additions
+or replacements not used to design its recipe, it reaches matched fresh-use quality
+and old/joint retention with less repeated teaching, optimization or repair. Keep
+resource dimensions separate absent a defensible workload tradeoff; lower teaching
+cost with higher recurring inference is a qualified result. This supports practical
+acquisition savings without needing a mechanistic transplant claim first.
+
+A new operation may require new downstream learning. New facts under the old
+operation, such as added edges, instead require access/import and stale-answer
+invalidation; learning the algorithm again is not intrinsically required. Neither
+case is identified by a new model name or a new embedding dimension. The choice
+from this block is to grant freezing no privileged status and retain direct use
+as the reference route. Missing evidence: a semantically matched second provider,
+a usable interface for each route, and comparative acquisition/retention receipts.
+The existing positive hybrid does not supply those observations. This allocation
+block closes without a run, a new donor search, or further generic definitions.
+
+### S2.3. A concrete retention obligation when the port grows
+
+**Conditional calculation, not an empirical finding.** Freezing receiving weights
+does not preserve old behavior if adding a donor changes the inputs over which
+it normalizes. For a fixed attention query, let the old keys have softmax partition
+sum Z and weighted value average y. Let new keys have sum Z_new and average y_new.
+Concatenating them yields exactly
+
+`y_extended = (Z*y + Z_new*y_new)/(Z + Z_new)`.
+
+Even new **zero values** change this output to `Z*y/(Z+Z_new)` when their keys
+receive positive weight. Uniformly duplicate the entire normalization pool, holding keys/scores/values
+fixed, and y stays unchanged. Duplicating just one donor stream changes its mass
+when other streams share that pool; positional changes also invalidate the
+fixed-key premise. Thus a generic “duplicate-donor”
+control is underspecified: what is duplicated, and what mass or prior should that
+represent? This elementary softmax calculation is ordinary scaffolding, not a
+new law of learned latent space or a statement that every hybrid uses this design.
+A downstream decision may remain unchanged despite the local difference.
+
+The acquisition choice it changes is concrete: preserve the old input path,
+exclude inactive donor keys from its normalization, use an explicitly separate
+branch, or learn and validate a new selection policy. Zero-gating a separate
+new branch can preserve the old path at initialization under its stated wiring;
+it does not guarantee retention after training or on newly combined uses. None
+of these caller-supplied safeguards establishes discovered latent structure.
+If integration claims old behavior survives because weights are frozen, check
+routing, normalization and visible donor multiplicity as well as parameter hashes.
+Matched constant/irrelevant ports belong in the corresponding growth comparison.
+The unresolved learned question is which uses can share a receiving interface
+without extra calibration or harmful changes, and whether an operational map
+predicts that economically before a new integration is trained. No run selected.
+
+### S2.4. Decision question before further source inspection
+
+**Proposition attempt, unestablished:** a task-conditioned description of donor
+behavior can reduce the total cost of selecting and integrating a useful donor,
+relative to directly trying candidate integrations under the same recipe. The
+action served is donor selection before costly adaptation, not predicting responses
+for their own sake. The description and its labels/queries/computation must be
+charged. It cannot be judged by reusing the donor/task cases that designed it.
+
+A predictor of final task accuracy after one fixed adaptation budget is not yet
+a predictor of supervision or computation needed to reach a quality/retention
+threshold. Both can inform acquisition, but they change different choices.
+Likewise model-level transfer potential does not identify a causal capability
+module or show that old/joint uses survive. Before inventing a metric, inspect
+existing transferability estimation for exactly these targets and data permissions.
+This selects a bounded primary-source question, not a model or computation run.
+
+**Source check, 2026-09-14.** You et al., *LogME*, ICML 2021,
+[official paper](https://proceedings.mlr.press/v139/you21b/you21b.pdf),
+§§3–6, estimate transfer suitability from fixed pretrained features and labeled
+target examples. A Bayesian linear readout marginalizes weights and optimizes
+evidence hyperparameters. Experiments compare scores with downstream performance;
+the vision fine-tuning comparison searches learning rate and weight decay,
+whereas language comparisons use published fine-tuning results. Scoring avoids
+backbone fine-tuning, but requires feature extraction and labels. The timing
+comparison concerns assessing candidates against fine-tuning with hyperparameter
+search, not eliminating adaptation of the selected model. The authors explicitly
+identify static pre-adaptation features as a limitation. This is useful selection
+evidence, not a measurement of integration time to a retention-constrained target.
+
+Achille et al., *Task2Vec*, ICCV 2019,
+[main paper](https://openaccess.thecvf.com/content_ICCV_2019/papers/Achille_Task2Vec_Task_Embedding_for_Meta-Learning_ICCV_2019_paper.pdf),
+§§3–4.2, and [supplement](https://openaccess.thecvf.com/content_ICCV_2019/supplemental/Achille_Task2Vec_Task_Embedding_ICCV_2019_supplemental.pdf),
+§§3–4.3, describe labeled tasks through a shared pretrained probe: fit a classifier
+and estimate a diagonal Fisher description averaged by convolutional filter.
+The principal selection endpoint is expert classification after training a new
+linear head. Task distances guide selection; MODEL2VEC additionally learns model
+offsets from measured performance on other tasks. Its leave-one-task-out protocol
+withholds the target task's performance supervision, not an entire expert family.
+Probe fitting, labels and upstream library/performance construction count as
+resources. The main/supplement Mixed task counts differ, so no count-based claim
+is imported here. These results support selecting useful experts, not cumulative
+integration or retention; the description depends on the probe and task, rather
+than being an intrinsic inventory of a donor's capabilities.
+
+**Our inference and decision.** Both precedents make model selection a credible
+use of a representation description. Neither inspected protocol measures the
+added contribution to an already capable receiver under repeated acquisition.
+High standalone suitability can be redundant with what that receiver already
+does. Conversely a donor poor at the whole task can supply a missing operation.
+S19's receiver-conditioned probing addresses accessible predictive information
+under a declared readout family; it does not by itself estimate the learning,
+retention repair or continuing calls needed by a different integration recipe.
+Subtracting standalone scores does not establish that missing comparison.
+
+The prospective map must therefore be evaluated against an action: which
+**donor and permitted integration recipe** to try, at what budget, for this
+receiver and fresh-use obligation. A descriptor can be useful without being
+native mathematics; that stronger claim would require stable operational
+relations across presentations and interventions. No new metric or run is
+selected from these papers. The next design question is whether a small amount
+of receiver-conditioned evidence can change that acquisition decision more
+cheaply than direct trial, including the cost of gathering the evidence itself.
+
 ### S3. Primary-source map: what can already be reused?
 
 Read on 2026-09-13. These are externally reported results, not project

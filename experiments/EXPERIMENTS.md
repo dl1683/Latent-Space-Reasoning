@@ -1,6 +1,6 @@
 # Experiments Log
 
-## Autonomous conditional continuation — design locked, 2026-09-13
+## Autonomous conditional continuation — audited local closure, 2026-09-13
 
 Canonical S26 specifies one bounded CPU strategy diagnostic after two fresh real
 CLI direction rounds. All retained variant rows consistently reconstruct four

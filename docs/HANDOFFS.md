@@ -85,6 +85,16 @@ startup; an external 180-second process wait also returned normally. Exact recei
 and the correction of the audit prose's runtime transcription are in the ledger.
 No next run is selected. Preserve the broader capability-composition objective.
 
+**Acquisition-effort and selection boundary (S2.2–S2.4):** two fresh strategy
+rounds remove privileged status from freezing: paired states are teaching data,
+and adapter learning can repeat task computation. A conditional softmax calculation
+shows that growing the normalized input pool can change old behavior despite
+fixed weights. LogME and Task2Vec supply positive prior art for expert selection,
+but the inspected protocols do not measure marginal integration value to an
+existing receiver or effort to reach quality with old/joint retention. The next
+strategy dialogue asks when a task-conditioned descriptor changes donor-plus-recipe
+allocation more cheaply than a small direct trial. No predictor or run selected.
+
 Session totals: 628 apparatus / 0 artifact-bearing code lines (98 + 119 + 204 + 207),
 four probes / zero building rounds, fifteen model forwards, no GPU or training.
 The user's strategy-only mandate governs; construction is not required to repair
