@@ -32,7 +32,7 @@ tests strict interchange, not all acquisition. Evidence for one interface is
 local, not a universal law or a finished cumulative system.
 
 **Current evidence boundary:** source and implementation studies now extend
-through S49. They supply concrete trained reasoning, compressed-context reading,
+through S50. They supply concrete trained reasoning, compressed-context reading,
 stitching and separately prepared contributor interfaces. None of the inspected
 results establishes the full repeated-acquisition contract below. Published
 precedents, local results and untested combinations must remain separate.
@@ -41,7 +41,7 @@ precedents, local results and untested combinations must remain separate.
 |---|---|---|
 | Use a pretrained contributor in another computation | External constructive interfaces and joint-use precedent, S28/S30/S39/S40 | Local useful donor contribution under an adequate joint task and serious direct control |
 | Reason using retained representations under later questions | Prepared compressed-context consumer and its released conditioning path, S49 | A predicted donor-response export usable by that consumer; independent-donor memory composition |
-| Add useful B while retaining established A | Retention definitions, correction policy and ingredient-versus-composition counterexample, S7/S8/S13/S32 | Observed before/after behavior of one persistently growing system |
+| Add useful B while retaining established A | External semantic/spatial merger with original-task evaluations, S50; retention constraints, S7/S8/S13/S32 | Local useful acquisition; donor-matched semantic retention and joint-operation attribution in the reference episode |
 | Add C while reusing earlier preparation | Incremental-learning comparators and separately prepared interface precedent, S28-S31/S40 | An observed later acquisition with charged repair and retained A/B/joint uses |
 | Retire a donor while retaining useful fresh-input behavior | Folded-transfer precedent and concrete teaching recipes, S30/S42/S49 | This project's demonstrated donor-independent acquisition; cached answers alone are insufficient |
 | Discover effective native latent mathematics | Conditional operational constraints and scoped empirical diagnostics | A law predicting useful interventions or composition in real learned spaces beyond the tested scaffolding |
@@ -302,12 +302,13 @@ explicitly unable to read local files. The third review inspected the final lock
 and runner and conditionally justified one bounded CPU execution after concrete
 supervisor, tokenizer/alignment, checkpointing and reporting corrections.
 
-**Current allocation after S49 consolidation.** The next consequential commitment
-is an acquisition episode with a specific prior operation A, a new contribution B,
-and a useful joint request. A repeated question about one saved export is a memory-
-reuse test; it does not by itself test successive capability acquisition. Naming A
-is not enough: its claimed adequacy must be supported before retention can be read
-from a before/after comparison. No eligible local episode is selected yet.
+**Current allocation after S50 source review.** The concrete reference episode
+combines spatial masking A and semantic recognition B into category-conditioned
+segmentation. Original-task evaluations and joint behavior make this an acquisition
+precedent; teacher, prompt and resolution mismatches limit attribution. Next study
+preserving the achieved interaction during another admission, including the prompts
+that B supplies to A. No local model run or reproduction is selected. Repeated
+questions over one saved export remain distinct from successive acquisition.
 
 The recent investigations change three choices:
 
@@ -336,7 +337,7 @@ parked; unavailable real CLI audits do not block independent strategy reviews.
 Do not reopen closed probes, add a theorem section or construct a new apparatus
 merely to fill the missing episode. Preserve the full acquisition objective while
 making the next candidate decision concrete. Source/decision chronology remains
-in S38-S49, NOTEBOOK and the ledger; this boundary controls live allocation.
+in S38-S50, NOTEBOOK and the ledger; this boundary controls live allocation.
 
 ## Conditional route choices
 
@@ -5304,3 +5305,150 @@ external text teaching plus dynamically produced shared-model targets. Independe
 round-two review confirms the distinction and closure. Stop this availability
 branch without more code search or a substitute implementation; retain its
 complete trained-recipe and no-alignment multitask comparison as research assets.
+
+### S50. A concrete encoder acquisition episode: recognition and segmentation
+
+**Episode to inspect, before source reading.** An initial segmentation system A
+produces spatial masks. A semantic recognition donor B contributes category/text
+meaning. A joint request asks which pixels belong to a named category, while the
+system must retain its earlier spatial operation and the donor's semantic use.
+Inspect SAM-CLIP as one proposed model-merging episode for those roles. Determine
+what is actually trained, retained and evaluated before adopting its claims.
+This is a prospective source contract, not a statement that every listed capability
+has already been demonstrated or that the merged model is available locally.
+
+This targets a persistent encoder's before/after uses, rather than repeated
+queries about one saved response. It does not reopen S34's deferred image-generation
+and scene-evaluator proposal. No model loading, dataset download, segmentation
+benchmark or checkpoint diagnostic is selected. A complete useful merge may still
+require substantial training; acquisition cost and any original-task degradation
+belong in the result. A second donor addition remains a separate cumulative claim.
+
+**Source result, not a local experiment.** [Final CVPRW paper](https://openaccess.thecvf.com/content/CVPR2024W/ELVM/papers/Wang_SAM-CLIP_Merging_Vision_Foundation_Models_Towards_Semantic_and_Spatial_Understanding_CVPRW_2024_paper.pdf),
+sections 3–4/Tables 1/5: SAM-CLIP distills semantic embeddings into a spatial
+backbone while replaying spatial masks. Training uses 40.8M images, head preparation,
+joint updates and optional resolution adaptation; this is not training-free.
+Box-prompt segmentation changes from 41.2 to 40.9 COCO mAP and 36.8 to 35.0 LVIS
+mAP. The semantic teacher is CLIP-L/14, while Table 1 compares CLIP-B; these are
+not actual-donor semantic-retention measurements. The donor image encoder is
+replaced at inference; its text encoder remains. Table 5 reports VOC mIoU
+60.6 for the semantic head at 448px and 66.0 for both heads at 1024px.
+
+[Author v4 appendix](https://arxiv.org/html/2310.15308v4), B/C: refinement consumes
+the coarse semantic mask and sampled points. The illustrated original-SAM
+comparison receives the points. The direct proposal/classification pipeline uses
+CLIP-B and reports 27.2 VOC mIoU. Neither comparison isolates the merger from
+all prompt, teacher and resolution differences. No second acquisition is reported.
+Root manually inspected published Figure 3 and Table 1 crops to check the source;
+this is not local output-quality evidence.
+
+**Operational interpretation.** Let the existing operation be
+\(A(x,g)\to m\): image plus geometric prompt to spatial mask. Let the acquired
+operation be \(B(x,t)\to\tilde m\): image plus category request to a semantic
+mask estimate. The joint operation feeds \(\Gamma(\tilde m)\), containing a
+coarse mask and points, into the spatial refiner. These symbols describe callable
+behavior, not presumed isolated capability regions. The meaningful new ability
+is selecting and refining what a category refers to in an image. An instance
+mask and a mask covering every instance of a class are different requests.
+
+The existing operation now encounters prompts produced by the new operation.
+Its adequacy on old geometric prompts cannot settle adequacy on this new prompt
+distribution. Conversely, failure on the new distribution would not erase old-task
+retention. This is S5/S8/S13's contextual support requirement instantiated in a
+real acquisition episode, not a new abstract theorem. The native object is the
+meaning and legal continuation of a selection, including its spatial granularity;
+cosine distillation is scaffolding and does not supply that operational law.
+
+**Decision-changing controls, not queued runs.** First compare the old and merged
+spatial refiners on exactly the same coarse masks and points from the acquired
+semantic head. This isolates refiner compatibility conditional on that head; it
+does not compare whole acquisition routes. Separately, use the actual semantic
+donor in a competent direct pipeline, and compare heads at matched resolution
+and adaptation. Report old-task degradation separately from the new joint benefit;
+neither zero degradation nor lower cost is required for every useful acquisition.
+Before a later C addition, retain the achieved A, B and joint behaviors as the
+reference, including requests generated by B. Ingredient-only replay is not an
+assurance that their acquired interaction survives.
+
+**Allocation.** Adopt this as the concrete reference acquisition episode. Do not
+reproduce its training locally. Next resolve how preservation of a new interaction
+could be checked or maintained during another admission, using this episode's
+actual interfaces. No additional geometry diagnostic or broad paper catalog is
+selected. Independent source review by `intervention_value_review` used author
+v3; root checked final main text and v4 appendices separately. Final PDF custody:
+SHA256 `74d2b3bdb6e8ade5690f2a93a4a426b735716409b6ee6b5a5fa1b664b8177258`,
+7,007,345 bytes, 13 pages; the final PDF does not include the author appendices.
+
+**Matched-guidance interface check.** The [original spatial predictor](https://github.com/facebookresearch/segment-anything/blob/dca509fe793f601edb92606367a655c15ac00fdf/segment_anything/predictor.py)
+accepts both point prompts and a dense mask input, with the documented mask shape
+1×256×256. Thus the original branch is not restricted to points-only by its API.
+The source comparison does not establish the matched-guidance result. A competent
+comparison must preserve image geometry, padding, logit conventions and mask
+selection, while each spatial path uses its own image encoder. Swapping only a
+decoder onto the other backbone would introduce an unvalidated latent interface.
+This closes the narrow expressibility check: no implementation hunt or execution
+follows. Predictor custody: revision `dca509fe793f601edb92606367a655c15ac00fdf`,
+11,649 bytes, SHA256
+`ab66c29ac0b5b204d23997ef49d8a2476f71b596ce97e35efbf116cfc2118fce`.
+
+**Replay-source decision (worked proposal, no training).** The two-round approach
+review by `resumed_frontier_adversary` rejects another generic retention checklist.
+Instead compare replaying the original spatial/semantic teachers with replaying
+those teachers **plus the achieved joint service** during a later admission.
+The first protects ingredients on their respective training inputs. The second
+can directly teach an interaction that became available after the first acquisition.
+Neither its necessity nor its benefit is established here.
+
+The concrete service has a further dependency: its final pixel labels compare
+scores across a requested class vocabulary, not just an isolated category. Write
+\(J_0(x,V;\omega)\) for the achieved AB segmentation on image \(x\), vocabulary
+\(V\) (including its background convention), and point-sampling randomness
+\(\omega\). Preserve text-template aggregation, preprocessing and output conventions
+as part of that request. A replay record can contain \((x,V,y_0)\), where
+\(y_0=J_0(x,V;\omega)\), plus sampling provenance. The new system receives
+\((x,V)\) and must generate its **own** coarse masks, prompts and refined output.
+Feeding it the old coarse mask instead tests a conditional continuation only.
+
+The existing unlabeled image pool supplies candidate \(x\), but the image-level
+semantic distillation loss does not itself supply a distribution over \(V\).
+Class names can be chosen without new human mask annotations; choosing the query
+support is additional preparation, not an automatic property of the images.
+Use declared training images and request families, with evaluation held out for
+the intended generalization claim. Retaining one fixed vocabulary does not establish
+retention under arbitrary categories or vocabulary changes. Absence/background
+cases and a mask with no point above the sampling threshold need an explicit
+service convention before target generation; no source failure is inferred.
+
+A possible additional target loss is pixel cross-entropy
+\(\mathbb E_{(x,V)}[-\sum_u\log p_\theta(y_0(u)\mid x,V,u)]\), where
+\(p_\theta\) uses the updated system's final class scores before hard argmax.
+This is ordinary pseudo-label distillation proposed for the complete service,
+not a new native law or a guarantee that the recipe works. Hard point selection
+can interrupt gradient paths: final loss does not automatically teach every
+internal decision. A differentiable coarse-mask path, a separate intermediate
+target or another learning procedure would need an explicit choice before fitting.
+
+One cached mask represents one sampled outcome, not the full stochastic service.
+Declare a deterministic reference and student sampling policy, or target an
+expectation/distribution over their randomness. Ordinary within-system sampling
+variation belongs beside any claimed degradation. Independent proposal review by
+`alignment_contribution_review` also identifies the cheapest training confound:
+extra joint targets provide extra optimization work. An equal-total-budget
+ingredient-replay arm is needed before crediting joint-target content for a gain.
+Matching final targets preserves behavior on that support, not internal mechanism.
+
+Frozen AB targets can be generated once on a finite declared replay panel and
+stored; or AB can be retained as an online teacher. Charge target generation,
+teacher storage/runtime, student work and any repairs separately. This is a
+training dependency, not proof of donor retirement for the deployed service.
+Teacher outputs preserve achieved behavior, including errors; verified corrections
+must remain possible under the earlier S32 migration policy. Measure actual task
+quality and degradation separately from agreement with the teacher.
+
+**Resolved boundary:** protecting the achieved interaction is expressible without
+new human segmentation labels, conditional on access to the trained AB system,
+images and a deliberately selected request distribution. The image-only recipe
+does not already contain that request coverage. No C capability, replay panel,
+loss implementation or training run is selected. The remaining investment question
+is which useful next contribution would expose a consequential retention tradeoff,
+not whether another generic replay framework can be written.

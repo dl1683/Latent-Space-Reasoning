@@ -2,6 +2,12 @@
 
 ## Strategy/discovery checkpoint and history — 2026-09-14
 
+S50 now supplies the concrete reference episode: semantic acquisition into a
+spatial model, old-task evaluations and useful joint behavior. Attribution is
+limited by unmatched guidance, semantic comparator and resolution. The next
+question concerns retaining the achieved interaction during another admission;
+original-input retention alone does not settle that. No local reproduction.
+
 **Latest user restart, 2026-09-14:** mission fixed, approach flexible. S37 and its
 unavailable CLI audit are parked. S38 now separates donor target construction,
 student intervention training, pretrained contribution and mechanism interpretation.

@@ -72,8 +72,8 @@ startup; an external 180-second process wait also returned normally. Exact recei
 and the correction of the audit prose's runtime transcription are in the ledger.
 This completed probe is not reopened. Preserve the broader capability-composition objective.
 
-**Active decision:** a concrete acquisition episode must identify supported prior
-operation A, useful new contribution B, and their useful joint behavior. The current
+**Active decision:** S50 supplies a concrete semantic/spatial acquisition reference;
+next examine retaining its achieved interaction through another admission. The current
 source alternatives and closed branches are consolidated in the [live boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 Memory reuse alone does not establish successive capability acquisition. Useful
 information, computation, accessibility and effort are legitimate benefits; new

@@ -1,5 +1,20 @@
 # Experiments Log
 
+## S50 concrete acquisition reference — 2026-09-14
+
+Source study of a semantic/spatial merger identifies original-operation retention
+measurements and a useful joint behavior, with teacher, prompt and resolution
+confounds limiting attribution. The original spatial API accepts dense masks as
+well as points; matching that guidance is expressible but untested in this study.
+Canonical S50 retains final-paper custody, separately identified author appendices,
+the pinned predictor interface and independent review provenance. This is a source
+result, not a local empirical block. Six blocks, fifteen scored model forwards,
+1065 apparatus /0 artifact-bearing lines remain unchanged. No reproduction selected.
+The worked replay-source proposal finds that unlabeled images can support generated
+joint-service targets only after selecting vocabulary/request support and a sampling
+policy. The student must run its own path. Equal-budget ingredient replay is the
+comparison; no training or new empirical block follows from this derivation.
+
 ## Mission-coverage consolidation — 2026-09-14
 
 Current map and routing consolidated through S49; no new empirical block. Earlier

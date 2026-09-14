@@ -18,9 +18,10 @@ This is the current application of the philosophy, not a replacement for it. We 
 
 Candidate evidence starts with A in a base system, B in a donor, acquisition of useful B behavior with A retained, and held-out tasks requiring both. Further acquisitions test cumulative growth; donor removal is a separate assimilation branch. Relevant controls include simple routing, direct evidence forwarding, structured readouts, retrieval and matched learning budgets. Acquisition and recurring inference costs are counted separately. Current work is autonomous strategy/discovery; definitions, sources and bounded probe results live in the canonical direction's strategy notebook.
 
-**Current research allocation:** make one acquisition episode concrete: an
-established operation A, a new useful contribution B, and joint use with earlier
-behavior retained. Source studies provide connected interfaces, compressed-memory
+**Current research allocation:** S50 studies a published merger of semantic
+recognition and spatial masking as a concrete acquisition reference. Next examine
+how its achieved interaction could survive another addition. No local reproduction
+is selected. Source studies also provide connected interfaces, compressed-memory
 consumers and trained continuous-reasoning recipes as alternatives. Their existence
 does not establish cumulative acquisition. A donor can add useful information,
 make computation accessible or reduce effort. See the [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).

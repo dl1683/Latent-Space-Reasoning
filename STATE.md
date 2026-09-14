@@ -1,10 +1,10 @@
 # STATE
 
 **Research resumed — latest user direction, 2026-09-14.** Keep the mission
-fixed and pivot around roadblocks. Current source work reaches S49: a prepared
-compressed-context consumer can accept later questions, while a response-
-reconstruction export does not automatically supply that operation. Connecting
-response prediction to such a consumer remains an untested acquisition route.
+fixed and pivot around roadblocks. Current source work reaches S50: a published
+semantic/spatial merger supplies a concrete acquisition reference with original-task
+evaluations and joint use. Its attribution limits and the next interaction-retention
+question are recorded in the canonical direction. No local reproduction is selected.
 The S47 real-data panel is closed with a sufficient direct lexical remedy.
 S37 and its incomplete real CLI audit remain parked; neither blocks strategy.
 No new model run, acquired capability or intrinsic latent-space failure is claimed.
@@ -84,9 +84,10 @@ startup; an external 180-second process wait also returned normally. Exact recei
 and the correction of the audit prose's runtime transcription are in the ledger.
 This completed probe is not reopened. Preserve the broader capability-composition objective.
 
-**Active decision:** select a concrete acquisition episode with supported prior
-operation A, useful new contribution B, and a joint use that preserves established
-behavior. Repeated questions over one memory are not successive acquisition.
+**Active decision:** use S50's semantic/spatial acquisition as the reference episode
+and investigate preservation of its achieved interaction during another admission.
+Old-operation prompts and prompts produced by the acquired operation need separate
+coverage. Repeated questions over one memory are not successive acquisition.
 S40 supplies a connected-use precedent; S49 supplies a later-question memory
 consumer and a complete trained-reasoning comparator. Their unresolved combination
 is not a selected architecture. Useful contribution may be information, computation,
