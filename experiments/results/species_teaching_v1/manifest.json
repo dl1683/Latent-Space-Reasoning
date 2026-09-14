@@ -1,0 +1,1299 @@
+{
+  "seed": 20260914,
+  "mirror_revision": "8a8486039c718e33d87b96ed42c0f457e6a7d939",
+  "classes": [
+    89,
+    106,
+    120,
+    160,
+    171,
+    189
+  ],
+  "class_names": [
+    "089.Hooded_Merganser",
+    "106.Horned_Puffin",
+    "120.Fox_Sparrow",
+    "160.Black_throated_Blue_Warbler",
+    "171.Myrtle_Warbler",
+    "189.Red_bellied_Woodpecker"
+  ],
+  "rows": [
+    {
+      "id": 5147,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0015_79132.jpg"
+    },
+    {
+      "id": 5148,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0049_79136.jpg"
+    },
+    {
+      "id": 5149,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0085_79146.jpg"
+    },
+    {
+      "id": 5151,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0061_796723.jpg"
+    },
+    {
+      "id": 5153,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0053_796728.jpg"
+    },
+    {
+      "id": 5155,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0021_796732.jpg"
+    },
+    {
+      "id": 5159,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0057_796742.jpg"
+    },
+    {
+      "id": 5163,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0013_796754.jpg"
+    },
+    {
+      "id": 5164,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0066_796755.jpg"
+    },
+    {
+      "id": 5171,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0058_796770.jpg"
+    },
+    {
+      "id": 5172,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0036_796771.jpg"
+    },
+    {
+      "id": 5173,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0083_796773.jpg"
+    },
+    {
+      "id": 5174,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0090_796774.jpg"
+    },
+    {
+      "id": 5176,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0024_796779.jpg"
+    },
+    {
+      "id": 5180,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0078_78959.jpg"
+    },
+    {
+      "id": 5184,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0084_78954.jpg"
+    },
+    {
+      "id": 5185,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0075_78977.jpg"
+    },
+    {
+      "id": 5187,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0040_78984.jpg"
+    },
+    {
+      "id": 5194,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0059_79016.jpg"
+    },
+    {
+      "id": 5200,
+      "label": 0,
+      "class_id": 89,
+      "split": "train",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0070_79054.jpg"
+    },
+    {
+      "id": 5150,
+      "label": 0,
+      "class_id": 89,
+      "split": "test",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0022_79153.jpg"
+    },
+    {
+      "id": 5156,
+      "label": 0,
+      "class_id": 89,
+      "split": "test",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0007_79157.jpg"
+    },
+    {
+      "id": 5167,
+      "label": 0,
+      "class_id": 89,
+      "split": "test",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0071_796760.jpg"
+    },
+    {
+      "id": 5178,
+      "label": 0,
+      "class_id": 89,
+      "split": "test",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0002_796781.jpg"
+    },
+    {
+      "id": 5183,
+      "label": 0,
+      "class_id": 89,
+      "split": "test",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0087_78972.jpg"
+    },
+    {
+      "id": 5186,
+      "label": 0,
+      "class_id": 89,
+      "split": "test",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0018_78979.jpg"
+    },
+    {
+      "id": 5188,
+      "label": 0,
+      "class_id": 89,
+      "split": "test",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0092_78989.jpg"
+    },
+    {
+      "id": 5198,
+      "label": 0,
+      "class_id": 89,
+      "split": "test",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0064_79040.jpg"
+    },
+    {
+      "id": 5199,
+      "label": 0,
+      "class_id": 89,
+      "split": "test",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0020_79046.jpg"
+    },
+    {
+      "id": 5205,
+      "label": 0,
+      "class_id": 89,
+      "split": "test",
+      "path": "089.Hooded_Merganser/Hooded_Merganser_0072_78973.jpg"
+    },
+    {
+      "id": 6146,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0024_100620.jpg"
+    },
+    {
+      "id": 6149,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0055_100882.jpg"
+    },
+    {
+      "id": 6154,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0040_100891.jpg"
+    },
+    {
+      "id": 6156,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0034_100895.jpg"
+    },
+    {
+      "id": 6166,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0082_100876.jpg"
+    },
+    {
+      "id": 6167,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0072_100938.jpg"
+    },
+    {
+      "id": 6169,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0066_100877.jpg"
+    },
+    {
+      "id": 6171,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0062_100693.jpg"
+    },
+    {
+      "id": 6172,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0007_100699.jpg"
+    },
+    {
+      "id": 6175,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0001_100973.jpg"
+    },
+    {
+      "id": 6178,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0030_100725.jpg"
+    },
+    {
+      "id": 6180,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0033_100731.jpg"
+    },
+    {
+      "id": 6181,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0004_100733.jpg"
+    },
+    {
+      "id": 6185,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0028_100765.jpg"
+    },
+    {
+      "id": 6186,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0022_100766.jpg"
+    },
+    {
+      "id": 6188,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0056_101030.jpg"
+    },
+    {
+      "id": 6189,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0078_100777.jpg"
+    },
+    {
+      "id": 6190,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0021_100780.jpg"
+    },
+    {
+      "id": 6194,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0081_101054.jpg"
+    },
+    {
+      "id": 6196,
+      "label": 1,
+      "class_id": 106,
+      "split": "train",
+      "path": "106.Horned_Puffin/Horned_Puffin_0031_100804.jpg"
+    },
+    {
+      "id": 6150,
+      "label": 1,
+      "class_id": 106,
+      "split": "test",
+      "path": "106.Horned_Puffin/Horned_Puffin_0074_100886.jpg"
+    },
+    {
+      "id": 6159,
+      "label": 1,
+      "class_id": 106,
+      "split": "test",
+      "path": "106.Horned_Puffin/Horned_Puffin_0027_100906.jpg"
+    },
+    {
+      "id": 6160,
+      "label": 1,
+      "class_id": 106,
+      "split": "test",
+      "path": "106.Horned_Puffin/Horned_Puffin_0071_100651.jpg"
+    },
+    {
+      "id": 6161,
+      "label": 1,
+      "class_id": 106,
+      "split": "test",
+      "path": "106.Horned_Puffin/Horned_Puffin_0054_100915.jpg"
+    },
+    {
+      "id": 6164,
+      "label": 1,
+      "class_id": 106,
+      "split": "test",
+      "path": "106.Horned_Puffin/Horned_Puffin_0059_100925.jpg"
+    },
+    {
+      "id": 6165,
+      "label": 1,
+      "class_id": 106,
+      "split": "test",
+      "path": "106.Horned_Puffin/Horned_Puffin_0077_100671.jpg"
+    },
+    {
+      "id": 6173,
+      "label": 1,
+      "class_id": 106,
+      "split": "test",
+      "path": "106.Horned_Puffin/Horned_Puffin_0069_101018.jpg"
+    },
+    {
+      "id": 6198,
+      "label": 1,
+      "class_id": 106,
+      "split": "test",
+      "path": "106.Horned_Puffin/Horned_Puffin_0010_100771.jpg"
+    },
+    {
+      "id": 6199,
+      "label": 1,
+      "class_id": 106,
+      "split": "test",
+      "path": "106.Horned_Puffin/Horned_Puffin_0073_100830.jpg"
+    },
+    {
+      "id": 6200,
+      "label": 1,
+      "class_id": 106,
+      "split": "test",
+      "path": "106.Horned_Puffin/Horned_Puffin_0026_100937.jpg"
+    },
+    {
+      "id": 6971,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0041_115218.jpg"
+    },
+    {
+      "id": 6974,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0010_114728.jpg"
+    },
+    {
+      "id": 6979,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0044_114747.jpg"
+    },
+    {
+      "id": 6980,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0093_114757.jpg"
+    },
+    {
+      "id": 6983,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0092_114774.jpg"
+    },
+    {
+      "id": 6984,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0122_114776.jpg"
+    },
+    {
+      "id": 6987,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0009_114796.jpg"
+    },
+    {
+      "id": 6988,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0116_115311.jpg"
+    },
+    {
+      "id": 6989,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0055_114809.jpg"
+    },
+    {
+      "id": 6993,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0109_114859.jpg"
+    },
+    {
+      "id": 6998,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0118_114884.jpg"
+    },
+    {
+      "id": 7001,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0113_114389.jpg"
+    },
+    {
+      "id": 7002,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0104_114908.jpg"
+    },
+    {
+      "id": 7004,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0012_115324.jpg"
+    },
+    {
+      "id": 7014,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0119_115512.jpg"
+    },
+    {
+      "id": 7021,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0025_114555.jpg"
+    },
+    {
+      "id": 7023,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0078_114582.jpg"
+    },
+    {
+      "id": 7024,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0138_114586.jpg"
+    },
+    {
+      "id": 7028,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0110_115172.jpg"
+    },
+    {
+      "id": 7029,
+      "label": 2,
+      "class_id": 120,
+      "split": "train",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0124_114662.jpg"
+    },
+    {
+      "id": 6972,
+      "label": 2,
+      "class_id": 120,
+      "split": "test",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0106_114720.jpg"
+    },
+    {
+      "id": 6976,
+      "label": 2,
+      "class_id": 120,
+      "split": "test",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0135_115251.jpg"
+    },
+    {
+      "id": 6982,
+      "label": 2,
+      "class_id": 120,
+      "split": "test",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0026_115281.jpg"
+    },
+    {
+      "id": 6996,
+      "label": 2,
+      "class_id": 120,
+      "split": "test",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0057_114355.jpg"
+    },
+    {
+      "id": 7009,
+      "label": 2,
+      "class_id": 120,
+      "split": "test",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0018_114468.jpg"
+    },
+    {
+      "id": 7012,
+      "label": 2,
+      "class_id": 120,
+      "split": "test",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0083_114496.jpg"
+    },
+    {
+      "id": 7015,
+      "label": 2,
+      "class_id": 120,
+      "split": "test",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0040_115034.jpg"
+    },
+    {
+      "id": 7018,
+      "label": 2,
+      "class_id": 120,
+      "split": "test",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0067_114528.jpg"
+    },
+    {
+      "id": 7019,
+      "label": 2,
+      "class_id": 120,
+      "split": "test",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0054_114541.jpg"
+    },
+    {
+      "id": 7027,
+      "label": 2,
+      "class_id": 120,
+      "split": "test",
+      "path": "120.Fox_Sparrow/Fox_Sparrow_0015_114650.jpg"
+    },
+    {
+      "id": 9357,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0121_161418.jpg"
+    },
+    {
+      "id": 9358,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0081_161427.jpg"
+    },
+    {
+      "id": 9365,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0036_161517.jpg"
+    },
+    {
+      "id": 9367,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0106_161523.jpg"
+    },
+    {
+      "id": 9371,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0133_161539.jpg"
+    },
+    {
+      "id": 9372,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0123_161542.jpg"
+    },
+    {
+      "id": 9373,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0006_161557.jpg"
+    },
+    {
+      "id": 9374,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0073_161558.jpg"
+    },
+    {
+      "id": 9376,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0024_161619.jpg"
+    },
+    {
+      "id": 9381,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0010_161169.jpg"
+    },
+    {
+      "id": 9382,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0060_161644.jpg"
+    },
+    {
+      "id": 9387,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0061_161667.jpg"
+    },
+    {
+      "id": 9391,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0005_161168.jpg"
+    },
+    {
+      "id": 9393,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0130_161682.jpg"
+    },
+    {
+      "id": 9394,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0053_161684.jpg"
+    },
+    {
+      "id": 9400,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0037_161707.jpg"
+    },
+    {
+      "id": 9404,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0137_161207.jpg"
+    },
+    {
+      "id": 9405,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0126_161724.jpg"
+    },
+    {
+      "id": 9406,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0063_161213.jpg"
+    },
+    {
+      "id": 9408,
+      "label": 3,
+      "class_id": 160,
+      "split": "train",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0016_161216.jpg"
+    },
+    {
+      "id": 9352,
+      "label": 3,
+      "class_id": 160,
+      "split": "test",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0129_161399.jpg"
+    },
+    {
+      "id": 9355,
+      "label": 3,
+      "class_id": 160,
+      "split": "test",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0113_161407.jpg"
+    },
+    {
+      "id": 9356,
+      "label": 3,
+      "class_id": 160,
+      "split": "test",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0119_161416.jpg"
+    },
+    {
+      "id": 9377,
+      "label": 3,
+      "class_id": 160,
+      "split": "test",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0085_161621.jpg"
+    },
+    {
+      "id": 9378,
+      "label": 3,
+      "class_id": 160,
+      "split": "test",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0100_161622.jpg"
+    },
+    {
+      "id": 9380,
+      "label": 3,
+      "class_id": 160,
+      "split": "test",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0072_161636.jpg"
+    },
+    {
+      "id": 9389,
+      "label": 3,
+      "class_id": 160,
+      "split": "test",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0102_161161.jpg"
+    },
+    {
+      "id": 9396,
+      "label": 3,
+      "class_id": 160,
+      "split": "test",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0127_161176.jpg"
+    },
+    {
+      "id": 9403,
+      "label": 3,
+      "class_id": 160,
+      "split": "test",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0086_161716.jpg"
+    },
+    {
+      "id": 9407,
+      "label": 3,
+      "class_id": 160,
+      "split": "test",
+      "path": "160.Black_throated_Blue_Warbler/Black_Throated_Blue_Warbler_0110_161726.jpg"
+    },
+    {
+      "id": 10009,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0107_166917.jpg"
+    },
+    {
+      "id": 10012,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0008_166927.jpg"
+    },
+    {
+      "id": 10013,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0064_166679.jpg"
+    },
+    {
+      "id": 10014,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0026_166680.jpg"
+    },
+    {
+      "id": 10016,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0059_166946.jpg"
+    },
+    {
+      "id": 10019,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0025_166704.jpg"
+    },
+    {
+      "id": 10023,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0043_166708.jpg"
+    },
+    {
+      "id": 10027,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0033_166727.jpg"
+    },
+    {
+      "id": 10034,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0015_166713.jpg"
+    },
+    {
+      "id": 10038,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0112_166754.jpg"
+    },
+    {
+      "id": 10040,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0023_166764.jpg"
+    },
+    {
+      "id": 10045,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0098_166794.jpg"
+    },
+    {
+      "id": 10046,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0073_166798.jpg"
+    },
+    {
+      "id": 10049,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0050_166820.jpg"
+    },
+    {
+      "id": 10050,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0067_166828.jpg"
+    },
+    {
+      "id": 10051,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0104_166829.jpg"
+    },
+    {
+      "id": 10053,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0036_166833.jpg"
+    },
+    {
+      "id": 10060,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0037_166690.jpg"
+    },
+    {
+      "id": 10061,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0100_166871.jpg"
+    },
+    {
+      "id": 10063,
+      "label": 4,
+      "class_id": 171,
+      "split": "train",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0065_166885.jpg"
+    },
+    {
+      "id": 10011,
+      "label": 4,
+      "class_id": 171,
+      "split": "test",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0086_166926.jpg"
+    },
+    {
+      "id": 10017,
+      "label": 4,
+      "class_id": 171,
+      "split": "test",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0071_166692.jpg"
+    },
+    {
+      "id": 10024,
+      "label": 4,
+      "class_id": 171,
+      "split": "test",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0034_166720.jpg"
+    },
+    {
+      "id": 10028,
+      "label": 4,
+      "class_id": 171,
+      "split": "test",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0054_166985.jpg"
+    },
+    {
+      "id": 10033,
+      "label": 4,
+      "class_id": 171,
+      "split": "test",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0020_166997.jpg"
+    },
+    {
+      "id": 10042,
+      "label": 4,
+      "class_id": 171,
+      "split": "test",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0087_166783.jpg"
+    },
+    {
+      "id": 10044,
+      "label": 4,
+      "class_id": 171,
+      "split": "test",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0068_166892.jpg"
+    },
+    {
+      "id": 10047,
+      "label": 4,
+      "class_id": 171,
+      "split": "test",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0028_166905.jpg"
+    },
+    {
+      "id": 10058,
+      "label": 4,
+      "class_id": 171,
+      "split": "test",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0005_166853.jpg"
+    },
+    {
+      "id": 10059,
+      "label": 4,
+      "class_id": 171,
+      "split": "test",
+      "path": "171.Myrtle_Warbler/Myrtle_Warbler_0030_166732.jpg"
+    },
+    {
+      "id": 11072,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0069_181248.jpg"
+    },
+    {
+      "id": 11073,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0012_181765.jpg"
+    },
+    {
+      "id": 11082,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0099_180766.jpg"
+    },
+    {
+      "id": 11084,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0055_180768.jpg"
+    },
+    {
+      "id": 11086,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0010_180772.jpg"
+    },
+    {
+      "id": 11087,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0115_180775.jpg"
+    },
+    {
+      "id": 11089,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0058_182317.jpg"
+    },
+    {
+      "id": 11092,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0077_182334.jpg"
+    },
+    {
+      "id": 11095,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0103_180803.jpg"
+    },
+    {
+      "id": 11096,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0028_181830.jpg"
+    },
+    {
+      "id": 11099,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0112_180827.jpg"
+    },
+    {
+      "id": 11106,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0086_181891.jpg"
+    },
+    {
+      "id": 11109,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0002_180879.jpg"
+    },
+    {
+      "id": 11112,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0042_181062.jpg"
+    },
+    {
+      "id": 11113,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0120_181420.jpg"
+    },
+    {
+      "id": 11116,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0110_181188.jpg"
+    },
+    {
+      "id": 11120,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0088_180941.jpg"
+    },
+    {
+      "id": 11121,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0022_181969.jpg"
+    },
+    {
+      "id": 11127,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0009_180961.jpg"
+    },
+    {
+      "id": 11129,
+      "label": 5,
+      "class_id": 189,
+      "split": "train",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0114_181092.jpg"
+    },
+    {
+      "id": 11078,
+      "label": 5,
+      "class_id": 189,
+      "split": "test",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0049_180755.jpg"
+    },
+    {
+      "id": 11079,
+      "label": 5,
+      "class_id": 189,
+      "split": "test",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0025_180756.jpg"
+    },
+    {
+      "id": 11085,
+      "label": 5,
+      "class_id": 189,
+      "split": "test",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0015_182320.jpg"
+    },
+    {
+      "id": 11091,
+      "label": 5,
+      "class_id": 189,
+      "split": "test",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0075_180788.jpg"
+    },
+    {
+      "id": 11103,
+      "label": 5,
+      "class_id": 189,
+      "split": "test",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0008_180858.jpg"
+    },
+    {
+      "id": 11104,
+      "label": 5,
+      "class_id": 189,
+      "split": "test",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0078_181887.jpg"
+    },
+    {
+      "id": 11110,
+      "label": 5,
+      "class_id": 189,
+      "split": "test",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0089_181907.jpg"
+    },
+    {
+      "id": 11114,
+      "label": 5,
+      "class_id": 189,
+      "split": "test",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0054_182031.jpg"
+    },
+    {
+      "id": 11118,
+      "label": 5,
+      "class_id": 189,
+      "split": "test",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0074_180936.jpg"
+    },
+    {
+      "id": 11126,
+      "label": 5,
+      "class_id": 189,
+      "split": "test",
+      "path": "189.Red_bellied_Woodpecker/Red_Bellied_Woodpecker_0108_180956.jpg"
+    }
+  ],
+  "label_draws": [
+    0,
+    1,
+    2
+  ],
+  "labels_per_class": 3,
+  "steps": 200,
+  "lr": 0.03,
+  "l2": 0.001,
+  "teacher_weight": 0.5,
+  "temperature": 1,
+  "metadata_sha256": {
+    "classes": "66a884364a73edde6c71eeb7fd5d8bb791e80979b64759bd6a5d5d209bdc02ba",
+    "images": "e1cfc5ed1f4bd1b838040784b6f75c44f7a25d9b31707a3adab49ec694618c1f",
+    "image_class_labels": "e9df8c96d897994a245746fe2c98914b9b31f5342bddc6e8b06bdfbf45e49b02",
+    "train_test_split": "8bbbfcc09b4d3c9c6e3e40c9874bd863eb6658f4f456e472df1b33d3403d2600"
+  }
+}

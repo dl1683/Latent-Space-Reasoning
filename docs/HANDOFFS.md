@@ -19,6 +19,12 @@ combine useful contributions from successive pretrained models while retaining
 prior capabilities. Connected growth and assimilation after donor removal are
 separate branches. No cumulative capability or cost advantage is established.
 
+S58 completed and was independently reproduced from cached features and saved
+heads. Correct specialist pseudo-labels improve a scarce-label species readout
+after donor removal; soft targets do not improve on hard labels. The teacher's
+restricted labels match all 120 training truths. Preserve this ordinary teaching
+baseline without claiming new backbone knowledge or expanding the saturated panel.
+
 **Mode:** autonomous strategy/discovery, including definitions, source study and
 small bounded CPU probes, without system-building or large-model loading.
 Research began at 19:45 UTC; first periodic approach review completed around

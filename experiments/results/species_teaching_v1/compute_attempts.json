@@ -1,0 +1,32 @@
+[
+  {
+    "phase": "cache",
+    "items": 4,
+    "status": "complete",
+    "started_unix": 1789405247.461541,
+    "deadline_seconds": 90,
+    "wall_seconds": 5.068389199965168,
+    "pid": 33332,
+    "exit_code": 0
+  },
+  {
+    "phase": "cache",
+    "items": 176,
+    "status": "complete",
+    "started_unix": 1789405320.4799173,
+    "deadline_seconds": 150,
+    "wall_seconds": 19.096429000026546,
+    "pid": 10360,
+    "exit_code": 0
+  },
+  {
+    "phase": "fit",
+    "items": 4,
+    "status": "complete",
+    "started_unix": 1789405361.9789548,
+    "deadline_seconds": 120,
+    "wall_seconds": 10.783113100042101,
+    "pid": 16272,
+    "exit_code": 0
+  }
+]

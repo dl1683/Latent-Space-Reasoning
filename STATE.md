@@ -1,8 +1,10 @@
 # STATE
 
 **Research resumed — user direction, 2026-09-14.** Keep the mission fixed and
-pivot approaches around roadblocks. Current evidence reaches S57; no new run is
-selected. The [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary)
+pivot approaches around roadblocks. Source evidence reaches S57; S58 completed an
+independently reproduced CPU teaching precursor. Correct specialist pseudo-labels
+improved a frozen-feature species head; soft targets offered no advantage over
+hard labels under the locked recipe. The [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary)
 is authoritative for active allocation and closed/deferred episodes.
 
 The shared-predictor branch needs useful second-donor acquisition evidence; its
@@ -38,10 +40,11 @@ separate entropy review. Strategy map review completed around 03:34 UTC
 during subsequent substantive research.
 The reviewer challenges approach and question selection, never the mission.
 
-**Evidence status:** no cumulative acquisition, transferable graft, encoder
-reasoning artifact, donor-independent assimilation or cost advantage is established.
+**Evidence status:** S58 establishes modest teacher-assisted species readout after
+donor removal. No cumulative acquisition, transferable graft, encoder reasoning
+artifact, new backbone knowledge or cost advantage is established.
 The earlier four bounded probes sharpen the evidence requirements (S26 below);
-current six-block accounting is reported separately:
+current seven-block accounting is reported separately:
 
 - **S6, retained exports:** legacy plan bundles are nonfinite or overwhelmingly
   zero and unsuitable for the proposed transfer analysis. Underlying model
@@ -106,10 +109,12 @@ See the [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.
 S37 stays parked, S43/S47 stay closed, and the S49 small-checkpoint branch is closed
 without download or execution. No new model run or apparatus is queued.
 
-**Session accounting:** 1065 apparatus / 0 artifact-bearing code lines
-(98 + 119 + 204 + 207 + 330 + 107 runner lines); six probe blocks / zero building rounds.
-S37 has two failed execution attempts and zero scored forwards. Fifteen total
-scored model forwards, no GPU or training. S43 separately inspects32 published
+**Session accounting:** 1351 apparatus / 0 artifact-bearing code lines
+(98 + 119 + 204 + 207 + 330 + 107 + 286 runner lines); seven probe blocks / zero building rounds.
+S37 has two failed execution attempts and zero scored forwards. There are 375 total
+image/item-level backbone forwards, including S58's 360. S58 separately fits twelve
+candidate linear heads in 2400 optimization steps; no GPU. No reusable acquisition
+component was built. S43 separately inspects32 published
 responses on16 matched queries; it adds no local model inference. The explicit strategy mandate
 supersedes construction merely to change this ratio.
 

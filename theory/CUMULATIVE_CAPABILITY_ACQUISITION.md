@@ -266,8 +266,11 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 ## Next-work boundary
 
-**Active allocation, through S57:** strategy/discovery for useful successive
-acquisition and composition. No experiment is currently selected. A donor may add
+**Active allocation, through S58:** strategy/discovery for useful successive
+acquisition and composition. S58 completed a bounded species-teaching precursor:
+correct hard pseudo-labels improve a frozen-feature recipient head after donor
+removal; richer soft targets offer no advantage under this recipe. Preserve that
+baseline and move beyond this nearly saturated panel. A donor may add
 information, make useful computation accessible, or justify its cost through better
 quality. Connected use and ordinary teaching remain valid; donor removal is the
 selected resource-motivated assimilation branch, not a universal mission gate.
@@ -6124,3 +6127,126 @@ exclusivity test uses an affine feature formula; S48's displacement qualificatio
 applies there and does not refute the cosine-weighted transfer recipe. Keep these
 methods separate. Six local probe blocks, fifteen forwards and1065 apparatus/0
 artifact-bearing lines remain unchanged.
+
+### S58. Correct the precursor-selection criterion and test teaching
+
+**Fresh approach review, before preparation or compute.** The independent
+`s51_fresh_frontier_audit` identifies a changed criterion in S55: the selected
+question concerned limited-label specialist teaching, but the later rejection
+required a consequential composition result. Correct that unrun allocation
+explicitly. This is not reopening a negative experiment or replacing the mission
+with classification. S56/S57 remain useful source evidence; a modest precursor
+may measure an acquired distinction without proving the whole cumulative system.
+
+**Selected bounded contrast.** Use the already identified species predictor,
+one small fixed recipient representation, and the same image pool and head
+capacity. Compare label-only fitting, additional hard specialist pseudo-labels,
+and specialist distributions. Ground-truth evaluation labels stay outside fitting.
+The donor is absent from student evaluation. Report specialist performance,
+recipient label-only performance, paired differences and teaching/preparation cost.
+Do not use the generalist's incompatible class vocabulary as species targets.
+
+**Expectation and outcomes.** Specialist targets may help where recipient features
+already separate species but scarce labels fail to identify the boundary. A useful
+soft-over-hard difference motivates richer teaching signals; no benefit at this
+budget weakens this concrete recipe. Weak teacher predictions leave teaching
+untested. Neither positive nor negative result identifies an intrinsic latent law.
+The simplest confounds are taxonomy/preprocessing mismatch, leaked labels and
+unequal image access; bind these before fitting. Known pretraining overlap limits
+claims to images withheld from recipient fitting, not all historical pretraining.
+
+Preparation is capped at 100 MB of model archives and 20 MB of image data, with
+no bulk dataset. CPU only, one compute job at a time, checkpointed batches;
+initial timing burst at most 30 seconds, subsequent compute blocks at most two
+minutes. Select the sample independently of model scores. Exact sample/label
+counts and hyperparameters must be frozen before scoring, with no test-driven
+expansion. The initial task is binding the existing resources and small sample,
+not a new model catalog. No measured result exists at this allocation checkpoint.
+
+
+**Frozen implementation details before scoring.** Select six class IDs with seed
+20260914; each supplies twenty original-training and ten original-test images.
+Use three labeled training images per class under label-draw seeds 0/1/2. Cache
+both backbones on this fixed 180-image panel. The recipient is pooled frozen
+MobileNetV3-Small; the teacher is the bound CUB predictor. Standardize on the 120
+training feature rows only, with a floor for zero-variance coordinates. Linear
+six-way heads start at zero and use 200 Adam steps, learning rate .03 and mean
+squared-weight penalty .001. Teacher temperature is one, conditioned on the six
+selected classes. Supervised and unlabeled-teaching losses are each means and
+receive equal weight in teaching arms. Label-only sees the same images/features
+but no extra labels. A fully labeled head is a separately charged positive-control
+reference, not an equal-label competitor. Report training fit and each label draw;
+three draws still share only sixty test images. No test-driven tuning or expansion.
+Cache blocks have a cumulative 600-second wall ceiling including model startup;
+head fitting is capped at 120 seconds. Preparation is capped per attempt at ten
+minutes and resumes only the same frozen selection. Sources and pixel hashes are
+retained. The original archive returned HTTP403; an original-file-layout mirror
+binds labels, image IDs and original split flags without downloading the bulk archive.
+
+
+**Preparation binding and review correction.** Frozen manifest SHA256:
+`1327e7e73049486e25e0891ac85990e8a9d6712f0578cdc6263fddb1111acef6`.
+The six classes are Hooded Merganser, Horned Puffin, Fox Sparrow, Black-throated
+Blue Warbler, Myrtle Warbler and Red-bellied Woodpecker. Their image paths agree
+with class IDs and all 180 IDs are distinct. The selected transform is shorter-side
+resize 256, center crop 224 and standard ImageNet channel normalization for both
+backbones. The teacher's release log pins training source commit
+`81ee358fa1049153d2a3837aa49391daf57008d5`; its validation defaults support these
+size/normalization choices. This is not a claim of bit-identical historical image
+resampling across frameworks. No preprocessing sweep is permitted.
+
+Independent implementation review finds no fatal label/loss/indexing defect and
+requires an external deadline supervisor. The runner now records each attempted
+compute process before launch and enforces import/load plus ready-state deadlines
+from a separate process; failed attempts consume the cumulative budget. Source
+package pytorchcv0.0.74 is isolated under internal/probe_dependencies; the existing
+Python environment supplies the tensor and image libraries. No global package
+installation or GPU allocation occurs.
+
+**Completed result and independent audit.** On the same sixty original-test
+images, label-only heads score 52/49/52 correct across label draws 0/1/2. Hard
+teaching scores 59/59/58; soft teaching 57/52/55; the fully labeled reference
+59/59/59. Hard teaching corrects 7/10/6 baseline mistakes with zero regressions.
+The repeated reference is deterministic, not three independent replications;
+all arms and draws share sixty test images. The full teacher scores 56/60 and
+the declared six-class restriction scores 59/60. Retained six-class probability
+mass ranges from .0288 to .9559 (median .6812).
+
+The cheapest explanation is directly supported: restricted teacher hard labels
+equal ground truth on all 120 training images. Each teaching draw supplies correct
+labels for 102 images beyond the eighteen human-labeled examples. The full-label
+reference confirms adequate readout capacity. Its uniform weighting differs from
+the teaching arm's equal labeled/unlabeled loss weighting; their small difference
+does not establish extra teacher information. Soft distributions offer no advantage
+over hard labels under the locked recipe. No temperature/loss sweep is selected.
+
+Independent tool-assisted reviewer `cache_integrity_review` verified metadata and
+image hashes, disjoint IDs, train-only normalization, reproduced label draws and
+every saved test prediction using only cached tensors and saved heads. This is
+not a real CLI audit. Root inspected three error/correction images (IDs 5199,
+9356, 10044); this visual check does not replace dataset labels or constitute
+expert species relabeling. Exact train/test image hash overlap is zero, while
+historical pretraining overlap remains unresolved.
+
+**Licensed result:** correct specialist pseudo-labels improved a linear head over
+frozen recipient features across three scarce-label draws without teacher access
+at student evaluation. This is useful ordinary teaching, not new backbone knowledge,
+native latent law, soft-information advantage, cumulative acquisition or general
+cost superiority. Label scarcity was an obstacle; an intrinsic representation hole
+was not demonstrated. Conventional feature standardization and linear heads are
+R^n scaffolding. The native target remains useful distinctions that survive provider
+withdrawal and remain available when further operations or alternatives are added.
+
+Preparation completed in 285.14 seconds with 18,850,762 image bytes and 52,638,209
+model archive bytes. Three externally supervised compute attempts completed in
+34.95 seconds total: two cache processes, 360 image-level backbone evaluations,
+then twelve heads with 2400 optimization steps. Backbone forward time totals
+13.1144 seconds; timing scopes are retained separately. No GPU. Only attempt-log
+redirection changed between the first four and remaining 176 cached images.
+Final runner has 286 apparatus lines; candidate heads exist but no reusable
+acquisition component was built. Session totals: seven scientific probe blocks,
+375 backbone evaluations, 1351 apparatus / zero artifact-bearing code lines.
+The strategy mandate does not require construction to improve that ratio.
+
+The reviewed next investment changes the acquisition question rather than tuning
+this nearly saturated panel. Its frozen sample and completed result stay closed.

@@ -1,5 +1,31 @@
 # Experiments Log
 
+## S58 bounded specialist-teaching precursor — 2026-09-14 (completed)
+
+Fresh review corrects an unrun selection criterion; the selected limited-label
+teaching question now has a result, independently reproduced from cached tensors.
+
+| Test correct / 60 | Label draw 0 | Label draw 1 | Label draw 2 |
+|---|---:|---:|---:|
+| 18 labels only | 52 | 49 | 52 |
+| Hard teacher targets | 59 | 59 | 58 |
+| Soft teacher targets | 57 | 52 | 55 |
+| 120-label reference | 59 | 59 | 59 |
+
+All draws reuse the same sixty test images. Hard teaching corrects 7/10/6 mistakes
+with zero regressions against label-only. Teacher hard targets equal all 120
+training truths: ordinary additional correct supervision explains the improvement.
+Teacher test accuracy is 56/60 full-vocabulary, 59/60 restricted to the six classes.
+No soft-information advantage, new backbone knowledge or cumulative claim.
+
+CPU preparation: 285.14 seconds, 18.85 MB images and 52.64 MB model archives.
+Compute supervisors: 34.95 seconds total; 360 image-level backbone evaluations,
+2400 head optimization steps, twelve candidate heads. All attempts completed.
+Runner: 286 apparatus lines, zero reusable artifact-bearing code lines. Session:
+seven probe blocks, 375 backbone evaluations, 1351/0 lines. No GPU or panel tuning.
+Manifest, preparation, attempts, cache blocks and predictions are retained in
+`results/species_teaching_v1/`; canonical S58 explains scope and provenance.
+
 ## S57 prepared intervention source contrast — 2026-09-14
 
 One source and independent review identify an offline-prepared recipient write

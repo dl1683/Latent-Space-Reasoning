@@ -23,7 +23,10 @@ ordinary teaching, reusable records and connected growth as serious alternatives
 S50/S51's exact local episode is closed; S53's reaction-request execution is
 deferred after its bounded access check. S52 retains the later-use distinction,
 and S54/S55's source lookups are closed with their evidence limits preserved.
-These findings do not establish cumulative acquisition or a cost advantage.
+S58 adds a bounded local positive: correct specialist pseudo-labels improve a
+species head over frozen recipient features after donor removal. Soft targets
+do not beat hard labels under the locked recipe. These findings do not establish
+new backbone knowledge, cumulative acquisition or a cost advantage.
 No model run or dependency-repair campaign is queued. Follow the
 [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 
