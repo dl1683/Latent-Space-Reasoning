@@ -86,6 +86,13 @@ large-board hang workaround; use fresh real Codex CLI sessions for result audits
 This consolidated routing replaces repeated current-session checkpoints only;
 all earlier handoffs below remain historical evidence.
 
+**Audit runtime restart note (2026-09-14):** fresh default CLI file-access
+recheck also failed. Several reviewers emitted final receipts but stayed alive
+and consumed CPU; verified command-line-matched completed processes were stopped.
+Check actual process exit after a receipt. Do not treat a final response as
+termination or leave failed-review helpers running. The real CLI result audit
+remains incomplete; no additional model attempt was made.
+
 ## Earlier handoffs (historical)
 
 The dated records below preserve the path to the present project. Their runtime,
