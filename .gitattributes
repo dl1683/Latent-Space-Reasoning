@@ -3,6 +3,12 @@
 /experiments/run_conditional_port_probe.py -text
 /experiments/run_cached_donor_screen.py -text
 /experiments/run_encoder_continuation_probe.py -text
+/experiments/run_species_teaching.py -text
+/experiments/run_attribute_comparison.py -text
+/experiments/run_relation_revision.py -text
+/experiments/results/species_teaching_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/experiments/results/attribute_comparison_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/experiments/results/relation_revision_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /experiments/results/acquisition_cache_integrity_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /experiments/results/conditional_port_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /experiments/results/cached_donor_screen_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
