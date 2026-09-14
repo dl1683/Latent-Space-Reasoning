@@ -2,6 +2,13 @@
 
 ## Strategy/discovery checkpoint and history — 2026-09-13
 
+**Latest user restart, 2026-09-14:** mission fixed, approach flexible. S37 and its
+unavailable CLI audit are parked. S38 now separates donor target construction,
+student intervention training, pretrained contribution and mechanism interpretation.
+Primary sources and two independent strategy reviews inform the comparison;
+no new model calls, runner or acquired artifact. Older checkpoints below are
+historical where they conflict with this current allocation.
+
 The enduring question is what a denizen of latent space needs for identity,
 movement, effort, maps and reusable laws. Cumulative capability acquisition is
 one direction within that philosophy. Connected growth and assimilation after

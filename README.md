@@ -18,12 +18,12 @@ This is the current application of the philosophy, not a replacement for it. We 
 
 Candidate evidence starts with A in a base system, B in a donor, acquisition of useful B behavior with A retained, and held-out tasks requiring both. Further acquisitions test cumulative growth; donor removal is a separate assimilation branch. Relevant controls include simple routing, direct evidence forwarding, structured readouts, retrieval and matched learning budgets. Acquisition and recurring inference costs are counted separately. Current work is autonomous strategy/discovery; definitions, sources and bounded probe results live in the canonical direction's strategy notebook.
 
-**Current research allocation:** renewed reviews demoted query compatibility as
-first priority and justified a bounded causal-teaching access preflight. Its two
-attempts ended before inference: a setup timeout and a downloader bug. The bug
-is corrected; there is no competence, intervention or acquisition result. No third
-run occurs in this allocation. Scientific evidence-finding remains a possible use;
-see the [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+**Current research allocation:** strategy work continues around the parked
+causal-teaching preflight. The next comparison separates special donor answers
+from changes to the receiver's training procedure, and tests whether pretrained
+access contributes beyond equally informed alternatives. This informs capability
+grafting without requiring every interface to be linear. No local acquisition
+result is established. See the [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 
 **Status: exploratory direction.** No cross-model grafting, cumulative acquisition or encoder-reasoning artifact has been established. Start with the [canonical direction](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) and [current state](STATE.md). Earlier findings below remain supporting evidence with their original limits.
 

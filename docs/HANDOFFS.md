@@ -1,12 +1,11 @@
 # Session handoff — 2026-09-13
 
-**Goal status — 2026-09-14: blocked, not complete.** The required real CLI
-result audit cannot read files; the same blocker remains after three consecutive
-goal turns. Priority reassessment, bounded attempts, evidence custody and current
-documentation are preserved. No scientific result or third run is claimed.
-Resume by verifying actual CLI file access, completing the existing S37 result
-audit, then deciding the next allocation. All known completed review helpers were
-stopped; the broader mission is neither rejected nor scientifically refuted.
+**Research resumed — latest user direction, 2026-09-14.** Keep the mission
+fixed and pivot around roadblocks. S37 and its incomplete real CLI result audit
+are parked; they do not block independent strategy or other research. Continue
+with the operational value of intervention teaching versus valid-input examples,
+without another S37 run or inaccessible-reviewer loop. No acquired capability or
+scientific negative is established by the failed attempts.
 
 
 ## Current routing
@@ -69,17 +68,15 @@ and the correction of the audit prose's runtime transcription are in the ledger.
 This completed probe is not reopened. Preserve the broader capability-composition objective.
 
 **Active decision:** follow the [canonical Next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-The user-requested reassessment demotes S36's compatibility-first priority.
-S37's reviewed causal-teaching preflight produced two execution failures and zero
-scored forwards: a setup deadline, then a downloader compression bug. Owned cache
-metadata and the downloader are corrected, but no third run occurs in this
-allocation. Donor competence, recipient headroom and intervention effects remain
-unmeasured; the pair and causal route have not failed a scientific test.
-Two real CLI result-audit attempts could not read files and remain incomplete.
-Independent collaboration custody checks verified counts and source/file hashes;
-this does not substitute for the required real CLI audit. Restore verified
-read-only audit access before advancing S37 or calling its result audited. No address
-search, training rescue or reopening of closed probes follows.
+S36's compatibility-first priority remains demoted. S37 and its unavailable real
+CLI result audit are parked, with no new run or scientific verdict. Latest user
+instruction resumes independent research around that roadblock. S38 separates
+teacher target construction from the student's internal training pathway, and
+pretrained donor contribution from mere dependence on an adapter's input.
+Primary sources and independent strategy reviews support these distinctions;
+they do not demonstrate a local acquisition gain. Next work makes the smallest
+teacher-target/student-pathway comparison precise and examines constructive
+ways for decoder representations to contribute to persistent encoder reasoning.
 
 Session totals: 958 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207 + 330), five probe blocks / zero building rounds; S37 has

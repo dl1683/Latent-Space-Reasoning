@@ -1,5 +1,20 @@
 # Experiments Log
 
+## S38 strategy resumed — 2026-09-14
+
+Latest user instruction keeps mission fixed and pivots around unavailable tooling.
+No S37 rerun or CLI repair loop. Conditional transcript simulation sharpened by
+independent review; teacher target construction and student training pathway are
+separate acquisition choices. Primary-source checks support an ordinary text-
+counterfactual comparator and qualify random-network nonlinear alignment through
+a disjoint-name test. Symbolic-teacher intervention training supplies a student-
+pathway precedent; ordinary augmentation already solves one behavioral endpoint.
+A conditional factorization argument identifies when both training paths coincide.
+See canonical S38 and ledger `s38_*` entries.
+No new model forwards or apparatus: totals remain 15 scored CPU forwards, five
+probe blocks, 958 apparatus / 0 artifact-bearing lines, no GPU or training.
+
+
 ## S37 execution outcome — 2026-09-14
 
 Two bounded attempts, **zero scored forwards**, no scientific result. Attempt 1

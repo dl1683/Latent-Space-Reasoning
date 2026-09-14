@@ -62,8 +62,9 @@ laws or demonstrated holes in a learned space. Current routing is below.
 
 ## Empirical frontier and intended uses
 
-The general problem map remains a foundation, while the user-requested S37
-reassessment supersedes S36's compatibility-first allocation. Scientific evidence-
+The general problem map remains a foundation, while renewed reviews supersede
+S36's compatibility-first allocation. S38 continues strategy after the explicit
+flexible-approach restart. Scientific evidence-
 finding remains a possible application. One bounded causal-teaching feasibility
 preflight was justified, but two execution attempts failed before inference.
 The downloader bug and owned metadata are corrected; no third run occurs in this
@@ -288,18 +289,14 @@ explicitly unable to read local files. The third review inspected the final lock
 and runner and conditionally justified one bounded CPU execution after concrete
 supervisor, tokenizer/alignment, checkpointing and reporting corrections.
 
-**Current allocation:** S37's fixed was/were panel remains scientifically untested.
-Two bounded execution attempts ended before any scored forward: the first at its
-compute deadline, the second at metadata alignment due to un-decoded HTTP compression.
-This is not donor incompetence or a failed causal address. Downloader and owned
-cache metadata are corrected offline; no third run occurs in this allocation.
-Two fresh real CLI result-audit attempts could not read files and remain incomplete.
-Separate collaboration custody checks verify recorded counts and hashes. The next
-allocation first requires verified read-only CLI access and a completed evidence
-audit. The locked controls and
-finite funding criteria remain intact: natural counterfactual, lexical, identity
-and repeat; competence and recipient headroom before teaching. No cross-model
-vector copying, fitting, address search or training rescue is authorized here.
+**Current allocation:** latest user instruction resumes research around roadblocks.
+S37 is parked with two inconclusive execution attempts and an incomplete real CLI
+audit; no further execution or scientific claim follows from it. S38 is active:
+separate teacher target construction from student intervention training, compare
+valuable pretrained contribution with equally informed retrained alternatives,
+and keep useful cumulative behavior as the endpoint. Independent strategy reviewers
+can challenge this work without being mislabeled real CLI auditors. Do not restart
+an inaccessible-reviewer loop or require its repair before unrelated research.
 
 This tests access to a possible teaching channel, not cumulative acquisition,
 causal transfer already achieved or native mathematics discovered by vector
@@ -3974,3 +3971,185 @@ purchase, if justified after that review, remains the unchanged competence/headr
 intervention panel; only positive accessible teaching evidence funds the ordinary-
 versus-counterfactual-teaching comparison. No claim of an absolute best route or
 of complete understanding is supported.
+
+
+### S38. Which intervention knowledge is useful to inherit?
+
+A denizen needs moves that improve useful future responses. The immediate
+allocation question is whether acquisition benefits from special teacher answers,
+from the receiver's internal training procedure, or from both. S37 is parked;
+its execution failure and unavailable CLI audit do not govern this independent
+strategy question. No new model run or apparatus follows here.
+
+**Repaired proposition, after independent strategy review.** Fix the donor
+family, adaptive episode-selection policy, learner initialization, and utility
+on promised receiver behavior. Suppose a donor-independent simulator using only
+permitted ordinary queries and disclosed metadata reproduces each intervention
+episode's conditional joint law given the complete previous transcript, including
+its dependence on learner state and shared randomness. Induction over episodes
+then gives the same law for the learning transcript, trained receiver and utility.
+Simulator query, computation, preparation and storage costs need not be equal.
+Metadata cannot hide donor-specific alignment or source-selection work.
+
+Matching one-episode marginals is insufficient; S5's shared-bit counterexample
+already establishes this point and is not a new result here.
+This is standard experiment-simulation reasoning, not a discovered latent law.
+Donors agreeing on all permitted ordinary outputs have identical donor-imitation
+targets there; that does not establish equal value for external truth, future
+composition, or changed environments. Those require their own target relationship.
+Do not call this limitation a converse of the simulator proposition.
+
+**Decision-changing distinction.** Keep three candidate teaching arms conceptually
+separate. Ordinary teaching supervises the student on ordinary inputs. A second
+arm supervises corresponding student interventions using targets obtained from
+ordinary teacher calls on explicitly constructed counterfactual inputs. A third
+uses the same student interventions but targets obtained from teacher interventions.
+The second-versus-third contrast concerns teacher access; the first-versus-second
+contrast concerns the receiver's training pathway. Common ordinary losses, learner
+initialization, episode support and effort accounting must remain explicit.
+
+This is a three-arm design question, not a queued experiment or an assertion that
+an arbitrary internal swap has a semantically valid text counterpart. A vocabulary-
+valid token splice need not be a task-valid counterfactual. When a proposed ordinary
+surrogate differs, it only rejects that surrogate; it does not prove that every
+ordinary-query procedure is insufficient. The useful endpoint remains behavior
+and prior-use retention, not fitting an imposed mechanism for its own sake.
+
+Independent reviewer `intervention_value_review` recommends acquisition efficiency
+as the first benefit to investigate and warns against another generic sufficiency
+campaign. Root independently identified the same teacher-target/student-pathway
+split. Inspect the published loss and ablations next, then state the smallest
+unresolved contrast. Existing mathematics is scaffolding; the native candidate is
+an interchangeable move defined by preserved and changed behavioral roles across
+contexts and contributors, not a shared residual coordinate or matching layer ID.
+
+
+**Published losses do not resolve the three-arm contrast.** [Wu et al. (2022),
+Algorithm 1, §§3–5](https://aclanthology.org/2022.naacl-main.318.pdf) forms both
+teacher and student interchanges, then matches their outputs alongside ordinary
+losses. Source-state values remain on the student's differentiable computation
+path. Reported ablations vary alignment, layer count, data fraction and auxiliary
+losses, rather than replacing teacher intervention targets while preserving the
+student intervention objective. Thus the source supports the combined recipe;
+it does not identify the separate value of special donor answers. This is a
+source-specific missing contrast, not an assertion that no paper has tested it.
+
+A useful ordinary-access comparator is [Feng et al. (EMNLP 2024), §§3–4.6,
+Table 2](https://aclanthology.org/2024.emnlp-main.333.pdf): construct label-changing
+text edits, generate supporting/refuting rationales, and teach through ordinary
+language-model training. Its equal-example-count comparison reports 33.01 to
+36.28 for one standard-rationale baseline after replacing half the original
+examples with counterfactual ones. Equal example count does not equal teacher
+queries or training tokens; generation and five-path filtering add work. The
+paper supplies an ordinary-input precedent, not a controlled comparison with
+internal intervention teaching or proof that its edits isolate causal mechanisms.
+Its original-versus-generated discriminator is not a gold-label validity test.
+
+**New control obligation from independent source review.** Distinguish a trained
+composite's dependence on its donor input from a valuable contribution of donor
+pretraining. Post-training zeroing may only induce a distribution shift. A matched
+adapter trained with the same selection budget on raw/public input, ordinary donor
+answers, or suitable untrained representations is a stronger acquisition baseline.
+Nonlinear adapters are allowed to do useful work; account for that work and ask
+whether pretrained access changes the attainable utility–effort curve. This is
+our operational analysis, not a theorem that all such baselines are equivalent.
+
+
+**Nonlinear interfaces need contribution tests, not a blanket linearity rule.**
+[Sutter et al., NeurIPS 2025 final, §4 and Appendix I.2.2–3,
+pp.6,38–39](https://proceedings.neurips.cc/paper_files/paper/2025/file/dbb98528c9870377f3f0d133aae6050b-Paper-Conference.pdf)
+prove their unrestricted-abstraction result under countable inputs, layerwise
+input injectivity, strict output surjectivity, matchable orderings, and a network
+that already solves the task. Their empirical random-network alignment result
+has a significant qualification: its main IOI split separates sentences but not
+names. Under disjoint name sets, random-network alignment fails in the reported
+setting while trained-network nonlinear alignment succeeds. Alignment training
+uses two epochs over one million interventions. This is neither a cheap mapping
+guarantee nor an impossibility theorem for useful nonlinear grafting. Root checked
+the final PDF directly after independent source review; its SHA256 is
+80a9c16eea3c447730192b88a0ac9945ebac603d9852961268f6df197919fcea.
+
+Our resulting allocation rule: freeze the interface before genuinely fresh entities
+and combinations, and compare pretrained access with equally informed retrained
+controls at matched selection effort. A failed post-training donor ablation is
+not enough. Useful engineered composition, acquired pretrained contribution, and
+recovery of the donor's original mechanism are three distinct achievements.
+Standalone donor task accuracy is not a universal acquisition requirement: a
+useful representation may need a trained readout. S37's native agreement competence
+criterion was specific to the donor operation it proposed to teach.
+
+The source's name-disjoint result is a constructive clue for the mission: richer
+maps need not erase the distinction between useful pretraining and fitting the
+adapter. It is a published task-specific result, not our experiment and not proof
+of cumulative acquisition. Prefer assessing operational transfer and its effort
+over policing the linearity of a chosen coordinate chart.
+
+
+**Training-path calculation before another source check.** Write a student's
+patched hidden state as z_theta=(1-M)h_theta(x)+M h_theta(s), with a fixed selection
+mask M and all unpatched base context held in the downstream function g_theta.
+For loss ell(g_theta(z_theta),y), the encoder-side gradient contains
+D_z(ell o g_theta)[(1-M)D_theta h_theta(x)+M D_theta h_theta(s)].
+Ordinary counterfactual training instead contains D_theta h_theta(tau(x,s)).
+Equal teacher targets alone do not equate these paths. Equality requires an
+appropriate student-side identity (and matching remaining context/dependencies)
+throughout the parameter neighborhood used in training, not just equal predictions
+at one parameter setting. Full differentiation also includes downstream and other
+context parameter paths. This chain-rule calculation makes the proposed contrast
+explicit; it is standard calculus, not a new latent law or measured advantage.
+
+**Symbolic-teacher precedent, independently reviewed.** [Geiger et al., ICML
+2022, §§3–6, Table 1, Figure 4 and Appendix C](https://proceedings.mlr.press/v162/geiger22a/geiger22a.pdf)
+compares internal intervention training with input augmentation using a supplied
+symbolic oracle. On MNIST-PVR, typed internal quadrant substitution reaches
+93.93% behavioral test accuracy versus 90.90% for input-quadrant augmentation;
+untyped intervention training reaches 0.09%. On MQNLI, augmentation already
+reaches perfect behavioral performance, while internal training produces stronger
+agreement with the specified interventions. Appendix C describes one million
+base/source pairs reused per epoch, a common symbolic label oracle and up to five
+epochs; total computational work is not matched. ReaSCAN's reported comparison
+has no augmentation arm. These are published results, not local reproductions.
+Root and independent reviewer `intervention_value_review` checked the methods;
+the review is not a real CLI audit.
+
+**Decision.** The source supplies a constructive student-training precedent without
+requiring extra answers from a pretrained donor. It does not isolate gradient
+routing alone: internal substitution also changes intermediate states and effort.
+The smallest useful unresolved comparison fixes base/source pairs, checks equality
+of oracle targets episode by episode, and compares held-out behavioral learning
+curves against total work for ordinary versus internal substitution. Equal endpoint
+performance can conceal acquisition differences. Better intervention agreement
+alone is not an acquisition benefit unless a later use needs that operation.
+Do not train a large replication or add a detached-gradient arm before the basic
+contrast is useful. A symbolic teacher is an informative control, not evidence
+that arbitrary pretrained donors have interchangeable internal parts.
+
+**Equivalence boundary derived from the contrast.** Let inputs have typed slots
+x=(x_1,...,x_m), and let tau_{i<-j}(x,s) replace base slot i with source slot j.
+Suppose a student's whole interface factors as h_theta(x)_i=phi_theta(x_i),
+with the same differentiable phi for interchangeable slots, no cross-slot context,
+no omitted bypass, and identical treatment of randomness. The downstream function
+may mix these components arbitrarily. Then
+
+    h_theta(tau_{i<-j}(x,s)) = swap_{i<-j}(h_theta(x),h_theta(s)).
+
+This is an identity in theta, so identical targets, loss weights and episode
+weights yield identical mathematical gradients for input and internal substitution
+where derivatives exist. For nonsmooth operations, matching differentiation
+conventions is an additional condition. Optimizer paths coincide if optimizer
+state and numerical execution also agree; input work may still differ. This
+result requires an identity across parameters, not an observed one-point match.
+
+Thus a student-training difference needs some failure of those assumptions, such
+as contextual mixing before the interface, nonshared role encoders, stochastic
+differences, bypass context or unequal objectives. It does not by itself establish
+extra teacher knowledge. For a deterministic symbolic oracle that reads each slot
+independently and then combines the slot values, its input and internal replacement
+targets are likewise equal. This defines a clean target control without assuming
+the neural receiver satisfies the same factorization.
+
+The native question remains which substitutions preserve meaning across actual
+contexts. Coordinate masks implement a proposed move; they do not discover its
+validity. The factorization calculation is ordinary scaffolding, not a new law of
+latent space or a reason to make all future representations context-free. Context
+can be exactly the useful information a donor contributes.
