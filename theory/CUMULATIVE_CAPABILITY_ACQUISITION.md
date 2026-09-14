@@ -4967,3 +4967,65 @@ its preparation bill. Compare target-side contrast examples/learning, direct
 prompting and native target steering where the source permits. Style or refusal
 changes must not become factual/reasoning acquisition claims. No local generation,
 verbosity line, model loading or new apparatus is selected by this source question.
+
+**Bounded source finding.** [Chen et al., NeurIPS 2025 final](https://papers.neurips.cc/paper_files/paper/2025/file/4569a868e7aa891248832ec08445d071-Paper-Conference.pdf),
+§4 and Appendices A/F, demonstrates some response-language steering transfer using
+affine residual-stream stitches within model families. Receiver weights stay fixed,
+but recipient clamp targets are recalibrated. Stitch preparation collects both
+models' activations on 180k samples and trains two epochs; the steering-model
+contexts have 128 tokens. Main text says 100 paired direction examples; Appendix F
+says 250 for feature/coefficient fitting. Root confirms the discrepancy in the
+final PDF. Language detection on 163 instruction-stripped prompts does not establish
+answer correctness or termination, and explicit language prompting is not an arm.
+General instruction steering is weaker; inspected sections do not test two-move
+composition. This is a simpler interface precedent, not established cheaper total
+acquisition. Independent source review: `intervention_value_review`.
+
+**Operation transport calculation, independently checked.** Use column vectors,
+a unit source direction v, a target level a, and an affine stitch T(h)=Ah+t.
+The source clamp is C(h)=h+v(a-v^T h). For invertible A, direct substitution gives
+
+    T C T^{-1}(z) = z + Av [a - v^T A^{-1}(z-t)].
+
+The write vector is Av; the read functional is v^T A^{-1}. They are not generally
+Euclidean duals. Mapping and normalizing v does not by itself specify this move.
+A Euclidean recipient clamp along u=Av/||Av|| equals this transported operation
+only if v is an eigenvector of A^T A, with target ||Av||a + u^T t. This is a
+full-domain algebraic statement, not an empirical gate for a learned model.
+
+For injective rectangular A, any left inverse B gives the functional v^T B on
+t+range(A); extensions outside that affine image are not uniquely determined.
+For noninjective A, the source clamp descends to a well-defined operation on that
+image exactly when Av=0 or v^T k=0 for every k in ker(A). Indeed, two source states
+differing by k have identical exports but their post-clamp exports differ by
+-Av(v^T k). If Av=0, the exported operation is identity. On a restricted reachable
+domain the relevant condition concerns actual shared-export state pairs; the
+full-space criterion must not be imposed as an exact learned-model verdict.
+
+**Composing two clamps.** Let C_{v,a} and C_{w,b} have unit directions, set
+rho=v^T w, alpha=a-v^T h and beta=b-w^T h. Expanding both orders gives
+
+    C_{w,b} C_{v,a}(h) - C_{v,a} C_{w,b}(h)
+      = rho (v beta - w alpha).
+
+They commute as maps on the full space exactly when the directions are orthogonal,
+or w=sigma v and b=sigma a for sigma in {-1,1}: the same target hyperplane.
+Parallel incompatible clamps overwrite each other. After the v-clamp then w-clamp,
+the first coordinate becomes a + rho[beta-rho alpha], exposing possible overwrite.
+Pointwise agreement need not imply global commutation. Ordered tasks can legitimately
+require noncommutation, and commuting changes can be behaviorally useless.
+
+**What changes the acquisition question.** An exported move may need its write
+direction, measurement rule, target and valid contexts, not just a direction vector.
+The paper explicitly recalibrates a recipient intervention; it does not claim exact
+conjugacy, so this calculation is not a refutation. Ask whether preparing a shared
+correspondence reduces recipient-specific work for a later useful operation relative
+to learning that operation directly. Charge recalibration and check independently
+prepared joint behavior when that is the intended use. No commutator-measurement
+program or local steering run follows.
+
+Reviewer `alignment_contribution_review` independently verified the transport,
+descent and commutation conditions and keeps them diagnostic. These are ordinary
+affine-projection facts. The native candidate remains the operation's changed and
+preserved responses under useful continuation. No structural hole in a real latent
+space, acquired reasoning capability or new native law has been demonstrated.

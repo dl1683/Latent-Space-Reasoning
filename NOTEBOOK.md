@@ -19,7 +19,8 @@ S44-S46 clarified conditional evidence selection and direct teaching. S47 ran a
 107-line lexical diagnostic on four usable pairs among five selected reports:
 7/8 adequate whole-abstract selections,8/8 with RESULTS filtering, one mixed-quality
 tie remaining. Closed without model probe or expansion. No acquired artifact.
-S48 asks about portable intervention operations. Older checkpoints below are
+S48 checks the distinction between portable directions and read/write operations;
+no commutator apparatus or model run is selected. Older checkpoints below are
 historical where they conflict with this current allocation.
 
 The enduring question is what a denizen of latent space needs for identity,

@@ -98,8 +98,9 @@ structured-query panel: lexical/RESULTS filtering selected adequate evidence8/8,
 with one mixed-quality tie. Close that panel without a model probe or expansion;
 this is direct-method behavior, not acquired capability.
 S46 prioritizes direct preference teaching as the comparator to response embeddings;
-a dictionary cannot hide an unproven semantic interpreter. S48 inspects portable
-steering operations as a separate branch. See the [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+a dictionary cannot hide an unproven semantic interpreter. S48 separates transporting a direction from transporting a complete read/write
+operation. Its checked algebra remains diagnostic; later-operation preparation
+and useful joint behavior must determine the next choice. See the [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 S37 stays parked; no inaccessible-reviewer repair loop or new apparatus is queued.
 
 **Session accounting:** 1065 apparatus / 0 artifact-bearing code lines

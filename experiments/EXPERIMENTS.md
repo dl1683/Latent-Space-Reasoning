@@ -1,5 +1,16 @@
 # Experiments Log
 
+## S48 transported operation contract — 2026-09-14
+
+Primary source and independent algebra separate a transported direction from the
+complete read/write intervention. Affine transport, descent through a noninjective
+export and clamp-order effects are diagnostic; the inspected method recalibrates
+the recipient and does not promise exact conjugacy. A later operation must justify
+its remaining recipient-specific preparation against direct learning. No new model
+run or apparatus; local totals remain six probe blocks,15 scored model forwards
+and1065 apparatus /0 artifact-bearing physical code lines. Canonical S48 and ledger
+`s48_transported_operation_contract_20260914` carry provenance and limits.
+
 ## S47 real evidence selection and direct remedy — 2026-09-14
 
 Fixed five report pairs, ten prompts; four pairs semantically usable with an exact
