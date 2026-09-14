@@ -9,8 +9,8 @@ established theorems, demonstrated capabilities or an approved run specification
 The target is **repeated useful acquisition with established capabilities retained**.
 Reusing prior preparation is one important approach and potential benefit; learning
 to make later admissions easier is a stronger optional claim. A usable contribution must survive its
-interface and participate in the intended computation. No single shared geometry or cumulative architecture has been selected; S37
-names a pair only for a bounded teaching-access preflight. These distinctions organize the
+interface and participate in the intended computation. No single shared geometry
+or cumulative architecture has been selected; S37's preflight is parked. These distinctions organize the
 notebook; they are not a compulsory sequence of experiments.
 
 | Decision | What must be known | What would change the approach |
@@ -31,18 +31,28 @@ Receiver adaptation is allowed when declared and attributed. A frozen receiver
 tests strict interchange, not all acquisition. Evidence for one interface is
 local, not a universal law or a finished cumulative system.
 
-**Current evidence boundary:** external planning, contextual inference and
-heterogeneous stitching supply constructive precedents for reusing learned
-computation or interfaces (S8/S14/S28/S30). Folded weight transfer supplies a
-donor-withdrawal route with unresolved attribution controls (S30). No inspected
-result supplies the full sequential acquisition claim under our contract.
+**Current evidence boundary:** source and implementation studies now extend
+through S49. They supply concrete trained reasoning, compressed-context reading,
+stitching and separately prepared contributor interfaces. None of the inspected
+results establishes the full repeated-acquisition contract below. Published
+precedents, local results and untested combinations must remain separate.
 
-The four local probes remain scoped negatives: ineligible plan exports (S6), an
-additive-compatible conditional panel (S21), one losing fixed combination rule
-(S22), and weak first proposals limiting a continuation test (S26). They do not
-establish that pretrained donors cannot contribute. The inspected onboarding
-implementation in S18 also leaves contribution attribution unresolved. Exact
-receipts and limitations stay in those sections rather than defining the agenda.
+| Mission requirement | Strongest relevant evidence here | Still not established |
+|---|---|---|
+| Use a pretrained contributor in another computation | External constructive interfaces and joint-use precedent, S28/S30/S39/S40 | Local useful donor contribution under an adequate joint task and serious direct control |
+| Reason using retained representations under later questions | Prepared compressed-context consumer and its released conditioning path, S49 | A predicted donor-response export usable by that consumer; independent-donor memory composition |
+| Add useful B while retaining established A | Retention definitions, correction policy and ingredient-versus-composition counterexample, S7/S8/S13/S32 | Observed before/after behavior of one persistently growing system |
+| Add C while reusing earlier preparation | Incremental-learning comparators and separately prepared interface precedent, S28-S31/S40 | An observed later acquisition with charged repair and retained A/B/joint uses |
+| Retire a donor while retaining useful fresh-input behavior | Folded-transfer precedent and concrete teaching recipes, S30/S42/S49 | This project's demonstrated donor-independent acquisition; cached answers alone are insufficient |
+| Discover effective native latent mathematics | Conditional operational constraints and scoped empirical diagnostics | A law predicting useful interventions or composition in real learned spaces beyond the tested scaffolding |
+
+Local accounting is six probe blocks, fifteen scored model forwards and no
+strategy-phase training or GPU use. S6/S21/S22/S26 are scoped negatives; S37 has
+two failed attempts and zero scored forwards. S47 demonstrates a sufficient direct
+lexical/section remedy on its small structured panel, then closes without a model
+probe. S43 separately inspects stored external responses. None demonstrates
+cumulative acquisition or an intrinsic inability of pretrained donors to contribute.
+Exact receipts remain in the ledger and result sections.
 
 The mathematical aim is an economical operational language for identity,
 substitution, extension and effort. Ordinary mathematics is useful scaffolding.
@@ -58,7 +68,10 @@ shows that retaining skill ingredients need not retain their achieved compositio
 Existing representation-learning and successor-feature results offer constructive
 contracts, with explicit task-family, evaluation and coverage assumptions.
 These are analytical constraints and external positive precedents, not discovered
-laws or demonstrated holes in a learned space. Current routing is below.
+laws or demonstrated holes in a learned space. S48 adds the diagnostic distinction
+between a transported vector and a complete read/write operation; S49 makes
+later-request use depend on a prepared consumer, not the embedding label.
+Current routing is below.
 
 ## Empirical frontier and intended uses
 
@@ -289,45 +302,41 @@ explicitly unable to read local files. The third review inspected the final lock
 and runner and conditionally justified one bounded CPU execution after concrete
 supervisor, tokenizer/alignment, checkpointing and reporting corrections.
 
-**Current allocation:** latest user instruction resumes research around roadblocks.
-S37 is parked with two inconclusive execution attempts and an incomplete real CLI
-audit; no further execution or scientific claim follows from it. S38 separates
-teacher access, receiver training and pretrained contribution. Its source review
-and conditional derivation are recorded. S39 verifies heterogeneous communication
-implementations. S40 finds a constructive separate-preparation/joint-use precedent
-with released interfaces; exact joint-run linkage and item-level retention remain
-unresolved in the checked material. S41 derives one-read attention composition but
-independent review keeps it diagnostic: useful joint behavior takes priority over
-new attention apparatus. S42 identifies response-derived embedding teaching as a
-concrete comparator and a possible shared-predictor assimilation route. Prefix reuse
-is conditional computation reuse, not demonstrated acquisition. S43 inspected a fixed first-16 teaching slice and found one clean correction
-amid shared errors and incomplete targets. The slice is closed; the correction
-is not a training selection. S44 fixes evidence retrieval as one worked operation;
-S45 develops a prospective conditional-relevance comparison. Neither establishes
-a competent endpoint or selects training. S46 prioritizes direct task-specific
-teaching as the comparator to full response representations. S47 found a sufficient
-lexical/section remedy on a fixed real-data panel and closes it without a model
-probe. S48 asks about portable intervention operations as a separate branch.
-Its preparation comparison must credit direct learning with the same recipient
-calibration activations and any reusable reference. Transferred readouts can avoid
-new task-specific calibration in the inspected source; that does not establish
-transported updates or reasoning. Further clamp algebra is not the next step.
-S49 distinguishes response reconstruction from a prepared consumer of compressed
-context under later requests. A predictor-to-consumer connection is prospective;
-its donor-specific useful information must be established before any composition
-or training claim. No new local run is selected.
-Keep useful cumulative behavior as endpoint. Independent strategy reviewers
-can challenge this work without being mislabeled real CLI auditors. Do not restart
-an inaccessible-reviewer loop or require its repair before unrelated research.
+**Current allocation after S49 consolidation.** The next consequential commitment
+is an acquisition episode with a specific prior operation A, a new contribution B,
+and a useful joint request. A repeated question about one saved export is a memory-
+reuse test; it does not by itself test successive capability acquisition. Naming A
+is not enough: its claimed adequacy must be supported before retention can be read
+from a before/after comparison. No eligible local episode is selected yet.
 
-The earlier preflight tested access to a possible teaching channel; current
-source and mathematical work establishes no local cumulative acquisition or native
-mathematics discovered by vector patching. Useful behavioral consequences and
-retained interpretation are the operational objects. Preserve broader chimera, encoder-reasoning and successive-growth aims;
-S34 and earlier closed probes are not reopened. The user-requested priority and actual-file design reviews completed around
-08:00 UTC on September 14; subsequent result-audit access failures are not
-completed audits. Retain the approximately two-hour cadence during substantive research. Canonical S37 and the three retained review receipts supply
-the detailed lock and limitations.
+The recent investigations change three choices:
+
+- **Connected use:** S40 supplies a separate-preparation/joint-use precedent.
+  Exact joint-run linkage and item-level retention remain unresolved in the checked
+  release. This supports the route, not reopening that provenance search.
+- **Compact retained exports:** S49 identifies a prepared later-question consumer,
+  but response prediction plus that consumer remains an untested combination.
+  Useful contribution may be information, computation, accessibility or effort;
+  it need not be new Shannon information. Credit direct teaching, saved text and
+  reusable baseline preparation equally.
+- **Trained continuous reasoning:** S49 identifies a complete recipe and a
+  no-alignment multitask control retaining rationale access. Its traced targets
+  are dynamic shared-model states, not an established external hidden-target port.
+  Its small-checkpoint availability branch is closed without download or inference.
+
+The missing evidence is therefore not another isolated alignment, reconstruction
+or recurrence result. It is a justified acquisition episode: what established A
+continues to do, what B changes, and why their joint use is useful. Component
+competence, prepared consumer compatibility and prior-use retention are different
+questions; one cannot silently stand in for another. A quality benefit can justify
+extra cost, and additional teaching is allowed when its work is counted.
+
+S43's stored-response slice and S47's direct-remedy panel remain closed. S37 stays
+parked; unavailable real CLI audits do not block independent strategy reviews.
+Do not reopen closed probes, add a theorem section or construct a new apparatus
+merely to fill the missing episode. Preserve the full acquisition objective while
+making the next candidate decision concrete. Source/decision chronology remains
+in S38-S49, NOTEBOOK and the ledger; this boundary controls live allocation.
 
 ## Conditional route choices
 
@@ -5173,8 +5182,9 @@ multi-span repair makes that distinction experimentally motivated, without provi
 that all consumers need joint training. Keep direct saved text and ordinary-context
 reasoning as serious alternatives. No reproduction, new wrapper, predictor training
 or local model loading is selected; next work should identify whether predicting
-the consumer-compatible target adds useful information or merely repeats a response
-that the receiving backbone could already produce. S38's access controls and S43's
+the consumer-compatible target supplies useful information, computation, access
+or effort savings relative to what the receiver can already do. Information
+novelty is not mandatory; repeating the same answer more economically can matter. S38's access controls and S43's
 teacher-correctness distinction remain applicable. This is a candidate dependency
 chain, not a demonstrated new reasoning model or native law.
 
@@ -5208,8 +5218,10 @@ prefix caching too. Compact memory may reduce later attention work, but savings
 cannot be inferred from repeated uncached baseline calls. This carries S4.1/S19/
 S38/S42/S46 into the concrete consumer choice, rather than reopening those lines.
 
-**Next allocation.** Specify a real multiple-request use and its saved-text/direct-
-prediction alternatives before choosing a fitting objective. The acquired object
+**Consumer-specific prerequisite, not the whole allocation.** Specify the multiple-
+request use and saved-text/direct-prediction alternatives before choosing a fitting
+objective. The live boundary additionally requires the retained prior operation A,
+new contribution B and useful joint use; memory reuse alone is insufficient. The acquired object
 is defined by distinctions recoverable under those requests, not by a coordinate
 norm. No new empirical block, local model loading or claim of a learned-space hole.
 

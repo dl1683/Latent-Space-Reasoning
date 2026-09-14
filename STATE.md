@@ -38,7 +38,8 @@ The reviewer challenges approach and question selection, never the mission.
 
 **Evidence status:** no cumulative acquisition, transferable graft, encoder
 reasoning artifact, donor-independent assimilation or cost advantage is established.
-Four bounded probes sharpen the evidence requirements (S26 below):
+The earlier four bounded probes sharpen the evidence requirements (S26 below);
+current six-block accounting is reported separately:
 
 - **S6, retained exports:** legacy plan bundles are nonfinite or overwhelmingly
   zero and unsuitable for the proposed transfer analysis. Underlying model
@@ -83,29 +84,17 @@ startup; an external 180-second process wait also returned normally. Exact recei
 and the correction of the audit prose's runtime transcription are in the ledger.
 This completed probe is not reopened. Preserve the broader capability-composition objective.
 
-**Active decision:** compare connected donor use with response-derived teaching
-into a shared predictor. The former keeps donor computation available on new inputs;
-the latter aims to retain learned contributions after donor retirement. Published
-precedents support exploring both, but no cumulative local advantage is established.
-The S43 slice contains one verified answer correction and is closed; it does not
-select training. S44-S45 define a worked evidence-retrieval operation and a
-prospective unfamiliar-record relevance reversal. S47 now supplies a bounded real
-structured-query panel: lexical/RESULTS filtering selected adequate evidence8/8,
-with one mixed-quality tie. Close that panel without a model probe or expansion;
-this is direct-method behavior, not acquired capability.
-S46 prioritizes direct preference teaching as the comparator to response embeddings;
-a dictionary cannot hide an unproven semantic interpreter. S48 separates transporting a direction from transporting a complete read/write
-operation. Its checked algebra remains diagnostic. Direct learning must receive
-the same reusable calibration evidence before transfer can claim preparation
-savings; useful joint behavior remains unresolved. S49 verifies a reconstruction
-path that ignores fresh query tokens under a saved-export override, and separately
-identifies a trained compressed-context consumer that does accept later prompts.
-Their combination is a prospective dependency, not a demonstrated capability.
-A complete trained continuous-reasoning recipe is now a reference comparator; its
-no-alignment multitask arm preserves rationale access. Its traced shared-model
-hidden targets change during training. The small-checkpoint availability branch
-is closed as low leverage for acquisition; no download or model run follows. See the [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-S37 stays parked; no inaccessible-reviewer repair loop or new apparatus is queued.
+**Active decision:** select a concrete acquisition episode with supported prior
+operation A, useful new contribution B, and a joint use that preserves established
+behavior. Repeated questions over one memory are not successive acquisition.
+S40 supplies a connected-use precedent; S49 supplies a later-question memory
+consumer and a complete trained-reasoning comparator. Their unresolved combination
+is not a selected architecture. Useful contribution may be information, computation,
+accessibility or effort savings; novel information is not mandatory.
+
+See the [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+S37 stays parked, S43/S47 stay closed, and the S49 small-checkpoint branch is closed
+without download or execution. No new model run or apparatus is queued.
 
 **Session accounting:** 1065 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207 + 330 + 107 runner lines); six probe blocks / zero building rounds.

@@ -32,6 +32,13 @@ two-round review. Consumer teaching must exercise intended later requests.
 No commutator apparatus or model run is selected. Older checkpoints below are
 historical where they conflict with this current allocation.
 
+**Mission-coverage consolidation, September 14:** current routing now requires
+supported prior A, useful new B and a joint use; repeated requests over one memory
+are not successive acquisition. Recent interface findings change implementation
+choices without supplying that episode. Information novelty is not required for
+useful contribution. The compact canonical map separates precedents from missing
+local evidence and supersedes the accumulated routing diary above.
+
 The enduring question is what a denizen of latent space needs for identity,
 movement, effort, maps and reusable laws. Cumulative capability acquisition is
 one direction within that philosophy. Connected growth and assimilation after
@@ -66,8 +73,8 @@ the required comparator if a future eligible preflight funds teaching. Receipts
 live in internal/codex_transcripts, exact failures in the ledger and canonical S37.
 S34 and previously closed scientific probes remain deferred/closed.
 
-**Accounting and custody:** 958 apparatus / 0 artifact-bearing code lines
-(98 + 119 + 204 + 207 + 330), five probe blocks / zero construction rounds;
+**Accounting and custody:** 1065 apparatus / 0 artifact-bearing code lines
+(98 + 119 + 204 + 207 + 330 + 107), six probe blocks / zero construction rounds;
 S37 has two failed attempts and zero scored forwards; 15 total scored forwards,
 no GPU or training. Strategy authorization supersedes construction to repair the
 ratio. Root alone writes boards after stale-session ID collisions; integrity

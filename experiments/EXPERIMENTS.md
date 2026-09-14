@@ -1,5 +1,15 @@
 # Experiments Log
 
+## Mission-coverage consolidation — 2026-09-14
+
+Current map and routing consolidated through S49; no new empirical block. Earlier
+four negatives, two failed S37 attempts within its block, and S47's direct-method
+success retain their scopes. Six blocks, fifteen scored model forwards,1065
+apparatus /0 artifact-bearing code lines. Current notebook's stale958/five count
+corrected. Useful contribution need not add novel information. The missing
+acquisition episode must identify supported prior A, new B and retained joint use;
+repeated queries over a saved export alone do not satisfy that requirement.
+
 ## S49 saved exports and later requests — 2026-09-14
 
 Pinned source inspection finds that supplying a saved reconstruction export
