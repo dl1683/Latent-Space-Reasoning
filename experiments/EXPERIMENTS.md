@@ -1,5 +1,18 @@
 # Experiments Log
 
+## S61 source resolution and S62 annotation feasibility — 2026-09-14
+
+S61 distinguishes useful resolution repair from matched-effort causal attribution
+and prior-service retention. Its source inquiry is closed. S62 independently
+verifies 26 discordant training pairs across six species for fixed breast-color
+questions: 54 pair–color comparisons, not independent observations. All 1800 raw
+training votes reproduce the aggregates (1440 known, 360 unknown); there is one
+vote per image–attribute. Initial extraction: 3,949,152 bytes / 21.62 seconds;
+additional raw-vote custody fetch: 3,900,000 bytes / 1.586 seconds. Test attributes
+remain unexamined. Frozen design selects a bounded matched-reader probe, not yet
+run. No new model block, forward, fitted reader or runner at this checkpoint.
+Receipts: `results/attribute_comparison_v1/`; canonical S61/S62 and ledger.
+
 ## S59–S60 strategy after the teaching result — 2026-09-14
 
 Two-round review declines a hierarchical-versus-flat classifier run: the direct

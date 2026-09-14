@@ -1,7 +1,7 @@
 # STATE
 
 **Research resumed — user direction, 2026-09-14.** Keep the mission fixed and
-pivot approaches around roadblocks. Source evidence reaches S60; S58 completed an
+pivot approaches around roadblocks. Source evidence reaches S61; S58 completed an
 independently reproduced CPU teaching precursor. Correct specialist pseudo-labels
 improved a frozen-feature species head; soft targets offered no advantage over
 hard labels under the locked recipe. The [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary)
@@ -9,8 +9,11 @@ is authoritative for active allocation and closed/deferred episodes.
 
 S59 declines an unmotivated hierarchical-classifier comparison. S60 adds external
 evidence for a jointly taught representation supporting later trained readers.
-Current inquiry: operational coverage when input conditions change, with training
-support and downstream competence separated from feature-matching diagnostics.
+S61 closes that source inquiry with behavioral coverage evidence and charged-reader
+repair requirements. S62 selects a bounded later-attribute comparison: retained
+specialist features versus full species logits, with recipient-feature context.
+Training support is independently verified and the test-pair/reader design frozen;
+feature extraction, reader fitting and test-attribute inspection remain unrun.
 
 The shared-predictor branch needs useful second-donor acquisition evidence; its
 isolation and conditional cache arguments are already worked out. Connected use,

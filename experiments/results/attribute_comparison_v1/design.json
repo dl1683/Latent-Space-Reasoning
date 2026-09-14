@@ -1,0 +1,177 @@
+{
+  "status": "frozen_before_test_annotation_extraction",
+  "test_pair_seed": 20260916,
+  "test_pairs": {
+    "89": [
+      [
+        5156,
+        5183
+      ],
+      [
+        5178,
+        5198
+      ],
+      [
+        5205,
+        5186
+      ],
+      [
+        5199,
+        5167
+      ],
+      [
+        5188,
+        5150
+      ]
+    ],
+    "106": [
+      [
+        6150,
+        6165
+      ],
+      [
+        6164,
+        6160
+      ],
+      [
+        6199,
+        6173
+      ],
+      [
+        6159,
+        6161
+      ],
+      [
+        6198,
+        6200
+      ]
+    ],
+    "120": [
+      [
+        6982,
+        7018
+      ],
+      [
+        7009,
+        6972
+      ],
+      [
+        6996,
+        7012
+      ],
+      [
+        6976,
+        7019
+      ],
+      [
+        7027,
+        7015
+      ]
+    ],
+    "160": [
+      [
+        9356,
+        9377
+      ],
+      [
+        9389,
+        9403
+      ],
+      [
+        9380,
+        9352
+      ],
+      [
+        9355,
+        9396
+      ],
+      [
+        9378,
+        9407
+      ]
+    ],
+    "171": [
+      [
+        10059,
+        10017
+      ],
+      [
+        10024,
+        10044
+      ],
+      [
+        10011,
+        10058
+      ],
+      [
+        10028,
+        10033
+      ],
+      [
+        10047,
+        10042
+      ]
+    ],
+    "189": [
+      [
+        11114,
+        11085
+      ],
+      [
+        11091,
+        11118
+      ],
+      [
+        11104,
+        11103
+      ],
+      [
+        11110,
+        11078
+      ],
+      [
+        11126,
+        11079
+      ]
+    ]
+  },
+  "attributes": [
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120
+  ],
+  "arms": [
+    "teacher_features",
+    "teacher_raw_logits",
+    "recipient_features"
+  ],
+  "reader": "per_attribute_centered_standardized_ridge",
+  "slope_effective_df": 15,
+  "df_cap": "minimum numerical rank across arms",
+  "eigenvalue_relative_tolerance": 1e-10,
+  "constant_for_single_target_or_rank_zero": true,
+  "free_intercept": true,
+  "annotation_rule": "unanimous votes at certainty>=3 elseunknown",
+  "tie_credit": 0.5,
+  "primary_unit": "mean qualifying color score within disjoint image pair",
+  "logit_atol": 1e-05,
+  "logit_rtol": 1e-05,
+  "cpu_threads": 2,
+  "extract_deadline_seconds": 120,
+  "fit_deadline_seconds": 120,
+  "max_new_teacher_forwards": 180,
+  "gpu": false,
+  "new_weight_downloads": false
+}

@@ -268,7 +268,7 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 ## Next-work boundary
 
-**Active allocation, through S60:** strategy/discovery for useful successive
+**Active allocation, through S62:** strategy/discovery for useful successive
 acquisition and composition. S58 completed a bounded species-teaching precursor:
 correct hard pseudo-labels improve a frozen-feature recipient head after donor
 removal; richer soft targets offer no advantage under this recipe. Preserve that
@@ -278,10 +278,12 @@ quality. Connected use and ordinary teaching remain valid; donor removal is the
 selected resource-motivated assimilation branch, not a universal mission gate.
 
 S59 declines a hierarchical classifier comparison without a material admission
-benefit. S60 supplies a constructive representation-level teaching precedent.
-Next examine whether contributed operations remain usable across permitted input
-conditions, distinguishing training-support confounds from intrinsic limitations.
-No large reproduction or extension of S58's fixed test panel is queued.
+benefit. S60–S61 supply representation-teaching and operational-coverage precedents;
+their bounded source inquiry is closed. S62 now selects a bounded comparison of
+retained features versus full terminal outputs for later within-species attribute
+questions. Training annotation support and reader design are independently reviewed;
+the frozen test-pair manifest precedes test-label extraction. No feature extraction
+or reader fitting has run yet. No large reproduction or species-task tuning is queued.
 
 The next empirical decision must identify what an established system does, what a
 new donor contributes, and an intended use whose result changes the investment.
@@ -6363,3 +6365,168 @@ control. Continue: this is a useful positive precedent, not proof that matching
 representations always beats teaching outputs at equal effort. The next source
 question concerns coverage across presentation conditions and actual operation
 quality; do not substitute feature-error tables for behavioral evidence.
+
+### S61. Separate presentation robustness from added information
+
+**Definition before a local probe.** An acquired operation is promised on inputs
+and requests, not on a vector without its acquisition conditions. Let T change
+an input presentation. Call T admissible for request q only when the evidence
+needed for q is preserved. Then test the achieved reader's useful response across
+x and T(x), charging any reader repair separately. Higher resolution can reveal
+new evidence; preserving every output under every resize is not the objective.
+For requests that need those new details, usefulness should be measured directly.
+This applies the existing task-relative interface vocabulary, not a new invariant.
+
+The immediate source question is whether S60's feature mode change corresponds
+to lost useful behavior and whether correcting teacher/input coverage repairs it.
+The simplest competing explanation is ordinary training support: different teachers
+were used under different input conditions. No intrinsic conflict among their
+latent spaces follows from that recipe. The inexpensive inference alternative is
+to retain an operation's working input size where the intended request permits it;
+compare its lost detail and cost before declaring new training necessary.
+
+**Independently reviewed source.** [RADIOv2.5 v2](https://arxiv.org/html/2412.07679v2)
+section 3.1/Figure 2 reports zero-shot classification deterioration above roughly
+512 pixels, beyond a feature-only diagnostic. Section 4.2 teaches each provider
+across resolutions, using interpolation or padded/cropped teacher inputs, and
+describes 900,000 training iterations versus the 600,000-iteration baseline.
+Table 1 A-to-B improves ADE20K from 50.03 to 52.84, but depth slightly decreases.
+Semantic heads are trained at three resolutions and the best reported (§5.1).
+VLM evaluation unfreezes the vision encoder during instruction tuning; it is not
+the frozen-encoder protocol of S60. These results support the repair approach,
+while leaving training-budget attribution and unchanged-reader retention distinct.
+
+**Decision relevance.** We now have an operationally consequential source failure
+with a concrete constructive response, not merely colorful feature plots. The
+relevant acquisition object includes which conditions each contribution was taught
+under. The next mathematical question is how to specify useful extension across
+conditions without demanding invariance to genuinely new information. No local
+model download, run, new apparatus or change to S58's panel is selected.
+
+Independent `alignment_contribution_review` confirms that Figure 2's classification
+test retains the language-side consumer, whereas separately fitted dense readers
+and vision-language fine-tuning measure other forms of usefulness. Reader weights
+need not be frozen as a universal rule: the retained capability is the promised
+external operation, and permitted repair has a cost. Newly prepared benchmark
+readers do not measure retention relative to a previously achieved service unless
+that service is actually replayed. This applies S7/S13/S32 rather than adding a
+new retention requirement. No seed-level or matched-budget causal claim is made.
+
+**Second-round decision.** Close this bounded source inquiry. For a future
+admission, reserve a bounded consumer-repair arm and judge prior achieved requests
+before and after permitted repair. An inexpensive repaired reader is a valid
+acquisition outcome; a fixed-reader failure alone does not reject the route.
+Another generic protocol elaboration adds little without a concrete admission.
+
+### S62. Later questions versus retained terminal answers — selected bounded probe
+
+**Question and definition before data binding.** Does retaining a specialist's
+internal representation allow useful later questions that its ordinary prediction
+interface makes substantially harder? Let z(x) be a frozen specialist feature,
+p(x) its full species prediction, and a(x) a separately annotated visible attribute.
+Compare equally budgeted readers of z and p on held-out attribute questions.
+Attribute variation within species is required for the main contrast; otherwise
+species recognition alone could explain the apparent new access. Include that
+identity shortcut and the existing recipient representation as direct controls.
+This is a task-relative value-of-interface question, not proof that logits contain
+no attribute information or that a learned reader invents no new knowledge.
+
+The so-what is: keep a specialist's representation and ask useful questions later,
+instead of being limited to the answer it was originally trained to give. A
+pairwise attribute comparison could be a simple declared consumer, but is not
+automatically a reasoning-model breakthrough. Connected feature extraction and
+offline exports are distinct; cached features do not provide fresh-input access
+after the provider is removed.
+
+**Candidate resources and selection limits.** Existing S58 models and images may
+avoid new weight downloads. Per-image attribute metadata and its uncertainty
+labels must first be bound. No attribute outcomes have been inspected, no attribute
+reader fitted and no additional feature extraction selected. Reusing a panel
+after seeing species results must be disclosed; this does not reopen or tune its
+completed species estimand. Independent direction review will decide whether this
+addresses the mission or merely repeats terminal readout work. No run is queued.
+
+**Reviewed annotation-feasibility allocation, before selected-image labels.**
+Bind the fixed breast-color family, IDs 106–120, from the pinned mirror's root
+`attributes.txt`. Certainties 1/2 mean not visible/guessing; retain votes with
+certainty 3/4 (probably/definitely). This is annotation confidence, not verified
+visibility. Aggregate confident votes only when unanimous; conflicting confident
+votes or no confident vote yield unknown, never absent. Inspect original-training
+images only. With seed 20260915, shuffle sorted training IDs within each sorted
+species, then pair adjacent IDs without reuse. Freeze those pairs before reading
+annotations. Report every color/species, including zero qualifying comparisons.
+Qualifying comparisons require both labels known and different.
+
+At least twelve distinct qualifying training pairs across at least three species
+licenses reader-design consideration; it is an allocation threshold, not proof of
+statistical adequacy. Multiple colors on one pair are not independent support.
+Test annotations remain unexamined. Failure closes this family/pair construction
+without a feature-capability verdict or attribute search. Independent reviewer
+`alignment_contribution_review` accepts this scope and aggregation correction.
+The 73,132,180-byte annotation file supports byte ranges; bound extraction to
+5 MB and avoid the complete archive. No model compute is authorized by this gate.
+
+**Completed training-support check.** The frozen manifest precedes ranged label
+extraction. It yields 26 distinct discordant training pairs across all six species
+(4/5/5/2/7/3 in class order), meeting the allocation rule. Extraction received
+3,949,152 bytes in 21.62 seconds, with per-range hashes and all selected training
+labels retained. This is annotation preparation, not model evidence; no forward
+or fitted reader occurred. Test attribute labels remain unexamined. Exact receipts
+are in `experiments/results/attribute_comparison_v1/`.
+
+**Prospective reader-design proposal, not yet execution authorization.** Retain
+all 200 raw teacher logits as the primary terminal-output comparator, not just the
+winning label or six-class restriction. Compare pooled teacher features and cached
+recipient features, with class-identity shortcuts as diagnostics. Larger feature
+dimension must not silently grant unrestricted reader capacity. One candidate is
+ridge readers with train-only standardization and matched effective degrees of
+freedom, selecting regularization from the training feature spectrum rather than
+attribute outcomes. A shared intercept and separately counted feature/storage
+costs remain necessary. Such matching compares a declared accessible reader family;
+it does not test every possible decoder or establish information-theoretic absence.
+Direction review must settle this budget before any teacher-feature extraction.
+
+**Execution design approved after review, before test annotations.** Use linear
+ridge readers of full raw 200 logits, pooled 512 specialist features, and cached
+576 recipient features. For each attribute, use identical confident training rows
+across arms, center and standardize on those rows only, and match slope effective
+degrees of freedom to min(15, minimum numerical rank across arms). Rank tolerance
+is 1e-10 times the largest training Gram eigenvalue in float64. Add a free intercept;
+rank-zero or single-valued targets receive constant scores. Find regularization
+from the feature spectrum alone, including the zero-regularization pseudoinverse
+limit when needed. Report achieved degrees of freedom and regularization. This
+controls one complexity measure, not all expressive power or inductive bias.
+
+Freeze disjoint original-test pairs by the same sorted-species/shuffled-ID procedure
+with independent seed 20260916 before extracting their labels. Score known,
+discordant colors by comparing continuous predictions, with exact ties worth .5;
+average colors within each pair. Report paired feature/output wins, losses, ties,
+mean score difference, support and species breakdown. No arbitrary success gate,
+attribute selection, hyperparameter sweep or confidence claim from pair–color rows.
+
+Authorize at most 180 CPU specialist forwards to cache pooled features, reusing
+all prior recipient features and raw logits. Verify reproduced logits with
+atol=1e-5, rtol=1e-5; a mismatch blocks interpretation until resolved. External
+process deadlines: 120 seconds feature extraction and 120 seconds fitting, with
+attempt receipts before launch. No GPU or new weights. Annotation extraction is
+separate bounded preparation; raw selected votes must be retained for custody.
+Independent `alignment_contribution_review` approves this bounded probe, not any
+broader reasoning, intrinsic-information or cumulative-acquisition claim.
+
+**Custody completion.** Independent `cache_integrity_review` reproduced all fixed
+pairs and support counts, then verified all 1800 retained training votes against
+the aggregates: 1440 known, 360 unknown, zero mismatches. Each image–attribute has
+one vote, so unanimity is vacuous on these records; confidence filtering does not
+establish inter-annotator agreement. To preserve raw-vote evidence, six previously
+hashed ranges were re-fetched (an additional 3,900,000 bytes / 1.586 seconds after
+the initial feasibility check). Combined annotation acquisition is 7,849,152 bytes;
+this supplemental custody action is separately charged, not hidden inside the
+initial 5 MB allocation. Only selected training votes are retained; fetched ranges
+can contain neighboring records that were discarded without label analysis.
+
+The frozen `design.json` SHA256 is
+`26dae188c82606b88ae28f97222e495bac479ae622922e6684a756e38792f6b7`.
+It fixes all thirty test pairs before their attribute labels are extracted. Next:
+implement one bounded runner, retain selected test votes, extract at most 180
+specialist feature packets, fit the fixed readers, and independently audit the
+result. No code or model execution is represented as completed by this checkpoint.
