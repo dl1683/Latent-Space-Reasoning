@@ -5936,3 +5936,29 @@ law is established. Independent strategy review accepts this narrower residue an
 rejects another scale counterexample as uninformative. Stop this artifact search.
 Small CPU preparation remains authorized when it serves a concrete new question;
 this check does not select training or demand another user confirmation.
+
+**Next candidate, with a corrected teaching comparator.** Independent two-round
+strategy dialogue narrows a possible precursor to an explicitly requested species
+service added beside an established broad-object service. This is ordinary
+specialist teaching through frozen recipient features, not S42's trainable-suffix
+experiment or a claim of joint reasoning. Its useful question is whether specialist
+supervision improves held-out species behavior under a limited label budget and
+survives removal of the specialist at inference. Old-head isolation is bookkeeping.
+
+An original generalist lacking the species vocabulary cannot supply a matched
+species-teaching baseline. Compare the same recipient features, head capacity and
+training-image pool with (i) the declared ground-truth label budget, (ii) those
+labels plus specialist distributions, and (iii) those labels plus specialist hard
+pseudo-labels. Additional unlabeled-image supervision is intentional, not equal
+information; charge its preparation. A fully labeled head is a separately costed
+reference. Direct specialist execution remains a deployment alternative. Bind the
+specialist taxonomy explicitly; restriction or renormalization cannot silently
+turn unsupported labels into model errors. Split evaluation images before fitting.
+
+This candidate is worth one bounded resource-feasibility allocation, not an open
+model catalog. It still needs a small trained species-prediction port, its vocabulary
+and compatible evaluation images; the S55 editable-consumer lookup stays closed.
+The next check is limited to that prediction role and may prepare a small CPU
+sample. No model, dataset, run or acquisition result is selected by this paragraph.
+The head is ordinary mathematical scaffolding; any native-math contribution must
+come from subsequent evidence about useful acquired distinctions and their effort.

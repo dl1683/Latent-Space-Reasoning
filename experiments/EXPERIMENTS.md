@@ -1,5 +1,14 @@
 # Experiments Log
 
+## S55 species-teaching comparator clarification — 2026-09-14
+
+Two-round strategy dialogue selects one bounded resource-feasibility allocation
+for a possible explicit species service. A generalist without species outputs is
+not a valid species-teaching comparator. Label-only, soft specialist teaching and
+hard pseudo-label teaching must declare supervision and cost. This is ordinary
+assimilation feasibility, not shared-suffix reuse or joint reasoning. No new run,
+empirical block, model forward or apparatus line. Details remain in S55.
+
 ## S53 reaction-consequence source contract — 2026-09-14
 
 One specialist source and two-round direction review select conditional structural
