@@ -20,11 +20,12 @@ with competent inputs or establish that a learned exporter helps. No rerun,
 threshold change or new selection follows. [Raw result](experiments/results/encoder_continuation_v1/result.json)
 retains probabilities, counts and hashes; the completed audit receipt is in the ledger.
 
-**Current paper checkpoint:** S34's concrete image proposal is deferred after two
-fresh design dialogues. No weights or local model execution were purchased.
-Retain coverage/selection controls and the scoped range-only selective-execution
-argument. Return to what a subsequent acquisition actually inherits; no replacement
-image-bank hunt, judge-calibration program or extra proposal round is selected.
+**Current paper checkpoint:** S34's bounded image proposal is deferred without
+execution. S35's two fresh dialogues close the inheritance framing. The canonical
+empirical frontier connects useful contribution, retained interpretation/repair
+and total effort to the original grafting, encoder-reasoning and growing-space
+uses. No scalar-transfer run, stronger mandatory admission-learning criterion or
+further generic framing is selected. A consolidated strategy review is next.
 
 
 **Accounting and custody:** 628 apparatus / 0 artifact-bearing code lines

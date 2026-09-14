@@ -73,11 +73,11 @@ and the correction of the audit prose's runtime transcription are in the ledger.
 No next run is selected. Preserve the broader capability-composition objective.
 
 **Active decision:** follow the [canonical Next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-S34's bounded image proposal is deferred after two fresh design dialogues. Its
-controls are retained; no weights or model execution were purchased. Compatibility,
-judging and an unspecified next use make the investment unattractive. Return to
-what a subsequent acquisition inherits from prior preparation; no replacement
-image-bank hunt or generic proposal round. Canonical routing controls.
+S34's bounded image proposal is deferred without execution. S35's two-dialogue
+inheritance framing is complete; the canonical empirical frontier now organizes
+useful contribution, retained interpretation/repair and total effort. No further
+generic definition, scalar-transfer run or replacement image hunt is selected.
+A fresh consolidated strategy review checks this map against the original uses.
 
 **Session accounting:** 628 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207 runner lines); four probe rounds / zero building rounds.

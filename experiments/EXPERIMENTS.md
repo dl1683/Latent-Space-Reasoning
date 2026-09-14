@@ -1,5 +1,15 @@
 # Experiments Log
 
+## Inheritance framing complete — 2026-09-14
+
+Two fresh direction dialogues close S35's paper analysis. A retained fitting choice
+is reconstructible from declared historical evidence; its usefulness after a new
+provider still requires quality/cost evidence. This is a legitimate cheap baseline,
+not a new admission-learning algorithm or selected experiment. The three empirical
+uncertainties are useful contribution, retained interpretation/repair and total
+effort. Stronger learning-to-admit is optional. No model calls or new runner.
+Receipts: `inheritance_dialogue_r1_20260914` and `inheritance_dialogue_r2_20260914`.
+
 ## Candidate proposal decision — 2026-09-14, deferred
 
 S34 now specifies 32 possible fixed candidates, accessible generator/object/scene
@@ -11,7 +21,8 @@ outweighs a narrow interface result with no concrete next use. An authenticated 
 opened the image but mislocalized colors: file access works, endpoint reliability
 is unproved. Root and an independent reader cross-checked the figure. This separate
 source-image call adds no local probe forwards. Receipts and hashes are in
-`candidate_proposal_dialogue_r1_20260914` and `source_image_judge_readiness_20260914`.
+`candidate_proposal_dialogue_r1_20260914`, `candidate_proposal_dialogue_r2_20260914`
+and `source_image_judge_readiness_20260914`.
 
 ## Fourth periodic approach review — 2026-09-14, 02:40 UTC
 

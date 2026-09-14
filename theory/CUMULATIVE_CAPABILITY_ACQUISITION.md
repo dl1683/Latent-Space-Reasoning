@@ -59,6 +59,60 @@ contracts, with explicit task-family, evaluation and coverage assumptions.
 These are analytical constraints and external positive precedents, not discovered
 laws or demonstrated holes in a learned space. Current routing is below.
 
+## Empirical frontier and intended uses
+
+The strategy map is sufficiently defined to distinguish three decisions. It is not
+a claim that the scientific problem is solved or that a particular system works.
+
+| Remaining uncertainty | Evidence that would change the investment |
+|---|---|
+| Useful contribution | On fresh meaningful joint requests, a contributor performs its assigned role through the receiving interface. Compare omission, the cheapest adequate direct route and legitimate receiver learning; donor-alone superiority is unnecessary. If component competence is weak, composition remains untested. |
+| Retained interpretation | A later addition reuses identified evidence/interpretation and keeps established uses adequate, with any repair charged. Compare actual deployed behavior, not just the original baseline. Fixed consumer reuse is useful even without learning across admissions. |
+| Consequential effort | At adequate old/joint quality, retained preparation beats competent replay, incremental fitting, direct learning or routing on the costs that matter for the intended use. Initial training, new extraction, support preparation, repair, storage and recurring inference are all part of the comparison. |
+
+A useful quality gain can justify additional cost. Cost superiority and progressively
+cheaper admissions are not universal requirements for cumulative growth.
+
+**Capability grafting and a chimera.** The useful endpoint is a joint behavior such
+as using specialist evidence in a competent language/multimodal response while
+preserving prior uses. A map must identify a callable or transportable computation,
+its inputs and the consumer that can use it. Known stitching and teaching precedents
+justify investigating this route; they do not establish isolated capability regions,
+arbitrary donor compatibility, or training-free assimilation. Runtime composition,
+partial shared computation and donor withdrawal remain distinct investments.
+
+**Reasoning through encoders.** The operative object is a competent observation,
+comparison, update or candidate judgment, plus a procedure that can use it repeatedly.
+A decoder is one possible consumer, not an automatic explanation of where reasoning
+or newly learned knowledge resides. Existing structured readouts and direct use of
+available evidence are serious alternatives. The selected protein continuation panel
+had weak first proposals and cannot rule out competent encoder-supported reasoning.
+The deferred image proposal also leaves participation unmeasured.
+
+**A space that grows across releases.** A persistent system may retain multiple
+ports, enlarge its representation, or migrate to compatible new providers. It need
+not place everything into one fixed vector or execute every retained model on each
+query. Saved embeddings cover their encoded inputs; fresh questions need appropriate
+callable access or a separately learned export. A retired model's token table does
+not preserve its contextual computation. Replacement may preserve a useful interface
+without adding a capability; a new useful distinction or operation is growth.
+
+**Efficiency applications, including verbosity.** An internal intervention is useful
+when quality and completion remain adequate and total work falls. Direct prompting,
+decoding and budget remedies must be measured before attributing savings to latent
+control. Shorter outputs alone do not establish better reasoning or acquisition.
+No verbosity experiment or earlier decoding line is reopened by this application.
+
+**Current priority.** Useful contribution has explanatory priority: cheaper admission
+of an unhelpful contributor is not the desired outcome. That is not a compulsory
+output-only gate or another preliminary diagnostics program. Choose evidence because
+its possible outcomes change a concrete acquisition decision in an intended use.
+S34 is deferred precisely because a narrow measurable participation effect did not
+yet justify its acquisition and judging cost. Neither a cheap lambda experiment nor
+another paper catalog fixes that missing value. The next substantive empirical
+investment must name the use, existing competent resources, permitted new teaching,
+retained object and rival method together; this map alone queues no construction.
+
 ## Philosophy and direction
 
 The enduring philosophy is to take latent space as a world. What would a
@@ -221,14 +275,14 @@ judge-calibration program or proposal round. Reopening requires a material chang
 arising through other work, not an assigned search for one. Preserve its controls
 and resource analysis as transferable strategy evidence.
 
-The next direction decision returns to S28's actual inheritance question: what
-prepared interpretation or operation can a later contributor use, beyond simply
-adding another independently executed model? S34's range-only argument separates
-selective execution from compression and teaching, but selects no new experiment.
-Work out one concrete successive-acquisition obligation before choosing further
-sources or compute; challenge whether it adds information beyond the completed
-contracts. Fourth periodic review completed around 02:40 UTC (e1086–e1087); next
-around 04:40 UTC after consolidation. Broad philosophy and closed lines remain.
+S35 completes the inheritance framing with two fresh dialogues and a concrete
+reconstructible fitting choice. It selects no scalar-transfer experiment and adds
+no mandatory learning-to-admit criterion. Further generic definitions, source
+catalogs and reconstruction examples are not the next work. The empirical frontier
+below controls evidence selection; use an intended application to identify the
+observation that would change an acquisition choice. No implementation or model run
+is queued. Fourth periodic review completed around 02:40 UTC (e1086–e1087); a fresh
+consolidated strategy review is next. Broad philosophy and closed lines remain.
 
 ## Conditional route choices
 
@@ -3396,7 +3450,7 @@ preparation, direct conditioning is the sensible competing investment. This imag
 lifecycle is now a worked option with explicit limits, not the chosen application
 of the entire project. No local image model or training job is selected by this paper analysis.
 
-**Cheapest useful first investment: completed-candidate evaluation.** Independent
+**Earlier investment proposal: completed-candidate evaluation.** Independent
 review identifies an avoidable bundle in trajectory guidance: scene interpretation,
 noise-state validity and derivatives need not be learned together. Keep the existing
 object-conditioned generator, produce a fixed budget of completed candidates and
@@ -3435,7 +3489,7 @@ large paper experiments. Checkpoints and training data links are not coverage
 receipts. No model weights, linked training corpus or new generator run were
 requested. This is a scoped artifact-eligibility finding, not global data absence.
 
-**Current disposition:** retain the lifecycle, but make completed-candidate
+**Pre-deferral disposition:** retain the lifecycle, but make completed-candidate
 coverage and useful clean evaluation the first prospective evidence purchase.
 Trajectory guidance is a later investment if proposal coverage warrants it. The
 source-only lifecycle account is complete; new evidence would require one suitable
@@ -3455,172 +3509,41 @@ participation, retention across additions and acquisition savings remain unmeasu
 Receipt `strategy_periodic_4_audit.md`, session
 `01a09dc5-c8af-7050-98ac-ed4203f6ed7e`; audit e1086–e1087, root synthesis complete.
 
-**One bounded candidate-data proposal (deferred after two dialogues; historical design).** The
-fourth review asks for accessible components, not further example hunting. A
-feed-forward class-conditioned generator avoids a sustained diffusion trajectory
-for this first coverage question. This is a different concrete instantiation of
-the lifecycle; it does not reproduce the selected compositional-diffusion paper.
+**Deferred candidate-data design, preserved for reuse.** The full resource and
+selection specification is in this file at commit `f9ce821` (retrieve with
+`git show f9ce821:theory/CUMULATIVE_CAPABILITY_ACQUISITION.md`), plus the hashed
+resource and dialogue ledger entries below. This table consolidates that closed
+proposal; no run or compatibility success is implied.
 
-| Role | Named resource and verified access | Unverified before execution |
-|---|---|---|
-| Completed candidates | [Official generator code](https://github.com/huggingface/pytorch-pretrained-BigGAN/tree/1e18aed2dff75db51428f13b940c38b923eb4a3d), 128-pixel configuration; noise vector, class vector and truncation inputs. Official checkpoint HEAD 200, 210,849,368 bytes | Loading/current-package compatibility, resident memory, CPU latency and task coverage |
-| Existing object assessment | Installed torchvision 0.26.0 ResNet18 `IMAGENET1K_V1`; official weight HEAD 200, 46,830,571 bytes; 1,000 class outputs | Adequacy on generated candidates; no object-fidelity guarantee from confidence |
-| Acquired scene assessment | [Official scene code/labels](https://github.com/CSAILVision/places365/tree/8a953ed56438726dc98bdef3796d042e7f1f171e), ResNet18 with 365 outputs; official checkpoint streamed-header request 200, 45,506,139 bytes | Generated-image adequacy, calibration and current checkpoint compatibility |
+| Item | Preserved specification |
+|---|---|
+| Generator | Official `pytorch-pretrained-BigGAN` revision `1e18aed2dff75db51428f13b940c38b923eb4a3d`, deep-128; 210,849,368-byte checkpoint. Noise/class/truncation interface, no discriminator or documented joint scene prompt. |
+| Object evaluator | Installed torchvision 0.26.0 ResNet18 `IMAGENET1K_V1`, 46,830,571-byte checkpoint; short-side resize 256, center crop 224, official normalization. |
+| Scene evaluator | Official Places365 revision `8a953ed56438726dc98bdef3796d042e7f1f171e`, ResNet18, 45,506,139-byte checkpoint; square 256 resize, center crop 224, official normalization. Square source images make the resize geometry coincide; tensor equality still needs checking. |
+| Access status | Code, labels and successful headers only; 303,186,078 total weight bytes, no bodies acquired. Full weight hashes, loading, compatibility, memory and latency unverified. Installed torch 2.12.0.dev20260408+cu128, NumPy 2.3.5, SciPy 1.16.2; generator package absent. |
+| Candidates | Four object conditions 208/281/339/817 (dog/cat/horse/sports car), four fixed seeds 0–3, paired noise at truncations 0.5 and 1.0: 32 distinct images maximum, all failures retained. Two requests per pool: scene classes 150 broadleaf forest and 319 street. |
+| Signals | Sum dog indices 151–268 and domestic-cat 281–285; individual 339/817 for horse/car; single declared scene classes. Supplied label interpretation, not quality evidence. |
+| Primary | Scene-only argmax, truncation 0.5, against object-only. Opposite-scene control uses identical images/scores. Exact uniform-selection expectation adds no model calls. |
+| Secondary | Fixed first candidate, joint sum of within-pool object/scene ranks (ties object rank then stable ID), and supported truncation 1.0 remedy. No post-result promotion. |
+| Practical screen | Net joint gain at least 2/8 versus object-only, at least 1/8 versus swapped scene, above uniform expectation; at most 1/8 object spoil. Report recoveries/losses, spoils/repairs and baseline-adequate denominator. A one-object-block gain stays scoped to that block. |
+| Endpoint | Two independent blind image readings for object, each scene and usability, with clear/ambiguous/absent labels. No scores or winning arm disclosed. Coverage is acceptable-candidate count, not a selector result. Shared candidate labels remain consistent across all comparisons; funding sensitivity to ambiguity makes the purchase inconclusive. |
+| Dependence | Four object blocks; shared seeds, paired truncations and two requests are nested. Different rendered images have separate labels. Descriptive effects only, no general significance claim. |
+| Ceilings | CPU float32/eval/batch1/two threads/one process; downloads 320 MiB/90s, compatibility+load 120s, inference 180s, peak RSS 3 GiB; 33 forwards per model including one fixed-input repeat, 99 total maximum. **45 minutes total effort**, including judging and the result audit. No fitting, gradients, porting extension or environment upgrade. |
+| Stopping consequences | Positive primary retains only a locally useful evaluation interface; low coverage closes these pools, not selects guidance. Adequate coverage without benefit closes the selector/instance. Feasibility or judging failure licenses no behavioral conclusion. |
 
-Only code, labels, configuration descriptions and response headers have been read.
-No checkpoint body was downloaded. Code revisions do not content-hash-pin external
-weights; verify complete file hashes if acquisition is later selected. Total listed
-weight size is 303,186,078 bytes, about 289 MiB. Installed package metadata includes
-torch 2.12.0.dev20260408+cu128, torchvision 0.26.0+cu128, NumPy 2.3.5 and SciPy
-1.16.2; the generator package is absent. CUDA-capable packages do not imply GPU use.
-The generator release has no discriminator; an object evaluator is an explicit
-additional resource, not an assumed generator output.
+An authenticated Claude source-image read completed but mislocalized purple in
+Figure A2's third row. Root and an independent visual reader instead observed
+purple water/sky with green trees in several panels. This verifies access, not
+endpoint reliability; shared reader mistakes are not bounded by disagreement.
+The source-image call is separate from local probe forwards. Its exact temporary
+render was hashed and removed after cross-check; the public PDF is reproducible.
 
-**Candidate budget.** Four object conditions: ImageNet indices 208 (Labrador
-retriever), 281 (tabby), 339 (sorrel) and 817 (sports car). The reported object
-requirements are dog, domestic cat, horse and sports car. Each condition receives
-four fixed latent seeds, 0–3, at truncation 0.5 and 1.0. The second truncation is a
-supported direct diversity/quality remedy, not another task learned from the data.
-Pair underlying noise draws across truncation arms and record the exact mapping
-into generator inputs. This yields at most **32 distinct completed images**.
-
-Each four-candidate pool serves two requirements: scene label 150
-`forest/broadleaf` and 319 `street`. This is eight object–scene task combinations
-per truncation arm, sharing candidates across the scene requirements. They are
-fresh study queries; their absence from either model's pretraining is not asserted. Preserve
-all candidates and failures with stable IDs; do not generate until an attractive
-pool appears. The supported generator interface has class and truncation inputs,
-not a documented free-text joint-scene prompt. Do not invent such a prompt arm.
-This limits comparison with directly scene-conditioned generation; no efficiency
-advantage over a suitably conditioned model follows.
-
-**What the evaluators see.** Convert completed RGB outputs once to the declared
-image convention. For the object model, use its official resize-short-side 256,
-center-crop 224 and normalization. For the scene release, use its documented
-**square 256×256 resize**, center-crop 224 and normalization. Record both specifications; their resize/crop geometry coincides for these square
-128×128 inputs. Check equality of the resulting input tensors before attributing
-any discrepancy to a different view. This proposal uses the published
-readout heads, so it does not initially purchase a learned reader.
-
-For the object signal, use summed probabilities for declared domestic-dog indices
-151–268, domestic-cat indices 281–285, and the individual horse/car indices 339/817.
-These task-specific label groups are supplied interpretation, not newly discovered
-latent structure. Scene signals use the single specified scene classes; do not
-silently pool different forest labels. All probabilities are selection signals,
-not independently established quality scores.
-
-**Selectors on identical candidate sets.** Compare a fixed first-candidate rule,
-object-only ranking, scene-only ranking and one fixed joint rank rule. For the
-joint rule, rank candidates separately by each signal and minimize the sum of the
-two ranks; break ties by object rank and then stable candidate ID. This avoids
-claiming calibrated addition of unrelated class probabilities. It remains just
-one heuristic; failure would close that rule on the panel, not composition.
-If scene-only is sufficient, retain the simpler interpretation rather than
-claiming the object readout is causally necessary. The class-conditioned generator
-remains an existing contributor in every arm.
-
-**Independent endpoint and coverage.** Before seeing selectors or confidence
-scores, two independent readers assess each image for recognizable object, the
-two requested scene contexts and basic visual adequacy. State why outputs are
-manually reviewed: optimized scene scores can reward the wrong content or
-attribute binding. Use clear / ambiguous / absent judgments and preserve disagreement;
-do not silently exclude difficult candidates. A strict joint success requires a
-clear requested object and scene with a usable image. Report ambiguity bounds
-separately. Candidate-set coverage is the oracle opportunity, not a learned
-selector result. Compare selected joint success and object adequacy on the same
-task rows; raw probabilities alone cannot establish either.
-
-The existing project process calls for a Claude reader and Codex cross-check.
-An authenticated Claude CLI read of the source figure completed, but incorrectly
-localized purple regions in its third row; root and an independent reader saw
-purple water/sky with predominantly green trees in several panels. This verifies
-file access, not reliable endpoint judging. Use independent per-image descriptions
-and labels, with no selector scores, captions or intended winning arm disclosed.
-Retain both original readings; disagreement makes the affected label ambiguous
-rather than silently accepting a preferred adjudication. No extra judge-training
-program is selected. This single source-image call is separate from local probe
-forwards; the ignored receipt preserves the failed interpretation. The four object pools are the dependence blocks:
-shared seeds, truncation pairs and two scene queries do not create independent
-replicates. With only four blocks, report descriptive paired outcomes and per-object
-results rather than a general significance claim.
-
-**Resource ceiling for a later feasibility check.** CPU only, float32, evaluation
-mode, batch one, two compute threads, one compute process. Proposed ceilings:
-320 MiB of model downloads, 90 seconds for transfer, 120 seconds for compatibility
-and loading, 180 seconds for all model inference, and 3 GiB peak process memory.
-At most 33 generator, 33 object and 33 scene forwards: 32 candidates plus one
-fixed-input repeat per model to measure the local numerical noise floor. Repeat
-the first primary generator input and each evaluator's first image exactly; preserve
-raw maximum differences and do not interpret smaller shifts as a condition effect.
-This is a local repeat check, not a global determinism certificate. No gradients,
-fitting or parameter search. These are stopping limits, not measured runtime predictions.
-Do not upgrade the general environment or expand into a model-porting project.
-If the existing stack cannot support this bounded invocation, defer this image
-instantiation and retain the access result; do not raise the resource limits to
-force a behavioral conclusion. Every generation completion/failure counts, and
-a failed or incomplete pool cannot be presented as a successful fixed-budget test.
-
-**Decision this could purchase.** Adequate coverage plus useful scene-informed
-selection would establish bounded connected participation and reuse across the two
-requirements. Adequate coverage without selection benefit questions the judgment
-or rule. Low coverage only rules out these terminal pools at this budget. A later
-provider replacement or new property acquisition remains a separate observation.
-The working generator, object assessment, scene assessment and their declared
-input/label interpretation are what persist; no claim that subsequent learning
-became cheaper is licensed. This proposal is concrete enough for a design dialogue,
-not yet for execution: access/compute compatibility and independent judging have
-not been validated.
-
-
-**Root response to proposal dialogue 1 (decision completion).** A denizen's new
-judgment should change choices in the direction actually requested. Keep the
-existing class-conditioned proposal and make **scene-only argmax at truncation
-0.5** the primary acquired selector: the cheapest use of the new distinction.
-Object-only is the primary existing-choice comparator. The fixed joint rank sum
-is secondary; truncation 1.0 is a separately reported supported remedy, never a
-replacement primary chosen after results. No claim that the object evaluator is
-necessary follows if scene-only works.
-
-Add the opposite-scene selector on exactly the same candidates, as a control for
-generic image quality. Also calculate exact expected joint success of uniform
-selection (the mean of the four endpoint indicators in each pool). Neither adds
-model forwards. Preserve first-candidate and joint-rule diagnostics. Independent
-endpoint labels never enter any selector. For each comparison report joint
-recoveries/losses and object spoils/repairs separately, including object blocks.
-
-The proposed funding threshold is deliberately practical and local: primary
-scene-only selection must recover at least **two net joint successes out of eight
-requests** versus object-only, at least **one net success** versus swapped-scene
-selection, and exceed uniform expected joint success. Allow at most **one object
-spoil out of eight** relative to object-only; report that loss explicitly rather
-than calling it per-case preservation. These are screening preferences, not
-estimated population cutoffs or significance tests. An apparent pass carried by
-one object block is provisional evidence confined to that block, not broad reuse.
-A positive outcome retains only this callable judgment interface for a separately
-chosen next question. It does not establish progressive acquisition savings.
-
-For ambiguity, calculate each decision contrast over the same feasible assignments
-of disputed labels: reuse a candidate's label consistently across both scene
-requests and every selector. Do not subtract unrelated optimistic/pessimistic
-rates as though labels could change by arm. If admissible assignments change the
-funding verdict, label the purchase inconclusive and stop this instantiation at
-the declared budget. Coverage is reported per requirement as independently judged
-acceptable-candidate count, without an additional arbitrary minimum gate.
-Adequate coverage with no useful selection closes this selector/instance. Little
-coverage closes these pools at this budget; it selects neither guidance nor a new
-generator. Compatibility, completion or judging failure yields feasibility evidence
-only. A useful secondary joint rule with a failed primary is a scoped observation,
-not permission to promote the rule or rerun automatically.
-
-Add a **45-minute total effort ceiling** for any subsequently selected acquisition,
-including compatibility troubleshooting, data generation, blinded review,
-disagreements, interpretation and its single result audit. Retain the narrower
-transfer/load/inference/memory ceilings above. Prior proposal research and this
-readiness check are sunk preparation, recorded separately and not described as
-free. No dependency-porting extension or judge-calibration project is purchased.
-This completes the proposed decision rule for one final fresh dialogue; execution
-has not yet been selected.
-
+Provenance: `candidate_proposal_resources_20260914`,
+`source_image_judge_readiness_20260914`, and
+`candidate_proposal_dialogue_r1_20260914` / `candidate_proposal_dialogue_r2_20260914`
+in the ledger. Final deferral below supersedes the earlier conditional funding
+recommendation. The full historical proposal retains URLs, transformations, timing
+scope and root responses; no evidence has been replaced by an execution claim.
 
 **Conditional residue: growth need not require every contributor on every query.**
 Independent strategy review worked a range-only case, not a new experiment. For a
@@ -3661,3 +3584,108 @@ endpoint choice, just as the horse score is a narrower proxy than the observable
 horse requirement. Different truncation images need their own labels. No threshold
 rewrite, extra proposal round or judged model run follows. Reopen only if other work
 materially supplies compatible resources, credible endpoints or consequential reuse.
+
+
+### S35. What would show that an acquisition inherits preparation?
+
+**Definition attempt, before selecting further evidence.** A denizen should learn
+how to admit another useful guide, rather than merely collect guides. Let H_k be
+the retained preparation after k admissions, B the fixed evidence supplied about a
+new contributor, and U the admission procedure. The resulting callable behavior is
+U(H_k,B). A participation comparison against omitting B measures the newcomer's
+use; it does not identify the value of H_k. A history comparison must hold the new
+contributor, permitted new evidence and evaluation requests fixed while changing
+which retained preparation is available. Preparation costs and earlier evidence
+must remain visible. There is no asserted monotone learning curve or theorem.
+
+The concrete obligation proposed for direction dialogue is a **second unfamiliar
+feature-provider admission to the same task consumer**, with original labeled
+support inputs retained, old provider representations retained and fresh query
+access available. Backfill the newcomer on those same support inputs; do not grant
+new target labels only to the proposed method. Compare inherited interpretation
+with ordinary incremental/warm-start fitting on exactly this evidence (S28.1), and
+with the same admission procedure without its acquired history. Keep the previously
+operational reader callable and assess actual old/joint use after any shared update.
+No dataset, model load or implementation is selected here.
+
+The difficult attribution is whether H_k carries useful acquired structure beyond
+memorized support answers or a favorable optimization initialization. Both memory
+and warm starts can be legitimate benefits; the comparison must name which benefit
+is sought instead of defining them away. Likewise, an unprepared control denied
+all earlier data identifies the value of that evidence-plus-preparation package,
+not specifically a novel integration algorithm. Replaying all previous evidence
+is a serious alternative with its recomputation charged. A fixed frozen universal
+consumer can reuse initial preparation without learning from prior admissions;
+that is useful procedural reuse, but not evidence that the first admission teaches
+something aiding the second. S28's source establishes a precedent for the former,
+not the latter. Root's current lean is to make this distinction the next decision,
+not to buy another one-off composition demonstration.
+
+
+**Independent comparison check.** Write A for retained historical evidence and
+H1 for the result of a declared history starting from H0. Comparing U(H1,B) with
+U(H0,B) identifies the retained package's value when A cannot be replayed; that
+package includes facts, support memory, optimizer state and calibration. Comparing
+U(H1,A+B) with U(H0,A+B) identifies prior preparation under common replay access
+and a declared marginal budget. Equal access is not equal cumulative exposure:
+H1 has already processed A, and that historical work is charged. Equal update
+counts need not equal FLOPs, encoded rows or teacher information. Both comparisons
+can establish legitimate warm-start benefits; neither alone isolates a novel
+integration algorithm. H1 must descend from the same H0 with fixed architecture,
+permissions and newcomer/evaluation selection to interpret the difference as
+history rather than checkpoint selection or extra capacity. A subsequent provider
+withheld from history formation and fresh query identities are required for the
+intended transfer scope. This cross-check sharpens evidence attribution without
+selecting a model or another theorem.
+
+
+**Root response to inheritance dialogue 1: one proposed retained state.** A stronger
+admission-learning claim is optional, not a new prerequisite for useful cumulative
+growth. The fresh dialogue correctly requires a coherent intervention: hold current
+features, reader and ordinary caches fixed while resetting only admission-derived
+state, if that separation actually exists. Otherwise report the broader package
+benefit. No mathematical language can manufacture that separability.
+
+Take one concrete cheap state for analysis: the ridge regularization choice lambda1
+selected during the first admission by a declared finite grid and fixed support
+fit/validation partition. Use a fixed objective normalization and recorded feature
+preprocessing; lambda values otherwise need not mean the same thing across episodes.
+The state includes the chosen value and provenance, not a newly claimed algorithm.
+On a second provider, retain the same old fitted reader and warm-start resources in
+both arms. One fits the expanded reader using lambda1; the other may select anew
+from the same grid, on the same permitted support evidence, with search charged.
+This asks whether avoiding repeated selection is worth retaining an empirical
+choice; it does not assume that the inherited choice remains adequate.
+
+The reconstruction procedure g reruns the first admission's recorded grid search
+on its retained feature rows and labels, with the same partition, preprocessing,
+solver rules and randomness. It returns the same state under deterministic replay.
+Thus no new information is supplied by the scalar when these inputs are available;
+its possible benefit is avoiding reconstruction or repeated selection. A changed
+provider can alter the best regularization, so replaying lambda1 does not guarantee
+second-admission quality or preservation of old decisions. A fixed reasonable
+lambda, no-search warm start and fresh support-based selection are serious cheap
+alternatives. Their old/joint quality still needs fresh evaluation.
+
+This identifies the deciding cost: if feature extraction or recurring model calls
+dominate, saving a small hyperparameter search may not materially change the total.
+If new search and repair cost less than the loss induced by stale regularization,
+retaining lambda1 is unattractive. No accuracy or timing follows from this analysis.
+It adds a low-cost inheritance baseline to S28.1 and closes the reconstruction
+exercise; it does not select a scalar-transfer experiment, meta-learner, new source
+catalog or theorem. The next dialogue must decide whether anything remains worth
+learning on paper here, rather than requiring stronger inheritance merely because
+fixed procedural reuse already has positive precedents.
+
+
+**S35 disposition after fresh dialogue 2.** The paper-only inheritance framing is
+complete. Reconstructing a previous choice and selecting an appropriate new choice
+are different operations; replay fidelity cannot establish present suitability.
+Fixed procedural reuse, cached computation and warm starts remain legitimate growth
+routes. No scalar-transfer run, stronger mandatory admission-learning criterion or
+further generic reconstruction exercise is selected. Receipt
+`internal/codex_transcripts/strategy_inheritance_dialogue_r2.md`, session
+`01a09df0-dfed-7972-b7ff-97e84d4376f2`. Three empirical uncertainties now control the
+strategy: useful contribution through an interface, retained interpretation and
+repair after additions, and consequential total work at adequate old/joint quality.
+These are dimensions of the problem, not three compulsory preliminary experiments.
