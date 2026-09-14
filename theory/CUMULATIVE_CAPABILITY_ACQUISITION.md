@@ -6,8 +6,9 @@ established theorems, demonstrated capabilities or an approved run specification
 
 ## Current decision map (strategy checkpoint, 2026-09-14)
 
-The target is **repeated acquisition in which prior preparation helps the next
-contributor or operation become useful**. A usable contribution must survive its
+The target is **repeated useful acquisition with established capabilities retained**.
+Reusing prior preparation is one important approach and potential benefit; learning
+to make later admissions easier is a stronger optional claim. A usable contribution must survive its
 interface and participate in the intended computation. No single shared geometry,
 donor pair or architecture has been selected. These distinctions organize the
 notebook; they are not a compulsory sequence of experiments.
@@ -61,14 +62,16 @@ laws or demonstrated holes in a learned space. Current routing is below.
 
 ## Empirical frontier and intended uses
 
-The strategy map is sufficiently defined to distinguish three decisions. It is not
-a claim that the scientific problem is solved or that a particular system works.
+The general problem map and a first application are selected. S36 targets better
+scientific evidence-finding through a new encoder while preserving established
+searches, initially investigating query-side compatibility. Expansion, replacement
+and no acquisition remain real outcomes. Scientific feasibility and value are unproven.
 
 | Remaining uncertainty | Evidence that would change the investment |
 |---|---|
 | Useful contribution | On fresh meaningful joint requests, a contributor performs its assigned role through the receiving interface. Compare omission, the cheapest adequate direct route and legitimate receiver learning; donor-alone superiority is unnecessary. If component competence is weak, composition remains untested. |
 | Retained interpretation | A later addition reuses identified evidence/interpretation and keeps established uses adequate, with any repair charged. Compare actual deployed behavior, not just the original baseline. Fixed consumer reuse is useful even without learning across admissions. |
-| Consequential effort | At adequate old/joint quality, retained preparation beats competent replay, incremental fitting, direct learning or routing on the costs that matter for the intended use. Initial training, new extraction, support preparation, repair, storage and recurring inference are all part of the comparison. |
+| Consequential effort | Determine whether the intended quality benefit justifies total acquisition, repair, storage and recurring work relative to competent alternatives. Require lower cost only when savings are the claim. |
 
 A useful quality gain can justify additional cost. Cost superiority and progressively
 cheaper admissions are not universal requirements for cumulative growth.
@@ -275,14 +278,25 @@ judge-calibration program or proposal round. Reopening requires a material chang
 arising through other work, not an assigned search for one. Preserve its controls
 and resource analysis as transferable strategy evidence.
 
-S35 completes the inheritance framing with two fresh dialogues and a concrete
-reconstructible fitting choice. It selects no scalar-transfer experiment and adds
-no mandatory learning-to-admit criterion. Further generic definitions, source
-catalogs and reconstruction examples are not the next work. The empirical frontier
-below controls evidence selection; use an intended application to identify the
-observation that would change an acquisition choice. No implementation or model run
-is queued. Fourth periodic review completed around 02:40 UTC (e1086–e1087); a fresh
-consolidated strategy review is next. Broad philosophy and closed lines remain.
+S35 closes the inheritance framing. The 03:34 UTC strategy-map audit identified
+application selection as unfinished; S36's two fresh application dialogues now
+resolve it. **Selected:** recurring scientific evidence-finding that distinguishes
+mechanism-testing and contrary evidence from topical similarity, while preserving
+established searches. **Initial route hypothesis:** a new encoder improves question
+interpretation through a query-side interface to retained document representations.
+Prefer expansion, rebuilding or no acquisition when their useful behavior and total
+work warrant it. Neither fixed coordinates nor lower cost is a universal requirement.
+
+The strategy-discovery picture is complete at the application-selection level, not
+at the scientific-validation or run-readiness level. Further generic definitions,
+reconstruction examples and catalogs are not the next work. A subsequent empirical
+block must select competent concrete resources and lock gain/loss, inspection,
+teaching and compute budgets; test the cheapest current-path remedy and distinguish
+newcomer contribution from learning supplied by relevance labels. No model download,
+implementation or run is queued. The original philosophy and broader chimera,
+encoder-reasoning and successive-growth ambitions remain open. Last consolidated
+adversarial review: 03:34 UTC, e1095–e1096; retain the approximately two-hour cadence
+when substantive research continues.
 
 ## Conditional route choices
 
@@ -3689,3 +3703,97 @@ further generic reconstruction exercise is selected. Receipt
 strategy: useful contribution through an interface, retained interpretation and
 repair after additions, and consequential total work at adequate old/joint quality.
 These are dimensions of the problem, not three compulsory preliminary experiments.
+
+
+### S36. Select a useful acquisition episode: a persistent scientific collection
+
+**Decision attempt before direction dialogue.** The intended recurring request is:
+find evidence relevant to a scientific question in a collection that remains useful
+across encoder releases. An acquisition should make previously poorly served
+questions materially better while established queries remain adequate. This is a
+concrete beneficiary for the growing-space idea. It tests a semantic access
+capability, not transfer of an internal reasoning algorithm or proof that the
+corpus's facts reside in encoder weights.
+
+The prepared resource is an existing collection, document identities, encoded
+vectors, its index and a working query path. This is a proposed deployment premise,
+not a claim that this repo has an eligible encoded collection: S6's rejected exports
+remain rejected. S32 supplies an external precedent for the migration decision, not
+a scientific-document dataset or demonstrated arbitrary released-model adapter.
+A collection that is cheap to rebuild or short-lived may not justify compatibility.
+
+Root's preferred route for investigation is a **query-side compatibility interface**
+from a new frozen encoder to the retained archive, using a small declared set of
+paired anchor inputs and any permitted relevance judgments. Preserve the existing
+query path as a callable fallback and judge the operational combination, not merely
+its saved weights. Compare full re-encoding/index rebuilding with the new encoder,
+and keeping the existing system without acquisition. A separate new index or typed
+late fusion is also a serious route when complementary access matters; shared vector
+coordinates are not mandatory.
+
+The preference reverses if the retained archive cannot adequately serve the useful
+new queries through the bounded interface while full re-encoding can, and its
+lifetime benefit justifies rebuilding. Failure of one fitted adapter does not prove
+that the old embeddings have irretrievably lost a distinction. Conversely, adequate
+new/old retrieval with consequential avoided rebuilding favors compatibility. A
+new model that yields no meaningful benefit is not acquired merely because released.
+No cost superiority is demanded when a worthwhile quality gain justifies expense.
+
+The expected next addition is another encoder release or specialist querying the
+same persistent collection. That makes retained identity, relevance evidence and
+usable query paths worth tracking; it does not promise that a first adapter makes
+later mapping easier. New anchors, model calls, calibration, index work, storage and
+query costs remain charged. No local collection, model pair, learning run or data
+acquisition is selected until the application-level preference is challenged.
+
+
+**Root commitment after application dialogue 1.** Select persistent scientific
+evidence-finding, targeting questions that require distinguishing mechanism-testing
+evidence from topical similarity, including contrary findings, while preserving
+established query adequacy. Prefer query-side compatibility provisionally because
+better question interpretation may unlock distinctions already accessible in the
+retained archive. Retained vectors are an economic hypothesis, not a mission
+requirement; choose document-side expansion or rebuilding if that supplies the
+useful distinction, and no acquisition if a cheaper current-system remedy suffices.
+This selects the application and initial route hypothesis, not a model or run.
+
+An illustrative recurring request is: “Which experiments actually test whether this
+mechanism caused the improvement, and which results limit that interpretation?”
+The system returns relevant evidence under a fixed inspection budget; it need not
+adjudicate the science or generate a conclusion. Topic-search adequacy is the old
+use; access to mechanism-testing and contrary evidence is the intended new behavior.
+Evidence finding can improve without information newly entering stored documents.
+It remains a narrower application than encoder reasoning or a chimera.
+
+Keep document identities, source text and accumulated relevance evidence through
+all routes; their value need not require retaining old vectors. Historical encoding
+cost is sunk. The prospective advantage is avoided future rebuilding, continuity or
+other declared ongoing constraints over recurring use. Do not manufacture an index
+solely to pretend it has an avoided rebuilding burden. A real deployment premise can
+be selected before local resources exist, but it is not an observed cost saving.
+
+The actual deployed query entry point must preserve old use after routing or result
+combination changes; merely keeping an old callable encoder is insufficient. New
+anchors teach correspondence, while relevance judgments can teach selection. Give
+credible current-path repairs the same permitted relevance evidence; where needed,
+an old-encoder interface with the same learning evidence tests whether gains came
+from new labels/reader capacity rather than the newcomer. A separate index combined
+by document identity is a genuine expansion option, not a failure of the mission.
+Before an eventual run, lock the minimum useful gain g, permitted old-query loss
+epsilon, common inspection budget and interface-learning budget on held-out query
+families. Re-encoding is a comparator, not a quality upper bound. The present block
+settles the strategic choice without inventing numerical evidence or an experiment.
+
+
+**Final application disposition (03:42 UTC).** Fresh dialogue 2 accepts the selected
+application and initial conditional route. No material application-selection decision
+requires another generic dialogue. The returned evidence supports a researcher's
+inspection; relevance must include contrary findings and never mean agreement with
+a query's premise. Better query interpretation cannot guarantee access to document
+distinctions absent from the retained interface. This is the scientific uncertainty
+that can favor expansion, not a reason to avoid choosing the investigation. Receipt
+`internal/codex_transcripts/strategy_application_dialogue_r2.md`, session
+`01a09e00-1c4d-7ce1-bd05-c0ea01bcb41c`. Selection-level strategy is complete;
+feasibility, attribution, retention and deployment value remain unproven. One future
+successful admission would establish a bounded result for this operation, not a
+chimera, general cumulative growth or a discovered latent-space law.

@@ -16,7 +16,9 @@ Research began at 19:45 UTC; first periodic approach review completed around
 21:42 UTC (e1027), second around 23:03 UTC (e1039-e1040), and third around
 00:54 UTC on September 14 (e1061-e1062), after consolidation at 89b34ae.
 Fourth review completed around 02:40 UTC (e1086-e1087), after e72f83d and a
-separate entropy review. Next due around 04:40 UTC. Challenge approach, never mission. GPU
+separate entropy review. Strategy map review completed around 03:34 UTC
+(e1095–e1096); retain the two-hour cadence during subsequent substantive research.
+Challenge approach, never mission. GPU
 approval remains per run. Old locked panels and paused lines are not restart
 instructions; no further model run or architecture is selected.
 
@@ -58,11 +60,13 @@ and the correction of the audit prose's runtime transcription are in the ledger.
 No next run is selected. Preserve the broader capability-composition objective.
 
 **Active decision:** follow the [canonical Next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-S34's bounded image proposal is deferred without execution. S35's two-dialogue
-inheritance framing is complete; the canonical empirical frontier now organizes
-useful contribution, retained interpretation/repair and total effort. No further
-generic definition, scalar-transfer run or replacement image hunt is selected.
-A fresh consolidated strategy review checks this map against the original uses.
+S36's two fresh dialogues select scientific evidence-finding across encoder
+releases: mechanism-testing and contrary evidence beyond topical similarity,
+with old searches retained. Initial route: query-side compatibility; expansion,
+rebuilding and no acquisition remain real alternatives. Strategy selection is
+complete; scientific validation and concrete run readiness remain unfinished.
+No model download, implementation or experiment is queued. S34 remains deferred.
+
 
 Session totals: 628 apparatus / 0 artifact-bearing code lines (98 + 119 + 204 + 207),
 four probes / zero building rounds, fifteen model forwards, no GPU or training.

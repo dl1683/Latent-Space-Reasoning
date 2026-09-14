@@ -1,5 +1,27 @@
 # Experiments Log
 
+## Application selected — 2026-09-14, 03:42 UTC
+
+Two fresh dialogues select S36's scientific evidence-finding use and initial
+query-side compatibility hypothesis, resolving the map audit's selection gap.
+Mechanism-testing and contrary evidence are the intended new behavior; established
+topic searches must remain adequate. Expansion, rebuilding and no acquisition are
+real outcomes. No local collection/model pair/run is claimed ready. Strategy selection
+is complete; empirical adequacy and value remain open. Receipts and hashes:
+`application_dialogue_r1_20260914` / `application_dialogue_r2_20260914`.
+No additional local forwards, GPU or training; four probes and 15 CPU forwards total.
+
+## Strategy map review — 2026-09-14, 03:34 UTC
+
+Fresh unprimed CLI inspected consolidated 7d0a1bf after independent entropy review.
+Continue; the general map is sufficient, but consequential use and preferred route
+remain unselected. More definitions are not the next step. S36 works one application
+choice. Corrected mandatory prior-preparation, cost-superiority and already-successful
+direct-route wording across current surfaces. No new numerical correction in inspected
+receipts, not a full numerical reproduction. Audit e1095–e1096; root synthesis complete.
+Ledger `strategy_map_adversarial_review_20260914`. Next review around 05:34 UTC;
+accounting remains four probes, 15 CPU forwards, 628:0 code lines, no GPU/training.
+
 ## Inheritance framing complete — 2026-09-14
 
 Two fresh direction dialogues close S35's paper analysis. A retained fitting choice

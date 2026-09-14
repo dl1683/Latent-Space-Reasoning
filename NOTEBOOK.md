@@ -20,12 +20,12 @@ with competent inputs or establish that a learned exporter helps. No rerun,
 threshold change or new selection follows. [Raw result](experiments/results/encoder_continuation_v1/result.json)
 retains probabilities, counts and hashes; the completed audit receipt is in the ledger.
 
-**Current paper checkpoint:** S34's bounded image proposal is deferred without
-execution. S35's two fresh dialogues close the inheritance framing. The canonical
-empirical frontier connects useful contribution, retained interpretation/repair
-and total effort to the original grafting, encoder-reasoning and growing-space
-uses. No scalar-transfer run, stronger mandatory admission-learning criterion or
-further generic framing is selected. A consolidated strategy review is next.
+**Current paper checkpoint:** S36's two fresh dialogues complete application and
+initial-route selection: scientific evidence-finding across encoder releases,
+favoring query-side compatibility conditionally while retaining expansion, rebuilding
+and no acquisition as alternatives. The general strategy picture is complete at this
+selection level; feasibility, attribution, retention and total value are unproven.
+No generic framing round, model download or experiment is queued. S34 remains deferred.
 
 
 **Accounting and custody:** 628 apparatus / 0 artifact-bearing code lines
@@ -35,9 +35,9 @@ ratio. Root alone writes boards after stale-session ID collisions; integrity
 entries restored as e1011–e1012. Mission synthesis retains its hang workaround.
 Fresh real CLI result audits and design dialogues have distinct receipts below;
 fourth periodic review completed around 02:40 UTC on September 14 (e1086-e1087)
-after consolidation at e72f83d and a separate entropy review. Next due around
-04:40 UTC. Its proposal requirement is now complete and the proposed run deferred; the
-canonical next-work boundary controls further strategy.
+after consolidation at e72f83d and a separate entropy review. Strategy map review completed around 03:34 UTC
+(e1095–e1096); retain the two-hour cadence during subsequent substantive research. S36 resolves its application-selection requirement; the canonical next-work
+boundary controls further empirical design.
 Detailed mathematics/source readings live in
 [canonical theory](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md); exact results,
 corrections and receipt hashes remain in the [ledger](experiments/ledger.jsonl)
