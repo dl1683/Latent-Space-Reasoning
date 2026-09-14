@@ -94,7 +94,9 @@ precedents support exploring both, but no cumulative local advantage is establis
 The S43 slice contains one verified answer correction and is closed; it does not
 select training. S44-S45 define a worked evidence-retrieval operation and a
 prospective unfamiliar-record relevance reversal. No competent endpoint, empirical
-panel or training run is selected; fresh donor access is a separate comparison. See the [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+panel or training run is selected; fresh donor access is a separate comparison.
+S46 prioritizes direct preference teaching as the comparator to response embeddings;
+a dictionary cannot hide an unproven semantic interpreter. See the [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 S37 stays parked; no inaccessible-reviewer repair loop or new apparatus is queued.
 
 **Session accounting:** 958 apparatus / 0 artifact-bearing code lines

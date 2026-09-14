@@ -304,7 +304,8 @@ is conditional computation reuse, not demonstrated acquisition. S43 inspected a 
 amid shared errors and incomplete targets. The slice is closed; the correction
 is not a training selection. S44 fixes evidence retrieval as one worked operation;
 S45 develops a prospective conditional-relevance comparison. Neither establishes
-a competent endpoint or selects training. Keep useful cumulative behavior as endpoint. Independent strategy reviewers
+a competent endpoint or selects training. S46 prioritizes direct task-specific
+teaching as the comparator to full response representations. Keep useful cumulative behavior as endpoint. Independent strategy reviewers
 can challenge this work without being mislabeled real CLI auditors. Do not restart
 an inaccessible-reviewer loop or require its repair before unrelated research.
 
@@ -4799,3 +4800,56 @@ preserved under useful substitution; cosine is scaffolding. A failed reversal
 could reflect conditioning, teaching or export limitations. It is not a proven
 hole in the donor's latent space. The broader chimera and encoder-reasoning mission
 remains; this is one possible observable operation within it.
+
+### S46. Teach the needed operation before predicting an entire answer
+
+**Question.** Does full response-representation teaching improve the S45 operation
+beyond directly learning the needed question-conditioned preference from the same
+training information? For this endpoint, an answer embedding is a candidate
+intermediate representation, not part of the output contract.
+
+**Primary competitor.** Keep text representations fixed and learn a task-specific
+ranking readout from the same training questions, records and donor preferences.
+Reference judgments and any human validation must be available equally to both
+arms. A response-embedding arm may exploit additional ordinary response content;
+that difference must be declared rather than called identical supervision. Compare
+quality and total preparation/inference work, not just trainable parameter counts.
+No universal superiority follows: finite data, readout restrictions and fixed
+representations may prevent direct teaching from learning a useful distinction.
+
+This local preference readout does not automatically answer unfamiliar operations.
+If predicting response representations earns its cost through reuse, test a later
+operation for which its preparation was not jointly optimized (S29/S35). Do not
+demand that the first retrieval task alone establish the value of general reusable
+exports, or claim such reuse from that task's success.
+
+**Alternative worked and corrected.** A donor might teach an explicit contrast
+dictionary: question interpretations joined to evidence interpretations, preserving
+source spans and scope. But a supposedly small matcher that recognizes negation,
+entity binding and disjointness would contain the very skill we need to acquire.
+Frozen-encoder lookup does not supply that interpretation for free. Perfect manual
+fields would move it into the builder.
+
+A genuinely executable export could instead be a donor-written predicate in a
+fixed restricted language: literal/token-position tests, Boolean combinations and
+bounded binding patterns, with preference plus matched spans or `unresolved` as
+output. No hidden `understands_disjointness` primitive. The donor supplies semantic
+rules; the builder only supplies mechanical execution and checks. Semantic repairs,
+test-specific exceptions or a new parser count as further development. Coverage
+must accompany correctness; abstaining almost everywhere is not useful acquisition.
+No such predicate has been obtained or run.
+
+**Decision after two-round dialogue.** Independent reviewer
+`alignment_contribution_review` proposed the dictionary, accepted root's hidden-
+interpreter objection, and prioritizes direct learned preference over building that
+interpreter. Keep executable donor predicates as a conditional secondary route.
+Question interpretation followed by evidence interpretation is conceptual pipeline
+complementarity, not demonstrated composition of two pretrained capabilities.
+
+**Native object and scope.** The reusable object is a scoped experimental contrast
+whose appropriate evidence depends on the question. A dictionary join is ordinary
+symbolic computation, and a vector readout is ordinary representation learning.
+Neither is a discovered native law. Their value is making the acquired distinction
+and required binding explicit. No model run, new runner, parser or training is
+selected. The next useful evidence must discriminate acquisition choices; another
+worked dictionary or arbitrary cache smoke test will not do that.

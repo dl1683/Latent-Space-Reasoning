@@ -1,5 +1,15 @@
 # Experiments Log
 
+## S46 direct operation teaching comparator — 2026-09-14
+
+Two-round independent dialogue prioritizes direct conditional preference teaching
+over full-answer representations for the specified retrieval endpoint. A contrast
+dictionary otherwise hides an unproven semantic interpreter. Donor-written bounded
+executable predicates remain a conditional alternative; no parser is built. Richer
+exports may earn their cost through later-operation reuse, which retrieval alone
+cannot show. Theory only; empirical totals unchanged. Ledger:
+`s46_direct_preference_competitor_20260914`.
+
 ## S44-S45 conditional evidence selection — 2026-09-14
 
 One source-reconfirmed worked retrieval request fixes the offered operation. A
