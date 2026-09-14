@@ -4,7 +4,7 @@ Status: current exploration direction, adopted by user instruction on 2026-09-13
 The working definitions and evaluation progression below are proposals, not
 established theorems, demonstrated capabilities or an approved run specification.
 
-## Current decision map (strategy checkpoint, 2026-09-13)
+## Current decision map (strategy checkpoint, 2026-09-14)
 
 The immediate problem is to find a **usable contribution that survives an
 interface change and can participate in further computation**. No single shared
@@ -46,12 +46,15 @@ The test is whether these definitions predict interventions and expose missing
 structure in actual learned spaces; another successful coordinate alignment
 would not by itself answer that question.
 
-**Current mathematical inquiry:** find an economical operational relation that
-changes an available acquisition, intervention or reuse decision. S24's correction
-example separates dependency, scope and realized answer change, but its completed
-contract needs only scoped record import. Learned behavior prediction is a broader
-research option; it is not automatically progress on this acquisition direction.
-The next selection must name the real operation and choice it would improve.
+**Current mathematical position:** S14 separates semantic continuation from
+internal clocks and identifies source information needed after an edit. S8.1
+shows exactly when a mean-only state can support another expected transition;
+conditional choice can need more. S8.2's independently audited finite example
+shows that retaining skill ingredients need not retain their achieved composition.
+Existing representation-learning and successor-feature results offer constructive
+contracts, with explicit task-family, evaluation and coverage assumptions.
+These are analytical constraints and external positive precedents, not discovered
+laws or demonstrated holes in a learned space. Current routing is below.
 
 ## Philosophy and direction
 
@@ -195,11 +198,19 @@ Two successive convenience-access diagnostics did not select a positive
 acquisition direction. S2.2–S2.4's selection dialogue and S14's continuation/edit
 paper case are complete: radius queries need distance plus radius; graph edits
 can require further source access. No new selector or forced route contest.
-S8 now records a positive latent-planning precedent that learns representations
-around a reused frozen processor. The active follow-up asks what makes an
-uncertain latent state usable for a subsequent operation, given the source's
-acknowledged expected-successor limitation. Distinguish that operational closure
-from coordinate-noise robustness and charge repeated representation learning.
+S8's positive planning precedent and S8.1's mean-state continuation analysis are
+complete. DeepMDP supplies existing task-relative sufficiency conditions;
+successor features supply within-family objective transfer. S8.2's exact GPI
+counterexample and conditional retention remedy have a fresh result audit
+(e1056-e1057). Do not extend that finite example into a benchmark.
+The bounded refinement check is also complete: adding an observation can split
+an old sufficient state without supplying an update for the new distinction.
+Its closure mechanism is already S11/CR-15.10, so do not repeat that theorem or
+build another finite benchmark. The decision now is whether the acquired
+distinction must remain usable after an action without querying its donor again.
+Current-readout use, retained source access and a maintained predictive state
+have different learning and recurring costs. The periodic approach review should
+choose which concrete access-and-effort question most advances the mission.
 No implementation, model run, checkpoint hunt or reproduction is selected.
 This is the sole detailed active routing; later sections retain scoped contracts
 and dated outcomes. Preserve the broader mathematical program, valid direct-use
@@ -1016,6 +1027,185 @@ measure of the effort needed to change a behavior. These are targeted interface
 questions suggested by a positive mechanism, not reasons to launch another model
 or generic latent-space measurement suite.
 
+**S8.1 — conditional proposition: when can an expected latent state be advanced?**
+To sharpen the source's stochastic-transition limitation, fix a finite state set
+S, an encoding z:S->R^d and an action a with transition kernel P_a. A belief b
+over S is exported only as `m(b)=E_b[z(s)]`. Require a receiving operation F_a
+to return the next expected encoding for **every** finitely supported belief:
+
+`F_a(m(b)) = E_{s~b,s'~P_a(.|s)}[z(s')]`.
+
+The necessary and sufficient condition is that the conditional next-feature
+expectation `g_a(s)=E[z(s')|s,a]` be affine in z(s) on this support. This asks whether the
+permitted move descends through the mean export, rather than whether nearby
+vectors look alike. The all-beliefs premise matters; a restricted deployment
+family can require less. No such property is assumed of XLVIN's learned encoder
+or transitions. This is a finite operational-closure calculation,
+not an empirical claim or a proposal to build another toy environment.
+
+**Proof.** If `g_a(s)=A_a*z(s)+c_a`, taking expectations supplies
+`F_a(m)=A_a*m+c_a`. Conversely, any coefficients alpha_s with zero total and
+`sum_s alpha_s*z(s)=0` split into equal-mass positive and negative parts.
+After normalization these give two beliefs with identical m. A well-defined F_a
+requires their expected g_a to agree, hence `sum_s alpha_s*g_a(s)=0`.
+Preserving every affine dependence makes z(s)->g_a(s) an affine map on the
+affine hull of z(S). F_a is thereby determined on its convex hull, with no
+obligation on inputs outside it. This also handles noninjective z: indistinguishable
+states must have identical expected successor features. It is existing affine
+and predictive-state scaffolding, independently checked, not new latent mathematics.
+Arithmetic averaging is itself a coordinate convention. The proposition tests
+that declared export; a probability law can instead be transported through a
+changed encoding without identifying its average with an ordinary state.
+
+**The next operation can break a previously sufficient mean.** For encoded
+states -1,0,+1, compare the equally weighted endpoint mixture with a point mass
+at 0. Both export mean 0. A deterministic transition taking both endpoints to +1
+and leaving 0 fixed gives next means 1 and 0: no function of the old mean can
+perform this particular move for both beliefs. Additional features or preserved
+branches can remove this witness; it does not refute learning a better encoding.
+
+There is a distinct observation-timing obligation even with identity transitions.
+Let two available actions pay z(s) and -z(s). Both expected payoffs are recoverable
+from the mean, so the best action chosen **before** observing the state has value
+`max(Ez,-Ez)=0` for both beliefs. If the state is observed **before choosing**,
+the value is `E|z|`: 1 for the endpoint mixture and 0 for the middle point.
+Mean-state closure for fixed actions therefore does not establish adequate
+conditional choice. This stronger operation is relevant only when the stipulated
+observation is actually available; it must not grant the receiver future knowledge.
+
+For this three-state support, adding the feature |z| distinguishes the beliefs;
+it is not a universal remedy for new states or further operations. This clarifies
+growth: add the distinction required by a new usable operation, rather than
+presuming every donor can be averaged into an unchanged state type. Possible
+realizations include richer features, explicit weighted branches, or querying
+the source again. Their acquisition and continuing costs remain empirical.
+The calculation qualifies a declared mean-only interface, not the tested planner's
+actual learned states or the feasibility of encoder-based reasoning.
+
+**Next-space question, before a bounded prior-art check.** If representations are
+learned around useful operations, what training target makes continuation quality
+the object being preserved? A reward/latent-transition objective is an existing
+candidate, not a new invention. Inspect its actual sufficiency assumptions:
+distributional transition error versus error of a mean, which task/policy family
+is covered, and which support the training data must reach. The intended decision
+is which operational contract a future co-designed space should learn against,
+not selecting an architecture or starting representation training here.
+
+**Existing sufficient-contract route.** Gelada et al.,
+[*DeepMDP*, ICML 2019](https://proceedings.mlr.press/v97/gelada19a/gelada19a.pdf),
+§§2–5, use reward error and Wasserstein error of the **full pushed-forward
+latent successor distribution**. Global value bounds concern latent policies
+with Lipschitz values; the optimal-policy bound additionally assumes a Lipschitz
+latent MDP with `gamma*K_P<1`. Local bounds use the evaluated policy's state-action
+occupancy, not arbitrary future coverage. These are discounted-return guarantees,
+not preservation of every trajectory query. §7 experiments assume deterministic
+transitions and use gradient penalties, which do not certify all theoretical
+premises. Atari results use the objective as an auxiliary to C51; latent planning
+is not the evaluated mechanism. The four-track example reports near track-invariance
+under identical dynamics/rewards, not exact empirical collapse. Root and an
+independent reader checked the main theory/experiment scope; no full proof audit
+or reproduction. This supplies a serious pre-existing co-design target, rather
+than evidence that a new latent objective has been invented here.
+
+**Our growth inference.** A representation can correctly discard which track
+an agent occupies when all relevant dynamics and rewards agree across tracks.
+A later track-specific question or reward need not be recoverable from that
+abstraction. That is task-relative compression working as intended. New rewards
+remain usable if they admit an adequate readout on the old representation; new
+actions need corresponding transition obligations. Otherwise retain a route to
+recover/refine omitted distinctions. Even predicting the full **latent** successor
+distribution does not restore information already discarded by the encoding.
+
+This gives two constructive cases to keep distinct: a new objective expressible
+through old features may reuse existing computation; a new distinction can require
+refining the space. Before treating either as novel, inspect the explicit transfer
+mechanism of successor features and generalized policy improvement for the first
+case. The bounded question is whether it actually composes useful actions across
+previously trained policies, what common semantics it assumes, and what learning
+or continuing evaluation it still needs. No policy training or architecture build.
+
+**S8.2 — proposition attempt before checking a growth guarantee.** For one fixed
+discounted MDP and exact action values of stored policies, define GPI(L) to choose
+`argmax_a max_{pi in L} Q^pi(s,a)`. Does L contained in L' imply that the policy
+GPI(L') performs at least as well as the already composed GPI(L)? The standard
+guarantee against individual stored policies is a different statement. Check this
+distinction before importing library growth as retention. This is a bounded
+mathematical source check, not an empirical toy benchmark or model run.
+
+**Primary source read.** Barreto et al.,
+[*Successor Features for Transfer in Reinforcement Learning*, NIPS 2017](https://papers.nips.cc/paper_files/paper/2017/file/350db081a661525235354dd3e19b8c05-Paper.pdf),
+§§3–5, factor policy values as expected discounted feature counts times reward
+weights. Transfer assumes common dynamics, actions and reward-feature semantics;
+new reward weights are supplied or learned. Theorem 1 bounds GPI against each
+stored policy under the **current** reward and uniform value-estimation error.
+Experiments report useful sequential navigation transfer and new reacher targets;
+the latter supplies features for all target locations and updates all four
+successor-feature models from each transition. This is meaningful within-family
+reuse, not arbitrary encoder grafting, new feature acquisition or donor removal.
+Root read the main mechanism, theorem statements and experiments. The following
+check concerns §4.2's stronger subset-policy inference, not its empirical scores.
+
+**Exact counterexample, independently derived and fresh-CLI audited.** Use
+discount .9, states u,s,x,y,z,terminal and actions 0/1. The table gives
+`next state, immediate reward`:
+
+| State | Action 0 | Action 1 | pi1 action | pi2 action |
+|---|---|---|---|---|
+| u | s, 0 | s, 0 | 0 | 0 |
+| s | x, 0 | y, 0 | 0 | 1 |
+| x | terminal, 1 | z, 0 | 0 | 1 |
+| y | terminal, 2 | terminal, 0 | 1 | 0 |
+| z | terminal, 10 | terminal, 0 | 0 | 1 |
+| terminal | terminal, 0 | terminal, 0 | 0 | 0 |
+
+At s, pi1's action values are (.9,0); pi2's are (0,1.8).
+GPI({pi1}) therefore chooses x, but at x improves to action 1 because its values
+under pi1 are (1,9). At z it takes reward 10. Its realized value from s is 8.1.
+GPI({pi1,pi2}) instead chooses y at s and then reward 2, for realized value 1.8.
+All decisive choices are strict. At predecessor u, either forced first action
+gives Q_old=7.29 versus Q_new=1.62, so the stronger Q-function comparison also
+fails. The constituent policy values at u are .81 and 1.62; the new GPI policy
+still satisfies Theorem 1 exactly. The theorem remains intact.
+
+Both constituents can be optimal for previous tasks with shared dynamics and
+common one-hot state/action features: source task i pays zero for pi_i's chosen
+actions and -1 otherwise. The selected policy attains the maximal value zero.
+Those rewards and the current target reward all use the same feature family.
+Thus assuming source-task optimality does not repair the stronger inference.
+Nor is approximation, training noise or a changed coordinate system responsible.
+
+The increased envelope of stored values is a better lower bound against stored
+policies; it is not the realized value of the old or new composed policy. This
+refutes monotonicity of **recomputed one-pass GPI under library inclusion**,
+not policy iteration after re-evaluating the improved policy or the usefulness
+of successor-feature transfer. It does not establish a failure in trained models.
+
+**Constructive retention obligation.** Include the previous executable composed
+policy g as a library member and evaluate every member's Q under the same current
+objective. With uniform action-value error at most epsilon, the next GPI policy h
+satisfies
+
+`V^h(s) >= V^g(s) - 2*epsilon/(1-gamma)`,
+`Q^h(s,a) >= Q^g(s,a) - 2*gamma*epsilon/(1-gamma)`.
+
+The Q statement is a slightly sharper consequence than the paper's stated bound;
+the state-value statement needs its own argument. Let W=max_i V^i and H=max_i Q^i.
+Approximate greediness gives `H(s,h(s)) >= max_a H(s,a)-2*epsilon >= W(s)-2*epsilon`.
+Also the policy Bellman operator satisfies `T_h W >= H(.,h(.))`. Contraction
+therefore gives `V^h >= W-2*epsilon/(1-gamma)`; conditioning on a forced first
+action supplies the Q bound. No arbitrary pointwise Q comparison was substituted
+for a deployed-return argument.
+
+Merely retaining policy code or the old envelope does not supply the composite's
+evaluation; learning its successor features also costs work. An evaluated old
+composite dominates its old constituents in the exact case, but need not dominate
+new additions. Reduction to ordinary single-policy improvement requires that
+extra dominance condition. Changed rewards protect g's value under the **new**
+reward, not its earlier numerical return; successive approximation losses can
+accumulate. The fresh CLI audit verified the witness, source scope and these
+qualifications without a numerical benchmark. Retaining constituent skills and
+retaining achieved composed behavior are different acquisition obligations.
+
 ### S9. Information gain versus new internal algorithm
 
 The third reviewer dialogue distinguishes three candidate probes:
@@ -1171,6 +1361,18 @@ error eta requires target separation between two items to be at most
 contract, not every possible representation. This is familiar mathematical
 scaffolding. The operational question is which necessary distinction or move
 it diagnoses. Choose the useful receiver operation before collecting a basis.
+
+**Growth corollary, not a new theory block.** Adding information can break the
+sufficiency of an old transition port. For example, T(a)=c, T(b)=a, T(c)=c admits
+a one-place quotient; newly distinguishing c leaves {a,b} with no unique successor
+block. Refining by future observations repairs it through the existing continuation
+construction. For finite stochastic kernels and arbitrary starting laws, the
+corresponding requirement is equal transition probabilities into each quotient
+block, not merely equal means of selected features. This is familiar quotient/
+lumpability scaffolding, independently checked, not learned-model evidence.
+It changes an acquisition decision only if the new distinction must be advanced
+without source requery. Current readout can still be useful without that contract;
+otherwise charge richer maintained state, transition learning or continued access.
 
 ### S12. What a model provider would actually export
 

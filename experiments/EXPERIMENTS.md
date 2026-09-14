@@ -1,5 +1,19 @@
 # Experiments Log
 
+## Continuation and growth contracts — 2026-09-14, mathematics/source only
+
+Canonical S8.1 gives a conditional mean-state closure proof and separates
+fixed-action prediction from observation-then-choice. DeepMDP and successor-feature
+primary sources supply existing task-relative representation and transfer contracts.
+S8.2 gives an exact counterexample to monotonicity of recomputed one-pass GPI
+under policy-library inclusion; its standard constituent-policy theorem remains
+intact. Retaining and evaluating the previous composed policy restores conditional
+retention bounds. Fresh real CLI audit e1056-e1057 checked the witness and scope.
+No numerical benchmark, learned-model failure, new latent law or compute run.
+Receipts: ledger `mean_state_closure_20260914`, `deepmdp_contract_source_20260914`
+and `gpi_growth_math_audit_20260914`. Accounting remains four probes, 15 model
+forwards, 628 apparatus / 0 artifact-bearing code lines.
+
 ## Autonomous conditional continuation — audited local closure, 2026-09-13
 
 Canonical S26 specifies one bounded CPU strategy diagnostic after two fresh real
@@ -39,7 +53,7 @@ scoped external-record import and stipulated calculator supply the useful
 operation. No learned predictor is needed there; no real purchasing donor or
 receiver is asserted. Independent strategy check agreed. Mission e1041 and ledger
 `scoped_revision_contract_closeout_20260913` retain the scoped result.
-Accounting remains 421 apparatus / 0 artifact-bearing lines, three probes /
+Accounting at that checkpoint was 421 apparatus / 0 artifact-bearing lines, three probes /
 zero construction rounds, eight model forwards, no GPU or training.
 
 

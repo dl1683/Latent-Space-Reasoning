@@ -10,7 +10,7 @@ sustained strategy, source research and bounded CPU probes, not system-building.
 No cumulative artifact, causal graft, encoder-reasoning or cost advantage is
 established. Closed prior lines stay closed; no run follows from documentation.
 
-**Current checkpoint:** S26's single CPU continuation run is complete, with
+**Latest empirical checkpoint:** S26's single CPU continuation run is complete, with
 independent audit complete: e1044-e1045. Primary and independent pair recovery were both 0/16;
 second-site recovery was 2/16 for both, versus cyclic content control 3/16.
 The first prediction was correct on only 1/16, capping unrevised pair recovery
@@ -20,13 +20,14 @@ with competent inputs or establish that a learned exporter helps. No rerun,
 threshold change or new selection follows. [Raw result](experiments/results/encoder_continuation_v1/result.json)
 retains probabilities, counts and hashes; the completed audit receipt is in the ledger.
 
-**Current paper inquiry:** S14's single-source-distance/radius continuation
-and graph-deletion witness are complete, conditional on their stated ports.
-The positive planning precedent in S8 reuses a frozen processor while learning
-surrounding representations for each task. This shifts attention to continuation
-of uncertain latent states and repeated representation-learning effort, with no
-new model run. Source and three-round dialogue receipts are in the ledger;
-canonical Next-work boundary remains the sole detailed active routing.
+**Current paper checkpoint:** S14's continuation/edit case and S8.1's mean-only
+closure proposition are complete. DeepMDP supplies task-relative representation
+conditions; successor features supply within-family transfer. S8.2 refutes only
+the stronger one-pass GPI library-inclusion monotonicity inference, while retaining
+and evaluating the previous executable composite restores conditional retention.
+Fresh real CLI audit e1056-e1057 independently verified the exact witness and
+qualified the remedy. No new numerical or model experiment. The next distinction-
+acquisition question lives only in canonical Next-work boundary.
 
 **Accounting and custody:** 628 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207), four probes / zero construction rounds; 15 model forwards,

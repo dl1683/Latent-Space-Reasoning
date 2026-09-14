@@ -57,11 +57,12 @@ and the correction of the audit prose's runtime transcription are in the ledger.
 No next run is selected. Preserve the broader capability-composition objective.
 
 **Active decision:** follow the [canonical Next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-S14's analytical continuation/edit case is complete; it establishes no learned
-latent hole. S8's newly read planning precedent supports learning representations
-around a reused frozen processor, with task learning still required. Follow its
-specific uncertainty/continuation obligation; no model run or construction is
-selected. Positive recipe evidence and causal attribution remain distinct.
+S14's continuation/edit case and S8.1's mean-state analysis are complete.
+S8.2's exact policy-composition counterexample and conditional retention remedy
+passed a fresh mathematical audit (e1056-e1057). These are analytical constraints,
+not learned-model failures. Existing planning/representation results supply
+constructive task-relative contracts. No model run or construction is selected;
+current inquiry concerns acquiring new distinctions with usable continuations.
 
 Session totals: 628 apparatus / 0 artifact-bearing code lines (98 + 119 + 204 + 207),
 four probes / zero building rounds, fifteen model forwards, no GPU or training.
