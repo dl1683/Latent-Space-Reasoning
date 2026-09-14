@@ -1,5 +1,14 @@
 # Experiments Log
 
+## S55 prediction-resource resolution — 2026-09-14
+
+A bounded check identifies a small published species predictor and accessible
+image/caption row metadata. No model or image was downloaded. Dataset authors
+warn of ImageNet overlap; label order and mirror split provenance are unbound.
+Independent review declines the isolated species-head run because its outcomes
+do not resolve the active operational-composition decision. Availability is no
+longer the deferral reason. No new empirical block, forward or runner line.
+
 ## S55 species-teaching comparator clarification — 2026-09-14
 
 Two-round strategy dialogue selects one bounded resource-feasibility allocation

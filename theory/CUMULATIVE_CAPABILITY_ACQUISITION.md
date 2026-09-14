@@ -5955,10 +5955,44 @@ reference. Direct specialist execution remains a deployment alternative. Bind th
 specialist taxonomy explicitly; restriction or renormalization cannot silently
 turn unsupported labels into model errors. Split evaluation images before fitting.
 
-This candidate is worth one bounded resource-feasibility allocation, not an open
-model catalog. It still needs a small trained species-prediction port, its vocabulary
-and compatible evaluation images; the S55 editable-consumer lookup stays closed.
-The next check is limited to that prediction role and may prepare a small CPU
-sample. No model, dataset, run or acquisition result is selected by this paragraph.
+The initial dialogue allocated one bounded resource-feasibility check, not an open
+model catalog. The completed check and subsequent allocation decision are below. At allocation, it needed a small trained species-prediction port, its vocabulary
+and compatible evaluation images; the S55 editable-consumer lookup stayed closed.
+The check was limited to that prediction role, with a small CPU sample allowed.
+No run or acquisition result was selected by that initial allocation.
 The head is ordinary mathematical scaffolding; any native-math contribution must
 come from subsequent evidence about useful acquired distinctions and their effort.
+
+
+**Completed prediction-port check; execution declined.** The prediction resource
+exists. The [model repository](https://github.com/osmr/pytorchcv/tree/80726b972e36b6569889f890f139227c27a5acba)
+defines a 200-class, 11,279,112-parameter predictor. Its metadata binds the
+[42,331,658-byte weight archive](https://github.com/osmr/imgclsmob/releases/tag/v0.0.344)
+and expected weight checksum. No weights were downloaded. The official dataset
+loader uses original class IDs minus one and its prescribed train/test flags;
+its inherited preprocessing defaults differ from the S55 concept-code wrapper.
+Neither default is a verified reproduction of the selected checkpoint's full recipe.
+Do not mix those preprocessing paths silently.
+
+The [dataset authors](https://www.vision.caltech.edu/datasets/cub_200_2011/) warn
+that images overlap ImageNet. A recipient trained there cannot be described as
+having never seen the evaluation images. This does not by itself invalidate a
+matched teaching contrast, but limits novel-knowledge and clean-pretraining claims.
+The official archive is 1.1 GB and was not downloaded. Two inspected hosting entries
+contain only README metadata. A [third mirror](https://huggingface.co/datasets/anjunhu/naively_captioned_CUB2002011_train/tree/9d62b3e6ee89d21aa29bba934ec6061b050ba32f)
+contains a 5,994-row image/caption dataset. A two-row metadata request confirmed
+individual image URLs and species-name captions. No image bytes were fetched.
+Its exposed schema lacks original image IDs; taxonomy order and split provenance
+remain unbound. Captions are label supervision, not permissible image-only inputs.
+
+Independent result review reverses the initial willingness to run this precursor:
+resource availability is now credible, but useful continuation has not been selected.
+Success would establish this teacher/feature/label combination, not transported
+operations, S42 suffix acquisition or composition. Failure would leave feature
+capacity, teaching budget and target quality unresolved. Therefore decline the
+species-head run for the active frontier, retain the receipt, and do not spend more
+on its remaining taxonomy or split binding. This is an allocation decision, not a
+negative experiment or a prohibition on ordinary readouts in a justified joint use.
+The resource check adds zero empirical blocks, forwards or runner lines. The next
+allocation must address a useful operation directly; returning to S42 cannot mean
+repeating its completed cache proof or another generic teaching-target discussion.
