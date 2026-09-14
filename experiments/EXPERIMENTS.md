@@ -24,6 +24,15 @@ acquisition. Learning, retained tails, conditional normalization and folding sco
 are recorded in the canonical document and `heterogeneous_grafting_source_20260914`.
 No experiment, model loading or new runner.
 
+## Retained interpretation and migration — 2026-09-14, source/strategy only
+
+Three fresh direction dialogues refine S31's future-operation teaching contract
+and S32's provider-replacement case. Independently checked published migration
+tables show why the currently deployed query/gallery pair is the retention
+reference. No model or economic retirement decision was executed. Source versions,
+reported points and independent scope checks live in canonical S32 and ledger
+`migration_retirement_contract_20260914`. Source study adds no empirical probe.
+
 ## Continuation and growth contracts — 2026-09-14, mathematics/source only
 
 Canonical S8.1 gives a conditional mean-state closure proof and separates

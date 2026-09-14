@@ -6,10 +6,11 @@ established theorems, demonstrated capabilities or an approved run specification
 
 ## Current decision map (strategy checkpoint, 2026-09-14)
 
-The immediate problem is to find a **usable contribution that survives an
-interface change and can participate in further computation**. No single shared
-geometry, donor pair or architecture has been selected. These distinctions
-organize the notebook; they are not a compulsory sequence of experiments.
+The target is **repeated acquisition in which prior preparation helps the next
+contributor or operation become useful**. A usable contribution must survive its
+interface and participate in the intended computation. No single shared geometry,
+donor pair or architecture has been selected. These distinctions organize the
+notebook; they are not a compulsory sequence of experiments.
 
 | Decision | What must be known | What would change the approach |
 |---|---|---|
@@ -18,7 +19,7 @@ organize the notebook; they are not a compulsory sequence of experiments.
 | What can the receiver do with it? | Competent read, update, comparison, verification or other declared operation, S8/S11/S14 | Readout success does not establish reusable state changes; the inference procedure may carry the reasoning |
 | What makes two ports interchangeable? | Preserved task-relative responses and legal continuations within declared tolerances, S5/S7/S14 | Matching geometry alone cannot decide operational substitution |
 | What changes when the system grows? | New distinctions, calibration and compatibility with old operations, S2/S15/S17/S20 | A fixed interface may need extension; incompatible demands need an explicit policy rather than a retention promise |
-| What is reused across acquisitions? | The integration procedure, permitted new supervision and fresh-input obligation, S2.2 | Reusing a learned acquisition method differs from engineering a new connector for every donor; either may be useful but they support different scaling claims |
+| What is reused across acquisitions? | Integration procedure, retained preparation, new teaching and fresh-input access, S2.2/S28–S31 | Reusing interpretation differs from retaining weights; incremental fitting and direct distillation are serious alternatives, while future-operation reuse differs from anticipated multitask training |
 | What is retained, and at what cost? | Old and joint task behavior, donor dependencies, acquisition and recurring costs, S4/S13/S19 | Keeping a donor and removing it are separate branches; retention by snapshots has a resource cost |
 
 **Decisive empirical unknown:** can a donor's useful distinction or operation
@@ -29,19 +30,18 @@ Receiver adaptation is allowed when declared and attributed. A frozen receiver
 tests strict interchange, not all acquisition. Evidence for one interface is
 local, not a universal law or a finished cumulative system.
 
-**Current evidence boundary:** retained local plan exports fail basic integrity
-(S6). The closest inspected external onboarding implementation lacks the
-replacement-contribution null and a matched baseline receiver (S18). Neither
-finding establishes that pretrained donors cannot contribute. Neither artifact
-currently answers the decisive question without new work. The bounded real-
-encoder diagnostic in S21 admits an additive explanation at its primary
-tolerance; the fixed cached-output combination in S22 loses to the better
-individual donor on all four selected assays. These are local screens, not
-evidence against the broader mission. S23 sharpens the remaining question:
-are the promised joint answers identified by what the donors actually expose?
-S26's weak first proposals additionally limit its autonomous continuation test.
-Externally reported learned planning and contextual inference provide constructive
-precedents, but no inspected result supplies the full sequential acquisition claim.
+**Current evidence boundary:** external planning, contextual inference and
+heterogeneous stitching supply constructive precedents for reusing learned
+computation or interfaces (S8/S14/S28/S30). Folded weight transfer supplies a
+donor-withdrawal route with unresolved attribution controls (S30). No inspected
+result supplies the full sequential acquisition claim under our contract.
+
+The four local probes remain scoped negatives: ineligible plan exports (S6), an
+additive-compatible conditional panel (S21), one losing fixed combination rule
+(S22), and weak first proposals limiting a continuation test (S26). They do not
+establish that pretrained donors cannot contribute. The inspected onboarding
+implementation in S18 also leaves contribution attribution unresolved. Exact
+receipts and limitations stay in those sections rather than defining the agenda.
 
 The mathematical aim is an economical operational language for identity,
 substitution, extension and effort. Ordinary mathematics is useful scaffolding.
@@ -184,7 +184,7 @@ bounds are conditional retention tools. Causal intervention results distinguish
 decodability from usable computation. Additive, presentation, competence and
 execution-mode controls constrain how the next artifacts should be tested.
 
-Existing results establish no cross-model grafting, encoder reasoning system,
+This project's results establish no cross-model grafting, encoder reasoning system,
 cumulative acquisition, donor-independent assimilation or cost advantage.
 Historical failed, invalid and incomplete lines retain their recorded status.
 See [STATE](../STATE.md), [axioms](AXIOMS.md),
@@ -208,15 +208,16 @@ statistics from fresh-query access. No cost or quality advantage is established.
 The 00:55 UTC paper block has selected this target and closed refresh scheduling;
 it does not select pretraining or an implementation.
 
-S29 has worked the extension across contributors and operations, including a
-missing-combination contract that charges primitive teaching. S30's two-source
-grafting check is complete. S31 now develops the choice between acquiring an
-intermediate operation for several uses and direct task-output distillation.
-Resolve that choice through genuine direction dialogue before choosing a concrete
-next contract; no model, benchmark or reproduction is selected. This is the sole
-detailed active routing. Preserve the broader denizen mathematics, direct-use
-routes and historical closures. Next periodic approach review is around 02:54 UTC
-after consolidation.
+S29–S32 have worked operation reuse, grafting precedents, retained interpretation
+and a current-reference migration decision. Learning curves, rather than another
+sufficiency proof, must decide their economic advantages. S33 now asks what
+teaching evidence to purchase for acquisition: ordinary targeted examples or
+responses to declared internal interventions. Run genuine direction dialogue and
+at most one primary causal-distillation case, comparing against informative valid
+input counterfactuals rather than only random passive data. No model, benchmark or
+reproduction is selected. This is the sole detailed active routing. Preserve the
+broader denizen mathematics, direct-use routes and historical closures. Next
+periodic approach review is around 02:54 UTC after consolidation.
 
 ## Conditional route choices
 
@@ -3003,3 +3004,134 @@ Conversely, identical call counts can expose different amounts of teacher
 information. A useful next paper question must specify the anticipated family and
 available intermediate semantics, then identify what reusable preparation is worth
 retaining; it cannot obtain a learning-effort advantage from a stipulated graph.
+
+**Fresh dialogue round 2 and adopted scope.** Retain revisable interpretation
+within a family of recurring entities, attributes and relations whose meanings
+are stable; a new meaning needs new teaching. Preserve identified evidence, learned
+correspondence and earlier callable uses. The competing shared direct learner also
+keeps parameters, accumulated teaching and replay evidence. For an unforeseen
+operation, neither sees its answers during preparation; after reveal, both receive
+the permitted specification and teaching. Known multitask preparation is a separate
+contract. The deciding observation is a post-reveal learning curve: where does
+adaptation occur, what prior interpretation remains usable, and what total work
+is saved? Sufficient retained information alone cannot answer this economic
+question. This closes the on-paper S31 framing without choosing a new graph run.
+Receipt: `strategy_grafting_dialogue_r2.md`, fresh session
+`01a09d91-f1f7-7d00-98ea-89d2709a5f61`.
+
+### S32. Does a new provider replace or complement the old one?
+
+**Question before a third direction response.** The user's stream of newer
+models need not grow the number of retained providers forever. A new provider can
+replace an old one for the declared workload, coexist because the old one retains
+a useful conditional contribution, or replace only some uses. This is task- and
+interface-relative substitution, not a claim about all knowledge in either model.
+
+Replacement favors economical migration while retaining prepared evidence and
+established consumers; complementarity favors selective joint use. The useful
+lifetime of an interface therefore affects what initial preparation can repay.
+Standalone superiority does not determine either choice. A route that needs less
+serving work may still incur expensive backfilling, calibration or repair.
+
+The prospective bounded source question is whether a real embedding-update method
+preserves use of already encoded evidence while admitting a better new encoder,
+and exactly what new training or provider cooperation it requires. That would
+make replacement concrete without assuming arbitrary independently released
+models are compatible. It would not by itself show that an older donor has no
+remaining specialist value. The third dialogue must decide whether this source
+case changes the preparation strategy or merely repeats a sufficiency caution.
+No model, re-indexing job, benchmark or implementation is selected.
+
+**Third dialogue selects the migration case, then a scoped retirement decision.**
+Fresh CLI session `01a09d95-8175-7662-9836-6233e1d132ba` read the paper's arXiv v2
+main/appendices; root independently read the CVPR final main and three-page
+supplement. The case makes an interface outliving its original provider concrete.
+It does not settle S31's consumer-design choice or justify a compatibility survey.
+Receipt: `strategy_grafting_dialogue_r3.md`.
+
+**Primary evidence.** [Shen et al., CVPR 2020](https://openaccess.thecvf.com/content_CVPR_2020/papers/Shen_Towards_Backward-Compatible_Representation_Learning_CVPR_2020_paper.pdf)
+train a new encoder with an influence loss through the frozen old classifier.
+Basic BCT uses old labeled training data; extensions use old-model outputs for
+new classes. Training runs 16 epochs on eight accelerators; incremental
+compatibility cost is not isolated. New queries can use old gallery embeddings.
+The three-version experiment trains on 25%/50%/100% identity subsets while keeping
+the evaluation task fixed. Its Table 4 shows that compatibility with the original
+baseline does not preserve every improvement achieved by the second version.
+This is cooperative new-model training, not arbitrary released-API alignment.
+
+The [CVPR supplement](https://openaccess.thecvf.com/content_CVPR_2020/supplemental/Shen_Towards_Backward-Compatible_Representation_CVPR_2020_supplemental.pdf),
+§2/Table 4, adds partial-backfill evidence for a separate two-model setup and
+reports the third model's same-model endpoints. At other operating points,
+compatibility can also differ. No seed spread or confidence intervals accompany
+the inspected tables. Do not extrapolate the partial-backfill curve to the
+three-version setting or interpret aggregate point differences as guaranteed
+per-item retention.
+
+**One workload-relative decision from those reported points.** Use the currently
+deployed second query encoder with first-version gallery features as the reference.
+Here Q denotes the query encoder and G the gallery encoding version:
+
+| Configuration | Search, TPIR at FPIR .01 (%) | Verification, TAR at FAR .0001 (%) |
+|---|---:|---:|
+| Original Q1/G1 | 22.57 | 41.45 |
+| Currently deployed Q2/G1 | 39.00 | 56.34 |
+| Replace queries only, Q3/G1 | 36.10 | 53.98 |
+| Re-encode gallery, Q3/G3 | 74.12 | 85.66 |
+
+Rows 1–3: main Table 4; row 4: supplement Table 4. These are published results,
+not a new local experiment. Under a no-point-degradation requirement relative to
+the deployed reference, query-only replacement does not qualify on these reported
+values. Retaining Q2 for G1 or paying to re-encode are distinct options; the table
+does not supply their economic break-even point. A future decision needs a declared
+tolerance and uncertainty analysis, not a threshold chosen to make retirement pass.
+
+**What to preserve.** Keep gallery identity, encoding version and the actual
+deployed query/gallery combination, together with its quality reference. Old
+raw images, access and permission permit re-encoding; saved old features alone
+do not provide that route. The provider's classifier and permitted training data
+are acquisition resources for the compatible-training route. Moving that work
+upstream does not make it free. Continuing to serve the old query encoder remains
+an option when replacement training or re-encoding is unavailable.
+
+For a declared future workload, compare migration preparation, one-time
+re-encoding/repair and recurring query/storage work separately at adequate quality.
+No measured costs here select permanent retention or retirement. The substantive
+decision is narrower: **do not retire the working Q2/G1 configuration merely
+because Q3/G1 improves over Q1/G1.** A better same-version encoder can still be a
+worse replacement against already retained evidence.
+
+**Residue for the growing-space mission.** An old contributor can retain value
+through compatibility with accumulated preparation, without possessing unique
+facts or an irreplaceable algorithm. Conversely, saved embeddings can remain
+useful for fresh queries after their producing encoder stops serving, provided
+a compatible query/consumer path exists. This preserves corpus-derived evidence,
+not all knowledge in the retired model. The native object is substitution within
+an operational context, with the retained evidence and consumer included in that
+context. No new learned law, global dominance result or architecture is asserted.
+This bounded source branch is complete; no further source or compute follows.
+
+### S33. What teaching evidence should acquisition purchase?
+
+**Definition attempt before source inspection.** Fix a donor operation, receiving
+learning procedure, useful held-out endpoint and acquisition budget. Ordinary
+teaching records input/output behavior. Intervention teaching additionally records
+the response when a declared internal state/component is replaced or changed,
+including the input, intervention specification and source of the replacement.
+These are different evidence channels; S1's observational ambiguity does not prove
+that the second teaches useful behavior more efficiently.
+
+The decision is whether to allocate acquisition effort to internal interventions
+or targeted ordinary examples. The strongest simple alternative uses valid input
+counterfactuals or hard-example selection that deliberately varies the same task
+factor. Internal interventions can expose otherwise rare dependencies, but they
+can also create unfamiliar states, transmit donor artifacts or simply add labels.
+The required comparison charges teacher generation, alignment search and student
+optimization; it does not grant the intervention route extra teaching unnoticed.
+
+An independent response favors one bounded primary causal-distillation case. Read
+what the student learns—internal correspondence, useful outputs or both—and whether
+the reported comparison identifies an acquisition benefit. Agreement with an
+imposed causal model after extra supervision can be valuable without demonstrating
+efficiency. Preserve useful acquisition as the endpoint; internal causal equivalence
+is optional additional interpretation. No new identifiability theorem, model run,
+source catalog or architecture follows from this question.

@@ -57,12 +57,12 @@ and the correction of the audit prose's runtime transcription are in the ledger.
 No next run is selected. Preserve the broader capability-composition objective.
 
 **Active decision:** follow the [canonical Next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-S28–S30 supply the reusable-consumer contract, stronger incremental baselines and
-concrete grafting precedents, without measured acquisition savings. S31 compares
-acquiring an intermediate operation for multiple uses with direct task-output
-distillation; the dialogue will decide whether that intermediate earns its added
-learning and maintenance. Completed mathematical audits and source evidence remain
-in canonical sections and the ledger. No implementation or new compute is selected.
+S28–S32 supply reusable-consumer, grafting and migration contracts without measured
+acquisition savings. Retained interpretation is compared with an incremental
+direct learner; replacement uses the currently deployed behavior as its reference.
+S33 now examines teaching evidence for acquisition. Canonical sections and the
+ledger retain completed analysis, source scopes and dialogue receipts.
+No implementation or new compute is selected.
 
 Session totals: 628 apparatus / 0 artifact-bearing code lines (98 + 119 + 204 + 207),
 four probes / zero building rounds, fifteen model forwards, no GPU or training.
