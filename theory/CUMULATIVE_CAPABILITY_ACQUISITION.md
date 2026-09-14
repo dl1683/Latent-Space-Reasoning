@@ -39,6 +39,9 @@ tolerance; the fixed cached-output combination in S22 loses to the better
 individual donor on all four selected assays. These are local screens, not
 evidence against the broader mission. S23 sharpens the remaining question:
 are the promised joint answers identified by what the donors actually expose?
+S26's weak first proposals additionally limit its autonomous continuation test.
+Externally reported learned planning and contextual inference provide constructive
+precedents, but no inspected result supplies the full sequential acquisition claim.
 
 The mathematical aim is an economical operational language for identity,
 substitution, extension and effort. Ordinary mathematics is useful scaffolding.
@@ -190,31 +193,30 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 ## Next-work boundary
 
-S6/S21/S22 and S24's scoped-record contract are closed. S26's single CPU
-continuation diagnostic is also closed after independent audit e1044-e1045:
-weak first proposals limit this task; no useful autonomous gain was demonstrated.
-Do not extend pairs, swap in a larger model or fit an exporter to rescue it.
-Two successive convenience-access diagnostics did not select a positive
-acquisition direction. S2.2–S2.4's selection dialogue and S14's continuation/edit
-paper case are complete: radius queries need distance plus radius; graph edits
-can require further source access. No new selector or forced route contest.
-S8's positive planning precedent and S8.1's mean-state continuation analysis are
-complete. DeepMDP supplies existing task-relative sufficiency conditions;
-successor features supply within-family objective transfer. S8.2's exact GPI
-counterexample and conditional retention remedy have a fresh result audit
-(e1056-e1057). Do not extend that finite example into a benchmark.
-The bounded refinement check is also complete: adding an observation can split
-an old sufficient state without supplying an update for the new distinction.
-Its closure mechanism is already S11/CR-15.10, so do not repeat that theorem or
-build another finite benchmark. The decision now is whether the acquired
-distinction must remain usable after an action without querying its donor again.
-Current-readout use, retained source access and a maintained predictive state
-have different learning and recurring costs. The periodic approach review should
-choose which concrete access-and-effort question most advances the mission.
-No implementation, model run, checkpoint hunt or reproduction is selected.
-This is the sole detailed active routing; later sections retain scoped contracts
-and dated outcomes. Preserve the broader mathematical program, valid direct-use
-routes and historical closures.
+S6/S21/S22/S26 are closed empirical probes; do not rescue them with more pairs,
+a larger model or a fitted exporter. S24 and S27 close their stipulated episodes
+through sufficient typed connected use. S8.1/S8.2/S14/S11 retain completed
+continuation, composition-retention and refinement constraints; no further finite
+benchmark or duplicate theorem follows. The third periodic review (e1061-e1062)
+corrected caution becoming the agenda, followed by two genuine direction rounds.
+
+S28 is the constructive target: reuse a receiving inference procedure across
+successive contributors, preserving prior uses and charging all new teaching and
+contextual work. Its selected source-dependency inspection is complete. S28.1
+strengthens the baseline with incremental/warm-start fitting and separates support
+statistics from fresh-query access. No cost or quality advantage is established.
+The 00:55 UTC paper block has selected this target and closed refresh scheduling;
+it does not select pretraining or an implementation.
+
+Next work asks which part of this reusable procedure can survive a change in the
+required operation, rather than only another evidence view for the same labels.
+Work one constructive extension using already-read mechanisms; identify what new
+semantic teaching is needed and what old computation could be reused. Do not
+rename classification as a new operation or require an internal algorithm graft
+before any useful acquisition counts. No new source hunt, model, benchmark or
+reproduction is selected. This is the sole detailed active routing. Preserve the
+broader denizen mathematics, direct-use routes and historical closures. Next
+periodic approach review is around 02:54 UTC after consolidation.
 
 ## Conditional route choices
 
@@ -934,15 +936,22 @@ certificate candidate, not a claimed new version of this theory.
 
 **Two further precedents delimit where computation is learned.**
 [SIMPLE, August 2026 v1](https://arxiv.org/html/2608.19115v1), method and
-Appendices B–C, pretrains a new 125M-parameter inference model on synthetic
-multi-view tasks. It consumes labeled support examples and frozen projected
-views; its frozen and adapter-calibrated variants must be distinguished. The
-separate cross-domain experiment learns a target linear classifier. Fixed
-Gaussian projection is input normalization, not discovered native structure.
-The examined paper/abstract links expose no project-specific checkpoint or code;
-independent bounded link inspection agrees, without asserting no release exists
-elsewhere. This makes reusable inference a serious competing investment, not a
-ready local artifact or a reason to pretrain a replacement here.
+Appendices A–D, trains a 125M-parameter inference model on synthetic multi-view
+classification episodes. SIMPLE-F jointly processes labeled support and unlabeled
+queries without weight updates; SIMPLE-A calibrates on support. Fixed projected
+inputs and contextual computation remain work. The separate cross-domain study
+trains a target classifier. Feature/descriptor and omics benchmarks do not identify
+pinned pretrained encoder exports or test successive contributor arrivals.
+The prior samples 1–16 views; missing-view experiments do not establish arbitrary
+new-donor growth. Joint sample attention supplies no demonstrated query-batch
+invariance or reusable cached support summary. Downstream efficiency excludes
+synthetic pretraining; total pretraining steps, hardware and elapsed time are
+unspecified in the inspected source. These limits leave positive reusable
+classification inference intact, while cumulative retention and amortization
+remain open. Root and an independent reader checked these details. Previously
+inspected paper links exposed no project-specific checkpoint/code; no new release
+search or reproduction is selected. This is a constructive initial investment
+to compare with repeated task learning, not a ready local artifact.
 
 [TransNAR, June 2024 v1](https://arxiv.org/html/2406.09308v1), §§3–4, trains
 cross-attention and a 70M text receiver around a frozen graph reasoner. Text and
@@ -1082,7 +1091,7 @@ the source again. Their acquisition and continuing costs remain empirical.
 The calculation qualifies a declared mean-only interface, not the tested planner's
 actual learned states or the feasibility of encoder-based reasoning.
 
-**Next-space question, before a bounded prior-art check.** If representations are
+**Question that motivated the completed prior-art check below.** If representations are
 learned around useful operations, what training target makes continuation quality
 the object being preserved? A reward/latent-transition objective is an existing
 candidate, not a new invention. Inspect its actual sufficiency assumptions:
@@ -1713,7 +1722,7 @@ The linked repository has later onboarding claims beyond the paper. Treat those
 as separate versioned evidence, inspected at commit
 `ca36be0b86eee76425f6aad3f37c634cdbcc8a0f`; do not conflate its newer protocol with
 the paper's experimental setup. Code inspection and saved-result interpretation
-are ongoing; no external script has been executed or model loaded.
+are completed in S18; no external script was executed or model loaded.
 
 ### S17. A relative code may admit an absolute reader with anchors
 
@@ -2624,3 +2633,215 @@ composition given competent inputs. Do not lower the threshold, change pairs,
 claim absence of conditional structure, or infer that a learned exporter helps.
 Raw probabilities, parent counts, source/runner/snapshot hashes and timings are
 in [the result](../experiments/results/encoder_continuation_v1/result.json).
+
+
+### S27. Connected refresh closes the stipulated navigation episode
+
+**Third periodic review and second dialogue, 2026-09-14.** The proposed
+traversability-then-energy episode closes through full-refresh typed acquisition,
+conditional on adequate ports. Both contributions must address the same directed
+edges, vehicle and conditions. Traversability needs feasible/infeasible/unknown
+semantics. An additive-cost planner can filter edges and minimize supplied energy;
+history-, payload- or battery-dependent costs require appropriate state or a
+restricted contract. The old shortest-feasible-route operation remains callable;
+an energy-aware choice may legitimately differ. No installed donor, run, general
+savings claim or learned continuation mechanism is asserted.
+
+Three changes remain distinct. A physical change can alter a property's value.
+A viewpoint change can alter visibility, confidence or correspondence without
+changing the property. Obsolete model inputs can require recomputation even in a
+static world. A new start position changes the route; it need not change edge
+costs. Full requery uses current available evidence, not knowledge of unseen change.
+
+The reusable recipe registers identified contributions, supplies inputs, refreshes
+ports and invokes established consumers. Meaning, units, calibration, coverage,
+correspondence and any new consumption rule remain donor-specific teaching or
+engineering. A shared schema does not establish transfer of their interpretation.
+Caller-installed invalidation rules make selective refresh ordinary caching;
+without an actual recurring burden and error consequences, no savings comparison
+selects learning them. Do not extend this episode into another benchmark or cache
+study. Its residue is to separate contribution acquisition, evidence revision and
+consumer recomputation, then name which obligations cease recurring on addition.
+
+The second fresh dialogue accepts root's objection and recommends reusing learned
+consumer operations across acquisitions instead. This is a constructive use of
+S2.2, grounded in S8's positive precedents, not a new empirical result. It leaves
+full-refresh connected access eligible and charges all new interpretation learning.
+
+### S28. Reusing interpretation across successive contributors
+
+**Constructive target adopted after three dialogue rounds, 2026-09-14.** Fix
+one prediction task, label semantics, identified labeled support and an already
+learned consumer F. Add two contributors using the same recipe:
+`D0 -> D0+D1 -> D0+D1+D2`. The second addition tests repetition, not scalability.
+At each stage retain the callable donors, support encodings, declared calibration,
+receiver changes and established single/joint-use configurations. Evaluate useful
+added contribution on fresh inputs and retention of earlier uses. This is a
+strategy contract, not a selected architecture, benchmark or run.
+
+Shared support can reuse labels when the same identified examples and target
+meaning remain valid. New donor encodings and their interpretation still cost
+work. Missing correspondence, new granularity or new task semantics may require
+new teaching. A fresh simple reader gets the same support and all accumulated
+views; it is not artificially limited to the newest donor. Compare initial
+consumer learning, per-addition encoding/calibration/repair, and per-query work
+separately. F may infer a task-specific rule during each forward pass: that is
+valid reusable inference, but it is not no learning or free recurring computation.
+
+The persistent acquisition state need not be a changed backbone. A registered
+contributor, its calibrated interface and retained support can enable fresh uses.
+Preserving an old callable configuration and maintaining quality of the expanded
+configuration are different obligations. Old predictions may legitimately improve;
+keeping files alone or insisting on identical answers is not the quality test.
+This first contract adds evidence under an existing operation. New operations
+remain a distinct branch requiring their own semantics and consumption learning.
+
+**Selected source-detail question, now inspected:** when another view arrives,
+what can stay prepared, and what is rebuilt for each query? Root and an independent
+reader revisited SIMPLE's method and Appendices A–D; the source report is S8.
+The following dependency analysis is our inference from that stated architecture,
+not a measured cache implementation or timing result.
+
+| Object | Reuse conditional on unchanged dependencies | What can require renewed work |
+|---|---|---|
+| Raw reference inputs, IDs and labels | Same examples and label meaning; input available to new donor | New modality inputs, missing original references, changed granularity or semantics |
+| Per-donor support encodings and fixed preprocessing | Pinned donor, input, projection and support statistics | Using the new donor on support examples requires its own aligned features; absent features remain masked with usefulness unestablished. Encoder changes or recalibration invalidate affected values |
+| Feature-level within-view processing | Fixed parameters and that view's inputs | A new view needs its own processing; adapter changes can affect previously processed views |
+| Cross-view support representation | Same view set, masks, indexing, values and receiving parameters | New evidence enters cross-view attention and normalized aggregation, so old joint representations cannot simply be assumed valid |
+| Sample-level contextual outputs | Same complete permitted context and parameters | Joint support/query attention allows query-dependent support processing; the source establishes no reusable final support summary or independent-query equivalence |
+| Calibrated reader/configuration | Its declared parameters and support remain valid | SIMPLE-A can change calibration/readout objects; the exact per-view/shared update scope is not fully resolved by prose alone |
+
+This is not a claim that every value necessarily changes, that all partial caching
+is impossible, or that the published implementation realizes these cache boundaries.
+Fixed earlier-stage computations can be reusable even when a later joint state is
+not. The source's description licenses dependencies, not an exact incremental API.
+The actual cost advantage and optimal reuse boundary still require measurements.
+
+**Acquisition-evidence choice.** Backfilling a new donor on retained support inputs
+is one concrete way to provide its relationship to the task without acquiring new
+target labels. It needs those inputs and donor calls. If they are unavailable,
+possible alternatives include new labeled calibration examples, paired unlabeled
+bridges or retained source access with suitable prior structure; adequacy is not
+automatic. Missing-view support is not evidence that a view absent from every
+labeled support row will become useful. Do not promote full backfill to a universal
+necessity or claim that saved old embeddings substitute for arbitrary original
+inputs. Existing S1/S10/S23 already contain the identification cautions.
+
+**Investment implication.** This precedent offers a reusable inference procedure,
+not demonstrated permanent compilation of each task's inference. Initial synthetic
+pretraining, per-addition support preparation and recurring contextual computation
+are distinct investments. Its reported downstream advantage does not determine
+how many acquisitions or queries amortize initial training. Unknown absolute costs
+need not block the strategy question: specify which retained acquisition evidence
+and reusable preparation a future method would require, then compare against fresh
+simple fitting on that same evidence. No implementation or new compute follows.
+
+**S28.1 — worked baseline identity before allocating initial training.** The
+fresh-reader reference must not imply that simple methods necessarily restart all
+optimization. For aligned support rows, let X be retained old features, Z a new
+contributor's features, Y fixed targets and lambda>0 a fixed ridge penalty. Put
+A=X^T X+lambda I, B=X^T Y, C=X^T Z, D=Z^T Z+lambda I and H=Z^T Y.
+The expanded ridge fit solves the block normal equations. With
+S=D-C^T A^{-1} C, its exact coefficients are
+
+`beta_new = S^{-1}(H-C^T A^{-1}B)`,
+`beta_old_updated = A^{-1}B - A^{-1}C*beta_new`.
+
+This is an existing Schur-complement identity, not native latent mathematics or
+a numerical result. The previous factorization and solution can be reused; this
+primal route also needs the new normal-equation terms. A practical solve uses
+factors rather than explicit inverses. Lambda>0 makes the full Gram system and
+its Schur complement positive definite. Changing regularization or preprocessing
+changes the problem and reusable objects. Root and an independent reader checked
+the algebra. Reuse does not establish a substantial speedup: dimensions, conditioning,
+retained factors and implementation determine its cost.
+
+There is a distinct dual route for the same objective. With retained support Gram
+K_old=X X^T, form `K_total=K_old+Z Z^T` and solve
+`alpha=(K_total+lambda I)^{-1}Y`. This requires no primal cross-feature moment C.
+A fresh prediction is `(x_query X^T + z_query Z^T)*alpha`. Support Gram matrices
+and targets suffice for the fit, but not for arbitrary future predictions without
+query-to-support evaluations. Retained feature rows are one sufficient deployment
+resource; a callable kernel port is another. The dual route trades feature-sized
+algebra for support-sized storage/solves, without a universal cost ordering.
+
+This makes the acquisition-evidence choice route-dependent. A and B alone do not
+generally supply C or H for the primal update. Aligned X,Z and retained Y can;
+alternatively use sufficient cross-moment resources. The dual route uses aligned
+support kernels and Y but must retain a deployable query-evaluation path. Raw
+inputs can regenerate old or new features when needed; they are unnecessary for
+these algebraic fits when the required feature/kernel resources already exist.
+Existing labels can be reused if retained and still meaningful. New feature or
+kernel extraction remains work. Old summary statistics are not automatically
+adequate preparation for either arbitrary later donors or fresh deployment.
+
+An iterative comparator can also start at `(beta_old,0)`, preserving original
+linear predictions before updates under fixed concatenated features. The updated
+joint optimum need not preserve old predictions or held-out quality. Keeping the
+old coefficients preserves a callable reader only while its feature/preprocessing
+path remains available. Incremental and warm-start simple methods belong beside
+fresh fitting as serious references; do not grant a proposed meta-learner savings
+by forcing its comparator to restart unnecessarily. Linear task adequacy and total
+cost remain empirical. No code, solver timing or model run follows from this
+ordinary-mathematics baseline calculation.
+
+
+### S29. Reuse across contributors and operations
+
+**Definition attempt within the reusable-consumer direction.** A stronger
+constructive target has two independently varied axes: the source of observations
+and the operation performed on them. An observation interface is reusable across
+operations if previously learned identity/correspondence and relevant evidence
+can serve the next operation without relearning those parts. New quantities,
+semantics and executor calibration are still charged. This is a prospective
+investment question, not an established transfer law or selected experiment.
+
+A worked contract uses reachability and minimum travel time over the same network.
+Both need node/edge identity; minimum time additionally needs durations and a
+consumer for them. Keep the established topology interface initially fixed,
+permit declared duration teaching, and ask whether the new operation can reuse
+its correspondence. Existing executors supply the algorithms; a classification
+consumer is not presumed to know them. A typed graph is a serious realization of
+the common interface, not a deliberately weakened alternative.
+
+**The missing combination makes reuse testable.** Given source D0 with operation
+O0 and O1, calibrate a new source D1 through declared primitive evidence, then
+ask whether O1 can consume D1 without new end-to-end O1 answer supervision. Record
+all primitive labels, paired data and receiver/interface adaptation. The unseen
+combination is not supervision-free when its component meanings were taught.
+A new duration reader is allowed; pretending durations were in the old interface
+when they were not would manufacture a failure. Matching held-out whole-task
+quality and retained O0 use is the endpoint, not merely filling the matrix cell.
+
+Compare reuse with operation-specific interface fitting under the same evidence;
+both may reuse all legitimate prior labels and computation. Do not charge a new
+label budget only to the comparator or require it to restart optimization. If
+reuse saves topology/correspondence optimization or new teaching at matched quality,
+invest in the common observation interface plus separate consumers. If necessary
+repair removes that saving, shared early perception with operation-specific ports
+remains viable. Failure of one fit does not establish intrinsic information loss.
+
+This advances S28 from new evidence under one task to reuse of interpretation
+under a new operation. It does not establish transfer of an absent internal
+algorithm. The existing S14 continuation cases and S8 positive mechanisms supply
+its foundation; no new closure theorem, model availability search or graph benchmark
+is selected. The remaining concrete question is which part of the acquisition
+interface is reusable before the next operation's answer labels are supplied.
+
+
+### S30. Check the grafting branch against concrete heterogeneous fusion
+
+**Question before bounded primary-source inspection.** S28/S29 examine reusable
+consumption, but the user's broader mission also includes transferring useful
+computation into a receiving model. Does a concrete cross-architecture fusion
+method retain donor benefit after donor runtime withdrawal, and what alignment,
+calibration, search or task learning does it pay? Separate full-body fusion,
+exported adapters, shared-trunk serving and connected inference. None is assumed
+to establish arbitrary grafts or native mathematics merely by using transport.
+
+The bounded source pass will inspect a concrete weight-transfer mechanism and a
+current encoder-stitching mechanism, at most these two primary cases. Its decision
+is whether direct grafting supplies a sufficiently constructive alternative to
+continually adding callable donors to deserve its own next strategy contract.
+Read actual data/learning/retention scopes, not abstracts; no models, code execution,
+checkpoint hunt or reproduction. Existing analytical closures remain closed.

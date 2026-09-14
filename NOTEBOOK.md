@@ -20,14 +20,14 @@ with competent inputs or establish that a learned exporter helps. No rerun,
 threshold change or new selection follows. [Raw result](experiments/results/encoder_continuation_v1/result.json)
 retains probabilities, counts and hashes; the completed audit receipt is in the ledger.
 
-**Current paper checkpoint:** S14's continuation/edit case and S8.1's mean-only
-closure proposition are complete. DeepMDP supplies task-relative representation
-conditions; successor features supply within-family transfer. S8.2 refutes only
-the stronger one-pass GPI library-inclusion monotonicity inference, while retaining
-and evaluating the previous executable composite restores conditional retention.
-Fresh real CLI audit e1056-e1057 independently verified the exact witness and
-qualified the remedy. No new numerical or model experiment. The next distinction-
-acquisition question lives only in canonical Next-work boundary.
+**Current paper checkpoint:** S8.1/S8.2's continuation and audited composition
+constraints are complete. The third review and two direction responses close
+S27 through sufficient typed connected refresh and adopt S28's reusable consumer.
+Its targeted source inspection distinguishes retained preparation from recurring
+contextual inference. S28.1 adds incremental and warm-start simple readers as
+serious comparisons; support statistics and a deployable query path are distinct
+resources. These are source/analytical findings, not new experiments. Canonical
+Next-work boundary now asks about extending reuse beyond one task's evidence views.
 
 **Accounting and custody:** 628 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207), four probes / zero construction rounds; 15 model forwards,
@@ -35,8 +35,10 @@ no GPU or training. Strategy authorization supersedes construction to repair the
 ratio. Root alone writes boards after stale-session ID collisions; integrity
 entries restored as e1011–e1012. Mission synthesis retains its hang workaround.
 Fresh real CLI result audits and design dialogues have distinct receipts below;
-second periodic review completed around 23:03 UTC (e1039-e1040); next due
-around 01:03 UTC on September 14 after consolidation.
+third periodic review completed around 00:54 UTC on September 14 (e1061-e1062);
+next due around 02:54 UTC after consolidation. The review says caution is crowding
+out constructive acquisition; the completed dialogue selected S28's receiving
+procedure while closing S27's refresh proposal.
 Detailed mathematics/source readings live in
 [canonical theory](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md); exact results,
 corrections and receipt hashes remain in the [ledger](experiments/ledger.jsonl)

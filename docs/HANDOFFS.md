@@ -13,9 +13,9 @@ separate branches. No cumulative capability or cost advantage is established.
 **Mode:** autonomous strategy/discovery, including definitions, source study and
 small bounded CPU probes, without system-building or large-model loading.
 Research began at 19:45 UTC; first periodic approach review completed around
-21:42 UTC (e1027), and the second around 23:03 UTC (e1039-e1040). Next due
-around 01:03 UTC on September 14 after consolidation. Challenge
-approach, never mission. GPU
+21:42 UTC (e1027), second around 23:03 UTC (e1039-e1040), and third around
+00:54 UTC on September 14 (e1061-e1062), after consolidation at 89b34ae.
+Next due around 02:54 UTC after consolidation. Challenge approach, never mission. GPU
 approval remains per run. Old locked panels and paused lines are not restart
 instructions; no further model run or architecture is selected.
 
@@ -62,7 +62,10 @@ S8.2's exact policy-composition counterexample and conditional retention remedy
 passed a fresh mathematical audit (e1056-e1057). These are analytical constraints,
 not learned-model failures. Existing planning/representation results supply
 constructive task-relative contracts. No model run or construction is selected;
-current inquiry concerns acquiring new distinctions with usable continuations.
+S27 closes through stipulated connected refresh. S28 now targets reuse of a
+learned receiving procedure across successive contributors; its source-dependency
+check and incremental-baseline calculation are complete. Current routing remains
+canonical; no implementation or new compute is selected.
 
 Session totals: 628 apparatus / 0 artifact-bearing code lines (98 + 119 + 204 + 207),
 four probes / zero building rounds, fifteen model forwards, no GPU or training.

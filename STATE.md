@@ -19,9 +19,10 @@ a fixed shared vector space, training-free transfer or proprietary access.
 decision-changing questions. No system-building, large-model loading or sustained
 compute; per-run GPU approval remains. Consolidate before approximately two-hour
 adversarial approach reviews. The first completed around 21:42 UTC (audit e1027);
-the second completed around 23:03 UTC (e1039-e1040). The next is due around
-01:03 UTC on September 14 after consolidation. The reviewer challenges
-approach and question selection, never the mission.
+the second completed around 23:03 UTC (e1039-e1040), and the third around
+00:54 UTC on September 14 (e1061-e1062), after consolidation at 89b34ae.
+Next periodic review is due around 02:54 UTC after another consolidation.
+The reviewer challenges approach and question selection, never the mission.
 
 **Evidence status:** no cumulative acquisition, transferable graft, encoder
 reasoning artifact, donor-independent assimilation or cost advantage is established.
@@ -76,7 +77,10 @@ S8.2's exact policy-composition counterexample and conditional retention remedy
 passed a fresh mathematical audit (e1056-e1057). These are analytical constraints,
 not learned-model failures. Existing planning/representation results supply
 constructive task-relative contracts. No model run or construction is selected;
-current inquiry concerns acquiring new distinctions with usable continuations.
+S27 closes through stipulated connected refresh. S28 now targets reuse of a
+learned receiving procedure across successive contributors; its source-dependency
+check and incremental-baseline calculation are complete. Current routing remains
+canonical; no implementation or new compute is selected.
 
 **Session accounting:** 628 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207 runner lines); four probe rounds / zero building rounds.

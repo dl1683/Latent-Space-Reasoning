@@ -1,5 +1,20 @@
 # Experiments Log
 
+## Third periodic approach review — 2026-09-14, 00:54 UTC
+
+Fresh real CLI inspected consolidated 89b34ae and recommends continuing while
+ending further interface cautions as the default. S27 develops one <=45-minute
+constructive refresh-versus-maintenance episode, with full refresh as a serious
+reference and all consumption/decision learning charged. Root challenges whether
+generic caching would repeat the closed S24 contract. Two direction responses
+now close S27 through sufficient typed connected refresh and adopt S28's reusable
+consumer target. Targeted source inspection and S28.1's incremental-reader algebra
+are complete; neither is a new numerical experiment.
+Audit e1061-e1062; exact receipt/hash in ledger
+`strategy_periodic_approach_review_3_20260914`. No new experiment or model call.
+Accounting remains 628 apparatus / 0 artifact-bearing code lines, four probes /
+zero building rounds, 15 model forwards. Next periodic review around 02:54 UTC.
+
 ## Continuation and growth contracts — 2026-09-14, mathematics/source only
 
 Canonical S8.1 gives a conditional mean-state closure proof and separates
