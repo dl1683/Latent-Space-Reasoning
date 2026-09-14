@@ -5950,3 +5950,12 @@ operation survives. The research choice remains whether a proposed shared update
 adds enough useful behavior to justify measured damage or repair of established
 uses, against retaining separate callable paths. Stop the one-source inspection;
 no source expansion, projection implementation or model-loading task is selected.
+
+**Post-review allocation boundary.** Proposed repeats of S51's handoff trace and
+S42's prefix-reuse proposition were rejected after checking the live evidence.
+For the shared-predictor branch, the remaining decision needs actual second-donor
+teaching through an additional port, compared with a separate student at charged
+preparation and inference effort. First-port isolation is not that evidence.
+Record this empirical dependency once; another mask audit or generic proof does
+not resolve it absent a consequential eligible experiment. This narrows investment
+in that branch without closing the broader cumulative-acquisition program.
