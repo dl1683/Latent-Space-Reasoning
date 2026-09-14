@@ -1,5 +1,12 @@
 # Experiments Log
 
+## S57 prepared intervention source contrast — 2026-09-14
+
+One source and independent review identify an offline-prepared recipient write
+vector, distinct from S56 live paired reconstruction. Method-level dependency
+and selected behavioral illustrations do not establish implementation timings,
+new expertise or cumulative composition. No model run or new apparatus.
+
 ## S56 feature-to-operation source check — 2026-09-14
 
 One primary report and pinned implementation distinguish behavioral modulation

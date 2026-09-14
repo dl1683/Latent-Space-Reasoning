@@ -32,7 +32,7 @@ tests strict interchange, not all acquisition. Evidence for one interface is
 local, not a universal law or a finished cumulative system.
 
 **Current evidence boundary:** source and implementation studies now extend
-through S56. They supply concrete trained reasoning, compressed-context reading,
+through S57. They supply concrete trained reasoning, compressed-context reading,
 stitching and separately prepared contributor interfaces. None of the inspected
 results establishes the full repeated-acquisition contract below. Published
 precedents, local results and untested combinations must remain separate.
@@ -266,7 +266,7 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 ## Next-work boundary
 
-**Active allocation, through S56:** strategy/discovery for useful successive
+**Active allocation, through S57:** strategy/discovery for useful successive
 acquisition and composition. No experiment is currently selected. A donor may add
 information, make useful computation accessible, or justify its cost through better
 quality. Connected use and ordinary teaching remain valid; donor removal is the
@@ -302,7 +302,7 @@ Local accounting remains six probe blocks, fifteen scored model forwards,
 classification. No strategy-phase training or GPU work. A ratio with zero artifact
 lines is undefined; constructing something merely to improve it is prohibited by
 the user's strategy instruction. Source and manual calculations are not model runs.
-Detailed decisions, evidence and historical routing remain in S0–S56 and the ledger.
+Detailed decisions, evidence and historical routing remain in S0–S57 and the ledger.
 
 ## Conditional route choices
 
@@ -6066,3 +6066,61 @@ prompting remedy, donor runtime and recipient-only alternative explicit. Do not
 reproduce the offered-name metric, build a zero-mask toy, or launch this large
 model pair. No new local probe, forward, training or runner line. No native law
 or intrinsic latent-space hole is established by this source inspection.
+
+### S57. Can a prepared map transport an independently discovered intervention?
+
+**Question before source inspection.** S56's zero recipient write is one design,
+not a general obstacle. A constructive alternative fits coefficients c for an
+independently discovered donor direction v_D in a prepared donor dictionary and
+uses the corresponding recipient dictionary to obtain v_R. If this preparation
+is completed offline, adding v_R during recipient inference need not run D.
+The denizen's test is preserved useful response to the move, not vector fit alone.
+
+Inspect one primary cross-architecture mapping report for the actual transfer
+recipe, its interventions, preparation and comparator. Ask whether it provides a
+recipient-only intervention, whether the behavioral evaluation supports more than
+selected examples, and which additional operation or donor the same preparation
+was tested on. S48 already distinguishes a direction from a full read/write clamp;
+do not repeat that algebra. No map fitting or model loading is selected.
+
+
+**Constructive source resolution.** [Cross-Architecture Model Diffing with
+Crosscoders, v1](https://arxiv.org/html/2602.11729v1), sections 3.1/B.4.5/C.3,
+uses the ten shared donor decoder vectors most cosine-aligned with an independent
+persona direction. Their similarities weight the corresponding recipient vectors;
+the result is rescaled to the donor vector's norm. This is not least-squares fitting.
+The recipe permits offline preparation followed by recipient-only additive steering.
+The paper reports three persona transfers using the same prepared dictionary.
+These are selected behavioral illustrations, not a test of arbitrary directions,
+useful new expertise, joint operations or successive donor admission. Dictionary
+training uses 100 million aligned activation pairs; cheap online application does
+not make preparation cheap. The authors distinguish representational exclusivity
+from absence of a concept. Source-reported examples are not local quality evidence.
+
+The linked training repository is pinned at
+`8e8c0b3411144299ef89b1ea618483d706757c3c`; a bounded filename check did not locate
+a transfer/steering script. That is not evidence that the implementation is absent.
+No further artifact search, training or large-model reproduction is selected.
+
+**What changes in our strategy.** S56's absent write direction does not force live
+donor use for every mapped intervention. A prepared shared dictionary can define
+a recipient-side move, with donor computation charged to preparation. Its empirical
+utility and coverage remain separate from mathematical expressibility. Reuse across
+several independently discovered moves is a relevant precedent and should receive
+credit even though it is not cumulative acquisition from further donors.
+
+The next meaningful question is whether such preparation transfers a useful new
+operation more effectively than direct recipient preparation with the same allowed
+evidence. Do not substitute cosine fit or feature-name agreement for that contrast.
+Low similarity to each individual dictionary atom does not demonstrate novelty
+relative to their combinations. Existing R^n operations remain scaffolding; their
+success would need an operational law with tested scope to serve the native-math
+mission. No new numerical toy, model forward or runner is warranted by this reading.
+
+
+Independent review confirms the method-level runtime distinction, not a traced
+execution implementation or measured savings. The separate stitching-based
+exclusivity test uses an affine feature formula; S48's displacement qualification
+applies there and does not refute the cosine-weighted transfer recipe. Keep these
+methods separate. Six local probe blocks, fifteen forwards and1065 apparatus/0
+artifact-bearing lines remain unchanged.
