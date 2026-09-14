@@ -4853,3 +4853,49 @@ Neither is a discovered native law. Their value is making the acquired distincti
 and required binding explicit. No model run, new runner, parser or training is
 selected. The next useful evidence must discriminate acquisition choices; another
 worked dictionary or arbitrary cache smoke test will not do that.
+
+### S47. Real paired questions before another model check
+
+S36 already selected scientific evidence finding; S44-S46 sharpen its operation
+and comparator, not a reason to repeat application-selection dialogue. Inspect
+one existing annotated dataset for raw examples before designing more machinery.
+
+**Specific candidate.** [Evidence Inference 2.0](https://aclanthology.org/2020.bionlp-1.13.pdf)
+links structured intervention/comparator/outcome questions to trial-report evidence
+and effect labels. Its trained encoder pipeline separates evidence identification
+from result classification. We need only the first operation. Conditioning matters
+in the published comparison; abstract-only data support smaller inputs. Those are
+external results, not competence of a local frozen encoder. This is narrower than
+distinguishing mechanism tests from topical discussion: select the passage relevant
+to the supplied outcome question, not give medical advice or adjudicate causality.
+
+**Prospective data inspection.** At source commit
+`a661e8c14f973398380c8865cf2f27a535aaaf6d`, inspect at most five training reports,
+selected by increasing numeric article id. Eligibility is two prompts with the
+same intervention/comparator, different outcomes, and verified abstract evidence
+with distinct nonoverlapping spans. Exclude every prompt flagged in the release
+README. Take the first eligible prompt pair by numeric ids per report. Preserve
+all valid annotations for those prompts. Selection precedes semantic reading;
+do not replace pairs after seeing whether they are easy or useful. Fetch metadata
+within 20 MiB total and only the selected source reports; no bulk article download.
+Parser correction before semantic inspection: the CSV uses True/False while its
+README says 0/1. Root's initial literal-1 filter selected nothing; that is not a
+data negative. Recognize both encodings, preserve all valid annotations, and allow
+one corrected metadata fetch (30 MiB cumulative cap). The pair-selection rule is
+unchanged; no model has run or semantic pairs been read.
+
+**Expectation and confound.** At least one report may furnish question-conditioned
+passage preference without manually idealized records. Different effect labels
+alone do not establish different relevant passages. An annotation for one question
+is not automatically a negative for another. Root and independent review must read
+the cross-question passages. If none qualify, reject this bounded panel; no larger
+search or model is justified by that failure. Offsets must be checked against the
+supplied source text; do not silently repair labels. No model load or training.
+
+**Separate composition obligation remains.** Independent strategy dialogue with
+`resumed_frontier_adversary` keeps S40's separately prepared joint use distinct
+from this terminal readout: test combined decisions against each contributor,
+declared selection and ordinary evidence communication, with competence established
+first. An aggregate of separate tasks is not a mixed-use task. Neither this data
+inspection nor successful retrieval would settle contextual compatibility of
+acquired moves or donor-independent cumulative reasoning.
