@@ -1,5 +1,14 @@
 # STATE
 
+**Goal status — 2026-09-14: blocked, not complete.** The required real CLI
+result audit cannot read files; the same blocker remains after three consecutive
+goal turns. Priority reassessment, bounded attempts, evidence custody and current
+documentation are preserved. No scientific result or third run is claimed.
+Resume by verifying actual CLI file access, completing the existing S37 result
+audit, then deciding the next allocation. All known completed review helpers were
+stopped; the broader mission is neither rejected nor scientifically refuted.
+
+
 ## Current direction: cumulative capability acquisition (2026-09-13)
 
 Read the [canonical direction and decision map](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md).
