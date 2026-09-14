@@ -32,7 +32,7 @@ tests strict interchange, not all acquisition. Evidence for one interface is
 local, not a universal law or a finished cumulative system.
 
 **Current evidence boundary:** source and implementation studies now extend
-through S57. They supply concrete trained reasoning, compressed-context reading,
+through S57, followed by the local S58 teaching result. Sources supply concrete trained reasoning, compressed-context reading,
 stitching and separately prepared contributor interfaces. None of the inspected
 results establishes the full repeated-acquisition contract below. Published
 precedents, local results and untested combinations must remain separate.
@@ -43,11 +43,12 @@ precedents, local results and untested combinations must remain separate.
 | Reason using retained representations under later questions | Prepared compressed-context consumer and its released conditioning path, S49 | A predicted donor-response export usable by that consumer; independent-donor memory composition |
 | Add useful B while retaining established A | External semantic/spatial merger with original-task evaluations, S50; retention constraints, S7/S8/S13/S32 | Local useful acquisition; donor-matched semantic retention and joint-operation attribution in the reference episode |
 | Add C while reusing earlier preparation | Incremental-learning comparators and separately prepared interface precedent, S28-S31/S40 | An observed later acquisition with charged repair and retained A/B/joint uses |
-| Retire a donor while retaining useful fresh-input behavior | Folded-transfer precedent and concrete teaching recipes, S30/S42/S49 | This project's demonstrated donor-independent acquisition; cached answers alone are insufficient |
+| Retire a donor while retaining useful fresh-input behavior | S58: correct pseudo-labels improve a frozen-feature head on held-out images after teacher removal; external recipes S30/S42/S49 | Broader operations, new backbone knowledge and successive acquisitions; S58 is a limited species readout |
 | Discover effective native latent mathematics | Conditional operational constraints and scoped empirical diagnostics | A law predicting useful interventions or composition in real learned spaces beyond the tested scaffolding |
 
-Local accounting is six probe blocks, fifteen scored model forwards and no
-strategy-phase training or GPU use. S6/S21/S22/S26 are scoped negatives; S37 has
+Local accounting is seven probe blocks, 375 backbone forwards and 2400 linear-head
+optimization steps; no GPU. S58 is a bounded teaching positive with independently
+reproduced predictions. S6/S21/S22/S26 are scoped negatives; S37 has
 two failed attempts and zero scored forwards. S47 demonstrates a sufficient direct
 lexical/section remedy on its small structured panel, then closes without a model
 probe. S43 separately inspects stored external responses. None demonstrates
@@ -81,7 +82,8 @@ flexible-approach restart. Scientific evidence-
 finding remains a possible application. One bounded causal-teaching feasibility
 preflight was justified, but two execution attempts failed before inference.
 The downloader bug and owned metadata are corrected; no third run occurs in this
-allocation. No competence, intervention or cumulative acquisition result exists.
+allocation. Those failed attempts establish no competence, intervention or cumulative
+result; S58 later establishes its separate modest teaching result.
 
 | Remaining uncertainty | Evidence that would change the investment |
 |---|---|
@@ -266,7 +268,7 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 ## Next-work boundary
 
-**Active allocation, through S58:** strategy/discovery for useful successive
+**Active allocation, through S60:** strategy/discovery for useful successive
 acquisition and composition. S58 completed a bounded species-teaching precursor:
 correct hard pseudo-labels improve a frozen-feature recipient head after donor
 removal; richer soft targets offer no advantage under this recipe. Preserve that
@@ -274,6 +276,12 @@ baseline and move beyond this nearly saturated panel. A donor may add
 information, make useful computation accessible, or justify its cost through better
 quality. Connected use and ordinary teaching remain valid; donor removal is the
 selected resource-motivated assimilation branch, not a universal mission gate.
+
+S59 declines a hierarchical classifier comparison without a material admission
+benefit. S60 supplies a constructive representation-level teaching precedent.
+Next examine whether contributed operations remain usable across permitted input
+conditions, distinguishing training-support confounds from intrinsic limitations.
+No large reproduction or extension of S58's fixed test panel is queued.
 
 The next empirical decision must identify what an established system does, what a
 new donor contributes, and an intended use whose result changes the investment.
@@ -6250,3 +6258,108 @@ The strategy mandate does not require construction to improve that ratio.
 
 The reviewed next investment changes the acquisition question rather than tuning
 this nearly saturated panel. Its frozen sample and completed result stay closed.
+
+### S59. Admission changes the choice set
+
+**Denizen question and proposed decision.** Can an acquired species distinction
+remain useful when new alternatives are admitted, without the caller first telling
+the system which contributor applies? The so-what is: learn another specialist's
+distinctions while still knowing when to use what was learned before. Independent
+direction reviewer `alignment_contribution_review` proposes successive vocabulary
+admission as a next precursor. Using the same specialist for another group would
+be one-provider vocabulary acquisition, not multiple-donor acquisition.
+
+**Apply existing mathematics, do not rediscover it.** S39 already shows that
+conditioning on a subset erases its probability mass; S42 records vocabulary
+normalization effects, and S50 treats vocabulary as part of a request. Let A and B
+be disjoint class sets, with scoped readouts q_A(y|x) and q_B(y|x). A union service
+also needs a scope probability g(x). Its probabilities are g q_A on A and
+(1-g) q_B on B. The scoped readouts alone do not determine g. This is an interface
+obligation, not a new theorem or proof that learned representations are deficient.
+
+For a true conditional law p on the union, write pi(x)=p(A|x). The conditional
+log-loss excess of that factorized service decomposes exactly as
+
+    KL(p || q) = KL(Bern(pi) || Bern(g))
+                 + pi KL(p(.|A) || q_A)
+                 + (1-pi) KL(p(.|B) || q_B).
+
+This follows by substituting p(y)=pi p(y|A), or its B counterpart, in the KL sum.
+Terms with zero true group mass are omitted. Thus useful scoped prediction and
+scope selection are separately measurable contributions; exact scoped retention
+does not guarantee useful union choice. Conversely, a union argmax can change
+after alternatives are added while the original scoped service remains unchanged.
+Specify which request is promised before calling this forgetting.
+
+**Candidate comparison, not an allocated run.** Freeze the achieved A head;
+teach a B head and a group selector using permitted training labels and cached
+features. Compare against a jointly taught union head with the same evidence.
+Group labels derived from permitted training species labels are legitimate;
+test group identity is not an input. Full specialist logits may serve a separately
+charged teacher diagnostic, not free recipient routing. Test both the original
+scoped request and mixed union requests. Never compare head maxima as though
+separately normalized confidences already supplied calibrated scope.
+
+**Allocation challenge.** At this small scale, retaining old feature rows and
+refitting one linear union head is cheap. Hierarchical classification may add
+machinery without a resource benefit. Fixed scoped heads trivially preserve scoped
+predictions; that fact alone is not informative empirical retention evidence.
+No artificial ban on old features or joint fitting should manufacture an advantage.
+Before another run, identify the actual quality, reuse or acquisition-effort
+uncertainty that would change the choice. The broader mission does not require
+this particular hierarchy. This definition and second-round challenge precede
+any new data, fitting or sample expansion.
+
+**Second-round resolution.** The reviewer agrees not to allocate this hierarchy
+comparison at the present scale. A union head can coexist with unchanged A, reuse
+the same backbone/features, and preserve the old scoped service too. Different
+classifier inductive biases could produce a small quality difference; that would
+not by itself answer a consequential acquisition question. Joint teaching while
+retaining the old scoped head is the reasonable implementation default if this
+vocabulary expansion is needed, not a theorem of accuracy dominance. Reconsider
+reuse only under an independently motivated workload with material accumulated
+preparation cost, or a contribution requiring an inadequately supplied computation.
+No new run, fitted head, model forward or apparatus. The conditional decomposition
+is an application of existing probability, not a new native law.
+
+### S60. Learn a representation that supports further readers
+
+**Question before an experiment.** S58 fits a useful terminal decision into
+existing features. A different acquisition target modifies the representation so
+that subsequently fitted readers can use several contributed properties. Define
+the retained object as the learned encoder plus declared adapters; distinguish
+an unchanged teacher consumer from a newly trained downstream reader. Credit the
+reader's training rather than attributing all resulting reasoning to the encoder.
+The so-what is: teach one representation from several specialists, then use it
+for questions not supplied as teaching labels. No large reproduction is selected.
+
+**Bounded primary source.** [AM-RADIO, camera-ready v5](https://arxiv.org/html/2312.06709v5),
+sections 3–5, learns a student encoder through teacher-specific summary/spatial
+adapters. It matches features rather than labels; adapters are two-layer MLPs.
+Table 3's "None" removes spatial supervision, not all teaching. Adding both spatial
+teachers gives ADE20K 48.13 versus 47.05 for spatial DINOv2 alone, with summary
+teaching retained. Frozen-feature segmentation uses trained linear readers; VQA
+adds projector training and language-model instruction tuning. Existing CLIP and
+SAM consumers are also used without fine-tuning their decoder heads. Training
+reports 600,000 steps and 614 million examples; this is not a small preparation.
+Stage two adds SAM while also changing resolution. Figure 5 reports a feature-error
+mode change around 720 pixels, not a measured downstream failure rate.
+
+**Interpretation after independent source review.** This is a serious
+constructive precedent for representation-level multi-provider assimilation beyond
+S58's head-only learning. It does not isolate repeated admission from other training
+changes, or establish retention after arbitrary future contributors. Downstream
+transfer deserves credit even when its task type was anticipated; chronological
+unanticipated-task reuse is a stronger separate claim. Cosine/feature matching is
+R^n scaffolding. The operational concern suggested by the resolution effect is
+whether a permitted change of presentation changes which contributed operations
+are available. Feature error alone cannot adjudicate that concern. No local model
+loading, new runner, parameter fitting or empirical block follows from this source.
+
+Independent reviewer `alignment_contribution_review` read the final CVPR paper
+and confirms the frozen-encoder/new-reader distinction and spatial-ablation scope.
+The inspected main paper does not supply a matched ordinary output-teaching
+control. Continue: this is a useful positive precedent, not proof that matching
+representations always beats teaching outputs at equal effort. The next source
+question concerns coverage across presentation conditions and actual operation
+quality; do not substitute feature-error tables for behavioral evidence.

@@ -1,5 +1,15 @@
 # Experiments Log
 
+## S59–S60 strategy after the teaching result — 2026-09-14
+
+Two-round review declines a hierarchical-versus-flat classifier run: the direct
+union head can retain the old scoped head and reuse the same features. No actual
+resource constraint motivates the added hierarchy. S60 independently checks a
+primary multi-teacher representation precedent, distinguishing frozen-backbone
+downstream readers from unchanged teacher consumers. No local run or new apparatus;
+seven blocks, 375 backbone evaluations and 1351/0 code lines remain unchanged.
+Canonical S59/S60 and the ledger retain the analytical and source boundaries.
+
 ## S58 bounded specialist-teaching precursor — 2026-09-14 (completed)
 
 Fresh review corrects an unrun selection criterion; the selected limited-label
