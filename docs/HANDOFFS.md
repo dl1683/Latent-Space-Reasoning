@@ -780,3 +780,8 @@ Verbatim from `docs/STRUCTURED_NEGATIVE_2026_08_29.md` ("Findings that survive a
 - Hash-bearing completed configs and runners are evidence; editing them destroys reproducibility.
 - ~~This program is CLOSED.~~ **REOPENED 2026-08-31.** Phase 1 experiments below are closed results; Phase 2 uses non-R^n approaches. Do not reopen Phase 1's R^n-based repair ladders or measurement sweeps.
 
+
+S53 follow-up: the reviewed first question is conditional access for one late
+request, not persistent cross-request consistency. Exact local execution is
+deferred after a bounded source-access check; no dependency repair is queued.
+The canonical S53 records attribution controls and the retained-product convention.

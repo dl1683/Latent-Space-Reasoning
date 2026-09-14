@@ -521,3 +521,8 @@ word as written in each section header):
 - Closed toy program — licensed wording (Rounds 36–37; ENDED 2026-08-29)
 - NLM-007 — CLOSED (2026-08-29; audit #22 closing statement, verbatim)
 - NLM-007 — adoption-order record (Rounds 1–34; superseded orders kept verbatim), including the NLM-001 through NLM-006b verdict/lock sections, Rounds 10–33, audits #2–#20, and the four-cell evidence gate (2026-08-27 — 2026-08-29)
+
+S53 follow-up: the reviewed first question is conditional access for one late
+request, not persistent cross-request consistency. Exact local execution is
+deferred after a bounded source-access check; no dependency repair is queued.
+The canonical S53 records attribution controls and the retained-product convention.

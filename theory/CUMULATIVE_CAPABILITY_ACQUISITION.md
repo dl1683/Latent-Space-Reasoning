@@ -5840,10 +5840,67 @@ MIT cannot establish stereochemical identity, and equivalent serialization does
 not license arbitrary tautomer, charge or fragment normalization.
 
 The next decision is a deliberately limited consumer and attribution comparison:
-can a reader that is competent on actual product graphs use the frozen reaction
-encoder's states to answer these later requests, beyond input-only and untrained-
-feature controls, at worthwhile total effort against decode-once graph queries?
+can a limited reader use the frozen reaction encoder's states to answer these
+later requests, beyond input-only and untrained-feature controls, at worthwhile
+total effort against decode-once graph queries? Reference-product graph queries
+verify the task answers; they do not validate the different latent interface.
 Training that reader is additional chemistry learning unless controls show otherwise.
 No checkpoint substitution, dataset expansion or execution is selected automatically.
 The native target is stable consequence identity under changing requests; graph
 operations and neural readouts are scaffolding, not a newly demonstrated latent law.
+
+**Consumer attribution correction (independent two-stage review).** Let a mixed
+reaction input be x, a later motif request be r, and its reference-product predicate
+be a. Compare one declared conditional reader class h(F(x),r), trained separately
+on identical reaction/request labels and budgets, using (i) frozen pretrained
+contextual states, (ii) input token/position features before contextual computation,
+and (iii) frozen random contextual states of the same architecture/tokenizer.
+Match token access, masks, truncation, query encoding and reader capacity. A fixed
+training budget compares accessible performance at that budget; it does not prove
+that every feature arm reaches its best possible performance.
+
+An explicit graph exposes bonds and atoms that contextual token states do not.
+A graph-query procedure is therefore an answer-construction check, not a positive
+control for the neural reader. Encoding product-only strings also changes the
+input distribution; learning a graph-to-state bridge adds another learned task.
+The native donor's decode-once graph route is the deployment comparator, with its
+own prediction errors and generation failures. Reference graphs are not an oracle
+available to either prediction route at inference.
+
+Keep every request for a reaction in one split, and check duplicate reactions and
+equivalent input serializations across splits. Generalization to fresh reactions
+with familiar motifs differs from generalization to unseen motifs or compositions.
+Any benefit licenses useful accessibility to this reader, not localization of
+reaction computation inside the encoder: the reader may learn transformations
+from features that pretraining organized well. A negative locates a limitation of
+this interface and learning budget, not an intrinsic impossibility of reasoning.
+
+**First workload and access boundary.** The reviewed first comparison has one
+late motif request per fresh reaction; save the encoded state before revealing
+that request. This is conditional access, not evidence of consistency across
+multiple requests. Sample requests independently of withheld products and report
+the four membership cells afterward, including sparse or empty cells. Do not
+balance them using product labels. Include motif-frequency and input-membership
+baselines. The one-query runtime condition is q < D+P+g, with consumer learning
+and feature preparation charged separately. Set the accuracy/cost tradeoff before
+execution; no numerical advantage threshold is declared by this source check.
+
+A bounded check of the [official repository](https://github.com/pschwllr/MolecularTransformer)
+found mixed-input training/preprocessing instructions, a regex tokenizer, and links
+to tokenized splits and averaged checkpoints. Its documented environment is old
+(Python 3.5, PyTorch 0.4.1, torchtext 0.3.1). Preprocessing removes from the product
+any molecule also present unchanged in the inputs: product predicates therefore
+refer to the benchmark's retained product, not every substance in the vessel.
+The mixed inputs lack the separated atom-contribution role token; this does not
+make target construction free of product-dependent conventions.
+
+The linked data/model Box endpoints could not be inspected by the web tool;
+opening their explicit redirected URLs also failed. The GitHub revision metadata
+request returned HTTP 504. These are access observations, not evidence the files
+are absent. This check did not bind a checkpoint size/hash, repository revision,
+prepared-data sample or current execution compatibility. No weights, full dataset,
+packages or model code were downloaded/executed. Stop this bounded access check;
+do not turn it into a legacy-environment repair or substitute-checkpoint campaign.
+Execution is deferred, while the conditional-access comparison and its attribution
+limits remain usable. Further strategy should resolve a consequential question
+rather than add more contract machinery for this currently unbound local episode.

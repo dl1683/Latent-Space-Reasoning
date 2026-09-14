@@ -4264,3 +4264,9 @@ STATE.md wording, verbatim:
   amended contract was committed at `fea3a8f`; the verdict entry above is the
   first outcome analysis. Ledger: `substitution_probe_smoke_qwen3_0p6b`,
   `nlm001_pipeline_smoke_8`; artifacts `experiments/results/pipeline_smoke_8/`.
+
+S53 follow-up: two-round consumer attribution review and bounded official-repository
+access check, recorded as `s53_consumer_attribution_access_20260914`. Reference graph
+queries verify answers, not neural-reader competence. Three matched feature arms
+are proposed for one late request. Box inspection failed and revision API returned
+504; endpoint absence is not inferred. Execution deferred, no new empirical block.

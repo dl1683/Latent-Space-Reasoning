@@ -124,3 +124,8 @@ NOTEBOOK.md            Reverse-chronological running log (recent); older entries
 ## License
 
 MIT
+
+S53 follow-up: the reviewed first question is conditional access for one late
+request, not persistent cross-request consistency. Exact local execution is
+deferred after a bounded source-access check; no dependency repair is queued.
+The canonical S53 records attribution controls and the retained-product convention.
