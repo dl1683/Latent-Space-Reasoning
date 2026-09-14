@@ -87,26 +87,20 @@ startup; an external 180-second process wait also returned normally. Exact recei
 and the correction of the audit prose's runtime transcription are in the ledger.
 This completed probe is not reopened. Preserve the broader capability-composition objective.
 
-**Active decision:** follow the [canonical Next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-S36's compatibility-first priority remains demoted. S37 and its unavailable real
-CLI result audit are parked, with no new run or scientific verdict. Latest user
-instruction resumes independent research around that roadblock. S38 separates
-teacher target construction from the student's internal training pathway, and
-pretrained donor contribution from mere dependence on an adapter's input.
-S39 then finds actual cross-checkpoint communication implementations beyond the
-same-model core. Their useful contribution needs the identical receiver prompt
-without a message, followed by correct/permuted content and source-rollout controls.
-Pinned source review identifies these comparisons; no local gain or new run is
-claimed. S40 finds published joint use of separately trained interfaces and an
-implemented composition operator. Exact joint-run configuration and per-item
-retention are unbound in the materials checked. S41 attention algebra is a reviewed
-conditional diagnostic, not a new instrumentation allocation. Continue toward
-useful joint behavior through an operationally meaningful interface.
+**Active decision:** compare connected donor use with response-derived teaching
+into a shared predictor. The former keeps donor computation available on new inputs;
+the latter aims to retain learned contributions after donor retirement. Published
+precedents support exploring both, but no cumulative local advantage is established.
+The S43 slice contains one verified answer correction and is closed; it does not
+select training. The next strategy review must identify a useful operation and a
+decision-changing affordable comparison. See the [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+S37 stays parked; no inaccessible-reviewer repair loop or new apparatus is queued.
 
 **Session accounting:** 958 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207 + 330 runner lines); five probe blocks / zero building rounds.
 S37 has two failed execution attempts and zero scored forwards. Fifteen total
-scored model forwards, no GPU or training. The explicit strategy mandate
+scored model forwards, no GPU or training. S43 separately inspects32 published
+responses on16 matched queries; it adds no local model inference. The explicit strategy mandate
 supersedes construction merely to change this ratio.
 
 **Continuity and custody:** commit-seal rung 1 stays paused; closed lines stay
@@ -114,7 +108,9 @@ closed, and the strong-assert panel is a deferred option. Historical quota dates
 are not current access checks. Root alone writes the blackboards because separate
 MCP sessions reused IDs; reviewers return findings for provenance-preserving relay.
 Mission synthesis is skipped under its known large-board hang workaround.
-Result audits use fresh real Codex CLI sessions. Dated session checkpoints remain
+Real CLI result audits require a working fresh CLI. Under the latest restart
+workaround, available independent strategy/data reviews are labeled accurately and
+do not halt over inaccessible tooling. Dated session checkpoints remain
 in NOTEBOOK.md and the ledger rather than being repeated in current routing.
 
 ## Historical state below

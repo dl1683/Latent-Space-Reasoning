@@ -1,6 +1,6 @@
 # NOTEBOOK
 
-## Strategy/discovery checkpoint and history — 2026-09-13
+## Strategy/discovery checkpoint and history — 2026-09-14
 
 **Latest user restart, 2026-09-14:** mission fixed, approach flexible. S37 and its
 unavailable CLI audit are parked. S38 now separates donor target construction,

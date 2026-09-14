@@ -1,4 +1,4 @@
-# Session handoff — 2026-09-13
+# Session handoff — 2026-09-14
 
 **Research resumed — latest user direction, 2026-09-14.** Keep the mission
 fixed and pivot around roadblocks. S37 and its incomplete real CLI result audit
@@ -72,29 +72,29 @@ startup; an external 180-second process wait also returned normally. Exact recei
 and the correction of the audit prose's runtime transcription are in the ledger.
 This completed probe is not reopened. Preserve the broader capability-composition objective.
 
-**Active decision:** follow the [canonical Next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-S36's compatibility-first priority remains demoted. S37 and its unavailable real
-CLI result audit are parked, with no new run or scientific verdict. Latest user
-instruction resumes independent research around that roadblock. S38 separates
-teacher target construction from the student's internal training pathway, and
-pretrained donor contribution from mere dependence on an adapter's input.
-S39 then finds actual cross-checkpoint communication implementations beyond the
-same-model core. Their useful contribution needs the identical receiver prompt
-without a message, followed by correct/permuted content and source-rollout controls.
-Pinned source review identifies these comparisons; no local gain or new run is
-claimed. Continue toward a useful small task and operationally meaningful interface.
+**Active decision:** compare connected donor use with response-derived teaching
+into a shared predictor. The former keeps donor computation available on new inputs;
+the latter aims to retain learned contributions after donor retirement. Published
+precedents support exploring both, but no cumulative local advantage is established.
+The S43 slice contains one verified answer correction and is closed; it does not
+select training. The next strategy review must identify a useful operation and a
+decision-changing affordable comparison. See the [canonical next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+S37 stays parked; no inaccessible-reviewer repair loop or new apparatus is queued.
 
 Session totals: 958 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207 + 330), five probe blocks / zero building rounds; S37 has
 two failed attempts, zero scored forwards. Fifteen total scored model forwards,
-no GPU or training.
+no GPU or training. S43 separately inspects32 published responses on16 matched
+queries without new local inference.
 The user's strategy-only mandate governs; construction is not required to repair
 the ratio. Preserve retained results, source subsets, provenance and negatives.
 
 Root is the sole blackboard writer after cross-session ID collisions; reviewers
 read boards and return findings for root to record with provenance. Integrity
 entries were restored as e1011–e1012. Skip mission synthesis under the documented
-large-board hang workaround; use fresh real Codex CLI sessions for result audits.
+large-board hang workaround. Real CLI audits require working fresh CLI access;
+the latest restart permits accurately labeled independent strategy/data review
+without repairing inaccessible tools before unrelated work.
 This consolidated routing replaces repeated current-session checkpoints only;
 all earlier handoffs below remain historical evidence.
 

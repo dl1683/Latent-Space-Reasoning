@@ -18,17 +18,13 @@ This is the current application of the philosophy, not a replacement for it. We 
 
 Candidate evidence starts with A in a base system, B in a donor, acquisition of useful B behavior with A retained, and held-out tasks requiring both. Further acquisitions test cumulative growth; donor removal is a separate assimilation branch. Relevant controls include simple routing, direct evidence forwarding, structured readouts, retrieval and matched learning budgets. Acquisition and recurring inference costs are counted separately. Current work is autonomous strategy/discovery; definitions, sources and bounded probe results live in the canonical direction's strategy notebook.
 
-**Current research allocation:** strategy work continues around the parked
-causal-teaching preflight. S38 separates special donor answers from receiver
-training and pretrained contribution. S39 examines whether live latent
-communication actually works across distinct pretrained contributors. S40 finds a
-published example of jointly using separately trained interfaces; S41 keeps the
-attention calculation subordinate to useful composition and retained behavior.
-S42 connects decoder-derived response embeddings to a concrete teaching comparator;
-S43 finds one concrete donor correction in a bounded released-data slice, together
-with shared errors and unfinished answers. No training run follows.
-This informs capability grafting without requiring every interface to be linear. No local acquisition
-result is established. See the [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+**Current research allocation:** compare live donor composition with teaching
+compact contributions into a shared predictor. Published work supports separately
+prepared interfaces and response-derived embeddings; neither establishes our full
+cumulative-growth claim. A fixed released-data inspection found one concrete donor
+correction, along with shared errors and unfinished targets. The next strategy
+choice is a useful operation and an affordable comparison that distinguishes these
+routes. No training or model run is selected. See the [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 
 **Status: exploratory direction.** No cross-model grafting, cumulative acquisition or encoder-reasoning artifact has been established. Start with the [canonical direction](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) and [current state](STATE.md). Earlier findings below remain supporting evidence with their original limits.
 
