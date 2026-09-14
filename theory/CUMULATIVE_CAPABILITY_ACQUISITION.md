@@ -32,7 +32,7 @@ tests strict interchange, not all acquisition. Evidence for one interface is
 local, not a universal law or a finished cumulative system.
 
 **Current evidence boundary:** source and implementation studies now extend
-through S54. They supply concrete trained reasoning, compressed-context reading,
+through S55. They supply concrete trained reasoning, compressed-context reading,
 stitching and separately prepared contributor interfaces. None of the inspected
 results establishes the full repeated-acquisition contract below. Published
 precedents, local results and untested combinations must remain separate.
@@ -341,6 +341,11 @@ contract work or dependency repair is queued for this episode.
 S54 returns to successive admissions. A bounded primary-source inspection
 separates final order robustness from retained behavior and identifies streaming
 merge baselines. It does not establish jointly composed use; no new run is selected.
+
+S55 finds no immediately usable teaching arrays in the checked historical vision
+caches and narrows a concept-bottleneck precedent to global policy edits. Its local
+consumer lookup is closed; contributed policy revisions remain a possible form of
+acquisition, distinct from contributed features or answers. No run is selected.
 
 The recent investigations change three choices:
 
@@ -5959,3 +5964,48 @@ preparation and inference effort. First-port isolation is not that evidence.
 Record this empirical dependency once; another mask audit or generic proof does
 not resolve it absent a consequential eligible experiment. This narrows investment
 in that branch without closing the broader cumulative-acquisition program.
+
+### S55. Empirical resources and a candidate editable interface
+
+**Resource check before allocating compute.** The two historical vision-cache
+directories currently contain only their manifests, not feature arrays. Their old
+reported experiments remain historical evidence; they are not immediately runnable
+teaching packets. S43 and S47 remain closed. A two-query search for released
+aligned teacher/feature packets did not bind one. The inspected repository README
+at https://github.com/efkirmizi/distill/blob/main/README.md describes computing
+teacher features/logits into RAM during training, not a verified released packet.
+This limited check establishes no global absence, and small CPU preparation remains
+allowed; a preexisting packet is not a universal prerequisite.
+
+**Definition before next source selection.** A candidate editable concept interface
+has a frozen image representation, interpretable attribute observations and a
+consumer whose decision changes under a declared attribute intervention. Ask whether
+a specialist's supplied distinction can become an operation the receiver uses,
+rather than merely another class score. Broad object recognition versus fine-grained
+bird distinctions gives a concrete possible use; arbitrary model diversity does not.
+An edit to a concept variable is not automatically a faithful intervention on the
+underlying image or latent cause. Competent recognition and useful intervention
+must be established separately, with direct classifier repair as a comparator.
+
+**Source resolution and closed feasibility check.** [Post-hoc Concept Bottleneck
+Models, author v2](https://arxiv.org/html/2205.15480v2), sections 2/4, studies global
+class-concept weight pruning and renormalization. It is not the proposed local
+bird-attribute overwrite. The hybrid residual can retain effects bypassing concepts.
+The [official implementation](https://github.com/mertyg/post-hoc-cbm/tree/c0ba2b7b33b569cc713456cda8c25973809ec7cb)
+accepts concept scores through `forward_projs`; these are margins, not calibrated
+probabilities. Its README describes training the concept bank and classifier.
+The author-linked [reproduction](https://github.com/dgcnz/FACT/tree/b996ef039ca2167c8b1d89e4a2f1b5d4866c42c1)
+provides editing scripts; checked output directories contain placeholders rather
+than a trained consumer. No trained endpoint is bound by this limited inspection;
+this is not a global absence claim. No weights or datasets were downloaded.
+
+**Acquisition implication.** A contributor may supply instructions for revising a
+response policy rather than new features or per-example answers. Applying an edit
+without optimization still changes weights. The edit needs held-out useful effects
+and collateral-behavior evaluation, and direct classifier repair receives the same
+feedback. A meaningful concept name does not establish faithful causal semantics.
+The original local-correction proposal remains untested; no model-specific native
+law is established. Independent strategy review accepts this narrower residue and
+rejects another scale counterexample as uninformative. Stop this artifact search.
+Small CPU preparation remains authorized when it serves a concrete new question;
+this check does not select training or demand another user confirmation.
