@@ -5177,3 +5177,118 @@ the consumer-compatible target adds useful information or merely repeats a respo
 that the receiving backbone could already produce. S38's access controls and S43's
 teacher-correctness distinction remain applicable. This is a candidate dependency
 chain, not a demonstrated new reasoning model or native law.
+
+**Consumer-response teaching, not a new branch.** For a response Y sampled from
+a donor given x, compressor K, prepared consumer Q, and predictor H, an optional
+objective is
+
+    E_(x,Y,r) KL[Q(K(Y),r) || Q(H(x),r)].
+
+Specify the joint request distribution if r depends on Y. Teacher distributions
+are fixed targets; gradients still traverse the frozen student-side consumer into
+H. This may cost much more than fitting cached targets. It is ordinary downstream
+distillation through a reusable interface, not an additional source of information
+or a selected training run. Actual donor and consumer correctness remain separate.
+With stochastic targets, one memory may not realize the teacher-response mixture
+across all requests. S8 already gives the relevant mean-export warning.
+
+Reviewer `alignment_contribution_review` identifies the consequential requirement:
+memories indistinguishable under the teaching requests have the same behavioral
+loss. Request selection therefore partly defines what capability is acquired.
+Reconstruction-only teaching does not exercise the later-question use contract;
+matching taught requests guarantees neither unseen-request behavior nor a unique
+memory representation. No additional theorem or benchmark is needed to state this.
+
+The direct predictor G(x,r) must receive the same donor evidence and teacher
+responses. H's special restriction is that its export cannot depend on the later
+request r. Reuse can matter for known request families when particular questions
+arrive later; requiring an entirely unforeseen family would unnecessarily narrow
+the mission. Potential savings must credit the direct predictor with ordinary
+prefix caching too. Compact memory may reduce later attention work, but savings
+cannot be inferred from repeated uncached baseline calls. This carries S4.1/S19/
+S38/S42/S46 into the concrete consumer choice, rather than reopening those lines.
+
+**Next allocation.** Specify a real multiple-request use and its saved-text/direct-
+prediction alternatives before choosing a fitting objective. The acquired object
+is defined by distinctions recoverable under those requests, not by a coordinate
+norm. No new empirical block, local model loading or claim of a learned-space hole.
+
+**Bounded competing-route question.** Before assembling a response predictor and
+context compressor, inspect CODI's direct continuous-reasoning distillation as one
+alternative consumer-preparation recipe. Does it already train a latent producer
+through final-answer behavior, what source/recipient access does it need, and which
+part, if any, can be reused for a new donor? A demonstrated complete trained recipe
+could replace speculative assembly as a reference comparator; same-query reasoning
+alone would not establish later-request memory reuse or cumulative acquisition.
+No reproduction or additional architecture search is selected.
+
+**Competing-route result.** [CODI, EMNLP 2025 final](https://aclanthology.org/2025.emnlp-main.36.pdf),
+sections 3-4.4, trains shared parameters on explicit rationales and latent-answer
+generation, with detached pre-answer hidden-state targets linking the tasks.
+Stop-gradient does not freeze the shared teacher parameters. Table 2's no-alignment
+arm retains explicit-CoT training, a stronger information-access control than
+answer-only training. The separate-static-teacher arm improves when explicit-CoT
+training is added to the student. Inference uses a configured latent-step count;
+the step-count figure varies training settings, not just inference time within
+one checkpoint. These are published trained-procedure comparisons, not locally
+reviewed generation quality or total-cost evidence. Independent reviewer:
+`intervention_value_review`. Root verified Table 2 in the final PDF; the reviewer's
+additional resource reading used author v3 Appendix A and is not promoted to an
+exact final-PDF resource claim here.
+
+Root also inspected official [code revision 2c2314662c63e9f482ebc46614ffe9af17a241e5](https://github.com/zhenyi4/codi/tree/2c2314662c63e9f482ebc46614ffe9af17a241e5).
+`src/model.py:296-298` uses the same model for a no-gradient reference and a
+gradient-bearing reference pass. Lines 330-368 feed previous hidden states back
+and form detached alignment targets; lines 384-400 add the explicit-task loss.
+This verifies the access/update distinction, not a reproduction of Table 2.
+No source code was imported or executed. PDF and file hashes are in the ledger.
+
+**Allocation consequence.** Use the complete trained continuous-reasoning recipe
+as a reference alternative to speculative predictor/compressor assembly. Preserve
+the no-alignment multitask control: removing richer training data is an inadequate
+test of the linking objective's contribution. A complete recipe can be useful
+without establishing which latent steps implement which operation.
+
+The reviewer proposes fixed learned inputs in place of carried hidden states as
+the cheapest continuation control. Keep it prospective: equal slot counts do not
+mean equal runtime, and fixed slots may admit parallel prefill while recurrent
+feedback needs serial execution. Count actual computation and allow the direct
+implementation its efficient path. No new training run follows. This distinguishes
+an available trained reasoning procedure from an unverified portable memory; it
+does not settle donor acquisition, prior-use retention or
+separately prepared composition. The native target remains useful continuation
+and preservation under changed contexts, not hidden-coordinate agreement itself.
+
+**Availability check before considering a bounded diagnostic.** Inspect only the
+official release pointers for a small already-trained continuous-reasoning model.
+An available small checkpoint could make a narrow useful-continuation question
+empirically accessible without training. Replacing recurrent states at inference
+would test dependence of that trained procedure, not replace the matched-training
+fixed-slot control above. If only training code or large checkpoints are offered,
+do not train a substitute, download weights or manufacture a new benchmark to
+keep this line alive. This is an interface-availability check, not an execution lock.
+
+**Availability disposition and one training episode.** The official release does
+point to `zen-E/CODI-gpt2`, revision
+`fd641b3d3edc59e4f534b55588e906588c9e36bb`, advertising a 406,398,137-byte weight
+file. The base checkpoint is locally cached. Availability is not the blocker:
+reviewer `resumed_frontier_adversary` rejects an own-model feedback-ablation download
+as low leverage for acquisition. No weights were downloaded. A second dialogue
+resolves the separate-donor dependency using the already pinned entrypoint instead.
+
+`train.py:219-293` turns question/rationale/answer text into recipient-tokenized
+examples; `src/model.py:262-274` accepts token IDs, masks, labels and positions,
+not an externally supplied teacher model or hidden-target tensor. The reference
+states come from the changing shared model. External rationale/answer text can
+be prepared offline, and tokenization can be cached under fixed conventions.
+Reference hidden targets generally cannot be cached once across parameter updates
+without changing this objective. No-gradient execution is not frozen parameters.
+Reuse within an unchanged parameter state is narrower and not implemented here.
+
+The inspected default entrypoint supplies no cross-donor layer/dimension map.
+That does not deny the paper's separate-teacher experiment or claim a search of
+every branch. It identifies what this released path actually offers: ordinary
+external text teaching plus dynamically produced shared-model targets. Independent
+round-two review confirms the distinction and closure. Stop this availability
+branch without more code search or a substitute implementation; retain its
+complete trained-recipe and no-alignment multitask comparison as research assets.

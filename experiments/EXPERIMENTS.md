@@ -9,6 +9,12 @@ evaluation. Its multi-span result required extra training on the concatenation
 pattern; it is not independent-donor composition. No local model run or acquired
 artifact. Canonical S49 and two `s49_*_20260914` ledger entries retain code/PDF
 hashes and independent reviewer provenance. Accounting remains unchanged.
+Further S49 review retains consumer-response distillation as optional and adds a
+complete trained-reasoning comparator with rationale-preserving no-alignment
+control. Traced hidden targets depend on changing shared parameters. Official
+small-checkpoint availability is confirmed, then closed without download or
+execution after independent direction review; two additional S49 ledger records
+preserve the receipt and disposition. No new theorem section or runner.
 
 ## S48 transported operation contract — 2026-09-14
 

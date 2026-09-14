@@ -25,6 +25,10 @@ Readout transfer without new task calibration does not establish reusable update
 S49 verifies the missing new-question input in a reconstruction path and a
 separate prepared memory consumer with actual later-prompt conditioning. Their
 combination remains untested; source multi-span reuse required extra training.
+Continuation identifies a trained reasoning comparator and a no-alignment control
+that retains rationale access. Shared-model targets remain dynamic despite
+detachment; a small-checkpoint download was rejected as low leverage after
+two-round review. Consumer teaching must exercise intended later requests.
 No commutator apparatus or model run is selected. Older checkpoints below are
 historical where they conflict with this current allocation.
 

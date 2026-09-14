@@ -89,7 +89,11 @@ the same reusable calibration evidence before transfer can claim preparation
 savings; useful joint behavior remains unresolved. S49 verifies a reconstruction
 path that ignores fresh query tokens under a saved-export override, and separately
 identifies a trained compressed-context consumer that does accept later prompts.
-Their combination is a prospective dependency, not a demonstrated capability. See the [canonical next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+Their combination is a prospective dependency, not a demonstrated capability.
+A complete trained continuous-reasoning recipe is now a reference comparator; its
+no-alignment multitask arm preserves rationale access. Its traced shared-model
+hidden targets change during training. The small-checkpoint availability branch
+is closed as low leverage for acquisition; no download or model run follows. See the [canonical next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 S37 stays parked; no inaccessible-reviewer repair loop or new apparatus is queued.
 
 Session totals: 1065 apparatus / 0 artifact-bearing code lines
