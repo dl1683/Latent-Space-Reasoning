@@ -1,0 +1,58 @@
+{
+  "status": "complete_consumer_diagnostic_zero_eligible_cases",
+  "review_method": "Root and alignment_contribution_review manually read all18 decoded outputs; cache_integrity_review independently checked hashes,prompt order,tokens,EOS and manually read outputs. Not CLI audit.",
+  "cases": 3,
+  "responses": 18,
+  "terminated": 18,
+  "termination_per_arm": {
+    "composition_omission": {
+      "terminated": 3,
+      "total": 3
+    },
+    "composition_supplied": {
+      "terminated": 3,
+      "total": 3
+    },
+    "composition_wrong_subject": {
+      "terminated": 3,
+      "total": 3
+    },
+    "first_hop_omission": {
+      "terminated": 3,
+      "total": 3
+    },
+    "first_hop_supplied": {
+      "terminated": 3,
+      "total": 3
+    },
+    "second_hop_new": {
+      "terminated": 3,
+      "total": 3
+    }
+  },
+  "correct_counts": {
+    "original_citizenship": 2,
+    "supplied_citizenship": 3,
+    "new_capital_prerequisite": 0,
+    "supplied_composed_capital": 0
+  },
+  "prerequisite_eligible_cases": 0,
+  "omission_new_capital_agreement": 0,
+  "wrong_subject_new_capital_intrusion": 0,
+  "wrong_subject_country_misattribution_cases": [
+    177
+  ],
+  "scope": "All capital prerequisite and valid composed outputs name countries; this exact cloze interface lacks demonstrated prerequisite competence. No intrinsic knowledge/composition failure, selective update, acquired donor computation or native-law claim. First-hop copying is not selective revision.",
+  "retry_forward_calls": 111,
+  "first_attempt_forward_calls": null,
+  "first_attempt_forward_bounds": [
+    1,
+    16
+  ],
+  "total_forward_bounds": [
+    112,
+    127
+  ],
+  "attempt_wall_seconds": 133.17386939999415,
+  "next_after_user_resume": "Freeze only three natural capital prerequisite questions on same countries under neutral QA instruction, same model/decoding/CPU limits; no supplied capital answers. Bundled wrapper remedy, not phrase-level causal attribution. Not run or queued. If all usable, separately select composition; otherwise pivot without prompt search."
+}

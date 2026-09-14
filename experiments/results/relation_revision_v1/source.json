@@ -1,0 +1,4214 @@
+{
+  "url": "https://raw.githubusercontent.com/edenbiran/RippleEdits/54f3b88af4895a3aacb580ec63ce7ae857185040/data/benchmark/popular.json",
+  "revision": "54f3b88af4895a3aacb580ec63ce7ae857185040",
+  "bytes": 4194304,
+  "prefix_sha256": "5b8c49c64f74f63afd8b4f81ebf47b0c511f2c83f8e250704ac47814e7988f15",
+  "complete_records": 321,
+  "wall_seconds": 1.264520199969411,
+  "selected": {
+    "0": {
+      "example_type": "popular",
+      "edit": {
+        "prompt": "The name of the country of citizenship of Leonardo DiCaprio is Syria.",
+        "subject_id": "Q38111",
+        "relation": "COUNTRY_OF_CITIZENSHIP",
+        "target_id": "Q858",
+        "original_fact": {
+          "prompt": "The name of the country of citizenship of Leonardo DiCaprio is United States of America.",
+          "subject_id": "Q38111",
+          "relation": "COUNTRY_OF_CITIZENSHIP",
+          "target_id": "Q30"
+        }
+      },
+      "Logical_Generalization": [],
+      "Compositionality_I": [
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the currency in the country of citizenship of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "Syrian pound",
+                  "aliases": [
+                    "SYP",
+                    "LS",
+                    "Syrian lira"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The name of the currency in the country of citizenship of Leonardo DiCaprio is",
+              "second_relation": "CURRENCY",
+              "second_hop_target_ids": [
+                "Q240468"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the currency in Syria is",
+              "answers": [
+                {
+                  "value": "Syrian pound",
+                  "aliases": [
+                    "SYP",
+                    "LS",
+                    "Syrian lira"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q858",
+              "relation": "CURRENCY",
+              "target_ids": [
+                "Q240468"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The official language of the country of citizenship of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "Arabic",
+                  "aliases": [
+                    "ar",
+                    "Arabic language",
+                    "Arabian language"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The official language of the country of citizenship of Leonardo DiCaprio is",
+              "second_relation": "OFFICIAL_LANGUAGE",
+              "second_hop_target_ids": [
+                "Q13955"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The official language of Syria is",
+              "answers": [
+                {
+                  "value": "Arabic",
+                  "aliases": [
+                    "ar",
+                    "Arabic language",
+                    "Arabian language"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q858",
+              "relation": "OFFICIAL_LANGUAGE",
+              "target_ids": [
+                "Q13955"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the continent which the country of citizenship of Leonardo DiCaprio is part of is",
+              "answers": [
+                {
+                  "value": "Asia",
+                  "aliases": [
+                    "Asian continent"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The name of the continent which the country of citizenship of Leonardo DiCaprio is part of is",
+              "second_relation": "CONTINENT",
+              "second_hop_target_ids": [
+                "Q48"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the continent which Syria is part of is",
+              "answers": [
+                {
+                  "value": "Asia",
+                  "aliases": [
+                    "Asian continent"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q858",
+              "relation": "CONTINENT",
+              "target_ids": [
+                "Q48"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the capital city of the country of citizenship of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "Damascus",
+                  "aliases": [
+                    "Sham city",
+                    "Jasmine city"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The name of the capital city of the country of citizenship of Leonardo DiCaprio is",
+              "second_relation": "CAPITAL",
+              "second_hop_target_ids": [
+                "Q3766"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the capital city of Syria is",
+              "answers": [
+                {
+                  "value": "Damascus",
+                  "aliases": [
+                    "Sham city",
+                    "Jasmine city"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q858",
+              "relation": "CAPITAL",
+              "target_ids": [
+                "Q3766"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the head of government of the country of citizenship of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "Hussein Arnous",
+                  "aliases": [
+                    "\u1e24usayn \u02bbArn\u016bs",
+                    "\u02bbArn\u016bs, \u1e24usayn"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The name of the head of government of the country of citizenship of Leonardo DiCaprio is",
+              "second_relation": "HEAD_OF_GOVERNMENT",
+              "second_hop_target_ids": [
+                "Q60455401"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the head of government of Syria is",
+              "answers": [
+                {
+                  "value": "Hussein Arnous",
+                  "aliases": [
+                    "\u1e24usayn \u02bbArn\u016bs",
+                    "\u02bbArn\u016bs, \u1e24usayn"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q858",
+              "relation": "HEAD_OF_GOVERNMENT",
+              "target_ids": [
+                "Q60455401"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the anthem of the country of citizenship of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "Humat ad-Diyar",
+                  "aliases": [
+                    "national anthem of Syria",
+                    "Homat al Diyar"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The name of the anthem of the country of citizenship of Leonardo DiCaprio is",
+              "second_relation": "ANTHEM",
+              "second_hop_target_ids": [
+                "Q309468"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the anthem of Syria is",
+              "answers": [
+                {
+                  "value": "Humat ad-Diyar",
+                  "aliases": [
+                    "national anthem of Syria",
+                    "Homat al Diyar"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q858",
+              "relation": "ANTHEM",
+              "target_ids": [
+                "Q309468"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the head of state of the country of citizenship of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "Bashar al-Assad",
+                  "aliases": [
+                    "Bashsh\u0101r al-Asad",
+                    "al-Assad",
+                    "Assad",
+                    "dictator of Syria"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The name of the head of state of the country of citizenship of Leonardo DiCaprio is",
+              "second_relation": "HEAD_OF_STATE",
+              "second_hop_target_ids": [
+                "Q44329"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the head of state of Syria is",
+              "answers": [
+                {
+                  "value": "Bashar al-Assad",
+                  "aliases": [
+                    "Bashsh\u0101r al-Asad",
+                    "al-Assad",
+                    "Assad",
+                    "dictator of Syria"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q858",
+              "relation": "HEAD_OF_STATE",
+              "target_ids": [
+                "Q44329"
+              ],
+              "phrase": null
+            }
+          ]
+        }
+      ],
+      "Compositionality_II": [],
+      "Subject_Aliasing": [
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the country of citizenship of Di Caprio is",
+              "answers": [
+                {
+                  "value": "Syria",
+                  "aliases": [
+                    "sy",
+                    "\ud83c\uddf8\ud83c\uddfe",
+                    "Syrian Arab Republic",
+                    "SYR"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The name of the country of citizenship of Di Caprio is"
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the country of citizenship of Di Caprio is",
+              "answers": [
+                {
+                  "value": "Syria",
+                  "aliases": [
+                    "sy",
+                    "\ud83c\uddf8\ud83c\uddfe",
+                    "Syrian Arab Republic",
+                    "SYR"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The name of the country of citizenship of Di Caprio is"
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the country of citizenship of Leonardo di Caprio is",
+              "answers": [
+                {
+                  "value": "Syria",
+                  "aliases": [
+                    "sy",
+                    "\ud83c\uddf8\ud83c\uddfe",
+                    "Syrian Arab Republic",
+                    "SYR"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The name of the country of citizenship of Leonardo di Caprio is"
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the country of citizenship of Leonardo di Caprio is",
+              "answers": [
+                {
+                  "value": "Syria",
+                  "aliases": [
+                    "sy",
+                    "\ud83c\uddf8\ud83c\uddfe",
+                    "Syrian Arab Republic",
+                    "SYR"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The name of the country of citizenship of Leonardo di Caprio is"
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the country of citizenship of Leo DiCaprio is",
+              "answers": [
+                {
+                  "value": "Syria",
+                  "aliases": [
+                    "sy",
+                    "\ud83c\uddf8\ud83c\uddfe",
+                    "Syrian Arab Republic",
+                    "SYR"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The name of the country of citizenship of Leo DiCaprio is"
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the country of citizenship of Leo DiCaprio is",
+              "answers": [
+                {
+                  "value": "Syria",
+                  "aliases": [
+                    "sy",
+                    "\ud83c\uddf8\ud83c\uddfe",
+                    "Syrian Arab Republic",
+                    "SYR"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The name of the country of citizenship of Leo DiCaprio is"
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the country of citizenship of Leonardo Wilhelm DiCaprio is",
+              "answers": [
+                {
+                  "value": "Syria",
+                  "aliases": [
+                    "sy",
+                    "\ud83c\uddf8\ud83c\uddfe",
+                    "Syrian Arab Republic",
+                    "SYR"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The name of the country of citizenship of Leonardo Wilhelm DiCaprio is"
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the country of citizenship of Leonardo Wilhelm DiCaprio is",
+              "answers": [
+                {
+                  "value": "Syria",
+                  "aliases": [
+                    "sy",
+                    "\ud83c\uddf8\ud83c\uddfe",
+                    "Syrian Arab Republic",
+                    "SYR"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q858"
+              ],
+              "phrase": "The name of the country of citizenship of Leonardo Wilhelm DiCaprio is"
+            }
+          ]
+        }
+      ],
+      "Relation_Specificity": [
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the mother of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "Irmelin DiCaprio",
+                  "aliases": [
+                    "Irmelin Indenbirken",
+                    "Irmelin Indenbirken-DiCaprio"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "MOTHER",
+              "target_ids": [
+                "Q22984557"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the mother of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "Irmelin DiCaprio",
+                  "aliases": [
+                    "Irmelin Indenbirken",
+                    "Irmelin Indenbirken-DiCaprio"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "MOTHER",
+              "target_ids": [
+                "Q22984557"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the father of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "George DiCaprio",
+                  "aliases": [
+                    "George Paul DiCaprio"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "FATHER",
+              "target_ids": [
+                "Q5538516"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the father of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "George DiCaprio",
+                  "aliases": [
+                    "George Paul DiCaprio"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "FATHER",
+              "target_ids": [
+                "Q5538516"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The gender of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "male",
+                  "aliases": [
+                    "man",
+                    "male person",
+                    "male human",
+                    "male gender",
+                    "guy",
+                    "m",
+                    "human male",
+                    "sterner sex",
+                    "masc",
+                    "men",
+                    "boy",
+                    "boys",
+                    "\u2642",
+                    "male character"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "SEX_OR_GENDER",
+              "target_ids": [
+                "Q6581097"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The gender of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "male",
+                  "aliases": [
+                    "man",
+                    "male person",
+                    "male human",
+                    "male gender",
+                    "guy",
+                    "m",
+                    "human male",
+                    "sterner sex",
+                    "masc",
+                    "men",
+                    "boy",
+                    "boys",
+                    "\u2642",
+                    "male character"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "SEX_OR_GENDER",
+              "target_ids": [
+                "Q6581097"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The place of birth of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "Los Angeles",
+                  "aliases": [
+                    "Los Angeles, California",
+                    "Pink City",
+                    "The town of Our Lady the Queen of the Angels of the Little Portion",
+                    "La La Land",
+                    "Tinsel Town",
+                    "City of Angels",
+                    "City of Los Angeles",
+                    "LA, California",
+                    "L.A.",
+                    "LA",
+                    "Double Dubuque",
+                    "Los \u00c1ngeles",
+                    "Los Angeles, CA"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "PLACE_OF_BIRTH",
+              "target_ids": [
+                "Q65"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The place of birth of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "Los Angeles",
+                  "aliases": [
+                    "Los Angeles, California",
+                    "Pink City",
+                    "The town of Our Lady the Queen of the Angels of the Little Portion",
+                    "La La Land",
+                    "Tinsel Town",
+                    "City of Angels",
+                    "City of Los Angeles",
+                    "LA, California",
+                    "L.A.",
+                    "LA",
+                    "Double Dubuque",
+                    "Los \u00c1ngeles",
+                    "Los Angeles, CA"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "PLACE_OF_BIRTH",
+              "target_ids": [
+                "Q65"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the alma mater of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "John Marshall High School",
+                  "aliases": []
+                },
+                {
+                  "value": "Los Angeles Center for Enriched Studies",
+                  "aliases": []
+                },
+                {
+                  "value": "UCLA Lab School",
+                  "aliases": []
+                },
+                {
+                  "value": "Young Actors Space",
+                  "aliases": [
+                    "YAS"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "ALMA_MATER",
+              "target_ids": [
+                "Q6246887",
+                "Q6681997",
+                "Q7864033",
+                "Q8057887"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the alma mater of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "John Marshall High School",
+                  "aliases": []
+                },
+                {
+                  "value": "Los Angeles Center for Enriched Studies",
+                  "aliases": []
+                },
+                {
+                  "value": "UCLA Lab School",
+                  "aliases": []
+                },
+                {
+                  "value": "Young Actors Space",
+                  "aliases": [
+                    "YAS"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "ALMA_MATER",
+              "target_ids": [
+                "Q6246887",
+                "Q6681997",
+                "Q7864033",
+                "Q8057887"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The occupation of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "actor",
+                  "aliases": [
+                    "actress",
+                    "actors",
+                    "actresses"
+                  ]
+                },
+                {
+                  "value": "film actor",
+                  "aliases": [
+                    "movie actor",
+                    "film actress",
+                    "movie actress"
+                  ]
+                },
+                {
+                  "value": "screenwriter",
+                  "aliases": [
+                    "scenarist",
+                    "writer",
+                    "screen writer",
+                    "script writer",
+                    "scriptwriter",
+                    "screenplay writer"
+                  ]
+                },
+                {
+                  "value": "television actor",
+                  "aliases": [
+                    "TV actor",
+                    "actor",
+                    "television actress",
+                    "actress",
+                    "TV actress"
+                  ]
+                },
+                {
+                  "value": "film producer",
+                  "aliases": [
+                    "movie producer",
+                    "producer"
+                  ]
+                },
+                {
+                  "value": "stage actor",
+                  "aliases": [
+                    "theater actor",
+                    "theatre actor",
+                    "stage actress",
+                    "theater actress",
+                    "theatre actress",
+                    "theatrical actor",
+                    "theatrical actress"
+                  ]
+                },
+                {
+                  "value": "environmentalist",
+                  "aliases": [
+                    "conservationist",
+                    "environmental activist"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "OCCUPATION",
+              "target_ids": [
+                "Q33999",
+                "Q10800557",
+                "Q28389",
+                "Q10798782",
+                "Q3282637",
+                "Q2259451",
+                "Q3578589"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The occupation of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "actor",
+                  "aliases": [
+                    "actress",
+                    "actors",
+                    "actresses"
+                  ]
+                },
+                {
+                  "value": "film actor",
+                  "aliases": [
+                    "movie actor",
+                    "film actress",
+                    "movie actress"
+                  ]
+                },
+                {
+                  "value": "screenwriter",
+                  "aliases": [
+                    "scenarist",
+                    "writer",
+                    "screen writer",
+                    "script writer",
+                    "scriptwriter",
+                    "screenplay writer"
+                  ]
+                },
+                {
+                  "value": "television actor",
+                  "aliases": [
+                    "TV actor",
+                    "actor",
+                    "television actress",
+                    "actress",
+                    "TV actress"
+                  ]
+                },
+                {
+                  "value": "film producer",
+                  "aliases": [
+                    "movie producer",
+                    "producer"
+                  ]
+                },
+                {
+                  "value": "stage actor",
+                  "aliases": [
+                    "theater actor",
+                    "theatre actor",
+                    "stage actress",
+                    "theater actress",
+                    "theatre actress",
+                    "theatrical actor",
+                    "theatrical actress"
+                  ]
+                },
+                {
+                  "value": "environmentalist",
+                  "aliases": [
+                    "conservationist",
+                    "environmental activist"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "OCCUPATION",
+              "target_ids": [
+                "Q33999",
+                "Q10800557",
+                "Q28389",
+                "Q10798782",
+                "Q3282637",
+                "Q2259451",
+                "Q3578589"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the award Leonardo DiCaprio won is",
+              "answers": [
+                {
+                  "value": "Silver Bear for Best Actor",
+                  "aliases": []
+                },
+                {
+                  "value": "Golden Globe Award for Best Actor \u2013 Motion Picture Drama",
+                  "aliases": []
+                },
+                {
+                  "value": "Golden Globe Award for Best Actor \u2013 Motion Picture Musical or Comedy",
+                  "aliases": []
+                },
+                {
+                  "value": "Academy Award for Best Actor",
+                  "aliases": [
+                    "Performance by an Actor in a Leading Role",
+                    "Best Actor",
+                    "Best Actor Oscar",
+                    "Oscar for Best Actor"
+                  ]
+                },
+                {
+                  "value": "Golden Globe Award for Best Actor \u2013 Motion Picture Drama",
+                  "aliases": []
+                },
+                {
+                  "value": "Horatio Alger Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Alliance of Women Film Journalists Award for Best Actor",
+                  "aliases": []
+                },
+                {
+                  "value": "BAFTA Award for Best Actor in a Leading Role",
+                  "aliases": [
+                    "BAFTA for best Actor"
+                  ]
+                },
+                {
+                  "value": "Screen Actors Guild Award",
+                  "aliases": [
+                    "SAG Award"
+                  ]
+                },
+                {
+                  "value": "Golden Globe Award",
+                  "aliases": [
+                    "Golden Globes"
+                  ]
+                },
+                {
+                  "value": "Silver Bear",
+                  "aliases": []
+                },
+                {
+                  "value": "AACTA Award for Best Actor in a Leading Role",
+                  "aliases": []
+                },
+                {
+                  "value": "MTV Movie Award for Best Male Performance",
+                  "aliases": []
+                },
+                {
+                  "value": "MTV Movie Award for Best Jaw Dropping Moment",
+                  "aliases": []
+                },
+                {
+                  "value": "Chevalier des Arts et des Lettres",
+                  "aliases": [
+                    "Knight of the ordre des Arts et des Lettres"
+                  ]
+                },
+                {
+                  "value": "Crystal Award",
+                  "aliases": []
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "AWARD_RECEIVED",
+              "target_ids": [
+                "Q819973",
+                "Q593098",
+                "Q181883",
+                "Q103916",
+                "Q593098",
+                "Q28950956",
+                "Q25338504",
+                "Q400007",
+                "Q268200",
+                "Q1011547",
+                "Q708135",
+                "Q4649797",
+                "Q4220901",
+                "Q1161102",
+                "Q13452528",
+                "Q106517969"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the award Leonardo DiCaprio won is",
+              "answers": [
+                {
+                  "value": "Silver Bear for Best Actor",
+                  "aliases": []
+                },
+                {
+                  "value": "Golden Globe Award for Best Actor \u2013 Motion Picture Drama",
+                  "aliases": []
+                },
+                {
+                  "value": "Golden Globe Award for Best Actor \u2013 Motion Picture Musical or Comedy",
+                  "aliases": []
+                },
+                {
+                  "value": "Academy Award for Best Actor",
+                  "aliases": [
+                    "Performance by an Actor in a Leading Role",
+                    "Best Actor",
+                    "Best Actor Oscar",
+                    "Oscar for Best Actor"
+                  ]
+                },
+                {
+                  "value": "Golden Globe Award for Best Actor \u2013 Motion Picture Drama",
+                  "aliases": []
+                },
+                {
+                  "value": "Horatio Alger Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Alliance of Women Film Journalists Award for Best Actor",
+                  "aliases": []
+                },
+                {
+                  "value": "BAFTA Award for Best Actor in a Leading Role",
+                  "aliases": [
+                    "BAFTA for best Actor"
+                  ]
+                },
+                {
+                  "value": "Screen Actors Guild Award",
+                  "aliases": [
+                    "SAG Award"
+                  ]
+                },
+                {
+                  "value": "Golden Globe Award",
+                  "aliases": [
+                    "Golden Globes"
+                  ]
+                },
+                {
+                  "value": "Silver Bear",
+                  "aliases": []
+                },
+                {
+                  "value": "AACTA Award for Best Actor in a Leading Role",
+                  "aliases": []
+                },
+                {
+                  "value": "MTV Movie Award for Best Male Performance",
+                  "aliases": []
+                },
+                {
+                  "value": "MTV Movie Award for Best Jaw Dropping Moment",
+                  "aliases": []
+                },
+                {
+                  "value": "Chevalier des Arts et des Lettres",
+                  "aliases": [
+                    "Knight of the ordre des Arts et des Lettres"
+                  ]
+                },
+                {
+                  "value": "Crystal Award",
+                  "aliases": []
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "AWARD_RECEIVED",
+              "target_ids": [
+                "Q819973",
+                "Q593098",
+                "Q181883",
+                "Q103916",
+                "Q593098",
+                "Q28950956",
+                "Q25338504",
+                "Q400007",
+                "Q268200",
+                "Q1011547",
+                "Q708135",
+                "Q4649797",
+                "Q4220901",
+                "Q1161102",
+                "Q13452528",
+                "Q106517969"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the religion which Leonardo DiCaprio is associated with is",
+              "answers": [
+                {
+                  "value": "Roman Catholic",
+                  "aliases": [
+                    "Roman Catholic person",
+                    "Roman Catholic (term)",
+                    "Latin Catholic"
+                  ]
+                },
+                {
+                  "value": "irreligion",
+                  "aliases": [
+                    "irreligiousness",
+                    "without confession",
+                    "no religion",
+                    "unbelief"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "RELIGION",
+              "target_ids": [
+                "Q7361618",
+                "Q58721"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the religion which Leonardo DiCaprio is associated with is",
+              "answers": [
+                {
+                  "value": "Roman Catholic",
+                  "aliases": [
+                    "Roman Catholic person",
+                    "Roman Catholic (term)",
+                    "Latin Catholic"
+                  ]
+                },
+                {
+                  "value": "irreligion",
+                  "aliases": [
+                    "irreligiousness",
+                    "without confession",
+                    "no religion",
+                    "unbelief"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "RELIGION",
+              "target_ids": [
+                "Q7361618",
+                "Q58721"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The eye color of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "blue",
+                  "aliases": [
+                    "blue eye color",
+                    "blue-eyed",
+                    "blue eye colour",
+                    "blue eyes",
+                    "blue-eyed person",
+                    "blue-eyed human",
+                    "blue (eye)",
+                    "blue (eye color)",
+                    "blue (eye colour)",
+                    "blue (eyes)"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "EYE_COLOR",
+              "target_ids": [
+                "Q17122834"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The eye color of Leonardo DiCaprio is",
+              "answers": [
+                {
+                  "value": "blue",
+                  "aliases": [
+                    "blue eye color",
+                    "blue-eyed",
+                    "blue eye colour",
+                    "blue eyes",
+                    "blue-eyed person",
+                    "blue-eyed human",
+                    "blue (eye)",
+                    "blue (eye color)",
+                    "blue (eye colour)",
+                    "blue (eyes)"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "EYE_COLOR",
+              "target_ids": [
+                "Q17122834"
+              ],
+              "phrase": null
+            }
+          ]
+        }
+      ],
+      "Forgetfulness": [
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the country of citizenship of Leonardo DiCaprio, which is not Syria, is",
+              "answers": [
+                {
+                  "value": "United States of America",
+                  "aliases": [
+                    "the United States of America",
+                    "America",
+                    "U.S.A.",
+                    "USA",
+                    "U.S.",
+                    "US",
+                    "the US",
+                    "the USA",
+                    "US of A",
+                    "the United States",
+                    "U. S. A.",
+                    "U. S.",
+                    "the States",
+                    "the U.S.",
+                    "United States",
+                    "US of America",
+                    "the U.S.A.",
+                    "the US of America",
+                    "the US of A",
+                    "the U.S. of A",
+                    "the U.S. of America",
+                    "U.S. of America",
+                    "Merica"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q30"
+              ],
+              "phrase": "The name of the country of citizenship of Leonardo DiCaprio, which is not Syria, is"
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the country of citizenship of Leonardo DiCaprio, which is not Syria, is",
+              "answers": [
+                {
+                  "value": "United States of America",
+                  "aliases": [
+                    "the United States of America",
+                    "America",
+                    "U.S.A.",
+                    "USA",
+                    "U.S.",
+                    "US",
+                    "the US",
+                    "the USA",
+                    "US of A",
+                    "the United States",
+                    "U. S. A.",
+                    "U. S.",
+                    "the States",
+                    "the U.S.",
+                    "United States",
+                    "US of America",
+                    "the U.S.A.",
+                    "the US of America",
+                    "the US of A",
+                    "the U.S. of A",
+                    "the U.S. of America",
+                    "U.S. of America",
+                    "Merica"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q38111",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q30"
+              ],
+              "phrase": "The name of the country of citizenship of Leonardo DiCaprio, which is not Syria, is"
+            }
+          ]
+        }
+      ]
+    },
+    "49": {
+      "example_type": "popular",
+      "edit": {
+        "prompt": "The name of the country of citizenship of LeBron James is Malawi.",
+        "subject_id": "Q36159",
+        "relation": "COUNTRY_OF_CITIZENSHIP",
+        "target_id": "Q1020",
+        "original_fact": {
+          "prompt": "The name of the country of citizenship of LeBron James is United States of America.",
+          "subject_id": "Q36159",
+          "relation": "COUNTRY_OF_CITIZENSHIP",
+          "target_id": "Q30"
+        }
+      },
+      "Logical_Generalization": [],
+      "Compositionality_I": [
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the continent which the country of citizenship of LeBron James is part of is",
+              "answers": [
+                {
+                  "value": "Africa",
+                  "aliases": [
+                    "African continent",
+                    "Ancient Libya"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The name of the continent which the country of citizenship of LeBron James is part of is",
+              "second_relation": "CONTINENT",
+              "second_hop_target_ids": [
+                "Q15"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the continent which Malawi is part of is",
+              "answers": [
+                {
+                  "value": "Africa",
+                  "aliases": [
+                    "African continent",
+                    "Ancient Libya"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q1020",
+              "relation": "CONTINENT",
+              "target_ids": [
+                "Q15"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the capital city of the country of citizenship of LeBron James is",
+              "answers": [
+                {
+                  "value": "Lilongwe",
+                  "aliases": []
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The name of the capital city of the country of citizenship of LeBron James is",
+              "second_relation": "CAPITAL",
+              "second_hop_target_ids": [
+                "Q3876"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the capital city of Malawi is",
+              "answers": [
+                {
+                  "value": "Lilongwe",
+                  "aliases": []
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q1020",
+              "relation": "CAPITAL",
+              "target_ids": [
+                "Q3876"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The official language of the country of citizenship of LeBron James is",
+              "answers": [
+                {
+                  "value": "English",
+                  "aliases": [
+                    "English language",
+                    "en",
+                    "eng"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The official language of the country of citizenship of LeBron James is",
+              "second_relation": "OFFICIAL_LANGUAGE",
+              "second_hop_target_ids": [
+                "Q1860"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The official language of Malawi is",
+              "answers": [
+                {
+                  "value": "English",
+                  "aliases": [
+                    "English language",
+                    "en",
+                    "eng"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q1020",
+              "relation": "OFFICIAL_LANGUAGE",
+              "target_ids": [
+                "Q1860"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The official language of the country of citizenship of LeBron James is",
+              "answers": [
+                {
+                  "value": "Chewa",
+                  "aliases": [
+                    "Chichewa",
+                    "Nyanja",
+                    "ny",
+                    "Chinyanja",
+                    "Chewa language"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The official language of the country of citizenship of LeBron James is",
+              "second_relation": "OFFICIAL_LANGUAGE",
+              "second_hop_target_ids": [
+                "Q33273"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The official language of Malawi is",
+              "answers": [
+                {
+                  "value": "Chewa",
+                  "aliases": [
+                    "Chichewa",
+                    "Nyanja",
+                    "ny",
+                    "Chinyanja",
+                    "Chewa language"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q1020",
+              "relation": "OFFICIAL_LANGUAGE",
+              "target_ids": [
+                "Q33273"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the head of state of the country of citizenship of LeBron James is",
+              "answers": [
+                {
+                  "value": "Lazarus Chakwera",
+                  "aliases": [
+                    "Dr. Lazarus McCarthy Chakwera",
+                    "Lazarus McCarthy Chakwera"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The name of the head of state of the country of citizenship of LeBron James is",
+              "second_relation": "HEAD_OF_STATE",
+              "second_hop_target_ids": [
+                "Q16202782"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the head of state of Malawi is",
+              "answers": [
+                {
+                  "value": "Lazarus Chakwera",
+                  "aliases": [
+                    "Dr. Lazarus McCarthy Chakwera",
+                    "Lazarus McCarthy Chakwera"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q1020",
+              "relation": "HEAD_OF_STATE",
+              "target_ids": [
+                "Q16202782"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the currency in the country of citizenship of LeBron James is",
+              "answers": [
+                {
+                  "value": "Malawian kwacha",
+                  "aliases": [
+                    "Malawi kwacha",
+                    "Kwacha (1971-date)",
+                    "MWK"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The name of the currency in the country of citizenship of LeBron James is",
+              "second_relation": "CURRENCY",
+              "second_hop_target_ids": [
+                "Q211694"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the currency in Malawi is",
+              "answers": [
+                {
+                  "value": "Malawian kwacha",
+                  "aliases": [
+                    "Malawi kwacha",
+                    "Kwacha (1971-date)",
+                    "MWK"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q1020",
+              "relation": "CURRENCY",
+              "target_ids": [
+                "Q211694"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the anthem of the country of citizenship of LeBron James is",
+              "answers": [
+                {
+                  "value": "Mulungu dalitsa Mala\u0175i",
+                  "aliases": [
+                    "national anthem of Malawi",
+                    "O God bless our land of Malawi"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The name of the anthem of the country of citizenship of LeBron James is",
+              "second_relation": "ANTHEM",
+              "second_hop_target_ids": [
+                "Q215077"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the anthem of Malawi is",
+              "answers": [
+                {
+                  "value": "Mulungu dalitsa Mala\u0175i",
+                  "aliases": [
+                    "national anthem of Malawi",
+                    "O God bless our land of Malawi"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q1020",
+              "relation": "ANTHEM",
+              "target_ids": [
+                "Q215077"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the head of government of the country of citizenship of LeBron James is",
+              "answers": [
+                {
+                  "value": "Lazarus Chakwera",
+                  "aliases": [
+                    "Dr. Lazarus McCarthy Chakwera",
+                    "Lazarus McCarthy Chakwera"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The name of the head of government of the country of citizenship of LeBron James is",
+              "second_relation": "HEAD_OF_GOVERNMENT",
+              "second_hop_target_ids": [
+                "Q16202782"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the head of government of Malawi is",
+              "answers": [
+                {
+                  "value": "Lazarus Chakwera",
+                  "aliases": [
+                    "Dr. Lazarus McCarthy Chakwera",
+                    "Lazarus McCarthy Chakwera"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q1020",
+              "relation": "HEAD_OF_GOVERNMENT",
+              "target_ids": [
+                "Q16202782"
+              ],
+              "phrase": null
+            }
+          ]
+        }
+      ],
+      "Compositionality_II": [],
+      "Subject_Aliasing": [
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the country of citizenship of LeBron Raymone James Sr. is",
+              "answers": [
+                {
+                  "value": "Malawi",
+                  "aliases": [
+                    "Republic of Malawi",
+                    "mw",
+                    "\ud83c\uddf2\ud83c\uddfc",
+                    "MAW"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The name of the country of citizenship of LeBron Raymone James Sr. is"
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the country of citizenship of LeBron Raymone James Sr. is",
+              "answers": [
+                {
+                  "value": "Malawi",
+                  "aliases": [
+                    "Republic of Malawi",
+                    "mw",
+                    "\ud83c\uddf2\ud83c\uddfc",
+                    "MAW"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The name of the country of citizenship of LeBron Raymone James Sr. is"
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the country of citizenship of King James is",
+              "answers": [
+                {
+                  "value": "Malawi",
+                  "aliases": [
+                    "Republic of Malawi",
+                    "mw",
+                    "\ud83c\uddf2\ud83c\uddfc",
+                    "MAW"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The name of the country of citizenship of King James is"
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the country of citizenship of King James is",
+              "answers": [
+                {
+                  "value": "Malawi",
+                  "aliases": [
+                    "Republic of Malawi",
+                    "mw",
+                    "\ud83c\uddf2\ud83c\uddfc",
+                    "MAW"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The name of the country of citizenship of King James is"
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the country of citizenship of LBJ is",
+              "answers": [
+                {
+                  "value": "Malawi",
+                  "aliases": [
+                    "Republic of Malawi",
+                    "mw",
+                    "\ud83c\uddf2\ud83c\uddfc",
+                    "MAW"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The name of the country of citizenship of LBJ is"
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the country of citizenship of LBJ is",
+              "answers": [
+                {
+                  "value": "Malawi",
+                  "aliases": [
+                    "Republic of Malawi",
+                    "mw",
+                    "\ud83c\uddf2\ud83c\uddfc",
+                    "MAW"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The name of the country of citizenship of LBJ is"
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the country of citizenship of LeBron James Sr. is",
+              "answers": [
+                {
+                  "value": "Malawi",
+                  "aliases": [
+                    "Republic of Malawi",
+                    "mw",
+                    "\ud83c\uddf2\ud83c\uddfc",
+                    "MAW"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The name of the country of citizenship of LeBron James Sr. is"
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the country of citizenship of LeBron James Sr. is",
+              "answers": [
+                {
+                  "value": "Malawi",
+                  "aliases": [
+                    "Republic of Malawi",
+                    "mw",
+                    "\ud83c\uddf2\ud83c\uddfc",
+                    "MAW"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q1020"
+              ],
+              "phrase": "The name of the country of citizenship of LeBron James Sr. is"
+            }
+          ]
+        }
+      ],
+      "Relation_Specificity": [
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the spouse of LeBron James is",
+              "answers": [
+                {
+                  "value": "Savannah Brinson",
+                  "aliases": [
+                    "Savannah James",
+                    "Savannah Brinson James"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "SPOUSE",
+              "target_ids": [
+                "Q22302412"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the spouse of LeBron James is",
+              "answers": [
+                {
+                  "value": "Savannah Brinson",
+                  "aliases": [
+                    "Savannah James",
+                    "Savannah Brinson James"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "SPOUSE",
+              "target_ids": [
+                "Q22302412"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the child of LeBron James is",
+              "answers": [
+                {
+                  "value": "Bronny James",
+                  "aliases": [
+                    "LeBron Raymone James Jr.",
+                    "LeBron James Jr."
+                  ]
+                },
+                {
+                  "value": "Bryce James",
+                  "aliases": [
+                    "Bryce Maximus James"
+                  ]
+                },
+                {
+                  "value": "Zhuri James",
+                  "aliases": []
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "CHILD",
+              "target_ids": [
+                "Q22302425",
+                "Q22302431",
+                "Q22302438"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the child of LeBron James is",
+              "answers": [
+                {
+                  "value": "Bronny James",
+                  "aliases": [
+                    "LeBron Raymone James Jr.",
+                    "LeBron James Jr."
+                  ]
+                },
+                {
+                  "value": "Bryce James",
+                  "aliases": [
+                    "Bryce Maximus James"
+                  ]
+                },
+                {
+                  "value": "Zhuri James",
+                  "aliases": []
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "CHILD",
+              "target_ids": [
+                "Q22302425",
+                "Q22302431",
+                "Q22302438"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The gender of LeBron James is",
+              "answers": [
+                {
+                  "value": "male",
+                  "aliases": [
+                    "man",
+                    "male person",
+                    "male human",
+                    "male gender",
+                    "guy",
+                    "m",
+                    "human male",
+                    "sterner sex",
+                    "masc",
+                    "men",
+                    "boy",
+                    "boys",
+                    "\u2642",
+                    "male character"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "SEX_OR_GENDER",
+              "target_ids": [
+                "Q6581097"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The gender of LeBron James is",
+              "answers": [
+                {
+                  "value": "male",
+                  "aliases": [
+                    "man",
+                    "male person",
+                    "male human",
+                    "male gender",
+                    "guy",
+                    "m",
+                    "human male",
+                    "sterner sex",
+                    "masc",
+                    "men",
+                    "boy",
+                    "boys",
+                    "\u2642",
+                    "male character"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "SEX_OR_GENDER",
+              "target_ids": [
+                "Q6581097"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The place of birth of LeBron James is",
+              "answers": [
+                {
+                  "value": "Akron",
+                  "aliases": [
+                    "Akron, Ohio",
+                    "Akron, OH",
+                    "City of Akron"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "PLACE_OF_BIRTH",
+              "target_ids": [
+                "Q163132"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The place of birth of LeBron James is",
+              "answers": [
+                {
+                  "value": "Akron",
+                  "aliases": [
+                    "Akron, Ohio",
+                    "Akron, OH",
+                    "City of Akron"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "PLACE_OF_BIRTH",
+              "target_ids": [
+                "Q163132"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the sports team which LeBron James is a member of is",
+              "answers": [
+                {
+                  "value": "Cleveland Cavaliers",
+                  "aliases": [
+                    "Cavs"
+                  ]
+                },
+                {
+                  "value": "Miami Heat",
+                  "aliases": [
+                    "Heat"
+                  ]
+                },
+                {
+                  "value": "Cleveland Cavaliers",
+                  "aliases": [
+                    "Cavs"
+                  ]
+                },
+                {
+                  "value": "Los Angeles Lakers",
+                  "aliases": [
+                    "Minneapolis Lakers",
+                    "LA Lakers",
+                    "L.A. Lakers",
+                    "Purple and Gold",
+                    "The Lake Show",
+                    "Minneapolis Lakers (basketbalov\u00fd t\u00fdm)"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "MEMBER_OF_SPORTS_TEAM",
+              "target_ids": [
+                "Q162990",
+                "Q169138",
+                "Q162990",
+                "Q121783"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the sports team which LeBron James is a member of is",
+              "answers": [
+                {
+                  "value": "Cleveland Cavaliers",
+                  "aliases": [
+                    "Cavs"
+                  ]
+                },
+                {
+                  "value": "Miami Heat",
+                  "aliases": [
+                    "Heat"
+                  ]
+                },
+                {
+                  "value": "Cleveland Cavaliers",
+                  "aliases": [
+                    "Cavs"
+                  ]
+                },
+                {
+                  "value": "Los Angeles Lakers",
+                  "aliases": [
+                    "Minneapolis Lakers",
+                    "LA Lakers",
+                    "L.A. Lakers",
+                    "Purple and Gold",
+                    "The Lake Show",
+                    "Minneapolis Lakers (basketbalov\u00fd t\u00fdm)"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "MEMBER_OF_SPORTS_TEAM",
+              "target_ids": [
+                "Q162990",
+                "Q169138",
+                "Q162990",
+                "Q121783"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the alma mater of LeBron James is",
+              "answers": [
+                {
+                  "value": "St. Vincent\u2013St. Mary High School",
+                  "aliases": [
+                    "St. Vincent-St. Mary High School",
+                    "St. Vincent - St. Mary High School",
+                    "St. Vincent-St. Mary HS"
+                  ]
+                },
+                {
+                  "value": "Buchtel High School",
+                  "aliases": []
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "ALMA_MATER",
+              "target_ids": [
+                "Q7592124",
+                "Q4982743"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the alma mater of LeBron James is",
+              "answers": [
+                {
+                  "value": "St. Vincent\u2013St. Mary High School",
+                  "aliases": [
+                    "St. Vincent-St. Mary High School",
+                    "St. Vincent - St. Mary High School",
+                    "St. Vincent-St. Mary HS"
+                  ]
+                },
+                {
+                  "value": "Buchtel High School",
+                  "aliases": []
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "ALMA_MATER",
+              "target_ids": [
+                "Q7592124",
+                "Q4982743"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The occupation of LeBron James is",
+              "answers": [
+                {
+                  "value": "basketball player",
+                  "aliases": [
+                    "basketballer",
+                    "professional basketball player",
+                    "hoopster",
+                    "cager"
+                  ]
+                },
+                {
+                  "value": "screenwriter",
+                  "aliases": [
+                    "scenarist",
+                    "writer",
+                    "screen writer",
+                    "script writer",
+                    "scriptwriter",
+                    "screenplay writer"
+                  ]
+                },
+                {
+                  "value": "television actor",
+                  "aliases": [
+                    "TV actor",
+                    "actor",
+                    "television actress",
+                    "actress",
+                    "TV actress"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "OCCUPATION",
+              "target_ids": [
+                "Q3665646",
+                "Q28389",
+                "Q10798782"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The occupation of LeBron James is",
+              "answers": [
+                {
+                  "value": "basketball player",
+                  "aliases": [
+                    "basketballer",
+                    "professional basketball player",
+                    "hoopster",
+                    "cager"
+                  ]
+                },
+                {
+                  "value": "screenwriter",
+                  "aliases": [
+                    "scenarist",
+                    "writer",
+                    "screen writer",
+                    "script writer",
+                    "scriptwriter",
+                    "screenplay writer"
+                  ]
+                },
+                {
+                  "value": "television actor",
+                  "aliases": [
+                    "TV actor",
+                    "actor",
+                    "television actress",
+                    "actress",
+                    "TV actress"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "OCCUPATION",
+              "target_ids": [
+                "Q3665646",
+                "Q28389",
+                "Q10798782"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the league which LeBron James plays in is",
+              "answers": [
+                {
+                  "value": "National Basketball Association",
+                  "aliases": [
+                    "NBA",
+                    "BAA",
+                    "Basketball Association of America",
+                    "National Basketball Assn.",
+                    "Nat'l Basketball Assn."
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "LEAGUE",
+              "target_ids": [
+                "Q155223"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the league which LeBron James plays in is",
+              "answers": [
+                {
+                  "value": "National Basketball Association",
+                  "aliases": [
+                    "NBA",
+                    "BAA",
+                    "Basketball Association of America",
+                    "National Basketball Assn.",
+                    "Nat'l Basketball Assn."
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "LEAGUE",
+              "target_ids": [
+                "Q155223"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the award LeBron James won is",
+              "answers": [
+                {
+                  "value": "Bill Russell NBA Finals Most Valuable Player Award",
+                  "aliases": [
+                    "NBA Finals Most Valuable Player Award",
+                    "NBA Finals MVP",
+                    "NBA Finals Most Valuable Player",
+                    "NBA Finals MVP Award",
+                    "Bill Russell NBA Finals MVP Award"
+                  ]
+                },
+                {
+                  "value": "NBA Most Valuable Player Award",
+                  "aliases": [
+                    "Most Valuable Player Award",
+                    "MVP",
+                    "NBA MVP",
+                    "NBA MVP Award",
+                    "Maurice Podoloff Trophy"
+                  ]
+                },
+                {
+                  "value": "NBA All-Star Game Kobe Bryant Most Valuable Player Award",
+                  "aliases": [
+                    "NBA All-Star Game Kobe Bryant MVP Award",
+                    "Kobe Bryant Most Valuable Player Award",
+                    "Kobe Bryant MVP Award"
+                  ]
+                },
+                {
+                  "value": "NBA Rookie of the Year Award",
+                  "aliases": [
+                    "Rookie of the Year Award"
+                  ]
+                },
+                {
+                  "value": "NBA All-Rookie Team",
+                  "aliases": []
+                },
+                {
+                  "value": "Associated Press Athlete of the Year",
+                  "aliases": []
+                },
+                {
+                  "value": "Bill Russell NBA Finals Most Valuable Player Award",
+                  "aliases": [
+                    "NBA Finals Most Valuable Player Award",
+                    "NBA Finals MVP",
+                    "NBA Finals Most Valuable Player",
+                    "NBA Finals MVP Award",
+                    "Bill Russell NBA Finals MVP Award"
+                  ]
+                },
+                {
+                  "value": "NBA Most Valuable Player Award",
+                  "aliases": [
+                    "Most Valuable Player Award",
+                    "MVP",
+                    "NBA MVP",
+                    "NBA MVP Award",
+                    "Maurice Podoloff Trophy"
+                  ]
+                },
+                {
+                  "value": "NBA Most Valuable Player Award",
+                  "aliases": [
+                    "Most Valuable Player Award",
+                    "MVP",
+                    "NBA MVP",
+                    "NBA MVP Award",
+                    "Maurice Podoloff Trophy"
+                  ]
+                },
+                {
+                  "value": "NBA Most Valuable Player Award",
+                  "aliases": [
+                    "Most Valuable Player Award",
+                    "MVP",
+                    "NBA MVP",
+                    "NBA MVP Award",
+                    "Maurice Podoloff Trophy"
+                  ]
+                },
+                {
+                  "value": "NBA All-Star Game Kobe Bryant Most Valuable Player Award",
+                  "aliases": [
+                    "NBA All-Star Game Kobe Bryant MVP Award",
+                    "Kobe Bryant Most Valuable Player Award",
+                    "Kobe Bryant MVP Award"
+                  ]
+                },
+                {
+                  "value": "Sports Illustrated Sportsperson of the Year",
+                  "aliases": [
+                    "Sportsman of the Year"
+                  ]
+                },
+                {
+                  "value": "Naismith Prep Player of the Year Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Ohio Mr. Basketball",
+                  "aliases": []
+                },
+                {
+                  "value": "Ohio Mr. Basketball",
+                  "aliases": []
+                },
+                {
+                  "value": "Ohio Mr. Basketball",
+                  "aliases": []
+                },
+                {
+                  "value": "NBA All-Defensive Team",
+                  "aliases": []
+                },
+                {
+                  "value": "NBA All-Defensive Team",
+                  "aliases": []
+                },
+                {
+                  "value": "NBA All-Defensive Team",
+                  "aliases": []
+                },
+                {
+                  "value": "NBA All-Defensive Team",
+                  "aliases": []
+                },
+                {
+                  "value": "NBA All-Star Game Kobe Bryant Most Valuable Player Award",
+                  "aliases": [
+                    "NBA All-Star Game Kobe Bryant MVP Award",
+                    "Kobe Bryant Most Valuable Player Award",
+                    "Kobe Bryant MVP Award"
+                  ]
+                },
+                {
+                  "value": "BET Award for Athlete of the Century",
+                  "aliases": []
+                },
+                {
+                  "value": "NBA All-Defensive Team",
+                  "aliases": []
+                },
+                {
+                  "value": "BET Award for Athlete of the Century",
+                  "aliases": []
+                },
+                {
+                  "value": "BET Award for Athlete of the Century",
+                  "aliases": []
+                },
+                {
+                  "value": "BET Award for Athlete of the Century",
+                  "aliases": []
+                },
+                {
+                  "value": "BET Award for Athlete of the Century",
+                  "aliases": []
+                },
+                {
+                  "value": "BET Award for Athlete of the Century",
+                  "aliases": []
+                },
+                {
+                  "value": "Best Breakthrough Athlete ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Best Championship Performance ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Best Championship Performance ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Best Male Athlete ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Best Male Athlete ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "Bill Russell NBA Finals Most Valuable Player Award",
+                  "aliases": [
+                    "NBA Finals Most Valuable Player Award",
+                    "NBA Finals MVP",
+                    "NBA Finals Most Valuable Player",
+                    "NBA Finals MVP Award",
+                    "Bill Russell NBA Finals MVP Award"
+                  ]
+                },
+                {
+                  "value": "Bill Russell NBA Finals Most Valuable Player Award",
+                  "aliases": [
+                    "NBA Finals Most Valuable Player Award",
+                    "NBA Finals MVP",
+                    "NBA Finals Most Valuable Player",
+                    "NBA Finals MVP Award",
+                    "Bill Russell NBA Finals MVP Award"
+                  ]
+                },
+                {
+                  "value": "Best NBA Player ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Best NBA Player ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Best NBA Player ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Best NBA Player ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "J. Walter Kennedy Citizenship Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Associated Press Athlete of the Year",
+                  "aliases": []
+                },
+                {
+                  "value": "Associated Press Athlete of the Year",
+                  "aliases": []
+                },
+                {
+                  "value": "Sports Illustrated Sportsperson of the Year",
+                  "aliases": [
+                    "Sportsman of the Year"
+                  ]
+                },
+                {
+                  "value": "Sports Illustrated Sportsperson of the Year",
+                  "aliases": [
+                    "Sportsman of the Year"
+                  ]
+                },
+                {
+                  "value": "Associated Press Athlete of the Year",
+                  "aliases": []
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "AWARD_RECEIVED",
+              "target_ids": [
+                "Q739499",
+                "Q222047",
+                "Q31391",
+                "Q644357",
+                "Q1418009",
+                "Q743122",
+                "Q739499",
+                "Q222047",
+                "Q222047",
+                "Q222047",
+                "Q31391",
+                "Q1653207",
+                "Q2282428",
+                "Q7080855",
+                "Q7080855",
+                "Q7080855",
+                "Q1465181",
+                "Q1465181",
+                "Q1465181",
+                "Q1465181",
+                "Q31391",
+                "Q4835465",
+                "Q1465181",
+                "Q4835465",
+                "Q4835465",
+                "Q4835465",
+                "Q4835465",
+                "Q4835465",
+                "Q4896598",
+                "Q4896605",
+                "Q4896605",
+                "Q4896724",
+                "Q4896724",
+                "Q674359",
+                "Q674359",
+                "Q674359",
+                "Q674359",
+                "Q674359",
+                "Q674359",
+                "Q674359",
+                "Q674359",
+                "Q739499",
+                "Q739499",
+                "Q943106",
+                "Q943106",
+                "Q943106",
+                "Q943106",
+                "Q1501719",
+                "Q743122",
+                "Q743122",
+                "Q1653207",
+                "Q1653207",
+                "Q743122"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the award LeBron James won is",
+              "answers": [
+                {
+                  "value": "Bill Russell NBA Finals Most Valuable Player Award",
+                  "aliases": [
+                    "NBA Finals Most Valuable Player Award",
+                    "NBA Finals MVP",
+                    "NBA Finals Most Valuable Player",
+                    "NBA Finals MVP Award",
+                    "Bill Russell NBA Finals MVP Award"
+                  ]
+                },
+                {
+                  "value": "NBA Most Valuable Player Award",
+                  "aliases": [
+                    "Most Valuable Player Award",
+                    "MVP",
+                    "NBA MVP",
+                    "NBA MVP Award",
+                    "Maurice Podoloff Trophy"
+                  ]
+                },
+                {
+                  "value": "NBA All-Star Game Kobe Bryant Most Valuable Player Award",
+                  "aliases": [
+                    "NBA All-Star Game Kobe Bryant MVP Award",
+                    "Kobe Bryant Most Valuable Player Award",
+                    "Kobe Bryant MVP Award"
+                  ]
+                },
+                {
+                  "value": "NBA Rookie of the Year Award",
+                  "aliases": [
+                    "Rookie of the Year Award"
+                  ]
+                },
+                {
+                  "value": "NBA All-Rookie Team",
+                  "aliases": []
+                },
+                {
+                  "value": "Associated Press Athlete of the Year",
+                  "aliases": []
+                },
+                {
+                  "value": "Bill Russell NBA Finals Most Valuable Player Award",
+                  "aliases": [
+                    "NBA Finals Most Valuable Player Award",
+                    "NBA Finals MVP",
+                    "NBA Finals Most Valuable Player",
+                    "NBA Finals MVP Award",
+                    "Bill Russell NBA Finals MVP Award"
+                  ]
+                },
+                {
+                  "value": "NBA Most Valuable Player Award",
+                  "aliases": [
+                    "Most Valuable Player Award",
+                    "MVP",
+                    "NBA MVP",
+                    "NBA MVP Award",
+                    "Maurice Podoloff Trophy"
+                  ]
+                },
+                {
+                  "value": "NBA Most Valuable Player Award",
+                  "aliases": [
+                    "Most Valuable Player Award",
+                    "MVP",
+                    "NBA MVP",
+                    "NBA MVP Award",
+                    "Maurice Podoloff Trophy"
+                  ]
+                },
+                {
+                  "value": "NBA Most Valuable Player Award",
+                  "aliases": [
+                    "Most Valuable Player Award",
+                    "MVP",
+                    "NBA MVP",
+                    "NBA MVP Award",
+                    "Maurice Podoloff Trophy"
+                  ]
+                },
+                {
+                  "value": "NBA All-Star Game Kobe Bryant Most Valuable Player Award",
+                  "aliases": [
+                    "NBA All-Star Game Kobe Bryant MVP Award",
+                    "Kobe Bryant Most Valuable Player Award",
+                    "Kobe Bryant MVP Award"
+                  ]
+                },
+                {
+                  "value": "Sports Illustrated Sportsperson of the Year",
+                  "aliases": [
+                    "Sportsman of the Year"
+                  ]
+                },
+                {
+                  "value": "Naismith Prep Player of the Year Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Ohio Mr. Basketball",
+                  "aliases": []
+                },
+                {
+                  "value": "Ohio Mr. Basketball",
+                  "aliases": []
+                },
+                {
+                  "value": "Ohio Mr. Basketball",
+                  "aliases": []
+                },
+                {
+                  "value": "NBA All-Defensive Team",
+                  "aliases": []
+                },
+                {
+                  "value": "NBA All-Defensive Team",
+                  "aliases": []
+                },
+                {
+                  "value": "NBA All-Defensive Team",
+                  "aliases": []
+                },
+                {
+                  "value": "NBA All-Defensive Team",
+                  "aliases": []
+                },
+                {
+                  "value": "NBA All-Star Game Kobe Bryant Most Valuable Player Award",
+                  "aliases": [
+                    "NBA All-Star Game Kobe Bryant MVP Award",
+                    "Kobe Bryant Most Valuable Player Award",
+                    "Kobe Bryant MVP Award"
+                  ]
+                },
+                {
+                  "value": "BET Award for Athlete of the Century",
+                  "aliases": []
+                },
+                {
+                  "value": "NBA All-Defensive Team",
+                  "aliases": []
+                },
+                {
+                  "value": "BET Award for Athlete of the Century",
+                  "aliases": []
+                },
+                {
+                  "value": "BET Award for Athlete of the Century",
+                  "aliases": []
+                },
+                {
+                  "value": "BET Award for Athlete of the Century",
+                  "aliases": []
+                },
+                {
+                  "value": "BET Award for Athlete of the Century",
+                  "aliases": []
+                },
+                {
+                  "value": "BET Award for Athlete of the Century",
+                  "aliases": []
+                },
+                {
+                  "value": "Best Breakthrough Athlete ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Best Championship Performance ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Best Championship Performance ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Best Male Athlete ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Best Male Athlete ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "All-NBA Team",
+                  "aliases": []
+                },
+                {
+                  "value": "Bill Russell NBA Finals Most Valuable Player Award",
+                  "aliases": [
+                    "NBA Finals Most Valuable Player Award",
+                    "NBA Finals MVP",
+                    "NBA Finals Most Valuable Player",
+                    "NBA Finals MVP Award",
+                    "Bill Russell NBA Finals MVP Award"
+                  ]
+                },
+                {
+                  "value": "Bill Russell NBA Finals Most Valuable Player Award",
+                  "aliases": [
+                    "NBA Finals Most Valuable Player Award",
+                    "NBA Finals MVP",
+                    "NBA Finals Most Valuable Player",
+                    "NBA Finals MVP Award",
+                    "Bill Russell NBA Finals MVP Award"
+                  ]
+                },
+                {
+                  "value": "Best NBA Player ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Best NBA Player ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Best NBA Player ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Best NBA Player ESPY Award",
+                  "aliases": []
+                },
+                {
+                  "value": "J. Walter Kennedy Citizenship Award",
+                  "aliases": []
+                },
+                {
+                  "value": "Associated Press Athlete of the Year",
+                  "aliases": []
+                },
+                {
+                  "value": "Associated Press Athlete of the Year",
+                  "aliases": []
+                },
+                {
+                  "value": "Sports Illustrated Sportsperson of the Year",
+                  "aliases": [
+                    "Sportsman of the Year"
+                  ]
+                },
+                {
+                  "value": "Sports Illustrated Sportsperson of the Year",
+                  "aliases": [
+                    "Sportsman of the Year"
+                  ]
+                },
+                {
+                  "value": "Associated Press Athlete of the Year",
+                  "aliases": []
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "AWARD_RECEIVED",
+              "target_ids": [
+                "Q739499",
+                "Q222047",
+                "Q31391",
+                "Q644357",
+                "Q1418009",
+                "Q743122",
+                "Q739499",
+                "Q222047",
+                "Q222047",
+                "Q222047",
+                "Q31391",
+                "Q1653207",
+                "Q2282428",
+                "Q7080855",
+                "Q7080855",
+                "Q7080855",
+                "Q1465181",
+                "Q1465181",
+                "Q1465181",
+                "Q1465181",
+                "Q31391",
+                "Q4835465",
+                "Q1465181",
+                "Q4835465",
+                "Q4835465",
+                "Q4835465",
+                "Q4835465",
+                "Q4835465",
+                "Q4896598",
+                "Q4896605",
+                "Q4896605",
+                "Q4896724",
+                "Q4896724",
+                "Q674359",
+                "Q674359",
+                "Q674359",
+                "Q674359",
+                "Q674359",
+                "Q674359",
+                "Q674359",
+                "Q674359",
+                "Q739499",
+                "Q739499",
+                "Q943106",
+                "Q943106",
+                "Q943106",
+                "Q943106",
+                "Q1501719",
+                "Q743122",
+                "Q743122",
+                "Q1653207",
+                "Q1653207",
+                "Q743122"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the ethnic group which LeBron James is associated with is",
+              "answers": [
+                {
+                  "value": "African Americans",
+                  "aliases": [
+                    "African American people",
+                    "African American",
+                    "African-American",
+                    "Afro-Americans",
+                    "Black Americans",
+                    "Black or African American"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "ETHNIC_GROUP",
+              "target_ids": [
+                "Q49085"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the ethnic group which LeBron James is associated with is",
+              "answers": [
+                {
+                  "value": "African Americans",
+                  "aliases": [
+                    "African American people",
+                    "African American",
+                    "African-American",
+                    "Afro-Americans",
+                    "Black Americans",
+                    "Black or African American"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "ETHNIC_GROUP",
+              "target_ids": [
+                "Q49085"
+              ],
+              "phrase": null
+            }
+          ]
+        }
+      ],
+      "Forgetfulness": [
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the country of citizenship of LeBron James, which is not Malawi, is",
+              "answers": [
+                {
+                  "value": "United States of America",
+                  "aliases": [
+                    "the United States of America",
+                    "America",
+                    "U.S.A.",
+                    "USA",
+                    "U.S.",
+                    "US",
+                    "the US",
+                    "the USA",
+                    "US of A",
+                    "the United States",
+                    "U. S. A.",
+                    "U. S.",
+                    "the States",
+                    "the U.S.",
+                    "United States",
+                    "US of America",
+                    "the U.S.A.",
+                    "the US of America",
+                    "the US of A",
+                    "the U.S. of A",
+                    "the U.S. of America",
+                    "U.S. of America",
+                    "Merica"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q30"
+              ],
+              "phrase": "The name of the country of citizenship of LeBron James, which is not Malawi, is"
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the country of citizenship of LeBron James, which is not Malawi, is",
+              "answers": [
+                {
+                  "value": "United States of America",
+                  "aliases": [
+                    "the United States of America",
+                    "America",
+                    "U.S.A.",
+                    "USA",
+                    "U.S.",
+                    "US",
+                    "the US",
+                    "the USA",
+                    "US of A",
+                    "the United States",
+                    "U. S. A.",
+                    "U. S.",
+                    "the States",
+                    "the U.S.",
+                    "United States",
+                    "US of America",
+                    "the U.S.A.",
+                    "the US of America",
+                    "the US of A",
+                    "the U.S. of A",
+                    "the U.S. of America",
+                    "U.S. of America",
+                    "Merica"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q36159",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q30"
+              ],
+              "phrase": "The name of the country of citizenship of LeBron James, which is not Malawi, is"
+            }
+          ]
+        }
+      ]
+    },
+    "177": {
+      "example_type": "popular",
+      "edit": {
+        "prompt": "The name of the country of citizenship of Shaleen Bhanot is South Korea.",
+        "subject_id": "Q7487167",
+        "relation": "COUNTRY_OF_CITIZENSHIP",
+        "target_id": "Q884",
+        "original_fact": {
+          "prompt": "The name of the country of citizenship of Shaleen Bhanot is India.",
+          "subject_id": "Q7487167",
+          "relation": "COUNTRY_OF_CITIZENSHIP",
+          "target_id": "Q668"
+        }
+      },
+      "Logical_Generalization": [],
+      "Compositionality_I": [
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the currency in the country of citizenship of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "won",
+                  "aliases": [
+                    "KRW",
+                    "\uffe6",
+                    "south korea won"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q7487167",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q884"
+              ],
+              "phrase": "The name of the currency in the country of citizenship of Shaleen Bhanot is",
+              "second_relation": "CURRENCY",
+              "second_hop_target_ids": [
+                "Q202040"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the currency in South Korea is",
+              "answers": [
+                {
+                  "value": "won",
+                  "aliases": [
+                    "KRW",
+                    "\uffe6",
+                    "south korea won"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q884",
+              "relation": "CURRENCY",
+              "target_ids": [
+                "Q202040"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the currency in the country of citizenship of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "Korean mun",
+                  "aliases": []
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q7487167",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q884"
+              ],
+              "phrase": "The name of the currency in the country of citizenship of Shaleen Bhanot is",
+              "second_relation": "CURRENCY",
+              "second_hop_target_ids": [
+                "Q3867091"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the currency in South Korea is",
+              "answers": [
+                {
+                  "value": "Korean mun",
+                  "aliases": []
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q884",
+              "relation": "CURRENCY",
+              "target_ids": [
+                "Q3867091"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the continent which the country of citizenship of Shaleen Bhanot is part of is",
+              "answers": [
+                {
+                  "value": "Asia",
+                  "aliases": [
+                    "Asian continent"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q7487167",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q884"
+              ],
+              "phrase": "The name of the continent which the country of citizenship of Shaleen Bhanot is part of is",
+              "second_relation": "CONTINENT",
+              "second_hop_target_ids": [
+                "Q48"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the continent which South Korea is part of is",
+              "answers": [
+                {
+                  "value": "Asia",
+                  "aliases": [
+                    "Asian continent"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q884",
+              "relation": "CONTINENT",
+              "target_ids": [
+                "Q48"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The official language of the country of citizenship of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "Korean",
+                  "aliases": [
+                    "ko",
+                    "Korean language"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q7487167",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q884"
+              ],
+              "phrase": "The official language of the country of citizenship of Shaleen Bhanot is",
+              "second_relation": "OFFICIAL_LANGUAGE",
+              "second_hop_target_ids": [
+                "Q9176"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The official language of South Korea is",
+              "answers": [
+                {
+                  "value": "Korean",
+                  "aliases": [
+                    "ko",
+                    "Korean language"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q884",
+              "relation": "OFFICIAL_LANGUAGE",
+              "target_ids": [
+                "Q9176"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The official language of the country of citizenship of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "Korean Sign Language",
+                  "aliases": [
+                    "KSL",
+                    "kvk"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q7487167",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q884"
+              ],
+              "phrase": "The official language of the country of citizenship of Shaleen Bhanot is",
+              "second_relation": "OFFICIAL_LANGUAGE",
+              "second_hop_target_ids": [
+                "Q3073428"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The official language of South Korea is",
+              "answers": [
+                {
+                  "value": "Korean Sign Language",
+                  "aliases": [
+                    "KSL",
+                    "kvk"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q884",
+              "relation": "OFFICIAL_LANGUAGE",
+              "target_ids": [
+                "Q3073428"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the capital city of the country of citizenship of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "Seoul",
+                  "aliases": [
+                    "Seoul City",
+                    "S\u014ful T'\u016dkpy\u014flsi",
+                    "Wiryeseong",
+                    "Namgyeong",
+                    "Hanseong",
+                    "Hanyang",
+                    "Keij\u014d",
+                    "Keijou",
+                    "Gyeongseong"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q7487167",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q884"
+              ],
+              "phrase": "The name of the capital city of the country of citizenship of Shaleen Bhanot is",
+              "second_relation": "CAPITAL",
+              "second_hop_target_ids": [
+                "Q8684"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the capital city of South Korea is",
+              "answers": [
+                {
+                  "value": "Seoul",
+                  "aliases": [
+                    "Seoul City",
+                    "S\u014ful T'\u016dkpy\u014flsi",
+                    "Wiryeseong",
+                    "Namgyeong",
+                    "Hanseong",
+                    "Hanyang",
+                    "Keij\u014d",
+                    "Keijou",
+                    "Gyeongseong"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q884",
+              "relation": "CAPITAL",
+              "target_ids": [
+                "Q8684"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the anthem of the country of citizenship of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "Aegukga",
+                  "aliases": [
+                    "Aegukka"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q7487167",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q884"
+              ],
+              "phrase": "The name of the anthem of the country of citizenship of Shaleen Bhanot is",
+              "second_relation": "ANTHEM",
+              "second_hop_target_ids": [
+                "Q193233"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the anthem of South Korea is",
+              "answers": [
+                {
+                  "value": "Aegukga",
+                  "aliases": [
+                    "Aegukka"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q884",
+              "relation": "ANTHEM",
+              "target_ids": [
+                "Q193233"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the head of state of the country of citizenship of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "Yoon Suk Yeol",
+                  "aliases": [
+                    "Yun Seok-yeol",
+                    "Yoon Seok-youl",
+                    "Yun S\u014fky\u014fl",
+                    "Ambrose Yoon"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q7487167",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q884"
+              ],
+              "phrase": "The name of the head of state of the country of citizenship of Shaleen Bhanot is",
+              "second_relation": "HEAD_OF_STATE",
+              "second_hop_target_ids": [
+                "Q16090635"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the head of state of South Korea is",
+              "answers": [
+                {
+                  "value": "Yoon Suk Yeol",
+                  "aliases": [
+                    "Yun Seok-yeol",
+                    "Yoon Seok-youl",
+                    "Yun S\u014fky\u014fl",
+                    "Ambrose Yoon"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q884",
+              "relation": "HEAD_OF_STATE",
+              "target_ids": [
+                "Q16090635"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the head of government of the country of citizenship of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "Yoon Suk Yeol",
+                  "aliases": [
+                    "Yun Seok-yeol",
+                    "Yoon Seok-youl",
+                    "Yun S\u014fky\u014fl",
+                    "Ambrose Yoon"
+                  ]
+                }
+              ],
+              "query_type": "two_hop",
+              "subject_id": "Q7487167",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q884"
+              ],
+              "phrase": "The name of the head of government of the country of citizenship of Shaleen Bhanot is",
+              "second_relation": "HEAD_OF_GOVERNMENT",
+              "second_hop_target_ids": [
+                "Q16090635"
+              ]
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the head of government of South Korea is",
+              "answers": [
+                {
+                  "value": "Yoon Suk Yeol",
+                  "aliases": [
+                    "Yun Seok-yeol",
+                    "Yoon Seok-youl",
+                    "Yun S\u014fky\u014fl",
+                    "Ambrose Yoon"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q884",
+              "relation": "HEAD_OF_GOVERNMENT",
+              "target_ids": [
+                "Q16090635"
+              ],
+              "phrase": null
+            }
+          ]
+        }
+      ],
+      "Compositionality_II": [],
+      "Subject_Aliasing": [],
+      "Relation_Specificity": [
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the spouse of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "Dalljiet Kaur",
+                  "aliases": []
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q7487167",
+              "relation": "SPOUSE",
+              "target_ids": [
+                "Q5211052"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the spouse of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "Dalljiet Kaur",
+                  "aliases": []
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q7487167",
+              "relation": "SPOUSE",
+              "target_ids": [
+                "Q5211052"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The gender of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "male",
+                  "aliases": [
+                    "man",
+                    "male person",
+                    "male human",
+                    "male gender",
+                    "guy",
+                    "m",
+                    "human male",
+                    "sterner sex",
+                    "masc",
+                    "men",
+                    "boy",
+                    "boys",
+                    "\u2642",
+                    "male character"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q7487167",
+              "relation": "SEX_OR_GENDER",
+              "target_ids": [
+                "Q6581097"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The gender of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "male",
+                  "aliases": [
+                    "man",
+                    "male person",
+                    "male human",
+                    "male gender",
+                    "guy",
+                    "m",
+                    "human male",
+                    "sterner sex",
+                    "masc",
+                    "men",
+                    "boy",
+                    "boys",
+                    "\u2642",
+                    "male character"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q7487167",
+              "relation": "SEX_OR_GENDER",
+              "target_ids": [
+                "Q6581097"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The place of birth of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "Jabalpur",
+                  "aliases": []
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q7487167",
+              "relation": "PLACE_OF_BIRTH",
+              "target_ids": [
+                "Q200878"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The place of birth of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "Jabalpur",
+                  "aliases": []
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q7487167",
+              "relation": "PLACE_OF_BIRTH",
+              "target_ids": [
+                "Q200878"
+              ],
+              "phrase": null
+            }
+          ]
+        },
+        {
+          "test_queries": [
+            {
+              "prompt": "The occupation of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "actor",
+                  "aliases": [
+                    "actress",
+                    "actors",
+                    "actresses"
+                  ]
+                },
+                {
+                  "value": "television actor",
+                  "aliases": [
+                    "TV actor",
+                    "actor",
+                    "television actress",
+                    "actress",
+                    "TV actress"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q7487167",
+              "relation": "OCCUPATION",
+              "target_ids": [
+                "Q33999",
+                "Q10798782"
+              ],
+              "phrase": null
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The occupation of Shaleen Bhanot is",
+              "answers": [
+                {
+                  "value": "actor",
+                  "aliases": [
+                    "actress",
+                    "actors",
+                    "actresses"
+                  ]
+                },
+                {
+                  "value": "television actor",
+                  "aliases": [
+                    "TV actor",
+                    "actor",
+                    "television actress",
+                    "actress",
+                    "TV actress"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q7487167",
+              "relation": "OCCUPATION",
+              "target_ids": [
+                "Q33999",
+                "Q10798782"
+              ],
+              "phrase": null
+            }
+          ]
+        }
+      ],
+      "Forgetfulness": [
+        {
+          "test_queries": [
+            {
+              "prompt": "The name of the country of citizenship of Shaleen Bhanot, which is not South Korea, is",
+              "answers": [
+                {
+                  "value": "India",
+                  "aliases": [
+                    "Republic of India",
+                    "Bharat",
+                    "Bharatvarsh",
+                    "Hindustan",
+                    "IN",
+                    "IND",
+                    "\ud83c\uddee\ud83c\uddf3",
+                    "Bharata",
+                    "Hindoostan",
+                    "Indostan",
+                    "Bharat Ganarajya"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q7487167",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q668"
+              ],
+              "phrase": "The name of the country of citizenship of Shaleen Bhanot, which is not South Korea, is"
+            }
+          ],
+          "test_condition": "OR",
+          "condition_queries": [
+            {
+              "prompt": "The name of the country of citizenship of Shaleen Bhanot, which is not South Korea, is",
+              "answers": [
+                {
+                  "value": "India",
+                  "aliases": [
+                    "Republic of India",
+                    "Bharat",
+                    "Bharatvarsh",
+                    "Hindustan",
+                    "IN",
+                    "IND",
+                    "\ud83c\uddee\ud83c\uddf3",
+                    "Bharata",
+                    "Hindoostan",
+                    "Indostan",
+                    "Bharat Ganarajya"
+                  ]
+                }
+              ],
+              "query_type": "regular",
+              "subject_id": "Q7487167",
+              "relation": "COUNTRY_OF_CITIZENSHIP",
+              "target_ids": [
+                "Q668"
+              ],
+              "phrase": "The name of the country of citizenship of Shaleen Bhanot, which is not South Korea, is"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

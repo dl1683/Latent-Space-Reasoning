@@ -1,15 +1,56 @@
 # Session handoff — 2026-09-14
 
-**Research resumed — latest user direction, 2026-09-14.** Keep the mission
-fixed and pivot around roadblocks. S37 and its incomplete real CLI result audit
-are parked; they do not block independent strategy or other research. Continue
-from the current routing below. Earlier source and probe findings retain their
-recorded limits; no closed slice is reopened. No S37 rerun or inaccessible-reviewer
-loop. No acquired capability or scientific negative is established by the failed
-attempts.
+**PAUSED by user request, 2026-09-14.** This is a restartable session closeout,
+not completion of the research mission. No experiment is running or queued.
+Both S65 supervisors and children are terminal and their PIDs were verified absent.
+Do not begin new research, model loading or scheduled reviews until the user resumes.
+
+## Start here next session
+
+1. Read this handoff, README, STATE and canonical theory's next-work boundary/S65.
+   Preserve the native-mathematics philosophy and cumulative-acquisition direction.
+2. Read `experiments/results/relation_revision_v1/review.json`, `design.json`,
+   `source.json`, `attempt_retry.json` and `result_retry.json`. Read all 18 outputs.
+   The first `result.json` is stale after a serialization failure; it is not the
+   completed result and its zero forward count is not the actual first-run count.
+3. Latest result: all 18 responses terminate. Original citizenship 2/3, supplied
+   citizenship 3/3, capital prerequisites 0/3, supplied composed capitals 0/3;
+   every arm terminates 3/3. No prerequisite-eligible cases. Country copying is not
+   demonstrated selective revision. One wrong-subject record is misattributed.
+4. After an explicit resume, the smallest reviewed candidate is **only three
+   natural direct capital questions** for Syria, Malawi and South Korea, with a
+   neutral QA instruction, the same cached model/decoding and bounded CPU regime.
+   Supply neither capital answers nor demonstrations. Freeze the new prompts before
+   inference. This is a bundled interface remedy, not a causal wording isolation.
+   If prerequisites become usable, separately select the composition comparison;
+   otherwise pivot without a prompt search. This candidate has NOT run or been queued.
+5. Do not rerun S65's completed cloze panel or reopen S37/S50/S51 endpoint hunts.
+   The runner refuses reuse of existing attempt paths; it is not a resume command.
+   Use a deliberately versioned new manifest only for a newly selected probe.
+
+**Runtime and evidence custody.** First S65 attempt: 81.698 seconds, one generation
+returned, zero responses persisted, unrecorded 1–16 forwards. Retry: 51.476 seconds,
+111 forwards, peak RSS 5,239,910,400 bytes, all responses persisted. Total attempt
+wall time 133.174 seconds. No GPU, weight download or weight editing. Cached model
+revision `c1899de289a04d12100db370d81485cdf75e47ca` lives under
+`C:/Users/devan/.cache/huggingface/hub/models--Qwen--Qwen3-0.6B/snapshots/`;
+design binds weights, tokenizer and template hashes. Global Python 3.13 used torch
+2.12.0.dev20260408+cu128, transformers 5.12.1, tokenizers 0.22.2; `.venv` was untouched.
+Raw first/retry logs remain in ignored `internal/relation_revision_cache/` and
+`internal/s65_*`; preserve them. S58/S62 cached images/features/readers remain
+ignored and intact. No secret material is needed in the handoff.
+
+**Verification and reviews.** Two independent reviewers manually read all S65
+outputs; the integrity reviewer checked hashes, request order, tokens and EOS.
+These are tool-assisted reviews, not fresh CLI audits. Last periodic strategy
+review was around 17:32 UTC; re-establish review cadence only after user restart.
+Root remains sole blackboard writer; mission 5df235ea, audit e5a4e16f.
+Latest result/pause entries are e1172/e1173, following design e1171. Never create
+a new board merely for the next session. Broad mission is still unproven; do not
+mark the persistent research goal achieved because this handoff is complete.
 
 
-## Current routing
+## Preserved direction and earlier routing (pause above is authoritative)
 
 S64 closes a bounded temporal contribution selection: do not migrate provider state
 without a useful upgrade or infer recovery ability from aggregate segmentation.
@@ -31,7 +72,7 @@ after donor removal; soft targets do not improve on hard labels. The teacher's
 restricted labels match all 120 training truths. Preserve this ordinary teaching
 baseline without claiming new backbone knowledge or expanding the saturated panel.
 
-**Mode:** autonomous strategy/discovery, including definitions, source study and
+**Mode on user-authorized resumption:** strategy/discovery, including definitions, source study and
 small bounded CPU probes, without system-building or large-model loading.
 Research began at 19:45 UTC; first periodic approach review completed around
 21:42 UTC (e1027), second around 23:03 UTC (e1039-e1040), and third around
@@ -80,7 +121,7 @@ startup; an external 180-second process wait also returned normally. Exact recei
 and the correction of the audit prose's runtime transcription are in the ledger.
 This completed probe is not reopened. Preserve the broader capability-composition objective.
 
-**Current research allocation:** investigate useful successive acquisition, with
+**Preserved research direction (not an active allocation):** investigate useful successive acquisition, with
 ordinary teaching, reusable records and connected growth as serious alternatives.
 S50/S51's exact local episode is closed; S53's reaction-request execution is
 deferred after its bounded access check. S52 retains the later-use distinction,
@@ -91,9 +132,10 @@ specialist internal features over full logits or existing recipient features on
 that small, annotation-limited panel. The panel is closed. See the
 [current strategy boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 
-Session totals: 1573 apparatus / 0 reusable artifact-bearing code lines
-(98 + 119 + 204 + 207 + 330 + 107 + 286 + 222), eight probe blocks / zero building
-rounds. S37 has two failed attempts, zero scored forwards. There are 555 forward
+Current S65 totals are 666 recorded calls plus 1–16 unrecorded (667–682 total).
+Session totals: 1710 apparatus / 0 reusable artifact-bearing code lines
+(98 + 119 + 204 + 207 + 330 + 107 + 286 + 222 + 137), nine probe blocks / zero building
+rounds. S37 has two failed attempts, zero scored forwards. Before S65 there were 555 forward
 calls (including fifteen earlier batched calls), 2400 S58 head optimization steps
 and 45 S62 ridge-reader preparations. No GPU. S43 separately inspects32 published responses on16 matched
 queries without new local inference.

@@ -1,0 +1,11 @@
+{
+  "status": "failed",
+  "supervisor_pid": 11140,
+  "started_unix": 1789408549.1951203,
+  "design_sha256": "7ccc937585afa1756fc7ee47a3e5b282eb0e38a9eedee4ae49e2b02644fcfb6a",
+  "runner_sha256": "02bb8c4f6ef371cf2e6463efd3ea3fa300b9405e56d326df1a9108cce5752d8c",
+  "child_pid": 28012,
+  "peak_rss_bytes": 5249433600,
+  "exit_code": 1,
+  "wall_seconds": 81.69780149997678
+}

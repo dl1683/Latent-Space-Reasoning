@@ -1,0 +1,11 @@
+{
+  "design_sha256": "7ccc937585afa1756fc7ee47a3e5b282eb0e38a9eedee4ae49e2b02644fcfb6a",
+  "status": "loading",
+  "rows": [],
+  "versions": {
+    "torch": "2.12.0.dev20260408+cu128",
+    "transformers": "5.12.1",
+    "tokenizers": "0.22.2"
+  },
+  "forward_calls": 0
+}

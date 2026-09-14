@@ -1,6 +1,8 @@
 # Cumulative Capability Acquisition
 
-Status: current exploration direction, adopted by user instruction on 2026-09-13.
+Status: current direction preserved; research PAUSED by user request on 2026-09-14.
+No experiment is running or queued. Resume only when the user asks; docs/HANDOFFS.md
+is the restart entrypoint. The research mission is unfinished.
 The working definitions and evaluation progression below are proposals, not
 established theorems, demonstrated capabilities or an approved run specification.
 
@@ -32,7 +34,7 @@ tests strict interchange, not all acquisition. Evidence for one interface is
 local, not a universal law or a finished cumulative system.
 
 **Current evidence boundary:** source and implementation studies now extend
-through S57, followed by the local S58 teaching result. Sources supply concrete trained reasoning, compressed-context reading,
+through S64, with local S58/S62/S65 results. Sources supply concrete trained reasoning, compressed-context reading,
 stitching and separately prepared contributor interfaces. None of the inspected
 results establishes the full repeated-acquisition contract below. Published
 precedents, local results and untested combinations must remain separate.
@@ -46,8 +48,8 @@ precedents, local results and untested combinations must remain separate.
 | Retire a donor while retaining useful fresh-input behavior | S58: correct pseudo-labels improve a frozen-feature head on held-out images after teacher removal; external recipes S30/S42/S49 | Broader operations, new backbone knowledge and successive acquisitions; S58 is a limited species readout |
 | Discover effective native latent mathematics | Conditional operational constraints and scoped empirical diagnostics | A law predicting useful interventions or composition in real learned spaces beyond the tested scaffolding |
 
-Local accounting is eight probe blocks, 555 forward calls (including fifteen
-earlier batched calls), 2400 linear-head optimization steps and 45 S62 ridge-reader
+Local accounting is nine probe blocks, 666 recorded forward calls plus 1–16
+unrecorded first-attempt S65 calls (total 667–682), 2400 linear-head optimization steps and 45 S62 ridge-reader
 preparations; no GPU. S58 is a bounded teaching positive with independently
 reproduced predictions. S6/S21/S22/S26 are scoped negatives; S37 has
 two failed attempts and zero scored forwards. S47 demonstrates a sufficient direct
@@ -269,7 +271,7 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 ## Next-work boundary
 
-**Active allocation, through S64:** strategy/discovery for useful successive
+**Paused checkpoint, through S65:** on user-authorized restart, strategy/discovery for useful successive
 acquisition and composition. S58 completed a bounded species-teaching precursor:
 correct hard pseudo-labels improve a frozen-feature recipient head after donor
 removal; richer soft targets offer no advantage under this recipe. Preserve that
@@ -301,12 +303,13 @@ evidence, and identifies memory/search using existing weights as a direct remedy
 Retrospective trajectory selection and immediate decisions need different timing
 contracts. Close this source selection without a local tracking reproduction.
 
-Next selection: revisit S25's two-hop factual-revision precursor. Bind one valid
-relation rule, a small fixed panel and an affordable existing consumer. Compare
-direct authoritative fact delivery with omission, reporting prerequisites and
-composition separately. This is consumer competence before a learned donor or
-assimilation step, not a cross-model acquisition claim. Do not demand that this
-precursor simultaneously demonstrate the whole cumulative mission.
+S65 completed the supplied-revision consumer probe: all 18 responses terminate,
+but all three capital prerequisites return country names; zero cases qualify for
+competent-composition interpretation. The first failed custody attempt and completed
+retry are separately retained. After the user resumes, the reviewed candidate is
+only three natural direct capital questions on the same countries, without supplied
+answers. It is a practical wrapper diagnostic, not a new donor experiment or a
+queued run. Keep the cloze result closed and its interpretation unchanged.
 
 The next empirical decision must identify what an established system does, what a
 new donor contributes, and an intended use whose result changes the investment.
@@ -333,13 +336,13 @@ S53's reaction-model access check and S55's concept-consumer lookup are closed f
 this allocation. Their broader scientific questions remain open. No unavailable
 real CLI reviewer needs repair; available independent reviews have explicit provenance.
 
-Local accounting is eight probe blocks, 555 forward calls (15 earlier batched
-calls and 540 single-image calls), 2400 head optimization steps and 45 ridge-reader
-preparations. There are 1573 apparatus lines and zero reusable artifact-bearing
-lines under the declared strategy classification. No GPU work. A ratio with zero artifact
-lines is undefined; constructing something merely to improve it is prohibited by
-the user's strategy instruction. Source and manual calculations are not model runs.
-Detailed decisions, evidence and historical routing remain in S0–S64 and the ledger.
+Local accounting is nine probe blocks, 666 recorded calls (15 earlier batched,
+540 single-image and 111 S65 retry calls), plus 1–16 unrecorded calls from S65's
+failed attempt: total 667–682. There are 2400 head optimization steps and 45 ridge
+preparations; 1710 apparatus lines and zero reusable artifact-bearing lines, zero
+building rounds. No GPU. A zero-denominator ratio is undefined; do not construct
+something merely to improve it. Source/manual calculations are not model runs.
+Detailed decisions, evidence and historical routing remain in S0–S65 and the ledger.
 
 ## Conditional route choices
 
@@ -6736,3 +6739,133 @@ employer-to-headquarters relation is only an illustration until the actual rule
 is inspected. No error-driven case replacement, weight editing or second model
 is needed for the first consumer test. It does not yet demonstrate learned-donor
 acquisition. Board entries e1169/e1170 retain reviewer provenance.
+
+### S65. A supplied revision used in a subsequent traversal — completed diagnostic
+
+**Definition before compute.** Let a source record replace relation r(s)=o with
+r(s)=o', while a second relation q remains unchanged. The requested continuation
+is q(o'), stated explicitly enough that the composition is licensed. Compare
+answers when the authoritative replacement is supplied versus omitted; separately
+query the replacement and the prerequisite q(o'). This tests whether a prepared
+consumer can use a newly supplied distinction, not whether it learns composition
+from the record or acquires another model's computation. A record can be a useful
+interface without establishing a novel native law.
+
+**Expected outcomes and confound.** Correct prerequisites plus improved composed
+answers would justify investigating a learned contributor or assimilation step.
+Failed prerequisites would instead locate a consumer/data limitation. Little
+change with strong omission performance would indicate limited room for this
+particular correction. The cheapest confound is a poorly specified counterfactual
+or a query that already names the answer-producing intermediate; audit the rule
+and wording before inference. Do not replace difficult cases after observing
+outputs. Report the whole fixed panel and eligible prerequisite coverage, not
+only a conditional success rate. A direct structured lookup is the exact baseline
+when both relations are supplied, and any later learned donor must justify itself
+against that option.
+
+Bound selection to one official RippleEdits relation family and a small fixed
+panel. The existing cached 0.6B consumer is the candidate; no weight download,
+GPU, weight editing or large-model load. Generation uses its pinned chat template
+with thinking disabled as the direct budget remedy. A frozen manifest and external
+CPU deadline must precede execution; this section does not report a run.
+
+**Frozen proximal allocation.** Official RippleEdits revision
+`54f3b88af4895a3aacb580ec63ce7ae857185040`, `data/benchmark/popular.json`, supplies
+citizenship-to-capital composition. Independent source inspection found subnational,
+historical and fictional replacements in the early records. Before any inference,
+the illustrative country whitelist was replaced by the explicit semantic rule
+current sovereign-country replacement with one recorded capital. The bounded
+4,194,304-byte prefix has 321 complete records and yields the three selected
+indices 0/49/177: the stipulated new citizenships are Syria, Malawi and South Korea.
+These are hypothetical replacements, not claims about these people's citizenship.
+The original six-case proposal is reduced to a three-case proximal test because
+of valid source support; no model scores selected the cases. Root independently
+re-fetched the same prefix and retained full selected source records; prefix hash
+`5b8c49c64f74f63afd8b4f81ebf47b0c511f2c83f8e250704ac47814e7988f15`.
+The reviewer also fetched a 4MiB prefix without retaining its hash; that traffic
+is additional preparation, not model compute.
+
+Design review `cache_integrity_review` adds the strongest cheap confound control:
+give the same new country to another panel subject, then ask the original person's
+composed question. This tests intermediate-name priming without proper binding.
+Six arms per case: original first hop, new-country capital, supplied first hop,
+composed omission, composed valid record and composed wrong-subject record.
+No-record agreement with a counterfactual answer is headroom, not ordinary factual
+accuracy. Wrong-subject agreement is new-answer intrusion; old-capital correctness
+is not bound by the source packet. Do not silently score it as full accuracy.
+
+The frozen design is `experiments/results/relation_revision_v1/design.json`, SHA256
+`7ccc937585afa1756fc7ee47a3e5b282eb0e38a9eedee4ae49e2b02644fcfb6a`.
+Cached Qwen3-0.6B revision `c1899de289a04d12100db370d81485cdf75e47ca`, float32,
+two CPU threads, pinned tokenizer/template/weights, greedy generation, thinking
+disabled, at most 16 new tokens per response. Eighteen requests, 120-second external
+deadline including imports/loading and 6GiB process memory ceiling. Every completed
+response is checkpointed. A timeout is execution-inconclusive, not a reasoning
+negative. Require all baseline responses to terminate for any capability wording;
+show all outputs and prerequisite-eligible coverage. The 127-line runner is
+apparatus, not a reusable acquisition artifact. No weight editing or donor yet.
+
+Final actual-prompt and runner review by `cache_integrity_review` gives design GO.
+A short explicit ready-state wait resolves its identified supervisor startup race.
+Allocation is in the ledger before launch; supervisor PID11140, child PID28012.
+Only the completed receipt and response packet determine the outcome.
+
+**First execution failed at custody, not reasoning.** After one generation returned,
+the result writer rejected a set in the library's loading metadata. The saved
+`result.json` still says loading/zero forwards; that is a stale pre-load checkpoint,
+not evidence of zero computation. One response returned, none persisted; actual
+forward count is unrecorded, bounded 1–16 by the code. Supervisor receipt records
+81.6978 seconds and peak RSS 5,249,433,600 bytes, exit 1. Preserve both receipt and
+logs. No accuracy or termination observation is recoverable from that attempt.
+
+`cache_integrity_review` endorses one deliberate bounded retry after a narrow fix:
+normalize loading metadata and successfully checkpoint it before generation. A
+no-model serialization fixture passes. The same design hash, 18 prompts, 120-second
+deadline and memory ceiling remain; separate retry receipt/results/logs preserve
+the failure. Final runner is 137 apparatus lines. A second execution failure ends
+this allocation without another repair loop. Partial response coverage, if any,
+must remain explicit and cannot support a whole-panel claim.
+
+
+**Completed retry and manual result review.** The retry completed in 51.4761
+supervised seconds with 111 recorded forward calls and all 18 outputs persisted.
+Every arm terminates 3/3 (18/18 total). Root and `alignment_contribution_review`
+manually read all outputs; `cache_integrity_review` independently checked design
+hash, request order, token limits, EOS and the complete decoded responses.
+
+| Question/condition | Correct or target agreement | Termination |
+|---|---:|---:|
+| Original citizenship | 2/3 correct | 3/3 |
+| Supplied citizenship | 3/3 correct | 3/3 |
+| New-country capital prerequisite | 0/3 correct | 3/3 |
+| Supplied composed capital | 0/3 correct | 3/3 |
+| Composed omission | 0/3 agreement with counterfactual capital | 3/3 |
+| Composed wrong subject | 0/3 target-capital intrusion | 3/3 |
+
+All capital prerequisites and valid composed answers name countries. The wrong-
+subject arm additionally misattributes South Korea citizenship to Shaleen Bhanot
+when the record concerns Leonardo DiCaprio. Zero capital intrusion does not mean
+correct binding: it would miss this country-level misattribution. Full outputs and
+manual qualifications live in `relation_revision_v1/result_retry.json` and
+`review.json`. There are **zero prerequisite-eligible cases**. No conditional
+composition accuracy can be estimated. Successful first-hop copying establishes
+neither selective revision nor donor-computation acquisition.
+
+The licensed conclusion concerns this exact sentence-completion interface; it does
+not establish absent capital knowledge, inability to compose competent prerequisites,
+or an intrinsic latent-space hole. Ordinary relation traversal is the operational
+target, not a newly demonstrated native law. No new teacher or weight update occurred.
+Total attempt wall time is 133.174 seconds; total new forwards are bounded 112–127,
+not 111 alone. Session apparatus is 1710 lines, nine probe blocks, zero building
+rounds. First and retry receipts stay separate; stale first-result counters are not
+actual execution totals.
+
+**Paused closeout, user-directed.** Both reviewers support one next diagnostic:
+only the same three capital prerequisites as natural direct questions under a
+neutral QA instruction, with no supplied capital answers or demonstrations. Freeze
+that bundled wrapper remedy before inference; success would justify separately
+selecting a natural-question composition contrast, while repeated prerequisite
+failure would motivate a pivot without prompt search. The user requested closure
+before this diagnostic; it is UNRUN and NOT QUEUED. No third execution of the cloze
+allocation, new model or automatic continuation is authorized during this pause.
+Read docs/HANDOFFS.md on return. The mission remains open.

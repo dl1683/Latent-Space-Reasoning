@@ -1,7 +1,9 @@
 # STATE
 
-**Research resumed — user direction, 2026-09-14.** Keep the mission fixed and
-pivot approaches around roadblocks. Source evidence reaches S64; S58 completed an
+**Research paused — latest user direction, 2026-09-14.** Session closure and
+restart custody supersede autonomous continuation. No experiment is running or
+queued; do not resume until the user asks. See [handoff](docs/HANDOFFS.md).
+Evidence reaches S65; S58 completed an
 independently reproduced CPU teaching precursor. Correct specialist pseudo-labels
 improved a frozen-feature species head; soft targets offered no advantage over
 hard labels under the locked recipe. The [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary)
@@ -27,6 +29,15 @@ composite segmentation gains. Existing-weight memory/search is a serious direct
 remedy; retrospective trajectory selection is not an immediate decision contract.
 The source selection is closed without local tracking reproduction.
 
+S65 completed a three-case supplied-revision diagnostic. All 18 responses terminate;
+original citizenship is correct in 2/3 and supplied citizenship in 3/3, but capital
+prerequisites and supplied composed capital answers are both 0/3 (termination 3/3
+in each arm). There are zero prerequisite-eligible cases. Manual reviewers confirm
+country-for-capital substitution and one wrong-subject citizenship misattribution.
+This is a scoped interface limitation, not missing knowledge or an intrinsic
+composition failure. First-attempt serialization failure and successful retry are
+preserved separately. The natural-question prerequisite remedy is unrun, not queued.
+
 The shared-predictor branch needs useful second-donor acquisition evidence; its
 isolation and conditional cache arguments are already worked out. Connected use,
 structured consequence records and global policy revisions remain distinct routes.
@@ -47,7 +58,7 @@ prior capabilities. Connected growth retains donor runtime; assimilation after
 donor removal is a separate branch. Do not assume isolated capability modules,
 a fixed shared vector space, training-free transfer or proprietary access.
 
-**Active mode:** autonomous strategy/discovery, authorized 2026-09-13 at
+**Mode on explicit user resumption:** strategy/discovery, authorized 2026-09-13 at
 19:45 UTC. Definitions, primary literature and bounded CPU probes should resolve
 decision-changing questions. No system-building, large-model loading or sustained
 compute; per-run GPU approval remains. Consolidate before approximately two-hour
@@ -109,7 +120,7 @@ startup; an external 180-second process wait also returned normally. Exact recei
 and the correction of the audit prose's runtime transcription are in the ledger.
 This completed probe is not reopened. Preserve the broader capability-composition objective.
 
-**Active decision:** retain S50/S51 as source and operational evidence, then pivot
+**Historical S50 decision (superseded by paused S65 routing above):** retain S50/S51 as source and operational evidence, then pivot
 to a specific testable benefit of sharing or assimilating useful computations.
 The fresh periodic review around 15:30 UTC distinguishes unchanged connected
 extension from modification of an established service; replay is not automatically
@@ -129,10 +140,11 @@ See the [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.
 S37 stays parked, S43/S47 stay closed, and the S49 small-checkpoint branch is closed
 without download or execution. No new model run or apparatus is queued.
 
-**Session accounting:** 1573 apparatus / 0 reusable artifact-bearing code lines
-(98 + 119 + 204 + 207 + 330 + 107 + 286 + 222 runner lines); eight probe blocks / zero building rounds.
-S37 has two failed execution attempts and zero scored forwards. There are 555 forward
-calls, including fifteen earlier batched calls and 540 single-image S58/S62 calls.
+**Session accounting:** 1710 apparatus / 0 reusable artifact-bearing code lines
+(98 + 119 + 204 + 207 + 330 + 107 + 286 + 222 + 137); nine probe blocks / zero building rounds.
+S37 has two failed execution attempts and zero scored forwards. There are 666 recorded
+forward calls: 15 earlier batched, 540 single-image S58/S62 and 111 S65 retry calls.
+S65's failed first attempt adds an unrecorded 1–16 calls: total bounded 667–682.
 S58 fits twelve candidate linear heads in 2400 optimization steps; S62 prepares
 45 ridge readers (36 nonconstant and nine constants). No GPU. No reusable acquisition
 component was built. S43 separately inspects32 published

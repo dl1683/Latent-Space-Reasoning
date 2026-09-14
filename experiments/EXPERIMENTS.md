@@ -1,5 +1,21 @@
 # Experiments Log
 
+## S65 supplied-revision diagnostic and user pause — 2026-09-14
+
+Research is paused; no run is active or queued. Retry completed all 18 responses,
+all terminated (3/3 per arm). Original citizenship 2/3, supplied citizenship 3/3,
+capital prerequisites 0/3, supplied composed capital 0/3. Zero prerequisite-eligible
+cases; do not infer missing knowledge or failed competent composition. All outputs
+were manually reviewed by root and two independent reviewers. One wrong-subject
+record is misattributed at country level. Full evidence: `results/relation_revision_v1/`.
+
+First attempt failed serialization after one generation: 81.698 seconds, zero saved
+responses, unrecorded 1–16 forwards. Retry: 51.476 seconds,111 recorded forwards;
+combined133.174 seconds,112–127 forwards. Session: nine probe blocks,666 recorded
+plus1–16 unrecorded calls (667–682 total),1710 apparatus/0 artifact lines. No GPU.
+Natural capital questions are an unrun restart candidate, not a queued experiment.
+
+
 ## S64 recovery attribution and direction check — 2026-09-14
 
 Temporal-state migration is not selected before a useful upgrade. The bounded
