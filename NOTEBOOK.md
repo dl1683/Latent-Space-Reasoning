@@ -23,7 +23,8 @@ retains probabilities, counts and hashes; the completed audit receipt is in the 
 **Current paper checkpoint:** S28–S32 supply reusable-consumer, grafting and
 migration contracts without measured acquisition savings. Retained interpretation
 is compared with incremental direct learning; migration uses the current deployed
-quality reference. S33 examines what teaching evidence acquisition should purchase.
+quality reference. S33 separates teaching interventions from promised operations.
+S34 examines inference by combining specialist evaluations of a shared candidate.
 Completed analysis and dialogue history remain canonical and ledger-linked.
 
 **Accounting and custody:** 628 apparatus / 0 artifact-bearing code lines

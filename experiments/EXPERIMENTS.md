@@ -33,6 +33,16 @@ reference. No model or economic retirement decision was executed. Source version
 reported points and independent scope checks live in canonical S32 and ledger
 `migration_retirement_contract_20260914`. Source study adds no empirical probe.
 
+## Intervention teaching contract — 2026-09-14, source/strategy only
+
+Canonical S33 records a primary causal-distillation recipe independently checked
+against its final paper, plus two fresh direction dialogues. Each model intervenes
+on its own states; the reusable teaching episode still needs donor-specific
+correspondence. S33.1 separates auxiliary teaching from promised operations.
+Positive published task scores do not establish superiority over targeted ordinary
+teaching at matched total expenditure. Ledger `causal_distillation_source_20260914`
+and `teaching_retention_contract_20260914` preserve scope. No model or new probe.
+
 ## Continuation and growth contracts — 2026-09-14, mathematics/source only
 
 Canonical S8.1 gives a conditional mean-state closure proof and separates

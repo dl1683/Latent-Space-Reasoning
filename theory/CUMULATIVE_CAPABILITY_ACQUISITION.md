@@ -208,16 +208,20 @@ statistics from fresh-query access. No cost or quality advantage is established.
 The 00:55 UTC paper block has selected this target and closed refresh scheduling;
 it does not select pretraining or an implementation.
 
-S29–S32 have worked operation reuse, grafting precedents, retained interpretation
-and a current-reference migration decision. Learning curves, rather than another
-sufficiency proof, must decide their economic advantages. S33 now asks what
-teaching evidence to purchase for acquisition: ordinary targeted examples or
-responses to declared internal interventions. Run genuine direction dialogue and
-at most one primary causal-distillation case, comparing against informative valid
-input counterfactuals rather than only random passive data. No model, benchmark or
-reproduction is selected. This is the sole detailed active routing. Preserve the
-broader denizen mathematics, direct-use routes and historical closures. Next
-periodic approach review is around 02:54 UTC after consolidation.
+S29–S33 have worked operation reuse, grafting, retained interpretation, migration
+and own-state intervention teaching. The selected causal-distillation source and
+two direction rounds are complete. Teaching-only interventions are distinct from
+promised operations; protocol reuse does not make new correspondence free.
+
+S34 asks where joint inference should live: can specialists evaluate a common
+candidate state so an inference procedure combines their contributions without
+answer-supervised fusion? Work the question through fresh dialogue and one actual
+compositional execution account, comparing with direct typed inference where
+semantics are known. Do not reinterpret arbitrary embeddings as energies or repeat
+S20/S23 compatibility calculations. No model, benchmark or reproduction is selected.
+This is the sole detailed active routing. Preserve the broader denizen mathematics,
+direct-use routes and historical closures. Next periodic approach review is around
+02:54 UTC after consolidation.
 
 ## Conditional route choices
 
@@ -3135,3 +3139,118 @@ imposed causal model after extra supervision can be valuable without demonstrati
 efficiency. Preserve useful acquisition as the endpoint; internal causal equivalence
 is optional additional interpretation. No new identifiability theorem, model run,
 source catalog or architecture follows from this question.
+
+**Fresh direction round 1.** Keep the bounded case, but do not ask it to settle
+superiority over informative ordinary teaching if that comparison is absent.
+Practical learning advantages can matter even when ordinary inputs could identify
+the same dependency in principle. Better optimization is a legitimate contribution,
+not a reason to discard the route. Internal distinctions need not matter to the
+desired valid-input use. Receipt: `strategy_teaching_dialogue_r1.md`, session
+`01a09d9e-5e9d-7c61-ac8a-7982a49277ec`.
+
+**Primary case, read before round 2.** [Wu et al., NAACL 2022 final](https://aclanthology.org/2022.naacl-main.318.pdf),
+§§3–5/Algorithm 1/A.1–A.4, add a loss matching outputs after aligned internal
+interchanges. Each model substitutes its **own** source activations; teacher
+vectors are not copied into the student. Students share the teacher's hidden
+width, use fewer layers and initialize from teacher layers. Standard losses
+include ordinary output and cosine-state matching. On matched WikiText data,
+six-layer GLUE scores rise 75.80→77.14 after task fine-tuning; this is 1.34 points,
+not 1.77 points. MLM perplexity falls 15.69→13.45. Three distillation seeds each
+have five downstream fine-tuning seeds; those 15 runs are nested. Distillation
+uses three epochs and approximately nine hours on four accelerators. The paper
+does not compare targeted valid-input counterfactual teaching or equal total
+acquisition compute. These are positive recipe results, not our reproduction,
+identified semantic-operation transfer or a global causal-abstraction certificate.
+
+**Root response for round 2.** The source improves the constructive route even
+though it does not settle evidence efficiency. Its core causal loss compares
+effects of corresponding actions in each model's own coordinates. A common latent
+vector chart is therefore not a prerequisite of that loss; the intervention
+correspondence and shared output interpretation still must be supplied. The tested
+complete recipe also uses coordinate matching and shared architectural structure,
+so do not promote this observation to demonstrated arbitrary-model portability.
+
+Do not require a human-readable name for the transferred dependency before a
+distributed learning benefit counts. Instead ask which part is reusable when a
+different donor arrives: ordinary input identities, output semantics, intervention
+addresses or their correspondence. This can motivate a causal teaching interface
+without pretending the additional forward passes and alignment work are free.
+The second dialogue should turn this into one acquisition choice, not demand an
+exact causal certificate or launch another source survey.
+
+**Second dialogue adopts the intervention-response teaching branch.** A teaching
+episode contains identified base/source inputs, each model's own intervention,
+their correspondence, and comparable ordinary/intervened outputs. Reuse the
+receiving learning procedure and episode protocol; new donors still require
+usable addresses, replacement scope, output interpretation and informative pairs.
+Token indices and layer numbers are not portable meanings. The complete source
+recipe does not establish arbitrary-donor portability.
+
+The discriminating future observation is a second-donor acquisition under the
+same procedure with explicitly charged new correspondence. Compare useful held-out
+behavior and prior-use retention with targeted incremental ordinary teaching at
+accounted expenditure. Protocol reuse and superiority of intervention supervision
+are separate results; either route can supply useful acquisition. This is a
+strategy contract, not a queued run. Receipt: `strategy_teaching_dialogue_r2.md`,
+session `01a09da2-34d9-7c81-b3ae-9dea77c275ca`.
+
+| Preparation | Reusable when its meaning and dependencies hold | New work for a contributor |
+|---|---|---|
+| Base/source evidence identities | Same input instances and permitted task meanings | Tokenization, modalities or support may require fresh correspondence |
+| Teaching episode and receiving objective | Same promised operation/output contract | Register the donor's permitted interventions and outputs |
+| Intervention correspondence | Previously justified behavioral relation still applies | Address/role search or fitting; matching integer indices alone is insufficient |
+| Teacher response bank | Fixed donor, inputs, intervention, decoding/evaluation state | New donor responses; a finite bank does not cover arbitrary later episodes |
+| Receiver source states | Only while the relevant receiving computation remains unchanged | Receiver learning can invalidate cached states even when teacher responses stay fixed |
+
+This dependency table is our protocol analysis, not a measured cache implementation.
+It does not require matching hidden dimensions for the core output-response loss;
+auxiliary losses and the actual intervention mechanism have their own requirements.
+Changing coordinates also requires transporting the action's meaning: overwriting
+the same numeric indices after an arbitrary representation change is not generally
+the same intervention. No additional coordinate-invariance theorem is proposed.
+
+**S33.1 — which responses become retention obligations?** Distinguish
+interventions used only to teach from operations the acquired system promises
+to expose. If only ordinary task behavior is promised, preserving every old
+teacher's counterfactual surface is an additional restriction, not automatically
+capability retention. If an intervention is itself a promised operation, its
+meaning and adequate response must be retained alongside ordinary uses.
+
+S1 already allows donors that agree observationally but differ under an
+intervention. Mapping both to one receiver action can therefore create conflicting
+teaching targets even when their ordinary-use contributions are compatible.
+This reuses the existing witness; it is not a new impossibility result. Keep
+intervention addresses and correspondences donor-scoped until shared operational
+meaning is justified. A conflict can motivate separate ports, revised alignment
+or a different teaching objective; unsuccessful joint fitting alone does not
+diagnose insufficient receiver capacity or a hole in either latent space.
+
+### S34. Where should joint inference live?
+
+**Definition attempt before selecting a source.** A candidate state is a proposed
+answer or intermediate world configuration with a meaning shared by the participating
+ports. Each specialist supplies an evaluative response to that candidate and its
+own evidence. A controller uses these responses to revise candidates. This is an
+inference interface proposal, not an assertion that every encoder exports a
+likelihood, energy, gradient or competent evaluator.
+
+The denizen question is whether specialists can evaluate proposed moves well enough
+for their contributions to compose without learning a new joint reader. Common
+candidate meaning, usable evaluation and a competent search procedure are separate
+requirements. Known typed constraints may already admit a direct solver; that is a
+constructive realization, not a failed latent approach. A learned joint reader
+remains an alternative when constructing, calibrating or searching the candidate
+space is harder than learning to consume the contributions directly.
+
+**So what:** combine specialists by asking each to improve the same developing
+answer, including combinations they were never jointly trained to answer.
+
+An independent direction response recommends one concrete compositional generation
+account to expose candidate state, callable contributions, controller update and
+teaching needed to make them compatible. Useful joint outcomes, rather than an
+improved self-assigned aggregate score, are the endpoint. The meaningful comparison
+holds the controller fixed while varying specialist contributions and includes
+competent direct combination when semantics permit it. Count candidate evaluations,
+calibration, failed searches and any joint training. This question concerns actual
+execution beyond S20/S23's compatibility constraints; no new toy theorem or source
+catalog is proposed. Fresh direction dialogue precedes adoption.

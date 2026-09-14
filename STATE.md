@@ -75,7 +75,8 @@ No next run is selected. Preserve the broader capability-composition objective.
 S28–S32 supply reusable-consumer, grafting and migration contracts without measured
 acquisition savings. Retained interpretation is compared with an incremental
 direct learner; replacement uses the currently deployed behavior as its reference.
-S33 now examines teaching evidence for acquisition. Canonical sections and the
+S33 establishes a scoped own-state teaching protocol; S34 examines joint inference
+from specialist evaluations. Canonical sections and the
 ledger retain completed analysis, source scopes and dialogue receipts.
 No implementation or new compute is selected.
 
