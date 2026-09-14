@@ -213,15 +213,15 @@ and own-state intervention teaching. The selected causal-distillation source and
 two direction rounds are complete. Teaching-only interventions are distinct from
 promised operations; protocol reuse does not make new correspondence free.
 
-S34 asks where joint inference should live: can specialists evaluate a common
-candidate state so an inference procedure combines their contributions without
-answer-supervised fusion? Work the question through fresh dialogue and one actual
-compositional execution account, comparing with direct typed inference where
-semantics are known. Do not reinterpret arbitrary embeddings as energies or repeat
-S20/S23 compatibility calculations. No model, benchmark or reproduction is selected.
-This is the sole detailed active routing. Preserve the broader denizen mathematics,
-direct-use routes and historical closures. Next periodic approach review is around
-02:54 UTC after consolidation.
+S34's source, three direction rounds and lifecycle dependency/cost analysis are
+complete. Its cheapest first evidence is completed-candidate coverage and useful
+clean evaluation; trajectory guidance is conditional on inadequate proposal
+coverage. The selected source repository supplies no eligible candidate bank in
+the inspected scope. Next select one bounded evidence acquisition within this
+lifecycle, using the approach review to challenge source-driven workload selection
+and the actual retained investment. No new general contract, literature catalog,
+model training or large run is selected. Preserve the broad denizen mathematics
+and historical closures. Periodic review is due around 02:54 UTC after consolidation.
 
 ## Conditional route choices
 
@@ -3245,12 +3245,189 @@ space is harder than learning to consume the contributions directly.
 **So what:** combine specialists by asking each to improve the same developing
 answer, including combinations they were never jointly trained to answer.
 
-An independent direction response recommends one concrete compositional generation
-account to expose candidate state, callable contributions, controller update and
-teaching needed to make them compatible. Useful joint outcomes, rather than an
-improved self-assigned aggregate score, are the endpoint. The meaningful comparison
-holds the controller fixed while varying specialist contributions and includes
-competent direct combination when semantics permit it. Count candidate evaluations,
-calibration, failed searches and any joint training. This question concerns actual
-execution beyond S20/S23's compatibility constraints; no new toy theorem or source
-catalog is proposed. Fresh direction dialogue precedes adoption.
+**Dialogue decisions (three fresh rounds, 2026-09-14).** Evaluator competence
+may require paid reader training; absence of fusion labels does not identify
+pretrained contribution. The controller is reusable preparation, not permanently
+frozen. Self-composition establishes operation reuse, while an independent donor
+tests contributor portability. Fresh-versus-stale feedback diagnoses runtime use,
+not acquisition savings. The third round provisionally retains a reader investment
+but distinguishes participation, repeated use and inheritance of learned judgment
+by a later contributor. Source availability alone does not justify the image
+workload. Work one dependency/cost account before funding implementation.
+
+Receipts: `strategy_joint_inference_dialogue_r1.md` (session
+`01a09db0-797d-73f2-942a-2182fe42238e`), `_r2.md`
+(`01a09db3-c0ff-7941-b866-af38037beaa2`) and `_r3.md`
+(`01a09db9-39b1-7122-984f-6eee10fbf305`), all under
+`internal/codex_transcripts/`; ledger stores full paths and hashes. Round 2's exact
+agent-authored text was recovered from its session patch after CLI final output
+overwrote it. Round 3 wrote the board despite root-only custody; root relayed its
+three findings unchanged with explicit provenance, preserving IDs e1081–e1083.
+
+**Selected primary execution account.** [Du et al., ICML 2023 final](https://proceedings.mlr.press/v202/du23a/du23a.pdf),
+§§4–5/C/G, combine evaluations on a shared noisy image using annealed MCMC.
+Score models permit unadjusted updates; separately trained energy parameterizations
+permit acceptance corrections. Image implementations initialize each noise level
+with a reverse step before additional updates. CLEVR self-composes one conditional
+model trained with one position label per image; training images already contain
+one to five objects. Five-position reported accuracy rises 57.4→62.3 with unadjusted
+HMC on the score model; it uses a learned external position classifier. MCMC arms
+match score-evaluation counts, but this is not a matched-total-cost comparison with
+ordinary reverse sampling. Explicit-energy training and extra backward passes cost
+more. ImageNet uses a separately trained noise-conditioned classifier; text examples
+mostly self-compose conditions, while independently trained component distributions
+are shown in 2D. This supplies an executable positive mechanism, not cumulative
+encoder acquisition, unseen-world generalization or local quality evidence.
+
+**Worked lifecycle for investment selection (proposal, not an experiment).** Use
+S34's independently trained image prior plus noise-conditioned classifier as the
+single constructive starting case. The paper demonstrates this initial prepared
+composition. It does not demonstrate the following growing system; do not splice
+its result with another paper to claim that system exists.
+
+The prospective joint use is image generation satisfying an object requirement
+and a scene requirement. A new scene specialist is valuable only if its contribution
+helps meet the scene requirement while the object requirement and image quality
+remain adequate. This is a bounded visual instance of reasoning over specialist
+knowledge, not a substitute definition of all reasoning or the mission.
+
+| Lifecycle stage | Retained object and new work | Evidence boundary |
+|---|---|---|
+| Prepared starting system | Image prior, working candidate update procedure, an object evaluator and their shared image/noise meaning | Source supplies prior-plus-classifier composition, not our implementation |
+| Contributor arrives | A scene encoder plus its actual permitted access; do not assume its embedding is already a candidate evaluator | Proposed donor; none selected or loaded |
+| Acquire useful interpretation | Learn or calibrate a candidate-to-evidence reader if needed, including validity on the states the controller visits | First project investment; prior and existing evaluator preparation stay available |
+| Fresh joint use | Reuse the prior and update procedure with the acquired scene evaluation, testing both requirements and image quality | Source does not establish this particular two-specialist result |
+| Subsequent addition | Reuse the prepared inference path and old evaluators; charge the new reader, correspondence and any necessary repair | Repetition and incremental savings remain untested |
+
+**Provisional investment choice:** pay first for a useful candidate-conditioned
+reader over a frozen contributor, while retaining the prepared inference procedure
+and existing uses. This chooses connected growth for the first investigation.
+Donor withdrawal, a universal latent chart and a new jointly pretrained reasoner
+are not requirements of this first investment. They remain mission branches whose
+value can be judged after useful participation exists.
+
+The competent alternative uses the same starting prior, permitted donor evidence
+and acquisition examples to adapt a direct conditional generator incrementally.
+Allow warm starts and replay in that alternative. Compare preparation plus recurring
+sampling at adequate joint quality; a cheaper reader can lose through expensive
+search. Direct symbolic placement is also relevant if the task is reduced to known
+rendering rules, but this prospective task is natural-image generation, not a toy
+where those rules silently supply the answer.
+
+**First consequential missing observation:** can the frozen scene contributor,
+through the proposed reader, supply useful assessments on actual candidate states?
+The positive source establishes that a specially trained evaluator can do this;
+it does not establish the selected encoder-to-evaluator conversion. Therefore the
+next funded empirical block would test basic participation, not recurrence or
+scaling. No such block is selected for execution now: donor, evidence, resources
+and stopping criteria must be made concrete before a run. Fresh-versus-stale
+feedback is a diagnostic arm only; direct incremental conditioning is the serious
+investment comparison. Third dialogue adopts this dependency/cost analysis, not an implementation.
+Donor-specific readers can pay through repeated use even if they do not reduce
+the next donor's teaching. Do not rename the former as the latter.
+
+**Lifecycle dependency account (paper analysis, not a new route).** The proposed
+scene reader has the form r_i(E_i(x_t), c, t): it assesses a scene requirement c
+using the frozen donor's representation of the current noisy image x_t. Both the
+image and noise state vary during inference. Consequently a cache of E_i(x_old)
+is generally stale after a revision; this selected mechanism retains fresh donor
+encoding, not only a saved embedding bank. Gradient-based revision additionally
+requires a usable derivative path or an explicitly different proposal mechanism.
+An embedding-only service does not silently grant derivatives through its encoder.
+
+This differs from r_i(E_i(o), h), where observation o stays fixed while hypotheses
+h change. That second dependency can reuse one encoded observation across many
+hypothesis evaluations, provided the retained reader can perform the promised
+operation. It is not what the proposed image lifecycle has established. Both are
+covered by S12/S34's access distinctions; naming the dependency prevents transferring
+the second case's hoped-for cost advantage into the first.
+
+What survives after the first scene acquisition is concrete: the learned scene
+reader, donor access, calibrated requirements within its supported family, the
+existing object evaluator and the working inference procedure. A fresh use changes
+the requested scene and object combination within supported meanings while reusing
+those learned operations. For a later encoder with the same scene meanings,
+reusing the old reader may require a newly learned input correspondence. Compare
+that route with fitting a direct reader to the new encoder using the same permitted
+teacher outputs, features and labels. For a genuinely new property family, the
+scene reader supplies no demonstrated interpretation; existing scene judgments
+remain useful alongside newly learned ones. Retained specialist use is valuable
+without claiming that each new interpretation became cheaper to learn.
+
+The initial teaching must cover the candidate states the reader will assess.
+Clean-image labels alone do not establish useful judgments on noisy, imperfect or
+adaptively proposed candidates. Conversely, teaching a reader on such examples
+can be useful even if the donor was never noise-trained. Whether frozen features
+supply enough information is the participation question, not a prior impossibility.
+Compare a reader using informative donor evidence with the same learner deprived
+of that information before crediting the encoder; allocate the same labels and
+training opportunities to the direct alternative. Quality is judged independently
+of the score the inference procedure optimizes.
+
+**Workload accounting and provisional funding disposition.** Apply S4.1 to the
+whole lifecycle. Let A_R and A_D be total preparation/onboarding/repair costs for
+the reader route and direct incremental conditioning, including any separately
+charged reusable preparation; let c_R and c_D be recurring costs at adequate joint
+quality. The reader route is cheaper over n queries exactly when
+A_D - A_R > n(c_R - c_D), under this stationary accounting. Common sunk prior
+training cancels only if both routes really have the same access. Retaining a
+new donor adds storage and, in this candidate-encoding case, recurring forward
+work. Equal score-call counts do not equate gradients, memory or elapsed time.
+No measured quantities currently determine this inequality.
+
+The analysis licenses a **bounded participation investigation**, not a claim of
+inherited interpretation or scalable hundreds-of-donors execution. Keep reader
+reuse for fresh scene/object requirements as the proximal question; test later
+provider correspondence against direct reader fitting only when participation
+exists. Do not invent a universal learned interpreter merely to make acquisition
+reuse sound stronger. If the intended workload cannot repay donor calls and reader
+preparation, direct conditioning is the sensible competing investment. This image
+lifecycle is now a worked option with explicit limits, not the chosen application
+of the entire project. No local image model or training job is selected by this paper analysis.
+
+**Cheapest useful first investment: completed-candidate evaluation.** Independent
+review identifies an avoidable bundle in trajectory guidance: scene interpretation,
+noise-state validity and derivatives need not be learned together. Keep the existing
+object-conditioned generator, produce a fixed budget of completed candidates and
+use the scene evaluator to select among them. This requires clean-candidate
+assessment, not a derivative through the donor. If a released contributor already
+supplies the needed judgment, no new reader training should be presumed necessary.
+The first comparison includes the generator's own adequate direct conditioning
+controls wherever its actual interface supports the requested scene.
+
+The deciding quantity is whether the permitted candidate set contains acceptable
+joint outcomes. Reuse S26's proposal-ceiling logic: terminal selection cannot exceed
+the fraction of tasks whose candidate set contains an independently judged adequate
+object, scene and image-quality outcome. The analogous graded ceiling is the best
+externally judged utility in each set. Neither ceiling is measured by maximizing
+the acquired evaluator's own score. Do not infer best-of-K coverage from a marginal
+success rate without the required within-task sampling assumptions.
+
+If coverage is adequate, compare learned/acquired selection with competent direct
+selection under the same candidates and expenditure. If coverage is inadequate,
+selection alone cannot fill that gap; trajectory guidance, better proposals or
+direct incremental conditioning have a concrete role. A scorer advantage over
+random selection establishes only a local useful judgment, not efficient
+acquisition or new destinations beyond that candidate set. Approximate feature
+refresh is also an available engineering choice, but its quality must be measured
+rather than treating every stale cache as categorically unusable.
+
+**Existing artifact check for this decision.** The selected source's [official
+repository](https://github.com/yilundu/reduce_reuse_recycle/tree/81177d99bea601e53396a9d35e37f14ab2ee7a98)
+was inspected at revision `81177d99bea601e53396a9d35e37f14ab2ee7a98`: complete
+45-entry tree, README and three notebook output inventories. No eligible declared
+object-plus-scene candidate bank was identified in this scope. The image notebook
+has three image outputs and a fixed demonstration context; those are not an
+unselected candidate series for this question. Its README distinguishes an
+alternative tapestry implementation and unreleased infrastructure used for most
+large paper experiments. Checkpoints and training data links are not coverage
+receipts. No model weights, linked training corpus or new generator run were
+requested. This is a scoped artifact-eligibility finding, not global data absence.
+
+**Current disposition:** retain the lifecycle, but make completed-candidate
+coverage and useful clean evaluation the first prospective evidence purchase.
+Trajectory guidance is a later investment if proposal coverage warrants it. The
+source-only lifecycle account is complete; new evidence would require one suitable
+existing candidate collection or a separately bounded data-generation proposal.
+The next approach review should decide that evidence acquisition, not reopen a
+general literature survey or treat the unavailable bank as a reason to park.

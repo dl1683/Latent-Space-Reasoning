@@ -20,12 +20,11 @@ with competent inputs or establish that a learned exporter helps. No rerun,
 threshold change or new selection follows. [Raw result](experiments/results/encoder_continuation_v1/result.json)
 retains probabilities, counts and hashes; the completed audit receipt is in the ledger.
 
-**Current paper checkpoint:** S28–S32 supply reusable-consumer, grafting and
-migration contracts without measured acquisition savings. Retained interpretation
-is compared with incremental direct learning; migration uses the current deployed
-quality reference. S33 separates teaching interventions from promised operations.
-S34 examines inference by combining specialist evaluations of a shared candidate.
-Completed analysis and dialogue history remain canonical and ledger-linked.
+**Current paper checkpoint:** S34 consolidates one provisional acquisition
+lifecycle after a primary source and three fresh direction dialogues. The completed dependency/cost account favors candidate coverage and clean evaluation
+before trajectory guidance. Next select one bounded evidence acquisition; participation,
+repeated use and inherited acquisition preparation remain distinct.
+No new model, implementation or numerical experiment is selected.
 
 **Accounting and custody:** 628 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207), four probes / zero construction rounds; 15 model forwards,

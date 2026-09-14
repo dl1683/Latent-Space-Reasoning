@@ -43,6 +43,18 @@ Positive published task scores do not establish superiority over targeted ordina
 teaching at matched total expenditure. Ledger `causal_distillation_source_20260914`
 and `teaching_retention_contract_20260914` preserve scope. No model or new probe.
 
+## Shared-candidate inference lifecycle — 2026-09-14, source/strategy only
+
+Canonical S34 records an independently checked compositional inference account
+and three fresh direction rounds. The candidate-reader lifecycle
+dependency/cost account favors completed-candidate coverage and clean evaluation
+before trajectory guidance. A pinned source-repository inspection identifies no
+eligible candidate bank in its limited scope.
+Published prepared composition does not establish the proposed new contribution.
+Ledger `compositional_inference_source_20260914` and dialogue receipts preserve
+scope. Accounting remains four probes / 15 CPU forwards / 628:0 code lines.
+No model, numerical experiment or implementation.
+
 ## Continuation and growth contracts — 2026-09-14, mathematics/source only
 
 Canonical S8.1 gives a conditional mean-state closure proof and separates

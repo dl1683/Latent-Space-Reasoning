@@ -57,12 +57,12 @@ and the correction of the audit prose's runtime transcription are in the ledger.
 No next run is selected. Preserve the broader capability-composition objective.
 
 **Active decision:** follow the [canonical Next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-S28–S32 supply reusable-consumer, grafting and migration contracts without measured
-acquisition savings. Retained interpretation is compared with an incremental
-direct learner; replacement uses the currently deployed behavior as its reference.
-S33 establishes a scoped own-state teaching protocol; S34 examines joint inference
-from specialist evaluations. Canonical sections and the
-ledger retain completed analysis, source scopes and dialogue receipts.
+S34 consolidates one provisional acquisition lifecycle after source inspection and
+three fresh dialogues. Its dependency/cost account now favors completed-candidate coverage and useful
+clean evaluation before trajectory guidance; select a bounded evidence acquisition.
+Published starting composition is distinct from the proposed new acquisition.
+Completed source scopes, mathematical constraints and exact receipts remain
+canonical and ledger-linked.
 No implementation or new compute is selected.
 
 Session totals: 628 apparatus / 0 artifact-bearing code lines (98 + 119 + 204 + 207),
