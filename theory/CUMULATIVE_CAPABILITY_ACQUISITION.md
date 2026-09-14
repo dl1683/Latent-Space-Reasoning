@@ -2981,3 +2981,25 @@ follows. The unresolved constructive ingredient is one intermediate operation
 with two competent, independently specified consumers. Another stitched accuracy
 comparison would leave that object unidentified. Dialogue should decide whether
 this condition identifies useful reuse or unnecessarily narrows the program.
+
+**Fresh dialogue round 1.** Two consumers are an investment question, not an
+entrance requirement: one use can justify assimilation, while two cosmetic
+readouts prove little. A connected-first stage is worth purchasing only when it
+changes the acquisition choice. The proposed weighted-network intermediate makes
+shared interpretation concrete, but richer edge/duration teaching cannot be
+compared with reachability-only labels as an architectural advantage. A shared
+direct learner may discover its own intermediate and should get legitimate prior
+learning. Receipt: `strategy_grafting_dialogue_r1.md`, fresh session
+`01a09d8d-7814-7c62-9b83-b8d12d37d097`.
+
+**Root response before round 2.** Accept those corrections. The proposed
+learning-cost comparison does not yet resolve a strategy choice without actual
+learning curves; another finite network calculation would repeat S29. Also keep
+two evaluation contracts separate: a genuinely unanticipated operation withheld
+during acquisition, versus an anticipated multitask workload whose task labels
+may be taught from the outset. Direct multitask distillation is a serious option
+for the latter, not a matched arm if only it sees withheld-operation answers.
+Conversely, identical call counts can expose different amounts of teacher
+information. A useful next paper question must specify the anticipated family and
+available intermediate semantics, then identify what reusable preparation is worth
+retaining; it cannot obtain a learning-effort advantage from a stipulated graph.

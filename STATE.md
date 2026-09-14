@@ -72,17 +72,12 @@ and the correction of the audit prose's runtime transcription are in the ledger.
 No next run is selected. Preserve the broader capability-composition objective.
 
 **Active decision:** follow the [canonical Next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
-S14's continuation/edit case and S8.1's mean-state analysis are complete.
-S8.2's exact policy-composition counterexample and conditional retention remedy
-passed a fresh mathematical audit (e1056-e1057). These are analytical constraints,
-not learned-model failures. Existing planning/representation results supply
-constructive task-relative contracts. No model run or construction is selected;
-S27 closes through stipulated connected refresh. S28 now targets reuse of a
-learned receiving procedure across successive contributors; its source-dependency
-check and incremental-baseline calculation are complete. S29 extends the contract
-across operations; S30 records positive partial/full grafting precedents with their
-learning, runtime and attribution boundaries. Current routing remains canonical;
-no implementation or new compute is selected.
+S28–S30 supply the reusable-consumer contract, stronger incremental baselines and
+concrete grafting precedents, without measured acquisition savings. S31 compares
+acquiring an intermediate operation for multiple uses with direct task-output
+distillation; the dialogue will decide whether that intermediate earns its added
+learning and maintenance. Completed mathematical audits and source evidence remain
+in canonical sections and the ledger. No implementation or new compute is selected.
 
 **Session accounting:** 628 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207 runner lines); four probe rounds / zero building rounds.

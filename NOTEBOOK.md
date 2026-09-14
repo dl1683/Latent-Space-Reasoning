@@ -20,17 +20,11 @@ with competent inputs or establish that a learned exporter helps. No rerun,
 threshold change or new selection follows. [Raw result](experiments/results/encoder_continuation_v1/result.json)
 retains probabilities, counts and hashes; the completed audit receipt is in the ledger.
 
-**Current paper checkpoint:** S8.1/S8.2's continuation and audited composition
-constraints are complete. The third review and two direction responses close
-S27 through sufficient typed connected refresh and adopt S28's reusable consumer.
-Its targeted source inspection distinguishes retained preparation from recurring
-contextual inference. S28.1 adds incremental and warm-start simple readers as
-serious comparisons; support statistics and a deployable query path are distinct
-resources. These are source/analytical findings, not new experiments. Canonical
-S29 extends reuse across operations; S30's bounded source/code check records
-positive grafting precedents and their paid learning/runtime dependencies.
-Conditional transport scaling is a prospective control question, not a reproduced
-explanation of reported gains. Follow the canonical Next-work boundary.
+**Current paper checkpoint:** S28–S30 supply the reusable-consumer contract,
+stronger incremental baselines and concrete grafting precedents, without measured
+acquisition savings. S31 compares intermediate-operation reuse with direct
+output distillation. Completed analysis, source scopes and dialogue history remain
+in canonical sections and the ledger; follow the canonical Next-work boundary.
 
 **Accounting and custody:** 628 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207), four probes / zero construction rounds; 15 model forwards,
