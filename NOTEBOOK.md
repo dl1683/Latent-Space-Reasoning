@@ -2,6 +2,12 @@
 
 ## Strategy/discovery checkpoint and history — 2026-09-14
 
+S53 selects reaction-sensitive structural requests as a concrete candidate. Source
+study keeps mixed inputs, recorded-reference limits and MIT's missing stereochemistry
+explicit. A four-case source illustration is manually checked, with no parser/model
+run. The reviewer corrected query-count economics: more queries can favor a graph
+decoded once. Next define a limited consumer and attribution comparison; no training.
+
 S52 checks assimilation through independent ports and the existing per-request
 consumer loss. KL decomposition identifies its marginal target; two-round review
 chooses objectively assessable later uses instead of imitating donor randomness.

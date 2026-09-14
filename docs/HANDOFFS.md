@@ -80,6 +80,9 @@ using existing teaching recipes, with connected growth as a legitimate alternati
 S52 resolves marginal-versus-shared-analysis evaluation and credits a direct learner's
 reusable record. Select a useful operation; do not extend this into another proof
 or correlation campaign. No model run is queued.
+S53 now selects reaction-sensitive structural requests for source/data-contract
+work. Its four-case example was checked manually, not through a parser or model.
+Define consumer competence and attribution before fitting; charge decode-once reuse.
 Source alternatives and closed branches are consolidated in the [live boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 Memory reuse alone does not establish successive capability acquisition. Useful
 information, computation, accessibility and effort are legitimate benefits; new

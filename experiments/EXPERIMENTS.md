@@ -1,5 +1,15 @@
 # Experiments Log
 
+## S53 reaction-consequence source contract — 2026-09-14
+
+One specialist source and two-round direction review select conditional structural
+questions about a predicted product as a consumer-access candidate. A Table 1
+illustration was manually traced for four input/output membership cases. This is
+not a parser/model run, reaction benchmark or new local empirical block. RDKit
+availability was checked read-only; no dependency was installed. The reviewed cost
+comparison credits decoding/retaining a graph once. No source generation score is
+promoted to local quality evidence; model/reader selection and fitting remain unrun.
+
 ## S52 predicted consequences and later-use objective — 2026-09-14
 
 Analytical application of the existing consumer loss separates marginal answers

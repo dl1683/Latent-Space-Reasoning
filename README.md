@@ -23,7 +23,9 @@ assimilation into a persistent receiver. Ordinary teaching, reusable structured
 records and connected growth remain serious alternatives. S50/S51 supply an external
 acquisition reference and operational lessons; that exact local episode is closed
 after its limited endpoint check. S52 clarifies what later uses a predicted
-consequence must support. These source precedents and analytical constraints do
+consequence must support. S53 selects reaction-sensitive structural requests as a
+concrete source-study candidate, with decode-once graph queries as the direct route.
+These source precedents and analytical constraints do
 not establish cumulative acquisition. A donor can add useful information, make
 computation accessible or reduce effort. No new run is selected. See the
 [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).

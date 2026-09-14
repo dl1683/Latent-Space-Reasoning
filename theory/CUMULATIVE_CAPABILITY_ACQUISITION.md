@@ -32,7 +32,7 @@ tests strict interchange, not all acquisition. Evidence for one interface is
 local, not a universal law or a finished cumulative system.
 
 **Current evidence boundary:** source and implementation studies now extend
-through S52. They supply concrete trained reasoning, compressed-context reading,
+through S53. They supply concrete trained reasoning, compressed-context reading,
 stitching and separately prepared contributor interfaces. None of the inspected
 results establishes the full repeated-acquisition contract below. Published
 precedents, local results and untested combinations must remain separate.
@@ -329,7 +329,12 @@ modifying old ports, and per-request distillation need not preserve a shared ana
 across later uses. Favor objectively assessable consequences over imitation of
 teacher randomness. Task selection must credit a direct learner's reusable sufficient
 record; two anticipated answer heads alone do not establish a reusable operation.
-One concrete useful operation is under selection; no new compute is queued.
+S53 selects reaction-sensitive structural requests as a concrete source/data-contract
+candidate. A manually checked source illustration contains changed and unchanged
+predicates; it is not a model result. Next define the limited consumer and attribution
+comparison against decoding/retaining a graph once. The donor encoder would remain
+at runtime in that precursor question, so it is not full assimilation. No new compute
+is queued.
 
 The recent investigations change three choices:
 
@@ -5742,3 +5747,103 @@ do not force it to repeat inference separately for each request. Two readouts al
 do not establish acquisition of a reusable operation. A useful parameterized later
 use may make the distinction consequential, but a structured record that already
 supports it remains a valid acquisition route, not a disqualifying baseline trick.
+
+### S53. Candidate operation: predicted products under later structural requests
+
+**Candidate selected for source/data-contract study, not execution.** Independent
+`strategy_questions_review` proposes reaction-product prediction. A recorded mixed
+reactant/reagent input is mapped to a product graph before a later structural
+request is revealed. One request supplies a molecular motif; another supplies a
+candidate target structure. The retained consequence supports substructure or
+identity queries parameterized by that request, rather than storing two fixed
+answers. This is a proposed analysis workflow, not a recommendation to perform
+any synthesis or a claim of experimentally validated chemistry.
+
+The serious direct route predicts product SMILES once, parses and retains its graph,
+then uses ordinary graph operations. It receives the same donor teaching and gets
+its one-time prediction/parse costs credited. A latent consequence must have a
+competent reader; chemistry-specific embeddings do not automatically supply one.
+Study the small specialist precedent and its data conventions before assigning a
+recipient, choosing a benchmark or loading a model. Later acquisition and prior-use
+retention remain additional requirements of the cumulative program.
+
+The first interpretation-changing checks are whether input preparation uses the
+withheld product to label reactant/reagent roles, which chemical distinctions the
+reference dataset retains, and whether graph identity agrees with the requested
+use. Agreement with a mined reference product is not necessarily experimental
+correctness. No source-reported generation accuracy is promoted to a local quality
+claim, and no reaction dataset, model weights or new runner is selected here.
+
+**Source result and selected interface question.** [Molecular Transformer, author
+v2](https://arxiv.org/html/1811.02633v2), sections 2–4/Table 3, uses a 12M-parameter
+encoder–decoder and reports product prediction from mixed inputs. MIT removes
+stereochemical information; STEREO retains it. Mixed preparation avoids supplying
+the product-informed reactant/reagent split. The source documents missing inputs
+and questionable reference products. Its benchmark results are external precedent,
+not local generation-quality evidence.
+
+The two-round direction review selects conditional access to a frozen reaction
+encoder as the next bounded question. This tests a needed reader before selecting
+assimilation. The decoder may perform essential reaction computation; a newly
+trained query reader could learn it afresh. The hypothesis is useful access to
+predicted connectivity, not that the encoder already contains a complete product
+graph. The donor encoder remains at runtime, so this would not itself be full
+donor retirement. Direct structured-product teaching remains an acquisition route.
+
+**Workload correction.** Apply S4.1 to this specific choice. After canceling common
+encoder work, decoding/retaining a graph costs \(D+P+n g\); conditional queries
+cost \(n q\). Conditional access saves runtime only when \(n(q-g)<D+P\), before
+consumer acquisition costs. If \(q>g\), more queries favor the retained graph.
+The reviewer explicitly corrected its earlier opposite suggestion. Avoiding full
+decoding is not inherently efficient, and no runtime quantities are measured yet.
+
+**Eligibility before any model choice.** Reactant copying is the cheapest confound:
+many requested product motifs may already occur in the inputs. Changed-only
+queries introduce the opposite confound—the answer is then the complement of
+input membership. A useful source example should exhibit present→present,
+present→absent, absent→present and absent→absent requests where available.
+These are input/output predicate cases, not stereochemical or laboratory claims.
+
+For the paper's Table 1 illustrative mixed reaction, a bounded graph-query
+calculation can check whether these cases occur using a declared fixed motif list.
+Expected: a carbon triple bond disappears, a longer saturated carbon path appears,
+and unchanged-present/unchanged-absent motifs remain. If the list does not produce
+these cases, record that limitation without replacing examples to force a pass.
+The confound is mistaking queries on the recorded product for learned reaction
+prediction: this exercise tests eligibility and the direct reader only. It requires
+no donor, weights, training, chemical simulation or benchmark expansion.
+
+**Source illustration, manually checked.** Root and `strategy_questions_review`
+trace Table 1's mixed-input/product SMILES and obtain the following predicates:
+
+| Connectivity request | Input mixture | Recorded product |
+|---|---|---|
+| Contains a carbon–carbon triple bond | Yes | No |
+| Contains an eight-aliphatic-carbon path joined only by single bonds | No | Yes |
+| Contains a six-membered all-carbon aromatic ring | Yes | Yes |
+| Contains a fluorine atom | No | No |
+
+The source branch `CCCCC#CCCO` has a triple bond between its fifth and sixth
+carbons; the product branch `CCCCCCCCO` has eight single-bond-connected carbons.
+Including the external benzylic carbon extends the product path to nine, so the
+request says **contains** an eight-carbon path, not that eight is its maximum.
+This manual source calculation establishes an illustrative four-case distinction,
+not a useful learned predictor or benchmark. Constant answers would solve this
+single example. RDKit is absent from the default Python environment; no package
+was installed, no parser was executed and no new empirical block is counted.
+
+**Adopted next boundary.** The source example licenses further task-contract work
+around reaction-sensitive connectivity, not training. Keep unchanged as well as
+changed requests, and match their input-membership status before interpreting
+query success. Explicitly define identity under the chosen dataset conventions;
+MIT cannot establish stereochemical identity, and equivalent serialization does
+not license arbitrary tautomer, charge or fragment normalization.
+
+The next decision is a deliberately limited consumer and attribution comparison:
+can a reader that is competent on actual product graphs use the frozen reaction
+encoder's states to answer these later requests, beyond input-only and untrained-
+feature controls, at worthwhile total effort against decode-once graph queries?
+Training that reader is additional chemistry learning unless controls show otherwise.
+No checkpoint substitution, dataset expansion or execution is selected automatically.
+The native target is stable consequence identity under changing requests; graph
+operations and neural readouts are scaffolding, not a newly demonstrated latent law.
