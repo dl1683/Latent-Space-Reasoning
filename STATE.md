@@ -1,7 +1,7 @@
 # STATE
 
 **Research resumed — user direction, 2026-09-14.** Keep the mission fixed and
-pivot approaches around roadblocks. Source evidence reaches S61; S58 completed an
+pivot approaches around roadblocks. Source evidence reaches S63; S58 completed an
 independently reproduced CPU teaching precursor. Correct specialist pseudo-labels
 improved a frozen-feature species head; soft targets offered no advantage over
 hard labels under the locked recipe. The [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary)
@@ -16,6 +16,11 @@ features on fourteen pairs. Predictions were independently reproduced. Selected
 visual checks qualify the labels' visibility. Close this panel; it does not justify
 requiring specialist features, nor prove general logit sufficiency. Next identify
 a useful contribution beyond existing recipient access and matched teaching.
+
+S63 identifies an external temporal-service precedent and its attribution boundary:
+object association, persistent extent, memory and trained consumers are distinct
+contributions. Compare joint preparation against separate contributors with the
+same useful consumer. The source inquiry is complete; no large local reproduction.
 
 The shared-predictor branch needs useful second-donor acquisition evidence; its
 isolation and conditional cache arguments are already worked out. Connected use,

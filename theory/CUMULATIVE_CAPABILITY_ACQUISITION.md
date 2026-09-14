@@ -269,7 +269,7 @@ See [STATE](../STATE.md), [axioms](AXIOMS.md),
 
 ## Next-work boundary
 
-**Active allocation, through S62:** strategy/discovery for useful successive
+**Active allocation, through S63:** strategy/discovery for useful successive
 acquisition and composition. S58 completed a bounded species-teaching precursor:
 correct hard pseudo-labels improve a frozen-feature recipient head after donor
 removal; richer soft targets offer no advantage under this recipe. Preserve that
@@ -288,6 +288,12 @@ The panel is closed; annotation visibility also limits physical-color claims.
 Next identify a useful acquisition beyond what the recipient and matched teaching
 already provide, independently of this panel's errors. No readout-tuning sequence,
 large reproduction or species-task extension is queued.
+
+S63 supplies an external temporal-service precedent: contributed features support
+object association while memory and a trained decoder maintain identity and extent.
+The remaining acquisition comparison is against separately retained contributors
+with the same competent temporal consumer. Its bounded source read is closed;
+no unavailable-endpoint search or local tracking reproduction is selected.
 
 The next empirical decision must identify what an established system does, what a
 new donor contributes, and an intended use whose result changes the investment.
@@ -319,7 +325,7 @@ Local accounting remains six probe blocks, fifteen scored model forwards,
 classification. No strategy-phase training or GPU work. A ratio with zero artifact
 lines is undefined; constructing something merely to improve it is prohibited by
 the user's strategy instruction. Source and manual calculations are not model runs.
-Detailed decisions, evidence and historical routing remain in S0–S62 and the ledger.
+Detailed decisions, evidence and historical routing remain in S0–S63 and the ledger.
 
 ## Conditional route choices
 
@@ -6597,3 +6603,55 @@ step and warned against a sequence of readout benchmarks. It distinguished later
 than species pretraining from unseen question types, and made the recipient control
 binding for the acquisition decision. Audit entry e1164; independent tool-assisted
 review, not a real CLI audit. Continue the broader program.
+
+### S63. A contribution to persistent object identity — source question
+
+**Denizen definition before a reproduction.** A useful temporal operation must
+preserve which object is being followed and which extent of that object is meant,
+not merely classify each frame independently. Consider a service whose state
+contains an object reference and mask, and whose next-frame operation updates both.
+A contributed representation is useful if it improves that operation relative to
+the existing visual service and a competent direct tracking alternative. Any new
+memory, decoder training or object-association algorithm receives separate credit.
+This is an application of operational identity and continuation, not a claim that
+cosine neighbors define identity.
+
+The so-what is: combine a model that finds object boundaries with a representation
+that helps keep track of the same object over time. S61's primary source explicitly
+points to a downstream use of its combined backbone and segmentation adapter.
+Inspect that single source, *VideoSAM: Open-World Video Segmentation*, to identify
+the contributed operation, required new preparation and actual attribution controls.
+This is not S50/S51's closed endpoint hunt or another attribute-reader benchmark.
+No model download, local reproduction or architecture construction is selected.
+
+**Primary evidence and independent review.** [VideoSAM v1](https://arxiv.org/html/2410.08781v1),
+sections III–IV, uses mutual cosine matches to propagate segmentation prompts,
+retains reference patches/masks in memory, and carries an autoregressive object
+prompt for granularity. The encoder stays frozen; the decoder receives LoRA
+training and new prompt components are trained on annotated videos. Table III
+compares representation choices with propagation and memory retained: the combined
+encoder improves UVO mAP and BURST recall, but not UVO recall or BURST mAP.
+Table V separately tests object prompts and cycle training. Figure 2 uses oracle
+masks for pooled-feature association; it cannot establish intrinsic information
+absence. Default UVO figures differ between Table I and Tables III/V, so their
+gains must not be combined as one setting. BURST retains objects present throughout;
+robot-video examples are qualitative. Original image-service retention and
+successive donor admission are not demonstrated.
+
+**Operational consequence.** This is a useful precedent for contributed features
+participating in a repeated state update. The representation, association rule,
+memory and trained consumer all contribute; the behavior cannot be credited to
+the frozen encoder alone. Object identity and intended object extent are different
+state obligations: finding the right location does not settle whether the requested
+mask denotes a part or the whole object. Mutual nearest matches are a heuristic,
+not a guarantee of identity through occlusion or ambiguity. The native target is
+the externally usable identity/extent operation, not cosine geometry itself.
+
+Independent `alignment_contribution_review` upholds this constructive interpretation
+and its mixed attribution evidence. A serious comparator retains segmentation and
+association encoders separately with the same competent temporal consumer; the
+source does not isolate the advantage of joint distillation over that alternative.
+Thus the concrete acquisition uncertainty is the value of the combined contributor
+inside a fixed useful temporal service, with later consumer learning charged.
+No checkpoint hunt or large reproduction follows. Close the bounded source read;
+do not reinterpret oracle-mask diagnostics as universal latent-space holes.

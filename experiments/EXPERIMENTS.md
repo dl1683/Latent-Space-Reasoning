@@ -1,5 +1,14 @@
 # Experiments Log
 
+## S63 temporal-operation source check — 2026-09-14
+
+One primary source and independent review identify contributed features inside
+next-frame object association and granularity control. The encoder is frozen but
+the decoder and new temporal components receive training. Mixed ablation effects,
+oracle-mask diagnostic scope and inconsistent default table figures are preserved;
+no general information-absence or repeated-acquisition claim. No new empirical
+block, model forward or apparatus. Canonical S63 and ledger retain provenance.
+
 ## S62 later-attribute interface comparison — 2026-09-14 (completed)
 
 On fourteen disjoint qualifying test pairs / 31 color questions, mean within-pair
