@@ -1,5 +1,16 @@
 # Experiments Log
 
+## S44-S45 conditional evidence selection — 2026-09-14
+
+One source-reconfirmed worked retrieval request fixes the offered operation. A
+prospective reversal contrast asks whether the same evidence is preferred
+appropriately for different questions on unfamiliar records. Fresh donor answers
+at inference are additional information, not an equal-information teaching arm.
+Independent strategy dialogue rejected an uninformative four-record model check.
+No model loaded, runner added or acquisition demonstrated; numerical thresholds
+and an empirical panel remain unselected. See canonical S44-S45 and ledger
+`s44_s45_conditional_evidence_selection_20260914`. Empirical totals unchanged.
+
 ## S43 bounded teaching-target inspection — 2026-09-14
 
 Read 32 published responses for a fixed first16 identical queries; row-service

@@ -77,8 +77,9 @@ into a shared predictor. The former keeps donor computation available on new inp
 the latter aims to retain learned contributions after donor retirement. Published
 precedents support exploring both, but no cumulative local advantage is established.
 The S43 slice contains one verified answer correction and is closed; it does not
-select training. The next strategy review must identify a useful operation and a
-decision-changing affordable comparison. See the [canonical next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+select training. S44-S45 define a worked evidence-retrieval operation and a
+prospective unfamiliar-record relevance reversal. No competent endpoint, empirical
+panel or training run is selected; fresh donor access is a separate comparison. See the [canonical next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 S37 stays parked; no inaccessible-reviewer repair loop or new apparatus is queued.
 
 Session totals: 958 apparatus / 0 artifact-bearing code lines

@@ -22,9 +22,10 @@ Candidate evidence starts with A in a base system, B in a donor, acquisition of 
 compact contributions into a shared predictor. Published work supports separately
 prepared interfaces and response-derived embeddings; neither establishes our full
 cumulative-growth claim. A fixed released-data inspection found one concrete donor
-correction, along with shared errors and unfinished targets. The next strategy
-choice is a useful operation and an affordable comparison that distinguishes these
-routes. No training or model run is selected. See the [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+correction, along with shared errors and unfinished targets. A worked evidence-
+retrieval operation now defines a prospective comparison: learn which experiment
+answers which question, testing unfamiliar records and preservation of prior uses.
+This is a design, not demonstrated retrieval or acquisition. No run is selected. See the [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 
 **Status: exploratory direction.** No cross-model grafting, cumulative acquisition or encoder-reasoning artifact has been established. Start with the [canonical direction](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) and [current state](STATE.md). Earlier findings below remain supporting evidence with their original limits.
 

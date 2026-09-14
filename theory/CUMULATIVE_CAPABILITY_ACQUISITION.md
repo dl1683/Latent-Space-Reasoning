@@ -302,8 +302,9 @@ new attention apparatus. S42 identifies response-derived embedding teaching as a
 concrete comparator and a possible shared-predictor assimilation route. Prefix reuse
 is conditional computation reuse, not demonstrated acquisition. S43 inspected a fixed first-16 teaching slice and found one clean correction
 amid shared errors and incomplete targets. The slice is closed; the correction
-is not a training selection. Consolidate the connected-composition and shared-
-predictor teaching choices before committing to another empirical direction. Keep useful cumulative behavior as endpoint. Independent strategy reviewers
+is not a training selection. S44 fixes evidence retrieval as one worked operation;
+S45 develops a prospective conditional-relevance comparison. Neither establishes
+a competent endpoint or selects training. Keep useful cumulative behavior as endpoint. Independent strategy reviewers
 can challenge this work without being mislabeled real CLI auditors. Do not restart
 an inaccessible-reviewer loop or require its repair before unrelated research.
 
@@ -4644,3 +4645,157 @@ consumer. Target supervision must make them distinguishable. A correct subclaim
 inside an erroneous response does not license embedding the whole response as a
 correct teaching target. This concerns operational meaning, not vector geometry;
 no learned-space hole or new latent law has been demonstrated.
+
+
+### S44. One worked evidence-selection operation
+
+**Definition before evaluation.** Given a question q and four fixed source-derived
+records, return the record containing the most direct experimental support for the
+requested contrast. Output is a record id plus its supplied passage. This is
+retrieval, not an automated verdict on a paper's causal validity. The denizen's
+useful operation is choosing the evidence that bears on the particular question.
+
+**Request.** Return the supplied record that most directly tests whether a learned
+alignment generalizes beyond familiar entities, rather than just fitting them.
+
+These are short paraphrased records drawn from sources already inspected. They are
+an illustrative fixed input, not a deployed collection or held-out benchmark.
+
+| Record | Supplied evidence | Scope |
+|---|---|---|
+| D1 | The nonlinear-alignment study compares trained and randomly initialized representations when evaluation names are disjoint from training names; their alignment outcomes differ. | S38, final paper Appendix I.2.3, pp.38–39 |
+| D2 | The causal-distillation study varies losses and alignment choices within its teacher/student intervention recipe. | S38, DIITO source contrast |
+| D3 | The latent-communication core's cache-continuation argument concerns the same model and inputs. | S39, same-model proof and implementation |
+| D4 | The response-embedding study varies its response generator and embedding teacher. | S42, source ablations |
+
+**Worked selection: D1.** Root re-read the exact final PDF paragraph, checking its
+SHA256 against S38's receipt. The controlled name-disjoint comparison is present.
+This narrows the familiar-entity-fitting explanation in the reported setup; it
+neither identifies the donor's original mechanism nor proves a general pretraining
+attribution claim. D2–D4 address related, different controls and could answer other
+requests correctly. This reference interpretation is human-grounded, not output
+produced by an embedding consumer.
+
+**Exact offered interface.** The released response-derived encoder accepts text,
+returns a pooled projected vector, and supports similarity ranking of encoded
+records. That operation could return D1 and its stored passage. It cannot itself
+write the explanatory qualification above. Using its separate soft-prompt sequence
+with a decoder would be an additional operation, and using a judge to assess causal
+validity would add a consumer not present in this retrieval contract. No such
+addition is smuggled into the proposed comparison.
+
+**Serious direct comparator.** Search the same supplied records from the original
+question using lexical retrieval or explicit field matching; ordinary question
+expansion may also help and is a legitimate response-mediated route. The worked
+question includes an entity-generalization contrast that can make lexical matching
+easy. Returning D1 would therefore not by itself establish semantic reasoning or a
+benefit from predicted-response embeddings. Any later ranking comparison must hold
+the record texts, allowed information and relevance judgments fixed, and measure
+an adequate direct route. No ranking model or endpoint has been run here.
+
+**Decision-changing boundary.** The offered retrieval interface is sufficient in
+type for returning a relevant passage, so a new decoder/judge is unnecessary for
+this endpoint. Its empirical adequacy remains unknown. No competent affordable
+local released-model endpoint is asserted. The request fixes what an eventual
+export must preserve; it does not select training, establish retention, or reopen
+S36's compatibility-first preflight. There is no existing deployed collection or
+established topic-search baseline to preserve in this worked example.
+
+**Fresh direction dialogue.** `resumed_frontier_adversary` first rejected comparing
+architectures that serve different decisions; the second round accepted this
+narrower operation and withdrew an unsupported assumption that an existing index
+was available. Root checked the source passage before accepting D1. This is an
+independent strategy review, not a real CLI audit. No native law or learned-space
+hole follows from the hand-worked selection. Close this operation-definition unit
+without growing it into another catalog or claiming retrieval performance.
+
+**Compute decision.** A targeted cache read finds an ordinary 12-layer, 768-wide
+encoder with CLS pooling, but does not verify executable completeness or relevance
+competence. No predictive-response adapter is present in the targeted cache-name
+check. Independent review rejects running the four records merely because a model
+is available: either outcome would leave the acquisition decision substantially
+unchanged. No model was loaded. Advance to a prospective paired comparison.
+
+### S45. Prospective relevance reversal, not a new architecture
+
+**So what.** Teach a compact system to find the experiment that answers the actual
+scientific question, then check that the lesson travels to unfamiliar papers
+without making it choose the same kind of experiment for every question.
+
+**Operation.** For the same candidate records, changing the explanation under
+investigation can reverse which evidence is appropriate. For S44's example:
+
+| Request | Appropriate preference | What the distinction does |
+|---|---|---|
+| Does the alignment survive unfamiliar entities? | D1 over D2 | Selects the entity-generalization control |
+| Which component of this teaching recipe matters? | D2 over D1 | Selects the within-recipe ablation |
+
+These are prospective reference roles, not measured receiver skills. They concern
+which experiment addresses a question, not whether its result proves every causal
+claim. New wording over D1–D4 alone tests wording/intent robustness. Transfer of a
+decision rule requires unfamiliar experimental records and independently checked
+relevance judgments; papers and related experimental families must stay together
+across train/test splits. Hand-authoring the distinction into every test record
+would limit the result to reading those descriptions, not full-paper reasoning.
+
+**Cheapest structural null.** A question-independent preference for one record
+cannot reverse. Even a score of the form a(question) + b(record) has a fixed
+record ordering. This is the familiar additive-null issue from S21, not a new
+latent theorem. Query/document interactions can implement reversal using ordinary
+lexical rules or embedding similarity. Therefore reversal is a necessary task
+property here, not evidence that our representation is special.
+
+**Which acquisition?** The records already contain the factual evidence. Teaching
+would make a conditional distinction more accessible, not introduce the paper's
+facts. That is a legitimate capability target. The claim is improvement in using
+supplied evidence on fresh cases, with the donor absent after teaching. It is not
+knowledge novelty, mechanism recovery or cumulative growth after one admission.
+
+**Prospective comparison, separated by information access.**
+
+- First evaluate an unchanged ordinary retriever and the cheapest lexical/field
+  matching remedy on the fixed requests and records. They establish possible
+  adequacy/headroom; cached availability does not establish it.
+- Compare ordinary receiver adaptation and response-vector teaching using the
+  same training questions, donor responses, reference supervision and preparation
+  accounting. Both must answer fresh test requests without fresh donor answers.
+  Different objectives/representation choices make this a recipe comparison.
+- Include ordinary query expansion as a serious alternative. A fresh donor answer
+  at test time makes this a connected route with additional information and donor
+  calls; it is not a matched-information assimilation arm. An expansion predictor
+  trained only on the shared teaching set would instead be an assimilated arm,
+  with its own training and decoding work charged.
+
+Own-response versus donor-response teaching is a separate attribution contrast
+with the receiving recipe fixed (S38/S42). Do not infer donor value merely because
+two acquisition recipes differ. No special latent-access benefit can follow from
+a comparison in which both recipes receive the same ordinary answer text.
+
+**Outcome contract before any run.** Score question-conditioned ranking on new
+record families. Pair the two questions over each evidence pair and cluster any
+uncertainty by source family, not paraphrase. Report each request family's change
+from its pre-admission endpoint; a pooled gain can hide degradation on the other
+family. Retention applies only after baseline adequacy is actually demonstrated.
+Useful aggregate gain and tolerated regression must be fixed before viewing test
+results; this design has not selected their numerical values or a powered sample.
+A one-case exact pass/fail certificate is not the primary verdict. If a direct
+route is already adequate, ask whether teaching reduces recurring work; do not
+manufacture accuracy headroom. If endpoints are weak, do not call it failed grafting.
+
+**Selection boundary.** No training on the four-record illustration. A brief
+ordinary-retriever probe becomes informative only when a prospectively fixed panel
+and adequacy threshold can eliminate a concrete candidate before a more expensive
+comparison. The missing predictive-response adapter is not repaired by testing
+an ordinary encoder. No model, adapter, dataset panel or training run is selected
+by this contract. Close this design block; do not expand it into another source
+inventory or unconditional feasibility claim.
+
+**Independent direction dialogue and philosophy.** Reviewer
+`resumed_frontier_adversary` accepts ordinary supervised relevance as a useful
+operation, adds unfamiliar-record reversal, and corrects the fresh-answer access
+mismatch. Root accepts these limits. This is independent strategy review, not a
+real CLI audit. The native candidate is question-dependent evidence preference
+preserved under useful substitution; cosine is scaffolding. A failed reversal
+could reflect conditioning, teaching or export limitations. It is not a proven
+hole in the donor's latent space. The broader chimera and encoder-reasoning mission
+remains; this is one possible observable operation within it.
