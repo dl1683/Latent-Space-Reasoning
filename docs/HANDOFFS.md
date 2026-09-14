@@ -3,8 +3,9 @@
 **Research resumed — latest user direction, 2026-09-14.** Keep the mission
 fixed and pivot around roadblocks. S37 and its incomplete real CLI result audit
 are parked; they do not block independent strategy or other research. Continue
-from S38 teaching-pathway findings into S39 live latent communication: inspect
-actual heterogeneous interfaces and their contribution controls. No S37 rerun or
+from S38 teaching pathways and S39 heterogeneous communication into S40
+separately prepared contributor composition. S41 attention algebra stays diagnostic;
+useful joint behavior and prior-use retention are the unresolved questions. No S37 rerun or
 inaccessible-reviewer loop. No acquired capability or
 scientific negative is established by the failed attempts.
 

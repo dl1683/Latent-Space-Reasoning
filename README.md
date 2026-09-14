@@ -21,8 +21,10 @@ Candidate evidence starts with A in a base system, B in a donor, acquisition of 
 **Current research allocation:** strategy work continues around the parked
 causal-teaching preflight. S38 separates special donor answers from receiver
 training and pretrained contribution. S39 examines whether live latent
-communication actually works across distinct pretrained contributors. This informs capability
-grafting without requiring every interface to be linear. No local acquisition
+communication actually works across distinct pretrained contributors. S40 finds a
+published example of jointly using separately trained interfaces; S41 keeps the
+attention calculation subordinate to useful composition and retained behavior.
+This informs capability grafting without requiring every interface to be linear. No local acquisition
 result is established. See the [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 
 **Status: exploratory direction.** No cross-model grafting, cumulative acquisition or encoder-reasoning artifact has been established. Start with the [canonical direction](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) and [current state](STATE.md). Earlier findings below remain supporting evidence with their original limits.

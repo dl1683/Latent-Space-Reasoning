@@ -1,5 +1,17 @@
 # Experiments Log
 
+## S40–S41 separate preparation and joint use — 2026-09-14
+
+Primary source and pinned implementation review find a constructive precedent for
+joint use of separately trained donor interfaces. Parallel residual summation and
+sequential fusion are distinct operators; neither freezes an entire prior receiver
+trajectory. Released candidate interfaces exist, but exact joint-run configuration
+and item-level retention remain unbound in the checked material. A frozen-query
+attention identity is independently verified and retained as a diagnostic, not a
+new instrumentation program. See canonical S40–S41 and matching ledger entries.
+No local model run, training, weights download or new runner; totals unchanged:
+15 scored CPU forwards, five probe blocks, 958 apparatus / 0 artifact-bearing lines.
+
 ## S39 live latent communication source check — 2026-09-14
 
 Pinned source and independent strategy review separate same-model cache reuse

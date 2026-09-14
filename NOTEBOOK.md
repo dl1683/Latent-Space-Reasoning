@@ -7,7 +7,10 @@ unavailable CLI audit are parked. S38 now separates donor target construction,
 student intervention training, pretrained contribution and mechanism interpretation.
 Primary sources and independent strategy reviews inform the comparison. S39
 then found actual cross-model communication implementations and a concrete
-receiver-prompt confound; source-only controls are specified, no run selected.
+receiver-prompt confound. S40 identifies a constructive separately prepared/joint
+use precedent, with unbound exact joint-run provenance in the checked release.
+S41 one-read attention algebra is independently checked but kept diagnostic; it
+does not justify a new measurement program. No run selected.
 No new model calls, runner or acquired artifact. Older checkpoints below are
 historical where they conflict with this current allocation.
 

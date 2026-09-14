@@ -293,16 +293,19 @@ supervisor, tokenizer/alignment, checkpointing and reporting corrections.
 S37 is parked with two inconclusive execution attempts and an incomplete real CLI
 audit; no further execution or scientific claim follows from it. S38 separates
 teacher access, receiver training and pretrained contribution. Its source review
-and conditional derivation are recorded. S39 now checks live latent communication:
-same-model continuation versus admitting distinct pretrained contributors, including
-advertised heterogeneous extensions. Keep useful cumulative behavior as endpoint. Independent strategy reviewers
+and conditional derivation are recorded. S39 verifies heterogeneous communication
+implementations. S40 finds a constructive separate-preparation/joint-use precedent
+with released interfaces; exact joint-run linkage and item-level retention remain
+unresolved in the checked material. S41 derives one-read attention composition but
+independent review keeps it diagnostic: useful joint behavior takes priority over
+new attention apparatus. Keep useful cumulative behavior as endpoint. Independent strategy reviewers
 can challenge this work without being mislabeled real CLI auditors. Do not restart
 an inaccessible-reviewer loop or require its repair before unrelated research.
 
-This tests access to a possible teaching channel, not cumulative acquisition,
-causal transfer already achieved or native mathematics discovered by vector
-patching. Behavioral consequences and eventual teachability are the operational
-objects. Preserve broader chimera, encoder-reasoning and successive-growth aims;
+The earlier preflight tested access to a possible teaching channel; current
+source and mathematical work establishes no local cumulative acquisition or native
+mathematics discovered by vector patching. Useful behavioral consequences and
+retained interpretation are the operational objects. Preserve broader chimera, encoder-reasoning and successive-growth aims;
 S34 and earlier closed probes are not reopened. The user-requested priority and actual-file design reviews completed around
 08:00 UTC on September 14; subsequent result-audit access failures are not
 completed audits. Retain the approximately two-hour cadence during substantive research. Canonical S37 and the three retained review receipts supply
@@ -4304,3 +4307,141 @@ behavioral failure is asserted. If a useful-message experiment survives its firs
 controls, compare the same message with/without norm adjustment before inventing
 a metric or fitting another alignment. Ordinary algebra checks an operational
 requirement here; discovering useful receiver operations remains the destination.
+
+
+### S40. Can separately prepared contributions work together?
+
+A denizen needs acquired tools to remain useful when another tool arrives. S39
+found real communication implementations, but not a demonstrated sequence of
+retained contributions. The next question is narrower than another global-map
+search: can two receiver interfaces prepared separately be used together without
+joint fitting, and what prior behavior survives? This is the operational extension
+question from S5/S8.2, not a new definition or a demand for universal retention.
+
+**Proposition boundary before source adjudication.** Freezing the receiver and old
+interface parameters retains their available computation, but does not guarantee
+that jointly invoking an added interface preserves old answers. S5's substitution
+bound requires the contexts actually reached during joint use; isolated pairwise
+success does not supply that coverage. No new synthetic experiment is needed to
+repeat this established distinction. A published separate-training/joint-use test
+could nevertheless provide a constructive precedent for growth.
+
+**Constructive source result.** [Cache-to-Cache v2, §§3.3–4.4 and A.5](https://arxiv.org/html/2510.03215v2)
+trains cache fusers with both models frozen. Table 6 includes receiver-only
+fine-tuning and same-model sharing; different-model sharing leads on its four
+tasks, with unequal trainable parameter counts. A.5.1 combines separately trained
+fusers without additional training, reporting a higher aggregate score than either
+pairing. This is a meaningful connected-growth precedent, not our reproduction.
+The general training uses 500,000 examples; the ablation fuser has 478 million
+parameters. The receiver's multiple-choice generation cap is 64 tokens, without a
+termination table. No local capability or cost headline follows. A.5.2's universal
+interface still has pair-specific gates and does not improve every receiver over
+its best individual pairing. Neither experiment establishes repeated admission
+with prior-use retention.
+
+**The released composition operator is concrete.** Root and independent reviewer
+`intervention_value_review` inspected [pinned wrapper lines 511–581](https://github.com/thu-nics/C2C/blob/113c3a9b2538cbf096a0477e1ec99ae2a2e0d12a/rosetta/model/wrapper.py#L511).
+Parallel mode gives each fuser the same current base-cache slice and adds their
+output-minus-base residuals once. Sequential mode feeds the updated slice onward.
+[Projector lines 947–1024](https://github.com/thu-nics/C2C/blob/113c3a9b2538cbf096a0477e1ec99ae2a2e0d12a/rosetta/model/projector.py#L947)
+compute gated contextual key/value updates. Same current slice does not imply an
+entire receiver-only trajectory. Table 13 has not been tied to an exact saved
+configuration or fusion mode. A bounded official-source check found both candidate
+fuser directories at [release revision f01fc3258b305e280e04c7238f4f2cf31b7dc70d](https://huggingface.co/nics-efc/C2C_Fuser/tree/f01fc3258b305e280e04c7238f4f2cf31b7dc70d),
+but no matching joint-run record in the checked model card, tree and examples.
+The chat example changes response inclusion and is not an evaluation substitute.
+No weights were downloaded. This scoped absence ends the metadata search. Pinned file hashes are in the ledger; source fetched
+in memory, never imported or executed. Review is strategy review, not a CLI audit.
+
+**Why this changes the next question.** A candidate move is now explicit: add a
+separately prepared contributor's contextual update through an unchanged receiver.
+Ask how much of A's established useful behavior survives B's admission, and which
+joint uses become possible. Keep A-support, B-support and mixed-use cases separate;
+retain item-level corrections and regressions. Compare joint execution with simple
+donor selection under declared information and resource access. Matching routing
+would still establish useful connected access, while narrowing the composition
+claim. Do not demand all capabilities improve on all inputs, or start a retention
+measurement program before the selected contribution is useful.
+
+Parallel preparation avoids one within-step source of shifted fuser input, but the
+receiver can respond nonlinearly to the summed changes. Sequential fusion can also
+be order-sensitive. These are distinct predictions, not interchangeable settings.
+The highest-leverage strategy step is to derive a small consequence of this actual
+operator, then ask which observable would distinguish its failure modes. Training
+hundreds of millions of adapter parameters locally is not justified.
+
+**Shared factors are a different proposal.** [Thought Communication, NeurIPS 2025
+final, §§2–4 and Appendix A](https://proceedings.neurips.cc/paper_files/paper/2025/file/b2b502c3629beadda06311386d2c6f73-Paper-Conference.pdf)
+uses response hidden states, an autoencoder and an injection adapter. Its factor
+identification requires invertible smooth mixing, population distribution matching,
+Jacobian-support conditions and sparsity. Practical reconstruction plus an L1 penalty
+does not verify those assumptions. Its 500/500 training/evaluation setup and agent
+count experiments do not establish successive admission with retained interpretation.
+Independent reviewer `alignment_contribution_review` and root checked the final
+paper. Shared statistical factors need not be common truth or reusable interventions;
+receiver-only and input-only adapters remain useful comparators. Do not launch a
+factor-recovery campaign from an identification theorem alone.
+
+**Native-math and holes check.** Cache addition and sparse Jacobians are ordinary
+coordinate tools. The denizen's proposed object is the contextual compatibility of
+useful updates: can they remain jointly executable, and where does that cease?
+This is not yet a discovered law or a proven hole in any learned model. A future
+space could expose stable compositional operations, but the present task is to
+identify useful operations and test their contextual limits. No new model run,
+training, runner or empirical artifact in S40.
+
+
+### S41. What does adding cache updates predict at one attention read?
+
+A denizen would need to distinguish changing where a read looks from changing
+what it reads. S40 supplies an actual key/value update operator. Before another
+run, derive its simplest consequence. This is conventional attention algebra used
+as scaffolding, not a new law of latent space or evidence of useful transfer.
+
+**Proposition attempt: frozen-query composition.** Fix one attention head, query q,
+finite unmasked token support, attention scale and baseline key/value pairs (k_i,v_i).
+Let a_i and b_i be the scaled query products with two prepared key increments.
+The increments are evaluated against the same baseline cache and then held fixed.
+Let u_i,w_i be their value increments. Baseline scores are s_i; write
+p0=softmax(s), pA=softmax(s+a), pB=softmax(s+b). Under parallel addition,
+
+    pAB_i = (pA_i * pB_i / p0_i) / sum_j(pA_j * pB_j / p0_j)
+    yAB = sum_i pAB_i * (v_i + u_i + w_i).
+
+Proof: substitute the three normalized exponentials; normalizers independent of i
+cancel. This is exact on common finite support, with ideal positive probabilities;
+use log scores in finite precision. Masked tokens are excluded, not divided by zero.
+The receiver query, positions, mask and prepared increments must be identical in
+all arms. A separately executed whole-model A/B run generally violates that contract.
+
+**Two distinguishable consequences.** With the already prepared key increments zeroed, weights stay p0
+and yAB-y0=(yA-y0)+(yB-y0) for this one read. With key updates active, attention
+reweighting can interact with either donor's values. A nonlinear combined read
+therefore needs neither nonlinear dependence of the fusers on each other nor a
+new capability. Conversely, additive head outputs do not guarantee additive later
+behavior. This identifies key-only, value-only and joint key/value ablations as
+mechanism contrasts if a useful donor contribution is first present.
+
+**What equivalence is operational here?** For this fixed query/support, adding a
+constant to every score increment changes no attention probability. Key directions
+annihilated by q are also invisible. The visible operation is a change in relative
+attention odds, not Euclidean distance between cache arrays. Its scope is deliberately
+local: a later query can distinguish keys this read cannot. A global quotient needs
+future-query coverage (S5), not a declaration that these states are the same forever.
+
+**Questions under independent review.** Does this decomposition predict anything
+worth measuring beyond the attention implementation itself? Which useful failure
+would be distinguished by the key/value contrasts? Can routing or a simpler text
+message explain the entire behavioral gain before mechanistic work is warranted?
+Independent reviewer `alignment_contribution_review` verified the formula and scope.
+A fixed linear output projection preserves the value-only identity, but later
+nonlinear computation need not. Do not re-evaluate a coupled fuser/gate and claim
+the same prepared-increment intervention. Key/value ablations can disrupt a jointly
+learned interface; they do not isolate proven addressing/content modules.
+
+**Allocation decision:** this is mostly an implementation identity. Retain it as a
+diagnostic for an observed useful system that regresses under joint use. It could
+separate one-read reweighting from changed queries or later trajectories; testing
+the identity alone earns no capability claim. Useful separate/joint/selection
+evidence takes priority. No synthetic benchmark, model loading or new runner is selected. The formula is a
+conditional prediction for a candidate intervention, not a reason to build apparatus.

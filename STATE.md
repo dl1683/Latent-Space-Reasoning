@@ -3,8 +3,9 @@
 **Research resumed — latest user direction, 2026-09-14.** Keep the mission
 fixed and pivot around roadblocks. S37 and its incomplete real CLI result audit
 are parked; they do not block independent strategy or other research. Continue
-from S38 teaching-pathway findings into S39 live latent communication: inspect
-actual heterogeneous interfaces and their contribution controls. No S37 rerun or
+from S38 teaching pathways and S39 heterogeneous communication into S40
+separately prepared contributor composition. S41 attention algebra stays diagnostic;
+useful joint behavior and prior-use retention are the unresolved questions. No S37 rerun or
 inaccessible-reviewer loop. No acquired capability or
 scientific negative is established by the failed attempts.
 
@@ -93,7 +94,11 @@ S39 then finds actual cross-checkpoint communication implementations beyond the
 same-model core. Their useful contribution needs the identical receiver prompt
 without a message, followed by correct/permuted content and source-rollout controls.
 Pinned source review identifies these comparisons; no local gain or new run is
-claimed. Continue toward a useful small task and operationally meaningful interface.
+claimed. S40 finds published joint use of separately trained interfaces and an
+implemented composition operator. Exact joint-run configuration and per-item
+retention are unbound in the materials checked. S41 attention algebra is a reviewed
+conditional diagnostic, not a new instrumentation allocation. Continue toward
+useful joint behavior through an operationally meaningful interface.
 
 **Session accounting:** 958 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207 + 330 runner lines); five probe blocks / zero building rounds.
