@@ -32,42 +32,13 @@ changing the negative direction. No conclusion about all combinations follows.
 S23 supplies proof-only joint compatibility and identification cautions, not a
 new empirical result or construction proposal.
 
-The first task-first block closed early: the PFN1 case in S8 has a repeated
-training question/answer despite distinct DNA variants. It lacks the independent
-effect contrast, receiver role evidence and usable receiver needed for the
-proposed joint-contribution test. This is one source example, not a benchmark
-score or trained-model attribution. S24 now works through an actual table
-illustration on paper, assigning text, structure, binding and later queries to
-their sources. No model performance or product selection is implied. Coordinate
-repair is a caller obligation; crop-independent intervention laws would largely
-test our wrapper. S2.2 now specifies reuse of the acquisition procedure's recipe,
-evidence permissions and budget rule, allowing new learned adapters and receiver
-adaptation. Typed ports and explicit fact import remain serious alternatives.
-S25 separates target editing from acquiring useful consequences; correction can
-legitimately revise prior answers. Before further models, select a useful revision
-and fresh-input reuse obligation, name the donor's contribution and the old uses
-that should survive. Conditional contribution need not include standalone
-superiority. S24's analytical scope example separates dependency from realized
-answer change; the inquiry is to predict learned revision consequences before
-teaching the proposed rule. Its causal-abstraction bridge is established prior art,
-and the caller executing a rule does not establish its realization in a model.
-Attribute integration learning explicitly. S12's conditional tied-head
-calculation supplies parameter bookkeeping, not demonstrated compression or speed.
-No run, artifact, architecture or reproduction project is selected.
-Details live in
-[NOTEBOOK](../NOTEBOOK.md), the canonical document and the
-[experiment record](../experiments/EXPERIMENTS.md).
-
-**Second-review outcome:** S24's bounded purchasing contract selects external
-record revision through its stipulated typed interface. Authoritative scoped
-import and the specified calculator supply the useful operation; no learned
-revision predictor improves that decision. The candidate closes without compute.
-Predicting a producer's uncertain interpretation might support rechecking, but
-requires an actual scoped source, semantic port and alternative observation.
-Do not extend this hypothetical case or invent a learned receiver to make it hard.
-The next inquiry must connect a learned relation to an available acquisition,
-intervention or reuse choice. This is a scoped route choice, not a general verdict
-that explicit records solve the user's broader capability-composition ambition.
+**Closed task cases:** [Canonical S8/S24](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) preserve the PFN1
+endpoint/receiver eligibility failure and the sufficient scoped-record contract.
+The former is not a whole-benchmark or trained-model attribution verdict; the
+latter does not settle broader capability composition. Coordinate repair and
+caller-supplied continuation laws remain integration obligations. Source readings,
+independent checks and decision chronology stay in canonical theory, NOTEBOOK
+and the ledger; neither case is queued for extension.
 
 **S26 result, independently audited (e1044-e1045):** the single autonomous-continuation probe
 completed in 10.1455 seconds, seven CPU forwards / 112 rows, on 16 fixed pairs
@@ -85,15 +56,12 @@ startup; an external 180-second process wait also returned normally. Exact recei
 and the correction of the audit prose's runtime transcription are in the ledger.
 No next run is selected. Preserve the broader capability-composition objective.
 
-**Acquisition-effort and selection boundary (S2.2–S2.4):** two fresh strategy
-rounds remove privileged status from freezing: paired states are teaching data,
-and adapter learning can repeat task computation. A conditional softmax calculation
-shows that growing the normalized input pool can change old behavior despite
-fixed weights. LogME and Task2Vec supply positive prior art for expert selection,
-but the inspected protocols do not measure marginal integration value to an
-existing receiver or effort to reach quality with old/joint retention. The next
-strategy dialogue asks when a task-conditioned descriptor changes donor-plus-recipe
-allocation more cheaply than a small direct trial. No predictor or run selected.
+**Active decision:** follow the [canonical Next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+S14's analytical continuation/edit case is complete; it establishes no learned
+latent hole. S8's newly read planning precedent supports learning representations
+around a reused frozen processor, with task learning still required. Follow its
+specific uncertainty/continuation obligation; no model run or construction is
+selected. Positive recipe evidence and causal attribution remain distinct.
 
 Session totals: 628 apparatus / 0 artifact-bearing code lines (98 + 119 + 204 + 207),
 four probes / zero building rounds, fifteen model forwards, no GPU or training.

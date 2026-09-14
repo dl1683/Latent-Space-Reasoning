@@ -20,15 +20,13 @@ with competent inputs or establish that a learned exporter helps. No rerun,
 threshold change or new selection follows. [Raw result](experiments/results/encoder_continuation_v1/result.json)
 retains probabilities, counts and hashes; the completed audit receipt is in the ledger.
 
-**Acquisition-effort and selection boundary (S2.2–S2.4):** two fresh strategy
-rounds remove privileged status from freezing: paired states are teaching data,
-and adapter learning can repeat task computation. A conditional softmax calculation
-shows that growing the normalized input pool can change old behavior despite
-fixed weights. LogME and Task2Vec supply positive prior art for expert selection,
-but the inspected protocols do not measure marginal integration value to an
-existing receiver or effort to reach quality with old/joint retention. The next
-strategy dialogue asks when a task-conditioned descriptor changes donor-plus-recipe
-allocation more cheaply than a small direct trial. No predictor or run selected.
+**Current paper inquiry:** S14's single-source-distance/radius continuation
+and graph-deletion witness are complete, conditional on their stated ports.
+The positive planning precedent in S8 reuses a frozen processor while learning
+surrounding representations for each task. This shifts attention to continuation
+of uncertain latent states and repeated representation-learning effort, with no
+new model run. Source and three-round dialogue receipts are in the ledger;
+canonical Next-work boundary remains the sole detailed active routing.
 
 **Accounting and custody:** 628 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207), four probes / zero construction rounds; 15 model forwards,

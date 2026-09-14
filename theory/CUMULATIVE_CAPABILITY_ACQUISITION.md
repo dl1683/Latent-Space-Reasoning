@@ -191,14 +191,19 @@ S6/S21/S22 and S24's scoped-record contract are closed. S26's single CPU
 continuation diagnostic is also closed after independent audit e1044-e1045:
 weak first proposals limit this task; no useful autonomous gain was demonstrated.
 Do not extend pairs, swap in a larger model or fit an exporter to rescue it.
-Two successive convenience-access diagnostics have not selected a positive
-acquisition direction. Return to task/interface analysis of an already identified
-positive hybrid: distinguish the whole donor port's contribution from the effect
-of its pretraining, structured inputs and receiving-interface learning. S8 records
-the bounded source case; no reproduction, source hunt or next run is selected.
-Direct callable use remains a valid endpoint. A richer learned interface needs
-a specific additional purpose. Preserve the broader mathematical program and
-its native operations question; closed/paused lines are not restart instructions.
+Two successive convenience-access diagnostics did not select a positive
+acquisition direction. S2.2–S2.4's selection dialogue and S14's continuation/edit
+paper case are complete: radius queries need distance plus radius; graph edits
+can require further source access. No new selector or forced route contest.
+S8 now records a positive latent-planning precedent that learns representations
+around a reused frozen processor. The active follow-up asks what makes an
+uncertain latent state usable for a subsequent operation, given the source's
+acknowledged expected-successor limitation. Distinguish that operational closure
+from coordinate-noise robustness and charge repeated representation learning.
+No implementation, model run, checkpoint hunt or reproduction is selected.
+This is the sole detailed active routing; later sections retain scoped contracts
+and dated outcomes. Preserve the broader mathematical program, valid direct-use
+routes and historical closures.
 
 ## Conditional route choices
 
@@ -388,8 +393,8 @@ burden must be followed across the sequence. Receiver training during acquisitio
 remains permitted. Assimilation additionally requires fresh-input use after donor
 withdrawal; keeping answers for previously seen inputs is not that capability.
 
-This selects the intended reusable object, not a task or a queued run. S24 still
-lacks a demonstrated useful relation for its proposed second donor. A stable typed
+This selects the intended reusable object, not a task or a queued run. S24 later
+closed its scoped example through a sufficient typed executor. A stable typed
 acquisition procedure may satisfy this target; a growing collection of bespoke
 integrations may be useful while leaving procedure reuse unestablished. The
 native question is whether a common operational language makes the next addition
@@ -429,7 +434,7 @@ from this block is to grant freezing no privileged status and retain direct use
 as the reference route. Missing evidence: a semantically matched second provider,
 a usable interface for each route, and comparative acquisition/retention receipts.
 The existing positive hybrid does not supply those observations. This allocation
-block closes without a run, a new donor search, or further generic definitions.
+block is closed; current routing lives in the Next-work boundary.
 
 ### S2.3. A concrete retention obligation when the port grows
 
@@ -523,10 +528,13 @@ The prospective map must therefore be evaluated against an action: which
 **donor and permitted integration recipe** to try, at what budget, for this
 receiver and fresh-use obligation. A descriptor can be useful without being
 native mathematics; that stronger claim would require stable operational
-relations across presentations and interventions. No new metric or run is
-selected from these papers. The next design question is whether a small amount
-of receiver-conditioned evidence can change that acquisition decision more
-cheaply than direct trial, including the cost of gathering the evidence itself.
+relations across presentations and interventions. Two subsequent fresh strategy
+rounds close predictor design as the immediate inquiry. Direct trials can leave
+reusable trained parameters, examples and observations; compare incremental
+effort after crediting that progress, not gross screening expense alone. A short
+unsuccessful trial is not proof that longer adaptation would fail. Nor must two
+operational routes exist before a useful acquisition obligation can be studied.
+S14 works one such obligation on paper; no new metric or empirical run follows.
 
 ### S3. Primary-source map: what can already be reused?
 
@@ -954,6 +962,60 @@ content accuracy must not redefine that usefulness away. This source case is a
 place to work out contribution and acquisition effort, not a queued large training
 run or another search for convenient downloadable artifacts.
 
+**Bounded follow-up question, stated before source inspection.** A learned algorithmic
+processor could earn a practical role by avoiding a costly or lossy conversion
+from perceptual/uncertain inputs into a solver-ready problem. This is an
+unestablished proposition about acquisition effort and useful computation,
+not a general separation from structured distributions, programs or tools.
+Inspect the original neural-algorithmic-reasoning motivation and one executed
+latent-planning precedent for what is actually demonstrated: what the input
+encoder learns, what computation is pretrained/reused, what supervision the
+receiving task pays for, and which comparison isolates the purported benefit.
+This targets reasoning over rich encoder states, not checkpoint availability.
+
+**Source outcome, 2026-09-14.** Veličković and Blundell,
+[*Neural algorithmic reasoning*, Patterns 2021](https://pmc.ncbi.nlm.nih.gov/articles/PMC8276006/),
+“Algorithmic bottlenecks” and “The blueprint,” propose training a processor on
+synthetic algorithm execution, freezing it, then learning new raw-input encoders
+and output decoders around it. Their motivation is that prematurely reducing
+uncertain observations to scalar solver inputs can impair downstream decisions.
+This is a perspective and proposed mechanism, not an independent experimental
+confirmation of the cited planner or a general theorem against explicit tools.
+
+Deac et al., [*Neural Algorithmic Reasoners are Implicit Planners*, NeurIPS 2021](https://papers.nips.cc/paper/2021/file/82e9e7a12665240d13d0b928be28f230-Paper.pdf),
+§§3–4, implements XLVIN: retain a frozen value-iteration processor trained on
+synthetic graphs; learn observation encoders, latent transitions and policy/value
+heads through task interaction. Reported low-data benefits over PPO and ATreeC
+span control and pixel observations. The same random-graph-trained processor is
+reused, while surrounding task learning remains payable. Random **graphs** do
+not mean random executor **weights**. No random-executor or equal-total-compute
+comparison isolates algorithmic pretraining. Maze value decoding and
+scalar-versus-latent Gaussian-noise tests are diagnostic, not interchange evidence.
+§3 also acknowledges that an expected successor embedding may not support
+further expansion in stochastic environments; breadth-first expansion grows
+exponentially with depth. The [supplement](https://papers.nips.cc/paper/2021/file/82e9e7a12665240d13d0b928be28f230-Supplemental.pdf),
+E–H, specifies synthetic graph construction and downstream training, without
+fully accounting for executor pretraining. This is a positive complete-recipe
+precedent, not demonstrated cumulative acquisition into one retained receiver.
+
+**What this changes in our strategy.** A receiving representation can be learned
+around a reusable operation, rather than first finding an accidental alignment
+between independently trained spaces. That is a constructive candidate for the
+next-space lens. This particular processor was deliberately taught an algorithm;
+it does not demonstrate recovering an unknown reasoning operation from a general
+pretrained encoder. Repeated representation learning, imported operation fidelity
+and benefits over appropriately trained structured alternatives remain distinct
+questions. Its success merits studying the learned interface; lack of isolated
+pretraining attribution does not erase the complete recipe's usefulness.
+
+The denizen's proposed next distinction is concrete: a state summarizing possible
+outcomes must support the **next** operation, not merely represent a plausible
+average now. The paper itself exposes this concern for stochastic transitions.
+Likewise a robustness curve in arbitrary coordinate units is not yet an invariant
+measure of the effort needed to change a behavior. These are targeted interface
+questions suggested by a positive mechanism, not reasons to launch another model
+or generic latent-space measurement suite.
+
 ### S9. Information gain versus new internal algorithm
 
 The third reviewer dialogue distinguishes three candidate probes:
@@ -1277,10 +1339,77 @@ operations. A representation can offer an important practical advantage without
 being impossible to encode in text. Serialization alone, in turn, does not make
 the recipient capable of interpreting it cheaply.
 
-Before compute, find an actual donor pair and an already usable receiver port
-that populate this contract. If none is available, identify the missing evidence
-and examine published interchange cases. Do not rehabilitate invalid cached
-pairs or create another apparatus project simply to force an experiment.
+An empirical interchange claim needs an actual donor pair and usable receiving
+operation that populate this contract. This is a requirement for that experiment,
+not a prerequisite to mathematical work or to other acquisition routes. Invalid
+cached pairs remain closed; active routing lives in the Next-work boundary.
+
+**Worked continuation, 2026-09-14 — declared semantic stage, not layer index.**
+Stipulate a port containing exact minimum hop distances d(s,v), stable node
+identities and infinity for unreachable nodes. A receiver asks which nodes are
+reachable within radius k and which become newly reachable at radius k+1:
+
+`B_k(v) = 1[d(s,v) <= k]`,
+`N_k(v) = 1[d(s,v) = k+1]`.
+
+The port plus k supplies both exactly, and advancing the request changes k to
+k+1 without changing d. If k is omitted, the same node at distance 2 requires
+different B answers at k=1 and k=2, and different N answers at k=0 and k=1.
+No deterministic reader of d alone can satisfy both omitted-context requests.
+The missing item is query context, not necessarily a missing latent distinction.
+Once k is supplied, this stipulated continuation has no remaining information
+obstruction. A frozen stage-consuming interface may need a conversion; permitted
+receiver adaptation can instead consume distances directly. Neither choice needs
+to imitate the donor's internal algorithm. Conversion work still counts.
+
+Even providers solving the same problem need not share an iteration clock.
+Initialize distances at (s,a,b)=(0,infinity,infinity). A simultaneous relaxation
+round reads old distances; an ordered sweep updates a then b using new distances.
+On s->a->b, one ordered sweep reaches (0,1,2), requiring two simultaneous rounds.
+On s->b->a, it reaches (0,infinity,1), matching one simultaneous round but not
+two. Thus no single choice of simultaneous-round index matches the first ordered
+sweep on both graphs. This ordinary algorithmic example refutes that specific
+clock-matching rule, not graph-conditioned adapters or richer hidden-state maps.
+Use the semantic radius observation above if that is what consumption requires.
+
+These calculations close the alleged stage-information obstruction for this
+contract; they are not a new learned latent law. S8's final **hidden** states
+are not established to be equivalent to decoded distances. Final-state access
+avoids an intermediate-clock obligation, but does not prove answer-only access
+is adequate for the trained hybrid. If evolving states matter, identify the
+required observations before assuming iteration or layer correspondence.
+
+**One further operation: edit the graph, then ask again.** The proposition to
+test on paper is whether the same distance export remains sufficient when an
+edge can be deleted. Unlike advancing a radius, this changes the problem itself.
+Take directed graphs on (s,a,b,c,t). Both contain edges s->a, a->t, s->b, b->c;
+G1 additionally contains c->t, while G2 does not. Both export distances
+`(0,1,1,2,2)`. Even all edges lying on shortest paths from s are identical:
+c->t is absent from that set because it supplies a longer route to t.
+
+Delete a->t in both graphs. Now G1 has distance 3 to t through b,c, while t is
+unreachable in G2. The old distances, shortest-path edges and named deletion are
+identical, but the required answers differ. No reader of those resources alone
+can supply both correct answers. This is a concrete instance of S11's existing
+successor-factorization condition, not a new general impossibility theorem.
+The changed operation has exposed a distinction the old answer contract omitted.
+
+The remedy is explicit: retain graph access and recompute/query the donor on the
+edited graph, or export additional information adequate for the declared edits.
+A particular extra detour resolves this pair; no claim is made that a fixed
+small detour list handles every graph or edit sequence. Repeated donor calls
+and maintaining richer state have different costs, not a demonstrated winner.
+S8's hybrid already receives the graph, so this is **not** evidence of an
+information deficit in that model. There, any obstacle would concern affordable
+use of available information, as S19 distinguishes. We have not established
+which information its hidden states retain or whether it supports graph edits.
+
+The paper case closes with two different acquisition contracts: final distances
+plus radius suffice for the stated continuation; editing the source requires
+additional access or retained distinctions. A port's adequacy depends on the
+future operations, not only its current answer accuracy. This makes the denizen's
+question concrete: two maps can list identical travel times yet differ in which
+detours survive a road closure. No model run follows from this analytical witness.
 
 
 ### S15. A fixed hub need not mean a fixed set of distinctions
@@ -1509,9 +1638,11 @@ condition explicitly on a baseline. Neither gives a free causal acquisition
 certificate. A trained probe only approximates the within-family optimization,
 and our sequential operational/retention requirements remain additional.
 
-**Practical contract:** report improvement of the actual fixed receiver, then
+**Practical contract:** for the fixed-receiver comparison, report its improvement, then
 compare with an inexpensive competent alternative under the declared training
-and inference budget. These are different claims. Additional information,
+and inference budget. S2.2 separately permits receiver adaptation with its
+learning attributed; fixing it is not an acquisition-wide requirement.
+These are different claims. Additional information,
 accessible computation and cheaper realization are all legitimate contributions.
 Use an information-novelty control only for a novelty claim; use a matched total-
 cost comparison for an efficiency claim. Do not fit high-dimensional mutual
