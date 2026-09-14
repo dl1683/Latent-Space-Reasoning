@@ -1,5 +1,15 @@
 # Experiments Log
 
+## S49 saved exports and later requests — 2026-09-14
+
+Pinned source inspection finds that supplying a saved reconstruction export
+bypasses fresh query encoding. A separate prepared context-compression interface
+actually combines memory with a later prompt, supported by source training and
+evaluation. Its multi-span result required extra training on the concatenation
+pattern; it is not independent-donor composition. No local model run or acquired
+artifact. Canonical S49 and two `s49_*_20260914` ledger entries retain code/PDF
+hashes and independent reviewer provenance. Accounting remains unchanged.
+
 ## S48 transported operation contract — 2026-09-14
 
 Primary source and independent algebra separate a transported direction from the
@@ -10,6 +20,11 @@ its remaining recipient-specific preparation against direct learning. No new mod
 run or apparatus; local totals remain six probe blocks,15 scored model forwards
 and1065 apparatus /0 artifact-bearing physical code lines. Canonical S48 and ledger
 `s48_transported_operation_contract_20260914` carry provenance and limits.
+Continuation: accumulating a full positive centroid during recipient clamp
+calibration needs no extra model forwards. A declared reusable reference enables
+a direct direction comparator on those positives; reference quality is unproven.
+Readout reuse and state-update transfer have different preparation obligations.
+Ledger `s48_shared_calibration_comparator_20260914`; no new empirical block.
 
 ## S47 real evidence selection and direct remedy — 2026-09-14
 

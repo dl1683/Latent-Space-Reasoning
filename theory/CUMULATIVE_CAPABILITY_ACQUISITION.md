@@ -308,6 +308,14 @@ a competent endpoint or selects training. S46 prioritizes direct task-specific
 teaching as the comparator to full response representations. S47 found a sufficient
 lexical/section remedy on a fixed real-data panel and closes it without a model
 probe. S48 asks about portable intervention operations as a separate branch.
+Its preparation comparison must credit direct learning with the same recipient
+calibration activations and any reusable reference. Transferred readouts can avoid
+new task-specific calibration in the inspected source; that does not establish
+transported updates or reasoning. Further clamp algebra is not the next step.
+S49 distinguishes response reconstruction from a prepared consumer of compressed
+context under later requests. A predictor-to-consumer connection is prospective;
+its donor-specific useful information must be established before any composition
+or training claim. No new local run is selected.
 Keep useful cumulative behavior as endpoint. Independent strategy reviewers
 can challenge this work without being mislabeled real CLI auditors. Do not restart
 an inaccessible-reviewer loop or require its repair before unrelated research.
@@ -5029,3 +5037,143 @@ descent and commutation conditions and keeps them diagnostic. These are ordinary
 affine-projection facts. The native candidate remains the operation's changed and
 preserved responses under useful continuation. No structural hole in a real latent
 space, acquired reasoning capability or new native law has been demonstrated.
+
+**Preparation comparison, September 14 continuation.** For the denizen, effort
+includes making a move usable, not only obtaining its direction. Let the exact
+weighted mean of recipient positive activations used for calibration be mu+.
+For a transferred unit direction u, the calibrated level is u^T mu+. Accumulating
+the full mean during those same forwards costs an O(d) vector accumulator and no
+additional model forwards. This does not assert equal wall time. A scalar retained
+alone cannot generally recover that mean after the fact.
+
+If a previously prepared recipient reference mu0 is available, the direct candidate
+is d=(mu+-mu0)/||mu+-mu0||, with level d^T mu+. An exactly zero difference gives no
+direction and must be reported. Thus direct preparation can use the same new
+positive forwards. Preparing the reference must be charged; an unmatched shared
+reference need not work as well as operation-specific paired negatives. The paper
+does not establish an already reusable English reference, and its general stitch
+corpus cannot silently substitute for matched negatives. Independent reviewer
+`intervention_value_review` confirms this conditional accounting and source limit.
+
+The consequential comparison is transferred versus direct recipient preparation
+on identical positive activations, equal calibration opportunities, and a declared
+reference policy. A transferred direction may still improve useful effects or
+sample efficiency; equal forward counts do not imply equal quality. Both methods
+must be credited with reusable preparation. Existing S4.1 and S31 already cover
+amortization and later-operation learning curves; no new generic cost theorem is
+needed. No reference-quality experiment is selected before useful move selection.
+
+In the same source, section 4 also evaluates source-trained probes on down-stitched
+recipient states without retraining the probe. This avoids additional recipient
+task-training activations beyond stitch preparation, not recipient inference.
+It is a constructive readout-transfer precedent; it does not establish a state
+update, donor-exclusive knowledge acquisition or composed reasoning.
+
+**Decision-changing distinction.** Readout reuse, calibrated intervention transfer
+and retained reasoning contributions have different preparation obligations.
+Evidence for one cannot pay the bill for another. Preserve this distinction when
+choosing a useful operation; do not reproduce probe transfer merely to obtain a
+positive result. Means and affine maps remain ordinary coordinate scaffolding;
+the target object is a move's useful effect, applicability and preservation of
+other uses. No new learned-space hole or local execution follows.
+
+### S49. Does a saved response export receive the later question?
+
+**Question and direction dialogue.** The denizen needs to use an acquired object
+under a later request without revisiting its producer. A proposed premise-update
+example was withdrawn after root challenged its duplication of S24/S29 and its
+failure to distinguish new facts from new operations. Reviewer
+`resumed_frontier_adversary` then selected an exact interface dependency: can the
+prepared response export reach an existing consumer together with a new question?
+S43 retains response text, not learned exports; S47 is a lexical selector. Neither
+artifact answers this behaviorally. Do not reinterpret either closed probe as one.
+
+**Pinned source trace, not execution.** Root rechecked the S42 official revision
+and exact file hash. In `modeling_encoder_decoder.py:207-237`, training encodes the
+original query and prepends reconstruction soft prompts to answer-token embeddings
+for decoder loss. At lines 545-551, a supplied `decoder_inputs_embeds` bypasses
+query encoding. At lines 563-612, generation consumes that prepared sequence and
+appends its own generated-token embeddings. The original query tokens or their
+cache are not separately passed to the inspected decoder path. Decoder pretrained
+knowledge remains available; this does not attribute all decoded content to export.
+
+Passing a new `input_ids` together with a saved embedding override therefore does
+not condition this path on a new question: those IDs supply the output device but
+their content does not enter the decoder. This is a source-code dependency claim,
+not a model experiment. The ordinary no-override path instead re-encodes its input.
+
+The arbitrary embedding override makes manually appending decoder-token embeddings
+of a new question technically expressible. That would change the conditioning
+sequence; a missing dedicated argument is not an architectural impossibility.
+The inspected path alone establishes neither competence on that sequence nor its
+training cost. Likewise, successful original-response reconstruction would not
+establish new-question use. Inspect source training/evaluation before crediting it.
+
+Reviewer `intervention_value_review` independently confirms this trace. The v3
+paper's reconstruction objective and inspected decoding evaluation concern the
+original query's response; latent chaining remains prospective. No fresh-request
+use evaluation was found in the checked sections, not a claim about every possible
+use of the released architecture.
+
+**Allocation consequence.** Keep the released method as a concrete response-
+prediction/retrieval candidate. Reusing its soft prompts for independently supplied
+requests is a prospective consumer capability, not an already available reasoning
+primitive. Saved ordinary answer text is the direct reusable export comparator;
+a structured record is eligible only with its extraction preparation charged.
+No new model loading, decoder wrapper or follow-up dataset follows from this trace.
+The response recoverable under later requests is the native candidate object;
+pooling and soft-prompt coordinates remain scaffolding. An absent tested consumer
+is an interface gap, not a proven information hole in its representation.
+
+**Next source question, declared before inspection.** Let K(y) compress an available
+answer or evidence text y, and let Q(K(y),r) use it under a separately supplied
+request r. Does a published prepared consumer actually exercise this conditioning,
+and what preparation made it work? Inspect In-context Autoencoder as one concrete
+candidate, not a new architecture catalogue. If it supports later questions, that
+would supply a consumer precedent, while predicting its input from an ungenerated
+donor answer remains a separate acquisition problem. If it only reconstructs y,
+it does not fill the present gap. In either case, encoding available text is not
+exporting a donor's whole knowledge, and text retrieval/ordinary context remains
+the direct comparator. No local model run is selected by this source question.
+
+**Source resolution.** [ICAE, ICLR 2024 final](https://proceedings.iclr.cc/paper_files/paper/2024/file/0b276510ec2d3f6613a8b60c41ff0438-Paper-Conference.pdf),
+sections 2.1-2.3 and 3.2.2, supplies this separate-request consumer. A LoRA encoder
+compresses context; a frozen decoder reads memory plus a separate prompt.
+Autoencoding/continuation pretraining precedes instruction training on 240k triples.
+Context-dependent response evaluation uses model judgments without a reported
+termination gate; no local quality or lifetime-cost claim follows. Section 3.3.3
+reports that concatenating individually compressed spans initially failed, then
+worked after additional multi-span training, evaluated by continuation perplexity.
+Those spans share one prepared interface; they are not independent pretrained
+contributors. Independent source reviewer: `alignment_contribution_review`.
+
+**Released path verified separately from the paper.** Root inspected official
+[revision 469a46886a92dd5e76b2d12a8bac0fb7ed7d4cdd](https://github.com/getao/icae/tree/469a46886a92dd5e76b2d12a8bac0fb7ed7d4cdd),
+without importing or executing it. The later v2 release is not silently identified
+with the paper's exact runs. `fine_tuned_inference.py:52-69` compresses `input`,
+then concatenates template embeddings, memory slots and separately tokenized
+`prompt`. Decoding disables the encoder adapter. In `modeling_icae_multi_span.py:228-261`,
+compression sees only context segments and memory tokens. Training construction in
+`training_utils.py:126-150` likewise separates context and prompt, with answer-only
+loss labels. The example loop recompresses each row; its dependency graph permits
+retaining memory for another prompt, but does not implement a persistent cache.
+Source hashes are in the ledger. No checkpoint or training data was downloaded.
+
+**What this changes.** A prepared consumer for compressed evidence under later
+questions exists as a concrete precedent. Consumer training, rather than a vector
+space label, makes the operation available. The current missing connection is
+whether a predictor of a donor's response can produce inputs that this kind of
+consumer uses adequately. Joining two papers does not establish that connection.
+The target would be a consumer-compatible memory of a selected response, not an
+export of the donor's whole knowledge. Pooled retrieval vectors cannot substitute
+for these slots merely because both are called embeddings.
+
+Single-memory use and multiple-memory use are separate investments. The reported
+multi-span repair makes that distinction experimentally motivated, without proving
+that all consumers need joint training. Keep direct saved text and ordinary-context
+reasoning as serious alternatives. No reproduction, new wrapper, predictor training
+or local model loading is selected; next work should identify whether predicting
+the consumer-compatible target adds useful information or merely repeats a response
+that the receiving backbone could already produce. S38's access controls and S43's
+teacher-correctness distinction remain applicable. This is a candidate dependency
+chain, not a demonstrated new reasoning model or native law.

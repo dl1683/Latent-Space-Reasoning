@@ -84,8 +84,12 @@ with one mixed-quality tie. Close that panel without a model probe or expansion;
 this is direct-method behavior, not acquired capability.
 S46 prioritizes direct preference teaching as the comparator to response embeddings;
 a dictionary cannot hide an unproven semantic interpreter. S48 separates transporting a direction from transporting a complete read/write
-operation. Its checked algebra remains diagnostic; later-operation preparation
-and useful joint behavior must determine the next choice. See the [canonical next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+operation. Its checked algebra remains diagnostic. Direct learning must receive
+the same reusable calibration evidence before transfer can claim preparation
+savings; useful joint behavior remains unresolved. S49 verifies a reconstruction
+path that ignores fresh query tokens under a saved-export override, and separately
+identifies a trained compressed-context consumer that does accept later prompts.
+Their combination is a prospective dependency, not a demonstrated capability. See the [canonical next-work boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 S37 stays parked; no inaccessible-reviewer repair loop or new apparatus is queued.
 
 Session totals: 1065 apparatus / 0 artifact-bearing code lines

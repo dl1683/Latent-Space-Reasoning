@@ -1,17 +1,13 @@
 # STATE
 
 **Research resumed — latest user direction, 2026-09-14.** Keep the mission
-fixed and pivot around roadblocks. S37 and its incomplete real CLI result audit
-are parked; they do not block independent strategy or other research. Continue
-from S38 teaching pathways and S39 heterogeneous communication into S40
-separately prepared contributor composition. S41 attention algebra stays diagnostic;
-useful joint behavior and prior-use retention are unresolved. S42 separates
-response-derived teaching from reusable latent reasoning. S43 found one
-clean correction in a fixed released-data slice, alongside shared errors and
-incomplete targets. The slice is closed; it does not select training. No S37 rerun or
-inaccessible-reviewer loop. No acquired capability or
-scientific negative is established by the failed attempts.
-
+fixed and pivot around roadblocks. Current source work reaches S49: a prepared
+compressed-context consumer can accept later questions, while a response-
+reconstruction export does not automatically supply that operation. Connecting
+response prediction to such a consumer remains an untested acquisition route.
+The S47 real-data panel is closed with a sufficient direct lexical remedy.
+S37 and its incomplete real CLI audit remain parked; neither blocks strategy.
+No new model run, acquired capability or intrinsic latent-space failure is claimed.
 
 ## Current direction: cumulative capability acquisition (2026-09-13)
 
@@ -99,8 +95,12 @@ with one mixed-quality tie. Close that panel without a model probe or expansion;
 this is direct-method behavior, not acquired capability.
 S46 prioritizes direct preference teaching as the comparator to response embeddings;
 a dictionary cannot hide an unproven semantic interpreter. S48 separates transporting a direction from transporting a complete read/write
-operation. Its checked algebra remains diagnostic; later-operation preparation
-and useful joint behavior must determine the next choice. See the [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+operation. Its checked algebra remains diagnostic. Direct learning must receive
+the same reusable calibration evidence before transfer can claim preparation
+savings; useful joint behavior remains unresolved. S49 verifies a reconstruction
+path that ignores fresh query tokens under a saved-export override, and separately
+identifies a trained compressed-context consumer that does accept later prompts.
+Their combination is a prospective dependency, not a demonstrated capability. See the [canonical next-work boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 S37 stays parked; no inaccessible-reviewer repair loop or new apparatus is queued.
 
 **Session accounting:** 1065 apparatus / 0 artifact-bearing code lines

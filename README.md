@@ -28,7 +28,9 @@ answers which question, testing unfamiliar records and preservation of prior use
 A bounded real-data check found a sufficient lexical/section-filtering remedy on
 eight structured queries, with a mixed-quality tie remaining. That panel is closed;
 it establishes no learned acquisition. Portable intervention operations remain a
-separate source-level question. See the [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+separate source-level question. Source inspection now distinguishes response
+reconstruction from compressed memories trained for later questions; combining
+response prediction with that consumer remains untested. See the [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 
 **Status: exploratory direction.** No cross-model grafting, cumulative acquisition or encoder-reasoning artifact has been established. Start with the [canonical direction](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) and [current state](STATE.md). Earlier findings below remain supporting evidence with their original limits.
 

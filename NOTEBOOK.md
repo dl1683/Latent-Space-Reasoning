@@ -20,7 +20,12 @@ S44-S46 clarified conditional evidence selection and direct teaching. S47 ran a
 7/8 adequate whole-abstract selections,8/8 with RESULTS filtering, one mixed-quality
 tie remaining. Closed without model probe or expansion. No acquired artifact.
 S48 checks the distinction between portable directions and read/write operations;
-no commutator apparatus or model run is selected. Older checkpoints below are
+shared calibration evidence must also benefit the direct-learning comparator.
+Readout transfer without new task calibration does not establish reusable updates.
+S49 verifies the missing new-question input in a reconstruction path and a
+separate prepared memory consumer with actual later-prompt conditioning. Their
+combination remains untested; source multi-span reuse required extra training.
+No commutator apparatus or model run is selected. Older checkpoints below are
 historical where they conflict with this current allocation.
 
 The enduring question is what a denizen of latent space needs for identity,
