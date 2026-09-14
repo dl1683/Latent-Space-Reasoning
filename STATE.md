@@ -87,7 +87,13 @@ and the correction of the audit prose's runtime transcription are in the ledger.
 This completed probe is not reopened. Preserve the broader capability-composition objective.
 
 **Active decision:** retain S50/S51 as source and operational evidence, then pivot
-to an independently supported acquisition opportunity. No trained AB endpoint was
+to a specific testable benefit of sharing or assimilating useful computations.
+The fresh periodic review around 15:30 UTC distinguishes unchanged connected
+extension from modification of an established service; replay is not automatically
+needed for the former. It rejects another availability-driven substitution.
+Next investigate cumulative assimilation of
+fresh-input operations using already studied teaching recipes; ordinary teaching
+and connected growth remain valid alternatives. No trained AB endpoint was
 bound in the limited source check; do not extend the hunt or train a substitute.
 Old-operation prompts and prompts produced by an acquired operation need separate
 coverage. Repeated questions over one memory are not successive acquisition.

@@ -1,5 +1,15 @@
 # Experiments Log
 
+## Fresh periodic approach review — 2026-09-14, around 15:30 UTC
+
+After62f85fe and separate entropy checking, independent fresh subagent review
+distinguishes unchanged connected growth from shared updates and distinguishes
+native-input from induced-input component replay. Joint-service replay is not
+necessarily required. A worked hypothetical depth-boundary failure prioritizes
+available output/image evidence and direct learned repair as comparators; it is
+not an empirical block. Next selection needs a testable useful benefit of sharing
+or assimilation, not prior proof of superiority. No real CLI audit or new runner.
+
 ## S51 depth-selection interface and endpoint boundary — 2026-09-14
 
 A raw relative-depth interface makes category/depth pixel selection expressible

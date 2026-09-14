@@ -2,6 +2,15 @@
 
 ## Strategy/discovery checkpoint and history — 2026-09-14
 
+Fresh periodic review around 15:30 UTC followed62f85fe and separate entropy checking.
+It corrected a possible conflation of unchanged connected addition with shared
+updates that can forget old uses. S50 replay is conditional on modifying relevant
+dependencies and is not necessary if induced-input component replay already suffices.
+S51 works one depth-boundary error and a direct repair hypothesis; it supplies no
+measured reason for shared adaptation. Next choose a specific testable benefit,
+not another model merely because it is downloadable. Independent subagent review,
+not a real CLI audit. No empirical count changes.
+
 S51 defines a useful category/depth pixel selection and verifies one raw depth
 interface. No learned alignment is required to express the direct route. A limited
 source check did not bind the actual trained AB endpoint, so local execution of

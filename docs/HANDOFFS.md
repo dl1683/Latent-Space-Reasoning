@@ -71,8 +71,13 @@ This completed probe is not reopened. Preserve the broader capability-compositio
 
 **Active decision:** S50/S51 retain a concrete acquisition reference, replay proposal
 and depth-selection use. Exact local execution is closed after a limited endpoint
-check did not bind the trained combined model; pivot without an extended search. The current
-source alternatives and closed branches are consolidated in the [live boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+check did not bind the trained combined model; pivot without an extended search.
+The fresh periodic review around 15:30 UTC asks for a specific testable benefit of
+sharing or assimilation. Unchanged connected extension creates no parameter
+forgetting by itself; do not manufacture shared training merely to test replay.
+The next question family is cumulative assimilation of fresh-input operations,
+using existing teaching recipes, with connected growth as a legitimate alternative.
+Source alternatives and closed branches are consolidated in the [live boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 Memory reuse alone does not establish successive capability acquisition. Useful
 information, computation, accessibility and effort are legitimate benefits; new
 information is not required. No new model run or apparatus is queued.
