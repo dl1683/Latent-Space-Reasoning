@@ -5,8 +5,10 @@
 **Latest user restart, 2026-09-14:** mission fixed, approach flexible. S37 and its
 unavailable CLI audit are parked. S38 now separates donor target construction,
 student intervention training, pretrained contribution and mechanism interpretation.
-Primary sources and two independent strategy reviews inform the comparison;
-no new model calls, runner or acquired artifact. Older checkpoints below are
+Primary sources and independent strategy reviews inform the comparison. S39
+then found actual cross-model communication implementations and a concrete
+receiver-prompt confound; source-only controls are specified, no run selected.
+No new model calls, runner or acquired artifact. Older checkpoints below are
 historical where they conflict with this current allocation.
 
 The enduring question is what a denizen of latent space needs for identity,

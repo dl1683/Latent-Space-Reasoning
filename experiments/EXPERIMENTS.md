@@ -1,5 +1,15 @@
 # Experiments Log
 
+## S39 live latent communication source check — 2026-09-14
+
+Pinned source and independent strategy review separate same-model cache reuse
+from heterogeneous contributor admission. The official core uses one model across
+roles. Pinned community extensions implement actual heterogeneous transport.
+A function-body versus complete-function prompt difference identifies the first
+no-message receiver control; no causal explanation of author results is claimed.
+Probability-mediated transport preserves a conditional message, not arbitrary
+latent state. See canonical S39 and ledger. No new execution; totals unchanged.
+
 ## S38 strategy resumed — 2026-09-14
 
 Latest user instruction keeps mission fixed and pivots around unavailable tooling.

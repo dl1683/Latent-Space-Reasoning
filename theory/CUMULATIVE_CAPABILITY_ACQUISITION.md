@@ -291,10 +291,11 @@ supervisor, tokenizer/alignment, checkpointing and reporting corrections.
 
 **Current allocation:** latest user instruction resumes research around roadblocks.
 S37 is parked with two inconclusive execution attempts and an incomplete real CLI
-audit; no further execution or scientific claim follows from it. S38 is active:
-separate teacher target construction from student intervention training, compare
-valuable pretrained contribution with equally informed retrained alternatives,
-and keep useful cumulative behavior as the endpoint. Independent strategy reviewers
+audit; no further execution or scientific claim follows from it. S38 separates
+teacher access, receiver training and pretrained contribution. Its source review
+and conditional derivation are recorded. S39 now checks live latent communication:
+same-model continuation versus admitting distinct pretrained contributors, including
+advertised heterogeneous extensions. Keep useful cumulative behavior as endpoint. Independent strategy reviewers
 can challenge this work without being mislabeled real CLI auditors. Do not restart
 an inaccessible-reviewer loop or require its repair before unrelated research.
 
@@ -4153,3 +4154,153 @@ contexts. Coordinate masks implement a proposed move; they do not discover its
 validity. The factorization calculation is ordinary scaffolding, not a new law of
 latent space or a reason to make all future representations context-free. Context
 can be exactly the useful information a donor contributes.
+
+
+### S39. Can live latent communication admit a different contributor?
+
+A denizen needs another contributor's message to retain useful meaning during a
+continuation. S38 studies teaching into a receiver; this source contrast studies
+connected use of retained donor computation. Neither entails the other.
+
+**Contract before implementation inspection.** A reusable message includes the
+receiver-relative continuation it enables, not just its tensor shape. Fix receiver
+parameters, prefix, positions, masks and state conventions. A cache may reproduce
+recomputation when it contains the same keys and values that receiver would have
+computed on the same prefix. Different contributors require additional evidence;
+a byte-preserving copy does not itself preserve interpretation. This specializes
+S5's continuation-sensitive port contract, rather than inventing another identity.
+
+**Primary source boundary.** [LatentMAS v4, 3 August 2026, §§3–4,
+Appendices A–C/G](https://arxiv.org/html/2511.20639v4) autoregresses aligned hidden
+states and reuses layerwise caches. The lossless-transfer proof expressly uses
+caches produced by the same model on the same inputs. Reported backbone variants
+are separate configurations, not a sequence of mixed pretrained admissions;
+Appendix G suggests trainable adapters for heterogeneous agents. Its input/output
+map is ridge alignment over embedding matrices under a shared semantic-coefficient
+assumption. Appendix E.3's latent-reasoning/text-communication arm uses only the
+last 128 decoded tokens. Accuracy, token and timing reports do not provide the
+termination table required for our capability/cost claims. We therefore retain a
+same-model continuation precedent without adopting the efficiency headline or
+claiming training-free heterogeneous transfer. Root checked v4 after independent
+review identified it as newer than the initially opened v3.
+
+**Pinned implementation inspection.** Official repository revision
+`9a9e4d331eb11430bd9e64754c6b252b06d73031` exposes one ModelWrapper in
+`methods/latent_mas.py`; roles call the same wrapper while carrying past_key_values.
+An optional second inference copy uses the same model_name, not a second donor
+checkpoint. Read-only source inspection, not execution or a claim about every
+community extension. Hashes and exact source paths are retained in the ledger.
+
+**Independent strategy review.** `alignment_contribution_review` proposes the
+right diagnostic: in ordinary attention, K'=KR and Q'=QR^{-T} preserve QK^T
+for invertible R, but pairing Q' directly with the old K generally changes scores.
+Thus even equal-shape, functionally equivalent attention computations need not
+share a raw cache convention. This is algebraic scaffolding, not a discovered
+latent law; it does not claim every such transform is a symmetry of an entire
+position-encoded transformer. A compatible adapter can repair the convention.
+
+The native target is a communication move whose relevant consequences survive
+new contributors and continuations. The cheapest ordinary evidence interface and
+receiver recomputation remain serious comparators. The next source-only check
+examines advertised heterogeneous extensions: do they actually pass latent
+information across distinct pretrained checkpoints, or combine ordinary tool/text
+interfaces? No model download, generation or training is selected.
+
+
+**The heterogeneous extensions are actual candidates.** [Hybrid implementation,
+revision d9f0d2235d92f81874083d701db456b9c6a5f39e](https://github.com/nhminle/LatentMAS-Hybrid/blob/d9f0d2235d92f81874083d701db456b9c6a5f39e/methods/latent_mas_hybrid.py)
+loads distinct checkpoints, computes cross-model ridge maps from vocabulary rows,
+and re-encodes accumulated prompts under the recipient before appending transferred
+states to construct a fresh recipient cache. It resets the retained hidden sequence
+to the new model's states on switching. The [README at that revision](https://github.com/nhminle/LatentMAS-Hybrid/blob/d9f0d2235d92f81874083d701db456b9c6a5f39e/README.md)
+restricts intended use to shared-tokenizer models and leaves specialization versus
+overhead benchmarking to future work. Root verified the switching path after
+independent review by `intervention_value_review`. This is implemented cross-model
+transport, not merely a tool/text integration and not demonstrated acquisition.
+
+[AVP at revision e71453a85b718317eaf85b3d0546f1080f9cc96e](https://github.com/VectorArc/avp-python/tree/e71453a85b718317eaf85b3d0546f1080f9cc96e)
+implements a different route: source output-head probabilities weight recipient
+input embeddings; different tokenizers use an intersecting token-string vocabulary
+and renormalize there (`src/avp/rosetta/project.py`). Its HumanEval pipeline defaults
+to one transferred state, extracted after an extra EOS-token forward following
+latent rollout. The recipient first processes that vector, then its own reviewer
+prompt. The code supports multiple transferred states as a separate option.
+Its documentation reports mixed cross-model outcomes. Those author reports have
+not been reproduced here or checked against raw per-item results and termination.
+
+**Smallest confound, found in implementation.** AVP's direct HumanEval prompt asks
+for a function body; its receiving reviewer prompt asks for a complete function
+and invokes a reviewer role. Therefore target-solo versus cross-model results are
+not a clean message-contribution contrast. The first null is the identical receiver
+reviewer prompt with no donor message. A same-position, same-scale message permuted
+across requests then tests content dependence, separating it from extra positions
+or generic perturbation. The inspected evaluator handles both a raw body and a
+complete function; this is a prompt-control issue, not a demonstrated scoring bug.
+This is an identified uncontrolled contrast, not evidence that prompting explains
+the reported difference. The text comparison also changes
+sender computation and recipient context; it compares whole procedures.
+
+**Useful narrowing, not dismissal.** For AVP's probability-mediated channel,
+matching the selected source logits up to an additive constant (at the same
+positive temperature), recipient embedding rows, and normalization suffices to
+reproduce the transferred vector. This concerns that message only. The source
+state follows internal latent rollout and an extra token; an ordinary text API is
+not automatically able to generate or query that state. Nor is the weighted mean
+embedding an expectation over the recipient's nonlinear responses: S8 already
+states the relevant affine boundary. Keep this legitimate no-fitting interface
+as a candidate without treating it as a universal latent translator.
+
+The next informative distinction is whether source latent rollout contributes
+beyond projecting its ordinary prompt-prefill distribution, under the same terminal
+token convention. Then compare equally budgeted recipient computation and targeted
+sender text. Unique donor information is not required: useful computation or a
+better quality/effort tradeoff can justify connected acquisition. A single switch
+and a consequential receiver decision come before a multi-agent chain or a claim
+that old operations survive future admissions. No experiment is selected yet.
+
+
+**Projection review and uncertainty boundary.** Independent reviewer
+`alignment_contribution_review` verified the pinned probability-mediated paths.
+Complete source probabilities at the selected state suffice for the message;
+top-k access generally does not. The projection's optional diagnostics do not
+alter its main output. Normalization can take the mean outside the convex hull,
+so even a convex-mixture interpretation of the transmitted point needs qualification.
+Correct-versus-permuted gain would establish conditional message-content value,
+not pretraining-specific attribution or cumulative growth.
+
+For the overlap route, let S be the shared-token set, p the complete source
+softmax at the chosen temperature, rho=p(S), and q_v=p_v/rho on S. The projected
+message is determined by q, independent of rho. Two source distributions with
+identical q but very different rho therefore induce the same message. Whenever a
+promised receiver decision depends on confidence that a relevant outcome lies in
+S, that message alone is insufficient. Carrying rho repairs this particular lost
+distinction, not the remaining mean-embedding compression or semantic token match.
+This is a property of the inspected operator, not empirical evidence that current
+models often encounter the problematic distributions. Shared-token count alone
+cannot bound rho. Do not turn this conditional diagnostic into another generic
+certification or benchmark campaign.
+
+**Concrete next experiment shape, not a selected run.** One fixed receiver and
+one useful decision, not a chain: identical reviewer prompt without a message;
+correct message; within-panel message permutation at identical insertion positions
+and norms. If the content contrast succeeds, add zero-versus-positive source latent
+steps with the same terminal token, followed by a competent ordinary message and
+receiver extra-computation comparison. Positive ordinary communication is useful
+acquisition evidence too. Before any such run, specify a task whose donor or joint
+contribution is plausible and whose competent baseline fits the short CPU budget;
+do not substitute poor miniature language models simply because their weights are
+cached. The published implementation is a candidate, not that eligibility evidence.
+
+
+**Coordinate check, not a new campaign.** The unnormalized probability bridge
+commutes with a recipient chart change E'=EA, g'(z')=g(z'A^-1): pEA=(pE)A.
+Source coordinate changes preserving the selected logits also preserve its message.
+The current Euclidean norm adjustment need not commute. For E=I_2,
+p=(1/2,1/2), A=diag(2,1), adjusted transport in the new chart is 3/sqrt(10)
+times the transported old adjustment. This is a positive scalar difference; a
+scale-invariant continuation erases it. Independent review confirmed the algebra
+and this qualification. No arbitrary whole-transformer symmetry or observed
+behavioral failure is asserted. If a useful-message experiment survives its first
+controls, compare the same message with/without norm adjustment before inventing
+a metric or fitting another alignment. Ordinary algebra checks an operational
+requirement here; discovering useful receiver operations remains the destination.

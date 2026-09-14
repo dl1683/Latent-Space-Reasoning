@@ -3,8 +3,9 @@
 **Research resumed — latest user direction, 2026-09-14.** Keep the mission
 fixed and pivot around roadblocks. S37 and its incomplete real CLI result audit
 are parked; they do not block independent strategy or other research. Continue
-with the operational value of intervention teaching versus valid-input examples,
-without another S37 run or inaccessible-reviewer loop. No acquired capability or
+from S38 teaching-pathway findings into S39 live latent communication: inspect
+actual heterogeneous interfaces and their contribution controls. No S37 rerun or
+inaccessible-reviewer loop. No acquired capability or
 scientific negative is established by the failed attempts.
 
 
@@ -73,10 +74,11 @@ CLI result audit are parked, with no new run or scientific verdict. Latest user
 instruction resumes independent research around that roadblock. S38 separates
 teacher target construction from the student's internal training pathway, and
 pretrained donor contribution from mere dependence on an adapter's input.
-Primary sources and independent strategy reviews support these distinctions;
-they do not demonstrate a local acquisition gain. Next work makes the smallest
-teacher-target/student-pathway comparison precise and examines constructive
-ways for decoder representations to contribute to persistent encoder reasoning.
+S39 then finds actual cross-checkpoint communication implementations beyond the
+same-model core. Their useful contribution needs the identical receiver prompt
+without a message, followed by correct/permuted content and source-rollout controls.
+Pinned source review identifies these comparisons; no local gain or new run is
+claimed. Continue toward a useful small task and operationally meaningful interface.
 
 Session totals: 958 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207 + 330), five probe blocks / zero building rounds; S37 has
