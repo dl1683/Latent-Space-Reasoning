@@ -79,8 +79,10 @@ not learned-model failures. Existing planning/representation results supply
 constructive task-relative contracts. No model run or construction is selected;
 S27 closes through stipulated connected refresh. S28 now targets reuse of a
 learned receiving procedure across successive contributors; its source-dependency
-check and incremental-baseline calculation are complete. Current routing remains
-canonical; no implementation or new compute is selected.
+check and incremental-baseline calculation are complete. S29 extends the contract
+across operations; S30 records positive partial/full grafting precedents with their
+learning, runtime and attribution boundaries. Current routing remains canonical;
+no implementation or new compute is selected.
 
 **Session accounting:** 628 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207 runner lines); four probe rounds / zero building rounds.

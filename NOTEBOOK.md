@@ -27,7 +27,10 @@ Its targeted source inspection distinguishes retained preparation from recurring
 contextual inference. S28.1 adds incremental and warm-start simple readers as
 serious comparisons; support statistics and a deployable query path are distinct
 resources. These are source/analytical findings, not new experiments. Canonical
-Next-work boundary now asks about extending reuse beyond one task's evidence views.
+S29 extends reuse across operations; S30's bounded source/code check records
+positive grafting precedents and their paid learning/runtime dependencies.
+Conditional transport scaling is a prospective control question, not a reproduced
+explanation of reported gains. Follow the canonical Next-work boundary.
 
 **Accounting and custody:** 628 apparatus / 0 artifact-bearing code lines
 (98 + 119 + 204 + 207), four probes / zero construction rounds; 15 model forwards,

@@ -15,6 +15,15 @@ Audit e1061-e1062; exact receipt/hash in ledger
 Accounting remains 628 apparatus / 0 artifact-bearing code lines, four probes /
 zero building rounds, 15 model forwards. Next periodic review around 02:54 UTC.
 
+## Reusable operations and grafting — 2026-09-14, source/strategy only
+
+Canonical S29 works a source/operation reuse contract. S30 checks two primary
+heterogeneous fusion mechanisms and a pinned code release with independent readers.
+Positive interface reuse and folded weight transfer remain distinct from sequential
+acquisition. Learning, retained tails, conditional normalization and folding scopes
+are recorded in the canonical document and `heterogeneous_grafting_source_20260914`.
+No experiment, model loading or new runner.
+
 ## Continuation and growth contracts — 2026-09-14, mathematics/source only
 
 Canonical S8.1 gives a conditional mean-state closure proof and separates

@@ -208,15 +208,15 @@ statistics from fresh-query access. No cost or quality advantage is established.
 The 00:55 UTC paper block has selected this target and closed refresh scheduling;
 it does not select pretraining or an implementation.
 
-Next work asks which part of this reusable procedure can survive a change in the
-required operation, rather than only another evidence view for the same labels.
-Work one constructive extension using already-read mechanisms; identify what new
-semantic teaching is needed and what old computation could be reused. Do not
-rename classification as a new operation or require an internal algorithm graft
-before any useful acquisition counts. No new source hunt, model, benchmark or
-reproduction is selected. This is the sole detailed active routing. Preserve the
-broader denizen mathematics, direct-use routes and historical closures. Next
-periodic approach review is around 02:54 UTC after consolidation.
+S29 has worked the extension across contributors and operations, including a
+missing-combination contract that charges primitive teaching. S30's two-source
+grafting check is complete. S31 now develops the choice between acquiring an
+intermediate operation for several uses and direct task-output distillation.
+Resolve that choice through genuine direction dialogue before choosing a concrete
+next contract; no model, benchmark or reproduction is selected. This is the sole
+detailed active routing. Preserve the broader denizen mathematics, direct-use
+routes and historical closures. Next periodic approach review is around 02:54 UTC
+after consolidation.
 
 ## Conditional route choices
 
@@ -2845,3 +2845,139 @@ is whether direct grafting supplies a sufficiently constructive alternative to
 continually adding callable donors to deserve its own next strategy contract.
 Read actual data/learning/retention scopes, not abstracts; no models, code execution,
 checkpoint hunt or reproduction. Existing analytical closures remain closed.
+
+**S30.1 — normalization question before interpretation.** A transport plan moves
+probability mass; a coordinate map need not preserve that normalization. For
+nonnegative plans with row sums `1/a_out` and `1/a_in`, investigate the conditional
+bound
+
+`maxabs(Q_out W Q_in^T) <= maxabs(W)/(a_out a_in)`.
+
+If two outer layer plans each have row mass `1/L`, their elementwise geometric
+mean has row mass at most `1/L`. Raw use of all these plans could therefore make
+the transferred term small. This is a question about the *printed formula*, not
+a finding about the released implementation or reported runs: first check whether
+the code rescales/sparsifies plans before use. The interpretation-changing null
+is masked target-weight shrinkage with identical masks and interpolation strength;
+when donor scale is material, also preserve that scale in a correspondence-breaking
+control. A positive transfer claim should isolate donor-specific contribution
+from a helpful change to the target alone. No numeric run is proposed.
+
+**Two constructive precedents, source scopes checked.**
+
+- [Transport and Merge, arXiv 2602.05495v2](https://arxiv.org/html/2602.05495v2),
+  main and appendices A–D: paired-input activation correlations determine neuron
+  and layer transport; selected target weights receive transported source weights.
+  Optional adaptation trains base parameters with the transported term frozen.
+  Folding permits the target architecture to run without the donor. Appendix B
+  specifies 2,000 examples per dataset. Reported merge-only gains include Malay
+  categories and Indonesian average 38.43→39.18; medical average instead goes
+  46.30→46.23, then 47.87 with adaptation. General-task averages and individual
+  source-target pairs do not test sequential acquisition. The representation-space
+  theorem proves a linear product identity, not nonlinear behavioral equivalence.
+  The inspected paper does not fully specify adaptation/search cost or isolate a
+  shrink-only arm. These are external results, not our reproduction.
+- [Revisiting Model Stitching, CVPR 2026 final](https://openaccess.thecvf.com/content/CVPR2026/papers/Mai_Revisiting_Model_Stitching_In_the_Foundation_Model_Era_CVPR_2026_paper.pdf),
+  §§3–6: frozen visual backbones are joined by trained tokenwise interfaces. Final
+  feature matching followed by task-loss training outperforms several alternatives;
+  matched self-stitches control for trainable module, position, loss and data.
+  Cross-model gains occur but not for every pair/position. At layer 22, fMoW
+  self-stitches score 69.9/68.9 and cross-stitches 72.2/71.8. A task-agnostic
+  interface trained on approximately 1.1M images is reused with newly fitted linear
+  heads. Shared-trunk deployment retains specialized suffixes. Thus the paper
+  supplies a positive feature-interface reuse precedent, not complete donor
+  withdrawal or sequential acquisition. Main and supplement were read separately
+  from earlier arXiv versions.
+- The [stitching supplement](https://openaccess.thecvf.com/content/CVPR2026/supplemental/Mai_Revisiting_Model_Stitching_In_the_Foundation_Model_Era_CVPR_2026_supplemental.pdf),
+  A.2–A.3/B.4–B.6, charges classification training up to 100 epochs, early stopping
+  and three learning rates. VST stitch training uses one epoch over 558k pretraining
+  and 665k instruction pairs; multimodal training follows a broader recipe.
+  Its 4.3%/39% figures count extra encoder layers, not end-to-end latency. The
+  45.5%/84.2% figures average five normalized benchmark gains; one component exceeds
+  100%, so the full-model reference is not an upper bound. Prediction analysis
+  includes interference as well as rescue. Fresh heads and frozen-tail forward/
+  backward computation remain costs even when the interface is reused.
+
+**Pinned weight-transfer specification check.** Root and an independent reader
+inspected the official release at commit
+`6a822ef33d386585c57fa4e7cdd79925454336a7`; no code was executed or models fetched.
+The [activation extractor](https://raw.githubusercontent.com/chenhangcuisg-code/Cross-Architecture-Merging-for-Large-Language-Models/6a822ef33d386585c57fa4e7cdd79925454336a7/activs_llama3_modules.py#L194)
+uses model-specific tokenization and masked token means: alignment is per prompt,
+not token-to-token. It extracts attention and some MLP projections; that does not
+establish that every extracted module is transplanted.
+
+The [fusion consumer](https://raw.githubusercontent.com/chenhangcuisg-code/Cross-Architecture-Merging-for-Large-Language-Models/6a822ef33d386585c57fa4e7cdd79925454336a7/generate_hot_residual.py#L672)
+maps attention Q/K/V/O. It multiplies geometric-mean layer weights by
+`round(sqrt(L_pre L_post))`, then uses `Q_out W_B Q_in^T` without feature
+renormalization on that path. Selected-mode initialization copies original weights
+outside selected slices and computes `(1-alpha) W_base + alpha W_hot`, resolving
+the paper's interpolation/additive-formula discrepancy for this code path.
+The [transport producer](https://raw.githubusercontent.com/chenhangcuisg-code/Cross-Architecture-Merging-for-Large-Language-Models/6a822ef33d386585c57fa4e7cdd79925454336a7/core/hot_transport_chunk.py#L125)
+uses uniform probability marginals, normalizes Q by its total sum and returns it
+without barycentric scaling. The intervening caller/save path and actual paper-run
+plans remain unchecked; do not assert those runs used unrescaled Q.
+
+The [training/folding path](https://raw.githubusercontent.com/chenhangcuisg-code/Cross-Architecture-Merging-for-Large-Language-Models/6a822ef33d386585c57fa4e7cdd79925454336a7/train_hot_residual_sft.py#L535)
+freezes the transported buffer while training base parameters. Selected folding
+uses current base weights outside the mask, whereas training interpolates those
+weights with their frozen original copies. These can differ after adaptation;
+dense folding follows the patched linear function. Actual paper-run flags remain
+unverified. This is a conditional path distinction, not a demonstrated run failure.
+
+**S30.1 disposition — conditional calculation, not a reproduced mechanism.**
+For any output entry, nonnegativity gives
+`|sum_uv Q_out[i,u] W[u,v] Q_in[j,v]| <= maxabs(W) sum_u Q_out[i,u] sum_v Q_in[j,v]`,
+which proves the proposed bound under its stipulated row masses. Cauchy–Schwarz
+gives the outer geometric-mean bound. Scaling both feature maps to unit row mass
+changes their product by exactly `a_out a_in`; this compares two maps, not the
+donor and target weight norms. The code's layer multiplier corrects the simpler
+raw-layer interpretation, while caller-side feature scaling is unresolved. Stop
+this bounded inspection here. A future transfer experiment should inspect its
+actual transported/target norms and compare shrink-only plus scale-matched broken
+correspondence. No explanation of the reported benchmark gains follows today.
+
+**What changes our strategy.** Useful grafting is sufficiently concrete to retain
+as a branch alongside connected inference. The two cases occupy different points:
+trained interfaces can reuse a donor prefix/receiver suffix; direct weight transfer
+can remove donor runtime but its attributed mechanism and adaptation cost need
+stronger isolation. Neither makes the user's ambition unreasonable, and neither
+establishes that a universal capability atlas already exists. An initial working
+interface could expose which donor computation must remain, before deciding what
+to compile into the receiver. Compilation need not precede all useful acquisition.
+
+For a denizen, the desired primitive is an operation that still does the intended
+thing after crossing between worlds. Correlation transport and Euclidean feature
+matching are existing coordinate tools, useful scaffolding. Our native-math
+question is whether intervention-defined operations have reusable domains of
+validity and composition rules across those worlds. No such learned law has been
+shown here. A failed graft may reflect its interface/optimization, not a proven
+hole in the source space; separating those explanations is part of the next
+constructive contract, not a reason to demand exact equivalence before proceeding.
+
+### S31. What would justify acquiring an intermediate operation?
+
+**Definition attempt before dialogue.** Let a donor operation `T` map current
+observations into an intermediate object used by two independently specified
+consumers `C0` and `C1`. Acquisition fits a receiving operation `T_hat` using a
+declared evidence budget. A useful reuse target is improved held-out `C1(T_hat(x))`
+without giving acquisition the new instances' or second use's answer labels,
+while retaining earlier receiver uses. The consumer must already be competent
+on the intended intermediate object, or its new learning is separately charged.
+This is a prospective functional target, not a theorem or selected run.
+
+The initial lean is to identify a useful connected interface before compiling
+the donor contribution into the receiver. The strongest alternative is direct
+distillation from the outset. The extra intermediate stage is justified only if
+it supplies reuse, supervision, repair savings or deployment choices that the
+direct route does not match. Ordinary distillation is a legitimate acquisition
+route; terminology does not establish a distinct research contribution.
+
+An independent strategy response sharpens the endpoint to donor-dependent benefit
+that survives a change of downstream use. Same-receiver task-label training and
+scale/support-preserving correspondence controls can help attribution. New inputs
+alone do not separate factual knowledge, representation and computation; no claim
+that the receiver lacked the algorithm or reproduces internal donor mechanisms
+follows. The unresolved constructive ingredient is one intermediate operation
+with two competent, independently specified consumers. Another stitched accuracy
+comparison would leave that object unidentified. Dialogue should decide whether
+this condition identifies useful reuse or unnecessarily narrows the program.
