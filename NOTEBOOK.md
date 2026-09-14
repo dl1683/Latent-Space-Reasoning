@@ -2,6 +2,12 @@
 
 ## Strategy/discovery checkpoint and history — 2026-09-14
 
+S52 checks assimilation through independent ports and the existing per-request
+consumer loss. KL decomposition identifies its marginal target; two-round review
+chooses objectively assessable later uses instead of imitating donor randomness.
+A reusable sufficient-record predictor is the cheap comparator; two anticipated
+answers alone do not show operation acquisition. No empirical count changes.
+
 Fresh periodic review around 15:30 UTC followed62f85fe and separate entropy checking.
 It corrected a possible conflation of unchanged connected addition with shared
 updates that can forget old uses. S50 replay is conditional on modifying relevant

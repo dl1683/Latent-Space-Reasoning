@@ -18,17 +18,15 @@ This is the current application of the philosophy, not a replacement for it. We 
 
 Candidate evidence starts with A in a base system, B in a donor, acquisition of useful B behavior with A retained, and held-out tasks requiring both. Further acquisitions test cumulative growth; donor removal is a separate assimilation branch. Relevant controls include simple routing, direct evidence forwarding, structured readouts, retrieval and matched learning budgets. Acquisition and recurring inference costs are counted separately. Current work is autonomous strategy/discovery; definitions, sources and bounded probe results live in the canonical direction's strategy notebook.
 
-**Current research allocation:** S50 studies a published merger of semantic
-recognition and spatial masking as a concrete acquisition reference. S51 defines
-a useful depth-selection extension, but local execution is closed because the
-checked sources do not bind the trained combined-model endpoint. The fresh review
-prioritizes a testable reason to share or assimilate computations over another
-availability-driven substitution. Next investigate cumulative assimilation of useful
-fresh-input operations, retaining ordinary teaching and connected growth as valid
-alternatives. Source studies also provide connected interfaces, compressed-memory
-consumers and trained continuous-reasoning recipes as alternatives. Their existence
-does not establish cumulative acquisition. A donor can add useful information,
-make computation accessible or reduce effort. See the [current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+**Current research allocation:** select a useful operation for successive
+assimilation into a persistent receiver. Ordinary teaching, reusable structured
+records and connected growth remain serious alternatives. S50/S51 supply an external
+acquisition reference and operational lessons; that exact local episode is closed
+after its limited endpoint check. S52 clarifies what later uses a predicted
+consequence must support. These source precedents and analytical constraints do
+not establish cumulative acquisition. A donor can add useful information, make
+computation accessible or reduce effort. No new run is selected. See the
+[current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 
 **Status: exploratory direction.** No cross-model grafting, cumulative acquisition or encoder-reasoning artifact has been established. Start with the [canonical direction](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) and [current state](STATE.md). Earlier findings below remain supporting evidence with their original limits.
 

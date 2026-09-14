@@ -1,5 +1,15 @@
 # Experiments Log
 
+## S52 predicted consequences and later-use objective — 2026-09-14
+
+Analytical application of the existing consumer loss separates marginal answers
+from shared-analysis use. Independent two-round review verifies the KL decomposition
+and keeps correctness distinct from teacher agreement. Separate donor-trained ports
+need not modify previous ports. A direct learner may predict and retain a sufficient
+record once; repeated-inference baselines would be unfair. No new theorem framework,
+runner, local empirical block or model forward. Six blocks/fifteen scored forwards
+and1065 apparatus/0 artifact-bearing lines remain unchanged.
+
 ## Fresh periodic approach review — 2026-09-14, around 15:30 UTC
 
 After62f85fe and separate entropy checking, independent fresh subagent review

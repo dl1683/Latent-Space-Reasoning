@@ -32,7 +32,7 @@ tests strict interchange, not all acquisition. Evidence for one interface is
 local, not a universal law or a finished cumulative system.
 
 **Current evidence boundary:** source and implementation studies now extend
-through S51. They supply concrete trained reasoning, compressed-context reading,
+through S52. They supply concrete trained reasoning, compressed-context reading,
 stitching and separately prepared contributor interfaces. None of the inspected
 results establishes the full repeated-acquisition contract below. Published
 precedents, local results and untested combinations must remain separate.
@@ -323,6 +323,13 @@ branch, not a universal requirement for growth. Use existing S30/S42/S49 teachin
 recipes to define an informative episode before selecting compute. Ordinary direct
 teaching can be the successful acquisition route; if only connected runtime works
 adequately, that remains a legitimate alternative.
+
+S52 resolves the next contract distinction: independent ports can assimilate without
+modifying old ports, and per-request distillation need not preserve a shared analysis
+across later uses. Favor objectively assessable consequences over imitation of
+teacher randomness. Task selection must credit a direct learner's reusable sufficient
+record; two anticipated answer heads alone do not establish a reusable operation.
+One concrete useful operation is under selection; no new compute is queued.
 
 The recent investigations change three choices:
 
@@ -5630,3 +5637,108 @@ selection follows automatically. If ordinary teaching performs equally well,
 accept that route. If removal breaks adequate service, favor connected growth for
 that operation. This keeps the useful cumulative object central without making
 donor retirement or latent-specific superiority a universal mission gate.
+
+### S52. Assimilating a consequence versus matching isolated answers
+
+**Definition and question before dialogue.** In S42's proposed shared frozen
+predictor, independently learned donor ports need not modify previous ports.
+Assimilation therefore need not create shared-parameter forgetting either.
+Its open question is useful fresh-input behavior after teaching-time donor removal,
+not an obligatory interference test. S49 already identifies the missing connection
+between response prediction and a competent later-question memory consumer; do
+not rediscover that dependency or reopen the closed checkpoint branches.
+
+For this branch, distinguish two objects. A single predicted answer serves its
+request. A predicted consequence is meant to represent one analysis that remains
+usable under several later requests. Let a donor produce analysis \(Y\) for input
+\(x\), and let \(K(Y)\) be its prepared consumer memory. S49's proposed response
+loss matches consumer behavior under a request distribution. Ask whether that
+objective protects the **joint later-use behavior** when the analysis is stochastic
+or the requests are chosen adaptively, rather than merely matching each question's
+marginal answers. This instantiates S23's existing joint-compatibility distinction;
+no new abstract counterexample or numeric apparatus is selected.
+
+For a procedure analysis that selects one of two alternative prerequisites, later
+questions about each prerequisite must refer to the same selected analysis. It is
+not enough to reproduce each prerequisite's aggregate frequency across different
+analyses. This is a prospective coherence issue, not observed model behavior. A
+deterministic reference analysis removes this particular stochastic ambiguity;
+it does not guarantee the student uses its retained object consistently.
+
+The cheapest relevant comparator keeps the donor's ordinary analysis text and
+uses the same declared consumer/question policy. Direct teaching also receives
+the same analysis and permitted request supervision. Any advantage of predicting
+memory must justify its teaching and recurring work, with ordinary prefix caching
+credited to the direct route. No later request is silently given to a predictor
+that is claimed to produce its retained object before that request arrives.
+
+**Decision sought.** Choose whether the intended service requires independent
+single-question performance, repeated questions about one fixed analysis, or an
+adaptive conversation that updates that analysis. These are different operations.
+Do not force the strongest contract onto every acquisition, but do not call marginal
+question scores evidence for a stronger persistent reasoning object. No task,
+consumer modification, training or model run is selected by this distinction.
+
+**Loss calculation for the already proposed objective.** Hold the reference encoder
+and consumer fixed. Fix \(x,r\), let
+\(q_Y(a)=Q(a\mid K(Y),r)\), and define
+\(\bar q(a)=\mathbb E_{Y\mid x,r}q_Y(a)\). For a student distribution \(p\)
+with adequate support, expanding the logarithm gives
+\[
+\mathbb E_Y D_{KL}(q_Y\Vert p)
+=\mathbb E_Y D_{KL}(q_Y\Vert\bar q)+D_{KL}(\bar q\Vert p).
+\]
+The first term is independent of the student. Thus this per-request objective
+targets the marginal consumer distribution, subject to what the student's memory
+and consumer can represent. It does not by itself identify a shared latent choice
+across requests. This is ordinary KL algebra applied to S49, not a new native law
+or evidence of an actual trained failure. When requests depend on the donor's
+analysis, use \(Y\mid x,r\), not \(Y\mid x\); request selection can itself
+convey information about that analysis.
+
+A leading question can consequently make memory appear useful or unnecessary
+for the wrong reason. Keep the same requests in memory-omission and ordinary-text
+controls; record whether the question policy used the reference analysis. Requests
+chosen after the memory is produced are not automatically independent of the answer.
+For adaptive later use, histories and request policy belong to the service; matching
+isolated initial-question distributions does not establish that stronger behavior.
+
+The task may accept any coherent valid analysis, rather than require reproduction
+of the donor's random choice among valid alternatives. Do not elevate exact joint
+distribution matching to a mission requirement. The practical next contract should
+preserve the consequential content/constraints across requested uses, allow valid
+corrections and distinguish coherence from factual or procedural correctness.
+
+**Two-round review and adopted minimal contract.** `alignment_contribution_review`
+confirms the calculation and rejects a new correlation-preservation campaign.
+For the next candidate, favor a fixed consequence with objectively assessable
+answers to two independently supplied question types. Produce memory for a fresh
+case before revealing the question, then evaluate both uses of that same saved
+object. Different valid explanations or reasoning paths are acceptable. Report
+the paired case-level ability to support both uses, not an average that can conceal
+failure of one. This does not require adaptive state updates or arbitrary requests.
+
+Donor responses are teaching evidence; correctness or an explicit admissible-answer
+criterion determines success. Marginal distillation may remain the training
+surrogate. A concrete application must justify retaining the predicted consequence
+against same-evidence direct teaching, saved text and any competent direct procedure.
+Do not choose a simple arithmetic toy merely because its labels are easy to check.
+No application or compute is selected here, and the broader cumulative question
+still requires a later donor admission and retention of earlier achieved uses.
+
+**Resolved investment distinction.** Assimilation can grow independent learned
+ports over shared frozen computation; parameter interference is optional. A
+reusable consequence must be judged by its promised later uses, rather than
+coordinate matching or imitation of arbitrary donor randomness. The next substantive
+work is selecting a useful operation with this assessable contract, using actual
+teacher/consumer competence and serious direct remedies to determine whether an
+empirical probe is worth running. The algebra and contract are complete for this
+question; do not extend them into another proof framework.
+
+**Simplest remaining confound for task selection.** Two anticipated questions can
+reduce to storing two predicted answers. Give the direct learner a joint output
+and an ordinary sufficient record, produced once and reused by lookup or computation;
+do not force it to repeat inference separately for each request. Two readouts alone
+do not establish acquisition of a reusable operation. A useful parameterized later
+use may make the distinction consequential, but a structured record that already
+supports it remains a valid acquisition route, not a disqualifying baseline trick.

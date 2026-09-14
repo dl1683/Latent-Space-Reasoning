@@ -1,12 +1,15 @@
 # STATE
 
 **Research resumed — latest user direction, 2026-09-14.** Keep the mission
-fixed and pivot around roadblocks. Current source work reaches S51: a published
+fixed and pivot around roadblocks. Current source and analytical work reaches S52: a published
 semantic/spatial merger supplies a concrete acquisition reference with original-task
 evaluations and joint use. Its attribution limits and the next interaction-retention
 question are recorded in the canonical direction. A depth-selection extension is
 expressible, but checked sources do not bind the trained combined-model endpoint.
 Local execution of this reference episode is closed; continue strategy elsewhere.
+S52 clarifies assimilated ports and later-use objectives: marginal answer matching
+does not establish a persistent analysis, and ordinary sufficient records are a
+serious reusable comparator. Selection now concerns a concrete useful operation.
 The S47 real-data panel is closed with a sufficient direct lexical remedy.
 S37 and its incomplete real CLI audit remain parked; neither blocks strategy.
 No new model run, acquired capability or intrinsic latent-space failure is claimed.

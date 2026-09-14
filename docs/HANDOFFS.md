@@ -77,6 +77,9 @@ sharing or assimilation. Unchanged connected extension creates no parameter
 forgetting by itself; do not manufacture shared training merely to test replay.
 The next question family is cumulative assimilation of fresh-input operations,
 using existing teaching recipes, with connected growth as a legitimate alternative.
+S52 resolves marginal-versus-shared-analysis evaluation and credits a direct learner's
+reusable record. Select a useful operation; do not extend this into another proof
+or correlation campaign. No model run is queued.
 Source alternatives and closed branches are consolidated in the [live boundary](../theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
 Memory reuse alone does not establish successive capability acquisition. Useful
 information, computation, accessibility and effort are legitimate benefits; new
