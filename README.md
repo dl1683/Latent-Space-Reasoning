@@ -1,53 +1,39 @@
 # Latent Space Reasoning
 
-**Paused by user request, 2026-09-14.** Research is checkpointed through S65;
-no experiment is running or queued. Start next session with the
-[restart handoff](docs/HANDOFFS.md). The broad mission remains open.
+> *How does math change at high dimensions? The phenomena that emerge — concentration of measure, almost-orthogonal packing, interference, distance uniformity — are not curiosities but the native physics of these spaces.*
 
-> *Every neural network has a vast mathematical world inside it. We treat it as ordinary vector space and apply linear algebra. But what if it has its own mathematics — structure that exists, that the model uses, and that our standard tools literally cannot see?*
+This project studies the **mathematics of high-dimensional spaces**: the geometry, algebra, and analysis that become qualitatively different when d >> 1. The scope spans neural network representations, traditional machine learning, and pure high-dimensional mathematics — any domain where high-dimensional structure determines behavior.
 
-This project explores the **native mathematics of latent spaces**: take the space as a world and ask what a denizen would need to invent to navigate it. What constitutes identity, a move, effort, a map or a reusable law? Native means coordinate-independent and effective for the medium; existing mathematics is a foundation to use. This philosophy is broader than any one research direction.
+LLM latent spaces (d=768–4096+), kernel feature maps, embedding spaces, and high-dimensional statistical models all operate in regimes where low-dimensional intuition fails. Understanding *how* it fails — and what replaces it — is the research question.
 
-## Current direction: cumulative capability acquisition
+## Empirical foundation: perturbation sensitivity in language models
 
-**Can a persistent AI system acquire capabilities from successive pretrained models, combine them, and preserve what it already knows?**
+86 experiments across 10 language models established a consistent hierarchy in how code perturbations affect model output:
 
-This is the current application of the philosophy, not a replacement for it. We are exploring:
+**Position >> operator family >> sign >> answer identity >> meaning.**
 
-- **Capability mapping and grafting:** identify useful computations and their interfaces, then investigate combining language, domain and multimodal capabilities across models. Capabilities need not occupy isolated regions. Reducing unnecessary verbosity is another application when quality is preserved and total cost falls.
-- **Reasoning over encoders:** use pretrained representations through reusable updates and composition, separating the encoder's contribution from what newly attached reasoning machinery learns.
-- **Growth across model generations:** integrate additional encoders and representations from decoder-only models, with diffusion and multimodal donors as prospective extensions. The persistent representation may itself expand rather than force every contribution into one fixed vector space.
+1. **WHERE you modify code is the dominant factor.** After-expression edits (comments, whitespace, dead code) produce consistent, reliable effects. Expression-adjacent modifications (parenthesization, type casts, identity operations) produce heterogeneous, cell-specific effects. The reliability gap between position types is large (AA ≈ 0.7–0.9 vs DD ≈ 0.1–0.5) and universal across tested models.
 
-**Connected growth** retains donor models at runtime. **Assimilated growth** retains an acquired capability after donor removal. Neither alignment nor adding models establishes useful growth by itself. A token embedding table is not a model's contextual knowledge and computation; exporting a backbone does not automatically make it small or cheap.
+2. **Sensitivity has multiplicative structure.** Behavioral distance decomposes as d[cell, pert] ≈ fragility[cell] × magnitude[pert], with R² = 0.82–0.88 in log space. This is a first-order Taylor approximation (small-angle regime), with a 12–25% structured residual from cell × perturbation group interaction.
 
-Candidate evidence starts with A in a base system, B in a donor, acquisition of useful B behavior with A retained, and held-out tasks requiring both. Further acquisitions test cumulative growth; donor removal is a separate assimilation branch. Relevant controls include simple routing, direct evidence forwarding, structured readouts, retrieval and matched learning budgets. Acquisition and recurring inference costs are counted separately. The research mode on user-authorized resumption is strategy/discovery; definitions, sources and bounded probe results live in the canonical direction's strategy notebook.
+3. **Models agree on what kinds of perturbations matter, but not on which expressions are vulnerable.** Within-model perturbation-type ordering correlates at +0.84 within architecture families. Cross-model cell vulnerability correlations are near zero. The perturbation-level structure transfers; the cell-level structure is model-specific.
 
-**Research direction on resumption:** investigate useful successive acquisition, with
-ordinary teaching, reusable records and connected growth as serious alternatives.
-S50/S51's exact local episode is closed; S53's reaction-request execution is
-deferred after its bounded access check. S52 retains the later-use distinction,
-and S54/S55's source lookups are closed with their evidence limits preserved.
-S58 adds a bounded local positive: correct specialist pseudo-labels improve a
-species head over frozen recipient features after donor removal. Soft targets
-do not beat hard labels under the locked recipe. These findings do not establish
-new backbone knowledge, cumulative acquisition or a cost advantage.
-S62 completed its later-attribute comparison and does not justify preferring
-specialist internal features over full logits or existing recipient features on
-that small, annotation-limited panel. The panel is closed. Follow the
-[current strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary).
+4. **Expression adjacency drives heterogeneity.** The same semantic operation (e.g., wrapping in parentheses) produces a reliable cell-ranking when placed on its own line (O-O ≈ 0.66) but an unreliable one when adjacent to the expression (D-D ≈ 0.39). Token-level interaction between modification and expression tokens creates cell-specific, position-dependent noise.
 
-S65 tested supplied factual revisions in a small language-model consumer. All
-18 responses terminated, but none of three capital prerequisites was answered
-correctly: the interface elicited country names instead. This does not establish
-missing knowledge or failed competent composition. The result and independent
-manual reviews are preserved; a plain-question diagnostic is unrun and deferred
-until the user resumes. No further model integration is selected.
+5. **Meaning is undetectable in arithmetic.** Within the same operator family, meaning-preserving vs meaning-changing perturbations produce indistinguishable 11-bin output distributions (effect sizes +0.002/+0.008/−0.090 across 3 architectures, all consistent with zero). The answer-identity confound makes meaning inseparable from answer change in this domain.
 
-**Status: exploratory direction.** No cross-model grafting, cumulative acquisition or encoder-reasoning artifact has been established. Start with the [canonical direction](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md) and [current state](STATE.md). Earlier findings below remain supporting evidence with their original limits.
+**Models tested:** Qwen3 (0.6B/1.7B, base and instruct), SmolLM2 (135M/360M/1.7B, base and instruct), Phi-1.5, StableLM-2-1.6B, CodeGen-350M. All experiments are CPU-only, deterministic, and fully logged.
 
-## Research history and continuity
+See [current state](STATE.md) and [experiment history](experiments/EXPERIMENTS.md).
 
-The [prior program](legacy/README.md) explored latent perturbation, diffusion repair and aggregation, including the permanent arithmetic-claim correction. The native-mathematics program then investigated frozen-encoder geometry, residual dynamics, causal interventions, learned carriers, behavioral quotients and continuation laws. Its conditional mathematics, bounded positive findings and structured negatives remain part of the foundation; closed lines are not silently reopened. [Experiment history](experiments/EXPERIMENTS.md) · [Mathematical foundation](theory/AXIOMS.md) · [Structured negative](docs/STRUCTURED_NEGATIVE_2026_08_29.md)
+## Research history
+
+1. **General mathematics of high-dimensional spaces** (current): Analytical/theoretical exploration of how math changes when d >> 1. Scope: pure math, statistical physics, information theory, random matrix theory, kernel methods. Key results so far: interference hierarchy (t-body terms suppressed by d^{-(t-1)/2}), representation-computation gap (store exp(d), compute √d), rate-distortion optimal allocation (α* = s/2 for Zipf(s) inputs).
+2. **Perturbation sensitivity** (empirical foundation): 86 experiments across 10 models characterizing the sensitivity hierarchy. Balanced factorial designs, 69 cells × 24 perturbation types, full-logit and 11-bin readouts.
+3. **Spectral/frame analysis** (closed 2026-09-18): Tensor composition line killed by row-permutation argument. Power-law eigenspectra from Zipfian training confirmed. Information-theoretic eigenspace priority confirmed. Spectral steepening descriptive but not predictive.
+4. **Omega modulus** (closed 2026-09-17): ~28,000 readouts across 5 architectures. Cross-architecture amplification confirmed; mechanism unresolved; cross-question transfer negative.
+5. **Cumulative capability acquisition** (S1–S65, closed): explored cross-model grafting, reasoning over encoders. No artifact established.
+6. **Prior program** ([legacy/](legacy/README.md)): latent perturbation, diffusion repair, aggregation. Produced the nine breakpoints below.
 
 ## A Depth-Dependent Readout Effect
 

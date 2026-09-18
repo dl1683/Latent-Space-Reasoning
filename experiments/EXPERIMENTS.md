@@ -1,5 +1,1206 @@
 # Experiments Log
 
+## Controlled Eigenspace Vulnerability — Entry 92 Overturned (2026-09-18)
+
+### Controlled eigenspace perturbation (entry 118, SmolLM2-135M)
+
+Injected fixed-magnitude perturbations into individual gate_proj eigenspaces
+at the MLP input (post-LN) across layers 0, 15, 29. All 576 eigenspaces
+tested at each layer. Result: POSITIVE beta at all layers (sensitivity
+INCREASES with eigenvalue, not decreases). Top eigenspaces are 3-14x more
+sensitive than tail. Overturns entry 92's "tail vulnerability" interpretation.
+The SNR prediction (beta=-0.5) rejected; observed beta = +0.25 to +0.41.
+
+Entry 92's correlation was confounded: natural perturbations that project into
+top eigenspaces at late layers are SMALL (absorbed by earlier layers), while
+tail-projecting perturbations are LARGE (unabsorbed). The tail vulnerability
+is a multi-layer processing artifact, not an eigenspace property.
+
+**Data:** experiments/results/frame_analysis/eigenspace_vulnerability.json
+**Script:** scratchpad/eigenspace_vulnerability.py
+**NOTEBOOK entry:** 118
+
+---
+
+## General HD Mathematics — Analytical Results (2026-09-18)
+
+**Direction pivot:** From model-specific experiments to general mathematical
+exploration of high-dimensional spaces. Scope: pure math, statistical physics,
+information theory, random matrix theory, kernel methods.
+
+### Interference hierarchy (entry 117, analytical)
+
+Derived: in R^d, t-body interference terms in degree-p polynomial maps scale
+as d^{-(t-1)/2} (RMS). Proven for p=2 (quadratic). Connects to cluster
+expansion (stat phys), 1/N expansion (QFT), Hoeffding decomposition (statistics).
+The "mean field" of HD spaces is independent feature processing.
+
+### Representation-computation gap (entry 117, analytical)
+
+Derived: store O(exp(d)) features (packing), linear computation on O(√d)
+simultaneously (coherence-limited), bilinear computation on O(1) simultaneously
+(dimension-independent). The gap is exponential. Training closes it by structuring
+weights. Intermediate dimension m provides computation bandwidth, not d.
+
+### Rate-distortion optimal allocation (entry 117, analytical)
+
+Proved: for Zipf(s) inputs, optimal eigenvalue exponent α* = s/2. Lagrange
+optimization. Observed model exponents (0.35-0.90) are steeper than optimal.
+The 1-body (mean-field) allocation becomes exact as d → ∞.
+
+**Theory notes:** scratchpad/interference_hierarchy.md, scratchpad/hd_computation_capacity.md
+**NOTEBOOK entry:** 117
+**What we learned:** HD spaces have a natural hierarchy where independent feature
+processing is the dominant term, with corrections suppressed by powers of d.
+This connects neural network architecture (depth, width, gating) to fundamental
+HD geometry. The representation-computation gap explains why transformers need
+both width (for packing) and depth × intermediate width (for computation).
+
+---
+
+## Row-Permutation Series: Composition is a Tensor Phenomenon — 2026-09-18
+
+**Central question:** What invariant captures MLP composition? Can static
+weight analysis characterize gated MLP function, or is composition
+fundamentally data-dependent?
+
+### Row-permutation challenge (entry 103)
+
+Prescribed by Droid adversarial review (entry 102). Permuted up_proj rows
+randomly (seed 42) on SmolLM2-135M, all 30 layers, 10 prompts.
+
+**Result:** Permutation preserves all D_k (diff < 5e-08) and all Gram
+operators, but destroys MLP output (mean relative error 139%, range
+1.04-1.64). Function-preserving control (consistent permutation across
+gate/up/down) has zero error (2.5e-07). Separation: 5.5 million to 1.
+
+### Row-wise cosine analysis (entry 104)
+
+Computed cos(gate_i, up_i) for all 1536 neurons per layer.
+
+**Result:** Mean cosine = -0.001, fraction positive = 0.499. Indistinguishable
+from random. In d=576, all pairwise cosines concentrate at zero by HD
+geometry. Row pairing matters but carries no per-pair directional signature.
+
+### Cross-matrix SVD (entry 105)
+
+Computed SVD of G = W_gate^T @ W_up (d x d) for original and permuted pairing.
+
+**Result:** Nuclear norm ratio 1.004, effective rank 410 vs 413, power-law
+exponent 0.372 vs 0.370. Nearly identical. The cross-matrix spectrum does
+NOT distinguish correct from random pairing.
+
+### Bilinear vs gated sensitivity (entry 106)
+
+Three modes under same permutation: SwiGLU, linear-gated (no silu), additive.
+
+**Result:** SwiGLU error = 1.39, linear-gated = 1.28 (ratio 1.09),
+additive = 0.88. The silu nonlinearity adds only 9% extra sensitivity.
+The elementwise multiply (gating) adds 46% over additive. The multiplicative
+tensor structure, not the activation function, drives composition sensitivity.
+
+**Converging conclusion:** No tested weight-only invariant captures gated MLP
+composition. D_k, row cosines, and cross-matrix SVD are all blind or washed
+out. The compositional structure is a 3-way tensor phenomenon created by
+multiplicative gating, not reducible to pairwise matrix statistics.
+
+### Predictive rewiring challenge (entries 108-109)
+
+Droid-prescribed decision experiment. 60 partial permutations per layer,
+5 test layers, train/test prompt split.
+
+**Entry 108:** Input-conditioned tensor predictor (gate+input, no silu) has
+R2 = 0.90 on held-out prompts vs DU (gate-blind) R2 = -2.4. But DU's poor
+R2 is calibration transfer failure, not ranking failure (correlation = 0.97).
+Note: activation-weighted predictor was tautologically perfect (same formula).
+
+**Entry 109 (decisive):** Weight-only tensor ||ΔT||_F (includes gate via
+Hadamard product tr(GG^T ⊙ D^TD ⊙ ΔUΔU^T)) vs weight-only DU ||DΔU||_F.
+R2: tensor 0.94, DU 0.95. Nearly identical. Gate structure in weights adds
+NOTHING to damage prediction. Input-conditioned tensor only marginally better
+(R2 = 0.96).
+
+**LINE CLOSED.** Per Droid's decision rule: DU suffices, gate-value tensor
+coupling is not a discoverable invariant. The sensitivity to row permutation
+is about how D amplifies changes in U, not about gate-up coupling.
+
+**NOTEBOOK entries:** 103-109
+**Data:** experiments/results/row_permutation/
+**Scripts:** row_permutation_challenge.py, row_aware_analysis.py,
+cross_matrix_svd.py, bilinear_vs_gated.py, predictive_rewiring.py,
+weight_only_predictor.py
+**What we learned:** D_k (Gram-operator invariants) are insufficient for
+composition — valid negative (entry 103). But there is no deeper weight-only
+compositional invariant hiding in the gate-up coupling. Permutation damage
+is predicted by the DU product. The gate's role is input-specific modulation,
+not weight-level coupling. The "tensor composition" framing was overclaimed;
+the correct framing is hidden-unit gauge symmetry.
+
+---
+
+## Mixed Moment Critical Exponent — 2026-09-18
+
+**Central question:** Can pairwise spectral statistics (eigenspectrum,
+coherence) predict frame operator composition, or do mixed moments carry
+essential information about eigenvector alignment?
+
+### Synthetic proof (entry 97)
+
+5 ensembles x {d=64-1024} x {gamma=2,4} x 30 trials. Power-law frame
+operators with alpha=0.8 (matching real models). Shared top-25% eigenvectors
+vs random. 6/6 pre-registered predictions confirmed.
+
+**Key result:** D1 separates shared from random at z > 49 across all d.
+The separation GROWS as d^{0.575} (predicted d^{0.6}). Critical exponent
+alpha = 0.5: below it pairwise geometry suffices; above, mixed moments are
+essential. Real models (alpha=0.6-0.9) are in the "fails" regime.
+
+### Real model verification (entry 98)
+
+SmolLM2-135M (d=576) and Qwen3-0.6B (d=1024). Normalized D1_norm between
+gate_proj and up_proj frame operators at every layer.
+
+**Key result:** D1_norm positive at ALL layers (0.05-1.32). Random baseline
+= 0. Sharing increases through depth, peaking at last layers (Qwen3 L27:
+1.32, 10x early baseline). Invisible to per-component spectral analysis.
+
+### D-scaling across SmolLM2 ladder (entry 100)
+
+SmolLM2-135M (d=576), 360M (d=960), 1.7B (d=2048). Same architecture
+family, 3.5x range of dimensions.
+
+**Key result:** D1_norm CONSTANT at ~0.21 across all dimensions. Training
+co-adapts alpha (spectral exponent decreases with d) to maintain constant
+cross-component coupling. Top-4 eigenvector overlap increases (0.35 -> 0.42)
+but per-vector contribution decreases (flatter spectra). Larger models
+distribute coupling more evenly across depth.
+
+**Formal theorem:** theory/mixed_moment_critical_exponent.md
+**Data:** experiments/results/frame_composition/
+**NOTEBOOK entries:** 97-100
+**What we learned:** Pairwise geometry is provably insufficient for trained
+networks. Mixed moments are the native cross-component information. A phase
+transition at alpha=0.5 separates two regimes. Real models maintain constant
+cross-component coupling (~0.21) by co-adapting spectral shape with dimension.
+
+---
+
+## Frame-Theoretic Analysis of Trained Transformers — 2026-09-18
+
+**Central question:** Do trained transformer weight matrices approximate the
+tight frame / equiangular tight frame structure assumed by formal superposition
+theory? What mathematical structure do they have instead?
+
+### Frame analysis (3 models)
+
+Analyzed embedding and MLP weight matrices of SmolLM2-135M (d=576),
+Qwen3-0.6B (d=1024), and Phi-1.5 (d=2048) as overcomplete frames.
+
+**Key finding:** Real models are 100x-10,000x from tight frame ideal.
+Condition numbers: 640-12,000 for embeddings, 180-25,888 for MLPs.
+Coherence 15-30x the Welch bound. The formal theory's assumptions are
+massively violated. Yet models achieve superposition.
+
+### Eigenspectrum shape
+
+Spectra follow power laws (exponent -0.35 to -0.90), NOT Marchenko-Pastur
+(random matrix) or uniform (tight frame). Tail exponents steepen through
+depth (-1.3 to -1.8). SmolLM2 embedding is effectively 4-dimensional
+(participation ratio 3.9/576). Gate_proj is steeper than up_proj universally.
+
+### Eigenprojection test (H1b: tail vulnerability)
+
+Perturbation vectors projected into gate_proj eigenbasis at 5 layers per model.
+High-sensitivity perturbations project LESS onto top eigenspaces at the input
+layer (SmolLM2 L0: rho=-0.43; Qwen3 L0: rho=-0.83, p=0.04). Interpretation:
+top eigenspaces are robust (high energy); tail eigenspaces are fragile. The
+power-law spectrum IS the vulnerability gradient. Late-layer patterns diverge
+across architectures (compensation strategies differ).
+
+### Rate-distortion prediction and first-principles derivation (entries 95, 99, 101)
+
+Monte Carlo test: random embedding directions with information-weighted norms
+produce FLAT spectra indistinguishable from uniform random. Power law requires
+directional structure from training. Phi-1.5 calibration falsifies monotone
+alpha(d); controlling variable is n/d (overcompleteness ratio), not d alone.
+
+**First-principles confirmation:** Single-layer embedding trained with SGD on
+Zipfian tokens + cross-entropy produces power-law eigenspectra. Uniform tokens
+→ flat spectrum. Power law exponent controlled by (Zipf s, n/d ratio).
+n/d=2 → exponent -2.39; n/d=128 → exponent -0.97. Zipf s=0 → flat (-0.25);
+s=1 → steep (-1.75).
+
+Per-token eigenspace rank: SmolLM2 median 32/576 (5.6%), Qwen3 326/1024
+(31.8%). Tokens are hierarchically clustered in eigenspace.
+
+### Effective Zipf measurement and quantitative prediction (entry 107)
+
+All three tokenizers show effective Zipf s ≈ 0.5 (not s = 1.0). BPE subword
+tokenization flattens the frequency distribution. 5×5 grid of toy models
+(s ∈ {0.3-0.7}, n/d ∈ {8-128}) quantifies the joint dependence. Prediction
+for Phi-1.5 (s=0.53, n/d=25): within 21%. High-n/d predictions fail because
+toy training (5000 steps) is insufficient for convergent organization.
+
+Three-variable model: exponent = f(Zipf s, n/d, training convergence).
+
+### Spectral-composition bridge (entry 110) — NEGATIVE
+
+Tested whether training on Zipfian data jointly organizes spectral structure
+AND compositional gate-up pairing. Minimal model (n=1024, d=64, h=128, untied
+unembed), 5 seeds, 4 conditions (gated/frozen-embed/additive/uniform).
+Fable-reviewed pair-sensitive signed-product statistic with Bonferroni correction.
+
+**Result:** Bridge hypothesis REJECTED (Bonferroni p=1.0). Spectral structure
+does not predict composition. SURPRISE: additive MLPs develop z=-7.79 spectral
+anti-pairing; gating disrupts this, explaining why gated MLPs are pairing-sensitive.
+
+### Spectral sensitivity test (entry 115) — NEGATIVE
+
+Zero-ablation of up_proj at each layer of SmolLM2-135M. Measure output divergence.
+
+**Result:** Spectral exponent does NOT predict sensitivity (rho=+0.28, p=0.14).
+Sensitivity is U-shaped (L0 and L29 critical, middle redundant). Position
+dominates over spectral structure. The depth gradient is descriptive, not
+predictive of functional importance.
+
+### Scale test and LN confound (entries 113-114)
+
+SmolLM2-360M confirms up_proj steepening (rho=-0.862). Post-LN spectra still
+flatten with depth (rho=+0.45, p=0.01), resolving the layer norm confound.
+Steepening rate approximately scale-invariant (-0.162 vs -0.142 normalized).
+
+### Hidden state spectra — complementary specialization (entry 113)
+
+Forward pass of SmolLM2-135M on 677 tokens of real text. Hidden state
+covariance eigenspectrum at each layer.
+
+**Result:** Hidden state spectra FLATTEN with depth (rho=+0.871, p<0.001).
+Weight spectra steepen (rho=-0.891). Anti-correlated. Rules out residual
+accumulation as the cause of weight steepening. Interpretation: complementary
+specialization — richer representations require more selective weights.
+
+### Spectral depth gradient (entry 112)
+
+Comprehensive depth profile across MLP and attention components. Both models.
+MLP gate/up Gram exponents, attention QK/OV effective ranks, gate-up pairing z-scores.
+
+**Result:** MLP up_proj exponent steepens monotonically with depth: SmolLM2
+rho=-0.891, Qwen3 rho=-0.649 (both p<0.001). Gate follows. Attention QK/OV
+effective ranks show NO depth trend. Creates a generalization-to-specialization
+gradient: early layers use many spectral directions (flat spectra), late layers
+concentrate on few (steep spectra). The pairing dipole (entry 111) sits at
+the extreme end. QK effective rank = 80% of d_head; OV = 93%.
+
+### Real-model pairing verification (entry 111)
+
+Computed signed-product pairing statistic across all 30 layers of SmolLM2-135M.
+200 shuffles per layer, embedding eigenbasis. Pure weight analysis.
+
+**Result:** Aggregate top-5 z = -0.11 (p=0.375, not significant). 28/30 layers
+show z ≈ 0 — confirms gating destroys anti-pairing in real models. ANOMALY:
+layer 28 (penultimate) shows POSITIVE pairing: top-5 z = +2.48, 137/576
+positive-significant eigenvectors, max z = 11.5, Bonferroni p ≈ 1e-6. Suggests
+near-output layers develop spectral co-alignment from concentrated loss gradients.
+
+**Data:** experiments/results/frame_analysis/real_model_pairing.json
+**NOTEBOOK entries:** 88-101, 107, 110-115
+**What we learned:** The theory-practice gap is RESOLVED for embeddings.
+Power law emerges from Zipfian data + gradient descent. The mechanism is
+directional structure (organized token-eigenspace alignment). The degree of
+organization depends on overcompleteness ratio n/d, not d alone. Effective
+Zipf s ≈ 0.5 for BPE tokenizers. Spectral structure and compositional
+pairing are INDEPENDENT — the additive anti-pairing discovery (entry 110)
+shows that gating decouples pairing from spectral constraints.
+
+---
+
+## HD Geometry Probes — 2026-09-18
+
+High-dimensional geometry of transformer hidden states across layers.
+Model: SmolLM2-1.7B (24 layers, d=2048). All probes: last-token extraction, fp32 CPU.
+
+**Central question:** Do transformer representations exhibit native high-dimensional mathematical structure beyond standard R^n geometry?
+
+### Probe 1: Arithmetic expressions (ARTIFACT)
+
+- 100 arithmetic expressions (`x = a op b`), all sharing suffix `\nprint(x)\n# Output: `
+- **ARTIFACT:** Shared suffix made all last tokens identical → cos=1.0 at L0
+- Apparent "spread-then-concentrate" hunchback was context propagation artifact
+- **Status:** Invalidated. Confirmed by Probes 2-3 which showed no hunchback.
+
+### Probe 2: Diverse inputs (clean)
+
+- 150 inputs: 50 arithmetic, 50 natural language, 50 code (bare text, no shared suffix)
+- **NO hunchback** for any class or combined. All trajectories monotonically concentrate.
+- Cross-class convergence zone at L12-L20 (~0.52-0.65), then L24 separates domains
+- Arith-code stay close (0.70); NL splits from both (0.35-0.37)
+- Per-class final cosine: arith 0.956, NL 0.806, code 0.824
+
+### Probe 3: Controlled similarity threshold (clean)
+
+- 120 inputs: 4 sets × 30 (identical_prefix, paraphrases, same_domain, cross_domain)
+- **NO hunchback** for ANY input set. All monotonically concentrate.
+- Final cosine preserves input similarity ordering (identical_prefix 0.871 > cross_domain 0.764)
+- Differentiation threshold hypothesis not supported
+
+### What survived Fable + Droid dual review
+
+1. Cross-domain mid-layer convergence → final-layer separation (real but not novel)
+2. Context-propagation mechanism (identical last token → hunchback) is concrete finding
+3. Per-class final cosine reflects next-token distribution similarity
+4. **All patterns are known phenomenology using standard R^n tools** — not breakthrough level
+
+### What was learned
+
+- ID hunchback, anisotropy, trajectory geometry are well-studied (5+ papers cited by reviewers)
+- Input cosine ≠ feature superposition (category error corrected)
+- eff_dim bounded by sample size n (rank ceiling), not d
+- cos_mean = (n||ȳ||² - 1)/(n-1) — the "dissociation" is elementary
+
+## MP-Deviation & Interference Composition — 2026-09-18
+
+Zero-cost reanalysis of 7-model balanced kill data (69 cells × 24 perturbations).
+
+### MP-Deviation Analysis (KILLED)
+
+Tested whether eigenvalue spikes above Tracy-Widom threshold in behavioral Gram
+matrices predict transfer hierarchy. Recommended by Fable strategic review R2.
+
+- All 7 models: 1-3 spikes above TW (MP deviations exist)
+- Spike overlap does NOT predict held-out transfer (rho near 0, all splits)
+- Spike count ~ gap correlation: split-dependent artifact (p=0.034 interleaved → p=0.562 full)
+- MP framework adds no predictive power over standard PCA
+- **Kill criterion #2 triggered:** deviations exist but don't predict
+
+### Interference Composition / Transitivity (KILLED)
+
+Tested whether perturbation correlations follow product rule r(i,k) ~ r(i,j)*r(j,k).
+Deviations would indicate a composition law.
+
+- Raw: positive residual +0.13 to +0.20 (all 7 models) — apparent superadditivity
+- 3-factor PCA captures 79-97% variance
+- After factoring: residual flips to -0.02 to -0.12 — superadditivity ENTIRELY from shared factors
+- Factors are architecture-family-specific (Qwen3-StableLM cluster; SmolLM2 cluster)
+- **Kill criterion triggered:** composition explained by ~3 trivial factors
+
+### Behavioral Rank Bootstrap (POSITIVE)
+
+Bootstrap test: is behavioral rank model-intrinsic or perturbation-set-dependent?
+Zero-cost reanalysis of balanced kill data.
+
+- Behavioral rank IS model-intrinsic (matches synthetic rank-k, NOT random)
+- Rank varies 1 (SmolLM2-360M) to 4+ (SmolLM2-1.7B-Instruct)
+- PR predicts k80 perfectly: rho=0.954, p=0.001
+- Instruction tuning doubles PR (1.32→2.62)
+
+### Weight Spectral Bridge (KILLED)
+
+Tests whether weight matrix spectral properties predict behavioral PR. CPU only.
+
+- No weight spectral quantity predicts behavioral PR (all p>0.25)
+- **Decisive:** SmolLM2 base/instruct have identical weight spectra (PR delta 0.1%)
+  but 98% different behavioral PR
+- Weight spectra encode capacity, not behavioral routing
+
+### Jacobian Derivation (KILLED — Fable R4)
+
+Theory-first: derive sensitivity hierarchy from attention Jacobian. Value/routing
+channel decomposition, causal masking argument.
+
+- Value/routing dichotomy stated backwards (both zero at t<p, both nonzero at T)
+- Perturbations not in Jacobian domain (variable length changes)
+- d_add_zero falsification: appends "+0" (zero original positions touched), should
+  behave A-like under theory. FAILS in 6/7 models (rho vs A = 0.06-0.86 vs AA 0.64-0.94)
+- Not novel: QK/OV circuit split (Elhage 2021) + adversarial Jacobian (Goodfellow 2015)
+- R3 kill criteria: 3/4 met. See scratchpad/fable_jacobian_r4.md
+
+### Attention Routing Diversity (KILLED)
+
+Tests whether base vs instruct routing diversity explains behavioral rank difference.
+CPU, ~50 forward passes per model on SmolLM2-1.7B base/instruct.
+
+- Routing nearly identical (delta <2% in heads changed, <1% in Jaccard)
+- 50-97% of heads change for every perturbation (not sparse)
+- Routing change is positional (token insertion), not content-based
+- Behavioral rank 2× difference does NOT come from routing diversity
+
+### Cumulative assessment
+
+Behavioral data (69×24) is intrinsically rank-3. All structure reduces to 3 architecture-
+family-specific vulnerability factors. RMT, interference composition, transitivity,
+weight spectra, Jacobian theory, and routing diversity add nothing beyond PCA.
+Dataset is exhausted for high-d analysis.
+
+**HD Math direction KILLED** (Fable R3 criterion #1 triggered):
+3 theory-first cycles (concentration/routing, weight spectral bridge, Jacobian),
+0 surviving testable predictions. One salvage finding: d_add_zero dissociates
+positional from computational accounts of the hierarchy.
+
+## TRHO Transfer Rho Spectrum — 2026-09-17
+
+Behavioral transfer rho across language model architectures, training strategies, and perturbation types.
+2 model families, 9 configurations, 40-50 cells per experiment.
+
+**Central question:** Is low behavioral transfer (rho) a universal property of language models,
+and does it vary with perturbation type?
+
+### Key Findings
+
+1. **Transfer hierarchy established:**
+   - Within-surface rho: 0.63-0.72 (trivial perturbations are self-consistent)
+   - Cross-type rho: 0.08-0.36 (surface cannot predict semantic; Qwen p=0.13 NOT significant)
+   - Within-semantic rho: 0.14-0.29 (structural changes unpredictable)
+
+2. **Effective dimensionality (model-independent):**
+   - Surface perturbations: ~1.9 effective dimensions
+   - Semantic perturbations: ~4.1 effective dimensions
+   - Ratio: 2.2x in BOTH Qwen3 and SmolLM2
+   - Semantic PC1 captured by surface (74-93%), but PC3/PC4 nearly orthogonal (2-4%)
+
+3. **1/sqrt(d_eff) bound:**
+   - Matches surface rho within 2% (predicted 0.731, observed 0.718)
+   - Overshoots semantic by 3.7x (predicted 0.497, observed 0.135)
+   - Excess non-transfer: semantic perturbations have adversarial structure beyond dimensionality
+
+4. **Perturbation correlation confirms hierarchy:**
+   - Surface correlations: 0.48-0.65 (perturbations probe same subspace)
+   - Semantic correlations: 0.18-0.25 (each perturbation probes different pathway)
+   - Commutative reorderings (a+b vs b+a) produce non-zero TV: refutes complexity confound
+
+5. **Bootstrap CIs (500 iterations):**
+   - Qwen cross-type: [-0.031, 0.341] — includes zero, cannot reject null
+   - SmolLM2 cross-type: [0.185, 0.709] — excludes zero
+   - All within-surface CIs exclude zero
+
+6. **Readout dependence:**
+   - 11-bin (task-specific): rho 0.13-0.30
+   - Full-logit cosine (full behavioral state): rho 0.25-0.68
+   - Phi-1.5 full-logit ERASES the semantic gap entirely (surface 0.70, semantic 0.66)
+   - Task-specific information transfers worst
+
+7. **Biology >> LLM:** Protein/yeast rho 0.88-0.98 vs LLM semantic 0.14-0.29.
+
+8. **Noise calibration clean:** Deterministic TV=0.0, permutation p<0.001, 4.9σ above null.
+
+9. **Perturbation transfer matrix (full-logit):**
+   - Qwen: semantic block mean rho=0.361, worst pair varname_y<->assign_twice at 0.044
+   - SmolLM2: semantic block mean rho=0.613 (intermediate)
+   - Phi-1.5: semantic block mean rho=0.754 (explains gap erasure: high within-semantic correlation)
+   - No negative correlations in full-logit; 11-bin negatives were readout artifacts
+   - func_call universally lowest-correlated semantic perturbation across all models
+
+10. **NL math transfer rho (Qwen3-1.7B-Base):**
+    - ALL rho values collapse vs code. 11-bin surface: 0.518 (vs 0.685 code), semantic: 0.094 (vs 0.309)
+    - NL "surface" perturbations are high-dimensional (3.81 vs 1.62): every word is semantic
+    - Dimensionality ratio shrinks (1.44x NL vs 1.99x code) because NL surface is also high-dim
+    - Implication: code alignment is partially certifiable (trivial perturbation class exists);
+      NL alignment is uncertifiable (no trivial perturbation class in NL)
+
+11. **Common-factor null (fragility control — CORRECTED):**
+    - Per-cell fragility accounts for most of raw rho (within-cell null means 0.48-0.87)
+    - ORIGINAL "semantic collapses" claim RETRACTED — was covariate contamination artifact
+    - Clean partial (other-type covariate): Qwen FL surface 0.76, semantic 0.43 (gap persists)
+    - Semantic retains condition-specific structure in ALL models (clean partial 0.42-0.77)
+    - SmolLM2 FL surface is ENTIRELY fragility (within-cell null p=0.26)
+
+12. **NL multi-model comparison (SmolLM2, Phi-1.5, full-logit):**
+    - Phi-1.5 gap erasure is CODE-SPECIFIC: ratio 1.05x (code) -> 1.82x (NL)
+    - SmolLM2 is DOMAIN-STABLE: ratio 1.49x (code) -> 1.50x (NL)
+    - Qwen3 COLLAPSES in NL: surface 0.661->0.175, semantic 0.227->0.048
+    - Model ordering reverses in NL: SmolLM2 > Phi-1.5 > Qwen3
+    - CAUTION: Phi-1.5 P(digit)=0.001 in NL; 11-bin unreliable, full-logit valid
+
+13. **Improved theoretical bound (mac/sqrt(d_eff)):**
+    - mac = mean absolute pairwise correlation between perturbation effects
+    - mac/sqrt(d_eff) has mean error 6.7% vs 15.6% for 1/sqrt(d_eff) alone
+    - For Qwen3 semantic: 11% error (mac/sqrt) vs 146% error (1/sqrt)
+    - All predictors rank-order models correctly (n=6 too small to discriminate)
+
+14. **Paired-gap bootstrap (direct CI on surface−semantic):**
+    - Qwen FL: gap +0.241 [+0.084, +0.430] — EXCLUDES ZERO (P(gap>0)=0.998)
+    - Qwen 11-bin: gap +0.147 [-0.030, +0.330] — includes zero
+    - SmolLM2 FL: gap +0.046 [-0.144, +0.212] — includes zero
+    - SmolLM2 11-bin: gap +0.173 [+0.028, +0.373] — EXCLUDES ZERO
+    - Phi FL: gap +0.002 [-0.095, +0.107] — no gap (50/50)
+    - Headline: Qwen full-logit gap is statistically established
+
+15. **Disattenuated cross-type correlation:**
+    - Qwen FL: cross=0.367 vs predicted=0.387 (one factor fits, disatt_r=0.948)
+    - All others: one factor rejected (disatt_r=0.35-0.76)
+    - 4/5 model×readout combos reject the single-factor model
+    - Qwen FL is the exception: surface and semantic fragility rankings coincide
+
+16. **Held-out perturbation prediction:**
+    - LOO within original 12: surface rho=0.76, semantic rho=0.51 (fragility predicts within-family)
+    - Cross-type: surface fragility → semantic held-out: rho 0.30-0.53
+    - Novel perturbations (dead_code, redundant_parens, int_str_roundtrip): ALL rho ≈ 0 (p>0.4)
+    - Fragility is perturbation-family-specific, NOT a universal cell property
+
+17. **Cross-domain fragility decomposition (NL vs code):**
+    - Fragility loading is MODEL x DOMAIN specific — same model allocates it differently
+    - Qwen3 CODE: fragility dominates both surface (R2=88%) and semantic (R2=83%)
+    - Qwen3 NL: surface is fragility-INDEPENDENT (R2=0.6%!), semantic is 92% fragility
+    - SmolLM2 CODE: surface is 94% fragility, semantic only 30% fragility
+    - SmolLM2 NL: both are 80-90% fragility, both collapse to ~0 after removal
+    - KEY: Qwen3 partial gap is CONSERVED: +0.255 (code) vs +0.256 (NL)
+    - The gap is an architectural invariant across domains despite completely different fragility allocation
+    - SmolLM2 code retains genuine semantic structure (partial rho=0.377) but SmolLM2 NL does not
+
+18. **StableLM-2-1.6B (4th architecture family, PARTIAL):**
+    - Code full-logit: surf=0.918, cross=0.763, sem=0.827 (ratio 0.97x, NO GAP)
+    - Code 11-bin: surf=0.735, cross=0.419, sem=0.406 (ratio 1.36x)
+    - NL full-logit: surf=0.640, cross=0.443, sem=0.206 (ratio 1.91x, HUGE gap)
+    - NL 11-bin: surf=0.612, cross=0.091, sem=0.025 (ratio 1.55x)
+    - Same pattern as Phi-1.5: code gap erasure + NL gap massive
+    - Falcon-H1-1.5B (hybrid SSM-attention) still running
+
+19. **Dimensionality scaling with perturbation vocabulary:**
+    - Qwen: d_eff = 0.253*n + 0.28, R2=0.976 — LINEAR growth, no saturation
+    - d_eff/n constant (0.26-0.29): each perturbation adds ~0.25 new dimensions
+    - SmolLM2: d_eff/n decreases from 0.23 to 0.18 — SATURATING
+    - Qwen rho DECREASES as vocabulary grows (0.87 -> 0.63); SmolLM2 INCREASES (0.87 -> 0.92)
+    - Model-dependent sensitivity landscape compactness predicts cross-type transfer
+
+20. **Cross-model fragility transfer (zero-cost):**
+    - Code: Qwen3 <-> SmolLM2 fragility rho=0.243 (p=0.13, NOT SIGNIFICANT)
+    - NL: Qwen3 <-> SmolLM2 fragility rho=-0.055 (p=0.74, ZERO)
+    - Cross-domain: Qwen3 code<->NL rho=0.163 (NS); SmolLM2 rho=0.416 (p=0.008)
+    - Fragility is (model x domain x perturbation-family)-specific, maximally non-transferable
+    - Different models find different cells sensitive on the SAME 40 arithmetic problems
+
+21. **Fable R13 review — claim triage:**
+    - WITHDRAWN: "Qwen3 collapses in NL" (fp16 floor), "SmolLM2 domain-stable" (fragility-dependent),
+      "Phi gap erasure code-specific" (precision mismatch), mac/sqrt(d_eff) (in-sample, fails holdout),
+      "no negative correlations in full-logit" (false in NL), biology >> LLM (no backing data),
+      d_eff as independent finding (restatement of correlation)
+    - SURVIVES: "Per-input behavioral sensitivity is a perturbation x input interaction,
+      not an input property." Surface class transfers because its 6 members are ONE perturbation
+      in 6 spellings (d_eff ~ 1.9). Everything else doesn't transfer.
+    - POSITION CONFOUND identified: surface appends AFTER assignment; semantic rewrites the assignment.
+      Class is confounded with "touches the line the answer depends on."
+    - KILL EXPERIMENT designed: 4 groups x 6 perts, fp32, CPU. Resolves fp16, position, held-out.
+
+22. **R13 kill experiment (COMPLETED — DECISIVE):**
+    - Qwen3-1.7B, fp32 CPU, 40 cells x 24 perturbations x 2 surfaces, 352s
+    - (a) 6 original inert appends after assignment
+    - (b) 6 NEW inert appends after assignment (held-out test)
+    - (c) 6 inert insertions BEFORE assignment (position control)
+    - (d) 6 meaning-preserving REWRITES of the assignment (matched position)
+    - **Results (full-logit Spearman rho):**
+      - a<->a = 0.785: within original inerts (baseline)
+      - a<->b = 0.811: held-out inerts TRANSFER (R13's "near-duplicates" prediction REFUTED)
+      - a<->c = 0.611: position control WORKS — before/after gap is ~0.2, not the whole story
+      - a<->d = 0.333: GAP IS REAL — rewrites don't transfer to inerts even at same position
+      - d<->d = 0.224: rewrites barely transfer to EACH OTHER
+    - **Results (11-bin):** same gradient: a<->b=0.746, a<->c=0.565, a<->d=0.328, d<->d=0.182
+    - **Gradient:** same-type inerts (0.81) > cross-position inerts (0.61) > cross-type (0.33) > within-rewrite (0.22)
+    - **Three confounds resolved:** (1) held-out test PASSES — surface class is real, not 6 near-duplicates;
+      (2) position contributes ~0.2 but doesn't explain the full gap; (3) fp32 consistent with 11-bin (no floor issue)
+    - Key: the factor is whether the perturbation TOUCHES THE COMPUTATION PATH, not position
+    - R14 REVIEW (PARTIAL CONFIRM): gradient real but "computation path" unfalsifiable; position ~35%
+      of gap; a<->b>a<->a is group-homogeneity noise; fp32 confirms 11-bin not fixes full-logit;
+      needs SmolLM2 replication + syntactic novelty + inert-at-assignment controls.
+
+23. **Kill experiment — SmolLM2-1.7B replication (COMPLETED — GRADIENT REPLICATES):**
+    - Same 4 groups x 6 perts, fp32 CPU, 40 cells, 357s, 95% accuracy
+    - **Results (full-logit):** a<->a=0.864, a<->b=0.861, a<->c=0.672, a<->d=0.583, d<->d=0.443
+    - Same gradient: same-type > cross-position > cross-type > within-rewrite
+    - Gap COMPRESSED vs Qwen3 (0.28 vs 0.45) but structure preserved
+    - ZERO distances below 1e-3 — no fp16/fp32 floor concern
+    - SmolLM2 more uniform in perturbation sensitivity (consistent with "domain-stable")
+
+24. **R14 control experiments (COMPLETED — SURFACES DISAGREE):**
+    - Groups: A (reference inert, 6), E (unusual inert appends, 6), F (inert assignment-line mods, 6), D (rewrites, 6)
+    - Qwen3-1.7B-Base, fp32 CPU, 40 cells × 24 perts × 2 surfaces, 366s, 100% accuracy
+    - **Full-logit ordering:** A(0.785) > E(0.645) > F(0.471) > D(0.224)
+    - **11-bin ordering:** A(0.686) > F(0.583) > E(0.442) > D(0.182)
+    - **E and F SWAP between surfaces** — two readouts disagree about which control group is "like A"
+    - Full-logit says: unusual appends transfer well (E≈A), assignment-line mods don't (F≈D)
+      → assignment-line TOKEN CONTENT matters for representation-level sensitivity
+    - 11-bin says: assignment-line mods transfer well (F≈A), unusual appends don't (E≈D)
+      → DISTRIBUTIONAL NOVELTY matters for decision-level sensitivity
+    - Both surfaces preserve the A > D gradient — the gap between inerts and rewrites is robust
+    - Cross-group: full-logit a<->e=0.609, a<->f=0.565; 11-bin a<->e=0.430, a<->f=0.572 (same swap)
+    - Distance magnitudes: E median slightly above A, F slightly above E, D highest (consistent gradient)
+    - **CALIBRATION (per-cell bootstrap):** E-F swap NOT significant on either surface
+      - fulllogit: E<->E minus F<->F = +0.171 CI [-0.013, 0.355] (includes 0)
+      - 11-bin: E<->E minus F<->F = -0.138 CI [-0.341, 0.048] (includes 0)
+      - Mann-Whitney A<->E vs A<->F: fulllogit p=0.79, 11-bin p=0.067
+    - Within-group heterogeneity dominates: f_semicolon (0.872 fl, 0.810 11b) > any E member;
+      e_list_pop (-0.021 11b) < any F member. Groups E/F not internally coherent.
+    - **Honest conclusion:** gradient from inerts to rewrites is robust across readout surfaces,
+      but the intermediate region cannot be cleanly attributed to either "computation path" or
+      "syntactic novelty". Individual perturbation identity dominates group membership.
+    - **Property analysis (18 non-A perturbations):**
+      - Position (after=0, at=1, replace=2) predicts FL rho: r=-0.538, p=0.021 uncorrected
+        R15: does NOT survive Bonferroni for 10 tests (5 predictors × 2 surfaces). SUGGESTIVE only.
+      - Mean distance predicts 11-bin rho: r=-0.703, p=0.001 (SURVIVES Bonferroni correction)
+        R15: but tautological — perturbations with larger distances have noisier rankings (rank-SNR)
+      - tokens_added, unusual, modifies_assign: all p > 0.1
+      - R15 CORRECTION: "two independent axes" downgraded to one confirmed but tautological predictor
+        (mean distance) plus one suggestive uncorrected predictor (position ordinal)
+
+25. **Kill experiment — Phi-1.5 (COMPLETED — NO GRADIENT):**
+    - microsoft/phi-1_5, fp32 CPU, 40 cells × 24 perts × 2 surfaces, 306s, 92.5% accuracy
+    - **Full-logit:** a<->a=0.807, a<->b=0.739, a<->c=0.709, a<->d=0.752, d<->d=0.763
+    - **NO GRADIENT:** a<->d (0.752) ≈ a<->a (0.807), d<->d (0.763) ≈ a<->a. MWU p=0.52 (NS)
+    - Rewrites transfer to inerts AND to each other — Phi-1.5 is perturbation-robust
+    - 11-bin: compressed range 0.514-0.601, 84% of distances < 1e-3 (resolution floor)
+    - Confirms gap erasure from earlier spectrum study under controlled kill experiment design
+    - **MODEL-DEPENDENT gradient:** Qwen3 (strong), SmolLM2 (compressed), Phi-1.5 (absent)
+    - R15 CONDITIONAL: result depends on P(digit) verification. If P(digit)≈0.001, 11-bin is noise
+      and full-logit measures non-arithmetic behavior. 84% of 11-bin distances < 1e-3 is consistent
+      with near-zero digit probability. MUST verify before claiming certifiability.
+    - R15: "code-specialized training" attribution confounded with arch/tokenizer/size (n=1)
+
+26. **Perturbation dimensionality analysis (zero model runs):**
+    - PCA on perturbation correlation matrices across all kill experiments
+    - d_eff (participation ratio): Qwen3 kill 2.72/2.87, controls 3.55/3.59, SmolLM2 1.97/2.78
+    - PC1 = fragility (common factor), captures 49-70% of variance
+    - Groups barely separable: between/within distance ratio 1.07-1.50
+    - 5-8 PCs for 90% variance — perturbation space is ~5-8 dimensional in practice
+    - SmolLM2 most one-dimensional (d_eff=1.97 FL) = most fragility-dominated
+    - R15: d_eff is algebraic identity (participation ratio = n/(1+(n-1)·mean_r²)); confirms #19
+      dimensionality results in kill experiment context, NOT an independent finding (R13 withdrew this)
+
+27. **Kill experiment — StableLM-2-1.6B (4th architecture, COMPLETED — GRADIENT PRESENT):**
+    - StableLM-2-1.6B (general, 1.6B), fp32 CPU, 40 expression cells x 24 perts x 2 surfaces
+    - Full-logit: a<->a=0.927, a<->b=0.937, a<->c=0.587, a<->d=0.628, d<->d=0.566
+    - Gap = 0.299 (MWU p=4.5e-13) — moderate gradient, between SmolLM2 and Qwen3
+    - Highest a<->a (0.927) and a<->b (0.937) of all 4 models — strongest inert transfer
+    - 82.5% accuracy (lowest of the 4; 7 cells wrong)
+    - Confirms: general-purpose models show gradient; magnitude varies by architecture
+
+28. **Rewrite Interchangeability Index (RII, zero model runs; R15 REVIEWED):**
+    - RII = mean within-group-D Spearman correlation across cells
+    - Measures whether a model treats meaning-preserving rewrites as INTERCHANGEABLE
+    - Phi-1.5: RII=0.763, StableLM-2: RII=0.566, SmolLM2: RII=0.443, Qwen3: RII=0.224
+    - RII vs gradient: Pearson r=-0.952 (p=0.048) among 4 comparable models (1.3-1.7B, >80% acc)
+    - Cross-model perturbation rank: Qwen3 is outlier (r~0 with SmolLM2); others cluster at r~0.5
+    - R15 CORRECTION: "code-specialized → high RII" was OVERREACH (n=1, confounded)
+    - RII is a descriptive index correlating with gradient; causal driver unknown
+
+29. **Kill experiment — CodeGen-350M-mono (5th architecture, COMPLETED — GRADIENT PRESENT):**
+    - CodeGen-350M-mono (code-specialized, 350M), fp32 CPU, 40 cells x 24 perts x 2 surfaces
+    - Full-logit: a<->a=0.762, a<->b=0.731, a<->c=0.354, a<->d=0.444, d<->d=0.368
+    - Gap = 0.318 (MWU p=2.3e-7) — REFUTES "code-specialized → no gradient"
+    - RII = 0.368 — REFUTES "code-specialized → high RII"
+    - Accuracy: 32.5% (barely above chance) — MAJOR CONFOUND with task incompetence
+    - 11-bin DEAD: 100% distances < 1e-3 (model puts near-zero probability on digits)
+    - Not directly comparable to 1.3-1.7B models due to scale × accuracy confound
+    - Interpretations: (a) code-specialization needs scale to produce certifiability,
+      (b) accuracy/task-competence is the real predictor, or (c) Phi's no-gradient is
+      architecture-specific (parallel attention), not training-domain-specific
+
+30. **RII decomposition and P(digit) verification (zero model runs, 2026-09-18):**
+    - P(digit) verified from 11-bin distance magnitudes (no model loading needed):
+      Qwen3 (median 0.015, 0% < 1e-3), SmolLM2 (0.094, 0%), StableLM (0.089, 0%),
+      Phi-1.5 (0.0003, 83%), CodeGen (0.00001, 100%). Clean binary split: 3 digit-predicting,
+      2 code-continuation. 11-bin INVALIDATED for Phi/CodeGen; full-logit valid for all
+    - **RETRACTED (R16 R2): z-RII and FDI are null artifacts.** Row-centering k=6 D columns
+      gives expected pairwise Spearman = -1/(k-1) = -0.20; pure-noise matrices give -0.192±0.002;
+      the five models give -0.174 to -0.191. "Universal z-RII ≈ -0.18" IS the null, not a finding.
+      FDI = RII - z_RII = RII + 0.18 (constant shift), so FDI vs gap r=-0.952 is the existing
+      RII vs gap r=-0.944 relabeled. All z-RII/FDI claims withdrawn
+    - **REPLACEMENT (R16 E-corrected, NOW WITH CIs):** Fragility-partialled group rhos (rank
+      regression on per-cell mean distance): residual RII collapses near zero for all models
+      (CIs all include 0). RII variation IS largely fragility share. But the GAP survives
+      partialling with bootstrap 95% CIs (1000 resamples, all exclude 0 except Phi):
+      Qwen3 0.294 [0.099, 0.454], CodeGen 0.251 [0.106, 0.412], StableLM 0.633 [0.303, 0.803],
+      SmolLM2 0.274 [0.060, 0.516]. Phi 0.044 [-0.057, 0.150] includes 0 (NS).
+      The gradient is NOT a fragility artifact; it is real perturbation-type-specific structure
+    - **PERMUTATION NULL (independent test):** Shuffle perturbation labels within each cell (500
+      perms). Qwen3 Z=8.8, SmolLM2 Z=6.0, StableLM Z=6.2, CodeGen Z=5.5 (all p<0.001).
+      Phi Z=1.0 (p=0.168, NS). Perturbation identity matters beyond fragility for 4/5 models.
+      Permutation 95th percentile ≈ 0.08-0.10 for all models
+    - **CELL-EXCLUSION (Phi):** Leave-1-out gap [0.048, 0.064]; leave-3-out (500 samples) max
+      0.076 (none > 0.10). Phi's no-gradient is robust to cell exclusion
+
+### Fable R15 adversarial review (2026-09-18):
+- 7 weaknesses identified; key corrections applied to STATE.md
+- CONFIRMED: multi-model gradient replication (now 4/5 models), Phi no-gradient
+- OVERREACH: "code-specialized → certifiable" (n=1 confounded; CodeGen REFUTES simplest version)
+- OVERREACH: "two independent axes" (position ordinal p=0.021 fails Bonferroni at 10 tests)
+- RESTATEMENT: d_eff finding confirms #19, not independent
+- Review: experiments/results/fable_strategy_r15.md
+
+31. **RETRACTED: Copy-vs-compute control (R17 — cell-schema mismatch, 2026-09-18):**
+    - `copy_vs_compute.py` used the 20-cell `make_cells()` schema from `run_transfer_spectrum.py`,
+      but kill experiment JSONs use 40-cell arithmetic-expression cells (zero literal-copy cells).
+      The "simple/complex" split was an arbitrary answer-digit partition, not computation type.
+      Cell descriptions in STATE.md were factually false. Additionally, the 12-cell gap sits within
+      the random-12 null distribution (48th-88th percentile), and the MWU tested amplitude difference
+      not the rho gap. All claims WITHDRAWN. Process violation: entered STATE.md without review
+
+32. **Per-perturbation distance profiles — DOWNGRADED to descriptive (R17, 2026-09-18):**
+    - "Qwen3 outlier" contrast NS at n=24 (Fisher z=1.66, p=0.10). Cluster is group-level effect
+    - Two most "model-dependent" perturbations (c_newline_before, a_whitespace) are tokenizer-confounded:
+      Qwen3's tokenizer merges them differently from other models
+    - d_temp_var is length-confounded (only D pert that adds a line)
+    - After group-demeaning, Qwen3-StableLM rises to r=0.62 (p=0.001); "cluster" collapses to NS
+    - Gradient survives exclusion of tokenizer-sensitive perturbations (all five models unchanged)
+    - Amplitude ordering model-dependent (Qwen3 D>A p=2e-9; others D<A all p<0.01) but gap is
+      rank-based (amplitude-invariant by construction); not an anomaly, a clarification
+
+33. **Cell exclusion robustness, symmetric (R17 correction, 2026-09-18):**
+    - Phi exhaustive L3O: max gap 0.077 (cells 6, 26, 30) across all 9880 combinations
+    - Gradient models L3O (2000 random triples, R17): min gap Qwen3 0.387, SmolLM2 0.232,
+      StableLM 0.238, CodeGen 0.255. Gradient never collapses under any cell exclusion
+    - L3O 2.5th percentiles: Qwen3 0.41, SmolLM2 0.25, StableLM 0.26, CodeGen 0.28
+
+34. **Phi readout saturation — CONFIRMED as readout artifact (R16 Step 1 + R18 restructure):**
+    - Removing ONE trailing space from query (`# Output: ` → `# Output:`) flips Phi from code
+      continuation (P(digit)=0.001) to digit prediction. Tokenizer: Q0→space token→newline, Q1→colon→digit
+    - **PRIMARY (40-cell kill-matched, same cells as other 4 models):** gap=0.217 [0.123, 0.355],
+      p=5.26e-11. P(digit)=0.980, accuracy=95%. Pre-registered gates PASS. Q0 control: gap=0.055.
+    - **SUPPLEMENTARY (20-cell, different cells/surfaces — NOT comparable to kill):** gap=0.335
+      [0.141, 0.494], p=8.76e-9. P(digit)=0.843, accuracy=85%. Larger gap partly confounded by
+      combined cell/surface/query changes (R18). RII under Q1: 0.235 [0.051, 0.412]
+    - Raw gap: Qwen3 (0.452) > CodeGen (0.318) > StableLM (0.299) > SmolLM2 (0.281) > Phi-Q1 (0.217)
+    - **STATUS: 5/5 CONFIRMED (R18 definitive test).** Phi Q1 passes ALL gates:
+      Z=4.6 (p<0.001), residual gap 0.386 [0.171, 0.564] excl 0, PC1 share 84.6%.
+      Residual gap is SECOND HIGHEST (above Qwen3/CodeGen). All 5 models confirmed.
+    - Qwen3 Q1 control: Q1 INADMISSIBLE on Qwen3 (P(digit)=0.019). Readout effect model-specific
+
+35. **Bootstrap CIs + permutation null on fragility-partialled quantities (R16 Step 0):**
+    - 1000 bootstrap resamples, rank regression partialling on Q0 kill data
+    - **Raw gap CIs:** Qwen3 [+0.315, +0.593], CodeGen [+0.202, +0.436], StableLM [+0.191, +0.438],
+      SmolLM2 [+0.197, +0.385] — all excl 0. Phi Q0 [+0.005, +0.106] barely excl 0.
+    - **Residual gap CIs:** Qwen3 +0.230 [+0.077, +0.430], CodeGen +0.277 [+0.100, +0.421],
+      StableLM +0.560 [+0.256, +0.750], SmolLM2 +0.310 [+0.091, +0.533] — all excl 0.
+      Phi Q0 +0.005 [-0.076, +0.110] includes 0 (NS).
+    - **Residual RII CIs:** Qwen3 +0.062 [-0.037, +0.142], SmolLM2 +0.051 [-0.046, +0.164],
+      StableLM +0.061 [-0.027, +0.218], CodeGen +0.078 [-0.025, +0.197] — all include 0.
+      Phi +0.125 [+0.029, +0.263] — ONLY model with resid RII excl 0.
+    - **Permutation null for resid RII (500 shuffles):** Qwen3 bias-corrected +0.099 (significant),
+      SmolLM2 +0.071 (NS), StableLM +0.078 (NS), Phi +0.142 (significant), CodeGen +0.118 (significant)
+    - Confirms: gradient is real perturbation-type structure, not common-factor artifact
+
+36. **TRANSFER RHO — RETRACTED "2/5 transfer" claim (R19 review, 2026-09-18):**
+    - Raw A→D correlation 0.56-0.92: real, driven by common fragility (all methods agree)
+    - Same-locus inert exchangeability: A→B residual 0.83-0.97, all 5 models (SOLID)
+    - **RETRACTED:** "2/5 models (Qwen3, StableLM) show type-specific transfer"
+      R19 found: StableLM flips sign under rank partialling (-0.42); outlier cell (10%2) drives it.
+      Qwen3 drops to 0.00 under rank+PC1+PC2; Simpson mixture across operator strata.
+      The 2/5 vs 3/5 split was COVARIATE COMPOSITION (C-PC1 vs B-PC1 controls the outcome).
+      a_empty in Group A means "inert sensitivity" IS baseline fragility (rho 0.87-0.99 with baseline).
+    - **All-PC1 anti-transfer also retracted** (suppression artifact, caught earlier)
+    - **NEW: Fragility has a second edit-locus dimension** (PC2, 8-17% variance).
+      After removing PC1+PC2: zero of five models shows residual A→D transfer.
+    - No model ordering is stable across methods (forking-paths hazard)
+    - Power 0.43 at rho=0.3, n=40 — cannot claim null or positive
+    - **Defensible:** fragility dominates; inert appends are exchangeable; no type-specific
+      transfer currently established for any model at n=40.
+    - Next: cell×perturbation interaction test (direct test), or ≥113-cell pre-registered run
+
+37. **Tokenization-covariate regression (R17 Priority 2, zero cost, 2026-09-18):**
+    - Does tokenizer explain per-perturbation distance profile?
+    - Token-count delta between minimal/verbose surfaces is CONSTANT (4 tokens) across all 24
+      perturbations for 4/5 models (the only surface difference is `# Python code\n` prefix)
+    - Qwen3 has 1 exception: c_newline_before (3 tokens, tokenizer merge artifact)
+    - R^2: Qwen3 0.347 (below 0.5 threshold), all others 0.000 (degenerate — constant input)
+    - **VERDICT: Per-perturbation distance variation is NOT a tokenizer artifact.**
+    - The variation comes from how models process different perturbations, not from tokenization
+
+38. **Operator-class test (R17 Priority 6, pre-registered, zero cost, 2026-09-18):**
+    - Pre-registered H1: D-sensitivity varies by operator class AND A-sensitivity does not
+    - Operators tested: +, -, *, %, // (** excluded, only 1 cell)
+    - **H1 FAILED for all 5 models.** Both A and D sensitivity vary by operator class:
+      Qwen3 (A p=0.003, D p=0.012), SmolLM2 (A p=0.000, D p=0.001),
+      StableLM (A p=0.002, D p=0.024), Phi (A p=0.000, D p=0.000),
+      CodeGen (A p=0.022, D p=0.319 — exception: D uniform)
+    - Operator class is a COMMON FRAGILITY axis, not D-specific
+    - "Pattern structure" is empty as a term — the sensitivity structure is just fragility
+    - Admissible under R17 rules (robustness check, not additive claim)
+
+39. **RETRACTED: Row-permutation interaction test (2026-09-19, retracted same day by R20):**
+    - Row-permutation of 40x24 distance matrix is invariant for interaction SS (row means travel
+      with rows). All 20 p-values were floating-point artifacts (null_std ~ 1e-20). "5/5 additive",
+      "type-blind", "monolithic fragility" all withdrawn. See fable_strategy_r20.md.
+    - **Correctly specified test (R20, nested F + group-label perm, log scale):**
+      4/5 models show cell x group interaction (group-perm p: Qwen3=0.0003, SmolLM2=0.0007,
+      StableLM=0.0003, CodeGen=0.009, Phi=0.31 null). Cell x group share of residual: 0.26-0.40
+      vs 0.13 expected under H0.
+    - Within-group D coherence: rho 0.22-0.76. D is six unrelated probes, not a type.
+    - Process lesson: null_std ~ 1e-20 and p=1.000 across all conditions is a stop signal.
+
+40. **Scale ladder — SmolLM2 (135M, 360M) + Qwen3-0.6B (2026-09-18):**
+    - Identical 40-cell, 24-pert kill experiment at smaller scales. fp32 CPU.
+    - SmolLM2-135M: gap=0.121 [0.065, 0.205], acc=52.5%, P(digit)=0.994, Perm Z=2.7 (p=0.004)
+    - SmolLM2-360M: gap=0.318 [0.207, 0.431], acc=90.0%, P(digit)=0.993, Perm Z=6.0 (p<0.001)
+    - Qwen3-0.6B:   gap=0.489 [0.347, 0.628], acc=100%, P(digit)=1.000, Perm Z=8.8 (p<0.001)
+    - **NON-MONOTONIC SCALING:** SmolLM2 gap peaks at 360M (0.318), drops at 1.7B (0.281).
+      Qwen3-0.6B gap (0.489) EXCEEDS Qwen3-1.7B (0.452). Accuracy scales monotonically.
+    - **Gradient exists at 135M parameters** with only 52.5% accuracy — significant at p=0.004.
+    - RII: SmolLM2-135M=0.712 (D perturbations barely distinguishable), 360M=0.184 (differentiated),
+      1.7B=0.443. Qwen3-0.6B=0.169, 1.7B=0.224.
+    - **Qwen3-0.6B residual analysis:** residual gap 0.309 [0.115, 0.487], PC1=53.1% (LOWEST
+      fragility dominance of all models). ALL GATES PASS. Despite HIGHEST raw gap, residual gap
+      is middle-of-pack. Residual RII 0.015 [-0.061, 0.111] (near zero after fragility removal).
+    - **Confound:** Qwen3-0.6B uses `Qwen/Qwen3-0.6B` (instruct), 1.7B uses `Qwen3-1.7B-Base`.
+      Scale comparison confounded by instruction tuning. SmolLM2 ladder is clean (all same family).
+    - **PC1 ordering:** Qwen3-1.7B (51%) < Qwen3-0.6B (53%) << SmolLM2-135M (70%) < SmolLM2-1.7B
+      (78%) < SmolLM2-360M (91%). Lower PC1 = more complex sensitivity structure.
+
+41. **Tukey non-additivity + multiplicative structure (2026-09-19):**
+    - Tukey 1-df: F=60-490 (p < 1e-13) all 5 models — data IS multiplicative on raw scale.
+    - Log transform reduces residual from 16-44% to 12-19%.
+    - Log-space permutation p > 0.39 — BUT this used the same broken row-permutation (R20).
+      The correctly specified group-label permutation finds 4/5 interaction (see finding 39).
+    - Variance decomposition (log): Cell 13-46%, Pert 37-75%, Residual 12-19%.
+    - The 12-19% log-space residual is REAL deterministic structure (fp32 CPU, no noise term).
+    - In 4/5 models it is organized by perturbation GROUP (cell x group share 0.26-0.40 vs 0.13 H0).
+
+42. **Kill experiment — Qwen3-0.6B-Base (INSTRUCT CONFOUND RESOLVED, 2026-09-19):**
+    - Qwen/Qwen3-0.6B-Base, fp32 CPU, 40 cells x 24 perts x 2 surfaces, 314s, 100% accuracy
+    - P(digit) median = 0.996. Admissible readout (Q0).
+    - **Full-logit:** a<->a=0.910, a<->d=0.586, d<->d=0.394. Gap=0.087 [0.052, 0.129], Z=5.0
+    - **5.6x LOWER than instruct variant** (0.087 vs 0.489). LARGEST EFFECT IN THE PROGRAM.
+    - Same architecture, same tokenizer, same 40 cells — instruction tuning is the variable.
+    - Within-D coherence: 0.394 (Base) vs 0.169 (Instruct) — tuning destroys D-group structure
+    - parens<->int_cast: 0.729 (Base) vs 0.183 (Instruct) — NOT tokenization (same tokenizer)
+    - Cross-variant fragility rho = 0.333 (p=0.036) — weak, tuning reorganizes fragility
+    - Mean distance: 0.025 (Base) vs 0.019 (Instruct) — Base has LARGER distances but LOWER gap
+    - Residual gap: 0.241 [0.169, 0.307], PC1=87.8%. ALL GATES PASS. Residual > raw (2.8x)
+      same suppressor pattern as SmolLM2-360M (R21 caution at high PC1).
+    - **Qwen3 Base scale is MONOTONIC:** 0.6B (0.087) → 1.7B (0.452) = 5.2x increase.
+      Prior "non-monotonic" claim was artifact of comparing instruct (0.6B) vs Base (1.7B).
+    - **Implications for alignment:** Instruction tuning/RLHF creates massive surface sensitivity.
+      Base model treats perturbation types as nearly interchangeable (gap 0.087); post-training
+      creates a 5.6x gap. Fine-tuning is the problem, not the architecture.
+
+### Status: Active — R21 CORRECTIONS APPLIED + INSTRUCT CONFOUND RESOLVED (2026-09-19).
+  GRADIENT: 8 models confirmed (gap 0.087-0.49, all Perm Z>=2.7). REAL. Exists at 135M params.
+  GRADIENT PERM Z: RESOLVED — within-row column shuffle, all Z>2 STAND.
+  Phi Q1 DEFINITIVE: gap=0.217, Z=4.6, residual gap 0.386 [0.171, 0.564] — ALL GATES PASS.
+  STRUCTURE: MULTIPLICATIVE dominant (first-order Taylor in small-angle regime, R21 derivation).
+    R2=1.000 RETRACTED. Correct log-space R2=0.82-0.88. CONTENT is in the 12-25% log residual.
+  INTERACTION: 7/8 models show cell x group interaction (nested F + group-label perm).
+    R21 CRITICAL: interaction EXISTS AMONG INERTS ALONE (AB vs C, p≤0.004 in 7/8).
+    Comment-vs-statement within A+B significant in 7/8. A vs B null in 8/8 (negative control).
+    Declared ABCD groups are NOT the axes models use to organize residuals.
+  ATTENUATION: A-D cross rho / sqrt(within-A * within-D) = 0.79-1.01. Single common cell
+    factor reproduces A-D gap. Inerts predict rewrites as well as other rewrites do (8/8).
+    "Not predictable from inert" WITHDRAWN; "less reliable" is supported.
+  WITHIN-D COHERENCE: rho 0.17-0.76. D perturbations don't agree on cell ordering.
+  D-COHERENCE OVERCLAIMS CORRECTED (R21): All rhos carry CIs (n=40). "Anti-correlated" →
+    uncorrelated. "Arithmetic identities" → cluster includes parens. "cond_true = control flow"
+    → SmolLM2-1.7B only, driven by identity cells. Tokenization confound: parens/int_cast
+    share space-token deletion, are top-3 D pair in 5/8.
+  COPY CONTROL (Qwen3): Gap=0.403 [0.288, 0.516], Z=7.9. Expression gap=0.452.
+    H_surface PASS (diff=0.049): gradient persists on LITERAL assignments (x=5, no computation).
+    H_compute FAIL (ratio=0.89): gradient NOT driven by computation sensitivity.
+  LOCUS CONFOUND: 5/8 negative type effect. Interaction primarily POSITIONAL.
+  POSITION vs CONTENT (zero-cost, 7 models): Same-position/diff-content rho=0.705 vs
+    same-content/diff-position rho=0.530. Position wins 6/7 models (+0.175 mean).
+    Perturbations at the same position are MORE similar than same-content at different positions.
+  SAME-LINE LOCUS (zero-cost, 7 models): Same-line inerts +0.070 more D-correlated than
+    different-line inerts. 7/7 positive, 2/7 significant. Small but consistent.
+  DIRECTION STRUCTURE: 3/4 models perm-validated (Z=2.9-5.8) but residual is 12-25% of total.
+    NOT D-SPECIFIC: Groups A (Z=8-14) and B (Z=5-7) show STRONGER direction divergence than D.
+    Direction divergence is a general property of context modulation, not semantic-type-specific.
+  NOISE FLOOR: Qwen3 SNR=316x, SmolLM2-135M SNR=10,408x. Both CLEAN. 0% below noise.
+  D-GROUP CROSS-MODEL (8 models): Within-D rho 0.169-0.712. Cross-model consistency 0/28
+    significant. No D-perturbation consistently most anomalous. D-coherence does NOT predict
+    residual gap (rho=+0.05, p=0.91). Raw gap does NOT predict residual gap (rho=-0.11, p=0.80).
+  SCALE LADDER RESIDUALS: SmolLM2-360M residual (0.384) > raw (0.318) but R21 flags suppressor
+    artifact at PC1=90.5%. 135M fails (CI incl 0). Non-monotonic not significant (CIs overlap, n=3).
+  FABLE R21 ADVERSARIAL REVIEW (this session): 2/6 tautological, 2/6 underpowered, 1/6 inflated
+    framing, 1/6 real and damaging (locus confound). Corrections applied to STATE.md.
+  COPY CONTROL (4 models complete, 3 admissible):
+    | Model | Copy Gap | Expr Gap | Ratio | H_surface | Admissible |
+    | Qwen3-1.7B | 0.403 | 0.452 | 89% | PASS (0.049) | YES |
+    | SmolLM2-1.7B | 0.386 | 0.281 | 137% | PASS (0.105) | YES |
+    | StableLM-2-1.6B | 0.193 | 0.299 | 65% | PASS (0.106) | YES |
+    | CodeGen-350M | 0.241 | 0.318 | 76% | PASS (0.077) | NO (70% acc) |
+    | Phi-1.5 | 0.197 | 0.217 | 91% | PASS (0.020) | NO (P(digit)=0.001) |
+    ALL H_surface PASS, ALL H_compute FAIL. Ratio 65-137%. 3/3 admissible from 3 families.
+    2 inadmissible (CodeGen: low acc; Phi: low P(digit)) show same pattern.
+    Gradient is surface-driven, not computation-driven. SERIES COMPLETE.
+  INSTRUCT CONFOUND: RESOLVED. Qwen3-0.6B-Base gap=0.087 vs instruct 0.489 (5.6x).
+    Instruction tuning is the largest single effect. Qwen3 Base scale is monotonic.
+    Base within-D rho 0.394 vs instruct 0.169. parens<->int_cast 0.729 vs 0.183.
+  INSTRUCT POSITION EFFECT (Qwen3-0.6B base vs instruct, zero-cost):
+    Instruction tuning SELECTIVELY reshapes correlations:
+    A<->C (inert cross-position): 0.410 -> 0.503 (UP — learns inerts are "same kind")
+    A<->D (cross-type): 0.586 -> 0.301 (DOWN — becomes more type-discriminative)
+    D<->D: 0.394 -> 0.169 (DOWN — destroys rewrite coherence)
+    Gap: 0.324 -> 0.489 (UP — gradient AMPLIFIED)
+    Qwen3 IT amplifies gap 1.5x (like-for-like). BUT SmolLM2-1.7B-Instruct REPLICATION
+    FAILS: gap 0.281→0.251 (DECREASES). SmolLM2 IT uniformly amplifies all groups 2-2.8x
+    (no selective D reduction). Effect is ARCHITECTURE-DEPENDENT, not general.
+  MEANING-CHANGE TRANSFER (Group E, 2 models):
+    Qwen3-1.7B: D→E rho=0.536 (sig); Inert→E rho=0.261 (NS). D predicts, inert does not.
+    SmolLM2-1.7B REPLICATION: D→E rho=0.727 (sig); Inert→E rho=0.514 (sig). BOTH predict.
+    UNIVERSAL: D→E > Inert→E (Δ=0.213-0.275). D is ALWAYS the better predictor.
+    NOT UNIVERSAL: Whether inert alone predicts depends on model's A-D correlation baseline.
+    Per-pert: additive shifts (+1, -1) and reassignment transfer well; multiplicative/negation do not.
+  SPACE-TOKEN CONFOUND — DISMISSED (zero-cost, 7 models): R21 flagged parens/int_cast
+    share space-token deletion. Test: Jaccard of token-level edits vs D-pair behavioral rho.
+    Grand r=0.094, p=0.340. NULL. Control: add_zero/zero_plus Jaccard=1.0 but rho=0.023-0.777.
+    parens/int_cast coincidence, not causal. One exception: Qwen3-1.7B r=0.523 (p=0.045).
+  POSITION SHIFT MECHANISM (zero-cost, 7 models): Token-count similarity does NOT predict
+    C-group pair correlation. Grand r=0.010, p=0.918, n=105 pooled pairs. 5/7 models negative.
+    Prediction was: C pairs with same token-count shift should correlate more. FALSIFIED.
+    SmolLM2-1.7B highest C pair (rho=0.875) has LARGEST shift diff (4 tokens) — opposite.
+    Position organization is QUALITATIVE (before/after in causal attention window), not
+    QUANTITATIVE (how many tokens shift the position). Mechanism: before-perturbations enter
+    the assignment's attention context, after-perturbations don't.
+  OPEN: (1) DONE — Copy control complete (5/5). (2) Noise floor on remaining models.
+  (3) DONE — Space-token confound DISMISSED (grand r=0.094, NS).
+  (4) Locus-crossed design. (5) Instance replicates (k>=3).
+  (6) Nested F + group-label perm on Qwen3-0.6B-Base. (7) Base model for other families.
+  (8) DONE — IT replication on SmolLM2: FAILS (architecture-dependent).
+  (9) Design causal transfer test. (10) DONE — SmolLM2 meaning-change: D→E 0.727, Inert→E 0.514.
+      R24 CORRECTION: on non-identity cells (n=24), Inert→E drops to 0.143 (NS); D→E to 0.393
+      (borderline). Transfer driven by 2 of 6 D members (add_zero, cond_true). Token-prefix null.
+  (11) DONE — Header relocation (R22 E1) on Qwen3: gap halved (0.453→0.234). Header in middle
+      disrupts all correlations. ~50% header effect, ~50% genuine structural. C_C decreased (not
+      increased as adjacency predicted). D_D unchanged.
+  (12) Readout comparison: gap survives on 11-bin in all 4 models (0.19-0.37). But Qwen3
+      cell-profile cross-readout rho ≈ 0 — full-logit and 11-bin measure different cells.
+  (13) Balanced cell v3 on Qwen3: Gap=0.500, CI [0.411, 0.588].
+  (14) DONE — Balanced cell v3 on SmolLM2-1.7B: Gap=0.275, CI [0.202, 0.362], z=4.33.
+      DD < AD (0.531 < 0.669). Residual gap 0.389 (HIGHER than raw — operator strata absorb
+      some gap). Replicates Qwen3 finding at lower magnitude.
+  (15) DONE — Prefix-form crossover on Qwen3 (2x2: add_zero/zero_plus x plus_one/one_plus).
+      Diagonal mean rho 0.349, off-diagonal 0.063 (non-identity n=24). Partial prefix support:
+      add_zero->plus_one=0.634 (strong, same prefix), add_zero->one_plus=-0.301 (anti, diff prefix).
+      BUT zero_plus->plus_one=0.428 > zero_plus->one_plus=0.063 (breaks prefix prediction).
+      E-E rho (plus_one vs one_plus) = -0.143: two E members are independent.
+      Prefix form is partial mediator; add_zero is the dominant D member.
+  (16) DONE — Prefix-form crossover REPLICATION on SmolLM2-1.7B: signs replicate Qwen3.
+      add_zero->plus_one=0.676, add_zero->one_plus=-0.405, zero_plus->plus_one=0.390,
+      zero_plus->one_plus=-0.159. E-E rho: **-0.470 (p=0.021, SIG)**.
+  (17) DONE — Variance analysis (zero-cost): add_zero has 3.5-4.3x more variance than
+      zero_plus. d_temp_var REVERSES column effect. Mean D -> E is NS in both models.
+      Neither prefix nor gradient hypothesis survives D-level aggregation. Transfer is
+      perturbation-member-specific, not group-specific. E-E anti-correlation is robust.
+  (18) DONE — 11-bin crossover reanalysis (Qwen3, 160 fwd passes, old 40 cells, 2026-09-19):
+      E-E flips from -0.143 (NS) to +0.758 (p<0.001). ALL four entries positive on 11-bin.
+      Off-diagonal > diagonal. Token-prefix null REFUTED on answer distribution.
+      Gap reframed as D-diversity, not D-disconnection.
+  (19) DONE — 11-bin crossover replication (SmolLM2, 160 fwd passes, old 40 cells, 2026-09-19):
+      E-E flips from -0.470 (p=0.021) to +0.124 (NS, p=0.563). Anti-correlation artifact
+      CONFIRMED (sign flips in both models). BUT broad positive transfer is QWEN3-SPECIFIC:
+      SmolLM2 has 1/4 significant vs 4/4. Only add_zero→plus_one survives in both.
+  (20) DONE — Fable R25 adversarial review (2026-09-19): DEVASTATING.
+      2×2 is a COLUMN main effect, not diagonal. `plus_one` transfers, `one_plus` doesn't.
+      `one_plus` is a garden-path column (precedence confound on `* // %` cells).
+      Operator strata REVERSE Qwen3 diagonal (within-stratum ad→plu = -0.23).
+      SmolLM2 ad→plu survives within-operator (+0.52) but interaction collapses to 0.04.
+      RETRACTIONS: "prefix form partial mediator" → downgrade; "E-E independence" → retract;
+      "meaning change determines cells" → withdraw; "token-prefix sharing" → narrow to
+      late-edit locality. Experiment was on old 40-cell set (violation of balanced-v3 mandate).
+      PROPOSED EXPERIMENTS: (1) meaning-preserving late twins on balanced v3 + both readouts
+      (the single most informative cheap test); (2) edit-position gradient; (3) `1+(e)` control;
+      (4) rerun 2×2 on balanced v3 + 11-bin; (5) report four cells with CIs, not diag/offdiag.
+  (21) DONE — Within-operator stratum analysis (balanced v3, zero-cost, 2026-09-19):
+      Gap SURVIVES and GROWS within operator strata. Qwen3: residual gap 0.515 > raw 0.500.
+      SmolLM2: residual 0.365 > raw 0.275. DD < AD in 5/5 (Qwen3), 3/5 (SmolLM2) strata.
+      d_add_zero and d_zero_plus have LOWEST AD correlations (0.068/-0.171 Qwen3) — the
+      crossover's D members are the least representative. R25's operator-stratum attack applies
+      to the crossover, not to the gap itself.
+  (22) DONE — Late-twin disambiguation (balanced v3, 6 perts, both readouts, 2026-09-19):
+      D (e+0, e-0) vs E (e+1, e-1, e+2, e+3). All append-after-e. 828 fwd passes per model.
+      **MEANING IS DEAD ON 11-BIN.** Replicated across Qwen3 and SmolLM2.
+      | | Qwen3 FL | Qwen3 11b | SmolLM2 FL | SmolLM2 11b |
+      |---|---|---|---|---|
+      | D-D - D-E | +0.234 [+0.082,+0.382] | -0.053 | +0.236 [+0.106,+0.357] | +0.015 [-0.171,+0.200] |
+      FL: meaning matters (CI excludes zero). 11-bin: meaning IRRELEVANT (CI spans zero).
+      E-E coherence structured by answer-shift direction (same-sign=0.836 vs opposite=0.725).
+  (23) DONE — Cross-position transfer (zero-cost reanalysis, balanced v3, 2026-09-19):
+      Reanalyzed existing kill data for A (after) vs C (before) position effects.
+      A-A > A-C in both models (CI excludes zero). A-D ~ C-D in both (rewrites equally low).
+      Position matters for after-perts, less so for before-perts (C-C < A-C in Qwen3).
+  (24) DONE — StableLM-2-1.6B late-twin disambiguation (3rd arch, 828 fwd passes, 2026-09-19):
+      EDIT LOCALITY ON BOTH READOUTS. FL: D-D-DE=-0.017 CI[-0.170,+0.129]. 11b: -0.044 CI[-0.201,+0.122].
+      Unlike Qwen3/SmolLM2, StableLM does NOT distinguish +/- in formatting geometry.
+      FL meaning distinction is MODEL-SPECIFIC. 11-bin edit locality now 3/3 models.
+  (25) DONE — Trivial pert inflation test (zero-cost, both models, 2026-09-19):
+      Dropping trivial A perts reduces gap by 10-12%. Gap robust to pert selection.
+  (26) DONE — Adversarial self-review (2026-09-19):
+      Strongest attack: D has 1 pair. "Fail to detect" not "meaning dead." Expand D planned.
+  (27) DONE — Expanded-D experiment (3 models, 6 D-D pairs each, 2026-09-19):
+      11-bin: 0/3 positive meaning. Qwen3 REVERSES (D-D-DE=-0.111, CI excl zero negative).
+      SmolLM2 +0.085 (CI spans zero), StableLM +0.062 (CI spans zero).
+      FL: SmolLM2 only clear (+0.180, CI excl zero). Qwen3 VANISHES. StableLM marginal.
+      Operator-family decomposition: within same family, meaning=+0.002/+0.008/-0.090 on 11-bin.
+  (28) DONE — Operator family decomposition (zero-cost, 2026-09-19):
+      All 3 models: ZERO within-family meaning effect on 11-bin. Family > meaning.
+  (29) DONE — SmolLM2-360M expanded-D (4th model, 2026-09-20):
+      FL: D-D-DE=-0.031 CI[-0.076,+0.009]. 11b: -0.035 CI[-0.097,+0.024]. BOTH REVERSED.
+      Supports operator-family confound critique: D-D dragged down by cross-family pairs.
+  (30) DONE — Adversarial review of expanded-D (Fable, 2026-09-20):
+      1 SOLID (FL=family-clustering), 2 QUALIFIED (meaning-dead, family>meaning), 1 FRAGILE
+      (expanded-D introduced family confound worse than 1-pair variance).
+      CRITICAL: D={+0,-0,*1,**1} spans 3 families. D-D is cross-family, D-E includes
+      same-family. Comparison structurally confounded. Fix: same-family D expansion.
+
+  (31) DONE → RETRACTED — Isomorphic same-family D (4 models, 2026-09-20):
+      D={+0,-0,+(0),-(0)}, E={+1,-1,+(1),-(1)}. Isomorphic sign×form. 552 fwd/model.
+      RETRACTED: DD-DE comparison confounded by answer identity (D→x, E→x±1).
+      Correct comparison (DD-EE): nothing significant. Answer identity test:
+      D-D <= E-E-same-sign in ALL 8 tests. Meaning has NO independent signal.
+      In arithmetic, meaning ≡ answer identity → cannot be separated.
+  (32) DONE — Answer identity confound analysis (zero-cost reanalysis, 2026-09-20):
+      Repartitioned all 28 pairwise correlations by answer identity (same/diff answer).
+      D-D ~ E-E-same-sign in SmolLM2-1.7B FL (+0.012 diff). REVERSE in 6/8 tests.
+      Dominant factor: sign matching (~0.18 gap), not meaning (~0.01 after control).
+      Meaning question CLOSED for arithmetic (meaning ≡ answer identity).
+
+---
+
+## OMT-0 Omega Modulus Transfer Test — 2026-09-15/17
+
+Systematic empirical test of the omega modulus as a behavioral preservation predictor.
+~30,000+ readouts across 65+ experiments on Qwen3 (0.6B/1.7B/4B), Pythia, StableLM, Gemma, GPT-2.
+
+**Central question:** Can omega (modulus of continuity under behavioral distance)
+trained on one set of conditions predict preservation under different conditions?
+
+### Experiments (reverse chronological):
+
+| # | Experiment | Readouts | Key Finding |
+|---|---|---|---|
+| 81 | **Pre-registered identity prediction** | 72 | PRE-REGISTERED PREDICTIONS: 0/4 CORRECT. Two-factor model (meaningfulness x baseline) COMPLETELY FAILS on held-out pairs. var_echo: predicted amplify, actual 0.1x (baseline 0.136, much higher than expected). english_synonym: predicted suppress, actual 4.0x (meaningful words CAN amplify). code_return: predicted amplify, actual 1.5x. pragma: predicted amplify, actual 0.2x. CONCLUSION: identity amplification is NOT predictable from simple surface token features. The two-factor model overfit the training pairs. Omega's pair-dependence is an irreducible empirical quantity — must be MEASURED, not derived |
+| 80 | **Surface type dissection** | 108 | THE MISSING FACTOR: Identity amplification depends on whether surface tokens are MEANINGFUL or ARBITRARY, not structural vs semantic. comment_short ("# a" vs "# b", arbitrary labels) has id=5.3x; comment_long ("# note here" vs "# info here", real words) has id=0.3x. SAME baselines (0.013 vs 0.011). Model's language predictions about real words compete with code-execution chain. Heavy shows opposite pattern: stmt_vs_stmt (8.3x) and cross_type (7.7x) are strongest — heavy wins when surfaces contain actual code. blank_vs_blank is INERT (0.4x for both). Clean rule: arbitrary-token surfaces let identity dominate; meaningful-token surfaces suppress it |
+| 79 | **Regime classifier (Fable E4)** | 144 | Three regimes are NOT a clean continuum. Spearman baseline vs id_amp: rho=-0.571, p=0.139 (not significant). CRITICAL: strong_explicit (most semantically assertive, "x is definitely 1") has identity SUPPRESSION (0.7x) and high baseline (0.025) — assertion strength ≠ regime. boundary (0.013 baseline) has 6.0x identity but comment_generic (0.019 baseline) has 0.3x — similar baselines, opposite identity effects. code_noise has heavy=5.4x (high). Heavy is qualitatively universal (always positive delta) but quantitatively varies 5.4x in delta_TV across pairs. Per-cell baselines vary up to 20x within a pair |
+| 78 | **Throwaway variable boundary** | 204 | Cancellation on strong_assert tracks pure-underscore names: _ (0.48x), __ (0.53x), ___ (0.68x) all cancel; _0 (0.96x), _x (0.89x), tmp (0.90x), counter (1.04x) do NOT cancel. Boundary: pure-underscore = throwaway → cancellation; any alphanumeric = real → no cancellation. `result` outlier: 30.0x single amplification (highest ever for collision!) and 0.60x cancellation (moderate, possibly ceiling effect). On boundary_pair: ALL names accumulate (ratio > 1), no cancellation for any name. SEMANTIC: amplification depends on variable name's semantic relationship to output: result (30x) >> tmp/__ (14-15x) >> counter (8.5x) |
+| 77 | **Verbatim vs renamed repeat (Fable E3)** | 120 | Renaming `_` to `__` does NOT break double-collision dip (4.8x vs 5.4x verbatim), but `_x` DOES (13.5x). Cancellation is throwaway-variable redundancy recognition, not token-level copy suppression. double_mixed beats single (13.5x vs 11.2x). identity_plus_read (var=var + _=var) = 19.6x on strong_assert (highest ever). On boundary_pair: double_verbatim INCREASES (3.7x vs 2.8x single) — no cancellation, opposite of strong_assert |
+| 76 | **Stacking grid on new pairs (Fable E1)** | 192 | Composition algebra CONFIRMED pair-conditioned across 4 pairs. identity ranges 13.5x (strong_assert) → 6.0x (boundary) → 1.3x (assert_weak) → 0.3x SUPPRESSION (comment_generic). ONLY 2 UNIVERSAL CONDITIONS: heavy (+) and identity+heavy (+). 13/15 conditions are MIXED sign across pairs. Pair correlation matrix: two weak clusters (sa+bp r=0.55, aw+cg r=0.38), near-zero cross-cluster. assert_weak has HIGH empty baseline (0.056) — most conditions suppress below it |
+| 75 | **Recency gate (Fable E2)** | 144 | Identity decays with distance on BOTH pairs. strong_assert: 13.5x → 10.1x → 4.5x → 2.5x (monotonic decay). boundary_pair: 6.0x → 3.6x → 3.1x → 4.2x (dips then RECOVERS). Heavy: OPPOSITE pattern — decays on strong_assert but GROWS on boundary_pair (2.7x → 8.1x). Per-cell: x_1 resistant to decay, y cells decay faster. Fable half-right: both pairs show decay, but different mechanisms (positional vs structural recovery). Heavy's value-mutation is amplified by intervening pass lines on boundary_pair |
+| 74 | **Collision repetition curve** | 120 | EVEN-ODD OSCILLATION: match collision 1=11.2x, 2=5.4x (DIP!), 3=12.3x (recovery!), 4=14.3x. Mismatch monotonic (no dip). At rep=2 mismatch overtakes match (6.0x vs 5.4x). Explains #73 double_collision self-cancel: even-phase destructive interference. Two matching copies pair-resolve ambiguity; three create new odd-man-out. Envelope grows: 4 reps = 14.3x |
+| 73 | **Amplification stacking** | 192 | Stacking is REAL, non-commutative, heterogeneous. collision+isinstance=2.1x superadditive (strongest). collision→identity=2.0x but identity→collision=1.7x (order matters). double_collision=0.5x SELF-CANCELLING (destructive interference!). double_identity=1.2x. Most combos near-additive (0.8-1.1x). Collision stacks with everything except itself |
+| 72 | **Collision form generalization** | 96 | Value-mentioning forms (type(val), print(val), assert var==val) ALL amplify 8-11x. eval_var (_ = var) only 1.9x — variable read barely amplifies. assign_match strongest (11.2x). Category: value_mention (9.6x) >> var_reference (5.4x) >> control (2.9x). CRITICAL: identity (var=var, 13x) >> eval_var (_ = var, 1.9x) proves identity paradox is SELF-ASSIGNMENT (circular binding), not variable evaluation |
+| 71 | **Literal-value collision** | 168 | COLLISION CONFIRMED: value-matching `_ = val` amplifies 8.1x on strong_assert (vs 4.1x mismatch). Match+identity=28.1x (doubles identity's 13.2x). Match+heavy=27.2x. Two causal paths to same value create CONSTRUCTIVE interference via representational ambiguity. Per-cell range: 3.3x-11.8x (consistent). New amplification primitive alongside identity |
+| 70 | **Depth gradient** | 144 | Pair-dependent depth scaling. On strong_assert: identity peaks at depth 3 (13.5x), non-monotonic. Heavy roughly monotonic (→11.6x). On boundary_pair: baseline TV grows with depth (0.005→0.046), drowning perturbation — identity=1.0x at depth 4. Scope-chain hypothesis PARTIALLY CONFIRMED: real effect visible only on well-controlled pairs. Measurement requires strongly-anchored surfaces |
+| 69 | **Pair vulnerability spectrum** | 120 | Anchoring hypothesis REFUTED. Vulnerability is COMPOSITION-SPECIFIC: assert_weak most absolutely vulnerable, comment_generic PROTECTS against identity+safety (27x lower TV than boundary) but vulnerable to heavy (6x). No pair is universally weak/strong. Margin gradient: assert_strong (0.55) > assert_weak (0.40) > boundary/comment (0.14-0.19) |
+| 68 | **Non-commutativity structure** | 432 | 6x6 composition matrix across 2 pairs. Empty is identity element (perfectly commutative). Mostly subadditive. Biggest asymmetry: nonvar→safety 3.54x. Only 1 superadditive pair. **KEY**: algebra is SURFACE-PAIR-DEPENDENT — identity→safety = 0.0118 (strong_assert) vs 0.1129 (boundary), a 9.6x difference. Same compositions, different pairs, dramatically different effects |
+| 67 | **Error correction test** | 72 traj | **PREDICTIONS WRONG at step-40 (52.8%)** but **PARTIALLY RIGHT with robust scoring (66.7%)**. Step-40 TV contaminated by 2-step oscillation artifact (digit vs separator tokens). Robust metric: heavy/reassign correctly predicted to diverge (4/4 each). nonvar_42/safety_comment correctly converge (4/4). empty incorrectly diverges (baseline instability). nonvar_expr incorrectly diverges (any token insertion destabilizes). Single-readout vs trajectory INVERSION confirmed but oscillation complicates interpretation | Heavy ALWAYS converges (0/4 predicted correctly) — mutation acts as attractor reset. Reassign ALWAYS converges (0/4). Empty mostly DIVERGES (3/4) — surface differences compound chaotically. **ACTUAL MECHANISM**: trajectory fate governed by DETERMINISTIC STATE ANCHORING, not mutation detection. Single-readout TV and trajectory fate are INVERSE: mutations converge trajectories (same attractor), no-ops diverge them (chaotic amplification) |
+| 67z | **Variable access gradient (zero-compute)** | 0 | Exp #55 data reanalysis: clean monotonic gradient by variable interaction type. none/comment: 0% flips, margin=0.81-0.86. code-read (type_check): 11.1% flips, margin=0.59. noop-write (identity): 11.1%, margin=0.63. mutate (heavy): 22.2%, margin=0.39. Critical jump at comment→code-read boundary. type_check can CORRECT errors (9→correct_digit) |
+| 67y | **Composition algebra detail (zero-compute)** | 0 | Chain data: non-commutativity scales with strength difference (IN/NI=6.33x). ALL superadditive chains end with identity (TI=1.71x, OI=1.81x). Identity is universal amplifier, neutral is universal damper. INI sandwich = 2.7x superadditive. Identity self-composition peaks at length 2 (III < II) |
+| 66a | **Bifurcation mechanism (zero-compute)** | 0 | TWO MECHANISMS found in #56 data. Type A: boundary_pair attractor capture at step 1 (surface_b locks onto 9-attractor). Type B: strong_assert error correction — step-4 spike resolves based on mutation semantics: heavy 4/4 diverge, nonvar_42 1/4 diverge, identity 3/4 diverge. Model performs AUTOREGRESSIVE ERROR CORRECTION |
+| 66b | **Composition algebra (zero-compute)** | 0 | #65 data reveals NON-COMMUTATIVE mostly SUBADDITIVE algebra. neutral→identity=0.0998 (1.77x superadditive, 4x stronger than reverse). Most compositions are subadditive (0.3-0.6x). Only "weak-then-strong" orderings create superadditivity. Weak perturbations PRIME for amplification by subsequent strong perturbations |
+| 60b | **Bifurcation fate predictor** | 42 pairs (partial) | Initial omega (step-0 TV) is a WEAK predictor of autoregressive grow-vs-collapse fate: TV AUC=0.632 (<0.7 threshold), margin AUC=0.600, TV-fate corr=0.339. **Continuation type dominates fate**: nonvar_42 always collapses (0%), safety_comment mostly collapses (14%), identity/heavy/type_check ~57% grow. All 42/108 pairs eligible. Omega does not beat simple confidence margin. Supports Fable R5: bimodality is continuation-type-driven, not omega-predictable |
+| 58r | **R6-corrected cross-Q reanalysis** | 0 (analysis) | Fair margin, baseline-flip filter, direct Spearman on #58 data. KEY: assert↔print ρ=0.651 (p=0.003), pooled ρ=0.222. Nothing transfers to addition (neither TV nor margin). Family-dependent, not universal negative |
+| R6 | **Fable strategic review R6** | — | Five problems with #58 design: comparison Q readout-mismatched, margin baseline unfair, low power, no baseline-flip filter, Spearman is primary quantity. Reframes: TV<margin/2 is a theorem. Omega's value is as certificate, not flip predictor |
+| E1 | **Token-persisted bifurcation rerun** | ~144 trajectories | RUNNING (5/72 conditions). R5 Priority #1. Early data: 3/5 conditions show UNSTABLE labels (change with horizon), supporting greedy-artifact hypothesis |
+| E2 | **Null control + distributional TV** | ~1500 fwd | QUEUED. R5 Priority #2. ARM1: arbitrary edits (not equiv pairs) give same grow rate? ARM2: T=0.7 sampling preserves bimodality? |
+| 65 | **Composition ordering** | 473 | **NON-COMMUTATIVE**: neutral_then_identity amplifies 2.1x above identity alone (0.100 vs 0.047). 7.3x asymmetry on verified/bare pair. 4x on neutral/identity vs reverse. Order of continuations matters dramatically. Static omega data (not trajectory) |
+| 64 | **Perturbation zoo** | 360 | 15 novel perturbation types mapped. Flip DIRECTION matters: if_pass pushes toward attractor 9, assign_zero pulls away. bool_var highest TV amplification (12.9x) but zero flips. TV magnitude ≠ flip risk — directional relationship to decision boundary determines outcome. 5 flips across 168 eligible combinations |
+| 63b | **Full-vocab incremental** | 0 (analysis) | Confirms #55b: full-vocab ≡ 11-bin (corr=1.0, AUC=0.832 all 4 combos). Flip cells 2.95x higher TV. Per Fable R5: same-readout robustness check, not direction-changing |
+| 63 | **Full-vocab consequence** | 288 | Full-vocab TV adds nothing over 11-bin for code pairs. TV ratio fullvocab/11-bin = 1.0004. Same 6 flips, same correlations (0.347), same accuracy (78.1%). 11-bin readout is sufficient for this domain |
+| 62 | **Omega incremental value** | 0 (analysis) | Margin alone AUC=0.977, adding omega DECREASES to 0.963. ⚠️ **Fable R5 caveat**: same-readout null on 7 flips, no eligibility filter. Margin trivially wins when both computed from same 11-bin readout. UNTESTED, not dead — cross-question #58 is the admissible test |
+| 61 | **Bifurcation predictor** | 0 (analysis) | Initial TV predicts autoregressive growth with AUC=0.676, r=+0.327. BUT continuation type dominates: identity 88% grow, heavy 75%, empty/nonvar 38%. ⚠️ **Fable R5**: autoregressive bimodality (#56) is greedy-decode artifact — need temperature experiment |
+| 60 | **Baseline feature comparison** | 0 (analysis) | Margin (r=-0.406, F1=0.632) beats omega (r=+0.272, F1=0.326). ⚠️ **Fable R5 caveat**: same-readout null on 7 flips. Margin beating omega is trivially expected when both share readout. Cross-question test (#58) needed |
+| 59 | **Digit-prior sweep** | 576 | **RIVAL_FAILS on stable cells**: Leading-digit match rate 9.7% (chance). Argmax perfectly tracks cell value {1,2,3,5,6,7} regardless of `_ = k` literal — zero flips across all 576 readouts. Attractor prediction (digit=9 lower TV) holds weakly (0.027 vs 0.033). ⚠️ **Caveat**: cells used (vals 1-7) are high-confidence; original R4 digit-copying claim was on uncertain cells. Test does NOT cover the uncertain-cell regime. **New finding**: literal-cell-value INTERFERENCE — when literal matches cell val, TV is HIGHER (e.g. nonvar_3 on val=3: 0.075 vs 0.027 on val≠3), suggesting collision not reinforcement |
+| 58 | **Cross-question consequence** | 500 (80 pairs after filtering) | **FAMILY-DEPENDENT TRANSFER (R6-corrected).** Mean transfer TV AUC=0.498 (chance). BUT assert↔print Spearman ρ=0.651 (p=0.003) — genuine intra-family transfer. Addition shows no stability (ρ=-0.135, 0.057). Fair margin ALSO fails at transfer (AUC 0.386). Same-Q certificate: 0/49 violations; cross-Q: 7-20% violations. Verdict: omega is question-FAMILY-dependent. Within coherent families (questions probing same state), omega transfers. Across family boundaries, nothing transfers |
+| 57 | **Length scaling** | 1008 | **TYPE-DEPENDENT**: heavy shows INVERTED-U (peak n=1-2, omega 0.106-0.126, then declines to 0.077 at n=12). identity is STEP FUNCTION (2.25x at n=1, flat after). nonvar shows persistent LOG growth (0.029 to 0.121 at n=12). comment SUPPRESSIVE (0.91x, below baseline). Steepest initial step: heavy 3.69x. Most sustained: nonvar. Pair-dependent: strong_assert_2/nonvar monotonic to 0.241; boundary_pair/heavy peaks n=1-2 then drops to baseline. More heavy lines = LESS sensitivity |
+| 56 | **Autoregressive compounding** | 1984 | **BIMODAL**: Omega over 30 generated tokens grows 12.1x overall (TV 0.048->0.582). BUT outcome is binary: 19/32 pairs grow to TV~0.95 (near-total divergence), 13/32 collapse to TV~0.0001 (convergence). Zero stable. identity most reliable amplifier (7/8 grow, final TV=0.855); heavy 6/8; empty and nonvar_42 coin flips (3/8). Critical transition at steps 4-8: abrupt phase jump within 1-2 tokens. Pair type secondary to continuation type |
+| 55 | **Cross-model consequence** | 432 | **NEGATIVE**: tau=0.3 from 1.7B does NOT transfer. 0.6B: 2.3% acc (near-chance), r=0.307, best F1=0.143 at tau=0.05, 1 flip/108 pairs. 4B: 91.2% acc, r=0.284, best F1=0.333 at tau=0.15, 3 flips/108 pairs. Ref 1.7B: r=0.677, F1=0.75. Sweet spot at 1.7B; 0.6B too weak, 4B too robust. Correlation NOT monotonic with scale |
+| 54 | **Identity paradox (BASE model)** | 288 | Identity HAS 11.1% flip rate on base model (TV=0.042). 0% flip rate in #49 was instruct-model bug. nonvar_42: 0% flips despite TV=0.034 (rank_corr=0.990, top3=1.00) — true rotation-like change. heavy: 22.2% flips, TV=0.074. Different continuations produce structurally different distributional changes |
+| 53 | **Prospective consequence (BASE)** | 576 | **NEGATIVE on base**: Train F1=0.220, Test F1=0.129±0.075, generalization 58.6%, test r=0.222. Fork agent's instruct results (F1=0.696) do NOT replicate on base model. Omega is a weak argmax-flip predictor without RLHF |
+| 52 | **State reconstruction** | 240 | Canonical records tautological TV=0 (both surfaces → identical text). Appended overwrite AMPLIFIES 6x on target_query, reduces ortho_query. Repair shifts sensitivity |
+| 51 | **Referent/name/query crossover** | 384 | Dual-variable design: target-specificity index = -0.008 (negative). Amplification general, not referent-specific. Baseline gap explains apparent 5x |
+| 50c | **Referent test** | 252 | **REVERSAL**: tracked-var continuations SUPPRESS omega (0.085), not amplify. tracked_value (var=val) near-zero (0.035). other_var_identity (w=w) HIGHEST (0.339), exceeding baseline (0.296). Gradient tracked>other>none is FALSE. Tracked var acts as re-anchoring mechanism |
+| 50b | Task transfer (arithmetic) | 270 | heavy is TASK-GENERAL (omega=0.186, 19x identity). safety_donot is TASK-SPECIFIC (0.003 on arithmetic vs 0.09 on scoping). Neutral near-zero on arithmetic |
+| 49b | **Consequence prediction (INSTRUCT)** | 288 | On Qwen3-1.7B (instruct, model-id bug): r_pb=0.677, F1=0.750 at tau=0.3. Does NOT replicate on base model (#53). RLHF-specific |
+| 48b | Safety comments on instruct | 432 | RLHF POLARIZES omega: heavy amplified 1.7-1.9x, neutral 3.8x on tight pairs. Safety/certainty SUPPRESSED (0.07-0.19x). Pair-dependent: safety_donot 7.4x tight, 1.0x wide |
+| — | **Revival** | 1584 | **MAJOR**: contracted distinctions CAN be revived. reassign_42 contracts 0.32x; none_assign+isinstance_check revives 2.6x. del_var amplifies 3.27x. "Close now" ≠ "interchangeable later" |
+| — | State reconstruction vs repair | 240 | Canonical records tautological TV=0 (design flaw). Appended overwrite AMPLIFIES 6x. Shifts sensitivity, doesn't repair |
+| — | Referent/name/query crossover | 384 | Amplification is **GENERAL**, not referent-specific. Target-specificity index = -0.008. Mentioning target amplifies OTHER query 5x more |
+| — | Boundary-preserving syntax | 192 | Confound real but effect survives. bare_var_nl (25x) strongest. nonvar_expr (10x) = identity. Computation context, not variable reference |
+| — | **Fable R3 corrections** | 0 (review) | **#38 boundary confound**; **#40 NN has no var**; **#45 circular score**; **#39 heterogeneous**. Pivot: predict failures, not catalog amplifiers |
+| 50 | NL full-vocab omega | 160 | **MAJOR**: NL omega (5-17x) EXCEEDS code omega (2-5x) with full-vocab TV. Domain gap was entirely 11-bin artifact |
+| 39 | Matched measurement reanalysis | 0 (reanalysis) | CORRECTS #33: on matched cells instruct heavy RISES #3→#1 (4.6x); NL 11-bin TV=0 (artifact) |
+| 49 | Meta-analysis | 0 (analysis) | heavy_bare ONLY universal amplifier (100%); identity_bare universal preserver (0%); neutral 67%; all comments preserve; pass > identity |
+| 48 | Safety comments on instruct | — | Running: does safety_donot amplification hold on instruct model? |
+| 47 | Chain amplification | 300 | Neutral GROWS monotonically (4.4x over 3 steps); identity saturates; HN=0.564 worst combo; neutral accumulation more dangerous than mutations |
+| 46 | Baseline predictor | 0 (analysis) | Baseline TV predicts omega (rho=0.74); BUT inverted on tight pairs (rho=-0.31); safest-looking pairs most vulnerable |
+| 45 | Minimal diagnostic set | 0 (analysis) | 3-probe set {comment_var, type_check, var_only} achieves rho=0.61; binary screening works, point prediction limited |
+| 44 | Comment taxonomy | 504 | Safety comments AMPLIFY 7.45x; deprecation SUPPRESSES 0.15x; "do not modify" increases sensitivity opposite of intent |
+| 43 | Authority framing | 288 | Doc frame SUPPRESSES neutral 97% on tight pairs but AMPLIFIES 3.5x on wide pairs; omega is frame-sensitive |
+| 48 | Fixed-cell comparison | 360 | On fixed cells: nonvar_42 beats identity 2/3 pairs (max), 3/3 (mean). Value matters: 42 vs 99 = 2.5x. Double nonvar < single. Token-specific modulation |
+| 46 | Boundary-preserving syntax crossover | 192 | Boundary artifact CONFIRMED (4.19x). Valid amplification survives (25x). `_ = 42` beats identity at tau=0.01 — amplification is computation context, not variable reference |
+| 44 | Pair property analysis | 576 | REFUTES strong/tight hypothesis: identity amplifies only 2/8 pairs; heavy universal; no simple predictor (category/TV/tokens) |
+| 41 | Layer scaling (0.6B vs 1.7B) | 210 | 0.6B onset at L8 (vs L20 in 1.7B); more distributed profile; larger models concentrate omega in late layers |
+| 40 | Repetition disentanglement | 540 | Pair-dependent opposing effects: strong pairs additive/last-wins; tight pairs suppressive/first-wins; I_paraphrase ≠ I |
+| 38 | Partial identity tokens | 720 | No single trigger; progressive buildup x(0.057)→x=(0.304)→x=x(0.687); newline REDUCES 4x; pair-dependent |
+| 37 | Systematic NL pair discovery v2 | 132 | FIRST NL pair at tau=0.05: passive voice "passed by"/"enacted by" (TV=0.028); 12x amplification |
+| 36 | Cross-arch instruct (StableLM) | 288 | RLHF reshaping REPLICATES but INVERTED: StableLM heavy #5→#1, neutral #1→#4 (opposite of Qwen3) |
+| 35 | Layer-wise fingerprint | 210 | Monotonically increasing; omega=0 in L0-16; onset at L20; 100x jump L16→L20; concentrated in final 30% |
+| 34 | Quantization (int8) | 288 | INT8 DESTROYS identity signal (#1→#5); safety certs NOT quant-invariant; TV(fp32,int8)=0.378 |
+| 33 | Base vs instruct | 288 | RLHF reshapes omega: heavy #1→#4, neutral #5→#2 (amplifies); omega detects alignment fingerprint |
+| 32 | Natural language omega | 130 | Omega EXISTS in NL; tau=0.10 needed (not 0.05); ". " strongest amplifier (3.1x); domain-general framework |
+| 31 | Phase transition | 204 | Step function at rep=1 (0.003→0.047); NO gradual ramp; rep_2 < rep_1 (interference) |
+| 30 | Bootstrap CIs | 0 (analysis) | Cohen's d=3.49, p=0.0004 for identity vs neutral |
+| 29 | Held-out prediction | 312 | 83.3% at tau=0.05, +33pp over naive baseline |
+| 28 | Multi-variable scope | 288 | type_check 2.3× stronger with 2+ vars in scope |
+| 27 | Variable name sensitivity | 144 | Name-length independent pattern; magnitude varies |
+| 26 | Gemma-3-1b replication | 144 | CONFIRMS omega; pass>neutral>identity (inverted) |
+| 25 | Architecture replication (Pythia, StableLM) | 288 | Pythia=zero; StableLM=intermediate |
+| 24 | Structure transfer (4 code structures) | 576 | class_method=zero amplification; nested_func strongest |
+| 23 | Rank-correlation transfer | 0 (analysis) | Spearman rho=0.52; rank predictor 71-86% at tau=0.01 |
+| 22 | Max-over-pairs analysis | 0 (analysis) | Does NOT fix multi-pair mixing at tight tau |
+| 21 | Perturbation diversity (14 types) | 360 | ALL 14 novel perturbation types amplify at tau=0.01 |
+| 20 | Scaling (0.6B/1.7B/4B) | 432 | Identity amplification scales monotonically: 0.003/0.014/0.051 |
+| 19 | Pair x depth interaction | 720 | All 5 pairs work at all depths; identity increases with depth |
+| 18 | Multi-pair randomized splits | 0 (analysis) | Omega is pair-dependent; loses to code-comment at tau=0.01 |
+| 17 | Cross-model (Qwen3-0.6B, GPT-2) | 288 | GPT-2 zero; 0.6B intermediate; scales with capacity |
+| 16 | Cross-query transfer | 288 | 100% accuracy at tau=0.02 both directions |
+| 15 | Pair transfer (leave-one-out) | 480 | +27.5pp over baseline at tau=0.01 |
+| 14 | Repair/undo chains | 432 | Neutral AMPLIFIES identity; amplification irreversible |
+| 13 | Measurement stability | 96 | Perfectly deterministic (zero TV between runs) |
+| 12 | Token ablation on identity | 480 | Variable mention drives amplification; just_var > identity |
+| 11 | Surface pair discovery | 360 | 12+ eligible pairs from 30 candidates |
+| 10 | Templates (5 structures) | 720 | All 5 structures show same omega pattern |
+| 9 | Transfer (cross-variable) | 432 | Train on x, predict y,z: 83-92% |
+| 8 | Gradient (semantic) | 384 | Smooth gradient from neutral to heavy |
+| 7 | Queries (format sensitivity) | 576 | Robust across query formats |
+| 6 | Values (1-9 sensitivity) | 1,080 | Value-independent |
+| 5 | Depth (2/3/4 nesting) | 1,152 | Deeper nesting = stronger amplification |
+| 4 | Composition (chain effects) | 1,032 | Non-linear; neutral catalyzes identity |
+| 3 | Controls (baselines) | 984 | Baselines validated |
+| 2 | Prospective prediction test | 0 (analysis) | Omega predicts preservation at 79% |
+| 1 | Fast sweep (core effect) | 3,528 | Core omega effect established |
+
+### Verdict (updated post-architecture replication):
+**Structured positive, cross-architecture.** Omega is a real phenomenon confirmed in
+3 architecture families (Qwen3, StableLM, Gemma). Code continuations amplify behavioral
+distance universally, but WHICH continuations amplify most is model-dependent:
+- Qwen3: identity > type_check > heavy > neutral
+- StableLM: neutral > type_check > heavy > identity
+- Gemma: pass > neutral > type_check > identity
+- Pythia: zero (insufficient code training at 1.4B)
+
+Scales monotonically with model capacity (Qwen3 family). Generalizes across variables,
+code structures, query formats, perturbation types (14/14 amplify). Partially transfers
+across surface-pair families via ranking (rho=0.52). Operational threshold: tau=0.05.
+
+~32,000+ readouts across 62+ experiments, 5 model architectures. Results in
+experiments/results/omega_*/. Fable reviews in experiments/results/fable_omega_review_{1,2,3,4}.md.
+
+### Fable R4 Corrections (2026-09-17):
+**Devastating reanalysis.** R4 identified that the program quietly stopped measuring
+omega (eligibility filter dropped since #46). Key corrections:
+- nonvar_42 is **digit copying** (argmax→"4" in 20/36 readouts), not computation context
+- Revival revised: 9/30 chains on eligible cells (stronger than R4's 1/25 on unfiltered)
+- Consequence AUC=0.918 on eligible cells survives correction
+- Gradient reversal, state confirmation anchor, TSI, value-matters 2.5x: **WITHDRAWN**
+- Cross-question transfer: **UNTESTED** — that's the real omega claim (exp #58 running)
+- Margin (confidence gap) **DOMINATES** omega for same-question flip prediction (AUC 0.977 vs 0.838)
+- Omega has **NEGATIVE** incremental value beyond margin (-0.018 delta AUC)
+- Length scaling reveals 3 dynamical signatures: heavy decays, identity saturates, nonvar accumulates
+
+### Revised Verdict (post-R4):
+**Omega is a real measurable phenomenon but NOT a useful predictor beyond simple confidence margin
+for same-question tasks.** The remaining theoretical claim — cross-question certification —
+is under test (exp #58). If omega predicts behavior under Q2 from measurements under Q1
+better than running Q2 directly, it has genuine value as a cheap certification tool.
+If not, the program reduces to "TV between surface pairs is a noisy proxy for confidence."
+
+
 ## S65 supplied-revision diagnostic and user pause — 2026-09-14
 
 Research is paused; no run is active or queued. Retry completed all 18 responses,
@@ -4419,3 +5620,238 @@ packet search and concept-consumer source check selected no execution. The sourc
 measures global policy editing, not the proposed local attribute correction.
 Ledger `s55_resource_and_editable_interface_20260914`; six local probe blocks and
 fifteen scored model forwards unchanged. No new runner, package or GPU work.
+
+## BALANCED KILL EXPERIMENT v3 — 2026-09-19
+
+**Purpose:** Operator-balanced cell set (R21/R23 mandate) to resolve effective-n
+limitation of the original 40-cell set, where operator explained 34-74% of fragility
+variance and effective n ≈ 6 strata.
+
+**Design (Fable-reviewed, R24):**
+- 69 cells: 60 primary (+: 15, -: 15, //: 15, %: 15) + 9 appendix (*: 6, **: 3)
+- ALL operands 1-9 (no double-digit tokenization confound)
+- Identity filter: "answer readable without an arithmetic step" — zero identities
+- 24 perturbations (groups A-D, same as original 40-cell), 2 surfaces
+- 3312 forward passes per model, fp32 CPU
+- Pre-registered: primary 60-cell core for main analysis; 69-cell full and
+  residual-after-stratum-means as secondary views
+- Power ~0.72 for rho=0.3 at n=69
+
+**Models:** (same panel as original + Qwen3-0.6B-Base per R23 C1)
+Qwen3-1.7B-Base, SmolLM2-1.7B, SmolLM2-1.7B-Instruct, SmolLM2-360M,
+SmolLM2-135M, Qwen3-0.6B-Base, Qwen3-0.6B-Instruct, Qwen3-1.7B-Instruct,
+StableLM-2-1.6B, CodeGen-350M, Phi-1.5
+
+**Key questions:**
+1. Does the gap survive with operator-balanced cells?
+2. Does residual gap (after stratum means) match raw gap?
+3. Does cross-model fragility transfer change from -0.022?
+4. Does eta² for operator drop from 34-74%?
+
+**Runner:** `experiments/run_balanced_kill.py`
+**Results:** `experiments/results/transfer_spectrum/balanced_kill_*.json`
+**Ledger:** `trho_balanced_kill_v3_launch`
+
+**Results (5 models complete, StableLM running):**
+
+| Model | Acc | Gap | CI | ResGap | eta2_op | Admissible |
+|-------|-----|-----|----|----|---------|-----------|
+| Qwen3-1.7B-Base | 99.1% | 0.500 | [0.411, 0.588] | 0.462 | 0.394 | Yes |
+| Qwen3-0.6B-Base | 97.2% | 0.271 | [0.187, 0.354] | 0.427 | 0.653 | Yes |
+| SmolLM2-1.7B | 87.6% | 0.275 | [0.202, 0.362] | 0.389 | 0.687 | Yes |
+| SmolLM2-360M | 69.2% | 0.244 | [0.186, 0.312] | 0.471 | 0.854 | NO |
+| Phi-1.5 | 65.0% | 0.034 | [0.006, 0.067] | 0.190 | 0.834 | NO |
+| StableLM-2-1.6B | 72.0% | 0.215 | [0.161, 0.285] | 0.173 | 0.608 | NO |
+
+**6-model cross-analysis — R26 REVIEW COMPLETE, MAJOR RETRACTION:**
+
+~~TWO-CLUSTER STRUCTURE~~ **RETRACTED (R26).** The "two clusters" were a group-ordering
+artifact: Qwen3 has D>A mean distance, all 4 non-Qwen3 have D<A. This single bit
+reproduces the partition. Group-mean-only null gives HIGHER rho for non-Qwen pairs.
+Within-group pert ranks (group ordering removed): SmolLM2 within collapses +0.739 ->
++0.014; SmolLM2-StableLM +0.642 -> +0.129; Phi-StableLM +0.457 -> -0.029.
+BUT Qwen3-Phi RISES +0.253 -> +0.614. Qwen3 within-family SURVIVES: +0.943.
+
+**LEVEL-OF-ANALYSIS DISSOCIATION (R26 key finding):**
+- Pert-level rho: Qwen3 within = +0.937. Cell-level rho: Qwen3 within = **+0.015 (p=0.90)**.
+- Models agree on which perturbation types are damaging but NOT which cells are vulnerable.
+- SmolLM2 within-family: pert +0.739, cell +0.496 (moderate agreement at both levels).
+- S1.7-Phi: pert +0.543, cell **-0.576** (anti-correlated at cell level!).
+- Split-half cell reliability 0.76-0.98 (real signal, not noise).
+
+~~Admissible-only gap~~ **RETRACTED (R26).** n=1 within pair, n=2 cross pairs — no power.
+Cell-level rho was zero WITHIN Qwen3 anyway. The gap is perturbation-magnitude ordering.
+
+~~H1 (accuracy vs eta2_op)~~ **NOT ESTABLISHED.** rho=-0.771, p=0.072, n=6.
+Without Phi (p_digit=0.0004): p=0.19. eta2 driven by per-op accuracy dispersion.
+
+**Confound tests:**
+- TOKENIZER: REFUTED for SmolLM2/StableLM/Phi. NEW: Qwen3 c_newline_before merges
+  `\n\n` into one token. Qwen3-0.6B's single largest pert. Without it, C>A drops.
+- OPERAND MAGNITUDE: REFUTED — cell residuals uncorrelated with max(a,b)
+- GROUP C POSITION: CONFIRMED — relabeled as prefix-position inert
+- GROUP ORDERING: CONFIRMED (R26) — the dominant confound in all cross-model pert rhos
+
+**~~Surviving after R26~~ — FURTHER RETRACTED BY R27:**
+
+**R27 ADVERSARIAL REVIEW — GAP IS D-COLUMN RELIABILITY ARTIFACT:**
+- ~~"Gap real for all 6 models"~~ → Phi fails permutation test (p=0.31). Q0.6/StLM marginal.
+- ~~"A-D gap measures inert vs semantic"~~ → AB=AA in 5/6 models (B identical to A). A not special.
+- ~~"D perturbations shift cell vulnerability"~~ → Disattenuated AD = 0.94-0.98 for S1.7/S360/Phi/StLM.
+  Only Qwen3 genuine (0.82).
+- DD reliability (within-group rho): Q1.7=0.134, Q0.6=0.392, S1.7=0.531, Phi=0.824.
+  D columns are unreliable; AA-AD gap = reliability artifact.
+- The measured d[cell,pert] IS header sensitivity (logit distance with vs without `# Python code\n`).
+
+**Surviving after R27:**
+- Qwen3 within-group pert rho = +0.893 (robust under all analysis variants)
+- Reliable-within/absent-across cell dissociation (split-half 0.85-0.95, cross ≈ 0)
+- Fragile ~0.5 cross-family pert cluster (Qwen3↔Phi/StLM; dies under exclusions)
+- Qwen3-only genuine cell-ranking shift (disattenuated AD = 0.82, CI excludes 1)
+- IT > scale for SmolLM2 pert ordering (base↔instruct +0.624 vs base↔360M +0.157)
+
+**SmolLM2-1.7B-Instruct COMPLETE (7th model, 4th admissible):**
+
+| Model | Acc | Gap | CI | ResGap | eta2_op | Admissible |
+|-------|-----|-----|----|----|---------|-----------|
+| SmolLM2-1.7B-Instruct | 93.4% | 0.307 | [0.231, 0.397] | 0.452 | 0.500 | Yes |
+
+IT comparison (SmolLM2-1.7B): acc 87.6%→93.4%, gap 0.275→0.307, eta2_op 0.687→0.500.
+Base↔Instruct: pert-beyond-group rho +0.624 (p=0.001), cell-beyond-op +0.572 (p<0.001).
+
+**Status:** 7/10 models complete. R27 demolished the gap as a semantic measure. 2×2
+D-reliability diagnostic RUNNING on Qwen3-0.6B to determine if D unreliability is
+structured (semantic) or token noise.
+
+(33) **R27 2×2 D-reliability diagnostic — Qwen3-0.6B (2026-09-20).** DONE.
+3312 forward passes, 364s CPU, 69 cells × 24 perts × 2 surfaces.
+Result: D unreliability is STRUCTURED (5/6 ops have within-op rho 0.65-0.89). ADJACENCY
+is the driver: O-O (+0.660) ≈ A-A (+0.696), both >> D-D (+0.392). temp_var is token noise.
+Data: `experiments/results/transfer_spectrum/r27_2x2_qwen3_0.6b_base.json`
+
+(34) **R27 2×2 D-reliability diagnostic — SmolLM2-360M replication (2026-09-20).** DONE.
+3312 forward passes, 237s CPU, 69 cells × 24 perts × 2 surfaces. Accuracy: 55.9% (caveat).
+**ADJACENCY REPLICATES:** O-O (+0.609) >> D-D (+0.412). All 6 ops structured (within-op 0.82-0.98).
+**NUANCE:** In 360M, O is BETWEEN A and D (not ≈ A like Qwen3). A-O (0.409) < A-D (0.536) —
+own-line ops probe different patterns from inert despite higher reliability. Adjacency affects
+reliability universally but pattern identity is model-specific. temp_var (+0.821) is structured
+in 360M vs anti-correlated in Qwen3 (-0.346).
+Data: `experiments/results/transfer_spectrum/r27_2x2_smollm2_360m.json`
+
+(35) **Answer identity confound test (4 models × 2 surfaces, 2026-09-20).** DONE → RETRACTION.
+No new forward passes (reanalysis of isomorphic same-family data). D-D ≤ E-E-same-sign in ALL
+8 tests. Isomorphic meaning effect RETRACTED — fully explained by answer identity confound.
+Sign matching is the dominant correlation factor (R² increment 0.183). Meaning adds R² = 0.003.
+See NOTEBOOK entry 62h-62i.
+**R29 CORRECTION:** The 62h comparison was biased (D-D averaged cross-sign pairs, EE only
+same-sign). Corrected DDsame vs EEsame: SmolLM2-1.7B +0.105 [0.025, 0.199] FL, +0.231
+[0.116, 0.350] 11b (both excl 0). Meaning is small+model-dependent, not zero.
+
+(36) **R29 adversarial review (2026-09-20).** Corrections to entries 62h/62i/adjacency.
+Key findings: (1) meaning retraction overclaimed; (2) adjacency confounded with locus;
+(3) disattenuated AD not D-specific; (4) 62i regression non-identifiable; (5) Phi failure
+is inadmissible data. See NOTEBOOK entry 67.
+
+(37) **R29 inside-line inert experiment — Qwen3-0.6B (2026-09-20).** DONE → DECISIVE.
+4140 forward passes, 69 cells × 30 perts × 2 surfaces. Adds group I (in-line inerts:
+`x = e  # c`, `x = e;`, `x = e ;`, `x = e  `, `x = e\t`, `x  = e`) alongside A/D/V/O.
+Tests whether D unreliability = adjacency-to-expression or locus (in-line vs after-line).
+**RESULT:** I-I = +0.708, A-A = +0.696 → line position effect +0.012 (ZERO).
+D-D = +0.392, O-O = +0.660. A-I cross = +0.728. Expression modification effect = -0.316.
+ADJACENCY-TO-EXPRESSION CONFIRMED, LOCUS HYPOTHESIS REFUTED. Per-pert: 5/6 I perts
+reliable (0.757-0.799); anomaly: i_trail_space = 0.367. D-V structuredness replicates R27.
+Data: `experiments/results/transfer_spectrum/r29_inline_inert_qwen3_0.6b_base.json`
+
+(38) **R29 inline-inert SmolLM2-360M replication (2026-09-20).** DONE → REPLICATES.
+4140 forward passes, 69 cells × 30 perts × 2 surfaces. Accuracy: 57.6% (below 80% caveat).
+I-I = +0.814, A-A = +0.780, D-D = +0.412. Line position effect: +0.034 (near zero).
+Corrected (excl i_trail_space/a_whitespace duplicate): A-A = +0.746, I-I = +0.789, diff = +0.044.
+i_trail_space NOT anomalous in 360M (0.863 vs Qwen3's 0.367) — model-specific token sensitivity.
+Data: `experiments/results/transfer_spectrum/r29_inline_inert_smollm2_360m.json`
+
+(39) **R30 adversarial review of inline-inert (2026-09-20).** PROVISIONAL verdict.
+15 concerns, 4 SERIOUS: (1) duplicate pert found (i_trail_space = a_whitespace),
+(2) inert token reproduces D-sized drop → expression modification NOT necessary, only sufficient,
+(5) I perts don't touch operand span → adjacency vs semantics still confounded,
+(10) I group selection bias toward safe edits. Key recommendations: in-expression inerts,
+larger pert groups, whitespace-token census. See NOTEBOOK entry 69.
+
+(40) **R30b in-expression inert — Qwen3-0.6B-Base (2026-09-20).** DONE → CORRECTED post-Fable review.
+69 cells × 36 perts × 2 surfaces, 1031s wall, 89.4% accuracy.
+6 groups: A (after-line inert), I (in-line inert outside expression), J (in-expression
+inert — NEW), D (in-line semantic), V (lexical variants of D), O (own-line semantic).
+Pooled J-J = +0.413, but 3 SERIOUS defects found by Fable adversarial review:
+(1) `//`-comment artifact on 15 cells dominates pooled rho (10x distance inflation),
+(2) j_spaces_both is pseudo-replicate of j_space_before_op (rho 0.957),
+(3) j_unary_first misclassified (adds AST node, belongs in D).
+**Op-stratified (correct): J-J = 0.53-0.59 vs I-I = 0.87, D-D = 0.29. J is INTERMEDIATE.**
+Neither adjacency nor semantic change predicts the ordering; "rarity fits" WITHDRAWN
+post-R31 Fable review (pooling artifact — op-stratified loadings flat at 0.53-0.60
+despite 3x surprisal range). NEW FINDING: `a  // b` read as C-comment on bare surface;
+header restores floor division (surface disambiguates language, 10x effect). See NOTEBOOK 73.
+
+(41) **R30b replication — SmolLM2-360M (2026-09-20).** DONE → UNRELIABLE (accuracy below threshold).
+69 cells × 36 perts × 2 surfaces, 55.96% accuracy (below 80% threshold).
+A-A=+0.669, I-I=+0.812, J-J=+0.621, D-D=+0.412. J-J > midpoint(A,D)=0.540,
+consistent with J intermediate/inert-leaning. Not used as evidence — accuracy too low.
+Fable review correctly warned against replicating this design. See NOTEBOOK 74.
+
+(42) **R30b within/between decomposition — Stage 0 (2026-09-20).** DONE — ZERO COST.
+Computed strat4 (op-stratified A-loading), betwOp (between-operator block correlation),
+per-operator loadings with 10000-sample bootstrap CIs for all 36 R30b perts.
+Saved: experiments/results/transfer_spectrum/r30b_decomposition.json.
+Three-level plateau confirmed: A/I strat4 0.79-0.95, J 0.50-0.87, D/V -0.01 to 0.66.
+j_space_after_op is outlier at 0.87 (nearly A-level, betwOp=1.00). Revised plateau:
+in-expression AST-preserving edits cluster at 0.50-0.66 except space-after-op.
+d_temp_var: strat4=-0.007 but betwOp=0.657 (preserves block structure, destroys cell ranking).
+d_cond_true: strat4=0.581 but betwOp=0.086 (opposite: preserves cell ranking, destroys block).
+See NOTEBOOK 79.
+
+(43) **R31 Stage 1 — 5 new spacing/paren perts (2026-09-20).** DONE. CORRECTED post-Fable review.
+69 cells × 7 perts (5 new + 2 anchors) × 3 passes (bare, header, surprisal).
+Qwen3-0.6B-Base, fp32 CPU. 226s.
+Fable adversarial review: 1/6 claims survive, 5 withdrawn.
+SURVIVING: p_double < d_parens, cell-level paired bootstrap diff -0.376 CI[-0.60,-0.15].
+WITHDRAWN: per-operator mechanism (within 1 SE), betwOp inversion (p=0.24), token-context
+refutation (`%` artifact), rarity dead (untested as registered), CIs wrong (operator-level).
+LEADING ALTERNATIVE: header shielding (depth-monotone attenuation). `%`-disambiguation
+artifact confirmed. Spacing perts near-inert once artifact excluded. See NOTEBOOK 80.
+
+(44) **R32 Nesting depth test (2026-09-20).** DONE.
+69 cells × 2 perts (p_triple + a_empty anchor). Qwen3-0.6B-Base, fp32 CPU. ~30s.
+Tests M-shield prediction: does strat4 decrease monotonically with paren depth?
+Depth series: expr(0.924) → (expr)(0.655) → ((expr))(0.279) → (((expr)))(0.287).
+Result: FLOOR at depth 2 (p_triple ≈ p_double, diff +0.007). NOT monotonic.
+Per-operator mean distance: M-shield holds d0→d2 on header-sensitive ops (`-`, `%`),
+but ALL 4 operators show small mean distance INCREASE at depth 3.
+Tokenization: all depths ≥1 have 8 tokens (` (((` and `)))\n` are single tokens).
+See NOTEBOOK 80 (R32 section).
+
+(45) **R33 Zero-cost re-analysis — artifact exclusion + cell-level CIs (2026-09-20).** DONE.
+Zero cost (reads saved R30b/R31/R32 data). Implements all Fable review recommendations.
+Artifact exclusion rule (median > 3x A-median): catches j_space_before_op/`//`,
+j_spaces_both/`//`, s_no_spaces/`%`, s_space_after_only/`%`, d_temp_var/`+,//,%`.
+Cell-level stratified bootstrap (2000 iterations) for all 42 forms.
+CLEAN LANDSCAPE: spacing perts near-inert (0.66-0.80), single-paren forms 0.58-0.66,
+double/triple parens uniquely at 0.28. "Three-level plateau" was artifact of
+disambiguation inflation. Paired contrasts confirmed. See NOTEBOOK 81.
+
+(46) **R33b H_rarity as registered — 13-form test (2026-09-20).** DONE — INCONCLUSIVE.
+69 cells × 8 R30b forms × 1 forward pass = 552 forward passes, 63s CPU.
+Computed line surprisal for 8 R30b in-expression forms + 5 R31 forms = 13 total.
+Saved: experiments/results/transfer_spectrum/r33b_r30b_surprisal.json.
+H_RARITY (13 forms, raw Spearman): rho=-0.196, p=0.522. NOT SIGNIFICANT.
+Partial on |token delta|: rho=-0.151. Registered threshold (rho ≤ -0.6, CI excl 0) FAILS.
+Sign correct (higher surprisal → lower strat4) but effect weak and underpowered at n=13.
+See NOTEBOOK 82.
+
+(47) **Fable R34 design review — R34 ABANDONED (2026-09-20).**
+Review of proposed M-shield test. Verdict: DO NOT RUN AS DESIGNED.
+Key finding from existing C-group data: "Python evidence" is NOT the operative variable.
+`pass` (Python keyword) RAISES header distance by 50%; `# start` (comment) COLLAPSES it.
+Prefix effect tracks "first-line-is-a-comment", not P(Python|prefix).
+Paren floor (~14) is 3× ABOVE comment-prefix floor (~4) — M-shield prediction fails.
+p_double is genuinely REORDERED (Pearson vs A = 0.105), not "A scaled down."
+M-SHIELD AS STATED IS REFUTED by existing C-group data + Pearson check.
+RECOMMENDED REPLACEMENT: (a) C-group re-analysis as prefix family, (b) 2×2 factorial,
+(c) sign-flip control (`# C code\n`). See NOTEBOOK 83.

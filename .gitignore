@@ -196,3 +196,9 @@ experiments/results/**/checkpoints/
 # Local scratchpad (Codex outputs, temp files)
 scratchpad/
 *.pt
+
+# Internal adversarial review artifacts (process, not science — findings live in NOTEBOOK.md)
+experiments/results/fable_*.md
+experiments/results/codex_*.md
+experiments/results/balanced_cell_review.md
+experiments/results/eligibility_reanalysis.md
