@@ -1,0 +1,290 @@
+{
+  "zipf_0.0": {
+    "zipf_s": 0.0,
+    "alpha_mean": 0.10038283343037176,
+    "loss_slope_mean": -0.0024579836318342793,
+    "excess_slope_mean": -0.008163096254155114,
+    "corr_rank_loss_mean": -0.03209312436017953,
+    "corr_rank_excess_mean": -0.031102093454691487,
+    "mean_loss": 3.830148100404872,
+    "mean_excess": 1.0494056056586918,
+    "seeds": [
+      {
+        "zipf_s": 0.0,
+        "alpha": 0.10531653684159688,
+        "n_tokens_enough": 1024,
+        "mean_loss": 3.8324031904905134,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 1.0516606957443329,
+        "corr_rank_excess": -0.027546151796481132,
+        "excess_slope": -0.00727053532957372,
+        "corr_rank_loss": -0.03052672744607391,
+        "loss_slope": -0.0022902391576019887
+      },
+      {
+        "zipf_s": 0.0,
+        "alpha": 0.09682745935096136,
+        "n_tokens_enough": 1024,
+        "mean_loss": 3.8172822236662562,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 1.0365397289200757,
+        "corr_rank_excess": -0.03152340466339471,
+        "excess_slope": -0.008024495642127313,
+        "corr_rank_loss": -0.03456155369768327,
+        "loss_slope": -0.002548750340770499
+      },
+      {
+        "zipf_s": 0.0,
+        "alpha": 0.09900450409855703,
+        "n_tokens_enough": 1024,
+        "mean_loss": 3.8407588870578473,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 1.0600163923116668,
+        "corr_rank_excess": -0.03423672390419861,
+        "excess_slope": -0.009194257790764309,
+        "corr_rank_loss": -0.03119109193678143,
+        "loss_slope": -0.0025349613971303495
+      }
+    ]
+  },
+  "zipf_0.3": {
+    "zipf_s": 0.3,
+    "alpha_mean": 0.10127563872562943,
+    "loss_slope_mean": 0.0798945323034803,
+    "excess_slope_mean": 0.3637486272570056,
+    "corr_rank_loss_mean": 0.6873378854411242,
+    "corr_rank_excess_mean": 0.8070915904709809,
+    "mean_loss": 3.907423457039119,
+    "mean_excess": 1.1266809622929383,
+    "seeds": [
+      {
+        "zipf_s": 0.3,
+        "alpha": 0.10545368167218112,
+        "n_tokens_enough": 1024,
+        "mean_loss": 3.901973483627215,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 1.1212309888810341,
+        "corr_rank_excess": 0.8088400420093999,
+        "excess_slope": 0.3579962661522245,
+        "corr_rank_loss": 0.6878676822239781,
+        "loss_slope": 0.07824722276461153
+      },
+      {
+        "zipf_s": 0.3,
+        "alpha": 0.09877190377035093,
+        "n_tokens_enough": 1024,
+        "mean_loss": 3.897902165627995,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 1.1171596708818146,
+        "corr_rank_excess": 0.8107446027933624,
+        "excess_slope": 0.36684139979419744,
+        "corr_rank_loss": 0.6893181228491415,
+        "loss_slope": 0.07890914669341775
+      },
+      {
+        "zipf_s": 0.3,
+        "alpha": 0.09960133073435622,
+        "n_tokens_enough": 1024,
+        "mean_loss": 3.922394721862147,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 1.1416522271159664,
+        "corr_rank_excess": 0.8016901266101807,
+        "excess_slope": 0.36640821582459465,
+        "corr_rank_loss": 0.6848278512502527,
+        "loss_slope": 0.0825272274524116
+      }
+    ]
+  },
+  "zipf_0.5": {
+    "zipf_s": 0.5,
+    "alpha_mean": 0.10404259390906488,
+    "loss_slope_mean": 0.12310458905719246,
+    "excess_slope_mean": 0.5845498817894724,
+    "corr_rank_loss_mean": 0.7830553308579283,
+    "corr_rank_excess_mean": 0.9095643221552504,
+    "mean_loss": 4.054599231165912,
+    "mean_excess": 1.2738567364197306,
+    "seeds": [
+      {
+        "zipf_s": 0.5,
+        "alpha": 0.1090544724393018,
+        "n_tokens_enough": 1024,
+        "mean_loss": 4.061279351928125,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 1.280536857181944,
+        "corr_rank_excess": 0.9074423961583012,
+        "excess_slope": 0.5819215980460622,
+        "corr_rank_loss": 0.784854868366146,
+        "loss_slope": 0.12318348045634339
+      },
+      {
+        "zipf_s": 0.5,
+        "alpha": 0.10141804603433592,
+        "n_tokens_enough": 1024,
+        "mean_loss": 4.046766068214299,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 1.2660235734681184,
+        "corr_rank_excess": 0.9090544289230796,
+        "excess_slope": 0.5859418358332261,
+        "corr_rank_loss": 0.7755867833089379,
+        "loss_slope": 0.12165668718915378
+      },
+      {
+        "zipf_s": 0.5,
+        "alpha": 0.10165526325355691,
+        "n_tokens_enough": 1024,
+        "mean_loss": 4.05575227335531,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 1.275009778609129,
+        "corr_rank_excess": 0.9121961413843703,
+        "excess_slope": 0.5857862114891287,
+        "corr_rank_loss": 0.7887243408987011,
+        "loss_slope": 0.12447359952608023
+      }
+    ]
+  },
+  "zipf_0.7": {
+    "zipf_s": 0.7,
+    "alpha_mean": 0.10767745036023187,
+    "loss_slope_mean": 0.1625693000390298,
+    "excess_slope_mean": 0.750300340669697,
+    "corr_rank_loss_mean": 0.8097085393119782,
+    "corr_rank_excess_mean": 0.9425253012631082,
+    "mean_loss": 4.296359346220647,
+    "mean_excess": 1.5156168514744663,
+    "seeds": [
+      {
+        "zipf_s": 0.7,
+        "alpha": 0.11276251319956929,
+        "n_tokens_enough": 1024,
+        "mean_loss": 4.298468056467575,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 1.5177255617213952,
+        "corr_rank_excess": 0.9422992381776821,
+        "excess_slope": 0.7560317159955768,
+        "corr_rank_loss": 0.8086820341428667,
+        "loss_slope": 0.16192490722411337
+      },
+      {
+        "zipf_s": 0.7,
+        "alpha": 0.10516802567578039,
+        "n_tokens_enough": 1024,
+        "mean_loss": 4.282069187599285,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 1.5013266928531046,
+        "corr_rank_excess": 0.9447532168915346,
+        "excess_slope": 0.7434956594917027,
+        "corr_rank_loss": 0.8091613676699588,
+        "loss_slope": 0.16157434472023144
+      },
+      {
+        "zipf_s": 0.7,
+        "alpha": 0.1051018122053459,
+        "n_tokens_enough": 1023,
+        "mean_loss": 4.308540794595079,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 1.5277982998488988,
+        "corr_rank_excess": 0.9405234487201081,
+        "excess_slope": 0.7513736465218114,
+        "corr_rank_loss": 0.8112822161231089,
+        "loss_slope": 0.16420864817274458
+      }
+    ]
+  },
+  "zipf_1.0": {
+    "zipf_s": 1.0,
+    "alpha_mean": 0.11649913579522127,
+    "loss_slope_mean": 0.20142224116091323,
+    "excess_slope_mean": 0.983339393160696,
+    "corr_rank_loss_mean": 0.8214548306121405,
+    "corr_rank_excess_mean": 0.9607013847588536,
+    "mean_loss": 4.870409358330924,
+    "mean_excess": 2.089642268881381,
+    "seeds": [
+      {
+        "zipf_s": 1.0,
+        "alpha": 0.12297855274625756,
+        "n_tokens_enough": 686,
+        "mean_loss": 4.878957803672659,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 2.098139009003294,
+        "corr_rank_excess": 0.961211608622,
+        "excess_slope": 0.9818527856596948,
+        "corr_rank_loss": 0.8294833742960558,
+        "loss_slope": 0.19968419169809243
+      },
+      {
+        "zipf_s": 1.0,
+        "alpha": 0.11419836792107367,
+        "n_tokens_enough": 685,
+        "mean_loss": 4.860682770751053,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 2.079940276004873,
+        "corr_rank_excess": 0.9577316848091901,
+        "excess_slope": 0.976451291941412,
+        "corr_rank_loss": 0.8126362253779292,
+        "loss_slope": 0.19822148279084673
+      },
+      {
+        "zipf_s": 1.0,
+        "alpha": 0.11232048671833261,
+        "n_tokens_enough": 703,
+        "mean_loss": 4.871587500569058,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 2.0908475216359768,
+        "corr_rank_excess": 0.9631608608453708,
+        "excess_slope": 0.9917141018809811,
+        "corr_rank_loss": 0.8222448921624367,
+        "loss_slope": 0.2063610489938006
+      }
+    ]
+  },
+  "zipf_1.3": {
+    "zipf_s": 1.3,
+    "alpha_mean": 0.12662153993443723,
+    "loss_slope_mean": 0.17026677605208473,
+    "excess_slope_mean": 1.220416107778396,
+    "corr_rank_loss_mean": 0.7615235691725933,
+    "corr_rank_excess_mean": 0.8470894524518587,
+    "mean_loss": 5.326262107725687,
+    "mean_excess": 2.544842540136839,
+    "seeds": [
+      {
+        "zipf_s": 1.3,
+        "alpha": 0.1339117872231819,
+        "n_tokens_enough": 273,
+        "mean_loss": 5.303834191599874,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 2.5217460571859474,
+        "corr_rank_excess": 0.6619708649034287,
+        "excess_slope": 1.2440749112582068,
+        "corr_rank_loss": 0.7628363458476889,
+        "loss_slope": 0.16664368681308456
+      },
+      {
+        "zipf_s": 1.3,
+        "alpha": 0.12413129463648959,
+        "n_tokens_enough": 276,
+        "mean_loss": 5.319522329684688,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 2.537695899613729,
+        "corr_rank_excess": 0.9460448545960339,
+        "excess_slope": 1.2318643131663716,
+        "corr_rank_loss": 0.7624810403738116,
+        "loss_slope": 0.17624557751861264
+      },
+      {
+        "zipf_s": 1.3,
+        "alpha": 0.12182153794364017,
+        "n_tokens_enough": 278,
+        "mean_loss": 5.355429801892498,
+        "mean_bayes": 2.780742494746181,
+        "mean_excess": 2.5750856636108397,
+        "corr_rank_excess": 0.9332526378561136,
+        "excess_slope": 1.1853090989106094,
+        "corr_rank_loss": 0.7592533212962793,
+        "loss_slope": 0.16791106382455703
+      }
+    ]
+  }
+}

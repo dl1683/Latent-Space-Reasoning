@@ -1,0 +1,16 @@
+{
+  "model": "SmolLM2-135M",
+  "d": 576,
+  "m": 1536,
+  "n_layers": 30,
+  "overall_cos_mean": -0.0009,
+  "overall_frac_positive": 0.499,
+  "random_cos_baseline": 0.0,
+  "random_frac_positive_baseline": 0.5,
+  "diag_dominance_mean": 0.4136,
+  "diag_dominance_range": [
+    0.2478,
+    0.5463
+  ],
+  "note": "Row-wise cosines indistinguishable from random. Row pairing matters for function (139%% error) but NOT through cosine alignment."
+}

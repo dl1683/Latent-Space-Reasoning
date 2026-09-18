@@ -1,0 +1,44 @@
+{
+  "special/whitespace": {
+    "count": 166,
+    "mean_norm": 3.1533474922180176,
+    "mean_top10_frac": 0.46406155824661255,
+    "mean_top50_frac": 0.5222781896591187,
+    "mean_eigenindex": 157.87996996431085
+  },
+  "digits": {
+    "count": 14,
+    "mean_norm": 2.6559178829193115,
+    "mean_top10_frac": 0.3031052052974701,
+    "mean_top50_frac": 0.3461298644542694,
+    "mean_eigenindex": 239.52857413100747
+  },
+  "short_letters": {
+    "count": 2531,
+    "mean_norm": 2.9687278270721436,
+    "mean_top10_frac": 0.47177407145500183,
+    "mean_top50_frac": 0.5337545275688171,
+    "mean_eigenindex": 130.39453249728678
+  },
+  "punctuation": {
+    "count": 1463,
+    "mean_norm": 3.500084161758423,
+    "mean_top10_frac": 0.48655664920806885,
+    "mean_top50_frac": 0.5498012900352478,
+    "mean_eigenindex": 137.2160453260136
+  },
+  "common_words": {
+    "count": 122,
+    "mean_norm": 2.653569459915161,
+    "mean_top10_frac": 0.303108274936676,
+    "mean_top50_frac": 0.3776938319206238,
+    "mean_eigenindex": 190.24606410092176
+  },
+  "other": {
+    "count": 1000,
+    "mean_norm": 2.924819231033325,
+    "mean_top10_frac": 0.30933934450149536,
+    "mean_top50_frac": 0.3899364769458771,
+    "mean_eigenindex": 161.33262070603786
+  }
+}

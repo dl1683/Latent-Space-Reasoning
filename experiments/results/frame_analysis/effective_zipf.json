@@ -1,0 +1,32 @@
+[
+  {
+    "model": "SmolLM2-135M",
+    "vocab_size": 49152,
+    "total_tokens": 2430,
+    "unique_tokens": 278,
+    "zipf_s_full": 0.5445623489608554,
+    "zipf_R2_full": 0.8255288119188183,
+    "zipf_s_top50": 0.7610234293986278,
+    "n_over_d": 85.33333333333333
+  },
+  {
+    "model": "Qwen3-0.6B",
+    "vocab_size": 151643,
+    "total_tokens": 2350,
+    "unique_tokens": 285,
+    "zipf_s_full": 0.4977236180044425,
+    "zipf_R2_full": 0.7947884152618022,
+    "zipf_s_top50": 0.7119836585159602,
+    "n_over_d": 148.0888671875
+  },
+  {
+    "model": "Phi-1.5",
+    "vocab_size": 50257,
+    "total_tokens": 2495,
+    "unique_tokens": 291,
+    "zipf_s_full": 0.5292674582331627,
+    "zipf_R2_full": 0.8114211903739346,
+    "zipf_s_top50": 0.7487493701512073,
+    "n_over_d": 24.53955078125
+  }
+]

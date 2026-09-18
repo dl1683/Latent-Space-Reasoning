@@ -1,0 +1,22 @@
+[
+  {
+    "model": "SmolLM2-135M",
+    "n": 49152,
+    "d": 576,
+    "alignment_rank_exponent": -0.5155742827596034,
+    "top1_alignment_over_random": 270.43829345703125,
+    "norm_topalign_spearman": 0.6732855003763968,
+    "median_token_erank": 1.122056484222412,
+    "eigenvalue_exponent": -0.5165434933045754
+  },
+  {
+    "model": "Qwen3-0.6B",
+    "n": 151936,
+    "d": 1024,
+    "alignment_rank_exponent": -0.36118478045115304,
+    "top1_alignment_over_random": 131.28369140625,
+    "norm_topalign_spearman": -0.08174142319512716,
+    "median_token_erank": 1.0798325538635254,
+    "eigenvalue_exponent": -0.3504390661374351
+  }
+]

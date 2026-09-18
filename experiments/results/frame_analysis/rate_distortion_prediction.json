@@ -1,0 +1,50 @@
+{
+  "experiment": "rate_distortion_prediction",
+  "date": "2026-09-18",
+  "purpose": "Test whether Zipf + information-weighted norms predict observed power-law eigenspectrum",
+  "models": {
+    "greedy_packing": {
+      "description": "Sort contributions by f_i * ||v_i||^2, pack contiguous blocks into eigenvalues",
+      "SmolLM2_exponent": -0.930,
+      "Qwen3_exponent": -0.933,
+      "note": "Assumes perfect directional alignment (unrealistic upper bound)"
+    },
+    "monte_carlo_info_weighted": {
+      "description": "Random unit directions scaled by sqrt(-log(P(token))), n=49152-151936, 1000 trials",
+      "SmolLM2_exponent": -0.098,
+      "Qwen3_exponent": -0.074,
+      "note": "Norm weighting alone produces FLAT spectra (MP-like)"
+    },
+    "monte_carlo_uniform": {
+      "description": "Random unit directions, uniform norms (Marchenko-Pastur baseline)",
+      "SmolLM2_exponent": -0.098,
+      "Qwen3_exponent": -0.074,
+      "note": "Indistinguishable from info-weighted random"
+    }
+  },
+  "observed": {
+    "SmolLM2": {"d": 576, "exponent": -0.517, "condition": 11970.5},
+    "Qwen3": {"d": 1024, "exponent": -0.350, "condition": 1175.5}
+  },
+  "directional_organization_alpha": {
+    "definition": "(observed_exponent - random_exponent) / (greedy_exponent - random_exponent)",
+    "SmolLM2": 0.503,
+    "Qwen3": 0.321,
+    "interpretation": "Fraction of theoretical maximum directional structure; decreases with d"
+  },
+  "zipf_sensitivity": {
+    "note": "Greedy model, SmolLM2 config (n=49152, d=576)",
+    "s_0.50": {"exponent": -0.461, "condition": 8.9},
+    "s_0.75": {"exponent": -0.693, "condition": 50.2},
+    "s_1.00": {"exponent": -0.930, "condition": 294.8},
+    "s_1.25": {"exponent": -1.175, "condition": 1904.4},
+    "s_1.50": {"exponent": -1.427, "condition": 13925.4}
+  },
+  "conclusions": [
+    "Norm weighting alone does NOT produce power-law spectra (random directions → flat)",
+    "Power law requires DIRECTIONAL STRUCTURE created by training",
+    "Degree of directional organization is d-dependent (alpha decreasing with d)",
+    "Effective Zipf exponent of training data is ~0.5, not 1.0",
+    "Partial organization (alpha~0.3-0.5) is the operating regime of real models"
+  ]
+}

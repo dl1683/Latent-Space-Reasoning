@@ -1,0 +1,15 @@
+{
+  "model": "SmolLM2-135M",
+  "d": 576,
+  "n_layers": 30,
+  "coverage_rank_rho": -0.7732306196380831,
+  "coverage_rank_p": 1.2073289832328937e-115,
+  "eff_neurons_rank_rho": -0.5684053575465301,
+  "eff_neurons_rank_p": 1.3472030869955112e-50,
+  "coverage_exponent": -0.014039013708067585,
+  "eff_neurons_exponent": 0.004840294301170143,
+  "coverage_top10": 502.4333333333334,
+  "coverage_mid": 485.2991898148148,
+  "coverage_bottom10": 491.2666666666667,
+  "time_s": 9.359498023986816
+}

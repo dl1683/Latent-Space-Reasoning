@@ -1,0 +1,17 @@
+{
+  "model": "Phi-1.5",
+  "d": 2048,
+  "n_tokens": 51200,
+  "embedding_exponent": -0.5649882934715382,
+  "embedding_R2": 0.8700586604030407,
+  "condition_number": 640.057373046875,
+  "top1_trace_fraction": 0.011724486947059631,
+  "participation_ratio": 1075.1624755859375,
+  "shannon_effective_rank": 1611.940185546875,
+  "alpha_directional_organization": 0.5229571533399165,
+  "alpha_params": {
+    "random_exponent": -0.178,
+    "greedy_exponent": -0.918,
+    "observed_exponent": -0.5649882934715382
+  }
+}

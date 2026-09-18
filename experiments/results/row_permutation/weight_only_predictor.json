@@ -1,0 +1,59 @@
+{
+  "model": "SmolLM2-135M",
+  "d": 576,
+  "m": 1536,
+  "test_layers": [
+    0,
+    7,
+    15,
+    22,
+    29
+  ],
+  "n_test_prompts": 5,
+  "per_layer": {
+    "L0": {
+      "r2_wt": 0.9354,
+      "r2_du": 0.9746,
+      "r2_it": 0.993,
+      "corr_wt": 0.9851,
+      "corr_du": 0.9884,
+      "corr_it": 0.9975
+    },
+    "L7": {
+      "r2_wt": 0.9412,
+      "r2_du": 0.9435,
+      "r2_it": 0.9206,
+      "corr_wt": 0.9709,
+      "corr_du": 0.9715,
+      "corr_it": 0.9597
+    },
+    "L15": {
+      "r2_wt": 0.9566,
+      "r2_du": 0.9598,
+      "r2_it": 0.9701,
+      "corr_wt": 0.9841,
+      "corr_du": 0.9844,
+      "corr_it": 0.9865
+    },
+    "L22": {
+      "r2_wt": 0.9617,
+      "r2_du": 0.9617,
+      "r2_it": 0.9348,
+      "corr_wt": 0.9806,
+      "corr_du": 0.9807,
+      "corr_it": 0.9744
+    },
+    "L29": {
+      "r2_wt": 0.9029,
+      "r2_du": 0.9009,
+      "r2_it": 0.9619,
+      "corr_wt": 0.9532,
+      "corr_du": 0.9518,
+      "corr_it": 0.981
+    }
+  },
+  "mean_r2_weight_tensor": 0.9396,
+  "mean_r2_weight_du": 0.9481,
+  "mean_r2_input_tensor": 0.9561,
+  "conclusion": "DU suffices. Gate info adds nothing to damage prediction. All three predictors near-identical R2 ~0.94-0.96."
+}
