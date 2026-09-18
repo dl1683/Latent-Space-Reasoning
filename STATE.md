@@ -5,8 +5,10 @@
 **Status: ACTIVE (user ruling, 2026-09-18).** A mid-file "HD MATH DIRECTION:
 CLOSED" verdict was a coding subagent overstepping its review mandate and is
 void; the corrected block appears below. Adversarial reviews (headless
-`droid exec`, every 2–3 hours during research sessions) exist to prevent
-overclaiming and to find truth assuming the axiom is true; they never close a
+`droid exec`, every 2–3 hours during research sessions) are goal-aligned
+adversaries: they attack the method and strategy to ensure the work is the
+best path to the goal, diagnose what is going wrong, and prevent
+overclaiming — assuming the axiom is true; they never close a
 direction or void the axiom. On a failed cycle the required question is "this
 is not working — what would work for exploring this problem statement?"
 
