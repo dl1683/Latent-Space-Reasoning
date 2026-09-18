@@ -2,6 +2,14 @@
 
 ## CURRENT DIRECTION: Mathematics of High-Dimensional Spaces
 
+**Status: ACTIVE (user ruling, 2026-09-18).** A mid-file "HD MATH DIRECTION:
+CLOSED" verdict was a coding subagent overstepping its review mandate and is
+void; the corrected block appears below. Adversarial reviews (headless
+`droid exec`, every 2–3 hours during research sessions) exist to prevent
+overclaiming and to find truth assuming the axiom is true; they never close a
+direction or void the axiom. On a failed cycle the required question is "this
+is not working — what would work for exploring this problem statement?"
+
 How does math change at high dimensions? This is the core research question.
 
 The scope is broad and fundamental: the native mathematics of spaces where
@@ -387,9 +395,11 @@ an inert suffix. rho(add_zero, A) ranges 0.06-0.86 vs AA baseline 0.64-0.94.
 Position of the edit does not determine behavior; whether appended tokens enter
 the computation the readout must perform DOES.
 
-**Fable R3 criterion #1 triggered:** 3 cycles, 0 surviving testable predictions.
-Next attempt must state a numeric/ordinal prediction absent from existing data
-BEFORE examining data, or the HD math direction closes entirely.
+**Fable R3 criterion #1 triggered (closure clause VOID per user ruling
+2026-09-18):** 3 cycles, 0 surviving testable predictions. Next attempt must
+state a numeric/ordinal prediction absent from existing data BEFORE examining
+data. The "or the HD math direction closes entirely" consequence is void:
+reviewers flag overclaims and approach problems; they do not close the mission.
 
 **Computational-relevance test REJECTED (Fable design review, 2026-09-18):**
 Pre-registered "syntactic context determines behavioral sensitivity" with 6 new
@@ -399,10 +409,23 @@ data, confirmatory outcome is tautological ("model knows Python"), disconfirmato
 outcome has 3 untested alternatives the design cannot separate. Not counted as an
 HD math attempt (behavioral sensitivity, not HD math, by its own admission).
 
-**HD MATH DIRECTION: CLOSED.** R3 criterion #1 fully triggered. 3 theory-first
-cycles killed, 0 surviving predictions, proposed behavioral test rejected as not
-HD math and not pre-registered. The behavioral sensitivity program is also closed
-(exhausted at rank-3, no breakthrough ceiling for further work).
+**HD MATH DIRECTION: ACTIVE (user ruling, 2026-09-18).** The earlier "CLOSED"
+verdict that stood here was a coding subagent overstepping its review mandate,
+not a scientific result. Three theory-first cycles failing to produce surviving
+predictions is evidence about those cycles, not license to retire the mission.
+The user direction stands: explore the mathematics of high-dimensional spaces,
+with LLM latent spaces as one later instance (they are too expensive on current
+hardware and have too many moving parts; the general HD foundation comes first).
+What the killed cycles DO establish, retained as method guidance for the next
+attempt: (1) the rank-3 behavioral transfer matrices are exhausted — do not
+re-mine them; (2) the open route is analytical/proof-first work on genuinely
+high-dimensional objects (weight matrices, hidden-state geometry, random-matrix
+and kernel regimes); (3) any empirical claim states a numeric/ordinal prediction
+absent from existing data BEFORE examining data. On a failed cycle the required
+question is "this is not working — what would work for exploring this problem
+statement?", never closure. The behavioral sensitivity program's surviving
+yield (multiplicative model, 4-level transfer hierarchy, d_add_zero
+dissociation, R31 disambiguation, omega amplification) remains retained below.
 
 **What survived (total yield of the kill experiment program):**
 - Multiplicative sensitivity model d[i,j] ≈ f[i] × m[j], R²=0.82-0.88
