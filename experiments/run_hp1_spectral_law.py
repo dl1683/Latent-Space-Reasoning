@@ -102,7 +102,8 @@ def run_qsae(n, d, s, seed, lr, checkpoints, Tmax, device="cpu",
                 W = W - lr * grad
             losses.append(loss)
             gnorms.append(gn if t in checkpoints else None)
-        last, prev = recs[-1], recs[-2]
+        last = recs[-1]
+        prev = recs[-2] if len(recs) >= 2 else last
         slope = (losses[-1] - losses[-1000]) / 1000.0 if len(losses) > 1000 else np.inf
         conv = (abs(last["bat"]["top90"]["alpha"] - prev["bat"]["top90"]["alpha"]) <= 0.05
                 and slope < 1e-5 and last["gnorm"] < 1e-3 * gnorm0)

@@ -1,5 +1,45 @@
 # NOTEBOOK
 
+## Entry 119: Theorem — quadratic superposition optimum is sparse-exact storage; power laws need retrieval geometry or dynamics (2026-09-18)
+
+**Context.** Cycle HP (v2, theory/HD_POWER_LAW_ALLOCATION.md): why do trained
+representations have power-law eigenspectra? First design (v1) was gated
+NO-GO by the first headless Droid review (ledger hp1_design_gate_droid) with
+five fixes and a strategic steer: analytic foundation cycle first. HP-A ran.
+
+**A1 result.** The random-mixing (mean-field) stationarity analysis of the
+quadratic superposition autoencoder predicts a bulge-with-cutoff norm
+profile. L-BFGS multi-init optima refute it decisively (fit R² 0.00–0.08).
+The true optimum: store the top-d usage tokens orthonormally, drop the tail,
+loss = Σ_{i>d} p_i exactly (matched to 6 decimals, 6/6 configs), frame
+operator = I_d, perfectly FLAT spectrum.
+
+**Theorem (with one-line proof).** L = tr((G−I)P(G−I)), G PSD of rank ≤ d;
+on ker G the factor G−I acts as −I, so L ≥ tr(P restricted to any
+(n−d)-dim kernel); choose the kernel = tail coordinates. Attained by
+orthonormal top-d storage. ∎
+
+**Why this matters (HD-native reading).** In high dimensions the quadratic
+reconstruction loss has NO superposition premium: when d ≪ n, interference is
+avoided by dropping tokens, and the optimum is an uninteresting identity
+frame. The cost of superposition — and therefore any power-law allocation —
+only bites when every token must remain RETRIEVABLE, which is the softmax
+world (margins vs. interference), i.e., the regime real embeddings train in.
+This cleanly splits the "why power law" question:
+1. dynamics branch: GD transients on ANY loss manufacturing steep spectra
+   before converging to flat (P-E predicts QSAE GD endpoints flat);
+2. geometry branch: softmax equilibrium genuinely power-law (XE arm, HP-B).
+Both branches are now pre-registered with frozen predictions (P-A′..P-E).
+
+**Process note.** First full loop under the standing orders: Droid gate →
+redesign → analytic cycle → theorem. The gate's five fixes were all
+material; the NO-GO was correct (v1's mean-field proposition was wrong in
+both coefficient and conclusion — the optimum is not mixed at all).
+
+Data: experiments/results/hpa_random_frame/a1_meanfield.json
+Theory: theory/HD_POWER_LAW_ALLOCATION.md §4b
+Ledger: hpa_a1_result
+
 ## Entry 118: Controlled eigenspace vulnerability INVERTS entry 92 — top eigenspaces are MORE sensitive (2026-09-18)
 
 Entry 92's "tail vulnerability" claimed perturbation vectors projecting onto

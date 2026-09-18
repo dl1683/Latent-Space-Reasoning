@@ -1,5 +1,42 @@
 # Experiments Log
 
+## HP-A A1: QSAE optimum proven sparse-exact; mean field refuted (2026-09-18)
+
+### Theorem (sparse-exact optimum of the quadratic superposition autoencoder)
+
+For the QSAE loss L(W) = Σ_i p_i ‖W^T W e_i − e_i‖² with usage weights p,
+code dimension d < n: writing G = W^T W (PSD, rank ≤ d) and P = diag(p),
+L = tr((G−I) P (G−I)). On ker G (dim n−d), G−I acts as −I, so
+L ≥ tr(P|_{ker G}), minimized by ker G = span of tail coordinates; the
+minimum is the tail mass Σ_{i>d} p_i, attained by any orthonormal unit-norm
+storage of the top-d usage tokens. The optimal frame operator is W W^T = I_d:
+**completely flat spectrum.**
+
+### Verification (L-BFGS, multi-init, 6 configs)
+
+s ∈ {0.5, 1.0} × (n,d) ∈ {(64,16),(256,64),(512,128)}, 5 independent inits
+each. Results (medians): loss − tail-mass bound = **0.000000 at all six
+configs**; nonzero-norm count k0 = d exactly; fitted power-law exponent at
+the optimum α ≈ 0.00; the P1′ mean-field bulge profile fits at R² = 0.00–0.08
+(threshold for refutation: < 0.8). **Mean-field ansatz REFUTED at the
+optimum; the optimum anti-mixes (organizes orthogonality) rather than mixes.**
+
+### Consequence for the program
+
+Power-law spectra cannot come from the quadratic objective's optimum — they
+must come from optimization dynamics (transients) or from softmax retrieval
+geometry. The rate-distortion s/2 benchmark and mean-field bulge are retired
+as QSAE comparators. Prediction P-E added (before any HP-B run): converged
+QSAE GD endpoints are flat (α ≤ 0.35), ≈ d nonzero norms, loss → tail mass.
+The XE (softmax) arm is now the main event of HP-B.
+
+**Data:** experiments/results/hpa_random_frame/a1_meanfield.json
+**Runner:** experiments/run_hpa_random_frame.py (shared: hp_spectral_lib.py)
+**Ledger:** hpa_a1_result
+**NOTEBOOK entry:** 119
+
+---
+
 ## Controlled Eigenspace Vulnerability — Entry 92 Overturned (2026-09-18)
 
 ### Controlled eigenspace perturbation (entry 118, SmolLM2-135M)
