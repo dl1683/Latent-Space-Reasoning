@@ -1,0 +1,177 @@
+{
+  "qwen3": {
+    "same_content_mean": 0.6074108818011257,
+    "same_position_mean": 0.7752157598499064,
+    "diff_pos_minus_content": 0.16780487804878075,
+    "same_content_pairs": {
+      "pass": 0.826829268292683,
+      "comment": 0.5915572232645404,
+      "dead_var": 0.5401500938086304,
+      "assert": 0.47110694183864926
+    },
+    "same_position_after_pairs": {
+      "comment/pass": 0.8221388367729832,
+      "pass/newline": 0.8484052532833022,
+      "comment/newline": 0.8926829268292685,
+      "assert/dead_var": 0.8602251407129458,
+      "assert/end_comment": 0.8440900562851783,
+      "dead_var/type_hint": 0.8045028142589119
+    },
+    "same_position_before_pairs": {
+      "comment/pass": 0.7039399624765479,
+      "pass/newline": 0.7120075046904316,
+      "dead_var/assert": 0.49399624765478434,
+      "comment/desc": 0.7701688555347093
+    }
+  },
+  "smollm2": {
+    "same_content_mean": 0.5868198874296436,
+    "same_position_mean": 0.808611632270169,
+    "diff_pos_minus_content": 0.22179174484052533,
+    "same_content_pairs": {
+      "pass": 0.6881801125703566,
+      "comment": 0.5144465290806755,
+      "dead_var": 0.575984990619137,
+      "assert": 0.5686679174484054
+    },
+    "same_position_after_pairs": {
+      "comment/pass": 0.9185741088180113,
+      "pass/newline": 0.9313320825515949,
+      "comment/newline": 0.9380863039399626,
+      "assert/dead_var": 0.7487804878048782,
+      "assert/end_comment": 0.9031894934333959,
+      "dead_var/type_hint": 0.7450281425891184
+    },
+    "same_position_before_pairs": {
+      "comment/pass": 0.7626641651031896,
+      "pass/newline": 0.8639774859287056,
+      "dead_var/assert": 0.6487804878048781,
+      "comment/desc": 0.6257035647279551
+    }
+  },
+  "stablelm": {
+    "same_content_mean": 0.5600375234521577,
+    "same_position_mean": 0.7605440900562853,
+    "diff_pos_minus_content": 0.20050656660412758,
+    "same_content_pairs": {
+      "pass": 0.6382739212007505,
+      "comment": 0.5030018761726079,
+      "dead_var": 0.7622889305816136,
+      "assert": 0.3365853658536586
+    },
+    "same_position_after_pairs": {
+      "comment/pass": 0.9814258911819889,
+      "pass/newline": 0.878236397748593,
+      "comment/newline": 0.8872420262664167,
+      "assert/dead_var": 0.9583489681050659,
+      "assert/end_comment": 0.9643527204502815,
+      "dead_var/type_hint": 0.9360225140712947
+    },
+    "same_position_before_pairs": {
+      "comment/pass": 0.49118198874296437,
+      "pass/newline": 0.5247654784240151,
+      "dead_var/assert": 0.4127579737335835,
+      "comment/desc": 0.5711069418386492
+    }
+  },
+  "codegen": {
+    "same_content_mean": 0.4750938086303941,
+    "same_position_mean": 0.5879174484052534,
+    "diff_pos_minus_content": 0.11282363977485932,
+    "same_content_pairs": {
+      "pass": 0.6165103189493434,
+      "comment": 0.2437148217636023,
+      "dead_var": 0.39474671669793626,
+      "assert": 0.6454033771106943
+    },
+    "same_position_after_pairs": {
+      "comment/pass": 0.8358348968105067,
+      "pass/newline": 0.7180112570356473,
+      "comment/newline": 0.8045028142589119,
+      "assert/dead_var": 0.853095684803002,
+      "assert/end_comment": 0.4337711069418387,
+      "dead_var/type_hint": 0.7285178236397749
+    },
+    "same_position_before_pairs": {
+      "comment/pass": -0.07392120075046905,
+      "pass/newline": 0.3675422138836773,
+      "dead_var/assert": 0.501500938086304,
+      "comment/desc": 0.7103189493433397
+    }
+  },
+  "smollm2_360m": {
+    "same_content_mean": 0.24662288930581616,
+    "same_position_mean": 0.5092307692307692,
+    "diff_pos_minus_content": 0.262607879924953,
+    "same_content_pairs": {
+      "pass": 0.010694183864915574,
+      "comment": 0.3467166979362101,
+      "dead_var": 0.4467166979362102,
+      "assert": 0.18236397748592875
+    },
+    "same_position_after_pairs": {
+      "comment/pass": 0.8641651031894936,
+      "pass/newline": 0.877673545966229,
+      "comment/newline": 0.9652908067542215,
+      "assert/dead_var": 0.17992495309568482,
+      "assert/end_comment": 0.7050656660412759,
+      "dead_var/type_hint": 0.43339587242026273
+    },
+    "same_position_before_pairs": {
+      "comment/pass": 0.301125703564728,
+      "pass/newline": 0.603564727954972,
+      "dead_var/assert": -0.12270168855534712,
+      "comment/desc": 0.28480300187617263
+    }
+  },
+  "smollm2_135m": {
+    "same_content_mean": 0.7696529080675423,
+    "same_position_mean": 0.8160975609756098,
+    "diff_pos_minus_content": 0.04644465290806754,
+    "same_content_pairs": {
+      "pass": 0.8666041275797374,
+      "comment": 0.776547842401501,
+      "dead_var": 0.7219512195121951,
+      "assert": 0.7135084427767355
+    },
+    "same_position_after_pairs": {
+      "comment/pass": 0.9647279549718575,
+      "pass/newline": 0.9688555347091935,
+      "comment/newline": 0.9604127579737337,
+      "assert/dead_var": 0.7313320825515948,
+      "assert/end_comment": 0.9703564727954974,
+      "dead_var/type_hint": 0.3924953095684804
+    },
+    "same_position_before_pairs": {
+      "comment/pass": 0.7893058161350845,
+      "pass/newline": 0.9208255159474672,
+      "dead_var/assert": 0.7737335834896811,
+      "comment/desc": 0.6889305816135085
+    }
+  },
+  "qwen3_06b": {
+    "same_content_mean": 0.4641181988742965,
+    "same_position_mean": 0.6768480300187619,
+    "diff_pos_minus_content": 0.21272983114446542,
+    "same_content_pairs": {
+      "pass": 0.6431519699812384,
+      "comment": 0.4121951219512196,
+      "dead_var": 0.36772983114446534,
+      "assert": 0.43339587242026273
+    },
+    "same_position_after_pairs": {
+      "comment/pass": 0.8724202626641653,
+      "pass/newline": 0.8356472795497187,
+      "comment/newline": 0.854596622889306,
+      "assert/dead_var": 0.6279549718574109,
+      "assert/end_comment": 0.7823639774859289,
+      "dead_var/type_hint": 0.7791744840525331
+    },
+    "same_position_before_pairs": {
+      "comment/pass": 0.40018761726078805,
+      "pass/newline": 0.650656660412758,
+      "dead_var/assert": 0.5459662288930582,
+      "comment/desc": 0.41951219512195126
+    }
+  }
+}

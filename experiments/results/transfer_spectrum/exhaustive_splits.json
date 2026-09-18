@@ -1,0 +1,38 @@
+{
+  "Qwen/Qwen3-1.7B-Base": {
+    "correct": 49,
+    "n_splits": 495,
+    "exhaustive_mean_rho": 0.30058582607825207,
+    "exhaustive_std_rho": 0.1205907169029738,
+    "exhaustive_median_rho": 0.2861774660924728,
+    "ci_95": [
+      0.12402254115349239,
+      0.625291737249549
+    ],
+    "frac_positive": 1.0
+  },
+  "HuggingFaceTB/SmolLM2-1.7B": {
+    "correct": 49,
+    "n_splits": 495,
+    "exhaustive_mean_rho": 0.15626264773215295,
+    "exhaustive_std_rho": 0.061333229771582044,
+    "exhaustive_median_rho": 0.15755543326629184,
+    "ci_95": [
+      0.027849812029216253,
+      0.2666383610540462
+    ],
+    "frac_positive": 0.98989898989899
+  },
+  "Qwen/Qwen2.5-0.5B": {
+    "correct": 49,
+    "n_splits": 495,
+    "exhaustive_mean_rho": 0.17401093053432423,
+    "exhaustive_std_rho": 0.09970060373252702,
+    "exhaustive_median_rho": 0.17490068784446894,
+    "ci_95": [
+      -8.272770772256593e-05,
+      0.3697752112264152
+    ],
+    "frac_positive": 0.9737373737373738
+  }
+}

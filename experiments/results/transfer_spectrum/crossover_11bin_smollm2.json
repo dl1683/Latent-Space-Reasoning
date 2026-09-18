@@ -1,0 +1,21 @@
+{
+  "model": "HuggingFaceTB/SmolLM2-1.7B",
+  "model_key": "smollm2",
+  "readout": "comparison",
+  "fulllogit": {
+    "diag_add_zero_plus_one": 0.6756521739130433,
+    "diag_zero_plus_one_plus": -0.1591304347826087,
+    "offdiag_add_zero_one_plus": -0.4052173913043478,
+    "offdiag_zero_plus_plus_one": 0.3904347826086956,
+    "ee_rho": -0.46956521739130425
+  },
+  "bin11": {
+    "diag_add_zero_plus_one": 0.5643478260869564,
+    "diag_zero_plus_one_plus": 0.12869565217391304,
+    "offdiag_add_zero_one_plus": 0.08869565217391304,
+    "offdiag_zero_plus_plus_one": 0.17043478260869566,
+    "ee_rho": 0.1243478260869565,
+    "ee_p": 0.5626487416883164
+  },
+  "n_nonidentity": 24
+}

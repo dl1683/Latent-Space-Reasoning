@@ -1,0 +1,24 @@
+{
+  "Qwen/Qwen3-1.7B-Base": {
+    "n_active": 40,
+    "within_surface_rho": 0.7179990694850151,
+    "within_surface_std": 0.06662007363728573,
+    "within_semantic_rho": 0.14695069654763634,
+    "within_semantic_std": 0.06130630284418471,
+    "cross_type_rho": 0.08269856459330142,
+    "cross_type_std": 0.15190209762310813,
+    "full_cross_rho": 0.05359670975031947,
+    "full_cross_p": 0.13477120082613225
+  },
+  "HuggingFaceTB/SmolLM2-1.7B": {
+    "n_active": 40,
+    "within_surface_rho": 0.6328233574879979,
+    "within_surface_std": 0.05848880803470521,
+    "within_semantic_rho": 0.29524682099024174,
+    "within_semantic_std": 0.0985792912205541,
+    "cross_type_rho": 0.3632690844204342,
+    "cross_type_std": 0.07608979191554142,
+    "full_cross_rho": 0.4435170138220275,
+    "full_cross_p": 6.354230439213024e-39
+  }
+}

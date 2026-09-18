@@ -1,0 +1,16 @@
+{
+  "analysis": "cross_model_fragility_transfer",
+  "code_pairwise": {
+    "Qwen/Qwen3-1.7B-Base__vs__HuggingFaceTB/SmolLM2-1.7B": {
+      "rho": 0.24315196998123828,
+      "p": 0.13057035941218326
+    }
+  },
+  "nl_pairwise": {
+    "qwen_vs_smollm2": {
+      "rho": -0.05478424015009382,
+      "p": 0.7370584969232159
+    }
+  },
+  "cross_domain": {}
+}

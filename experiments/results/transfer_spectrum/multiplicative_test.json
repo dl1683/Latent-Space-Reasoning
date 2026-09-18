@@ -1,0 +1,52 @@
+{
+  "CodeGen-350M": {
+    "additive_r2": 0.841438000789982,
+    "multiplicative_r2": 0.999999556489334,
+    "log_additive_r2": 0.8757591688403201,
+    "add_int_frac": 0.15856199921001804,
+    "log_int_frac": 0.12424083115967978,
+    "log_sv1_pct": 41.241094949509346,
+    "log_perm_p": 1.0,
+    "better_model": "MULTIPLICATIVE"
+  },
+  "Phi-1.5-Q0": {
+    "additive_r2": 0.7926079048256989,
+    "multiplicative_r2": 0.9999999858461974,
+    "log_additive_r2": 0.8728767423595696,
+    "add_int_frac": 0.20739209517430113,
+    "log_int_frac": 0.12712325764043045,
+    "log_sv1_pct": 28.33983124530002,
+    "log_perm_p": 1.0,
+    "better_model": "MULTIPLICATIVE"
+  },
+  "Qwen3-1.7B": {
+    "additive_r2": 0.7485500007955552,
+    "multiplicative_r2": 0.9999999957364516,
+    "log_additive_r2": 0.8543767870703263,
+    "add_int_frac": 0.2514499992044448,
+    "log_int_frac": 0.1456232129296737,
+    "log_sv1_pct": 31.00005436526833,
+    "log_perm_p": 0.5090981803639272,
+    "better_model": "MULTIPLICATIVE"
+  },
+  "SmolLM2-1.7B": {
+    "additive_r2": 0.6521787435869875,
+    "multiplicative_r2": 0.9999847720805031,
+    "log_additive_r2": 0.8154953015258513,
+    "add_int_frac": 0.34782125641301254,
+    "log_int_frac": 0.18450469847414883,
+    "log_sv1_pct": 34.9594090059025,
+    "log_perm_p": 0.3997200559888022,
+    "better_model": "MULTIPLICATIVE"
+  },
+  "StableLM-1.6B": {
+    "additive_r2": 0.5604184132824339,
+    "multiplicative_r2": 0.999960317252611,
+    "log_additive_r2": 0.8280702413891547,
+    "add_int_frac": 0.43958158671756614,
+    "log_int_frac": 0.17192975861084522,
+    "log_sv1_pct": 38.744175297582,
+    "log_perm_p": 0.6842631473705258,
+    "better_model": "MULTIPLICATIVE"
+  }
+}

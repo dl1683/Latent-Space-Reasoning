@@ -1,0 +1,54 @@
+{
+  "Qwen/Qwen3-1.7B-Base": {
+    "effective_dimensionality": {
+      "surface": 1.8697009651113548,
+      "semantic": 4.05258422518259,
+      "ratio": 2.167503948922243
+    },
+    "cross_type_significance": {
+      "point": 0.05359670975031947,
+      "ci_95": [
+        -0.03143149538033396,
+        0.34069381599263765
+      ],
+      "includes_zero": true
+    },
+    "effect_sizes": {
+      "within_surface": 0.7378349599882025,
+      "cross_type": 0.05359670975031947,
+      "within_semantic": 0.12911711938347936,
+      "surface_to_semantic_drop_pct": 82.50054193887155
+    },
+    "commutative": {
+      "all_asymmetric_nonzero": true,
+      "mean_asymmetric_tv": 0.008665457696770318,
+      "max_asymmetric_tv": 0.01749704297981225
+    }
+  },
+  "HuggingFaceTB/SmolLM2-1.7B": {
+    "effective_dimensionality": {
+      "surface": 1.8886540063519113,
+      "semantic": 4.22693186068813,
+      "ratio": 2.238065758191884
+    },
+    "cross_type_significance": {
+      "point": 0.4435170138220275,
+      "ci_95": [
+        0.18478323416589904,
+        0.7086856146708448
+      ],
+      "includes_zero": false
+    },
+    "effect_sizes": {
+      "within_surface": 0.6362154915210428,
+      "cross_type": 0.4435170138220275,
+      "within_semantic": 0.27693784322885334,
+      "surface_to_semantic_drop_pct": 56.471062569262564
+    },
+    "commutative": {
+      "all_asymmetric_nonzero": true,
+      "mean_asymmetric_tv": 0.04895302673912738,
+      "max_asymmetric_tv": 0.09217913539669098
+    }
+  }
+}

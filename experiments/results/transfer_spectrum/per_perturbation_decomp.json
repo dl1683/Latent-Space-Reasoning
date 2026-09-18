@@ -1,0 +1,150 @@
+{
+  "Qwen/Qwen3-1.7B-Base": {
+    "varname_y": {
+      "mean_tv": 0.028734348019497702,
+      "max_tv": 0.22186192823573947,
+      "std_tv": 0.04507231503303902,
+      "cross_surface_rho": null
+    },
+    "varname_result": {
+      "mean_tv": 0.01141839274450831,
+      "max_tv": 0.11094778776168823,
+      "std_tv": 0.01914022724245297,
+      "cross_surface_rho": null
+    },
+    "list_form": {
+      "mean_tv": 0.01678912779862003,
+      "max_tv": 0.09062439203262329,
+      "std_tv": 0.022751871892889314,
+      "cross_surface_rho": null
+    },
+    "assign_twice": {
+      "mean_tv": 0.01918235331413598,
+      "max_tv": 0.1785012731270399,
+      "std_tv": 0.02933074686816489,
+      "cross_surface_rho": null
+    },
+    "conditional": {
+      "mean_tv": 0.004782790352055599,
+      "max_tv": 0.07618234696565196,
+      "std_tv": 0.011157218500041437,
+      "cross_surface_rho": null
+    },
+    "func_call": {
+      "mean_tv": 0.01397948824815103,
+      "max_tv": 0.07252901792526245,
+      "std_tv": 0.019672446157442822,
+      "cross_surface_rho": null
+    },
+    "empty": {
+      "mean_tv": 0.005793833036341312,
+      "max_tv": 0.158821702003479,
+      "std_tv": 0.018620402796553873,
+      "cross_surface_rho": null
+    },
+    "identity": {
+      "mean_tv": 0.011213469924587115,
+      "max_tv": 0.09067189693450928,
+      "std_tv": 0.017382998841091356,
+      "cross_surface_rho": null
+    },
+    "comment": {
+      "mean_tv": 0.0038982278500952817,
+      "max_tv": 0.11866378784179688,
+      "std_tv": 0.0137993785066382,
+      "cross_surface_rho": null
+    },
+    "pass_stmt": {
+      "mean_tv": 0.006561353590359431,
+      "max_tv": 0.11960077285766602,
+      "std_tv": 0.015026711843274844,
+      "cross_surface_rho": null
+    },
+    "whitespace": {
+      "mean_tv": 0.004678043546300614,
+      "max_tv": 0.13645100593566895,
+      "std_tv": 0.015979870441076766,
+      "cross_surface_rho": null
+    },
+    "long_comment": {
+      "mean_tv": 0.004725793791249089,
+      "max_tv": 0.1188732385635376,
+      "std_tv": 0.013884053303841896,
+      "cross_surface_rho": null
+    }
+  },
+  "HuggingFaceTB/SmolLM2-1.7B": {
+    "varname_y": {
+      "mean_tv": 0.025513292194136738,
+      "max_tv": 0.1755593816342298,
+      "std_tv": 0.03717407375684608,
+      "cross_surface_rho": null
+    },
+    "varname_result": {
+      "mean_tv": 0.01695771869053715,
+      "max_tv": 0.17870984540786594,
+      "std_tv": 0.026486397524995386,
+      "cross_surface_rho": null
+    },
+    "list_form": {
+      "mean_tv": 0.014516550048210775,
+      "max_tv": 0.24736055795801803,
+      "std_tv": 0.031621184859759406,
+      "cross_surface_rho": null
+    },
+    "assign_twice": {
+      "mean_tv": 0.02513124196739227,
+      "max_tv": 0.16181260347366333,
+      "std_tv": 0.034280274563827026,
+      "cross_surface_rho": null
+    },
+    "conditional": {
+      "mean_tv": 0.010954112815943518,
+      "max_tv": 0.2555994734793785,
+      "std_tv": 0.029740802013465132,
+      "cross_surface_rho": null
+    },
+    "func_call": {
+      "mean_tv": 0.011829122388553515,
+      "max_tv": 0.11784350126981735,
+      "std_tv": 0.022117540728843123,
+      "cross_surface_rho": null
+    },
+    "empty": {
+      "mean_tv": 0.015940435536413132,
+      "max_tv": 0.41125741600990295,
+      "std_tv": 0.04891875599000176,
+      "cross_surface_rho": null
+    },
+    "identity": {
+      "mean_tv": 0.02617576994889532,
+      "max_tv": 0.3369385120458901,
+      "std_tv": 0.048194372764427305,
+      "cross_surface_rho": null
+    },
+    "comment": {
+      "mean_tv": 0.011859880654151311,
+      "max_tv": 0.3851168155670166,
+      "std_tv": 0.0453068705687538,
+      "cross_surface_rho": null
+    },
+    "pass_stmt": {
+      "mean_tv": 0.015041031884629774,
+      "max_tv": 0.3954901852848707,
+      "std_tv": 0.04702937900658437,
+      "cross_surface_rho": null
+    },
+    "whitespace": {
+      "mean_tv": 0.01425629857885724,
+      "max_tv": 0.38055179847287945,
+      "std_tv": 0.045212090381647245,
+      "cross_surface_rho": null
+    },
+    "long_comment": {
+      "mean_tv": 0.014470854690807755,
+      "max_tv": 0.3274938298854977,
+      "std_tv": 0.03951385694138911,
+      "cross_surface_rho": null
+    }
+  }
+}

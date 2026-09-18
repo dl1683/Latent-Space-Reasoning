@@ -1,0 +1,36 @@
+{
+  "experiment": "readout_comparison",
+  "date": "2026-09-17",
+  "purpose": "Address Fable R10 Alt-A critique: is the low rho an artifact of the 11-bin projection?",
+  "protocol": "Same 50-cell code arithmetic, 12 conditions. Two readouts: (1) 11-bin TV (digit probabilities), (2) Full logit cosine distance (~151K dimensions for Qwen, ~49K for SmolLM2).",
+  "results": {
+    "Qwen3-1.7B-Base": {
+      "11bin_tv_rho": 0.330,
+      "11bin_tv_std": 0.128,
+      "full_logit_cosine_rho": 0.680,
+      "full_logit_cosine_std": 0.057,
+      "ratio": 2.06
+    },
+    "SmolLM2-1.7B": {
+      "11bin_tv_rho": 0.135,
+      "11bin_tv_std": 0.061,
+      "full_logit_cosine_rho": 0.252,
+      "full_logit_cosine_std": 0.250,
+      "ratio": 1.87
+    }
+  },
+  "noise_calibration": {
+    "determinism_tv": 0.0,
+    "permutation_test_p": "< 0.001",
+    "null_mean_rho": -0.002,
+    "null_std_rho": 0.062,
+    "real_rho_sigma_above_null": 4.9
+  },
+  "interpretation": [
+    "11-bin projection underestimates transfer by ~2x (captures only task-relevant dimensions)",
+    "Full-logit rho (0.25-0.68) is still below biology (0.88-0.98)",
+    "Task-specific information (digits) shows LOWER transfer than general behavior",
+    "This means: general behavioral similarity under test conditions does NOT predict task-specific performance under novel conditions",
+    "The component of behavior most relevant for evaluation/safety (getting the right answer) is precisely what transfers least"
+  ]
+}

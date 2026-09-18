@@ -1,0 +1,30 @@
+{
+  "Qwen_surface": {
+    "deff": 1.87,
+    "rho_observed": 0.718,
+    "rho_predicted_1_sqrt_d": 0.7313,
+    "excess_ratio": 1.02,
+    "excess_absolute": 0.0133
+  },
+  "SmolLM2_surface": {
+    "deff": 1.89,
+    "rho_observed": 0.633,
+    "rho_predicted_1_sqrt_d": 0.7274,
+    "excess_ratio": 1.15,
+    "excess_absolute": 0.0944
+  },
+  "Qwen_semantic": {
+    "deff": 4.05,
+    "rho_observed": 0.135,
+    "rho_predicted_1_sqrt_d": 0.4969,
+    "excess_ratio": 3.68,
+    "excess_absolute": 0.3619
+  },
+  "SmolLM2_semantic": {
+    "deff": 4.23,
+    "rho_observed": 0.285,
+    "rho_predicted_1_sqrt_d": 0.4862,
+    "excess_ratio": 1.71,
+    "excess_absolute": 0.2012
+  }
+}

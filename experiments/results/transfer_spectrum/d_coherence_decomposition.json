@@ -1,0 +1,160 @@
+{
+  "description": "D-coherence decomposition across SmolLM2 scale ladder",
+  "d_perturbations": [
+    "d_temp_var",
+    "d_parens",
+    "d_int_cast",
+    "d_add_zero",
+    "d_zero_plus",
+    "d_cond_true"
+  ],
+  "per_model": {
+    "SmolLM2-135M": {
+      "d_coherence": 0.7124577861163228,
+      "pairwise_spearman": {
+        "d_temp_var_d_parens": 0.5949343339587243,
+        "d_temp_var_d_int_cast": 0.5829268292682928,
+        "d_temp_var_d_add_zero": 0.7317073170731709,
+        "d_temp_var_d_zero_plus": 0.6484052532833022,
+        "d_temp_var_d_cond_true": 0.8061913696060039,
+        "d_parens_d_int_cast": 0.7983114446529083,
+        "d_parens_d_add_zero": 0.6322701688555348,
+        "d_parens_d_zero_plus": 0.5446529080675423,
+        "d_parens_d_cond_true": 0.8221388367729832,
+        "d_int_cast_d_add_zero": 0.8238273921200752,
+        "d_int_cast_d_zero_plus": 0.6242026266416512,
+        "d_int_cast_d_cond_true": 0.7649155722326455,
+        "d_add_zero_d_zero_plus": 0.7778611632270169,
+        "d_add_zero_d_cond_true": 0.8204502814258914,
+        "d_zero_plus_d_cond_true": 0.7140712945590996
+      },
+      "mean_distance": {
+        "d_temp_var": 0.004040054976940155,
+        "d_parens": 0.007096970081329345,
+        "d_int_cast": 0.003877866268157959,
+        "d_add_zero": 0.003495156764984131,
+        "d_zero_plus": 0.0030090272426605224,
+        "d_cond_true": 0.005597405135631561
+      },
+      "cv": {
+        "d_temp_var": 0.4871726739814139,
+        "d_parens": 1.0753163623109983,
+        "d_int_cast": 0.5429206982012447,
+        "d_add_zero": 0.48027140157478226,
+        "d_zero_plus": 0.38688261681845526,
+        "d_cond_true": 0.4654131971894067
+      }
+    },
+    "SmolLM2-360M": {
+      "d_coherence": 0.1836272670419012,
+      "pairwise_spearman": {
+        "d_temp_var_d_parens": 0.3529080675422139,
+        "d_temp_var_d_int_cast": 0.052908067542213895,
+        "d_temp_var_d_add_zero": 0.5604127579737337,
+        "d_temp_var_d_zero_plus": 0.17617260787992498,
+        "d_temp_var_d_cond_true": 0.15834896810506568,
+        "d_parens_d_int_cast": 0.526078799249531,
+        "d_parens_d_add_zero": 0.2913696060037524,
+        "d_parens_d_zero_plus": 0.06210131332082553,
+        "d_parens_d_cond_true": 0.08592870544090057,
+        "d_int_cast_d_add_zero": -0.18893058161350848,
+        "d_int_cast_d_zero_plus": -0.20000000000000004,
+        "d_int_cast_d_cond_true": -0.1984990619136961,
+        "d_add_zero_d_zero_plus": 0.22870544090056288,
+        "d_add_zero_d_cond_true": 0.24652908067542217,
+        "d_zero_plus_d_cond_true": 0.600375234521576
+      },
+      "mean_distance": {
+        "d_temp_var": 0.036074386537075044,
+        "d_parens": 0.05014033317565918,
+        "d_int_cast": 0.046345099806785583,
+        "d_add_zero": 0.046032457053661345,
+        "d_zero_plus": 0.04695616364479065,
+        "d_cond_true": 0.04855706393718719
+      },
+      "cv": {
+        "d_temp_var": 0.4547278355693267,
+        "d_parens": 0.8645395714499846,
+        "d_int_cast": 0.8898165628848518,
+        "d_add_zero": 0.39732970962234543,
+        "d_zero_plus": 0.32991198492858775,
+        "d_cond_true": 0.2580244620042697
+      }
+    },
+    "SmolLM2-1.7B": {
+      "d_coherence": 0.4431394621638525,
+      "pairwise_spearman": {
+        "d_temp_var_d_parens": 0.4996247654784241,
+        "d_temp_var_d_int_cast": 0.48011257035647287,
+        "d_temp_var_d_add_zero": 0.3180112570356473,
+        "d_temp_var_d_zero_plus": 0.36416510318949347,
+        "d_temp_var_d_cond_true": 0.47448405253283304,
+        "d_parens_d_int_cast": 0.6212007504690433,
+        "d_parens_d_add_zero": 0.5651031894934334,
+        "d_parens_d_zero_plus": 0.577298311444653,
+        "d_parens_d_cond_true": 0.2819887429643528,
+        "d_int_cast_d_add_zero": 0.726829268292683,
+        "d_int_cast_d_zero_plus": 0.5590994371482176,
+        "d_int_cast_d_cond_true": 0.24240150093808632,
+        "d_add_zero_d_zero_plus": 0.777298311444653,
+        "d_add_zero_d_cond_true": 0.10450281425891184,
+        "d_zero_plus_d_cond_true": 0.05497185741088181
+      },
+      "mean_distance": {
+        "d_temp_var": 0.023993183672428132,
+        "d_parens": 0.022562360763549803,
+        "d_int_cast": 0.030081182718276978,
+        "d_add_zero": 0.03857373744249344,
+        "d_zero_plus": 0.0259557768702507,
+        "d_cond_true": 0.02081323117017746
+      },
+      "cv": {
+        "d_temp_var": 0.7407719179004127,
+        "d_parens": 0.7247518960164117,
+        "d_int_cast": 0.7918449329141402,
+        "d_add_zero": 0.7989080062333028,
+        "d_zero_plus": 0.746252550484005,
+        "d_cond_true": 1.1091348139012365
+      }
+    }
+  },
+  "cross_scale_rank_stability": {
+    "d_temp_var": {
+      "135M_360M": 0.1397748592870544,
+      "360M_1.7B": 0.21632270168855536,
+      "135M_1.7B": 0.48592870544090067
+    },
+    "d_parens": {
+      "135M_360M": 0.17354596622889307,
+      "360M_1.7B": 0.10075046904315198,
+      "135M_1.7B": 0.4632270168855535
+    },
+    "d_int_cast": {
+      "135M_360M": -0.4594746716697937,
+      "360M_1.7B": 0.25309568480300193,
+      "135M_1.7B": -0.05891181988742965
+    },
+    "d_add_zero": {
+      "135M_360M": 0.40900562851782374,
+      "360M_1.7B": -0.11181988742964354,
+      "135M_1.7B": -0.400562851782364
+    },
+    "d_zero_plus": {
+      "135M_360M": 0.1455909943714822,
+      "360M_1.7B": 0.020262664165103195,
+      "135M_1.7B": -0.025515947467166986
+    },
+    "d_cond_true": {
+      "135M_360M": 0.25347091932457794,
+      "360M_1.7B": 0.014634146341463417,
+      "135M_1.7B": 0.24446529080675425
+    }
+  },
+  "key_findings": [
+    "int_cast goes ANTI-correlated (-0.19 to -0.20) with add_zero/zero_plus/cond_true at 360M",
+    "cond_true stays isolated at 1.7B (r=0.05-0.24 with arithmetic D perts)",
+    "Arithmetic identity ops (int_cast, add_zero, zero_plus) re-cohere at 1.7B (r=0.56-0.78)",
+    "Cross-scale rank stability near zero: cell orderings completely reorganize with scale",
+    "Magnitude increases 7-14x from 135M to 360M for all D perturbations"
+  ]
+}

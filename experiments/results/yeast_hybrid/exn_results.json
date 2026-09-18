@@ -1,0 +1,14 @@
+{
+  "experiment": "yeast_ExN_benchmark",
+  "n_query": 2064,
+  "n_array": 4613,
+  "n_test": 774988,
+  "svd_best_k": 200,
+  "svd_r": 0.8054732219148331,
+  "knn_r": 0.31512558930182405,
+  "omega_knn_r": 0.31867733447035157,
+  "hybrid_alpha": 0.45,
+  "hybrid_r": 0.8066234964688,
+  "transfer_rho": 0.9647511752422577,
+  "transfer_p": 0.0
+}

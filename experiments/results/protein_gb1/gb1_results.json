@@ -1,0 +1,17 @@
+{
+  "experiment": "protein_GB1_epistasis",
+  "dataset": "SPG1_STRSG_Olson_2014",
+  "n_singles": 1045,
+  "n_doubles": 535917,
+  "n_positions": 55,
+  "transfer_rho": 0.9750004607974591,
+  "composition_rho": 0.9583616062588642,
+  "composition_r": 0.9139915750186888,
+  "mean_abs_epistasis": 0.9169065243297714,
+  "frac_strong_eps": 0.7907101286206633,
+  "svd_best_k": 30,
+  "svd_r": 0.9686820141389483,
+  "omega_knn_r": 0.9359954652049179,
+  "hybrid_r": 0.9686820141389483,
+  "hybrid_alpha": 0.0
+}

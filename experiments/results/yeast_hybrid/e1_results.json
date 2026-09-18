@@ -1,0 +1,21 @@
+{
+  "experiment": "E1_svd_omega_hybrid",
+  "dataset": "Costanzo_2016_ExE",
+  "n_query": 825,
+  "n_array": 786,
+  "n_test_points": 120537,
+  "svd_best_k": 100,
+  "svd_r": 0.8114061730350767,
+  "hybrid_a_alpha": 0.30000000000000004,
+  "hybrid_a_r": 0.8125907956602394,
+  "hybrid_b_alpha": 0.30000000000000004,
+  "hybrid_b_r": 0.8125907956602394,
+  "stacked_r": 0.8233488259769252,
+  "stacked_svd_same_half": 0.8199766367895879,
+  "stacking_weights": {
+    "svd": 0.9729092106959994,
+    "omega_knn": 3.8424149175808413,
+    "knn": -3.6916660938443373,
+    "intercept": -0.00025614562203823965
+  }
+}

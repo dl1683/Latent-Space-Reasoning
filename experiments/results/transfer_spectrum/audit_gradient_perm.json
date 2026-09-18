@@ -1,0 +1,21 @@
+{
+  "model": "Qwen3-1.7B",
+  "observed_gap": 0.4522295184490308,
+  "observed_aa": 0.7848280175109446,
+  "observed_ad": 0.33259849906191374,
+  "test1_within_row": {
+    "z": 8.804053603505986,
+    "p": 0.0,
+    "null_mean": -0.0014624994870811264,
+    "null_std": 0.051532173515554336
+  },
+  "test2_whole_row": {
+    "z": 1.6653345369377348e-06,
+    "p": 1.0,
+    "null_mean": 0.45222951844903064,
+    "null_std": 1.6653345369377348e-16
+  },
+  "n_perm": 500,
+  "audit_question": "Does the gradient perm Z share R20's row-permutation defect?",
+  "audit_method": "Compare within-row shuffle (actual test) vs whole-row permutation (R20 defect) on same statistic"
+}

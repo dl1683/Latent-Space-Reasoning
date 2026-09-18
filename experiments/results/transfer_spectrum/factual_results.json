@@ -1,0 +1,32 @@
+{
+  "Qwen/Qwen3-1.7B-Base": {
+    "model": "Qwen/Qwen3-1.7B-Base",
+    "task": "factual_completion",
+    "n_cells": 50,
+    "correct": 38,
+    "p_digit": 0.9575731359099154,
+    "active_cells": 50,
+    "max_mean_tv": 0.10330959820421412,
+    "transfer_rho": 0.549415874277933,
+    "rho_std": 0.08083216043402866,
+    "rho_range": [
+      0.31421927335371336,
+      0.6683164162891909
+    ]
+  },
+  "HuggingFaceTB/SmolLM2-1.7B": {
+    "model": "HuggingFaceTB/SmolLM2-1.7B",
+    "task": "factual_completion",
+    "n_cells": 50,
+    "correct": 41,
+    "p_digit": 0.9914018769638279,
+    "active_cells": 50,
+    "max_mean_tv": 0.09439123516902327,
+    "transfer_rho": 0.3888257986391946,
+    "rho_std": 0.05430226855825799,
+    "rho_range": [
+      0.24092854107385206,
+      0.5042632909607563
+    ]
+  }
+}

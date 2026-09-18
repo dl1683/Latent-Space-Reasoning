@@ -1,0 +1,63 @@
+{
+  "grand_r": 0.09395598443726035,
+  "grand_p": 0.34041345786294486,
+  "n_pairs": 105,
+  "models": {
+    "qwen3": {
+      "tok_sim_rho_corr": 0.5232882515254632,
+      "tok_sim_rho_p": 0.04530950274953485,
+      "parens_intcast_jaccard": 0.25,
+      "parens_intcast_behav_rho": 0.5984990619136962,
+      "parens_intcast_jacc_rank": 2,
+      "parens_intcast_rho_rank": 2
+    },
+    "smollm2": {
+      "tok_sim_rho_corr": 0.08491958467737781,
+      "tok_sim_rho_p": 0.763488501982182,
+      "parens_intcast_jaccard": 0.25,
+      "parens_intcast_behav_rho": 0.6212007504690433,
+      "parens_intcast_jacc_rank": 2,
+      "parens_intcast_rho_rank": 3
+    },
+    "stablelm": {
+      "tok_sim_rho_corr": -0.1285269389711664,
+      "tok_sim_rho_p": 0.6480308873942621,
+      "parens_intcast_jaccard": 0.25,
+      "parens_intcast_behav_rho": 0.777298311444653,
+      "parens_intcast_jacc_rank": 2,
+      "parens_intcast_rho_rank": 1
+    },
+    "codegen": {
+      "tok_sim_rho_corr": -0.11056324644626618,
+      "tok_sim_rho_p": 0.6948609731531739,
+      "parens_intcast_jaccard": 0.5,
+      "parens_intcast_behav_rho": 0.6041275797373359,
+      "parens_intcast_jacc_rank": 1,
+      "parens_intcast_rho_rank": 3
+    },
+    "smollm2_360m": {
+      "tok_sim_rho_corr": 0.493451640692871,
+      "tok_sim_rho_p": 0.06158867130798068,
+      "parens_intcast_jaccard": 0.25,
+      "parens_intcast_behav_rho": 0.526078799249531,
+      "parens_intcast_jacc_rank": 2,
+      "parens_intcast_rho_rank": 3
+    },
+    "smollm2_135m": {
+      "tok_sim_rho_corr": 0.3121368517871184,
+      "tok_sim_rho_p": 0.25737673805775657,
+      "parens_intcast_jaccard": 0.25,
+      "parens_intcast_behav_rho": 0.7983114446529083,
+      "parens_intcast_jacc_rank": 2,
+      "parens_intcast_rho_rank": 5
+    },
+    "qwen3_06b": {
+      "tok_sim_rho_corr": -0.1400025585221634,
+      "tok_sim_rho_p": 0.6187307666777234,
+      "parens_intcast_jaccard": 0.25,
+      "parens_intcast_behav_rho": 0.18302922296039364,
+      "parens_intcast_jacc_rank": 2,
+      "parens_intcast_rho_rank": 7
+    }
+  }
+}

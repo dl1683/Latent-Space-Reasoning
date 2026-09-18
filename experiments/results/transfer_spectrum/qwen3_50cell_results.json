@@ -1,0 +1,19 @@
+{
+  "model": "Qwen3-1.7B-Base",
+  "n_cells": 50,
+  "n_conditions": 12,
+  "correct": 49,
+  "p_digit": 0.9973287044667813,
+  "active_cells": 50,
+  "n_pairs": 1225,
+  "n_splits": 50,
+  "mean_rho": 0.28450798120226883,
+  "std_rho": 0.10947918092330454,
+  "median_rho": 0.27575938042427406,
+  "rho_range": [
+    0.1143773463708485,
+    0.6729837448845769
+  ],
+  "mean_p": 1.6237070855385164e-06,
+  "frac_significant": 1.0
+}

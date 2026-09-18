@@ -1,0 +1,21 @@
+{
+  "experiment": "E1b_omega_triage",
+  "dataset": "Costanzo_2016_ExE",
+  "verdict": "Omega adds marginal value on yeast. SVD captures nearly all predictable structure.",
+  "hybrid_improvement_overall": "+0.12% Pearson r",
+  "hybrid_improvement_by_quintile": {
+    "lowest_omega": "+0.0019",
+    "low_omega": "+0.0016",
+    "medium_omega": "+0.0010",
+    "high_omega": "+0.0012",
+    "highest_omega": "+0.0007"
+  },
+  "strong_interaction_detection_auc": {
+    "omega_score": 0.536,
+    "svd_residual": 0.832,
+    "svd_prediction_magnitude": 0.921,
+    "omega_plus_svd_residual": 0.830
+  },
+  "omega_enrichment_in_worst_100_pairs": "1.16x",
+  "interpretation": "Yeast at effective K~2-3 is mostly additive. SVD captures the additive structure completely. Omega's transfer test (rho=0.877) measures the same signal SVD already captures."
+}

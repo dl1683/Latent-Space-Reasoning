@@ -1,0 +1,51 @@
+{
+  "analysis": "common_factor_null",
+  "description": "Tests whether transfer rho gap survives controlling for per-cell fragility",
+  "tests": {
+    "shuffled_null": "Permute cell labels in test split, compare observed rho to null distribution",
+    "partial_correlation": "Regress out per-cell mean TV (fragility), recompute rho on residuals",
+    "sign_test": "Is surface > semantic consistent across model\u00d7readout combinations?"
+  },
+  "sign_test": {
+    "n_positive": 5,
+    "n_total": 5,
+    "p_value": 0.0625,
+    "comparisons": [
+      {
+        "model": "Qwen3-1.7B",
+        "readout": "full_logit",
+        "surface": 0.6610363155143049,
+        "semantic": 0.22653032606259024,
+        "gap": 0.4345059894517146
+      },
+      {
+        "model": "Qwen3-1.7B",
+        "readout": "11bin",
+        "surface": 0.6846541709027744,
+        "semantic": 0.3086253707239442,
+        "gap": 0.37602880017883017
+      },
+      {
+        "model": "SmolLM2-1.7B",
+        "readout": "full_logit",
+        "surface": 0.7603341855490331,
+        "semantic": 0.5108593727775055,
+        "gap": 0.2494748127715276
+      },
+      {
+        "model": "SmolLM2-1.7B",
+        "readout": "11bin",
+        "surface": 0.7393274418723442,
+        "semantic": 0.3449535243002853,
+        "gap": 0.3943739175720589
+      },
+      {
+        "model": "Phi-1.5",
+        "readout": "full_logit",
+        "surface": 0.6956115436390617,
+        "semantic": 0.6622437342801477,
+        "gap": 0.033367809358914036
+      }
+    ]
+  }
+}

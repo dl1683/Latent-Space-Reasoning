@@ -1,0 +1,50 @@
+{
+  "Qwen3": {
+    "observed_surf": 0.6610363155143049,
+    "observed_sem": 0.22653032606259024,
+    "d_eff_surf": 1.6206854429717334,
+    "d_eff_sem": 3.2194534692683225,
+    "pred_1_sqrt_d_surf": 0.7855080395826461,
+    "pred_1_sqrt_d_sem": 0.5573255120234457,
+    "corr_entropy_surf": 0.45471122495364147,
+    "corr_entropy_sem": 0.8017062474932377,
+    "neg_corr_frac_surf": 0.0,
+    "neg_corr_frac_sem": 0.0,
+    "mean_abs_corr_surf": 0.7381241609378356,
+    "mean_abs_corr_sem": 0.3607877955067965,
+    "improved_pred_surf": 0.5798024626268649,
+    "improved_pred_sem": 0.2010762428626356
+  },
+  "SmolLM2": {
+    "observed_surf": 0.7603341855490331,
+    "observed_sem": 0.5108593727775055,
+    "d_eff_surf": 1.358521263254252,
+    "d_eff_sem": 2.3971465841074964,
+    "pred_1_sqrt_d_surf": 0.8579594850029266,
+    "pred_1_sqrt_d_sem": 0.6458812902118439,
+    "corr_entropy_surf": 0.31856312770087186,
+    "corr_entropy_sem": 0.6680374510547857,
+    "neg_corr_frac_surf": 0.0,
+    "neg_corr_frac_sem": 0.0,
+    "mean_abs_corr_surf": 0.8201751094434022,
+    "mean_abs_corr_sem": 0.6129706066291434,
+    "improved_pred_surf": 0.7036770145102804,
+    "improved_pred_sem": 0.39590624627156773
+  },
+  "Phi-1.5": {
+    "observed_surf": 0.6956115436390617,
+    "observed_sem": 0.6622437342801477,
+    "d_eff_surf": 1.5025804510533853,
+    "d_eff_sem": 1.6036718212237189,
+    "pred_1_sqrt_d_surf": 0.8157951759479317,
+    "pred_1_sqrt_d_sem": 0.7896638391544134,
+    "corr_entropy_surf": 0.4117392688162501,
+    "corr_entropy_sem": 0.44872698098364366,
+    "neg_corr_frac_surf": 0.0,
+    "neg_corr_frac_sem": 0.0,
+    "mean_abs_corr_surf": 0.7817510944340214,
+    "mean_abs_corr_sem": 0.7536835522201376,
+    "improved_pred_surf": 0.6377487716312906,
+    "improved_pred_sem": 0.5951566473536897
+  }
+}

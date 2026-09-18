@@ -1,0 +1,59 @@
+{
+  "analysis": "nl_fragility_decomposition",
+  "qwen_nl": {
+    "label": "Qwen3 NL full-logit",
+    "n_cells": 40,
+    "fragility_r_surface": {
+      "r": 0.07491642066715765,
+      "p": 0.6459218014200074
+    },
+    "fragility_r_semantic": {
+      "r": 0.9592136279345475,
+      "p": 1.8865937955046712e-22
+    },
+    "fragility_var_explained_surface": 0.005612470085578526,
+    "fragility_var_explained_semantic": 0.9200907840153564,
+    "raw_rho": {
+      "surface": 0.125703564727955,
+      "semantic": 0.0325703564727955,
+      "cross": 0.08099332916406089,
+      "gap": 0.0931332082551595
+    },
+    "partial_rho": {
+      "surface": 0.13906191369606005,
+      "semantic": -0.11711069418386492,
+      "cross": 0.015613925370022926,
+      "gap": 0.25617260787992496
+    },
+    "surface_drop_pct": -10.626865671641795,
+    "semantic_drop_pct": 459.5622119815668
+  },
+  "smolLM2_nl": {
+    "label": "SmolLM2 NL full-logit",
+    "n_cells": 40,
+    "fragility_r_surface": {
+      "r": 0.9471028874649328,
+      "p": 2.3722058049810776e-20
+    },
+    "fragility_r_semantic": {
+      "r": 0.8934652914476073,
+      "p": 8.823295456027038e-15
+    },
+    "fragility_var_explained_surface": 0.8970038794444131,
+    "fragility_var_explained_semantic": 0.7982802270215579,
+    "raw_rho": {
+      "surface": 0.7340087554721703,
+      "semantic": 0.36521575984990623,
+      "cross": 0.4635240775484679,
+      "gap": 0.36879299562226403
+    },
+    "partial_rho": {
+      "surface": 0.0895809881175735,
+      "semantic": -0.08701688555347095,
+      "cross": -0.07381175734834272,
+      "gap": 0.17659787367104446
+    },
+    "surface_drop_pct": 87.79565128484765,
+    "semantic_drop_pct": 123.82615843008323
+  }
+}

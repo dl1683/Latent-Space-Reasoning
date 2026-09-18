@@ -1,0 +1,21 @@
+{
+  "model": "Qwen/Qwen3-1.7B-Base",
+  "model_key": "qwen3",
+  "readout": "comparison",
+  "fulllogit": {
+    "diag_add_zero_plus_one": 0.6339130434782608,
+    "diag_zero_plus_one_plus": 0.0634782608695652,
+    "offdiag_add_zero_one_plus": -0.3008695652173913,
+    "offdiag_zero_plus_plus_one": 0.4278260869565217,
+    "ee_rho": -0.1434782608695652
+  },
+  "bin11": {
+    "diag_add_zero_plus_one": 0.6095652173913042,
+    "diag_zero_plus_one_plus": 0.4234782608695652,
+    "offdiag_add_zero_one_plus": 0.5313043478260869,
+    "offdiag_zero_plus_plus_one": 0.7095652173913043,
+    "ee_rho": 0.7582608695652173,
+    "ee_p": 1.76264518234738e-05
+  },
+  "n_nonidentity": 24
+}
