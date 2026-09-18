@@ -10,7 +10,7 @@ import numpy as np
 from scipy.optimize import minimize
 
 sys.path.insert(0, str(Path(__file__).parent))
-from hp_spectral_lib import zipf_p, qsae_loss_grad, spectrum
+from hp_spectral_lib import zipf_p, qsae_loss_grad, spectrum, rand_frame
 
 OUT = Path(__file__).parent / "results" / "hpa_random_frame"
 OUT.mkdir(parents=True, exist_ok=True)
@@ -50,15 +50,6 @@ def fit_window(lam, frac):
 def battery(lam):
     return {w: fit_window(lam, f) for w, f in
             [("top50", 0.5), ("top90", 0.9), ("full", 1.0)]}
-
-
-def rand_frame(lam_profile_x, rng):
-    x = np.asarray(lam_profile_x, dtype=np.float64)
-    n = len(x)
-    U = rng.standard_normal((int((x > 0).sum()) or 2, n))
-    U /= np.linalg.norm(U, axis=0, keepdims=True)
-    W = U * np.sqrt(np.maximum(x, 0))[None, :]
-    return spectrum(W)
 
 
 # ---------------- A1 ----------------
@@ -128,7 +119,7 @@ def phase_a2(a1=None):
                     rows = []
                     for rep in range(20):
                         rng = np.random.default_rng(hash((tag, pname, rep)) % (2 ** 32))
-                        lam = rand_frame(prof, rng)
+                        lam = rand_frame(prof, d, rng)
                         b = battery(lam)
                         rows.append({w: dict(alpha=v["alpha"], r2_pl=v["r2_pl"], dR2=v["dR2"])
                                      for w, v in b.items()})
@@ -146,11 +137,11 @@ def phase_a2(a1=None):
 
 # ---------------- A3 ----------------
 
-def alpha_of_norms(x, seed, reps=5):
+def alpha_of_norms(x, d, seed, reps=5):
     vals = []
     for rep in range(reps):
         rng = np.random.default_rng(seed * 977 + rep)
-        lam = rand_frame(x, rng)
+        lam = rand_frame(x, d, rng)
         vals.append(fit_window(lam, 0.9)["alpha"])
     return float(np.median(vals))
 
@@ -158,7 +149,8 @@ def alpha_of_norms(x, seed, reps=5):
 def phase_a3():
     n, d, s = 64, 16, 1.0
     p = zipf_p(n, s)
-    fp = mf_fixed_point(n, d, s)
+    # A1 theorem endpoint (sparse-exact), NOT the refuted mean-field bulge
+    x_star_se = np.zeros(n); x_star_se[:d] = 1.0
     pilot = {}
     for seed in [90, 91, 92]:
         rng = np.random.default_rng(seed)
@@ -176,25 +168,25 @@ def phase_a3():
     # calibrate rho on first checkpoint only
     rng0 = np.random.default_rng(90)
     x0 = ((0.05 * rng0.standard_normal((d, n)) / np.sqrt(d)) ** 2).sum(axis=0)
-    x_star = fp["x"]
+    x_star = x_star_se
     best, rho = 1e9, None
     for r in np.logspace(-4, 1, 260):
         xt = x_star / (1 + np.maximum(x_star / np.maximum(x0, EPS) - 1, 0) * np.exp(-r * p * t1))
-        if abs(alpha_of_norms(xt, 7, 3) - a_pilot) < best:
-            best, rho = abs(alpha_of_norms(xt, 7, 3) - a_pilot), r
+        if abs(alpha_of_norms(xt, d, 7, 3) - a_pilot) < best:
+            best, rho = abs(alpha_of_norms(xt, d, 7, 3) - a_pilot), r
     # predictions at (1024,64,s=1) for HP-B
     n2, d2 = 1024, 64
     p2 = zipf_p(n2, s)
-    fp2 = mf_fixed_point(n2, d2, s)
+    x_star2 = np.zeros(n2); x_star2[:d2] = 1.0  # A1 theorem endpoint
     rng = np.random.default_rng(5)
     x0b = (0.05 ** 2) * (rng.standard_normal((d2, n2)) ** 2).sum(axis=0) / d2
     preds = {}
     for t in [1000, 10000, 50000, 100000, 200000]:
-        xt = fp2["x"] / (1 + np.maximum(fp2["x"] / np.maximum(x0b, EPS) - 1, 0) * np.exp(-rho * p2 * t))
-        preds[t] = alpha_of_norms(xt, 11)
+        xt = x_star2 / (1 + np.maximum(x_star2 / np.maximum(x0b, EPS) - 1, 0) * np.exp(-rho * p2 * t))
+        preds[t] = alpha_of_norms(xt, d2, 11)
     out = dict(pilot={str(sd): tr for sd, tr in pilot.items()},
                rho_cal=float(rho), rho_abs_err=float(best),
-               alpha_pred_1024_64_s1=preds, x_star_k0=int((fp2["x"] > 0).sum()))
+               alpha_pred_1024_64_s1=preds, x_star="sparse_exact_topd")
     json.dump(out, open(OUT / "a3_transient.json", "w"))
     print("A3 rho", rho, "preds", preds)
 

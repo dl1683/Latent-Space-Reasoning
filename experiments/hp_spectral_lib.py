@@ -44,20 +44,21 @@ def battery(lam):
     return {w: fit_window(lam, f) for w, f in [("top50", 0.5), ("top90", 0.9), ("full", 1.0)]}
 
 
-def rand_frame(x_profile, rng):
-    """Frame with the given column-norm profile and fresh random directions."""
+def rand_frame(x_profile, d, rng):
+    """d x n frame with the given column-norm profile and fresh random directions."""
     x = np.maximum(np.asarray(x_profile, dtype=np.float64), 0.0)
     n = len(x)
-    dd = max(int((x > 0).sum()), 2)
-    U = rng.standard_normal((dd, n))
+    U = rng.standard_normal((d, n))
     U /= np.linalg.norm(U, axis=0, keepdims=True)
     return spectrum(U * np.sqrt(x)[None, :])
 
 
 def n1t_alpha(W, rng, reps=3):
     """N1-t control: preserve learned norms, randomize directions; median top90 alpha."""
-    x = (np.asarray(W) ** 2).sum(axis=0)
-    return float(np.median([fit_window(rand_frame(x, rng), 0.9)["alpha"] for _ in range(reps)]))
+    W = np.asarray(W)
+    x = (W ** 2).sum(axis=0)
+    d = W.shape[0]
+    return float(np.median([fit_window(rand_frame(x, d, rng), 0.9)["alpha"] for _ in range(reps)]))
 
 
 def mf_fixed_point(n, d, s, iters=40000, tol=1e-13):
@@ -82,4 +83,5 @@ def alpha_pred(arm, t, rho, x_star, x0, reps=5, seed=7):
     p = zipf_p(arm["n"], arm["s"])
     xt = x_star / (1 + np.maximum(x_star / np.maximum(x0, EPS) - 1, 0) * np.exp(-rho * p * t))
     rng = np.random.default_rng(seed)
-    return float(np.median([fit_window(rand_frame(xt, rng), 0.9)["alpha"] for _ in range(reps)]))
+    return float(np.median([fit_window(rand_frame(xt, arm["d"], rng), 0.9)["alpha"]
+                            for _ in range(reps)]))

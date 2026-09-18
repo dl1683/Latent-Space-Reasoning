@@ -155,8 +155,9 @@ def phase_main(lr):
             tag = f"qsae_n{arm['n']}_d{arm['d']}_s{arm['s']}_seed{seed}"
             out = run_qsae(**arm, seed=seed, lr=lr, checkpoints=list(CK), Tmax=200000,
                            device=device)
-            # P-C' transient scoring (frozen rho from A3 pilot; theory x*)
-            fp = mf_fixed_point(arm["n"], arm["d"], arm["s"])
+            # P-C' transient scoring (frozen rho from A3 pilot; A1-theorem
+            # sparse-exact endpoint as x*: ones on top-d usage ranks, zero tail)
+            x_star_se = np.zeros(arm["n"]); x_star_se[:arm["d"]] = 1.0
             rng0 = np.random.default_rng(seed + 900)
             x0 = ((0.05 * rng0.standard_normal((arm["d"], arm["n"])) / np.sqrt(arm["d"])) ** 2
                   ).sum(axis=0)
@@ -164,7 +165,7 @@ def phase_main(lr):
             for t in PC_CK:
                 rec = next((r for r in out["records"] if r["t"] == t), None)
                 if rec:
-                    ap = alpha_pred(arm, t, rho, fp["x"], x0)
+                    ap = alpha_pred(arm, t, rho, x_star_se, x0)
                     devs[t] = dict(alpha_pred=ap, alpha_meas=rec["bat"]["top90"]["alpha"],
                                    dev=abs(ap - rec["bat"]["top90"]["alpha"]))
             out["pc_scoring"] = devs

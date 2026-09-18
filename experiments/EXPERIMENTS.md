@@ -35,6 +35,47 @@ The XE (softmax) arm is now the main event of HP-B.
 **Ledger:** hpa_a1_result
 **NOTEBOOK entry:** 119
 
+### A2: the spectral estimator itself is biased — measurement-validity result
+
+Random-frame Monte Carlo (norm profiles × random directions, d ∈ {32..1024},
+γ ∈ {4,16}, 20 draws; corrected instrument: ambient dimension d, not the
+positive-norm count — bug found and fixed before any result was used; A1
+unaffected, a2/a3 killed and rerun):
+
+- **A2-i REFUTED:** top-90% log-log OLS does not recover the norm-profile
+  exponent at d ≥ 256: max deviation 0.19 (γ=4, β=0.25) and 0.19 (γ=16,
+  β=1.0). Bias is a function of (γ, β) only — asymptotic in d by ~128.
+- **A2-iii REFUTED at γ=4:** uniform (flat) input reads α̂ = 0.40–0.45
+  (threshold 0.35). Passes at γ=16 (0.20–0.23 — matching the record's
+  "flat init ≈ −0.25" readings at real-model γ).
+- **A2-ii (specificity) CONFIRMED:** bulge inputs manufacture steep slopes
+  (α̂ up to 8.9–12.0 at s=1) but the curved-alternative diagnostic correctly
+  rejects them (ΔR² = 0.13–0.28 in favor of the quadratic-in-log fit; power-law
+  R² only 0.34–0.50).
+- Even TRUE power-law inputs at shallow β show curved fits winning (ΔR² up to
+  0.17): the random-frame map bends the log-spectrum (head spikes + MP floor).
+
+**Consequence for the record:** spectral exponents measured this way are
+comparable only within fixed (γ, window). Entry 101's cross-γ exponent sweep
+embeds this bias (magnitude partially artifact; the direction
+"higher overcompleteness → flatter" may survive but needs bias-corrected
+rereading).
+
+### A3: transient rate + the undershoot signature
+
+Independent pilot (exact gradient flow, seeds 90–92, (64,16,s=1)): α rises
+0.53 → 1.03+ over t=250..1250 — rich-get-richer confirmed at the exact
+dynamics level. Calibrated rate ρ = 2.755 (single free constant, first
+checkpoint only). Prediction map at (1024,64,s=1) uses the A1-theorem
+sparse-exact endpoint. Mechanism discovered inside the map: a saturated
+head-only random frame at γ_eff=1 has a Marchenko–Pastur spectrum that the
+estimator reads as α ≈ 1.15 — so a late-time measured α BELOW the norm-only
+prediction is the dynamic signature of learned orthogonality (directional
+organization beyond norms), cleanly separable by the N1-t control.
+
+**Data:** experiments/results/hpa_random_frame/{a2_spectral_map,a3_transient}.json
+**Ledger:** hpa_a2_result, hpa_a3_result
+
 ---
 
 ## Controlled Eigenspace Vulnerability — Entry 92 Overturned (2026-09-18)
