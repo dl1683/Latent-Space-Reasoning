@@ -186,6 +186,8 @@ insensitive to marginal reweighting that preserves correlations. HP-C test
 (later, pre-registered separately): matched-corpus M-spectra vs trained
 embedding spectra.
 
+## 6. What each outcome licenses
+
 - A1 refutes mean field at the optimum: directional correlation is created by
   the OBJECTIVE itself (not just dynamics) — HP-C targets its structure.
 - A2-ii confirms manufactured power laws: a measurement-validity constraint
