@@ -10,7 +10,7 @@ import numpy as np
 from scipy.optimize import minimize
 
 sys.path.insert(0, str(Path(__file__).parent))
-from run_hp1_spectral_law import zipf_p, qsae_loss_grad, spectrum
+from hp_spectral_lib import zipf_p, qsae_loss_grad, spectrum
 
 OUT = Path(__file__).parent / "results" / "hpa_random_frame"
 OUT.mkdir(parents=True, exist_ok=True)

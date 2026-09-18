@@ -92,6 +92,36 @@ pilot's FIRST checkpoint only. Grid runs never touch the calibration.
 preserve learned column norms, redraw directions independently; compare α
 trajectories. Separates norm-driven from direction-driven spectral evolution.
 
+## 4b. A1 result and theorem (recorded 2026-09-18, before any HP-B run)
+
+**A1 verdict: mean-field ansatz REFUTED at every configuration** (profile-fit
+R² 0.00–0.08 vs thresholds 0.9/0.8; identity R² 0.10–0.53). The reason is a
+theorem the L-BFGS optima exposed (loss matched Σ_{i>d} p_i to 6 decimals at
+all six (s,n,d)):
+
+**Theorem (sparse-exact optimum of the QSAE).** Let G = W^T W (rank ≤ d).
+L = tr((G−I) P (G−I)) with P = diag(p). G is PSD with rank ≤ d, so G−I has
+an (n−d)-dimensional kernel-inherited subspace on which it acts as −I
+(eigenvalues of G on ker G are 0). Hence L ≥ tr(P|_{ker G}), minimized by
+choosing ker G = span{e_i : i ∉ S} with S the top-d usage set, giving
+L_min = Σ_{i∉S} p_i, attained by ANY orthonormal unit-norm set {w_i}_{i∈S}
+(G = coordinate projector onto S). The optimal frame operator is W W^T = I_d:
+**completely flat spectrum, condition number 1.**
+
+Consequences (now part of the cycle's frozen expectations):
+- **P-E (added before any HP-B run):** converged QSAE GD endpoints show
+  α̂(top90) ≤ 0.35, ≈ d nonzero norms, and loss within 1e-6 of the tail mass.
+- Power-law spectra CANNOT come from the quadratic objective's optimum. They
+  must arise from (i) optimization dynamics (transients) or (ii) non-quadratic
+  retrieval geometry (softmax margins). The XE arm is therefore the main event
+  of HP-B; the QSAE arms test the dynamics-only branch.
+- HD-native moral: the quadratic reconstruction loss has no superposition
+  premium — with d ≪ n, interference is avoided by DROPPING tokens. The cost
+  of superposition only bites when every token must remain retrievable
+  (softmax), which is the real-embedding regime. The rate-distortion s/2
+  benchmark and the mean-field bulge both describe the wrong object for this
+  loss and are retired as comparators for QSAE.
+
 ## 5. HP-B design (repaired; frozen after HP-A lands)
 
 - Grid: s ∈ {0.5,1.0}; (n,d) ∈ {(256,64),(1024,64),(1024,256)} plus (4096,64)

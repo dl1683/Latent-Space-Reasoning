@@ -1,132 +1,204 @@
-"""HP-1: Equilibrium or transient? Spectral law of Zipf-trained superposition codes.
+"""HP-B: optimizer cycle (v2 repaired design, theory/HD_POWER_LAW_ALLOCATION.md §5).
 
-Implements the frozen pre-registration in theory/HD_POWER_LAW_ALLOCATION.md.
-CPU numpy only (float64). One canonical runner; phases explore the frozen grid.
+Phases:
+  pilot   lr calibration on INDEPENDENT seeds 90-92 (loss-based only)
+  main    QSAE grid: s in {0.5,1.0}, (n,d) in {(256,64),(1024,64),(1024,256)}
+          plus (4096,64) s=1 only; 3 seeds; convergence gate + frozen extension
+          schedule; N1-t at every checkpoint; P-C' scored on non-calibration
+          checkpoints against A3's frozen rho.
+  xe      entry-101 replication with the repaired equilibrium gate (capped
+          extensions; wall-clock bound logged).
+  nulls   N0 L-BFGS multi-init, N1 endpoint randomization, N2 uniform usage.
 
-Usage:
-  python experiments/run_hp1_spectral_law.py --phase lrcal   # lr calibration (loss-based)
-  python experiments/run_hp1_spectral_law.py --phase main    # QSAE grid, 3 seeds
-  python experiments/run_hp1_spectral_law.py --phase xe      # XE replication arm
-  python experiments/run_hp1_spectral_law.py --phase nulls   # N0/N1/N2
-  python experiments/run_hp1_spectral_law.py --phase smoke   # instrument check (not in grid)
+Small arms run CPU float64 numpy. The (1024,256) and (4096,64) arms run
+torch CUDA float32 when available (engineering backend change, logged in each
+JSON as "device"; measurement tolerances dwarf float32 roundoff).
 """
 import argparse, json, time
 from pathlib import Path
 import numpy as np
 
+from hp_spectral_lib import (zipf_p, qsae_loss_grad, spectrum, battery, fit_window,
+                             rand_frame, n1t_alpha, mf_fixed_point, alpha_pred, EPS)
+
 OUT = Path(__file__).parent / "results" / "hp1_spectral_law"
 OUT.mkdir(parents=True, exist_ok=True)
-EPS = 1e-12
+A3 = OUT.parent / "hpa_random_frame" / "a3_transient.json"
+
+GRID = [dict(n=256, d=64, s=0.5), dict(n=256, d=64, s=1.0),
+        dict(n=1024, d=64, s=0.5), dict(n=1024, d=64, s=1.0),
+        dict(n=1024, d=256, s=0.5), dict(n=1024, d=256, s=1.0),
+        dict(n=4096, d=64, s=1.0)]
+CK = [1000, 10000, 50000, 100000, 200000]
+PC_CK = [10000, 50000, 100000, 200000]  # 1e3 is burn-in, excluded from P-C' scoring
 
 
-def zipf_p(n, s):
-    k = np.arange(1, n + 1, dtype=np.float64)
-    w = k ** (-s) if s > 0 else np.ones(n)
-    return w / w.sum()
+def torch_available():
+    try:
+        import torch
+        return torch.cuda.is_available()
+    except Exception:
+        return False
 
 
-def spectrum(W):
-    S = W @ W.T
-    lam = np.linalg.eigvalsh(S)[::-1]
-    return np.maximum(lam, EPS)
+def run_qsae(n, d, s, seed, lr, checkpoints, Tmax, device="cpu",
+             wall_cap_s=7200, max_ext=3):
+    t_start = time.time()
+    if device == "cuda":
+        import torch
+        dev = "cuda"
+        p_t = torch.tensor(zipf_p(n, s), device=dev, dtype=torch.float32)
+
+        def step(W, record=False):
+            S = W @ W.T
+            Wp = W * p_t[None, :]
+            A = Wp @ W.T
+            loss = torch.trace(A @ S) - 2 * torch.trace(A) + float(p_t.sum().item())
+            grad = 2.0 * (S @ Wp) + 2.0 * (A @ W) - 4.0 * Wp
+            if record:
+                gn = float(grad.abs().max().item())
+                Wn = W.detach().cpu().numpy().astype(np.float64)
+                return float(loss.item()), gn, Wn
+            return W - lr * grad, None, None
+
+        def new_W():
+            g = torch.Generator(device=dev).manual_seed(seed)
+            W = 0.05 * torch.randn((d, n), generator=g, device=dev) / np.sqrt(d)
+            W[:, 0] = W[:, 0].abs()
+            return W
+    else:
+        p = zipf_p(n, s)
+        rng = np.random.default_rng(seed)
+
+        def new_W():
+            W = 0.05 * rng.standard_normal((d, n)) / np.sqrt(d)
+            W[:, 0] = np.abs(W[:, 0])
+            return W
+
+        def step(W, record=False):
+            loss, grad = qsae_loss_grad(W, p)
+            if record:
+                return float(loss), float(np.abs(grad).max()), W.copy()
+            return W - lr * grad, None, None
+
+    W = new_W()
+    _, gnorm0, _ = step(W, record=True)
+    T, ext = Tmax, 0
+    recs, losses, gnorms = [], [], []
+    rng_n1t = np.random.default_rng(seed + 500)
+    while True:
+        for t in range(1, T + 1):
+            if device == "cuda":
+                if t in checkpoints:
+                    loss, gn, Wn = step(W, record=True)
+                    recs.append(_record(Wn, t, loss, gn, d, s, n, rng_n1t))
+                else:
+                    W, _, _ = step(W)
+            else:
+                loss, grad = qsae_loss_grad(W, p)
+                if t in checkpoints:
+                    gn = float(np.abs(grad).max())
+                    recs.append(_record(W.copy(), t, float(loss), gn, d, s, n, rng_n1t))
+                W = W - lr * grad
+            losses.append(loss)
+            gnorms.append(gn if t in checkpoints else None)
+        last, prev = recs[-1], recs[-2]
+        slope = (losses[-1] - losses[-1000]) / 1000.0 if len(losses) > 1000 else np.inf
+        conv = (abs(last["bat"]["top90"]["alpha"] - prev["bat"]["top90"]["alpha"]) <= 0.05
+                and slope < 1e-5 and last["gnorm"] < 1e-3 * gnorm0)
+        if conv or ext >= max_ext or (time.time() - t_start) > wall_cap_s:
+            return dict(n=n, d=d, s=s, seed=seed, lr=lr, device=device, Tmax=T,
+                        extensions_used=ext, converged=bool(conv),
+                        capped_by_wall=(time.time() - t_start) > wall_cap_s,
+                        gnorm0=gnorm0, final_loss_slope=slope, records=recs,
+                        wall_s=time.time() - t_start)
+        T *= 4
+        ext += 1
+        checkpoints = sorted(set(checkpoints + [T // 4, T // 2]))
 
 
-def pl_fit(lam, frac=0.9):
-    """OLS of log lam_k vs log k over k=1..floor(frac*d). Returns (alpha, R2)."""
-    m = max(3, int(frac * len(lam)))
-    x = np.log(np.arange(1, m + 1))
-    y = np.log(lam[:m])
-    A = np.vstack([x, np.ones_like(x)]).T
-    coef, res, *_ = np.linalg.lstsq(A, y, rcond=None)
-    ss = ((y - y.mean()) ** 2).sum()
-    r2 = 1.0 - (res[0] / ss) if len(res) and ss > 0 else np.nan
-    return -coef[0], r2
+def _record(W, t, loss, gn, d, s, n, rng_n1t):
+    lam = spectrum(W)
+    bat = battery(lam)
+    x = (W ** 2).sum(axis=0)
+    return dict(t=t, loss=loss, gnorm=gn, bat={k: v for k, v in bat.items()},
+                n1t_alpha=n1t_alpha(W, rng_n1t),
+                norms=x.tolist(), lam=lam.tolist())
 
 
-def norm_profile_fit(x, s, n):
-    """Fit x_(k) = c0 - c1*H*k^s on the unclipped (x>0) region, usage-ranked."""
-    k = np.arange(1, n + 1, dtype=np.float64)
-    H = (k ** (-s)).sum() if s > 0 else float(n)
-    mask = x > 0
-    if mask.sum() < 5:
-        return dict(c0=np.nan, c1H=np.nan, r2=np.nan, n_unclipped=int(mask.sum()))
-    X = np.vstack([np.ones(mask.sum()), -(H * (k ** s))[mask]]).T
-    coef, res, *_ = np.linalg.lstsq(X, x[mask], rcond=None)
-    ss = ((x[mask] - x[mask].mean()) ** 2).sum()
-    r2 = 1.0 - (res[0] / ss) if len(res) and ss > 0 else np.nan
-    return dict(c0=coef[0], c1H=coef[1], r2=r2, n_unclipped=int(mask.sum()))
+def phase_pilot():
+    arm = dict(n=1024, d=64, s=1.0)
+    res = {}
+    for lr in [0.002, 0.01, 0.05, 0.2]:
+        ls = []
+        for seed in [90, 91, 92]:
+            r = run_qsae(**arm, seed=seed, lr=lr, checkpoints=[2000], Tmax=2000,
+                         max_ext=0)
+            ls.append(r["records"][-1]["loss"])
+        res[lr] = dict(median_loss=float(np.median(ls)), finite=bool(np.isfinite(ls).all()))
+        print(lr, res[lr])
+    ok = {k: v["median_loss"] for k, v in res.items() if v["finite"] and v["median_loss"] < 1.0}
+    best = min(ok, key=ok.get) if ok else 0.01
+    json.dump(dict(results={str(k): v for k, v in res.items()}, chosen_lr=best),
+              open(OUT / "lr_pilot.json", "w"), indent=1)
+    print("chosen lr:", best)
 
 
-def mf_spectrum(x_profile, rng):
-    """Spectrum from random directions with the given norm profile."""
-    n = len(x_profile)
-    d = int((x_profile > 0).sum())
-    d = max(d, 2)
-    keep = np.sort(x_profile)[::-1][:d]  # top-d norms get directions
-    W = rng.standard_normal((d, n))
-    W = W / np.linalg.norm(W, axis=0, keepdims=True)
-    W = W * np.sqrt(np.maximum(x_profile, 0))[None, :]
-    return spectrum(W)
+def phase_main(lr):
+    a3 = json.load(open(A3))
+    rho = a3["rho_cal"]
+    for arm in GRID:
+        heavy = arm["d"] * arm["n"] >= 200000 and arm["n"] > 2048
+        device = "cuda" if (heavy and torch_available()) else "cpu"
+        for seed in [0, 1, 2]:
+            tag = f"qsae_n{arm['n']}_d{arm['d']}_s{arm['s']}_seed{seed}"
+            out = run_qsae(**arm, seed=seed, lr=lr, checkpoints=list(CK), Tmax=200000,
+                           device=device)
+            # P-C' transient scoring (frozen rho from A3 pilot; theory x*)
+            fp = mf_fixed_point(arm["n"], arm["d"], arm["s"])
+            rng0 = np.random.default_rng(seed + 900)
+            x0 = ((0.05 * rng0.standard_normal((arm["d"], arm["n"])) / np.sqrt(arm["d"])) ** 2
+                  ).sum(axis=0)
+            devs = {}
+            for t in PC_CK:
+                rec = next((r for r in out["records"] if r["t"] == t), None)
+                if rec:
+                    ap = alpha_pred(arm, t, rho, fp["x"], x0)
+                    devs[t] = dict(alpha_pred=ap, alpha_meas=rec["bat"]["top90"]["alpha"],
+                                   dev=abs(ap - rec["bat"]["top90"]["alpha"]))
+            out["pc_scoring"] = devs
+            out["pc_pass"] = (sum(1 for v in devs.values() if v["dev"] <= 0.10) >= 3
+                              if devs else None)
+            # P-A'/P-B' only if converged
+            if out["converged"]:
+                end = out["records"][-1]
+                x = np.array(end["norms"])
+                k = np.arange(1, arm["n"] + 1, dtype=np.float64)
+                H = (k ** (-arm["s"])).sum()
+                mask = x > 1e-8 * x.max()
+                X = np.vstack([np.ones(mask.sum()), -(H * (k ** arm["s"]))[mask]]).T
+                coef, *_ = np.linalg.lstsq(X, x[mask], rcond=None)
+                ss = ((x[mask] - x[mask].mean()) ** 2).sum()
+                out["pa_norm_fit"] = dict(r2=float(1 - ((X @ coef - x[mask]) ** 2).sum() / ss),
+                                          c0=float(coef[0]), c1H=float(coef[1]),
+                                          n_unclipped=int(mask.sum()))
+                rngb = np.random.default_rng(seed + 300)
+                lam_act = np.array(end["lam"])
+                rids = []
+                for _ in range(5):
+                    lam_mf = rand_frame(x, rngb)
+                    m = min(len(lam_act), len(lam_mf))
+                    la, lm = np.log(np.maximum(lam_act[:m], EPS)), np.log(np.maximum(lam_mf[:m], EPS))
+                    rids.append(1 - ((la - lm) ** 2).sum() / ((la - la.mean()) ** 2).sum())
+                out["pb_r2_identity"] = float(np.median(rids))
+                out["pb_adequate"] = bool(end["bat"]["top90"]["r2_pl"] - out["pb_r2_identity"] <= 0.05)
+            json.dump(out, open(OUT / f"{tag}.json", "w"))
+            print(tag, "conv", out["converged"], "ext", out["extensions_used"],
+                  "a_end", round(out["records"][-1]["bat"]["top90"]["alpha"], 3),
+                  "pc_pass", out["pc_pass"])
 
 
-# ---------------- QSAE ----------------
-
-def qsae_loss_grad(W, p):
-    S = W @ W.T
-    Wp = W * p[None, :]
-    A = Wp @ W.T
-    loss = np.trace(A @ S) - 2.0 * np.trace(A) + p.sum()
-    grad = 2.0 * (S @ Wp) + 2.0 * (A @ W) - 4.0 * Wp
-    return loss, grad
-
-
-def run_qsae(n, d, s, seed, lr, checkpoints, Tmax, p=None, record_from=0):
-    rng = np.random.default_rng(seed)
-    p = zipf_p(n, s) if p is None else p
-    W = 0.05 * rng.standard_normal((d, n)) / np.sqrt(d)
-    W[:, 0] = np.abs(W[:, 0])  # break sign symmetry
-    ck = sorted(checkpoints)
-    recs, losses = [], []
-    t0 = time.time()
-    for t in range(1, Tmax + 1):
-        loss, grad = qsae_loss_grad(W, p)
-        W = W - lr * grad
-        losses.append(loss)
-        if t in ck and t >= record_from:
-            lam = spectrum(W)
-            alpha, r2 = pl_fit(lam)
-            x = (W ** 2).sum(axis=0)
-            recs.append(dict(t=t, loss=loss, alpha=alpha, r2_pl=r2,
-                             cond=lam[0] / max(lam[-1], EPS),
-                             norm_fit=norm_profile_fit(x, s, n),
-                             norms=x.tolist(), lam=lam.tolist()))
-    slope = (losses[-1] - losses[-1000]) / 1000.0 if len(losses) > 1000 else np.nan
-    return dict(n=n, d=d, s=s, seed=seed, lr=lr, Tmax=Tmax, converged_slope=slope,
-                final_loss=losses[-1], records=recs, wall_s=time.time() - t0), W
-
-
-def alpha_pred_curve(profile_star, p, checkpoints, kappa):
-    """P3 closed form: x_i(t)=x*_i(1-e^{-kappa p_i t}); proxy spectrum = sorted + mean."""
-    preds = {}
-    for t in checkpoints:
-        x = profile_star * (1.0 - np.exp(-kappa * p * t))
-        proxy = np.sort(x)[::-1] + max(x.sum() / len(profile_star), EPS)
-        preds[t] = pl_fit(np.maximum(proxy, EPS))[0]
-    return preds
-
-
-def calibrate_kappa(profile_star, p, checkpoints, alpha_at_t1):
-    best, bk = 1e9, None
-    for kappa in np.logspace(-3, 3, 240):
-        a = alpha_pred_curve(profile_star, p, [checkpoints[0]], kappa)[checkpoints[0]]
-        if abs(a - alpha_at_t1) < best:
-            best, bk = abs(a - alpha_at_t1), kappa
-    return bk
-
-
-# ---------------- XE (tied softmax, entry-101 replication) ----------------
-
-def run_xe(n, d, s, seed, lr, checkpoints, Tmax, batch=256):
+def run_xe(n, d, s, seed, lr, checkpoints, Tmax, batch=256, wall_cap_s=7200):
     rng = np.random.default_rng(seed)
     p = zipf_p(n, s)
     W = 0.01 * rng.standard_normal((d, n))
@@ -134,167 +206,88 @@ def run_xe(n, d, s, seed, lr, checkpoints, Tmax, batch=256):
     b1, b2, adeps = 0.9, 0.999, 1e-8
     recs = []
     t0 = time.time()
+    rngE = np.random.default_rng(12345)
+    Ie = rngE.choice(n, size=1024, p=p); Je = rngE.choice(n, size=1024, p=p)
     for t in range(1, Tmax + 1):
         I = rng.choice(n, size=batch, p=p)
         J = rng.choice(n, size=batch, p=p)
-        H = W[:, I]                          # d x B
-        Z = W.T @ H                          # n x B
+        H = W[:, I]
+        Z = W.T @ H
         Z = Z - Z.max(axis=0, keepdims=True)
         P = np.exp(Z); P /= P.sum(axis=0, keepdims=True)
         P[J, np.arange(batch)] -= 1.0
-        P /= batch                           # dL/dZ
-        gW = H @ P.T                         # d x n
-        contrib = W @ P                      # d x B (gradient into context cols)
-        np.add.at(gW, (slice(None), I), contrib)
+        P /= batch
+        gW = H @ P.T
+        np.add.at(gW, (slice(None), I), W @ P)
         mW = b1 * mW + (1 - b1) * gW
         vW = b2 * vW + (1 - b2) * gW * gW
         mh = mW / (1 - b1 ** t); vh = vW / (1 - b2 ** t)
         W -= lr * mh / (np.sqrt(vh) + adeps)
-        if t in sorted(checkpoints):
-            # eval loss on fixed probe batch
-            rngE = np.random.default_rng(12345)
-            Ie = rngE.choice(n, size=1024, p=p); Je = rngE.choice(n, size=1024, p=p)
+        if t in checkpoints:
             Ze = W.T @ W[:, Ie]; Ze -= Ze.max(axis=0, keepdims=True)
             Pe = np.exp(Ze); Pe /= Pe.sum(axis=0, keepdims=True)
-            loss = -np.log(Pe[Je, np.arange(1024)] + EPS).mean()
+            loss = float(-np.log(Pe[Je, np.arange(1024)] + 1e-12).mean())
             lam = spectrum(W)
-            alpha, r2 = pl_fit(lam)
-            recs.append(dict(t=t, loss=float(loss), alpha=alpha, r2_pl=r2,
-                             cond=lam[0] / max(lam[-1], EPS), lam=lam.tolist()))
+            bat = battery(lam)
+            rng_n1t = np.random.default_rng(seed + 500 + t)
+            recs.append(dict(t=t, loss=loss, gnorm=float(np.abs(gW).max()), bat=bat,
+                             n1t_alpha=n1t_alpha(W, rng_n1t), lam=lam.tolist(),
+                             norms=(W ** 2).sum(axis=0).tolist()))
+        if (time.time() - t0) > wall_cap_s:
+            break
     return dict(n=n, d=d, s=s, seed=seed, lr=lr, Tmax=Tmax, records=recs,
                 wall_s=time.time() - t0)
-
-
-# ---------------- nulls ----------------
-
-def null_n0_lbfgs(n, d, s, seed, gd_lam):
-    from scipy.optimize import minimize
-    p = zipf_p(n, s)
-    rng = np.random.default_rng(seed)
-    out = []
-    for k in range(3):
-        W0 = 0.05 * rng.standard_normal((d, n)) / np.sqrt(d)
-        f = lambda W: qsae_loss_grad(W.reshape(d, n), p)[0]
-        g = lambda W: qsae_loss_grad(W.reshape(d, n), p)[1].ravel()
-        r = minimize(f, W0.ravel(), jac=g, method="L-BFGS-B",
-                     options=dict(maxiter=20000, maxfun=40000, ftol=1e-14, gtol=1e-10))
-        lam = spectrum(r.x.reshape(d, n))
-        out.append(dict(seed=k, success=bool(r.success), loss=float(r.fun),
-                        alpha=pl_fit(lam)[0], lam=lam.tolist()))
-    m = min(len(gd_lam), min(len(o["lam"]) for o in out))
-    dev = max(abs(a - b) / max(abs(b), EPS)
-              for o in out for a, b in zip(gd_lam[:m], o["lam"][:m]))
-    return dict(runs=out, max_rel_dev_vs_gd=dev)
-
-
-def null_n1_random_dirs(x_profile, seed, s):
-    rng = np.random.default_rng(seed)
-    lam_mf = mf_spectrum(np.array(x_profile), rng)
-    return dict(alpha_mf=pl_fit(lam_mf)[0], r2_mf=pl_fit(lam_mf)[1],
-                lam_mf=lam_mf.tolist(), lam_mf_desc=lam_mf.tolist())
-
-
-def r2_identity(log_actual, log_model):
-    ss = ((log_actual - log_actual.mean()) ** 2).sum()
-    return 1.0 - ((log_actual - log_model) ** 2).sum() / ss if ss > 0 else np.nan
-
-
-# ---------------- phases ----------------
-
-GRID = [dict(n=256, d=64, s=0.5), dict(n=256, d=64, s=1.0),
-        dict(n=1024, d=64, s=0.5), dict(n=1024, d=64, s=1.0),
-        dict(n=1024, d=256, s=0.5), dict(n=1024, d=256, s=1.0)]
-CK = [1000, 10000, 50000, 100000, 200000]
-
-
-def phase_lrcal():
-    arm = dict(n=1024, d=64, s=1.0)
-    res = {}
-    for lr in [0.002, 0.01, 0.05, 0.2]:
-        r, _ = run_qsae(**arm, seed=0, lr=lr, checkpoints=[2000], Tmax=2000)
-        res[lr] = dict(final_loss=r["final_loss"], finite=bool(np.isfinite(r["final_loss"])))
-        print(lr, res[lr])
-    ok = {k: v for k, v in res.items() if v["finite"] and v["final_loss"] < 1.0}
-    best = min(ok, key=ok.get) if ok else 0.01
-    json.dump(dict(results=res, chosen_lr=best), open(OUT / "lr_calibration.json", "w"), indent=1)
-    print("chosen:", best)
-
-
-def phase_main(lr):
-    for arm in GRID:
-        for seed in [0, 1, 2]:
-            tag = f"qsae_n{arm['n']}_d{arm['d']}_s{arm['s']}_seed{seed}"
-            out, W = run_qsae(**arm, seed=seed, lr=lr, checkpoints=CK, Tmax=200000)
-            # P-C: kappa calibrated at FIRST checkpoint only, later = prediction
-            end = out["records"][-1]
-            star = np.array(end["norms"])
-            prof = np.maximum(star, 0)  # endpoint norms as x* for the P-C calibration
-            kap = calibrate_kappa(prof, zipf_p(arm["n"], arm["s"]), CK, out["records"][0]["alpha"])
-            out["kappa_cal"] = kap
-            out["alpha_pred"] = alpha_pred_curve(prof, zipf_p(arm["n"], arm["s"]), CK, kap)
-            # P-B: mean-field spectrum comparison at endpoint
-            rng = np.random.default_rng(seed + 100)
-            lam_act = np.array(end["lam"])
-            r2mf = []
-            for _ in range(3):
-                lam_mf = mf_spectrum(prof, rng)
-                m = min(len(lam_act), len(lam_mf))
-                r2mf.append(r2_identity(np.log(lam_act[:m]), np.log(np.maximum(lam_mf[:m], EPS))))
-            out["r2_mf_endpoint"] = float(np.mean(r2mf))
-            out["delta_r2_PB"] = float(end["r2_pl"] - out["r2_mf_endpoint"])
-            json.dump(out, open(OUT / f"{tag}.json", "w"))
-            print(tag, "alpha_end", round(end["alpha"], 3), "dR2", round(out["delta_r2_PB"], 3))
 
 
 def phase_xe():
     for seed in [0, 1, 2]:
         out = run_xe(1024, 64, 1.0, seed, 3e-3, [3000, 12000, 48000, 192000], 192000)
+        recs = out["records"]
+        if len(recs) >= 2:
+            a_l, a_p = recs[-1]["bat"]["top90"]["alpha"], recs[-2]["bat"]["top90"]["alpha"]
+            out["gate_stationary"] = bool(abs(a_l - a_p) <= 0.05)
         json.dump(out, open(OUT / f"xe_n1024_d64_s1_seed{seed}.json", "w"))
-        print("xe seed", seed, [(r["t"], round(r["alpha"], 3)) for r in out["records"]])
+        print("xe seed", seed, [(r["t"], round(r["bat"]["top90"]["alpha"], 3)) for r in recs])
 
 
 def phase_nulls(lr):
-    # N2: uniform usage
     for seed in [0, 1, 2]:
-        out, _ = run_qsae(1024, 64, 0.0, seed, lr, CK, 200000)
+        out = run_qsae(1024, 64, 0.0, seed, lr, list(CK), 200000, max_ext=1)
         json.dump(out, open(OUT / f"null_n2_uniform_seed{seed}.json", "w"))
-        print("N2 seed", seed, "alpha_end", round(out["records"][-1]["alpha"], 3))
-    # N0: L-BFGS multi-init vs GD endpoint
-    gd, Wgd = run_qsae(1024, 64, 1.0, 0, lr, CK, 200000)
+        print("N2 seed", seed, "alpha_end", round(out["records"][-1]["bat"]["top90"]["alpha"], 3))
+    from scipy.optimize import minimize
+    n, d, s = 1024, 64, 1.0
+    p = zipf_p(n, s)
+    gd = run_qsae(n, d, s, 0, lr, list(CK), 200000, max_ext=1)
     lam_gd = np.array(gd["records"][-1]["lam"])
-    n0 = null_n0_lbfgs(1024, 64, 1.0, 7, lam_gd)
-    json.dump(n0, open(OUT / "null_n0_lbfgs.json", "w"))
-    print("N0 max_rel_dev", n0["max_rel_dev_vs_gd"])
+    runs = []
+    for k in range(3):
+        rng = np.random.default_rng(7000 + k)
+        W0 = 0.05 * rng.standard_normal((d, n)) / np.sqrt(d)
+        f = lambda W: qsae_loss_grad(W.reshape(d, n), p)[0]
+        g = lambda W: qsae_loss_grad(W.reshape(d, n), p)[1].ravel()
+        r = minimize(f, W0.ravel(), jac=g, method="L-BFGS-B",
+                     options=dict(maxiter=20000, maxfun=40000, ftol=1e-15, gtol=1e-10))
+        lam = spectrum(r.x.reshape(d, n))
+        runs.append(dict(seed=k, loss=float(r.fun), alpha=fit_window(lam, 0.9)["alpha"],
+                         lam=lam.tolist()))
+    m = min(len(lam_gd), min(len(o["lam"]) for o in runs))
+    dev = max(abs(a - b) / max(abs(b), EPS) for o in runs for a, b in zip(lam_gd[:m], o["lam"][:m]))
+    json.dump(dict(runs=runs, max_rel_dev_vs_gd=dev),
+              open(OUT / "null_n0_lbfgs.json", "w"))
+    print("N0 max_rel_dev", dev)
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--phase", required=True,
-                    choices=["lrcal", "main", "xe", "nulls", "smoke"])
+    ap.add_argument("--phase", required=True, choices=["pilot", "main", "xe", "nulls"])
     ap.add_argument("--lr", type=float, default=None)
     a = ap.parse_args()
-    if a.phase == "lrcal":
-        phase_lrcal()
+    if a.phase == "pilot":
+        phase_pilot()
     elif a.phase == "main":
-        phase_main(a.lr or json.load(open(OUT / "lr_calibration.json"))["chosen_lr"])
+        phase_main(a.lr or json.load(open(OUT / "lr_pilot.json"))["chosen_lr"])
     elif a.phase == "xe":
         phase_xe()
     elif a.phase == "nulls":
-        phase_nulls(a.lr or json.load(open(OUT / "lr_calibration.json"))["chosen_lr"])
-    elif a.phase == "smoke":
-        # instrument check only: finite-difference gradient + tiny run NOT in grid
-        rng = np.random.default_rng(0)
-        W = rng.standard_normal((8, 20)); p = zipf_p(20, 1.0)
-        _, g = qsae_loss_grad(W, p)
-        num = np.zeros_like(W); h = 1e-6
-        for i in range(8):
-            for j in range(20):
-                Wp, Wm = W.copy(), W.copy()
-                Wp[i, j] += h; Wm[i, j] -= h
-                num[i, j] = (qsae_loss_grad(Wp, p)[0] - qsae_loss_grad(Wm, p)[0]) / (2 * h)
-        err = np.abs(num - g).max() / (np.abs(g).max() + EPS)
-        print("grad check max rel err:", err)
-        r, _ = run_qsae(64, 16, 1.0, 0, 0.05, [100, 300], 300)
-        print("tiny run alpha:", [round(x["alpha"], 3) for x in r["records"]])
-        assert err < 1e-4, "gradient check FAILED"
-        print("SMOKE OK")
+        phase_nulls(a.lr or json.load(open(OUT / "lr_pilot.json"))["chosen_lr"])
