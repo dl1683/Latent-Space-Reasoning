@@ -1,0 +1,20 @@
+{
+  "tau_0.02": {
+    "omega_accuracy": 0.7142857142857143,
+    "baseline_accuracy": 0.4444444444444444,
+    "omega_correct": 45,
+    "baseline_correct": 28,
+    "total": 63,
+    "omega_advantage": 17,
+    "omega_advantage_pp": 27.0
+  },
+  "tau_0.05": {
+    "omega_accuracy": 0.819047619047619,
+    "baseline_accuracy": 0.6476190476190476,
+    "omega_correct": 86,
+    "baseline_correct": 68,
+    "total": 105,
+    "omega_advantage": 18,
+    "omega_advantage_pp": 17.1
+  }
+}

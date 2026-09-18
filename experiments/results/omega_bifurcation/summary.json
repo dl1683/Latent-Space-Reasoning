@@ -1,0 +1,524 @@
+{
+  "n_pairs": 42,
+  "n_pairs_total_planned": 108,
+  "n_eligible": 42,
+  "n_generate": 20,
+  "tau": 0.05,
+  "note": "Partial results (42/108 pairs) due to sandbox process limits. Covers cells x_1, x_5, y_2.",
+  "all_pairs": {
+    "label": "all_pairs",
+    "n": 42,
+    "n_grow": 16,
+    "n_collapse": 26,
+    "tv_auc": 0.6322,
+    "tv_fate_corr": 0.3386,
+    "margin_auc": 0.6,
+    "entropy_auc": 0.48,
+    "margin_auc_n": 10,
+    "by_continuation": {
+      "empty": {
+        "n": 7,
+        "grow": 3,
+        "grow_rate": 0.429
+      },
+      "identity": {
+        "n": 7,
+        "grow": 4,
+        "grow_rate": 0.571
+      },
+      "nonvar_42": {
+        "n": 7,
+        "grow": 0,
+        "grow_rate": 0.0
+      },
+      "heavy": {
+        "n": 7,
+        "grow": 4,
+        "grow_rate": 0.571
+      },
+      "safety_comment": {
+        "n": 7,
+        "grow": 1,
+        "grow_rate": 0.143
+      },
+      "type_check": {
+        "n": 7,
+        "grow": 4,
+        "grow_rate": 0.571
+      }
+    }
+  },
+  "eligible_only": {
+    "label": "eligible_only",
+    "n": 42,
+    "n_grow": 16,
+    "n_collapse": 26,
+    "tv_auc": 0.6322,
+    "tv_fate_corr": 0.3386,
+    "margin_auc": 0.6,
+    "entropy_auc": 0.48,
+    "margin_auc_n": 10,
+    "by_continuation": {
+      "empty": {
+        "n": 7,
+        "grow": 3,
+        "grow_rate": 0.429
+      },
+      "identity": {
+        "n": 7,
+        "grow": 4,
+        "grow_rate": 0.571
+      },
+      "nonvar_42": {
+        "n": 7,
+        "grow": 0,
+        "grow_rate": 0.0
+      },
+      "heavy": {
+        "n": 7,
+        "grow": 4,
+        "grow_rate": 0.571
+      },
+      "safety_comment": {
+        "n": 7,
+        "grow": 1,
+        "grow_rate": 0.143
+      },
+      "type_check": {
+        "n": 7,
+        "grow": 4,
+        "grow_rate": 0.571
+      }
+    }
+  },
+  "records": [
+    {
+      "cell": "x_1",
+      "pair": "strong_assert_2",
+      "continuation": "empty",
+      "eligible": true,
+      "base_tv": 0.00722193717956543,
+      "initial_tv": 0.00722193717956543,
+      "final_tv": 0.9250697810377915,
+      "max_tv": 0.990468181342294,
+      "fate": "grow",
+      "min_margin": 0.9096745364367962,
+      "mean_entropy": 0.35368096240139757,
+      "transition_step": 6
+    },
+    {
+      "cell": "x_1",
+      "pair": "strong_assert_2",
+      "continuation": "identity",
+      "eligible": true,
+      "base_tv": 0.00722193717956543,
+      "initial_tv": 0.058276554045733064,
+      "final_tv": 0.9978909522338313,
+      "max_tv": 0.9994034082483267,
+      "fate": "grow",
+      "min_margin": 0.5972410589456558,
+      "mean_entropy": 0.754875401498611,
+      "transition_step": 4
+    },
+    {
+      "cell": "x_1",
+      "pair": "strong_assert_2",
+      "continuation": "nonvar_42",
+      "eligible": true,
+      "base_tv": 0.00722193717956543,
+      "initial_tv": 0.06225258845370263,
+      "final_tv": 0.0014788617849816887,
+      "max_tv": 0.999654862670944,
+      "fate": "collapse",
+      "min_margin": 0.5627656579017639,
+      "mean_entropy": 1.089891729720696,
+      "transition_step": 4
+    },
+    {
+      "cell": "x_1",
+      "pair": "strong_assert_2",
+      "continuation": "heavy",
+      "eligible": true,
+      "base_tv": 0.00722193717956543,
+      "initial_tv": 0.09661237453110516,
+      "final_tv": 0.9697423054797127,
+      "max_tv": 0.9773799836709713,
+      "fate": "grow",
+      "min_margin": 0.07657146453857422,
+      "mean_entropy": 1.7717139466680045,
+      "transition_step": 4
+    },
+    {
+      "cell": "x_1",
+      "pair": "strong_assert_2",
+      "continuation": "safety_comment",
+      "eligible": true,
+      "base_tv": 0.00722193717956543,
+      "initial_tv": 0.0032994828070513904,
+      "final_tv": 2.9029331835239702e-05,
+      "max_tv": 0.004630095289726022,
+      "fate": "collapse",
+      "min_margin": 0.9079150632023811,
+      "mean_entropy": 0.35217283100331587,
+      "transition_step": null
+    },
+    {
+      "cell": "x_1",
+      "pair": "strong_assert_2",
+      "continuation": "type_check",
+      "eligible": true,
+      "base_tv": 0.00722193717956543,
+      "initial_tv": 0.1285221034195274,
+      "final_tv": 0.9690107751666801,
+      "max_tv": 0.9947523193841334,
+      "fate": "grow",
+      "min_margin": 0.3215961754322052,
+      "mean_entropy": 0.9487661018600075,
+      "transition_step": 4
+    },
+    {
+      "cell": "x_1",
+      "pair": "boundary_pair",
+      "continuation": "empty",
+      "eligible": true,
+      "base_tv": 0.03827631054446101,
+      "initial_tv": 0.03827631054446101,
+      "final_tv": 0.0008603797387992836,
+      "max_tv": 0.9980739111524599,
+      "fate": "collapse",
+      "min_margin": 0.506734699010849,
+      "mean_entropy": 0.9188527328258398,
+      "transition_step": 11
+    },
+    {
+      "cell": "x_1",
+      "pair": "boundary_pair",
+      "continuation": "identity",
+      "eligible": true,
+      "base_tv": 0.03827631054446101,
+      "initial_tv": 0.04695978222298436,
+      "final_tv": 0.9285555655129784,
+      "max_tv": 0.9860271988727618,
+      "fate": "grow",
+      "min_margin": 0.045656055212020874,
+      "mean_entropy": 1.1057370639537245,
+      "transition_step": 1
+    },
+    {
+      "cell": "x_1",
+      "pair": "boundary_pair",
+      "continuation": "nonvar_42",
+      "eligible": true,
+      "base_tv": 0.03827631054446101,
+      "initial_tv": 0.014656126499176025,
+      "final_tv": 0.0007408401979773771,
+      "max_tv": 0.061270318969562254,
+      "fate": "collapse",
+      "min_margin": 0.3710961490869522,
+      "mean_entropy": 1.4370766199556178,
+      "transition_step": null
+    },
+    {
+      "cell": "x_1",
+      "pair": "boundary_pair",
+      "continuation": "heavy",
+      "eligible": true,
+      "base_tv": 0.03827631054446101,
+      "initial_tv": 0.07266390323638916,
+      "final_tv": 0.0021933995885774493,
+      "max_tv": 0.10161095857620239,
+      "fate": "collapse",
+      "min_margin": 0.11362326145172119,
+      "mean_entropy": 1.6547610037430918,
+      "transition_step": null
+    },
+    {
+      "cell": "x_1",
+      "pair": "boundary_pair",
+      "continuation": "safety_comment",
+      "initial_tv": 0.0655,
+      "final_tv": 0.0042,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_1",
+      "pair": "boundary_pair",
+      "continuation": "type_check",
+      "initial_tv": 0.0031,
+      "final_tv": 0.9275,
+      "fate": "grow",
+      "eligible": true
+    },
+    {
+      "cell": "x_1",
+      "pair": "minimal_ok_good",
+      "continuation": "empty",
+      "initial_tv": 0.0037,
+      "final_tv": 0.0012,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_1",
+      "pair": "minimal_ok_good",
+      "continuation": "identity",
+      "initial_tv": 0.0029,
+      "final_tv": 0.0009,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_1",
+      "pair": "minimal_ok_good",
+      "continuation": "nonvar_42",
+      "initial_tv": 0.0208,
+      "final_tv": 0.0009,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_1",
+      "pair": "minimal_ok_good",
+      "continuation": "heavy",
+      "initial_tv": 0.0226,
+      "final_tv": 0.988,
+      "fate": "grow",
+      "eligible": true
+    },
+    {
+      "cell": "x_1",
+      "pair": "minimal_ok_good",
+      "continuation": "safety_comment",
+      "initial_tv": 0.0007,
+      "final_tv": 0.0009,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_1",
+      "pair": "minimal_ok_good",
+      "continuation": "type_check",
+      "initial_tv": 0.0139,
+      "final_tv": 0.0005,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "strong_assert_2",
+      "continuation": "empty",
+      "initial_tv": 0.0017,
+      "final_tv": 0.7071,
+      "fate": "grow",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "strong_assert_2",
+      "continuation": "identity",
+      "initial_tv": 0.0346,
+      "final_tv": 0.0084,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "strong_assert_2",
+      "continuation": "nonvar_42",
+      "initial_tv": 0.0135,
+      "final_tv": 0.0,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "strong_assert_2",
+      "continuation": "heavy",
+      "initial_tv": 0.1504,
+      "final_tv": 0.9619,
+      "fate": "grow",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "strong_assert_2",
+      "continuation": "safety_comment",
+      "initial_tv": 0.0063,
+      "final_tv": 0.0,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "strong_assert_2",
+      "continuation": "type_check",
+      "initial_tv": 0.059,
+      "final_tv": 0.0032,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "boundary_pair",
+      "continuation": "empty",
+      "initial_tv": 0.0138,
+      "final_tv": 0.9738,
+      "fate": "grow",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "boundary_pair",
+      "continuation": "identity",
+      "initial_tv": 0.0569,
+      "final_tv": 0.9734,
+      "fate": "grow",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "boundary_pair",
+      "continuation": "nonvar_42",
+      "initial_tv": 0.0277,
+      "final_tv": 0.0028,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "boundary_pair",
+      "continuation": "heavy",
+      "initial_tv": 0.0516,
+      "final_tv": 0.0138,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "boundary_pair",
+      "continuation": "safety_comment",
+      "initial_tv": 0.0326,
+      "final_tv": 0.0017,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "boundary_pair",
+      "continuation": "type_check",
+      "initial_tv": 0.0161,
+      "final_tv": 0.9709,
+      "fate": "grow",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "minimal_ok_good",
+      "continuation": "empty",
+      "initial_tv": 0.0016,
+      "final_tv": 0.0,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "minimal_ok_good",
+      "continuation": "identity",
+      "initial_tv": 0.007,
+      "final_tv": 0.0,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "minimal_ok_good",
+      "continuation": "nonvar_42",
+      "initial_tv": 0.0192,
+      "final_tv": 0.0,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "minimal_ok_good",
+      "continuation": "heavy",
+      "initial_tv": 0.0483,
+      "final_tv": 0.0115,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "minimal_ok_good",
+      "continuation": "safety_comment",
+      "initial_tv": 0.0013,
+      "final_tv": 0.9678,
+      "fate": "grow",
+      "eligible": true
+    },
+    {
+      "cell": "x_5",
+      "pair": "minimal_ok_good",
+      "continuation": "type_check",
+      "initial_tv": 0.0087,
+      "final_tv": 0.0,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "y_2",
+      "pair": "strong_assert_2",
+      "continuation": "empty",
+      "initial_tv": 0.0081,
+      "final_tv": 0.0,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "y_2",
+      "pair": "strong_assert_2",
+      "continuation": "identity",
+      "initial_tv": 0.0527,
+      "final_tv": 0.9555,
+      "fate": "grow",
+      "eligible": true
+    },
+    {
+      "cell": "y_2",
+      "pair": "strong_assert_2",
+      "continuation": "nonvar_42",
+      "initial_tv": 0.0423,
+      "final_tv": 0.0,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "y_2",
+      "pair": "strong_assert_2",
+      "continuation": "heavy",
+      "initial_tv": 0.0947,
+      "final_tv": 0.9704,
+      "fate": "grow",
+      "eligible": true
+    },
+    {
+      "cell": "y_2",
+      "pair": "strong_assert_2",
+      "continuation": "safety_comment",
+      "initial_tv": 0.0159,
+      "final_tv": 0.0,
+      "fate": "collapse",
+      "eligible": true
+    },
+    {
+      "cell": "y_2",
+      "pair": "strong_assert_2",
+      "continuation": "type_check",
+      "initial_tv": 0.053,
+      "final_tv": 0.9748,
+      "fate": "grow",
+      "eligible": true
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "g00_empty": {
+    "mean": 0.006228432136898239,
+    "max": 0.008132344111800194,
+    "n": 6,
+    "preserves": true
+  },
+  "g01_newline": {
+    "mean": 0.01612856037293871,
+    "max": 0.029076188686303794,
+    "n": 6,
+    "preserves": false
+  },
+  "g02_pass": {
+    "mean": 0.008445175112380335,
+    "max": 0.01666189858224243,
+    "n": 6,
+    "preserves": false
+  },
+  "g03_hash": {
+    "mean": 0.006341339797169591,
+    "max": 0.008069106377661228,
+    "n": 6,
+    "preserves": true
+  },
+  "g04_comment_ok": {
+    "mean": 0.01021229923935607,
+    "max": 0.021253877988783643,
+    "n": 6,
+    "preserves": false
+  },
+  "g05_verified": {
+    "mean": 0.007243057674107452,
+    "max": 0.012384038767777383,
+    "n": 6,
+    "preserves": false
+  },
+  "g06_state_unchanged": {
+    "mean": 0.023655990759531658,
+    "max": 0.03699678182601929,
+    "n": 6,
+    "preserves": false
+  },
+  "g07_var_unchanged": {
+    "mean": 0.026356724071471643,
+    "max": 0.046782855002675205,
+    "n": 6,
+    "preserves": false
+  },
+  "g08_var_preserved": {
+    "mean": 0.017561514221597463,
+    "max": 0.031333042308688164,
+    "n": 6,
+    "preserves": false
+  },
+  "g09_ambiguous": {
+    "mean": 0.0436264845096351,
+    "max": 0.06143599312053993,
+    "n": 6,
+    "preserves": false
+  },
+  "g10_hint_update": {
+    "mean": 0.08535946516591746,
+    "max": 0.12351498292991892,
+    "n": 6,
+    "preserves": false
+  },
+  "g11_update_mention": {
+    "mean": 0.046270858127779015,
+    "max": 0.08133622852619737,
+    "n": 6,
+    "preserves": false
+  },
+  "g12_reassign": {
+    "mean": 0.03696437924130199,
+    "max": 0.04628541646525264,
+    "n": 6,
+    "preserves": false
+  },
+  "g13_strong_reassign": {
+    "mean": 0.06075748622242827,
+    "max": 0.08550289177219383,
+    "n": 6,
+    "preserves": false
+  },
+  "g14_double_reassign": {
+    "mean": 0.032649238458058484,
+    "max": 0.07786553545156494,
+    "n": 6,
+    "preserves": false
+  },
+  "g15_reassign_code": {
+    "mean": 0.024068835089565255,
+    "max": 0.05020651247468777,
+    "n": 6,
+    "preserves": false
+  }
+}

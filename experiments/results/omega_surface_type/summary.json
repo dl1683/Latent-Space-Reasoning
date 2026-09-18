@@ -1,0 +1,386 @@
+{
+  "experiment": 80,
+  "name": "surface_type",
+  "n_readouts": 108,
+  "n_comparisons": 54,
+  "results": [
+    {
+      "pair": "stmt_vs_blank",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.015382766723632812,
+      "flip": false
+    },
+    {
+      "pair": "stmt_vs_blank",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.09146678447723389,
+      "flip": false
+    },
+    {
+      "pair": "stmt_vs_blank",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.059814453125,
+      "flip": false
+    },
+    {
+      "pair": "stmt_vs_blank",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.0076770782470703125,
+      "flip": false
+    },
+    {
+      "pair": "stmt_vs_blank",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.07672452926635742,
+      "flip": false
+    },
+    {
+      "pair": "stmt_vs_blank",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.027587890625,
+      "flip": false
+    },
+    {
+      "pair": "stmt_vs_blank",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.016653060913085938,
+      "flip": false
+    },
+    {
+      "pair": "stmt_vs_blank",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.06973648071289062,
+      "flip": false
+    },
+    {
+      "pair": "stmt_vs_blank",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.020145416259765625,
+      "flip": true
+    },
+    {
+      "pair": "stmt_vs_stmt",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.02945709228515625,
+      "flip": false
+    },
+    {
+      "pair": "stmt_vs_stmt",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.134765625,
+      "flip": true
+    },
+    {
+      "pair": "stmt_vs_stmt",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.22302818298339844,
+      "flip": true
+    },
+    {
+      "pair": "stmt_vs_stmt",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.03450608253479004,
+      "flip": false
+    },
+    {
+      "pair": "stmt_vs_stmt",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.081787109375,
+      "flip": true
+    },
+    {
+      "pair": "stmt_vs_stmt",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.3223304748535156,
+      "flip": false
+    },
+    {
+      "pair": "stmt_vs_stmt",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.03692626953125,
+      "flip": false
+    },
+    {
+      "pair": "stmt_vs_stmt",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.07568359375,
+      "flip": false
+    },
+    {
+      "pair": "stmt_vs_stmt",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.29264068603515625,
+      "flip": false
+    },
+    {
+      "pair": "comment_short",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.02880859375,
+      "flip": false
+    },
+    {
+      "pair": "comment_short",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.07259857654571533,
+      "flip": false
+    },
+    {
+      "pair": "comment_short",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.0086212158203125,
+      "flip": false
+    },
+    {
+      "pair": "comment_short",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.0052490234375,
+      "flip": false
+    },
+    {
+      "pair": "comment_short",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.068206787109375,
+      "flip": false
+    },
+    {
+      "pair": "comment_short",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.061756134033203125,
+      "flip": true
+    },
+    {
+      "pair": "comment_short",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.005767822265625,
+      "flip": false
+    },
+    {
+      "pair": "comment_short",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.07107019424438477,
+      "flip": false
+    },
+    {
+      "pair": "comment_short",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.07094001770019531,
+      "flip": true
+    },
+    {
+      "pair": "comment_long",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.016187191009521484,
+      "flip": false
+    },
+    {
+      "pair": "comment_long",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.0015370845794677734,
+      "flip": false
+    },
+    {
+      "pair": "comment_long",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.006191253662109375,
+      "flip": false
+    },
+    {
+      "pair": "comment_long",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.00555419921875,
+      "flip": false
+    },
+    {
+      "pair": "comment_long",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.0010828971862792969,
+      "flip": false
+    },
+    {
+      "pair": "comment_long",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.0098724365234375,
+      "flip": false
+    },
+    {
+      "pair": "comment_long",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.01123046875,
+      "flip": false
+    },
+    {
+      "pair": "comment_long",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.008643627166748047,
+      "flip": false
+    },
+    {
+      "pair": "comment_long",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.026655197143554688,
+      "flip": false
+    },
+    {
+      "pair": "cross_type",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.0150146484375,
+      "flip": false
+    },
+    {
+      "pair": "cross_type",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.03222465515136719,
+      "flip": false
+    },
+    {
+      "pair": "cross_type",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.05074739456176758,
+      "flip": false
+    },
+    {
+      "pair": "cross_type",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.023681640625,
+      "flip": false
+    },
+    {
+      "pair": "cross_type",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.009765625,
+      "flip": false
+    },
+    {
+      "pair": "cross_type",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.23090267181396484,
+      "flip": false
+    },
+    {
+      "pair": "cross_type",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.0247802734375,
+      "flip": false
+    },
+    {
+      "pair": "cross_type",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.00439453125,
+      "flip": false
+    },
+    {
+      "pair": "cross_type",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.20423316955566406,
+      "flip": false
+    },
+    {
+      "pair": "blank_vs_blank",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.015259027481079102,
+      "flip": false
+    },
+    {
+      "pair": "blank_vs_blank",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.014743447303771973,
+      "flip": false
+    },
+    {
+      "pair": "blank_vs_blank",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.0031423568725585938,
+      "flip": false
+    },
+    {
+      "pair": "blank_vs_blank",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.028289794921875,
+      "flip": false
+    },
+    {
+      "pair": "blank_vs_blank",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.007327079772949219,
+      "flip": false
+    },
+    {
+      "pair": "blank_vs_blank",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.0123291015625,
+      "flip": false
+    },
+    {
+      "pair": "blank_vs_blank",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.031383514404296875,
+      "flip": false
+    },
+    {
+      "pair": "blank_vs_blank",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.0073699951171875,
+      "flip": false
+    },
+    {
+      "pair": "blank_vs_blank",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.01318359375,
+      "flip": false
+    }
+  ]
+}

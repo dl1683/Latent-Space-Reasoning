@@ -1,0 +1,1617 @@
+{
+  "strong_assert": {
+    "n_eligible_cells": 4,
+    "continuations": {
+      "assert_true": {
+        "omega": 0.07313936948776245,
+        "preserves": true,
+        "n_eligible": 4,
+        "preserved_count": 4,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.060927942395210266,
+        "max_tv": 0.07313936948776245,
+        "assessable": true
+      },
+      "bare_nl": {
+        "omega": 0.058369994163513184,
+        "preserves": true,
+        "n_eligible": 4,
+        "preserved_count": 4,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.05236344039440155,
+        "max_tv": 0.058369994163513184,
+        "assessable": true
+      },
+      "comment_var": {
+        "omega": 0.18094579759053886,
+        "preserves": false,
+        "n_eligible": 4,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.14817703662265558,
+        "max_tv": 0.18094579759053886,
+        "assessable": true
+      },
+      "double_neutral": {
+        "omega": 0.10047554969787598,
+        "preserves": false,
+        "n_eligible": 4,
+        "preserved_count": 3,
+        "preservation_rate": 0.75,
+        "mean_tv": 0.08463944494724274,
+        "max_tv": 0.10047554969787598,
+        "assessable": true
+      },
+      "ellipsis": {
+        "omega": 0.10260897874832153,
+        "preserves": false,
+        "n_eligible": 4,
+        "preserved_count": 2,
+        "preservation_rate": 0.5,
+        "mean_tv": 0.09512863186682807,
+        "max_tv": 0.10260897874832153,
+        "assessable": true
+      },
+      "heavy_1": {
+        "omega": 0.10456813202472404,
+        "preserves": false,
+        "n_eligible": 4,
+        "preserved_count": 3,
+        "preservation_rate": 0.75,
+        "mean_tv": 0.048537168207985815,
+        "max_tv": 0.10456813202472404,
+        "assessable": true
+      },
+      "heavy_2": {
+        "omega": 0.0975714007508941,
+        "preserves": true,
+        "n_eligible": 4,
+        "preserved_count": 4,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.06992292321228888,
+        "max_tv": 0.0975714007508941,
+        "assessable": true
+      },
+      "heavy_3": {
+        "omega": 0.06459865754004568,
+        "preserves": true,
+        "n_eligible": 4,
+        "preserved_count": 4,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.04626129688404035,
+        "max_tv": 0.06459865754004568,
+        "assessable": true
+      },
+      "heavy_then_neutral": {
+        "omega": 0.0906188964145258,
+        "preserves": true,
+        "n_eligible": 4,
+        "preserved_count": 4,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.06901533107156865,
+        "max_tv": 0.0906188964145258,
+        "assessable": true
+      },
+      "identity": {
+        "omega": 0.2663052307907492,
+        "preserves": false,
+        "n_eligible": 4,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.23802364782022778,
+        "max_tv": 0.2663052307907492,
+        "assessable": true
+      },
+      "neutral_1": {
+        "omega": 0.09682470560073853,
+        "preserves": true,
+        "n_eligible": 4,
+        "preserved_count": 4,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.08291865885257721,
+        "max_tv": 0.09682470560073853,
+        "assessable": true
+      },
+      "neutral_2": {
+        "omega": 0.01563853124389425,
+        "preserves": true,
+        "n_eligible": 4,
+        "preserved_count": 4,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.011635783113888465,
+        "max_tv": 0.01563853124389425,
+        "assessable": true
+      },
+      "neutral_3": {
+        "omega": 0.014257354487199336,
+        "preserves": true,
+        "n_eligible": 4,
+        "preserved_count": 4,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.011170145429787226,
+        "max_tv": 0.014257354487199336,
+        "assessable": true
+      },
+      "neutral_then_heavy": {
+        "omega": 0.10082606400828809,
+        "preserves": false,
+        "n_eligible": 4,
+        "preserved_count": 3,
+        "preservation_rate": 0.75,
+        "mean_tv": 0.0567615690670209,
+        "max_tv": 0.10082606400828809,
+        "assessable": true
+      },
+      "none": {
+        "omega": 0.09333306550979614,
+        "preserves": true,
+        "n_eligible": 4,
+        "preserved_count": 4,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.07950696349143982,
+        "max_tv": 0.09333306550979614,
+        "assessable": true
+      },
+      "observe": {
+        "omega": 0.17939263582229614,
+        "preserves": false,
+        "n_eligible": 4,
+        "preserved_count": 1,
+        "preservation_rate": 0.25,
+        "mean_tv": 0.14769576502294512,
+        "max_tv": 0.17939263582229614,
+        "assessable": true
+      },
+      "ok": {
+        "omega": 0.04526066780090332,
+        "preserves": true,
+        "n_eligible": 4,
+        "preserved_count": 4,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.036363237362820655,
+        "max_tv": 0.04526066780090332,
+        "assessable": true
+      },
+      "pass": {
+        "omega": 0.10368448495864868,
+        "preserves": false,
+        "n_eligible": 4,
+        "preserved_count": 3,
+        "preservation_rate": 0.75,
+        "mean_tv": 0.08546209335327148,
+        "max_tv": 0.10368448495864868,
+        "assessable": true
+      },
+      "print_var": {
+        "omega": 0.07193875312805176,
+        "preserves": true,
+        "n_eligible": 4,
+        "preserved_count": 4,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.0533357709646225,
+        "max_tv": 0.07193875312805176,
+        "assessable": true
+      },
+      "type_check": {
+        "omega": 0.13271927740424871,
+        "preserves": false,
+        "n_eligible": 4,
+        "preserved_count": 1,
+        "preservation_rate": 0.25,
+        "mean_tv": 0.10812938529852545,
+        "max_tv": 0.13271927740424871,
+        "assessable": true
+      },
+      "verified": {
+        "omega": 0.04848122596740723,
+        "preserves": true,
+        "n_eligible": 4,
+        "preserved_count": 4,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.0402957946062088,
+        "max_tv": 0.04848122596740723,
+        "assessable": true
+      }
+    }
+  },
+  "strong_assert_2": {
+    "n_eligible_cells": 6,
+    "continuations": {
+      "assert_true": {
+        "omega": 0.02990787662565708,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.01738087134435773,
+        "max_tv": 0.02990787662565708,
+        "assessable": true
+      },
+      "bare_nl": {
+        "omega": 0.029076188686303794,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.01612856037293871,
+        "max_tv": 0.029076188686303794,
+        "assessable": true
+      },
+      "comment_var": {
+        "omega": 0.03595267253695056,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.01961896421077351,
+        "max_tv": 0.03595267253695056,
+        "assessable": true
+      },
+      "double_neutral": {
+        "omega": 0.03659266233444214,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.017415653739590198,
+        "max_tv": 0.03659266233444214,
+        "assessable": true
+      },
+      "ellipsis": {
+        "omega": 0.027655242010951042,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.014225202418553332,
+        "max_tv": 0.027655242010951042,
+        "assessable": true
+      },
+      "heavy_1": {
+        "omega": 0.04628541646525264,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.03696437924130199,
+        "max_tv": 0.04628541646525264,
+        "assessable": true
+      },
+      "heavy_2": {
+        "omega": 0.08133622852619737,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.046270858127779015,
+        "max_tv": 0.08133622852619737,
+        "assessable": true
+      },
+      "heavy_3": {
+        "omega": 0.0670711855054833,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.025351240862316143,
+        "max_tv": 0.0670711855054833,
+        "assessable": true
+      },
+      "heavy_then_neutral": {
+        "omega": 0.033910813624970615,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.017853884763705235,
+        "max_tv": 0.033910813624970615,
+        "assessable": true
+      },
+      "identity": {
+        "omega": 0.06188727542757988,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.04811947337293532,
+        "max_tv": 0.06188727542757988,
+        "assessable": true
+      },
+      "neutral_1": {
+        "omega": 0.01663917303085327,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.010216136773427328,
+        "max_tv": 0.01663917303085327,
+        "assessable": true
+      },
+      "neutral_2": {
+        "omega": 0.03699678182601929,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.023655990759531658,
+        "max_tv": 0.03699678182601929,
+        "assessable": true
+      },
+      "neutral_3": {
+        "omega": 0.019287109375,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.008473912874857584,
+        "max_tv": 0.019287109375,
+        "assessable": true
+      },
+      "neutral_then_heavy": {
+        "omega": 0.06720942596439272,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.022296739160083234,
+        "max_tv": 0.06720942596439272,
+        "assessable": true
+      },
+      "none": {
+        "omega": 0.008132344111800194,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.006228432136898239,
+        "max_tv": 0.008132344111800194,
+        "assessable": true
+      },
+      "observe": {
+        "omega": 0.03969545841391664,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.022366161741956603,
+        "max_tv": 0.03969545841391664,
+        "assessable": true
+      },
+      "ok": {
+        "omega": 0.021253877988783643,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.01021229923935607,
+        "max_tv": 0.021253877988783643,
+        "assessable": true
+      },
+      "pass": {
+        "omega": 0.01666189858224243,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.008445175112380335,
+        "max_tv": 0.01666189858224243,
+        "assessable": true
+      },
+      "print_var": {
+        "omega": 0.06766375701408833,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.04410782761503166,
+        "max_tv": 0.06766375701408833,
+        "assessable": true
+      },
+      "type_check": {
+        "omega": 0.1285221034195274,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 5,
+        "preservation_rate": 0.8333333333333334,
+        "mean_tv": 0.06523809520391903,
+        "max_tv": 0.1285221034195274,
+        "assessable": true
+      },
+      "verified": {
+        "omega": 0.012384038767777383,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.007243057674107452,
+        "max_tv": 0.012384038767777383,
+        "assessable": true
+      }
+    }
+  },
+  "moderate_assert": {
+    "n_eligible_cells": 6,
+    "continuations": {
+      "assert_true": {
+        "omega": 0.18515096604824066,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 2,
+        "preservation_rate": 0.3333333333333333,
+        "mean_tv": 0.11736867078191911,
+        "max_tv": 0.18515096604824066,
+        "assessable": true
+      },
+      "bare_nl": {
+        "omega": 0.20424681901931763,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 1,
+        "preservation_rate": 0.16666666666666666,
+        "mean_tv": 0.1393924483078687,
+        "max_tv": 0.20424681901931763,
+        "assessable": true
+      },
+      "comment_var": {
+        "omega": 0.10177073202794418,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 5,
+        "preservation_rate": 0.8333333333333334,
+        "mean_tv": 0.06822078027471434,
+        "max_tv": 0.10177073202794418,
+        "assessable": true
+      },
+      "double_neutral": {
+        "omega": 0.05967526021413505,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.03160137899491625,
+        "max_tv": 0.05967526021413505,
+        "assessable": true
+      },
+      "ellipsis": {
+        "omega": 0.13904752483358607,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 4,
+        "preservation_rate": 0.6666666666666666,
+        "mean_tv": 0.08667176811529013,
+        "max_tv": 0.13904752483358607,
+        "assessable": true
+      },
+      "heavy_1": {
+        "omega": 0.1034992624190636,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 5,
+        "preservation_rate": 0.8333333333333334,
+        "mean_tv": 0.0635345082700951,
+        "max_tv": 0.1034992624190636,
+        "assessable": true
+      },
+      "heavy_2": {
+        "omega": 0.08553116011898965,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.06469543863689371,
+        "max_tv": 0.08553116011898965,
+        "assessable": true
+      },
+      "heavy_3": {
+        "omega": 0.11162236076779664,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 4,
+        "preservation_rate": 0.6666666666666666,
+        "mean_tv": 0.08020043652019619,
+        "max_tv": 0.11162236076779664,
+        "assessable": true
+      },
+      "heavy_then_neutral": {
+        "omega": 0.14454077888512984,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 2,
+        "preservation_rate": 0.3333333333333333,
+        "mean_tv": 0.10033551448820315,
+        "max_tv": 0.14454077888512984,
+        "assessable": true
+      },
+      "identity": {
+        "omega": 0.08340574312023818,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.04186145110967724,
+        "max_tv": 0.08340574312023818,
+        "assessable": true
+      },
+      "neutral_1": {
+        "omega": 0.04198220442049205,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.022920827109677095,
+        "max_tv": 0.04198220442049205,
+        "assessable": true
+      },
+      "neutral_2": {
+        "omega": 0.054736541060265154,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.03193261762983942,
+        "max_tv": 0.054736541060265154,
+        "assessable": true
+      },
+      "neutral_3": {
+        "omega": 0.05143669247627258,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.038132023687163986,
+        "max_tv": 0.05143669247627258,
+        "assessable": true
+      },
+      "neutral_then_heavy": {
+        "omega": 0.10239861928857863,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 5,
+        "preservation_rate": 0.8333333333333334,
+        "mean_tv": 0.07277954054976969,
+        "max_tv": 0.10239861928857863,
+        "assessable": true
+      },
+      "none": {
+        "omega": 0.07923662662506104,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.041545056737959385,
+        "max_tv": 0.07923662662506104,
+        "assessable": true
+      },
+      "observe": {
+        "omega": 0.1254290046344977,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 3,
+        "preservation_rate": 0.5,
+        "mean_tv": 0.0782437199765506,
+        "max_tv": 0.1254290046344977,
+        "assessable": true
+      },
+      "ok": {
+        "omega": 0.12464232690399513,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 4,
+        "preservation_rate": 0.6666666666666666,
+        "mean_tv": 0.07823607064589548,
+        "max_tv": 0.12464232690399513,
+        "assessable": true
+      },
+      "pass": {
+        "omega": 0.11250038829166442,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 4,
+        "preservation_rate": 0.6666666666666666,
+        "mean_tv": 0.07213103399650815,
+        "max_tv": 0.11250038829166442,
+        "assessable": true
+      },
+      "print_var": {
+        "omega": 0.08861743501620367,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.07270370591625881,
+        "max_tv": 0.08861743501620367,
+        "assessable": true
+      },
+      "type_check": {
+        "omega": 0.13803570671007037,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 5,
+        "preservation_rate": 0.8333333333333334,
+        "mean_tv": 0.042963887016715795,
+        "max_tv": 0.13803570671007037,
+        "assessable": true
+      },
+      "verified": {
+        "omega": 0.1191778632637579,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 5,
+        "preservation_rate": 0.8333333333333334,
+        "mean_tv": 0.07383667130003839,
+        "max_tv": 0.1191778632637579,
+        "assessable": true
+      }
+    }
+  },
+  "misleading": {
+    "n_eligible_cells": 6,
+    "continuations": {
+      "assert_true": {
+        "omega": 0.04889063537120819,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.02685064434384306,
+        "max_tv": 0.04889063537120819,
+        "assessable": true
+      },
+      "bare_nl": {
+        "omega": 0.0946710854768753,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.06486078487553944,
+        "max_tv": 0.0946710854768753,
+        "assessable": true
+      },
+      "comment_var": {
+        "omega": 0.0743354253936559,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.04728931233209247,
+        "max_tv": 0.0743354253936559,
+        "assessable": true
+      },
+      "double_neutral": {
+        "omega": 0.03833280876278877,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.030798038622985285,
+        "max_tv": 0.03833280876278877,
+        "assessable": true
+      },
+      "ellipsis": {
+        "omega": 0.09021560288965702,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.06049162106743703,
+        "max_tv": 0.09021560288965702,
+        "assessable": true
+      },
+      "heavy_1": {
+        "omega": 0.11340067081619054,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 4,
+        "preservation_rate": 0.6666666666666666,
+        "mean_tv": 0.09115174483061612,
+        "max_tv": 0.11340067081619054,
+        "assessable": true
+      },
+      "heavy_2": {
+        "omega": 0.03295807127142325,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.022887204463283222,
+        "max_tv": 0.03295807127142325,
+        "assessable": true
+      },
+      "heavy_3": {
+        "omega": 0.0320292660035193,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.017562031862325966,
+        "max_tv": 0.0320292660035193,
+        "assessable": true
+      },
+      "heavy_then_neutral": {
+        "omega": 0.02316163427894935,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.012399005878251046,
+        "max_tv": 0.02316163427894935,
+        "assessable": true
+      },
+      "identity": {
+        "omega": 0.03874844312667847,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.017078043330305565,
+        "max_tv": 0.03874844312667847,
+        "assessable": true
+      },
+      "neutral_1": {
+        "omega": 0.03238112758845091,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.027163625539590914,
+        "max_tv": 0.03238112758845091,
+        "assessable": true
+      },
+      "neutral_2": {
+        "omega": 0.038801145274192095,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.029603237519040704,
+        "max_tv": 0.038801145274192095,
+        "assessable": true
+      },
+      "neutral_3": {
+        "omega": 0.06342816818505526,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.041818106935049094,
+        "max_tv": 0.06342816818505526,
+        "assessable": true
+      },
+      "neutral_then_heavy": {
+        "omega": 0.04227170499507338,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.02265525902233397,
+        "max_tv": 0.04227170499507338,
+        "assessable": true
+      },
+      "none": {
+        "omega": 0.06830647587776184,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.051570561714470387,
+        "max_tv": 0.06830647587776184,
+        "assessable": true
+      },
+      "observe": {
+        "omega": 0.06100645661354065,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.044669865014535994,
+        "max_tv": 0.06100645661354065,
+        "assessable": true
+      },
+      "ok": {
+        "omega": 0.06503839790821075,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.04547067956688503,
+        "max_tv": 0.06503839790821075,
+        "assessable": true
+      },
+      "pass": {
+        "omega": 0.04809664189815521,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.028165521876265604,
+        "max_tv": 0.04809664189815521,
+        "assessable": true
+      },
+      "print_var": {
+        "omega": 0.037737488746643066,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.022087954993670184,
+        "max_tv": 0.037737488746643066,
+        "assessable": true
+      },
+      "type_check": {
+        "omega": 0.051225218805484474,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.029245776764582843,
+        "max_tv": 0.051225218805484474,
+        "assessable": true
+      },
+      "verified": {
+        "omega": 0.05378096550703049,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.03677923985136052,
+        "max_tv": 0.05378096550703049,
+        "assessable": true
+      }
+    }
+  },
+  "misleading_2": {
+    "n_eligible_cells": 6,
+    "continuations": {
+      "assert_true": {
+        "omega": 0.02010136842727661,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.017865605962773163,
+        "max_tv": 0.02010136842727661,
+        "assessable": true
+      },
+      "bare_nl": {
+        "omega": 0.05880697816610336,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.03973900024235869,
+        "max_tv": 0.05880697816610336,
+        "assessable": true
+      },
+      "comment_var": {
+        "omega": 0.09417267359094694,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.06954940193099901,
+        "max_tv": 0.09417267359094694,
+        "assessable": true
+      },
+      "double_neutral": {
+        "omega": 0.03293639421463013,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.019352794159203768,
+        "max_tv": 0.03293639421463013,
+        "assessable": true
+      },
+      "ellipsis": {
+        "omega": 0.06935186684131622,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.056121853180229664,
+        "max_tv": 0.06935186684131622,
+        "assessable": true
+      },
+      "heavy_1": {
+        "omega": 0.07637973199598491,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.05947510494540135,
+        "max_tv": 0.07637973199598491,
+        "assessable": true
+      },
+      "heavy_2": {
+        "omega": 0.19465050473809242,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.14842711140712103,
+        "max_tv": 0.19465050473809242,
+        "assessable": true
+      },
+      "heavy_3": {
+        "omega": 0.05496920086443424,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.047612793336156756,
+        "max_tv": 0.05496920086443424,
+        "assessable": true
+      },
+      "heavy_then_neutral": {
+        "omega": 0.03245810652151704,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.024477286545637373,
+        "max_tv": 0.03245810652151704,
+        "assessable": true
+      },
+      "identity": {
+        "omega": 0.060832083225250244,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.03486503451131284,
+        "max_tv": 0.060832083225250244,
+        "assessable": true
+      },
+      "neutral_1": {
+        "omega": 0.029165148735046387,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.02224370837211609,
+        "max_tv": 0.029165148735046387,
+        "assessable": true
+      },
+      "neutral_2": {
+        "omega": 0.039633531123399734,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.028506325422010075,
+        "max_tv": 0.039633531123399734,
+        "assessable": true
+      },
+      "neutral_3": {
+        "omega": 0.04941756511107087,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.0320374087896198,
+        "max_tv": 0.04941756511107087,
+        "assessable": true
+      },
+      "neutral_then_heavy": {
+        "omega": 0.0828818071167916,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.061869028984801844,
+        "max_tv": 0.0828818071167916,
+        "assessable": true
+      },
+      "none": {
+        "omega": 0.040093958377838135,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.026509394869208336,
+        "max_tv": 0.040093958377838135,
+        "assessable": true
+      },
+      "observe": {
+        "omega": 0.1298223578487523,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 4,
+        "preservation_rate": 0.6666666666666666,
+        "mean_tv": 0.09064307556642841,
+        "max_tv": 0.1298223578487523,
+        "assessable": true
+      },
+      "ok": {
+        "omega": 0.019047483801841736,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.015824869740754366,
+        "max_tv": 0.019047483801841736,
+        "assessable": true
+      },
+      "pass": {
+        "omega": 0.05296452343463898,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.037369055673480034,
+        "max_tv": 0.05296452343463898,
+        "assessable": true
+      },
+      "print_var": {
+        "omega": 0.09301285317633301,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.07179645806900226,
+        "max_tv": 0.09301285317633301,
+        "assessable": true
+      },
+      "type_check": {
+        "omega": 0.08747199864592403,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.05142085022331836,
+        "max_tv": 0.08747199864592403,
+        "assessable": true
+      },
+      "verified": {
+        "omega": 0.03464549779891968,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.027942890747605514,
+        "max_tv": 0.03464549779891968,
+        "assessable": true
+      }
+    }
+  },
+  "rewrite_pair": {
+    "n_eligible_cells": 6,
+    "continuations": {
+      "assert_true": {
+        "omega": 0.07013196824118495,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.03540012983527655,
+        "max_tv": 0.07013196824118495,
+        "assessable": true
+      },
+      "bare_nl": {
+        "omega": 0.08366799121722579,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.05893672075277815,
+        "max_tv": 0.08366799121722579,
+        "assessable": true
+      },
+      "comment_var": {
+        "omega": 0.10387750854715705,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 5,
+        "preservation_rate": 0.8333333333333334,
+        "mean_tv": 0.08150695854177077,
+        "max_tv": 0.10387750854715705,
+        "assessable": true
+      },
+      "double_neutral": {
+        "omega": 0.12810420198366046,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.11488550332918142,
+        "max_tv": 0.12810420198366046,
+        "assessable": true
+      },
+      "ellipsis": {
+        "omega": 0.06585966487182304,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.04495288931260196,
+        "max_tv": 0.06585966487182304,
+        "assessable": true
+      },
+      "heavy_1": {
+        "omega": 0.1076802909374237,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 5,
+        "preservation_rate": 0.8333333333333334,
+        "mean_tv": 0.07908781054720748,
+        "max_tv": 0.1076802909374237,
+        "assessable": true
+      },
+      "heavy_2": {
+        "omega": 0.11688774824142456,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 3,
+        "preservation_rate": 0.5,
+        "mean_tv": 0.09424505834370696,
+        "max_tv": 0.11688774824142456,
+        "assessable": true
+      },
+      "heavy_3": {
+        "omega": 0.11420446634292603,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 4,
+        "preservation_rate": 0.6666666666666666,
+        "mean_tv": 0.09615940201911144,
+        "max_tv": 0.11420446634292603,
+        "assessable": true
+      },
+      "heavy_then_neutral": {
+        "omega": 0.09352875826880336,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.08050078914190333,
+        "max_tv": 0.09352875826880336,
+        "assessable": true
+      },
+      "identity": {
+        "omega": 0.05229996656998992,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.044809703171874084,
+        "max_tv": 0.05229996656998992,
+        "assessable": true
+      },
+      "neutral_1": {
+        "omega": 0.09936345391906798,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.08041217813054875,
+        "max_tv": 0.09936345391906798,
+        "assessable": true
+      },
+      "neutral_2": {
+        "omega": 0.08024355722591281,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.05211799622823795,
+        "max_tv": 0.08024355722591281,
+        "assessable": true
+      },
+      "neutral_3": {
+        "omega": 0.12275860994122922,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 3,
+        "preservation_rate": 0.5,
+        "mean_tv": 0.08702515197607379,
+        "max_tv": 0.12275860994122922,
+        "assessable": true
+      },
+      "neutral_then_heavy": {
+        "omega": 0.089903324842453,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.06832758715124025,
+        "max_tv": 0.089903324842453,
+        "assessable": true
+      },
+      "none": {
+        "omega": 0.09102643677033484,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.08164945528066407,
+        "max_tv": 0.09102643677033484,
+        "assessable": true
+      },
+      "observe": {
+        "omega": 0.08114579319953918,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.063207437361901,
+        "max_tv": 0.08114579319953918,
+        "assessable": true
+      },
+      "ok": {
+        "omega": 0.11784653924405575,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 5,
+        "preservation_rate": 0.8333333333333334,
+        "mean_tv": 0.08381386477655421,
+        "max_tv": 0.11784653924405575,
+        "assessable": true
+      },
+      "pass": {
+        "omega": 0.10360939777456224,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 5,
+        "preservation_rate": 0.8333333333333334,
+        "mean_tv": 0.08957607547442119,
+        "max_tv": 0.10360939777456224,
+        "assessable": true
+      },
+      "print_var": {
+        "omega": 0.07207081280648708,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.052631466406940795,
+        "max_tv": 0.07207081280648708,
+        "assessable": true
+      },
+      "type_check": {
+        "omega": 0.037109539145603776,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.016318656542959314,
+        "max_tv": 0.037109539145603776,
+        "assessable": true
+      },
+      "verified": {
+        "omega": 0.11787239997647703,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 3,
+        "preservation_rate": 0.5,
+        "mean_tv": 0.09144074520251404,
+        "max_tv": 0.11787239997647703,
+        "assessable": true
+      }
+    }
+  },
+  "boundary_pair": {
+    "n_eligible_cells": 6,
+    "continuations": {
+      "assert_true": {
+        "omega": 0.03185315430164337,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.021807263294855755,
+        "max_tv": 0.03185315430164337,
+        "assessable": true
+      },
+      "bare_nl": {
+        "omega": 0.047757921973243356,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.027672192598402034,
+        "max_tv": 0.047757921973243356,
+        "assessable": true
+      },
+      "comment_var": {
+        "omega": 0.14668685715878382,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.1275897856830852,
+        "max_tv": 0.14668685715878382,
+        "assessable": true
+      },
+      "double_neutral": {
+        "omega": 0.061532340827398,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.047124259426103286,
+        "max_tv": 0.061532340827398,
+        "assessable": true
+      },
+      "ellipsis": {
+        "omega": 0.053410794818773866,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.04340183925038824,
+        "max_tv": 0.053410794818773866,
+        "assessable": true
+      },
+      "heavy_1": {
+        "omega": 0.08980635000625625,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.06677825778994399,
+        "max_tv": 0.08980635000625625,
+        "assessable": true
+      },
+      "heavy_2": {
+        "omega": 0.1353535728994757,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 4,
+        "preservation_rate": 0.6666666666666666,
+        "mean_tv": 0.08770922510302626,
+        "max_tv": 0.1353535728994757,
+        "assessable": true
+      },
+      "heavy_3": {
+        "omega": 0.06766402721405029,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.05341906348864237,
+        "max_tv": 0.06766402721405029,
+        "assessable": true
+      },
+      "heavy_then_neutral": {
+        "omega": 0.08156929255346768,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.06447017771521739,
+        "max_tv": 0.08156929255346768,
+        "assessable": true
+      },
+      "identity": {
+        "omega": 0.10921006771968678,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 5,
+        "preservation_rate": 0.8333333333333334,
+        "mean_tv": 0.06559394950939652,
+        "max_tv": 0.10921006771968678,
+        "assessable": true
+      },
+      "neutral_1": {
+        "omega": 0.059411422291304916,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.037096060860979684,
+        "max_tv": 0.059411422291304916,
+        "assessable": true
+      },
+      "neutral_2": {
+        "omega": 0.017556607723236084,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.011586556831995646,
+        "max_tv": 0.017556607723236084,
+        "assessable": true
+      },
+      "neutral_3": {
+        "omega": 0.04530364274978638,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.02557094891866048,
+        "max_tv": 0.04530364274978638,
+        "assessable": true
+      },
+      "neutral_then_heavy": {
+        "omega": 0.03687827743124217,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.02115405006528211,
+        "max_tv": 0.03687827743124217,
+        "assessable": true
+      },
+      "none": {
+        "omega": 0.06123902113176882,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.0336129347900472,
+        "max_tv": 0.06123902113176882,
+        "assessable": true
+      },
+      "observe": {
+        "omega": 0.07637040049303323,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.03348348840760688,
+        "max_tv": 0.07637040049303323,
+        "assessable": true
+      },
+      "ok": {
+        "omega": 0.024165789713151753,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.015837967104744166,
+        "max_tv": 0.024165789713151753,
+        "assessable": true
+      },
+      "pass": {
+        "omega": 0.037006520200520754,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.01583895655736948,
+        "max_tv": 0.037006520200520754,
+        "assessable": true
+      },
+      "print_var": {
+        "omega": 0.11777889728546143,
+        "preserves": false,
+        "n_eligible": 6,
+        "preserved_count": 4,
+        "preservation_rate": 0.6666666666666666,
+        "mean_tv": 0.09933940049571295,
+        "max_tv": 0.11777889728546143,
+        "assessable": true
+      },
+      "type_check": {
+        "omega": 0.06316202878952026,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.026913767059644062,
+        "max_tv": 0.06316202878952026,
+        "assessable": true
+      },
+      "verified": {
+        "omega": 0.021897335856920108,
+        "preserves": true,
+        "n_eligible": 6,
+        "preserved_count": 6,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.008462892399014285,
+        "max_tv": 0.021897335856920108,
+        "assessable": true
+      }
+    }
+  },
+  "observe_pair": {
+    "n_eligible_cells": 0,
+    "continuations": {
+      "assert_true": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "bare_nl": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "comment_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "double_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ellipsis": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_then_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "identity": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_then_heavy": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "none": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "observe": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ok": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "pass": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "print_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "type_check": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "verified": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      }
+    }
+  }
+}

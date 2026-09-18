@@ -1,0 +1,124 @@
+{
+  "n_observations": 200,
+  "rank_stability": {
+    "spearman_pairs": [
+      [
+        "print_output",
+        "assert_eq",
+        0.7214,
+        0.002399
+      ],
+      [
+        "print_output",
+        "addition",
+        -0.0857,
+        0.761334
+      ],
+      [
+        "assert_eq",
+        "addition",
+        -0.1357,
+        0.62962
+      ]
+    ],
+    "mean_rho": 0.1667
+  },
+  "certificate": {
+    "n_total": 102,
+    "n_certified": 75,
+    "n_violated": 11,
+    "violation_rate": 0.1467
+  },
+  "cross_q_results": [
+    {
+      "q_tv": "print_output",
+      "q_flip": "print_output",
+      "is_transfer": false,
+      "n": 36,
+      "n_flips": 2,
+      "tv_auc": 0.7794117647058824,
+      "margin_qtv_auc": 1.0,
+      "margin_qflip_auc": 1.0
+    },
+    {
+      "q_tv": "print_output",
+      "q_flip": "assert_eq",
+      "is_transfer": true,
+      "n": 26,
+      "n_flips": 3,
+      "tv_auc": 0.4492753623188406,
+      "margin_qtv_auc": 0.6666666666666666,
+      "margin_qflip_auc": 0.9637681159420289
+    },
+    {
+      "q_tv": "print_output",
+      "q_flip": "addition",
+      "is_transfer": true,
+      "n": 18,
+      "n_flips": 2,
+      "tv_auc": 0.4375,
+      "margin_qtv_auc": 0.21875,
+      "margin_qflip_auc": 0.828125
+    },
+    {
+      "q_tv": "assert_eq",
+      "q_flip": "print_output",
+      "is_transfer": true,
+      "n": 26,
+      "n_flips": 1,
+      "tv_auc": 0.92,
+      "margin_qtv_auc": 0.64,
+      "margin_qflip_auc": 1.0
+    },
+    {
+      "q_tv": "assert_eq",
+      "q_flip": "assert_eq",
+      "is_transfer": false,
+      "n": 26,
+      "n_flips": 3,
+      "tv_auc": 0.5507246376811594,
+      "margin_qtv_auc": 0.9637681159420289,
+      "margin_qflip_auc": 0.9637681159420289
+    },
+    {
+      "q_tv": "assert_eq",
+      "q_flip": "addition",
+      "is_transfer": true,
+      "n": 18,
+      "n_flips": 2,
+      "tv_auc": 0.53125,
+      "margin_qtv_auc": 0.15625,
+      "margin_qflip_auc": 0.828125
+    },
+    {
+      "q_tv": "addition",
+      "q_flip": "print_output",
+      "is_transfer": true,
+      "n": 18,
+      "n_flips": 1,
+      "tv_auc": 0.17647058823529413,
+      "margin_qtv_auc": 0.058823529411764705,
+      "margin_qflip_auc": 1.0
+    },
+    {
+      "q_tv": "addition",
+      "q_flip": "assert_eq",
+      "is_transfer": true,
+      "n": 18,
+      "n_flips": 3,
+      "tv_auc": 0.4888888888888889,
+      "margin_qtv_auc": 0.6,
+      "margin_qflip_auc": 0.9444444444444444
+    },
+    {
+      "q_tv": "addition",
+      "q_flip": "addition",
+      "is_transfer": false,
+      "n": 18,
+      "n_flips": 2,
+      "tv_auc": 1.0,
+      "margin_qtv_auc": 0.828125,
+      "margin_qflip_auc": 0.828125
+    }
+  ]
+}

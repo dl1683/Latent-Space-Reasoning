@@ -1,0 +1,848 @@
+{
+  "experiment": 71,
+  "name": "collision_dynamics",
+  "n_readouts": 168,
+  "n_comparisons": 84,
+  "results": [
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "var": "x",
+      "val": 1,
+      "literal": "control",
+      "continuation": "none",
+      "tv": 0.0019631385803222656,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "var": "x",
+      "val": 1,
+      "literal": "control",
+      "continuation": "identity",
+      "tv": 0.06520748138427734,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "var": "x",
+      "val": 1,
+      "literal": "control",
+      "continuation": "heavy",
+      "tv": 0.05164337158203125,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "var": "x",
+      "val": 1,
+      "literal": "match",
+      "continuation": "none",
+      "tv": 0.021256685256958008,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "var": "x",
+      "val": 1,
+      "literal": "match",
+      "continuation": "identity",
+      "tv": 0.09602665901184082,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "var": "x",
+      "val": 1,
+      "literal": "match",
+      "continuation": "heavy",
+      "tv": 0.08162975311279297,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "var": "x",
+      "val": 1,
+      "literal": "mismatch",
+      "continuation": "none",
+      "tv": 0.0439453125,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_2",
+      "var": "x",
+      "val": 2,
+      "literal": "control",
+      "continuation": "none",
+      "tv": 0.005692005157470703,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_2",
+      "var": "x",
+      "val": 2,
+      "literal": "control",
+      "continuation": "identity",
+      "tv": 0.06264853477478027,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_2",
+      "var": "x",
+      "val": 2,
+      "literal": "control",
+      "continuation": "heavy",
+      "tv": 0.024929046630859375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_2",
+      "var": "x",
+      "val": 2,
+      "literal": "match",
+      "continuation": "none",
+      "tv": 0.0404360294342041,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_2",
+      "var": "x",
+      "val": 2,
+      "literal": "match",
+      "continuation": "identity",
+      "tv": 0.11750638484954834,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_2",
+      "var": "x",
+      "val": 2,
+      "literal": "match",
+      "continuation": "heavy",
+      "tv": 0.0989990234375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_2",
+      "var": "x",
+      "val": 2,
+      "literal": "mismatch",
+      "continuation": "none",
+      "tv": 0.008323192596435547,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_3",
+      "var": "x",
+      "val": 3,
+      "literal": "control",
+      "continuation": "none",
+      "tv": 0.0009758472442626953,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_3",
+      "var": "x",
+      "val": 3,
+      "literal": "control",
+      "continuation": "identity",
+      "tv": 0.05492854118347168,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_3",
+      "var": "x",
+      "val": 3,
+      "literal": "control",
+      "continuation": "heavy",
+      "tv": 0.0301513671875,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_3",
+      "var": "x",
+      "val": 3,
+      "literal": "match",
+      "continuation": "none",
+      "tv": 0.017157316207885742,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_3",
+      "var": "x",
+      "val": 3,
+      "literal": "match",
+      "continuation": "identity",
+      "tv": 0.11562824249267578,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_3",
+      "var": "x",
+      "val": 3,
+      "literal": "match",
+      "continuation": "heavy",
+      "tv": 0.1042633056640625,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_3",
+      "var": "x",
+      "val": 3,
+      "literal": "mismatch",
+      "continuation": "none",
+      "tv": 0.01614665985107422,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_5",
+      "var": "y",
+      "val": 5,
+      "literal": "control",
+      "continuation": "none",
+      "tv": 0.003662109375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_5",
+      "var": "y",
+      "val": 5,
+      "literal": "control",
+      "continuation": "identity",
+      "tv": 0.03666353225708008,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_5",
+      "var": "y",
+      "val": 5,
+      "literal": "control",
+      "continuation": "heavy",
+      "tv": 0.09393310546875,
+      "flip": true
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_5",
+      "var": "y",
+      "val": 5,
+      "literal": "match",
+      "continuation": "none",
+      "tv": 0.0243072509765625,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_5",
+      "var": "y",
+      "val": 5,
+      "literal": "match",
+      "continuation": "identity",
+      "tv": 0.0968017578125,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_5",
+      "var": "y",
+      "val": 5,
+      "literal": "match",
+      "continuation": "heavy",
+      "tv": 0.13087844848632812,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_5",
+      "var": "y",
+      "val": 5,
+      "literal": "mismatch",
+      "continuation": "none",
+      "tv": 0.004211902618408203,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "var": "y",
+      "val": 6,
+      "literal": "control",
+      "continuation": "none",
+      "tv": 0.00521087646484375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "var": "y",
+      "val": 6,
+      "literal": "control",
+      "continuation": "identity",
+      "tv": 0.04501008987426758,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "var": "y",
+      "val": 6,
+      "literal": "control",
+      "continuation": "heavy",
+      "tv": 0.056980133056640625,
+      "flip": true
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "var": "y",
+      "val": 6,
+      "literal": "match",
+      "continuation": "none",
+      "tv": 0.06171751022338867,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "var": "y",
+      "val": 6,
+      "literal": "match",
+      "continuation": "identity",
+      "tv": 0.10760211944580078,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "var": "y",
+      "val": 6,
+      "literal": "match",
+      "continuation": "heavy",
+      "tv": 0.11589241027832031,
+      "flip": true
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "var": "y",
+      "val": 6,
+      "literal": "mismatch",
+      "continuation": "none",
+      "tv": 0.00823974609375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_7",
+      "var": "y",
+      "val": 7,
+      "literal": "control",
+      "continuation": "none",
+      "tv": 0.00492095947265625,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_7",
+      "var": "y",
+      "val": 7,
+      "literal": "control",
+      "continuation": "identity",
+      "tv": 0.03243064880371094,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_7",
+      "var": "y",
+      "val": 7,
+      "literal": "control",
+      "continuation": "heavy",
+      "tv": 0.08125495910644531,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_7",
+      "var": "y",
+      "val": 7,
+      "literal": "match",
+      "continuation": "none",
+      "tv": 0.01630115509033203,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_7",
+      "var": "y",
+      "val": 7,
+      "literal": "match",
+      "continuation": "identity",
+      "tv": 0.09686517715454102,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_7",
+      "var": "y",
+      "val": 7,
+      "literal": "match",
+      "continuation": "heavy",
+      "tv": 0.0790557861328125,
+      "flip": true
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_7",
+      "var": "y",
+      "val": 7,
+      "literal": "mismatch",
+      "continuation": "none",
+      "tv": 0.00997161865234375,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "var": "x",
+      "val": 1,
+      "literal": "control",
+      "continuation": "none",
+      "tv": 0.015382766723632812,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "var": "x",
+      "val": 1,
+      "literal": "control",
+      "continuation": "identity",
+      "tv": 0.09146678447723389,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "var": "x",
+      "val": 1,
+      "literal": "control",
+      "continuation": "heavy",
+      "tv": 0.059814453125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "var": "x",
+      "val": 1,
+      "literal": "match",
+      "continuation": "none",
+      "tv": 0.019694089889526367,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "var": "x",
+      "val": 1,
+      "literal": "match",
+      "continuation": "identity",
+      "tv": 0.0166015625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "var": "x",
+      "val": 1,
+      "literal": "match",
+      "continuation": "heavy",
+      "tv": 0.02939605712890625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "var": "x",
+      "val": 1,
+      "literal": "mismatch",
+      "continuation": "none",
+      "tv": 0.016620635986328125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_2",
+      "var": "x",
+      "val": 2,
+      "literal": "control",
+      "continuation": "none",
+      "tv": 0.0048828125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_2",
+      "var": "x",
+      "val": 2,
+      "literal": "control",
+      "continuation": "identity",
+      "tv": 0.06795024871826172,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_2",
+      "var": "x",
+      "val": 2,
+      "literal": "control",
+      "continuation": "heavy",
+      "tv": 0.0186767578125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_2",
+      "var": "x",
+      "val": 2,
+      "literal": "match",
+      "continuation": "none",
+      "tv": 0.02748394012451172,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_2",
+      "var": "x",
+      "val": 2,
+      "literal": "match",
+      "continuation": "identity",
+      "tv": 0.0244140625,
+      "flip": true
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_2",
+      "var": "x",
+      "val": 2,
+      "literal": "match",
+      "continuation": "heavy",
+      "tv": 0.058139801025390625,
+      "flip": true
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_2",
+      "var": "x",
+      "val": 2,
+      "literal": "mismatch",
+      "continuation": "none",
+      "tv": 0.01268625259399414,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_3",
+      "var": "x",
+      "val": 3,
+      "literal": "control",
+      "continuation": "none",
+      "tv": 0.0087890625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_3",
+      "var": "x",
+      "val": 3,
+      "literal": "control",
+      "continuation": "identity",
+      "tv": 0.09699773788452148,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_3",
+      "var": "x",
+      "val": 3,
+      "literal": "control",
+      "continuation": "heavy",
+      "tv": 0.0347900390625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_3",
+      "var": "x",
+      "val": 3,
+      "literal": "match",
+      "continuation": "none",
+      "tv": 0.023698806762695312,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_3",
+      "var": "x",
+      "val": 3,
+      "literal": "match",
+      "continuation": "identity",
+      "tv": 0.01653289794921875,
+      "flip": true
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_3",
+      "var": "x",
+      "val": 3,
+      "literal": "match",
+      "continuation": "heavy",
+      "tv": 0.07643318176269531,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_3",
+      "var": "x",
+      "val": 3,
+      "literal": "mismatch",
+      "continuation": "none",
+      "tv": 0.016242027282714844,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_5",
+      "var": "y",
+      "val": 5,
+      "literal": "control",
+      "continuation": "none",
+      "tv": 0.006183147430419922,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_5",
+      "var": "y",
+      "val": 5,
+      "literal": "control",
+      "continuation": "identity",
+      "tv": 0.07448673248291016,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_5",
+      "var": "y",
+      "val": 5,
+      "literal": "control",
+      "continuation": "heavy",
+      "tv": 0.01953125,
+      "flip": true
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_5",
+      "var": "y",
+      "val": 5,
+      "literal": "match",
+      "continuation": "none",
+      "tv": 0.05529308319091797,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_5",
+      "var": "y",
+      "val": 5,
+      "literal": "match",
+      "continuation": "identity",
+      "tv": 0.0244140625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_5",
+      "var": "y",
+      "val": 5,
+      "literal": "match",
+      "continuation": "heavy",
+      "tv": 0.1085357666015625,
+      "flip": true
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_5",
+      "var": "y",
+      "val": 5,
+      "literal": "mismatch",
+      "continuation": "none",
+      "tv": 0.031256675720214844,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "var": "y",
+      "val": 6,
+      "literal": "control",
+      "continuation": "none",
+      "tv": 0.016653060913085938,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "var": "y",
+      "val": 6,
+      "literal": "control",
+      "continuation": "identity",
+      "tv": 0.06973648071289062,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "var": "y",
+      "val": 6,
+      "literal": "control",
+      "continuation": "heavy",
+      "tv": 0.020145416259765625,
+      "flip": true
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "var": "y",
+      "val": 6,
+      "literal": "match",
+      "continuation": "none",
+      "tv": 0.0473179817199707,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "var": "y",
+      "val": 6,
+      "literal": "match",
+      "continuation": "identity",
+      "tv": 0.024169921875,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "var": "y",
+      "val": 6,
+      "literal": "match",
+      "continuation": "heavy",
+      "tv": 0.09047698974609375,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "var": "y",
+      "val": 6,
+      "literal": "mismatch",
+      "continuation": "none",
+      "tv": 0.024080276489257812,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_7",
+      "var": "y",
+      "val": 7,
+      "literal": "control",
+      "continuation": "none",
+      "tv": 0.00738525390625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_7",
+      "var": "y",
+      "val": 7,
+      "literal": "control",
+      "continuation": "identity",
+      "tv": 0.08281850814819336,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_7",
+      "var": "y",
+      "val": 7,
+      "literal": "control",
+      "continuation": "heavy",
+      "tv": 0.0205078125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_7",
+      "var": "y",
+      "val": 7,
+      "literal": "match",
+      "continuation": "none",
+      "tv": 0.08010578155517578,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_7",
+      "var": "y",
+      "val": 7,
+      "literal": "match",
+      "continuation": "identity",
+      "tv": 0.039306640625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_7",
+      "var": "y",
+      "val": 7,
+      "literal": "match",
+      "continuation": "heavy",
+      "tv": 0.10593414306640625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_7",
+      "var": "y",
+      "val": 7,
+      "literal": "mismatch",
+      "continuation": "none",
+      "tv": 0.0244140625,
+      "flip": false
+    }
+  ]
+}

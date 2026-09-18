@@ -1,0 +1,488 @@
+{
+  "experiment": 74,
+  "name": "collision_repetition",
+  "n_readouts": 120,
+  "n_comparisons": 60,
+  "results": [
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "literal_type": "match",
+      "reps": 0,
+      "tv": 0.0019631385803222656,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "literal_type": "match",
+      "reps": 1,
+      "tv": 0.021256685256958008,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "literal_type": "match",
+      "reps": 2,
+      "tv": 0.032956600189208984,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "literal_type": "match",
+      "reps": 3,
+      "tv": 0.0638277530670166,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "literal_type": "match",
+      "reps": 4,
+      "tv": 0.08607721328735352,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "literal_type": "mismatch",
+      "reps": 0,
+      "tv": 0.0019631385803222656,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "literal_type": "mismatch",
+      "reps": 1,
+      "tv": 0.0439453125,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "literal_type": "mismatch",
+      "reps": 2,
+      "tv": 0.053714752197265625,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "literal_type": "mismatch",
+      "reps": 3,
+      "tv": 0.06908535957336426,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "literal_type": "mismatch",
+      "reps": 4,
+      "tv": 0.08203649520874023,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "literal_type": "match",
+      "reps": 0,
+      "tv": 0.00455021858215332,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "literal_type": "match",
+      "reps": 1,
+      "tv": 0.04868292808532715,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "literal_type": "match",
+      "reps": 2,
+      "tv": 0.028829455375671387,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "literal_type": "match",
+      "reps": 3,
+      "tv": 0.04473865032196045,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "literal_type": "match",
+      "reps": 4,
+      "tv": 0.04797863960266113,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "literal_type": "mismatch",
+      "reps": 0,
+      "tv": 0.00455021858215332,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "literal_type": "mismatch",
+      "reps": 1,
+      "tv": 0.0048160552978515625,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "literal_type": "mismatch",
+      "reps": 2,
+      "tv": 0.007354736328125,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "literal_type": "mismatch",
+      "reps": 3,
+      "tv": 0.0033540725708007812,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "literal_type": "mismatch",
+      "reps": 4,
+      "tv": 0.005823373794555664,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "literal_type": "match",
+      "reps": 0,
+      "tv": 0.00521087646484375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "literal_type": "match",
+      "reps": 1,
+      "tv": 0.06171751022338867,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "literal_type": "match",
+      "reps": 2,
+      "tv": 0.002013683319091797,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "literal_type": "match",
+      "reps": 3,
+      "tv": 0.03542685508728027,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "literal_type": "match",
+      "reps": 4,
+      "tv": 0.033649444580078125,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "literal_type": "mismatch",
+      "reps": 0,
+      "tv": 0.00521087646484375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "literal_type": "mismatch",
+      "reps": 1,
+      "tv": 0.00823974609375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "literal_type": "mismatch",
+      "reps": 2,
+      "tv": 0.0090484619140625,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "literal_type": "mismatch",
+      "reps": 3,
+      "tv": 0.007946014404296875,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "literal_type": "mismatch",
+      "reps": 4,
+      "tv": 0.0078125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "literal_type": "match",
+      "reps": 0,
+      "tv": 0.015382766723632812,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "literal_type": "match",
+      "reps": 1,
+      "tv": 0.019694089889526367,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "literal_type": "match",
+      "reps": 2,
+      "tv": 0.04017782211303711,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "literal_type": "match",
+      "reps": 3,
+      "tv": 0.0380859375,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "literal_type": "match",
+      "reps": 4,
+      "tv": 0.04837512969970703,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "literal_type": "mismatch",
+      "reps": 0,
+      "tv": 0.015382766723632812,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "literal_type": "mismatch",
+      "reps": 1,
+      "tv": 0.016620635986328125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "literal_type": "mismatch",
+      "reps": 2,
+      "tv": 0.02001953125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "literal_type": "mismatch",
+      "reps": 3,
+      "tv": 0.010009765625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "literal_type": "mismatch",
+      "reps": 4,
+      "tv": 0.027950763702392578,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "literal_type": "match",
+      "reps": 0,
+      "tv": 0.0076770782470703125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "literal_type": "match",
+      "reps": 1,
+      "tv": 0.04460704326629639,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "literal_type": "match",
+      "reps": 2,
+      "tv": 0.06679964065551758,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "literal_type": "match",
+      "reps": 3,
+      "tv": 0.0668935775756836,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "literal_type": "match",
+      "reps": 4,
+      "tv": 0.07766842842102051,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "literal_type": "mismatch",
+      "reps": 0,
+      "tv": 0.0076770782470703125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "literal_type": "mismatch",
+      "reps": 1,
+      "tv": 0.030878543853759766,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "literal_type": "mismatch",
+      "reps": 2,
+      "tv": 0.05146312713623047,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "literal_type": "mismatch",
+      "reps": 3,
+      "tv": 0.0576629638671875,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "literal_type": "mismatch",
+      "reps": 4,
+      "tv": 0.06037616729736328,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "literal_type": "match",
+      "reps": 0,
+      "tv": 0.016653060913085938,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "literal_type": "match",
+      "reps": 1,
+      "tv": 0.0473179817199707,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "literal_type": "match",
+      "reps": 2,
+      "tv": 0.04117727279663086,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "literal_type": "match",
+      "reps": 3,
+      "tv": 0.035323143005371094,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "literal_type": "match",
+      "reps": 4,
+      "tv": 0.048987388610839844,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "literal_type": "mismatch",
+      "reps": 0,
+      "tv": 0.016653060913085938,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "literal_type": "mismatch",
+      "reps": 1,
+      "tv": 0.024080276489257812,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "literal_type": "mismatch",
+      "reps": 2,
+      "tv": 0.047122955322265625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "literal_type": "mismatch",
+      "reps": 3,
+      "tv": 0.048980712890625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "literal_type": "mismatch",
+      "reps": 4,
+      "tv": 0.04881477355957031,
+      "flip": false
+    }
+  ]
+}

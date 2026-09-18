@@ -1,0 +1,207 @@
+{
+  "experiment": 83,
+  "name": "nl_omega",
+  "n_readouts": 60,
+  "results": [
+    {
+      "cell": "birds",
+      "pair": "narrative_pair",
+      "continuation": "empty",
+      "tv": 0.0277252197265625,
+      "flip": false
+    },
+    {
+      "cell": "birds",
+      "pair": "narrative_pair",
+      "continuation": "identity",
+      "tv": 0.197967529296875,
+      "flip": false
+    },
+    {
+      "cell": "birds",
+      "pair": "narrative_pair",
+      "continuation": "heavy",
+      "tv": 0.1697998046875,
+      "flip": false
+    },
+    {
+      "cell": "birds",
+      "pair": "narrative_pair",
+      "continuation": "collision",
+      "tv": 0.0518193244934082,
+      "flip": false
+    },
+    {
+      "cell": "birds",
+      "pair": "boundary_pair",
+      "continuation": "empty",
+      "tv": 0.30019617080688477,
+      "flip": true
+    },
+    {
+      "cell": "birds",
+      "pair": "boundary_pair",
+      "continuation": "identity",
+      "tv": 0.1489734649658203,
+      "flip": false
+    },
+    {
+      "cell": "birds",
+      "pair": "boundary_pair",
+      "continuation": "heavy",
+      "tv": 0.2178497314453125,
+      "flip": true
+    },
+    {
+      "cell": "birds",
+      "pair": "boundary_pair",
+      "continuation": "collision",
+      "tv": 0.09073877334594727,
+      "flip": false
+    },
+    {
+      "cell": "fish",
+      "pair": "narrative_pair",
+      "continuation": "empty",
+      "tv": 0.124267578125,
+      "flip": false
+    },
+    {
+      "cell": "fish",
+      "pair": "narrative_pair",
+      "continuation": "identity",
+      "tv": 0.13743972778320312,
+      "flip": true
+    },
+    {
+      "cell": "fish",
+      "pair": "narrative_pair",
+      "continuation": "heavy",
+      "tv": 0.16117095947265625,
+      "flip": false
+    },
+    {
+      "cell": "fish",
+      "pair": "narrative_pair",
+      "continuation": "collision",
+      "tv": 0.1038818359375,
+      "flip": false
+    },
+    {
+      "cell": "fish",
+      "pair": "boundary_pair",
+      "continuation": "empty",
+      "tv": 0.3487052917480469,
+      "flip": false
+    },
+    {
+      "cell": "fish",
+      "pair": "boundary_pair",
+      "continuation": "identity",
+      "tv": 0.07091903686523438,
+      "flip": false
+    },
+    {
+      "cell": "fish",
+      "pair": "boundary_pair",
+      "continuation": "heavy",
+      "tv": 0.152069091796875,
+      "flip": false
+    },
+    {
+      "cell": "fish",
+      "pair": "boundary_pair",
+      "continuation": "collision",
+      "tv": 0.22435760498046875,
+      "flip": false
+    },
+    {
+      "cell": "stars",
+      "pair": "narrative_pair",
+      "continuation": "empty",
+      "tv": 0.119140625,
+      "flip": false
+    },
+    {
+      "cell": "stars",
+      "pair": "narrative_pair",
+      "continuation": "identity",
+      "tv": 0.0494384765625,
+      "flip": false
+    },
+    {
+      "cell": "stars",
+      "pair": "narrative_pair",
+      "continuation": "heavy",
+      "tv": 0.07080078125,
+      "flip": false
+    },
+    {
+      "cell": "stars",
+      "pair": "narrative_pair",
+      "continuation": "collision",
+      "tv": 0.06201171875,
+      "flip": false
+    },
+    {
+      "cell": "stars",
+      "pair": "boundary_pair",
+      "continuation": "empty",
+      "tv": 0.292572021484375,
+      "flip": true
+    },
+    {
+      "cell": "stars",
+      "pair": "boundary_pair",
+      "continuation": "identity",
+      "tv": 0.31574249267578125,
+      "flip": false
+    },
+    {
+      "cell": "stars",
+      "pair": "boundary_pair",
+      "continuation": "heavy",
+      "tv": 0.23937225341796875,
+      "flip": false
+    },
+    {
+      "cell": "stars",
+      "pair": "boundary_pair",
+      "continuation": "collision",
+      "tv": 0.24573516845703125,
+      "flip": true
+    }
+  ],
+  "noncomm_results": [
+    {
+      "cell": "birds",
+      "order": "id_then_col",
+      "tv": 0.1261444091796875
+    },
+    {
+      "cell": "birds",
+      "order": "col_then_id",
+      "tv": 0.1013336181640625
+    },
+    {
+      "cell": "fish",
+      "order": "id_then_col",
+      "tv": 0.043926239013671875
+    },
+    {
+      "cell": "fish",
+      "order": "col_then_id",
+      "tv": 0.144317626953125
+    },
+    {
+      "cell": "stars",
+      "order": "id_then_col",
+      "tv": 0.0606536865234375
+    },
+    {
+      "cell": "stars",
+      "order": "col_then_id",
+      "tv": 0.0439300537109375
+    }
+  ]
+}

@@ -1,0 +1,680 @@
+{
+  "experiment": 76,
+  "name": "stacking_newpairs",
+  "n_readouts": 192,
+  "n_comparisons": 96,
+  "results": [
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.06742525100708008,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.101806640625,
+      "flip": true
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "collision",
+      "tv": 0.0174560546875,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "print_val",
+      "tv": 0.0338897705078125,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "isinstance",
+      "tv": 0.03173828125,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.07522773742675781,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "identity+collision",
+      "tv": 0.07080078125,
+      "flip": true
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "collision+identity",
+      "tv": 0.048583984375,
+      "flip": true
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "identity+isinstance",
+      "tv": 0.070556640625,
+      "flip": true
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "isinstance+identity",
+      "tv": 0.03173828125,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "collision+isinstance",
+      "tv": 0.01513671875,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "isinstance+collision",
+      "tv": 0.0029296875,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "identity+heavy",
+      "tv": 0.09075546264648438,
+      "flip": true
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "heavy+identity",
+      "tv": 0.06979799270629883,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "double_identity",
+      "tv": 0.085693359375,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "double_collision",
+      "tv": 0.021728515625,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.05126953125,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.06217002868652344,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "collision",
+      "tv": 0.0269775390625,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "print_val",
+      "tv": 0.06204986572265625,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "isinstance",
+      "tv": 0.01611328125,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.10950374603271484,
+      "flip": true
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "identity+collision",
+      "tv": 0.0547480583190918,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "collision+identity",
+      "tv": 0.02490234375,
+      "flip": true
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "identity+isinstance",
+      "tv": 0.023992061614990234,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "isinstance+identity",
+      "tv": 0.01611328125,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "collision+isinstance",
+      "tv": 0.02294921875,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "isinstance+collision",
+      "tv": 0.014168262481689453,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "identity+heavy",
+      "tv": 0.14834308624267578,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "heavy+identity",
+      "tv": 0.053195953369140625,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "double_identity",
+      "tv": 0.04717302322387695,
+      "flip": true
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "double_collision",
+      "tv": 0.0252685546875,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.04931640625,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.0465240478515625,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "collision",
+      "tv": 0.0216064453125,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "print_val",
+      "tv": 0.04566812515258789,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "isinstance",
+      "tv": 0.0087890625,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.09352874755859375,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "identity+collision",
+      "tv": 0.03929710388183594,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "collision+identity",
+      "tv": 0.00927734375,
+      "flip": true
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "identity+isinstance",
+      "tv": 0.0016651153564453125,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "isinstance+identity",
+      "tv": 0.01611328125,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "collision+isinstance",
+      "tv": 0.016357421875,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "isinstance+collision",
+      "tv": 0.014404296875,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "identity+heavy",
+      "tv": 0.12435054779052734,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "heavy+identity",
+      "tv": 0.049869537353515625,
+      "flip": true
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "double_identity",
+      "tv": 0.03197479248046875,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "double_collision",
+      "tv": 0.0220947265625,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.012750625610351562,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.0013840198516845703,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "collision",
+      "tv": 0.018102169036865234,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "print_val",
+      "tv": 0.05646371841430664,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "isinstance",
+      "tv": 0.04443359375,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.038068294525146484,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "identity+collision",
+      "tv": 0.0007650852203369141,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "collision+identity",
+      "tv": 0.03146171569824219,
+      "flip": true
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "identity+isinstance",
+      "tv": 0.008009910583496094,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "isinstance+identity",
+      "tv": 0.0390625,
+      "flip": true
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "collision+isinstance",
+      "tv": 0.035607099533081055,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "isinstance+collision",
+      "tv": 0.02774810791015625,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "identity+heavy",
+      "tv": 0.03490638732910156,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "heavy+identity",
+      "tv": 0.008671760559082031,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "double_identity",
+      "tv": 0.008715629577636719,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "double_collision",
+      "tv": 0.012987613677978516,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.0206298828125,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.008858203887939453,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "collision",
+      "tv": 0.019854307174682617,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "print_val",
+      "tv": 0.027525901794433594,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "isinstance",
+      "tv": 0.01519775390625,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.04232025146484375,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "identity+collision",
+      "tv": 0.016169071197509766,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "collision+identity",
+      "tv": 0.0005774497985839844,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "identity+isinstance",
+      "tv": 0.0087890625,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "isinstance+identity",
+      "tv": 0.01611328125,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "collision+isinstance",
+      "tv": 0.029291987419128418,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "isinstance+collision",
+      "tv": 0.0078125,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "identity+heavy",
+      "tv": 0.03793621063232422,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "heavy+identity",
+      "tv": 0.010615825653076172,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "double_identity",
+      "tv": 0.023703575134277344,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "double_collision",
+      "tv": 0.0074005126953125,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.023731231689453125,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.008435964584350586,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "collision",
+      "tv": 0.02550983428955078,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "print_val",
+      "tv": 0.022822856903076172,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "isinstance",
+      "tv": 0.0078125,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.05233955383300781,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "identity+collision",
+      "tv": 0.008188724517822266,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "collision+identity",
+      "tv": 0.01618814468383789,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "identity+isinstance",
+      "tv": 0.008378982543945312,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "isinstance+identity",
+      "tv": 0.008304595947265625,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "collision+isinstance",
+      "tv": 0.030186891555786133,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "isinstance+collision",
+      "tv": 0.00146484375,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "identity+heavy",
+      "tv": 0.03164482116699219,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "heavy+identity",
+      "tv": 0.011903762817382812,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "double_identity",
+      "tv": 0.007946014404296875,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "double_collision",
+      "tv": 0.0006976127624511719,
+      "flip": false
+    }
+  ]
+}

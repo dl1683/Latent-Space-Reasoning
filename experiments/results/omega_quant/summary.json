@@ -1,0 +1,8 @@
+{
+  "n_readouts": 288,
+  "precisions": [
+    "fp32",
+    "int8"
+  ],
+  "model": "Qwen/Qwen3-1.7B"
+}

@@ -1,0 +1,722 @@
+[
+  {
+    "domain": "nl",
+    "pair": "said_mentioned",
+    "text_a": "He said that he",
+    "text_b": "He mentioned that he",
+    "continuation": "none",
+    "tv_full": 0.06794360280036926,
+    "tv_11bin": 1.6106227178624977e-06
+  },
+  {
+    "domain": "nl",
+    "pair": "said_mentioned",
+    "text_a": "He said that he",
+    "text_b": "He mentioned that he",
+    "continuation": "period",
+    "tv_full": 0.14555923640727997,
+    "tv_11bin": 0.05024579563178122
+  },
+  {
+    "domain": "nl",
+    "pair": "said_mentioned",
+    "text_a": "He said that he",
+    "text_b": "He mentioned that he",
+    "continuation": "comma",
+    "tv_full": 0.1369965672492981,
+    "tv_11bin": 0.08477678732015193
+  },
+  {
+    "domain": "nl",
+    "pair": "said_mentioned",
+    "text_a": "He said that he",
+    "text_b": "He mentioned that he",
+    "continuation": "and_conj",
+    "tv_full": 0.10485628992319107,
+    "tv_11bin": 0.009348270948976278
+  },
+  {
+    "domain": "nl",
+    "pair": "said_mentioned",
+    "text_a": "He said that he",
+    "text_b": "He mentioned that he",
+    "continuation": "exclamation",
+    "tv_full": 0.21814818680286407,
+    "tv_11bin": 0.0004993253969587386
+  },
+  {
+    "domain": "nl",
+    "pair": "said_mentioned",
+    "text_a": "He said that he",
+    "text_b": "He mentioned that he",
+    "continuation": "question",
+    "tv_full": 0.22330984473228455,
+    "tv_11bin": 0.004261133923137095
+  },
+  {
+    "domain": "nl",
+    "pair": "said_mentioned",
+    "text_a": "He said that he",
+    "text_b": "He mentioned that he",
+    "continuation": "semicolon",
+    "tv_full": 0.15010997653007507,
+    "tv_11bin": 0.01589844113914296
+  },
+  {
+    "domain": "nl",
+    "pair": "said_mentioned",
+    "text_a": "He said that he",
+    "text_b": "He mentioned that he",
+    "continuation": "the",
+    "tv_full": 0.1504874974489212,
+    "tv_11bin": 0.00847337837330997
+  },
+  {
+    "domain": "nl",
+    "pair": "said_mentioned",
+    "text_a": "He said that he",
+    "text_b": "He mentioned that he",
+    "continuation": "day",
+    "tv_full": 0.1232934445142746,
+    "tv_11bin": 7.616890070494264e-05
+  },
+  {
+    "domain": "nl",
+    "pair": "said_mentioned",
+    "text_a": "He said that he",
+    "text_b": "He mentioned that he",
+    "continuation": "was",
+    "tv_full": 0.1594710350036621,
+    "tv_11bin": 0.0011381624717614613
+  },
+  {
+    "domain": "nl",
+    "pair": "tired_exhausted",
+    "text_a": "He was tired after a long",
+    "text_b": "He was exhausted after a long",
+    "continuation": "none",
+    "tv_full": 0.06445211172103882,
+    "tv_11bin": 1.0010715740804699e-06
+  },
+  {
+    "domain": "nl",
+    "pair": "tired_exhausted",
+    "text_a": "He was tired after a long",
+    "text_b": "He was exhausted after a long",
+    "continuation": "period",
+    "tv_full": 0.10115810483694077,
+    "tv_11bin": 0.024518127800547518
+  },
+  {
+    "domain": "nl",
+    "pair": "tired_exhausted",
+    "text_a": "He was tired after a long",
+    "text_b": "He was exhausted after a long",
+    "continuation": "comma",
+    "tv_full": 0.09525489807128906,
+    "tv_11bin": 0.035790111403912306
+  },
+  {
+    "domain": "nl",
+    "pair": "tired_exhausted",
+    "text_a": "He was tired after a long",
+    "text_b": "He was exhausted after a long",
+    "continuation": "and_conj",
+    "tv_full": 0.18277975916862488,
+    "tv_11bin": 0.03532451554201543
+  },
+  {
+    "domain": "nl",
+    "pair": "tired_exhausted",
+    "text_a": "He was tired after a long",
+    "text_b": "He was exhausted after a long",
+    "continuation": "exclamation",
+    "tv_full": 0.09276135265827179,
+    "tv_11bin": 0.0005878509691683576
+  },
+  {
+    "domain": "nl",
+    "pair": "tired_exhausted",
+    "text_a": "He was tired after a long",
+    "text_b": "He was exhausted after a long",
+    "continuation": "question",
+    "tv_full": 0.05472312867641449,
+    "tv_11bin": 0.00032319135061698034
+  },
+  {
+    "domain": "nl",
+    "pair": "tired_exhausted",
+    "text_a": "He was tired after a long",
+    "text_b": "He was exhausted after a long",
+    "continuation": "semicolon",
+    "tv_full": 0.07843632996082306,
+    "tv_11bin": 0.0023048818693496287
+  },
+  {
+    "domain": "nl",
+    "pair": "tired_exhausted",
+    "text_a": "He was tired after a long",
+    "text_b": "He was exhausted after a long",
+    "continuation": "the",
+    "tv_full": 0.08779098838567734,
+    "tv_11bin": 0.029522892786189914
+  },
+  {
+    "domain": "nl",
+    "pair": "tired_exhausted",
+    "text_a": "He was tired after a long",
+    "text_b": "He was exhausted after a long",
+    "continuation": "day",
+    "tv_full": 0.05554812029004097,
+    "tv_11bin": 3.696358544402756e-05
+  },
+  {
+    "domain": "nl",
+    "pair": "tired_exhausted",
+    "text_a": "He was tired after a long",
+    "text_b": "He was exhausted after a long",
+    "continuation": "was",
+    "tv_full": 0.11834187060594559,
+    "tv_11bin": 1.9022185369976796e-05
+  },
+  {
+    "domain": "nl",
+    "pair": "house_home",
+    "text_a": "The house was built in",
+    "text_b": "The home was constructed in",
+    "continuation": "none",
+    "tv_full": 0.0896599292755127,
+    "tv_11bin": 0.0005710724508389831
+  },
+  {
+    "domain": "nl",
+    "pair": "house_home",
+    "text_a": "The house was built in",
+    "text_b": "The home was constructed in",
+    "continuation": "period",
+    "tv_full": 0.5016006231307983,
+    "tv_11bin": 0.5015814304351807
+  },
+  {
+    "domain": "nl",
+    "pair": "house_home",
+    "text_a": "The house was built in",
+    "text_b": "The home was constructed in",
+    "continuation": "comma",
+    "tv_full": 0.19168302416801453,
+    "tv_11bin": 0.17778128385543823
+  },
+  {
+    "domain": "nl",
+    "pair": "house_home",
+    "text_a": "The house was built in",
+    "text_b": "The home was constructed in",
+    "continuation": "and_conj",
+    "tv_full": 0.39198675751686096,
+    "tv_11bin": 0.20208813645876944
+  },
+  {
+    "domain": "nl",
+    "pair": "house_home",
+    "text_a": "The house was built in",
+    "text_b": "The home was constructed in",
+    "continuation": "exclamation",
+    "tv_full": 0.4922865033149719,
+    "tv_11bin": 0.005401988291851012
+  },
+  {
+    "domain": "nl",
+    "pair": "house_home",
+    "text_a": "The house was built in",
+    "text_b": "The home was constructed in",
+    "continuation": "question",
+    "tv_full": 0.3304689824581146,
+    "tv_11bin": 0.0013115056012793502
+  },
+  {
+    "domain": "nl",
+    "pair": "house_home",
+    "text_a": "The house was built in",
+    "text_b": "The home was constructed in",
+    "continuation": "semicolon",
+    "tv_full": 0.4431929290294647,
+    "tv_11bin": 0.031671850112616085
+  },
+  {
+    "domain": "nl",
+    "pair": "house_home",
+    "text_a": "The house was built in",
+    "text_b": "The home was constructed in",
+    "continuation": "the",
+    "tv_full": 0.2634184658527374,
+    "tv_11bin": 0.09681988577358425
+  },
+  {
+    "domain": "nl",
+    "pair": "house_home",
+    "text_a": "The house was built in",
+    "text_b": "The home was constructed in",
+    "continuation": "day",
+    "tv_full": 0.21745066344738007,
+    "tv_11bin": 0.0009727114884299226
+  },
+  {
+    "domain": "nl",
+    "pair": "house_home",
+    "text_a": "The house was built in",
+    "text_b": "The home was constructed in",
+    "continuation": "was",
+    "tv_full": 0.25171709060668945,
+    "tv_11bin": 0.0017360104575345758
+  },
+  {
+    "domain": "nl",
+    "pair": "passive_voice",
+    "text_a": "The law was passed by",
+    "text_b": "The law was enacted by",
+    "continuation": "none",
+    "tv_full": 0.028103096410632133,
+    "tv_11bin": 1.5385234206632958e-06
+  },
+  {
+    "domain": "nl",
+    "pair": "passive_voice",
+    "text_a": "The law was passed by",
+    "text_b": "The law was enacted by",
+    "continuation": "period",
+    "tv_full": 0.2963726818561554,
+    "tv_11bin": 0.1685303132981062
+  },
+  {
+    "domain": "nl",
+    "pair": "passive_voice",
+    "text_a": "The law was passed by",
+    "text_b": "The law was enacted by",
+    "continuation": "comma",
+    "tv_full": 0.1435404121875763,
+    "tv_11bin": 0.07214678823947906
+  },
+  {
+    "domain": "nl",
+    "pair": "passive_voice",
+    "text_a": "The law was passed by",
+    "text_b": "The law was enacted by",
+    "continuation": "and_conj",
+    "tv_full": 0.2975977659225464,
+    "tv_11bin": 0.12715691758785397
+  },
+  {
+    "domain": "nl",
+    "pair": "passive_voice",
+    "text_a": "The law was passed by",
+    "text_b": "The law was enacted by",
+    "continuation": "exclamation",
+    "tv_full": 0.19651514291763306,
+    "tv_11bin": 0.013117021037032828
+  },
+  {
+    "domain": "nl",
+    "pair": "passive_voice",
+    "text_a": "The law was passed by",
+    "text_b": "The law was enacted by",
+    "continuation": "question",
+    "tv_full": 0.4737662076950073,
+    "tv_11bin": 0.005696298301700153
+  },
+  {
+    "domain": "nl",
+    "pair": "passive_voice",
+    "text_a": "The law was passed by",
+    "text_b": "The law was enacted by",
+    "continuation": "semicolon",
+    "tv_full": 0.27337196469306946,
+    "tv_11bin": 0.023109173896955326
+  },
+  {
+    "domain": "nl",
+    "pair": "passive_voice",
+    "text_a": "The law was passed by",
+    "text_b": "The law was enacted by",
+    "continuation": "the",
+    "tv_full": 0.18167321383953094,
+    "tv_11bin": 0.03889583423733711
+  },
+  {
+    "domain": "nl",
+    "pair": "passive_voice",
+    "text_a": "The law was passed by",
+    "text_b": "The law was enacted by",
+    "continuation": "day",
+    "tv_full": 0.16599583625793457,
+    "tv_11bin": 0.0020796284261450637
+  },
+  {
+    "domain": "nl",
+    "pair": "passive_voice",
+    "text_a": "The law was passed by",
+    "text_b": "The law was enacted by",
+    "continuation": "was",
+    "tv_full": 0.3168131709098816,
+    "tv_11bin": 0.0008451230096397921
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "x",
+    "val": 1,
+    "continuation": "none",
+    "tv_full": 0.28798025846481323,
+    "tv_11bin": 0.28795912861824036
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "x",
+    "val": 1,
+    "continuation": "identity",
+    "tv_full": 0.5070489048957825,
+    "tv_11bin": 0.5008261492766906
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "x",
+    "val": 1,
+    "continuation": "neutral",
+    "tv_full": 0.5035442113876343,
+    "tv_11bin": 0.4966482973118218
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "x",
+    "val": 1,
+    "continuation": "heavy",
+    "tv_full": 0.933095395565033,
+    "tv_11bin": 0.9306554328108518
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "x",
+    "val": 1,
+    "continuation": "type_check",
+    "tv_full": 0.014844496734440327,
+    "tv_11bin": 0.014041199225708567
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "x",
+    "val": 1,
+    "continuation": "none",
+    "tv_full": 0.6185256838798523,
+    "tv_11bin": 0.23301005666144192
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "x",
+    "val": 1,
+    "continuation": "identity",
+    "tv_full": 0.8370521068572998,
+    "tv_11bin": 0.06070123135577887
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "x",
+    "val": 1,
+    "continuation": "neutral",
+    "tv_full": 0.6444348096847534,
+    "tv_11bin": 0.08422889644862153
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "x",
+    "val": 1,
+    "continuation": "heavy",
+    "tv_full": 0.6123279333114624,
+    "tv_11bin": 0.07253351684630616
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "x",
+    "val": 1,
+    "continuation": "type_check",
+    "tv_full": 0.07566316425800323,
+    "tv_11bin": 0.009362735494505614
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "x",
+    "val": 5,
+    "continuation": "none",
+    "tv_full": 0.12958548963069916,
+    "tv_11bin": 0.1295785903930664
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "x",
+    "val": 5,
+    "continuation": "identity",
+    "tv_full": 0.5742718577384949,
+    "tv_11bin": 0.568677189439768
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "x",
+    "val": 5,
+    "continuation": "neutral",
+    "tv_full": 0.4615062475204468,
+    "tv_11bin": 0.4566452639533054
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "x",
+    "val": 5,
+    "continuation": "heavy",
+    "tv_full": 0.9168511033058167,
+    "tv_11bin": 0.9140217442027279
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "x",
+    "val": 5,
+    "continuation": "type_check",
+    "tv_full": 0.018121976405382156,
+    "tv_11bin": 0.017174910509893948
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "x",
+    "val": 5,
+    "continuation": "none",
+    "tv_full": 0.64571613073349,
+    "tv_11bin": 0.2519088734406978
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "x",
+    "val": 5,
+    "continuation": "identity",
+    "tv_full": 0.8392568230628967,
+    "tv_11bin": 0.0443803541129455
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "x",
+    "val": 5,
+    "continuation": "neutral",
+    "tv_full": 0.6268214583396912,
+    "tv_11bin": 0.0666792562988121
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "x",
+    "val": 5,
+    "continuation": "heavy",
+    "tv_full": 0.6453101634979248,
+    "tv_11bin": 0.06253039598959731
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "x",
+    "val": 5,
+    "continuation": "type_check",
+    "tv_full": 0.0799894854426384,
+    "tv_11bin": 0.00856355122232344
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "y",
+    "val": 2,
+    "continuation": "none",
+    "tv_full": 0.3277299404144287,
+    "tv_11bin": 0.32771939039230347
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "y",
+    "val": 2,
+    "continuation": "identity",
+    "tv_full": 0.4448651075363159,
+    "tv_11bin": 0.43765029657515697
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "y",
+    "val": 2,
+    "continuation": "neutral",
+    "tv_full": 0.10399877279996872,
+    "tv_11bin": 0.09963775061646629
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "y",
+    "val": 2,
+    "continuation": "heavy",
+    "tv_full": 0.8720217347145081,
+    "tv_11bin": 0.8688460212557629
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "y",
+    "val": 2,
+    "continuation": "type_check",
+    "tv_full": 0.00694148987531662,
+    "tv_11bin": 0.005783106297092999
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "y",
+    "val": 2,
+    "continuation": "none",
+    "tv_full": 0.6245344877243042,
+    "tv_11bin": 0.14407364162616432
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "y",
+    "val": 2,
+    "continuation": "identity",
+    "tv_full": 0.8442410230636597,
+    "tv_11bin": 0.02889483713079244
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "y",
+    "val": 2,
+    "continuation": "neutral",
+    "tv_full": 0.6464391946792603,
+    "tv_11bin": 0.047788662544917315
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "y",
+    "val": 2,
+    "continuation": "heavy",
+    "tv_full": 0.8266674876213074,
+    "tv_11bin": 0.03885197834460996
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "y",
+    "val": 2,
+    "continuation": "type_check",
+    "tv_full": 0.1321609765291214,
+    "tv_11bin": 0.009128099911322352
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "y",
+    "val": 6,
+    "continuation": "none",
+    "tv_full": 0.3832804262638092,
+    "tv_11bin": 0.38326799869537354
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "y",
+    "val": 6,
+    "continuation": "identity",
+    "tv_full": 0.321158230304718,
+    "tv_11bin": 0.3136971846979577
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "y",
+    "val": 6,
+    "continuation": "neutral",
+    "tv_full": 0.10420648753643036,
+    "tv_11bin": 0.09939456434221938
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "y",
+    "val": 6,
+    "continuation": "heavy",
+    "tv_full": 0.8595901727676392,
+    "tv_11bin": 0.8563409311116175
+  },
+  {
+    "domain": "code",
+    "pair": "strong_assert_2",
+    "var": "y",
+    "val": 6,
+    "continuation": "type_check",
+    "tv_full": 0.007806324400007725,
+    "tv_11bin": 0.00667766654570201
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "y",
+    "val": 6,
+    "continuation": "none",
+    "tv_full": 0.6373530626296997,
+    "tv_11bin": 0.1382011785171926
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "y",
+    "val": 6,
+    "continuation": "identity",
+    "tv_full": 0.8448973894119263,
+    "tv_11bin": 0.028458759712520987
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "y",
+    "val": 6,
+    "continuation": "neutral",
+    "tv_full": 0.6489330530166626,
+    "tv_11bin": 0.0487599459302146
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "y",
+    "val": 6,
+    "continuation": "heavy",
+    "tv_full": 0.8317765593528748,
+    "tv_11bin": 0.03487261488044169
+  },
+  {
+    "domain": "code",
+    "pair": "boundary_pair",
+    "var": "y",
+    "val": 6,
+    "continuation": "type_check",
+    "tv_full": 0.13110029697418213,
+    "tv_11bin": 0.009175356386549538
+  }
+]

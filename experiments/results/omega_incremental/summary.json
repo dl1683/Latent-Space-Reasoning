@@ -1,0 +1,65 @@
+{
+  "omega_only": {
+    "f1": 0,
+    "precision": 0,
+    "recall": 0.0,
+    "auc": 0.8381795195954488,
+    "n_pred_pos": 0
+  },
+  "margin_only": {
+    "f1": 0,
+    "precision": 0,
+    "recall": 0.0,
+    "auc": 0.97724399494311,
+    "n_pred_pos": 0
+  },
+  "entropy_only": {
+    "f1": 0,
+    "precision": 0,
+    "recall": 0.0,
+    "auc": 0.8596713021491783,
+    "n_pred_pos": 0
+  },
+  "continuation_only": {
+    "f1": 0,
+    "precision": 0,
+    "recall": 0.0,
+    "auc": 0.8508217446270544,
+    "n_pred_pos": 0
+  },
+  "margin+continuation": {
+    "f1": 0,
+    "precision": 0,
+    "recall": 0.0,
+    "auc": 0.9810366624525917,
+    "n_pred_pos": 0
+  },
+  "omega+margin": {
+    "f1": 0,
+    "precision": 0,
+    "recall": 0.0,
+    "auc": 0.9519595448798989,
+    "n_pred_pos": 0
+  },
+  "omega+continuation": {
+    "f1": 0,
+    "precision": 0,
+    "recall": 0.0,
+    "auc": 0.8824273072060683,
+    "n_pred_pos": 0
+  },
+  "omega+margin+continuation": {
+    "f1": 0,
+    "precision": 0,
+    "recall": 0.0,
+    "auc": 0.9633375474083439,
+    "n_pred_pos": 0
+  },
+  "full": {
+    "f1": 0,
+    "precision": 0,
+    "recall": 0.0,
+    "auc": 0.9570164348925411,
+    "n_pred_pos": 0
+  }
+}

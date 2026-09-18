@@ -1,0 +1,336 @@
+{
+  "n_readouts": 300,
+  "elapsed_s": 104.44645524024963,
+  "pairs": {
+    "strong_assert_2": {
+      "tau_0.01": {
+        "I": {
+          "omega": 0.0584067702293396,
+          "length": 1,
+          "status": "AMPLIFY"
+        },
+        "H": {
+          "omega": 0.3921634464059025,
+          "length": 1,
+          "status": "AMPLIFY"
+        },
+        "N": {
+          "omega": 0.008098005055217072,
+          "length": 1,
+          "status": "PRESERVE"
+        },
+        "T": {
+          "omega": 0.03141670627519488,
+          "length": 1,
+          "status": "AMPLIFY"
+        },
+        "O": {
+          "omega": 0.009280860424041748,
+          "length": 1,
+          "status": "PRESERVE"
+        },
+        "II": {
+          "omega": 0.16074097156524658,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "IH": {
+          "omega": 0.3101175563642755,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "IN": {
+          "omega": 0.08879953622817993,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "HI": {
+          "omega": 0.37459565815515816,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "HH": {
+          "omega": 0.43495379691012204,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "HN": {
+          "omega": 0.3759694932959974,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "NI": {
+          "omega": 0.014029874226253014,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "NH": {
+          "omega": 0.1851180107332766,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "NN": {
+          "omega": 0.014997124671936035,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "TI": {
+          "omega": 0.15386570457485504,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "TT": {
+          "omega": 0.012359352956991643,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "OI": {
+          "omega": 0.12251782417297363,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "III": {
+          "omega": 0.14716777915600687,
+          "length": 3,
+          "status": "AMPLIFY"
+        },
+        "IHI": {
+          "omega": 0.15903399442322552,
+          "length": 3,
+          "status": "AMPLIFY"
+        },
+        "INI": {
+          "omega": 0.3352121502975933,
+          "length": 3,
+          "status": "AMPLIFY"
+        },
+        "HIH": {
+          "omega": 0.451793264830485,
+          "length": 3,
+          "status": "AMPLIFY"
+        },
+        "NIN": {
+          "omega": 0.037635272441548295,
+          "length": 3,
+          "status": "AMPLIFY"
+        },
+        "TTT": {
+          "omega": 0.023968546607648022,
+          "length": 3,
+          "status": "AMPLIFY"
+        },
+        "NNN": {
+          "omega": 0.03874689340591431,
+          "length": 3,
+          "status": "AMPLIFY"
+        },
+        "HHH": {
+          "omega": 0.25930013053584844,
+          "length": 3,
+          "status": "AMPLIFY"
+        }
+      },
+      "tau_0.05": {
+        "I": {
+          "omega": 0.1638379693031311,
+          "length": 1,
+          "status": "AMPLIFY"
+        },
+        "H": {
+          "omega": 0.3921634464059025,
+          "length": 1,
+          "status": "AMPLIFY"
+        },
+        "N": {
+          "omega": 0.048686493188142776,
+          "length": 1,
+          "status": "PRESERVE"
+        },
+        "T": {
+          "omega": 0.20703597366809845,
+          "length": 1,
+          "status": "AMPLIFY"
+        },
+        "O": {
+          "omega": 0.07693713903427124,
+          "length": 1,
+          "status": "AMPLIFY"
+        },
+        "II": {
+          "omega": 0.16074097156524658,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "IH": {
+          "omega": 0.3101175563642755,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "IN": {
+          "omega": 0.15563631057739258,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "HI": {
+          "omega": 0.37459565815515816,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "HH": {
+          "omega": 0.43495379691012204,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "HN": {
+          "omega": 0.5636014784686267,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "NI": {
+          "omega": 0.0819616765511455,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "NH": {
+          "omega": 0.28150205174461007,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "NN": {
+          "omega": 0.1448625922203064,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "TI": {
+          "omega": 0.3753615854802774,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "TT": {
+          "omega": 0.08503422141075134,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "OI": {
+          "omega": 0.12251782417297363,
+          "length": 2,
+          "status": "AMPLIFY"
+        },
+        "III": {
+          "omega": 0.14716777915600687,
+          "length": 3,
+          "status": "AMPLIFY"
+        },
+        "IHI": {
+          "omega": 0.1840830147266388,
+          "length": 3,
+          "status": "AMPLIFY"
+        },
+        "INI": {
+          "omega": 0.3352121502975933,
+          "length": 3,
+          "status": "AMPLIFY"
+        },
+        "HIH": {
+          "omega": 0.451793264830485,
+          "length": 3,
+          "status": "AMPLIFY"
+        },
+        "NIN": {
+          "omega": 0.18676608355599456,
+          "length": 3,
+          "status": "AMPLIFY"
+        },
+        "TTT": {
+          "omega": 0.2607751488685608,
+          "length": 3,
+          "status": "AMPLIFY"
+        },
+        "NNN": {
+          "omega": 0.21496820449829102,
+          "length": 3,
+          "status": "AMPLIFY"
+        },
+        "HHH": {
+          "omega": 0.28499733190983534,
+          "length": 3,
+          "status": "AMPLIFY"
+        }
+      }
+    }
+  },
+  "growth": {
+    "strong_assert_2_tau_0.01_I->II->III": {
+      "values": [
+        0.0584067702293396,
+        0.16074097156524658,
+        0.14716777915600687
+      ],
+      "trend": "GROWING",
+      "ratio": 2.5197041126934248
+    },
+    "strong_assert_2_tau_0.01_H->HH->HHH": {
+      "values": [
+        0.3921634464059025,
+        0.43495379691012204,
+        0.25930013053584844
+      ],
+      "trend": "SHRINKING",
+      "ratio": 0.6612042323482235
+    },
+    "strong_assert_2_tau_0.01_N->NN->NNN": {
+      "values": [
+        0.008098005055217072,
+        0.014997124671936035,
+        0.03874689340591431
+      ],
+      "trend": "GROWING",
+      "ratio": 4.784745519632881
+    },
+    "strong_assert_2_tau_0.01_T->TT->TTT": {
+      "values": [
+        0.03141670627519488,
+        0.012359352956991643,
+        0.023968546607648022
+      ],
+      "trend": "SHRINKING",
+      "ratio": 0.7629235986005456
+    },
+    "strong_assert_2_tau_0.05_I->II->III": {
+      "values": [
+        0.1638379693031311,
+        0.16074097156524658,
+        0.14716777915600687
+      ],
+      "trend": "SHRINKING",
+      "ratio": 0.8982519728605691
+    },
+    "strong_assert_2_tau_0.05_H->HH->HHH": {
+      "values": [
+        0.3921634464059025,
+        0.43495379691012204,
+        0.28499733190983534
+      ],
+      "trend": "SHRINKING",
+      "ratio": 0.7267309957666309
+    },
+    "strong_assert_2_tau_0.05_N->NN->NNN": {
+      "values": [
+        0.048686493188142776,
+        0.1448625922203064,
+        0.21496820449829102
+      ],
+      "trend": "GROWING",
+      "ratio": 4.415356096147112
+    },
+    "strong_assert_2_tau_0.05_T->TT->TTT": {
+      "values": [
+        0.20703597366809845,
+        0.08503422141075134,
+        0.2607751488685608
+      ],
+      "trend": "GROWING",
+      "ratio": 1.259564433409105
+    }
+  }
+}

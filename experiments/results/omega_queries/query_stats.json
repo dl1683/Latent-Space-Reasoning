@@ -1,0 +1,138 @@
+{
+  "assert_eq": {
+    "heavy": {
+      "mean": 0.027557085268199444,
+      "max": 0.05421572376508266,
+      "n": 3
+    },
+    "neutral": {
+      "mean": 0.0320357084274292,
+      "max": 0.044871985912323,
+      "n": 3
+    },
+    "none": {
+      "mean": 0.005053107432710628,
+      "max": 0.006487485370598733,
+      "n": 3
+    }
+  },
+  "comment_val": {
+    "heavy": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    },
+    "neutral": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    },
+    "none": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    }
+  },
+  "docstring": {
+    "heavy": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    },
+    "neutral": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    },
+    "none": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    }
+  },
+  "inline": {
+    "heavy": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    },
+    "neutral": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    },
+    "none": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    }
+  },
+  "print_bare": {
+    "heavy": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    },
+    "neutral": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    },
+    "none": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    }
+  },
+  "print_output": {
+    "heavy": {
+      "mean": 0.03696437924130199,
+      "max": 0.04628541646525264,
+      "n": 6
+    },
+    "neutral": {
+      "mean": 0.023655990759531658,
+      "max": 0.03699678182601929,
+      "n": 6
+    },
+    "none": {
+      "mean": 0.006228432136898239,
+      "max": 0.008132344111800194,
+      "n": 6
+    }
+  },
+  "result_eq": {
+    "heavy": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    },
+    "neutral": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    },
+    "none": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    }
+  },
+  "return_val": {
+    "heavy": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    },
+    "neutral": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    },
+    "none": {
+      "mean": null,
+      "max": null,
+      "n": 0
+    }
+  }
+}

@@ -1,0 +1,232 @@
+{
+  "Qwen3-0.6B-Base": {
+    "model_id": "Qwen/Qwen3-0.6B-Base",
+    "n_readouts": 216,
+    "overall_accuracy": 0.023,
+    "total_flips": 1,
+    "total_pairs": 108,
+    "flip_rate": 0.009,
+    "tv_flip_correlation": 0.307,
+    "best_threshold": 0.05,
+    "best_f1": 0.143,
+    "transferred_threshold_0.3": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 107,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0
+    },
+    "threshold_results": {
+      "0.01": {
+        "tp": 1,
+        "fp": 63,
+        "fn": 0,
+        "tn": 44,
+        "precision": 0.016,
+        "recall": 1.0,
+        "f1": 0.031
+      },
+      "0.02": {
+        "tp": 1,
+        "fp": 43,
+        "fn": 0,
+        "tn": 64,
+        "precision": 0.023,
+        "recall": 1.0,
+        "f1": 0.044
+      },
+      "0.05": {
+        "tp": 1,
+        "fp": 12,
+        "fn": 0,
+        "tn": 95,
+        "precision": 0.077,
+        "recall": 1.0,
+        "f1": 0.143
+      },
+      "0.1": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "tn": 107,
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "0.15": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "tn": 107,
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "0.2": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "tn": 107,
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "0.25": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "tn": 107,
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "0.3": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "tn": 107,
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "0.4": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "tn": 107,
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "0.5": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "tn": 107,
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      }
+    }
+  },
+  "Qwen3-4B-Base": {
+    "model_id": "Qwen/Qwen3-4B-Base",
+    "n_readouts": 216,
+    "overall_accuracy": 0.912,
+    "total_flips": 3,
+    "total_pairs": 108,
+    "flip_rate": 0.028,
+    "tv_flip_correlation": 0.284,
+    "best_threshold": 0.15,
+    "best_f1": 0.333,
+    "transferred_threshold_0.3": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 3,
+      "tn": 105,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0
+    },
+    "threshold_results": {
+      "0.01": {
+        "tp": 3,
+        "fp": 98,
+        "fn": 0,
+        "tn": 7,
+        "precision": 0.03,
+        "recall": 1.0,
+        "f1": 0.058
+      },
+      "0.02": {
+        "tp": 3,
+        "fp": 86,
+        "fn": 0,
+        "tn": 19,
+        "precision": 0.034,
+        "recall": 1.0,
+        "f1": 0.065
+      },
+      "0.05": {
+        "tp": 3,
+        "fp": 42,
+        "fn": 0,
+        "tn": 63,
+        "precision": 0.067,
+        "recall": 1.0,
+        "f1": 0.125
+      },
+      "0.1": {
+        "tp": 2,
+        "fp": 14,
+        "fn": 1,
+        "tn": 91,
+        "precision": 0.125,
+        "recall": 0.667,
+        "f1": 0.211
+      },
+      "0.15": {
+        "tp": 1,
+        "fp": 2,
+        "fn": 2,
+        "tn": 103,
+        "precision": 0.333,
+        "recall": 0.333,
+        "f1": 0.333
+      },
+      "0.2": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "tn": 105,
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "0.25": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "tn": 105,
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "0.3": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "tn": 105,
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "0.4": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "tn": 105,
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      },
+      "0.5": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "tn": 105,
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0
+      }
+    }
+  },
+  "comparison": {
+    "reference_model": "Qwen3-1.7B",
+    "reference_threshold": 0.3,
+    "reference_f1": 0.75,
+    "reference_correlation": 0.677
+  }
+}

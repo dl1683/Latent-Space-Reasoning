@@ -1,0 +1,737 @@
+[
+  {
+    "pair_idx": 0,
+    "a": "The capital of France is",
+    "b": "France's capital is",
+    "baseline_tv": 0.2211932000035046,
+    "status": "DISTANT",
+    "top5_a": [
+      " Paris",
+      " a",
+      "...",
+      " located",
+      " ______"
+    ],
+    "top5_b": [
+      " Paris",
+      " a",
+      " __",
+      " in",
+      " the"
+    ]
+  },
+  {
+    "pair_idx": 1,
+    "a": "The dog chased the",
+    "b": "The canine pursued the",
+    "baseline_tv": 0.5955647403017633,
+    "status": "DISTANT",
+    "top5_a": [
+      " cat",
+      " boy",
+      " rabbit",
+      " ball",
+      " man"
+    ],
+    "top5_b": [
+      " ball",
+      " bird",
+      " rabbit",
+      " cat",
+      " dog"
+    ]
+  },
+  {
+    "pair_idx": 2,
+    "a": "She walked to the",
+    "b": "She went to the",
+    "baseline_tv": 0.5622590362073084,
+    "status": "DISTANT",
+    "top5_a": [
+      " park",
+      " store",
+      " bus",
+      " market",
+      " top"
+    ],
+    "top5_b": [
+      " store",
+      " market",
+      " park",
+      " library",
+      " doctor"
+    ]
+  },
+  {
+    "pair_idx": 3,
+    "a": "The temperature was very",
+    "b": "The temp was extremely",
+    "baseline_tv": 0.17836236901709074,
+    "status": "DISTANT",
+    "top5_a": [
+      " low",
+      " high",
+      " cold",
+      " hot",
+      " very"
+    ],
+    "top5_b": [
+      " low",
+      " high",
+      " cold",
+      " hot",
+      " cool"
+    ]
+  },
+  {
+    "pair_idx": 4,
+    "a": "He said that he",
+    "b": "He mentioned that he",
+    "baseline_tv": 0.06794360780310783,
+    "status": "MARGINAL",
+    "top5_a": [
+      " would",
+      " was",
+      " is",
+      " had",
+      " will"
+    ],
+    "top5_b": [
+      " would",
+      " had",
+      " was",
+      " is",
+      " will"
+    ]
+  },
+  {
+    "pair_idx": 5,
+    "a": "The old man sat",
+    "b": "An elderly man sat",
+    "baseline_tv": 0.1787897912486465,
+    "status": "DISTANT",
+    "top5_a": [
+      " in",
+      " on",
+      " at",
+      " by",
+      " with"
+    ],
+    "top5_b": [
+      " in",
+      " on",
+      " at",
+      " by",
+      " alone"
+    ]
+  },
+  {
+    "pair_idx": 6,
+    "a": "It was raining",
+    "b": "Rain was falling",
+    "baseline_tv": 0.6711722210134836,
+    "status": "DISTANT",
+    "top5_a": [
+      " heavily",
+      ",",
+      " and",
+      " so",
+      " hard"
+    ],
+    "top5_b": [
+      " at",
+      ",",
+      " on",
+      " in",
+      " steadily"
+    ]
+  },
+  {
+    "pair_idx": 7,
+    "a": "The car drove down the",
+    "b": "The vehicle traveled down the",
+    "baseline_tv": 0.6307857813284873,
+    "status": "DISTANT",
+    "top5_a": [
+      " road",
+      " highway",
+      " street",
+      " hill",
+      " mountain"
+    ],
+    "top5_b": [
+      " hill",
+      " slope",
+      " road",
+      " track",
+      " ramp"
+    ]
+  },
+  {
+    "pair_idx": 8,
+    "a": "She opened the door and",
+    "b": "She opened the door then",
+    "baseline_tv": 0.48736059101964563,
+    "status": "DISTANT",
+    "top5_a": [
+      " stepped",
+      " saw",
+      " the",
+      " looked",
+      " said"
+    ],
+    "top5_b": [
+      " turned",
+      " said",
+      " stepped",
+      ",",
+      " she"
+    ]
+  },
+  {
+    "pair_idx": 9,
+    "a": "The children were playing in the",
+    "b": "The kids were playing in the",
+    "baseline_tv": 0.20652226464327997,
+    "status": "DISTANT",
+    "top5_a": [
+      " park",
+      " garden",
+      " yard",
+      " forest",
+      " field"
+    ],
+    "top5_b": [
+      " park",
+      " yard",
+      " garden",
+      " snow",
+      " field"
+    ]
+  },
+  {
+    "pair_idx": 10,
+    "a": "He picked up the phone and",
+    "b": "He grabbed the phone and",
+    "baseline_tv": 0.2861509178056502,
+    "status": "DISTANT",
+    "top5_a": [
+      " called",
+      " dia",
+      " said",
+      " began",
+      " started"
+    ],
+    "top5_b": [
+      " dia",
+      " called",
+      " said",
+      " began",
+      " started"
+    ]
+  },
+  {
+    "pair_idx": 11,
+    "a": "The sun was setting over the",
+    "b": "The sun set over the",
+    "baseline_tv": 0.25359808244620774,
+    "status": "DISTANT",
+    "top5_a": [
+      " horizon",
+      " ocean",
+      " hills",
+      " city",
+      " mountains"
+    ],
+    "top5_b": [
+      " city",
+      " mountains",
+      " hills",
+      " ocean",
+      " horizon"
+    ]
+  },
+  {
+    "pair_idx": 12,
+    "a": "They decided to go to the",
+    "b": "They chose to go to the",
+    "baseline_tv": 0.2590509446648436,
+    "status": "DISTANT",
+    "top5_a": [
+      " movies",
+      " park",
+      " beach",
+      " cinema",
+      " store"
+    ],
+    "top5_b": [
+      " park",
+      " movies",
+      " beach",
+      " store",
+      " cinema"
+    ]
+  },
+  {
+    "pair_idx": 13,
+    "a": "The book was on the",
+    "b": "The book sat on the",
+    "baseline_tv": 0.2587140814608279,
+    "status": "DISTANT",
+    "top5_a": [
+      " table",
+      " shelf",
+      " desk",
+      " floor",
+      " top"
+    ],
+    "top5_b": [
+      " table",
+      " shelf",
+      " desk",
+      " floor",
+      " top"
+    ]
+  },
+  {
+    "pair_idx": 14,
+    "a": "She smiled and said",
+    "b": "She grinned and said",
+    "baseline_tv": 0.23942426522582322,
+    "status": "DISTANT",
+    "top5_a": [
+      ",",
+      " goodbye",
+      " to",
+      " \"",
+      ":"
+    ],
+    "top5_b": [
+      ",",
+      " she",
+      " \"",
+      " that",
+      ":"
+    ]
+  },
+  {
+    "pair_idx": 15,
+    "a": "The river flowed through the",
+    "b": "The river ran through the",
+    "baseline_tv": 0.28811438691511904,
+    "status": "DISTANT",
+    "top5_a": [
+      " valley",
+      " forest",
+      " village",
+      " town",
+      " city"
+    ],
+    "top5_b": [
+      " valley",
+      " town",
+      " forest",
+      " city",
+      " village"
+    ]
+  },
+  {
+    "pair_idx": 16,
+    "a": "He was tired after a long",
+    "b": "He was exhausted after a long",
+    "baseline_tv": 0.06445211334254715,
+    "status": "MARGINAL",
+    "top5_a": [
+      " day",
+      " work",
+      " and",
+      " journey",
+      " trip"
+    ],
+    "top5_b": [
+      " day",
+      " work",
+      " and",
+      " journey",
+      ","
+    ]
+  },
+  {
+    "pair_idx": 17,
+    "a": "The house was built in",
+    "b": "The home was constructed in",
+    "baseline_tv": 0.08965993367573188,
+    "status": "MARGINAL",
+    "top5_a": [
+      " ",
+      " the",
+      " a",
+      " which",
+      " __"
+    ],
+    "top5_b": [
+      " ",
+      " the",
+      " a",
+      " which",
+      " what"
+    ]
+  },
+  {
+    "pair_idx": 18,
+    "a": "She looked at the sky and",
+    "b": "She gazed at the sky and",
+    "baseline_tv": 0.49112048229452,
+    "status": "DISTANT",
+    "top5_a": [
+      " saw",
+      " said",
+      " the",
+      " sighed",
+      " felt"
+    ],
+    "top5_b": [
+      " saw",
+      " felt",
+      " the",
+      " said",
+      " smiled"
+    ]
+  },
+  {
+    "pair_idx": 19,
+    "a": "The food was very",
+    "b": "The meal was quite",
+    "baseline_tv": 0.6944065512160332,
+    "status": "DISTANT",
+    "top5_a": [
+      " good",
+      " tasty",
+      " fresh",
+      " delicious",
+      " expensive"
+    ],
+    "top5_b": [
+      " a",
+      " good",
+      " ______",
+      " expensive",
+      " __"
+    ]
+  },
+  {
+    "pair_idx": 20,
+    "a": "The cat sat on the",
+    "b": "The cat lay on the",
+    "baseline_tv": 0.6014207429712431,
+    "status": "DISTANT",
+    "top5_a": [
+      " mat",
+      " table",
+      " chair",
+      " floor",
+      " windows"
+    ],
+    "top5_b": [
+      " table",
+      " floor",
+      " bed",
+      " windows",
+      " mat"
+    ]
+  },
+  {
+    "pair_idx": 21,
+    "a": "He ran to the",
+    "b": "He walked to the",
+    "baseline_tv": 0.2734994914720967,
+    "status": "DISTANT",
+    "top5_a": [
+      " door",
+      " store",
+      " bus",
+      " house",
+      " car"
+    ],
+    "top5_b": [
+      " park",
+      " store",
+      " bus",
+      " station",
+      " top"
+    ]
+  },
+  {
+    "pair_idx": 22,
+    "a": "She was happy about the",
+    "b": "She was glad about the",
+    "baseline_tv": 0.203310612419477,
+    "status": "DISTANT",
+    "top5_a": [
+      " result",
+      " news",
+      " new",
+      " results",
+      " change"
+    ],
+    "top5_b": [
+      " new",
+      " result",
+      " news",
+      " job",
+      " fact"
+    ]
+  },
+  {
+    "pair_idx": 23,
+    "a": "They went to the store and",
+    "b": "They went to the shop and",
+    "baseline_tv": 0.21693328173572515,
+    "status": "DISTANT",
+    "top5_a": [
+      " bought",
+      " got",
+      " they",
+      " spent",
+      " then"
+    ],
+    "top5_b": [
+      " bought",
+      " got",
+      " spent",
+      " they",
+      " purchased"
+    ]
+  },
+  {
+    "pair_idx": 24,
+    "a": "The big red",
+    "b": "The large red",
+    "baseline_tv": 0.6248339945214453,
+    "status": "DISTANT",
+    "top5_a": [
+      " dog",
+      " bus",
+      " box",
+      " wheel",
+      " car"
+    ],
+    "top5_b": [
+      " wheel",
+      " ball",
+      " and",
+      " rose",
+      " apple"
+    ]
+  },
+  {
+    "pair_idx": 25,
+    "a": "I think that the",
+    "b": "I believe that the",
+    "baseline_tv": 0.19673410619250423,
+    "status": "DISTANT",
+    "top5_a": [
+      " answer",
+      " problem",
+      " correct",
+      " number",
+      " question"
+    ],
+    "top5_b": [
+      " answer",
+      " correct",
+      " number",
+      " key",
+      " first"
+    ]
+  },
+  {
+    "pair_idx": 26,
+    "a": "He quickly ran to the",
+    "b": "He quickly walked to the",
+    "baseline_tv": 0.20504888161632243,
+    "status": "DISTANT",
+    "top5_a": [
+      " door",
+      " house",
+      " store",
+      " car",
+      " bus"
+    ],
+    "top5_b": [
+      " door",
+      " front",
+      " bus",
+      " car",
+      " edge"
+    ]
+  },
+  {
+    "pair_idx": 27,
+    "a": "The professor said that",
+    "b": "The teacher said that",
+    "baseline_tv": 0.310231217390639,
+    "status": "DISTANT",
+    "top5_a": [
+      " the",
+      " he",
+      " if",
+      " we",
+      " in"
+    ],
+    "top5_b": [
+      " the",
+      " there",
+      " if",
+      " ",
+      " in"
+    ]
+  },
+  {
+    "pair_idx": 28,
+    "a": "It was a beautiful",
+    "b": "It was a lovely",
+    "baseline_tv": 0.20665351880175187,
+    "status": "DISTANT",
+    "top5_a": [
+      " day",
+      " Saturday",
+      " summer",
+      " spring",
+      " morning"
+    ],
+    "top5_b": [
+      " day",
+      " summer",
+      " evening",
+      " Saturday",
+      ","
+    ]
+  },
+  {
+    "pair_idx": 29,
+    "a": "She had a small",
+    "b": "She had a little",
+    "baseline_tv": 0.6012410226221052,
+    "status": "DISTANT",
+    "top5_a": [
+      ",",
+      " dog",
+      " but",
+      " room",
+      " amount"
+    ],
+    "top5_b": [
+      " dog",
+      " boy",
+      " sister",
+      " brother",
+      " girl"
+    ]
+  },
+  {
+    "pair_idx": 30,
+    "a": "The man said hello.",
+    "b": "The man said hello!",
+    "baseline_tv": 0.39812440257874027,
+    "status": "DISTANT",
+    "top5_a": [
+      " ",
+      " He",
+      " The",
+      " I",
+      " What"
+    ],
+    "top5_b": [
+      " ",
+      " He",
+      " The",
+      " I",
+      " What"
+    ]
+  },
+  {
+    "pair_idx": 31,
+    "a": "It is a good day.",
+    "b": "It is a good day,",
+    "baseline_tv": 0.9396266988131691,
+    "status": "DISTANT",
+    "top5_a": [
+      " The",
+      " I",
+      " ",
+      " We",
+      " It"
+    ],
+    "top5_b": [
+      " and",
+      " but",
+      " so",
+      " the",
+      " a"
+    ]
+  },
+  {
+    "pair_idx": 32,
+    "a": "He is a teacher.",
+    "b": "He is a teacher,",
+    "baseline_tv": 0.9665266176974697,
+    "status": "DISTANT",
+    "top5_a": [
+      " He",
+      " ",
+      " His",
+      " I",
+      " The"
+    ],
+    "top5_b": [
+      " but",
+      " and",
+      " a",
+      " who",
+      " he"
+    ]
+  },
+  {
+    "pair_idx": 33,
+    "a": "The results were clear.",
+    "b": "The results were clear:",
+    "baseline_tv": 0.8130391431181594,
+    "status": "DISTANT",
+    "top5_a": [
+      " The",
+      " In",
+      " A",
+      " After",
+      " We"
+    ],
+    "top5_b": [
+      " the",
+      " ",
+      " in",
+      " a",
+      " The"
+    ]
+  },
+  {
+    "pair_idx": 34,
+    "a": "I saw a bird in the",
+    "b": "I saw the bird in the",
+    "baseline_tv": 0.32256700530804794,
+    "status": "DISTANT",
+    "top5_a": [
+      " sky",
+      " tree",
+      " morning",
+      " forest",
+      " park"
+    ],
+    "top5_b": [
+      " tree",
+      " forest",
+      " morning",
+      " sky",
+      " park"
+    ]
+  }
+]

@@ -1,0 +1,722 @@
+{
+  "experiment": 78,
+  "name": "throwaway_boundary",
+  "n_readouts": 204,
+  "n_comparisons": 102,
+  "results": [
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.0019631385803222656,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "single__",
+      "tv": 0.021256685256958008,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "double__",
+      "tv": 0.032956600189208984,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "single___",
+      "tv": 0.04950070381164551,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "double___",
+      "tv": 0.06320858001708984,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "single____",
+      "tv": 0.030531883239746094,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "double____",
+      "tv": 0.0574953556060791,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "single__0",
+      "tv": 0.07616639137268066,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "double__0",
+      "tv": 0.08721160888671875,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "single__x",
+      "tv": 0.05666542053222656,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "double__x",
+      "tv": 0.08336067199707031,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "single_tmp",
+      "tv": 0.06935882568359375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "double_tmp",
+      "tv": 0.09839463233947754,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "single_result",
+      "tv": 0.0751953125,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "double_result",
+      "tv": 0.12255859375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "single_counter",
+      "tv": 0.047632694244384766,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "double_counter",
+      "tv": 0.06299495697021484,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.00455021858215332,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "single__",
+      "tv": 0.04868292808532715,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "double__",
+      "tv": 0.028829455375671387,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "single___",
+      "tv": 0.06443393230438232,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "double___",
+      "tv": 0.024883747100830078,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "single____",
+      "tv": 0.04335606098175049,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "double____",
+      "tv": 0.014356553554534912,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "single__0",
+      "tv": 0.04075884819030762,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "double__0",
+      "tv": 0.00616908073425293,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "single__x",
+      "tv": 0.05104565620422363,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "double__x",
+      "tv": 0.03424191474914551,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "single_tmp",
+      "tv": 0.0535426139831543,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "double_tmp",
+      "tv": 0.038028597831726074,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "single_result",
+      "tv": 0.11181640625,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "double_result",
+      "tv": 0.0517578125,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "single_counter",
+      "tv": 0.01986980438232422,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "double_counter",
+      "tv": 0.0157928466796875,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.00521087646484375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "single__",
+      "tv": 0.06171751022338867,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "double__",
+      "tv": 0.002013683319091797,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "single___",
+      "tv": 0.0661764144897461,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "double___",
+      "tv": 0.007170677185058594,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "single____",
+      "tv": 0.0875248908996582,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "double____",
+      "tv": 0.03712272644042969,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "single__0",
+      "tv": 0.00960540771484375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "double__0",
+      "tv": 0.028090476989746094,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "single__x",
+      "tv": 0.04106283187866211,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "double__x",
+      "tv": 0.015369892120361328,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "single_tmp",
+      "tv": 0.041103363037109375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "double_tmp",
+      "tv": 0.011281013488769531,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "single_result",
+      "tv": 0.16455078125,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "double_result",
+      "tv": 0.03662109375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "single_counter",
+      "tv": 0.03173828125,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "double_counter",
+      "tv": 0.0244140625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.015382766723632812,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "single__",
+      "tv": 0.019694089889526367,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "double__",
+      "tv": 0.04017782211303711,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "single___",
+      "tv": 0.03085017204284668,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "double___",
+      "tv": 0.04153776168823242,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "single____",
+      "tv": 0.02259349822998047,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "double____",
+      "tv": 0.06367778778076172,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "single__0",
+      "tv": 0.024474382400512695,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "double__0",
+      "tv": 0.06666803359985352,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "single__x",
+      "tv": 0.006208658218383789,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "double__x",
+      "tv": 0.0224609375,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "single_tmp",
+      "tv": 0.03889799118041992,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "double_tmp",
+      "tv": 0.0723106861114502,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "single_result",
+      "tv": 0.03319549560546875,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "double_result",
+      "tv": 0.05101156234741211,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "single_counter",
+      "tv": 0.014504671096801758,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "double_counter",
+      "tv": 0.015680789947509766,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.0076770782470703125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "single__",
+      "tv": 0.04460704326629639,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "double__",
+      "tv": 0.06679964065551758,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "single___",
+      "tv": 0.050202369689941406,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "double___",
+      "tv": 0.060857534408569336,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "single____",
+      "tv": 0.014913082122802734,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "double____",
+      "tv": 0.05820417404174805,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "single__0",
+      "tv": 0.03916168212890625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "double__0",
+      "tv": 0.0500946044921875,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "single__x",
+      "tv": 0.03789091110229492,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "double__x",
+      "tv": 0.036385536193847656,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "single_tmp",
+      "tv": 0.057175636291503906,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "double_tmp",
+      "tv": 0.07025575637817383,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "single_result",
+      "tv": 0.014357209205627441,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "double_result",
+      "tv": 0.03712916374206543,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "single_counter",
+      "tv": 0.03064727783203125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "double_counter",
+      "tv": 0.042227745056152344,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.016653060913085938,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "single__",
+      "tv": 0.0473179817199707,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "double__",
+      "tv": 0.04117727279663086,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "single___",
+      "tv": 0.015395164489746094,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "double___",
+      "tv": 0.023027420043945312,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "single____",
+      "tv": 0.007917642593383789,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "double____",
+      "tv": 0.0015070438385009766,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "single__0",
+      "tv": 0.0126953125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "double__0",
+      "tv": 0.013671875,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "single__x",
+      "tv": 0.015635251998901367,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "double__x",
+      "tv": 0.0087890625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "single_tmp",
+      "tv": 0.023064136505126953,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "double_tmp",
+      "tv": 0.043901920318603516,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "single_result",
+      "tv": 0.0012259483337402344,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "double_result",
+      "tv": 0.016769886016845703,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "single_counter",
+      "tv": 0.02406930923461914,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "double_counter",
+      "tv": 0.04168224334716797,
+      "flip": false
+    }
+  ]
+}

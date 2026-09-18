@@ -1,0 +1,12 @@
+{
+  "n_pairs": 144,
+  "n_fv_flips": 6,
+  "n_b11_flips": 6,
+  "corr_fv_tv_fv_flip": 0.3466227671560049,
+  "corr_bin_tv_fv_flip": 0.34666393657266203,
+  "corr_fv_tv_bin_flip": 0.3466227671560049,
+  "corr_bin_tv_bin_flip": 0.34666393657266203,
+  "mean_fv_tv": 0.029704209801922035,
+  "mean_bin_tv": 0.029692133759757173,
+  "tv_ratio": 1.0004067084657025
+}

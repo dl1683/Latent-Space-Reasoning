@@ -1,0 +1,98 @@
+{
+  "g00_empty": {
+    "mean": 0.007828712463378906,
+    "max": 0.007828712463378906,
+    "n": 1,
+    "preserves": true
+  },
+  "g01_newline": {
+    "mean": 0.08952643722295761,
+    "max": 0.08952643722295761,
+    "n": 1,
+    "preserves": false
+  },
+  "g02_pass": {
+    "mean": 0.014611572027206421,
+    "max": 0.014611572027206421,
+    "n": 1,
+    "preserves": false
+  },
+  "g03_hash": {
+    "mean": 0.004840128123760223,
+    "max": 0.004840128123760223,
+    "n": 1,
+    "preserves": true
+  },
+  "g04_comment_ok": {
+    "mean": 0.022532179951667786,
+    "max": 0.022532179951667786,
+    "n": 1,
+    "preserves": false
+  },
+  "g05_verified": {
+    "mean": 0.02690436691045761,
+    "max": 0.02690436691045761,
+    "n": 1,
+    "preserves": false
+  },
+  "g06_state_unchanged": {
+    "mean": 0.018275029957294464,
+    "max": 0.018275029957294464,
+    "n": 1,
+    "preserves": false
+  },
+  "g07_var_unchanged": {
+    "mean": 0.06732302904129028,
+    "max": 0.06732302904129028,
+    "n": 1,
+    "preserves": false
+  },
+  "g08_var_preserved": {
+    "mean": 0.007227450609207153,
+    "max": 0.007227450609207153,
+    "n": 1,
+    "preserves": true
+  },
+  "g09_ambiguous": {
+    "mean": 0.1511328904889524,
+    "max": 0.1511328904889524,
+    "n": 1,
+    "preserves": false
+  },
+  "g10_hint_update": {
+    "mean": 0.058720714441733435,
+    "max": 0.058720714441733435,
+    "n": 1,
+    "preserves": false
+  },
+  "g11_update_mention": {
+    "mean": 0.07081770547665656,
+    "max": 0.07081770547665656,
+    "n": 1,
+    "preserves": false
+  },
+  "g12_reassign": {
+    "mean": 0.054480131599120796,
+    "max": 0.054480131599120796,
+    "n": 1,
+    "preserves": false
+  },
+  "g13_strong_reassign": {
+    "mean": 0.09587270102929324,
+    "max": 0.09587270102929324,
+    "n": 1,
+    "preserves": false
+  },
+  "g14_double_reassign": {
+    "mean": 0.06211607891600579,
+    "max": 0.06211607891600579,
+    "n": 1,
+    "preserves": false
+  },
+  "g15_reassign_code": {
+    "mean": 0.12755109771387652,
+    "max": 0.12755109771387652,
+    "n": 1,
+    "preserves": false
+  }
+}

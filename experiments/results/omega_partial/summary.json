@@ -1,0 +1,548 @@
+{
+  "n_readouts": 720,
+  "elapsed_s": 355.95773434638977,
+  "pair_distances": {
+    "strong_assert": {
+      "baseline_none": {
+        "mean_tv": 0.8798893203493208,
+        "max_tv": 0.9881776939146221,
+        "n": 6
+      },
+      "bare_newline": {
+        "mean_tv": 0.800625236794076,
+        "max_tv": 0.9593201726675034,
+        "n": 6
+      },
+      "pass_stmt": {
+        "mean_tv": 0.7886958080343902,
+        "max_tv": 0.9847713951021433,
+        "n": 6
+      },
+      "var_only": {
+        "mean_tv": 0.6517967376857996,
+        "max_tv": 0.96163734421134,
+        "n": 6
+      },
+      "var_equals": {
+        "mean_tv": 0.6819954405029117,
+        "max_tv": 0.9379566181451082,
+        "n": 6
+      },
+      "identity_no_nl": {
+        "mean_tv": 0.5786758706793383,
+        "max_tv": 0.9224963948508957,
+        "n": 6
+      },
+      "identity_full": {
+        "mean_tv": 0.6586671272658956,
+        "max_tv": 0.8819833839588682,
+        "n": 6
+      },
+      "dangling_assign": {
+        "mean_tv": 0.9051044593531211,
+        "max_tv": 0.9708645399659872,
+        "n": 6
+      },
+      "no_lhs": {
+        "mean_tv": 0.8903967939925982,
+        "max_tv": 0.9743445420026546,
+        "n": 6
+      },
+      "cross_var_assign": {
+        "mean_tv": 0.7591929575404114,
+        "max_tv": 0.8889826082449872,
+        "n": 6
+      },
+      "literal_assign": {
+        "mean_tv": 0.0633759635190169,
+        "max_tv": 0.08811229467391968,
+        "n": 6
+      },
+      "none_assign": {
+        "mean_tv": 0.7772316555516833,
+        "max_tv": 0.9231027574423933,
+        "n": 6
+      },
+      "comment_var": {
+        "mean_tv": 0.7190433242497724,
+        "max_tv": 0.9870910364588781,
+        "n": 6
+      },
+      "type_check": {
+        "mean_tv": 0.893585722813441,
+        "max_tv": 0.9835002022882691,
+        "n": 6
+      },
+      "observe": {
+        "mean_tv": 0.6324273579375586,
+        "max_tv": 0.9730900879949331,
+        "n": 6
+      }
+    },
+    "strong_assert_2": {
+      "baseline_none": {
+        "mean_tv": 0.053938186577094406,
+        "max_tv": 0.29229367699008435,
+        "n": 6
+      },
+      "bare_newline": {
+        "mean_tv": 0.12900518728505025,
+        "max_tv": 0.573988396092318,
+        "n": 6
+      },
+      "pass_stmt": {
+        "mean_tv": 0.11444216430997282,
+        "max_tv": 0.5818329234825796,
+        "n": 6
+      },
+      "var_only": {
+        "mean_tv": 0.02181350333618563,
+        "max_tv": 0.057451854227110744,
+        "n": 6
+      },
+      "var_equals": {
+        "mean_tv": 0.19247864559292793,
+        "max_tv": 0.30420446395874023,
+        "n": 6
+      },
+      "identity_no_nl": {
+        "mean_tv": 0.2804928161203861,
+        "max_tv": 0.6871456153894542,
+        "n": 6
+      },
+      "identity_full": {
+        "mean_tv": 0.09200140904795262,
+        "max_tv": 0.1638379693031311,
+        "n": 6
+      },
+      "dangling_assign": {
+        "mean_tv": 0.14645026477228384,
+        "max_tv": 0.40195465978467837,
+        "n": 6
+      },
+      "no_lhs": {
+        "mean_tv": 0.0538281644548988,
+        "max_tv": 0.12130828817316797,
+        "n": 6
+      },
+      "cross_var_assign": {
+        "mean_tv": 0.1330281346066234,
+        "max_tv": 0.2362544463685481,
+        "n": 6
+      },
+      "literal_assign": {
+        "mean_tv": 0.03199466069539388,
+        "max_tv": 0.13401585817337036,
+        "n": 6
+      },
+      "none_assign": {
+        "mean_tv": 0.10030837388088305,
+        "max_tv": 0.36746397614479065,
+        "n": 6
+      },
+      "comment_var": {
+        "mean_tv": 0.04096544778864578,
+        "max_tv": 0.12411694589536637,
+        "n": 6
+      },
+      "type_check": {
+        "mean_tv": 0.12165713097298674,
+        "max_tv": 0.2513206533913035,
+        "n": 6
+      },
+      "observe": {
+        "mean_tv": 0.026309763321478385,
+        "max_tv": 0.07693713903427124,
+        "n": 6
+      }
+    },
+    "boundary_pair": {
+      "baseline_none": {
+        "mean_tv": 0.1903530223692845,
+        "max_tv": 0.4796024343522731,
+        "n": 6
+      },
+      "bare_newline": {
+        "mean_tv": 0.18439677332692858,
+        "max_tv": 0.46866741885605734,
+        "n": 6
+      },
+      "pass_stmt": {
+        "mean_tv": 0.016225330531597137,
+        "max_tv": 0.034166038036346436,
+        "n": 6
+      },
+      "var_only": {
+        "mean_tv": 0.2300991689626244,
+        "max_tv": 0.45835379835625645,
+        "n": 6
+      },
+      "var_equals": {
+        "mean_tv": 0.00548282265663147,
+        "max_tv": 0.01688694953918457,
+        "n": 6
+      },
+      "identity_no_nl": {
+        "mean_tv": 0.004403048048213047,
+        "max_tv": 0.011126864701509476,
+        "n": 6
+      },
+      "identity_full": {
+        "mean_tv": 0.034560720125834145,
+        "max_tv": 0.16470807790756226,
+        "n": 6
+      },
+      "dangling_assign": {
+        "mean_tv": 0.014194538195927938,
+        "max_tv": 0.038516104221343994,
+        "n": 6
+      },
+      "no_lhs": {
+        "mean_tv": 0.019686758518218994,
+        "max_tv": 0.07488983869552612,
+        "n": 6
+      },
+      "cross_var_assign": {
+        "mean_tv": 0.030812541643778484,
+        "max_tv": 0.1238284707069397,
+        "n": 6
+      },
+      "literal_assign": {
+        "mean_tv": 0.07627665724915762,
+        "max_tv": 0.1871606856584549,
+        "n": 6
+      },
+      "none_assign": {
+        "mean_tv": 0.04214593768119812,
+        "max_tv": 0.206750750541687,
+        "n": 6
+      },
+      "comment_var": {
+        "mean_tv": 0.0745747039715449,
+        "max_tv": 0.30578669905662537,
+        "n": 6
+      },
+      "type_check": {
+        "mean_tv": 0.031378219525019325,
+        "max_tv": 0.1355111002922058,
+        "n": 6
+      },
+      "observe": {
+        "mean_tv": 0.10194527109464009,
+        "max_tv": 0.18775147199630737,
+        "n": 6
+      }
+    },
+    "minimal_ok_good": {
+      "baseline_none": {
+        "mean_tv": 0.03634600008263078,
+        "max_tv": 0.11659836720355088,
+        "n": 6
+      },
+      "bare_newline": {
+        "mean_tv": 0.03730131726388208,
+        "max_tv": 0.1476185170613462,
+        "n": 6
+      },
+      "pass_stmt": {
+        "mean_tv": 0.02552762196925566,
+        "max_tv": 0.06736682420887519,
+        "n": 6
+      },
+      "var_only": {
+        "mean_tv": 0.058039646421093494,
+        "max_tv": 0.126011328669847,
+        "n": 6
+      },
+      "var_equals": {
+        "mean_tv": 0.0014937617094498516,
+        "max_tv": 0.006365707038639812,
+        "n": 6
+      },
+      "identity_no_nl": {
+        "mean_tv": 0.0026699346023330386,
+        "max_tv": 0.004701331446995027,
+        "n": 6
+      },
+      "identity_full": {
+        "mean_tv": 0.016607692508235534,
+        "max_tv": 0.07529005373362452,
+        "n": 6
+      },
+      "dangling_assign": {
+        "mean_tv": 0.0014318886048082884,
+        "max_tv": 0.00386965274810791,
+        "n": 6
+      },
+      "no_lhs": {
+        "mean_tv": 0.010648392681711508,
+        "max_tv": 0.040418267250061035,
+        "n": 6
+      },
+      "cross_var_assign": {
+        "mean_tv": 0.005719780468401344,
+        "max_tv": 0.014284346718341112,
+        "n": 6
+      },
+      "literal_assign": {
+        "mean_tv": 0.04209291837954273,
+        "max_tv": 0.09379684925079346,
+        "n": 6
+      },
+      "none_assign": {
+        "mean_tv": 0.029198181557148928,
+        "max_tv": 0.07960493868449703,
+        "n": 6
+      },
+      "comment_var": {
+        "mean_tv": 0.03978304390451134,
+        "max_tv": 0.08704416826367378,
+        "n": 6
+      },
+      "type_check": {
+        "mean_tv": 0.004259522778132426,
+        "max_tv": 0.01741032632708084,
+        "n": 6
+      },
+      "observe": {
+        "mean_tv": 0.008044966697222359,
+        "max_tv": 0.014705586494528688,
+        "n": 6
+      }
+    }
+  },
+  "omega_eligible": {
+    "strong_assert": {},
+    "strong_assert_2": {
+      "baseline_none": {
+        "omega": 0.006596180755877867,
+        "mean": 0.0031392358141602017,
+        "status": "PRESERVE"
+      },
+      "bare_newline": {
+        "omega": 0.07000485278695123,
+        "mean": 0.03193089263095317,
+        "status": "AMPLIFY"
+      },
+      "pass_stmt": {
+        "omega": 0.035678282380104065,
+        "mean": 0.014033392297278624,
+        "status": "AMPLIFY"
+      },
+      "var_only": {
+        "omega": 0.057451854227110744,
+        "mean": 0.015276595473551424,
+        "status": "AMPLIFY"
+      },
+      "var_equals": {
+        "omega": 0.30420446395874023,
+        "mean": 0.17076313309371471,
+        "status": "AMPLIFY"
+      },
+      "identity_no_nl": {
+        "omega": 0.6871456153894542,
+        "mean": 0.3404439855366945,
+        "status": "AMPLIFY"
+      },
+      "identity_full": {
+        "omega": 0.1638379693031311,
+        "mean": 0.08786319196224213,
+        "status": "AMPLIFY"
+      },
+      "dangling_assign": {
+        "omega": 0.2096623166144127,
+        "mean": 0.08611244982967037,
+        "status": "AMPLIFY"
+      },
+      "no_lhs": {
+        "omega": 0.08587294816970825,
+        "mean": 0.045585618889163015,
+        "status": "AMPLIFY"
+      },
+      "cross_var_assign": {
+        "omega": 0.2362544463685481,
+        "mean": 0.1259281468046538,
+        "status": "AMPLIFY"
+      },
+      "literal_assign": {
+        "omega": 0.13401585817337036,
+        "mean": 0.04480695724487305,
+        "status": "AMPLIFY"
+      },
+      "none_assign": {
+        "omega": 0.36746397614479065,
+        "mean": 0.12759233685210347,
+        "status": "AMPLIFY"
+      },
+      "comment_var": {
+        "omega": 0.12411694589536637,
+        "mean": 0.0339329940652533,
+        "status": "AMPLIFY"
+      },
+      "type_check": {
+        "omega": 0.20703597366809845,
+        "mean": 0.08365738613065332,
+        "status": "AMPLIFY"
+      },
+      "observe": {
+        "omega": 0.07693713903427124,
+        "mean": 0.0339185054290283,
+        "status": "AMPLIFY"
+      }
+    },
+    "boundary_pair": {
+      "baseline_none": {
+        "omega": 0.0064179301261901855,
+        "mean": 0.006037592887878418,
+        "status": "PRESERVE"
+      },
+      "bare_newline": {
+        "omega": 0.006644904613494873,
+        "mean": 0.004988968372344971,
+        "status": "PRESERVE"
+      },
+      "pass_stmt": {
+        "omega": 0.006135880947113037,
+        "mean": 0.005608171224594116,
+        "status": "PRESERVE"
+      },
+      "var_only": {
+        "omega": 0.06415057182312012,
+        "mean": 0.04130449891090393,
+        "status": "AMPLIFY"
+      },
+      "var_equals": {
+        "omega": 0.0027115941047668457,
+        "mean": 0.0026446282863616943,
+        "status": "PRESERVE"
+      },
+      "identity_no_nl": {
+        "omega": 0.004997909069061279,
+        "mean": 0.0035059706096944865,
+        "status": "PRESERVE"
+      },
+      "identity_full": {
+        "omega": 0.01803433895111084,
+        "mean": 0.01148611307144165,
+        "status": "AMPLIFY"
+      },
+      "dangling_assign": {
+        "omega": 0.0067099928855896,
+        "mean": 0.00670015811920166,
+        "status": "PRESERVE"
+      },
+      "no_lhs": {
+        "omega": 0.010384082794189453,
+        "mean": 0.008566856384277344,
+        "status": "AMPLIFY"
+      },
+      "cross_var_assign": {
+        "omega": 0.02439814805984497,
+        "mean": 0.017137348651885986,
+        "status": "AMPLIFY"
+      },
+      "literal_assign": {
+        "omega": 0.09988781809806824,
+        "mean": 0.08394625969231129,
+        "status": "AMPLIFY"
+      },
+      "none_assign": {
+        "omega": 0.01339578628540039,
+        "mean": 0.007755547761917114,
+        "status": "AMPLIFY"
+      },
+      "comment_var": {
+        "omega": 0.00694429874420166,
+        "mean": 0.005816608667373657,
+        "status": "PRESERVE"
+      },
+      "type_check": {
+        "omega": 0.008459210395812988,
+        "mean": 0.007109999656677246,
+        "status": "PRESERVE"
+      },
+      "observe": {
+        "omega": 0.17425280809402466,
+        "mean": 0.09488222002983093,
+        "status": "AMPLIFY"
+      }
+    },
+    "minimal_ok_good": {
+      "baseline_none": {
+        "omega": 0.002869524156267289,
+        "mean": 0.001831531196027451,
+        "status": "PRESERVE"
+      },
+      "bare_newline": {
+        "omega": 0.0021796119053760776,
+        "mean": 0.0014267304050008534,
+        "status": "PRESERVE"
+      },
+      "pass_stmt": {
+        "omega": 0.003509722573653562,
+        "mean": 0.001867822122828026,
+        "status": "PRESERVE"
+      },
+      "var_only": {
+        "omega": 0.027905338094569743,
+        "mean": 0.01891247630313349,
+        "status": "AMPLIFY"
+      },
+      "var_equals": {
+        "omega": 0.0004800494389201049,
+        "mean": 0.00037837775380467065,
+        "status": "PRESERVE"
+      },
+      "identity_no_nl": {
+        "omega": 0.0031838939103181474,
+        "mean": 0.0020921794942599567,
+        "status": "PRESERVE"
+      },
+      "identity_full": {
+        "omega": 0.007345937603531638,
+        "mean": 0.0037649185117819193,
+        "status": "PRESERVE"
+      },
+      "dangling_assign": {
+        "omega": 0.0011589220084715635,
+        "mean": 0.0007332708870914454,
+        "status": "PRESERVE"
+      },
+      "no_lhs": {
+        "omega": 0.0026213526725769043,
+        "mean": 0.001852232453529723,
+        "status": "PRESERVE"
+      },
+      "cross_var_assign": {
+        "omega": 0.003981066278356593,
+        "mean": 0.002324330103874672,
+        "status": "PRESERVE"
+      },
+      "literal_assign": {
+        "omega": 0.03383287019096315,
+        "mean": 0.032984899900232754,
+        "status": "AMPLIFY"
+      },
+      "none_assign": {
+        "omega": 0.023945465894939844,
+        "mean": 0.012422886810478909,
+        "status": "AMPLIFY"
+      },
+      "comment_var": {
+        "omega": 0.000739353010430932,
+        "mean": 0.0006626551815619072,
+        "status": "PRESERVE"
+      },
+      "type_check": {
+        "omega": 0.0009681057199486531,
+        "mean": 0.0007335619363099491,
+        "status": "PRESERVE"
+      },
+      "observe": {
+        "omega": 0.010018873985245591,
+        "mean": 0.00534615542346728,
+        "status": "AMPLIFY"
+      }
+    }
+  }
+}

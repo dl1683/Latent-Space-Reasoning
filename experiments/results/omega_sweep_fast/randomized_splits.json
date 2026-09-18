@@ -1,0 +1,50 @@
+{
+  "tau_0.02": {
+    "n_splits": 100,
+    "omega": {
+      "mean": 0.775,
+      "std": 0.033,
+      "min": 0.714,
+      "max": 0.81
+    },
+    "keyword_baseline": {
+      "mean": 0.485,
+      "std": 0.053
+    },
+    "code_comment_baseline": {
+      "mean": 0.696,
+      "std": 0.029
+    },
+    "cal_mean_baseline": {
+      "mean": 0.747,
+      "std": 0.043
+    },
+    "omega_vs_keyword_pp": 29.0,
+    "omega_vs_code_comment_pp": 7.9,
+    "omega_vs_cal_mean_pp": 2.8
+  },
+  "tau_0.05": {
+    "n_splits": 100,
+    "omega": {
+      "mean": 0.844,
+      "std": 0.025,
+      "min": 0.771,
+      "max": 0.886
+    },
+    "keyword_baseline": {
+      "mean": 0.646,
+      "std": 0.023
+    },
+    "code_comment_baseline": {
+      "mean": 0.683,
+      "std": 0.028
+    },
+    "cal_mean_baseline": {
+      "mean": 0.499,
+      "std": 0.042
+    },
+    "omega_vs_keyword_pp": 19.8,
+    "omega_vs_code_comment_pp": 16.1,
+    "omega_vs_cal_mean_pp": 34.4
+  }
+}

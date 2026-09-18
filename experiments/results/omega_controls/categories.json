@@ -1,0 +1,61 @@
+{
+  "neutral_variants": [
+    "neutral_original",
+    "matched_len_neutral",
+    "formal_neutral",
+    "casual_neutral",
+    "terse_neutral",
+    "verbose_neutral"
+  ],
+  "heavy_variants": [
+    "heavy_original",
+    "matched_len_heavy_a",
+    "matched_len_heavy_b"
+  ],
+  "negated": [
+    "negated_neutral",
+    "negated_heavy"
+  ],
+  "whitespace": [
+    "whitespace_1",
+    "whitespace_2",
+    "whitespace_3",
+    "whitespace_4",
+    "whitespace_5"
+  ],
+  "cross_var": [
+    "cross_var_neutral_x",
+    "cross_var_neutral_y",
+    "cross_var_neutral_z",
+    "cross_var_heavy_x",
+    "cross_var_heavy_y",
+    "cross_var_heavy_z"
+  ],
+  "nonsense": [
+    "nonsense_1",
+    "nonsense_2",
+    "nonsense_3"
+  ],
+  "code": [
+    "code_identity",
+    "code_noop",
+    "code_type",
+    "code_assert_true",
+    "code_assert_var",
+    "code_del_restore"
+  ],
+  "minimal": [
+    "empty",
+    "just_hash",
+    "hash_space",
+    "hash_var",
+    "hash_number"
+  ],
+  "multi": [
+    "multi_neutral_2",
+    "multi_neutral_3",
+    "multi_heavy_2",
+    "multi_mixed_nh",
+    "multi_mixed_hn"
+  ]
+}

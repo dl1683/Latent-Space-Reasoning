@@ -1,0 +1,987 @@
+{
+  "strong_assert": {
+    "n_eligible_cells": 0,
+    "continuations": {
+      "assert_true": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "bare_nl": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "comment_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "double_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ellipsis": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_then_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "identity": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_then_heavy": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "none": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "observe": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ok": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "pass": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "print_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "type_check": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "verified": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      }
+    }
+  },
+  "strong_assert_2": {
+    "n_eligible_cells": 1,
+    "continuations": {
+      "assert_true": {
+        "omega": 0.006272561848163605,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.006272561848163605,
+        "max_tv": 0.006272561848163605,
+        "assessable": true
+      },
+      "bare_nl": {
+        "omega": 0.010822146141435951,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.010822146141435951,
+        "max_tv": 0.010822146141435951,
+        "assessable": true
+      },
+      "comment_var": {
+        "omega": 0.004901645937934518,
+        "preserves": true,
+        "n_eligible": 1,
+        "preserved_count": 1,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.004901645937934518,
+        "max_tv": 0.004901645937934518,
+        "assessable": true
+      },
+      "double_neutral": {
+        "omega": 0.012758195400238037,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.012758195400238037,
+        "max_tv": 0.012758195400238037,
+        "assessable": true
+      },
+      "ellipsis": {
+        "omega": 0.002953076735138893,
+        "preserves": true,
+        "n_eligible": 1,
+        "preserved_count": 1,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.002953076735138893,
+        "max_tv": 0.002953076735138893,
+        "assessable": true
+      },
+      "heavy_1": {
+        "omega": 0.011177166423294693,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.011177166423294693,
+        "max_tv": 0.011177166423294693,
+        "assessable": true
+      },
+      "heavy_2": {
+        "omega": 0.026711706595961004,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.026711706595961004,
+        "max_tv": 0.026711706595961004,
+        "assessable": true
+      },
+      "heavy_3": {
+        "omega": 0.01729187578894198,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.01729187578894198,
+        "max_tv": 0.01729187578894198,
+        "assessable": true
+      },
+      "heavy_then_neutral": {
+        "omega": 0.012393011536914855,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.012393011536914855,
+        "max_tv": 0.012393011536914855,
+        "assessable": true
+      },
+      "identity": {
+        "omega": 0.03462133265566081,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.03462133265566081,
+        "max_tv": 0.03462133265566081,
+        "assessable": true
+      },
+      "neutral_1": {
+        "omega": 0.005721390247344971,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.005721390247344971,
+        "max_tv": 0.005721390247344971,
+        "assessable": true
+      },
+      "neutral_2": {
+        "omega": 0.014252960681915283,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.014252960681915283,
+        "max_tv": 0.014252960681915283,
+        "assessable": true
+      },
+      "neutral_3": {
+        "omega": 0.005605638027191162,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.005605638027191162,
+        "max_tv": 0.005605638027191162,
+        "assessable": true
+      },
+      "neutral_then_heavy": {
+        "omega": 0.025380202860105783,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.025380202860105783,
+        "max_tv": 0.025380202860105783,
+        "assessable": true
+      },
+      "none": {
+        "omega": 0.001709524542093277,
+        "preserves": true,
+        "n_eligible": 1,
+        "preserved_count": 1,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.001709524542093277,
+        "max_tv": 0.001709524542093277,
+        "assessable": true
+      },
+      "observe": {
+        "omega": 0.006372815143549815,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.006372815143549815,
+        "max_tv": 0.006372815143549815,
+        "assessable": true
+      },
+      "ok": {
+        "omega": 0.003946729935705662,
+        "preserves": true,
+        "n_eligible": 1,
+        "preserved_count": 1,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.003946729935705662,
+        "max_tv": 0.003946729935705662,
+        "assessable": true
+      },
+      "pass": {
+        "omega": 0.002468349412083626,
+        "preserves": true,
+        "n_eligible": 1,
+        "preserved_count": 1,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.002468349412083626,
+        "max_tv": 0.002468349412083626,
+        "assessable": true
+      },
+      "print_var": {
+        "omega": 0.0244025849387981,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.0244025849387981,
+        "max_tv": 0.0244025849387981,
+        "assessable": true
+      },
+      "type_check": {
+        "omega": 0.05896957137156278,
+        "preserves": false,
+        "n_eligible": 1,
+        "preserved_count": 0,
+        "preservation_rate": 0.0,
+        "mean_tv": 0.05896957137156278,
+        "max_tv": 0.05896957137156278,
+        "assessable": true
+      },
+      "verified": {
+        "omega": 0.0026784446090459824,
+        "preserves": true,
+        "n_eligible": 1,
+        "preserved_count": 1,
+        "preservation_rate": 1.0,
+        "mean_tv": 0.0026784446090459824,
+        "max_tv": 0.0026784446090459824,
+        "assessable": true
+      }
+    }
+  },
+  "moderate_assert": {
+    "n_eligible_cells": 0,
+    "continuations": {
+      "assert_true": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "bare_nl": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "comment_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "double_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ellipsis": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_then_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "identity": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_then_heavy": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "none": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "observe": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ok": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "pass": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "print_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "type_check": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "verified": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      }
+    }
+  },
+  "misleading": {
+    "n_eligible_cells": 0,
+    "continuations": {
+      "assert_true": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "bare_nl": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "comment_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "double_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ellipsis": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_then_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "identity": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_then_heavy": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "none": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "observe": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ok": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "pass": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "print_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "type_check": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "verified": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      }
+    }
+  },
+  "misleading_2": {
+    "n_eligible_cells": 0,
+    "continuations": {
+      "assert_true": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "bare_nl": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "comment_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "double_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ellipsis": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_then_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "identity": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_then_heavy": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "none": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "observe": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ok": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "pass": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "print_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "type_check": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "verified": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      }
+    }
+  },
+  "rewrite_pair": {
+    "n_eligible_cells": 0,
+    "continuations": {
+      "assert_true": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "bare_nl": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "comment_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "double_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ellipsis": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_then_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "identity": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_then_heavy": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "none": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "observe": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ok": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "pass": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "print_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "type_check": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "verified": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      }
+    }
+  },
+  "boundary_pair": {
+    "n_eligible_cells": 0,
+    "continuations": {
+      "assert_true": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "bare_nl": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "comment_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "double_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ellipsis": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_then_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "identity": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_then_heavy": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "none": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "observe": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ok": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "pass": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "print_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "type_check": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "verified": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      }
+    }
+  },
+  "observe_pair": {
+    "n_eligible_cells": 0,
+    "continuations": {
+      "assert_true": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "bare_nl": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "comment_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "double_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ellipsis": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "heavy_then_neutral": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "identity": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_1": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_2": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_3": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "neutral_then_heavy": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "none": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "observe": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "ok": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "pass": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "print_var": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "type_check": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      },
+      "verified": {
+        "omega": null,
+        "n_eligible": 0,
+        "assessable": false
+      }
+    }
+  }
+}

@@ -1,0 +1,584 @@
+{
+  "experiment": 70,
+  "name": "depth_gradient",
+  "n_readouts": 144,
+  "n_comparisons": 72,
+  "results": [
+    {
+      "depth": 1,
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.0078125,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.009765625,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.021360397338867188,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.00634765625,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.02880859375,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.060077667236328125,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.003490447998046875,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.0185546875,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.0322265625,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.006931304931640625,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.07156026363372803,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.0584716796875,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.0032601356506347656,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.05117082595825195,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.061767578125,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.0047435760498046875,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.057373046875,
+      "flip": false
+    },
+    {
+      "depth": 1,
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.12125778198242188,
+      "flip": true
+    },
+    {
+      "depth": 2,
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.0012660026550292969,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.019971609115600586,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.037853240966796875,
+      "flip": true
+    },
+    {
+      "depth": 2,
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.004486083984375,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.004772663116455078,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.012805938720703125,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.005519866943359375,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.0048999786376953125,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.0550689697265625,
+      "flip": true
+    },
+    {
+      "depth": 2,
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.015744686126708984,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.11308228969573975,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.033782958984375,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.0048828125,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.09331881999969482,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.02423095703125,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.00250244140625,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.1461181640625,
+      "flip": false
+    },
+    {
+      "depth": 2,
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.038646697998046875,
+      "flip": true
+    },
+    {
+      "depth": 3,
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.0019631385803222656,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.06520748138427734,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.05164337158203125,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.00455021858215332,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.04773867130279541,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.04232215881347656,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.00521087646484375,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.04501008987426758,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.056980133056640625,
+      "flip": true
+    },
+    {
+      "depth": 3,
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.015382766723632812,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.09146678447723389,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.059814453125,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.0076770782470703125,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.07672452926635742,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.027587890625,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.016653060913085938,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.06973648071289062,
+      "flip": false
+    },
+    {
+      "depth": 3,
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.020145416259765625,
+      "flip": true
+    },
+    {
+      "depth": 4,
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.00830078125,
+      "flip": false
+    },
+    {
+      "depth": 4,
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.05621051788330078,
+      "flip": false
+    },
+    {
+      "depth": 4,
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.09386634826660156,
+      "flip": false
+    },
+    {
+      "depth": 4,
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.009033203125,
+      "flip": false
+    },
+    {
+      "depth": 4,
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.055419921875,
+      "flip": false
+    },
+    {
+      "depth": 4,
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.09259700775146484,
+      "flip": false
+    },
+    {
+      "depth": 4,
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.0081329345703125,
+      "flip": false
+    },
+    {
+      "depth": 4,
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.062436580657958984,
+      "flip": false
+    },
+    {
+      "depth": 4,
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.1082611083984375,
+      "flip": false
+    },
+    {
+      "depth": 4,
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.03264808654785156,
+      "flip": false
+    },
+    {
+      "depth": 4,
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.03950357437133789,
+      "flip": true
+    },
+    {
+      "depth": 4,
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.069580078125,
+      "flip": false
+    },
+    {
+      "depth": 4,
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.03747248649597168,
+      "flip": false
+    },
+    {
+      "depth": 4,
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.040827274322509766,
+      "flip": false
+    },
+    {
+      "depth": 4,
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.041015625,
+      "flip": true
+    },
+    {
+      "depth": 4,
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.06626319885253906,
+      "flip": false
+    },
+    {
+      "depth": 4,
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.05613565444946289,
+      "flip": true
+    },
+    {
+      "depth": 4,
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.0523681640625,
+      "flip": true
+    }
+  ]
+}

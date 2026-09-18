@@ -1,0 +1,1082 @@
+[
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "strong_assert_2",
+    "treatment": "original",
+    "probe": "target_query",
+    "tv": 0.007222473621368408
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "strong_assert_2",
+    "treatment": "original",
+    "probe": "ortho_query",
+    "tv": 0.2075437968596816
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "strong_assert_2",
+    "treatment": "summary_nl",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "strong_assert_2",
+    "treatment": "summary_nl",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "strong_assert_2",
+    "treatment": "appended_overwrite",
+    "probe": "target_query",
+    "tv": 0.016019344329833984
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "strong_assert_2",
+    "treatment": "appended_overwrite",
+    "probe": "ortho_query",
+    "tv": 0.12305876612663269
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "strong_assert_2",
+    "treatment": "canonical_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "strong_assert_2",
+    "treatment": "canonical_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "strong_assert_2",
+    "treatment": "incomplete_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "strong_assert_2",
+    "treatment": "incomplete_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "boundary_pair",
+    "treatment": "original",
+    "probe": "target_query",
+    "tv": 0.024889065796742216
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "boundary_pair",
+    "treatment": "original",
+    "probe": "ortho_query",
+    "tv": 0.012620020657777786
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "boundary_pair",
+    "treatment": "summary_nl",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "boundary_pair",
+    "treatment": "summary_nl",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "boundary_pair",
+    "treatment": "appended_overwrite",
+    "probe": "target_query",
+    "tv": 0.05162089136138093
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "boundary_pair",
+    "treatment": "appended_overwrite",
+    "probe": "ortho_query",
+    "tv": 0.05943920090794563
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "boundary_pair",
+    "treatment": "canonical_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "boundary_pair",
+    "treatment": "canonical_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "boundary_pair",
+    "treatment": "incomplete_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 1,
+    "pair": "boundary_pair",
+    "treatment": "incomplete_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "strong_assert_2",
+    "treatment": "original",
+    "probe": "target_query",
+    "tv": 0.0017097098170779645
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "strong_assert_2",
+    "treatment": "original",
+    "probe": "ortho_query",
+    "tv": 0.18526092544198036
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "strong_assert_2",
+    "treatment": "summary_nl",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "strong_assert_2",
+    "treatment": "summary_nl",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "strong_assert_2",
+    "treatment": "appended_overwrite",
+    "probe": "target_query",
+    "tv": 0.006558239459991455
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "strong_assert_2",
+    "treatment": "appended_overwrite",
+    "probe": "ortho_query",
+    "tv": 0.06609448418021202
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "strong_assert_2",
+    "treatment": "canonical_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "strong_assert_2",
+    "treatment": "canonical_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "strong_assert_2",
+    "treatment": "incomplete_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "strong_assert_2",
+    "treatment": "incomplete_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "boundary_pair",
+    "treatment": "original",
+    "probe": "target_query",
+    "tv": 0.013068716623820364
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "boundary_pair",
+    "treatment": "original",
+    "probe": "ortho_query",
+    "tv": 0.03182706795632839
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "boundary_pair",
+    "treatment": "summary_nl",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "boundary_pair",
+    "treatment": "summary_nl",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "boundary_pair",
+    "treatment": "appended_overwrite",
+    "probe": "target_query",
+    "tv": 0.042249479272868484
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "boundary_pair",
+    "treatment": "appended_overwrite",
+    "probe": "ortho_query",
+    "tv": 0.03359922766685486
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "boundary_pair",
+    "treatment": "canonical_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "boundary_pair",
+    "treatment": "canonical_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "boundary_pair",
+    "treatment": "incomplete_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "x",
+    "val": 5,
+    "pair": "boundary_pair",
+    "treatment": "incomplete_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "strong_assert_2",
+    "treatment": "original",
+    "probe": "target_query",
+    "tv": 0.008132077753543854
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "strong_assert_2",
+    "treatment": "original",
+    "probe": "ortho_query",
+    "tv": 0.11376286018639803
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "strong_assert_2",
+    "treatment": "summary_nl",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "strong_assert_2",
+    "treatment": "summary_nl",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "strong_assert_2",
+    "treatment": "appended_overwrite",
+    "probe": "target_query",
+    "tv": 0.08482307195663452
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "strong_assert_2",
+    "treatment": "appended_overwrite",
+    "probe": "ortho_query",
+    "tv": 0.04909547418355942
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "strong_assert_2",
+    "treatment": "canonical_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "strong_assert_2",
+    "treatment": "canonical_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "strong_assert_2",
+    "treatment": "incomplete_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "strong_assert_2",
+    "treatment": "incomplete_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "boundary_pair",
+    "treatment": "original",
+    "probe": "target_query",
+    "tv": 0.022007699983078055
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "boundary_pair",
+    "treatment": "original",
+    "probe": "ortho_query",
+    "tv": 0.018920275382697582
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "boundary_pair",
+    "treatment": "summary_nl",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "boundary_pair",
+    "treatment": "summary_nl",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "boundary_pair",
+    "treatment": "appended_overwrite",
+    "probe": "target_query",
+    "tv": 0.01813940776628442
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "boundary_pair",
+    "treatment": "appended_overwrite",
+    "probe": "ortho_query",
+    "tv": 0.0680804057046771
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "boundary_pair",
+    "treatment": "canonical_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "boundary_pair",
+    "treatment": "canonical_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "boundary_pair",
+    "treatment": "incomplete_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 2,
+    "pair": "boundary_pair",
+    "treatment": "incomplete_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "strong_assert_2",
+    "treatment": "original",
+    "probe": "target_query",
+    "tv": 0.00804668478667736
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "strong_assert_2",
+    "treatment": "original",
+    "probe": "ortho_query",
+    "tv": 0.13725143764168024
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "strong_assert_2",
+    "treatment": "summary_nl",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "strong_assert_2",
+    "treatment": "summary_nl",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "strong_assert_2",
+    "treatment": "appended_overwrite",
+    "probe": "target_query",
+    "tv": 0.05988335609436035
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "strong_assert_2",
+    "treatment": "appended_overwrite",
+    "probe": "ortho_query",
+    "tv": 0.036969990469515324
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "strong_assert_2",
+    "treatment": "canonical_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "strong_assert_2",
+    "treatment": "canonical_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "strong_assert_2",
+    "treatment": "incomplete_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "strong_assert_2",
+    "treatment": "incomplete_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "boundary_pair",
+    "treatment": "original",
+    "probe": "target_query",
+    "tv": 0.04099888278869912
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "boundary_pair",
+    "treatment": "original",
+    "probe": "ortho_query",
+    "tv": 0.027964584529399872
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "boundary_pair",
+    "treatment": "summary_nl",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "boundary_pair",
+    "treatment": "summary_nl",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "boundary_pair",
+    "treatment": "appended_overwrite",
+    "probe": "target_query",
+    "tv": 0.013135606452124193
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "boundary_pair",
+    "treatment": "appended_overwrite",
+    "probe": "ortho_query",
+    "tv": 0.09304314851760864
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "boundary_pair",
+    "treatment": "canonical_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "boundary_pair",
+    "treatment": "canonical_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "boundary_pair",
+    "treatment": "incomplete_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "y",
+    "val": 6,
+    "pair": "boundary_pair",
+    "treatment": "incomplete_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "strong_assert_2",
+    "treatment": "original",
+    "probe": "target_query",
+    "tv": 0.005940508097410202
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "strong_assert_2",
+    "treatment": "original",
+    "probe": "ortho_query",
+    "tv": 0.11767255887389183
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "strong_assert_2",
+    "treatment": "summary_nl",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "strong_assert_2",
+    "treatment": "summary_nl",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "strong_assert_2",
+    "treatment": "appended_overwrite",
+    "probe": "target_query",
+    "tv": 0.03051936626434326
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "strong_assert_2",
+    "treatment": "appended_overwrite",
+    "probe": "ortho_query",
+    "tv": 0.04826085455715656
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "strong_assert_2",
+    "treatment": "canonical_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "strong_assert_2",
+    "treatment": "canonical_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "strong_assert_2",
+    "treatment": "incomplete_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "strong_assert_2",
+    "treatment": "incomplete_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "boundary_pair",
+    "treatment": "original",
+    "probe": "target_query",
+    "tv": 0.012158307014033198
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "boundary_pair",
+    "treatment": "original",
+    "probe": "ortho_query",
+    "tv": 0.022276496514678
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "boundary_pair",
+    "treatment": "summary_nl",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "boundary_pair",
+    "treatment": "summary_nl",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "boundary_pair",
+    "treatment": "appended_overwrite",
+    "probe": "target_query",
+    "tv": 0.012534102264908142
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "boundary_pair",
+    "treatment": "appended_overwrite",
+    "probe": "ortho_query",
+    "tv": 0.08799992315471172
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "boundary_pair",
+    "treatment": "canonical_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "boundary_pair",
+    "treatment": "canonical_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "boundary_pair",
+    "treatment": "incomplete_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 3,
+    "pair": "boundary_pair",
+    "treatment": "incomplete_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "strong_assert_2",
+    "treatment": "original",
+    "probe": "target_query",
+    "tv": 0.00631976593285799
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "strong_assert_2",
+    "treatment": "original",
+    "probe": "ortho_query",
+    "tv": 0.12627147883176804
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "strong_assert_2",
+    "treatment": "summary_nl",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "strong_assert_2",
+    "treatment": "summary_nl",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "strong_assert_2",
+    "treatment": "appended_overwrite",
+    "probe": "target_query",
+    "tv": 0.02078344573965296
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "strong_assert_2",
+    "treatment": "appended_overwrite",
+    "probe": "ortho_query",
+    "tv": 0.03320048097521067
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "strong_assert_2",
+    "treatment": "canonical_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "strong_assert_2",
+    "treatment": "canonical_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "strong_assert_2",
+    "treatment": "incomplete_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "strong_assert_2",
+    "treatment": "incomplete_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "boundary_pair",
+    "treatment": "original",
+    "probe": "target_query",
+    "tv": 0.009649777202866971
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "boundary_pair",
+    "treatment": "original",
+    "probe": "ortho_query",
+    "tv": 0.030522219836711884
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "boundary_pair",
+    "treatment": "summary_nl",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "boundary_pair",
+    "treatment": "summary_nl",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "boundary_pair",
+    "treatment": "appended_overwrite",
+    "probe": "target_query",
+    "tv": 0.008034042810322717
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "boundary_pair",
+    "treatment": "appended_overwrite",
+    "probe": "ortho_query",
+    "tv": 0.07204297371208668
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "boundary_pair",
+    "treatment": "canonical_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "boundary_pair",
+    "treatment": "canonical_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "boundary_pair",
+    "treatment": "incomplete_record",
+    "probe": "target_query",
+    "tv": 0.0
+  },
+  {
+    "depth": 4,
+    "var": "z",
+    "val": 7,
+    "pair": "boundary_pair",
+    "treatment": "incomplete_record",
+    "probe": "ortho_query",
+    "tv": 0.0
+  }
+]

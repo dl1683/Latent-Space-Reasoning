@@ -1,0 +1,11 @@
+{
+  "method": "max_over_pairs_omega",
+  "n_splits": 100,
+  "pairs": [
+    "minimal_ok_fine",
+    "minimal_ok_good",
+    "novar_confirmed",
+    "strong_assert_2",
+    "terse_ok_okay"
+  ]
+}

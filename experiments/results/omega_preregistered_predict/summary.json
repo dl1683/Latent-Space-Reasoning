@@ -1,0 +1,41 @@
+{
+  "experiment": 81,
+  "name": "preregistered_predict",
+  "n_readouts": 72,
+  "n_comparisons": 36,
+  "predictions": {
+    "var_echo": {
+      "direction": "amplify",
+      "range": [
+        3.0,
+        8.0
+      ],
+      "meaningful": false
+    },
+    "english_synonym": {
+      "direction": "suppress",
+      "range": [
+        0.3,
+        1.0
+      ],
+      "meaningful": true
+    },
+    "code_return": {
+      "direction": "amplify",
+      "range": [
+        2.0,
+        6.0
+      ],
+      "meaningful": false
+    },
+    "pragma": {
+      "direction": "amplify",
+      "range": [
+        3.0,
+        7.0
+      ],
+      "meaningful": false
+    }
+  },
+  "direction_correct": 0,
+  "range_correct": 

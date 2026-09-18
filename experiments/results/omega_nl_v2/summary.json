@@ -1,0 +1,77 @@
+{
+  "n_readouts": 132,
+  "elapsed_s": 125.67323589324951,
+  "n_pairs_v2": 59,
+  "n_eligible_005": 1,
+  "n_eligible_010": 3,
+  "n_eligible_015": 6,
+  "phase2_tau": 0.05,
+  "continuation_summary": {
+    "contrast": {
+      "mean_tv": 0.1370773674138824,
+      "max_tv": 0.1370773674138824,
+      "mean_ratio": 4.877660359927324,
+      "amp_rate": 1.0,
+      "n": 1
+    },
+    "elaboration": {
+      "mean_tv": 0.13185774019180457,
+      "max_tv": 0.13185774019180457,
+      "mean_ratio": 4.691928978627479,
+      "amp_rate": 1.0,
+      "n": 1
+    },
+    "negation": {
+      "mean_tv": 0.33849163497291535,
+      "max_tv": 0.33849163497291535,
+      "mean_ratio": 12.04463771972885,
+      "amp_rate": 1.0,
+      "n": 1
+    },
+    "neutral_comma": {
+      "mean_tv": 0.21123041839891898,
+      "max_tv": 0.21123041839891898,
+      "mean_ratio": 7.516268061411036,
+      "amp_rate": 1.0,
+      "n": 1
+    },
+    "neutral_period": {
+      "mean_tv": 0.2963733987952126,
+      "max_tv": 0.2963733987952126,
+      "mean_ratio": 10.545933339057822,
+      "amp_rate": 1.0,
+      "n": 1
+    },
+    "temporal": {
+      "mean_tv": 0.17097292072340695,
+      "max_tv": 0.17097292072340695,
+      "mean_ratio": 6.083774832905797,
+      "amp_rate": 1.0,
+      "n": 1
+    }
+  },
+  "best_pairs_005": [
+    {
+      "a": "The law was passed by",
+      "b": "The law was enacted by",
+      "tv": 0.02810309806317159
+    }
+  ],
+  "best_pairs_010": [
+    {
+      "a": "The law was passed by",
+      "b": "The law was enacted by",
+      "tv": 0.02810309806317159
+    },
+    {
+      "a": "The book was written by",
+      "b": "The book was authored by",
+      "tv": 0.0966109020246206
+    },
+    {
+      "a": "He put the book on the",
+      "b": "He placed the book on the",
+      "tv": 0.09802654321473361
+    }
+  ]
+}

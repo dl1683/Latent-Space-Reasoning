@@ -1,0 +1,316 @@
+{
+  "depth4_nested": {
+    "strong_assert_2": {
+      "heavy": {
+        "mean": 0.027571618946967646,
+        "max": 0.04926037334371358,
+        "n": 5,
+        "preserves": false
+      },
+      "identity": {
+        "mean": 0.0452623782446608,
+        "max": 0.058276554045733064,
+        "n": 5,
+        "preserves": false
+      },
+      "neutral": {
+        "mean": 0.02177673578262329,
+        "max": 0.03699678182601929,
+        "n": 5,
+        "preserves": false
+      },
+      "none": {
+        "mean": 0.0049765028641559185,
+        "max": 0.00722193717956543,
+        "n": 5,
+        "preserves": true
+      },
+      "pass": {
+        "mean": 0.007409625977743417,
+        "max": 0.014917269872967154,
+        "n": 5,
+        "preserves": false
+      },
+      "type_check": {
+        "mean": 0.07264984748908318,
+        "max": 0.1285221034195274,
+        "n": 5,
+        "preserves": false
+      }
+    },
+    "moderate_assert": {
+      "heavy": {
+        "mean": 0.054480131599120796,
+        "max": 0.054480131599120796,
+        "n": 1,
+        "preserves": false
+      },
+      "identity": {
+        "mean": 0.08340574312023818,
+        "max": 0.08340574312023818,
+        "n": 1,
+        "preserves": false
+      },
+      "neutral": {
+        "mean": 0.018275029957294464,
+        "max": 0.018275029957294464,
+        "n": 1,
+        "preserves": false
+      },
+      "none": {
+        "mean": 0.007828712463378906,
+        "max": 0.007828712463378906,
+        "n": 1,
+        "preserves": true
+      },
+      "pass": {
+        "mean": 0.014611572027206421,
+        "max": 0.014611572027206421,
+        "n": 1,
+        "preserves": false
+      },
+      "type_check": {
+        "mean": 0.13803570671007037,
+        "max": 0.13803570671007037,
+        "n": 1,
+        "preserves": false
+      }
+    }
+  },
+  "depth2_nested": {
+    "strong_assert_2": {
+      "heavy": {
+        "mean": 0.009528114853310399,
+        "max": 0.029673139797523618,
+        "n": 6,
+        "preserves": false
+      },
+      "identity": {
+        "mean": 0.012146701266222712,
+        "max": 0.029910405668488238,
+        "n": 6,
+        "preserves": false
+      },
+      "neutral": {
+        "mean": 0.013261814912160238,
+        "max": 0.020851194858551025,
+        "n": 6,
+        "preserves": false
+      },
+      "none": {
+        "mean": 0.002328895240983305,
+        "max": 0.004719833465060219,
+        "n": 6,
+        "preserves": true
+      },
+      "pass": {
+        "mean": 0.0028132961839825534,
+        "max": 0.005261571903247386,
+        "n": 6,
+        "preserves": true
+      },
+      "type_check": {
+        "mean": 0.04112847697858039,
+        "max": 0.10433760581508977,
+        "n": 6,
+        "preserves": false
+      }
+    },
+    "moderate_assert": {
+      "heavy": {
+        "mean": 0.029622424551052972,
+        "max": 0.09492760244756937,
+        "n": 5,
+        "preserves": false
+      },
+      "identity": {
+        "mean": 0.029806466262380128,
+        "max": 0.0662976205785526,
+        "n": 5,
+        "preserves": false
+      },
+      "neutral": {
+        "mean": 0.005141084780916572,
+        "max": 0.0065456454758532345,
+        "n": 5,
+        "preserves": true
+      },
+      "none": {
+        "mean": 0.006824444606900215,
+        "max": 0.009001612663269043,
+        "n": 5,
+        "preserves": true
+      },
+      "pass": {
+        "mean": 0.005316772684454918,
+        "max": 0.006845057010650635,
+        "n": 5,
+        "preserves": true
+      },
+      "type_check": {
+        "mean": 0.04047382936405484,
+        "max": 0.08052968233823776,
+        "n": 5,
+        "preserves": false
+      }
+    }
+  },
+  "linear_shadow": {
+    "strong_assert_2": {
+      "heavy": {
+        "mean": 0.010516467178240419,
+        "max": 0.017895042896270752,
+        "n": 5,
+        "preserves": false
+      },
+      "identity": {
+        "mean": 0.03275130120164249,
+        "max": 0.059934995777439326,
+        "n": 5,
+        "preserves": false
+      },
+      "neutral": {
+        "mean": 0.012354260578285902,
+        "max": 0.030741120281163603,
+        "n": 5,
+        "preserves": false
+      },
+      "none": {
+        "mean": 0.004130593314766884,
+        "max": 0.00872814655303955,
+        "n": 5,
+        "preserves": true
+      },
+      "pass": {
+        "mean": 0.009599282901035622,
+        "max": 0.021983548998832703,
+        "n": 5,
+        "preserves": false
+      },
+      "type_check": {
+        "mean": 0.09935257056204136,
+        "max": 0.18393440544605255,
+        "n": 5,
+        "preserves": false
+      }
+    },
+    "moderate_assert": {
+      "heavy": {
+        "mean": 0.004941062841680832,
+        "max": 0.008412141964072362,
+        "n": 2,
+        "preserves": true
+      },
+      "identity": {
+        "mean": 0.052523579346598126,
+        "max": 0.06933838853728957,
+        "n": 2,
+        "preserves": false
+      },
+      "neutral": {
+        "mean": 0.0046343171707121655,
+        "max": 0.004655606724554673,
+        "n": 2,
+        "preserves": true
+      },
+      "none": {
+        "mean": 0.003488481044769287,
+        "max": 0.00452500581741333,
+        "n": 2,
+        "preserves": true
+      },
+      "pass": {
+        "mean": 0.013271309609990567,
+        "max": 0.017997041693888605,
+        "n": 2,
+        "preserves": false
+      },
+      "type_check": {
+        "mean": 0.07821844212594442,
+        "max": 0.1382617229828611,
+        "n": 2,
+        "preserves": false
+      }
+    }
+  },
+  "loop_body": {
+    "strong_assert_2": {
+      "heavy": {
+        "mean": 0.02747491612099111,
+        "max": 0.0747500981669873,
+        "n": 5,
+        "preserves": false
+      },
+      "identity": {
+        "mean": 0.08420775959966705,
+        "max": 0.13458704424556345,
+        "n": 5,
+        "preserves": false
+      },
+      "neutral": {
+        "mean": 0.044278585410211235,
+        "max": 0.10567804134916514,
+        "n": 5,
+        "preserves": false
+      },
+      "none": {
+        "mean": 0.008137577387969941,
+        "max": 0.00957075011683628,
+        "n": 5,
+        "preserves": true
+      },
+      "pass": {
+        "mean": 0.016491123021114617,
+        "max": 0.04177393123973161,
+        "n": 5,
+        "preserves": false
+      },
+      "type_check": {
+        "mean": 0.04403659349773079,
+        "max": 0.10248951194807887,
+        "n": 5,
+        "preserves": false
+      }
+    }
+  },
+  "conditional": {
+    "strong_assert_2": {
+      "heavy": {
+        "mean": 0.011446797847747802,
+        "max": 0.020710468292236328,
+        "n": 5,
+        "preserves": false
+      },
+      "identity": {
+        "mean": 0.020514886954333632,
+        "max": 0.04288647975772619,
+        "n": 5,
+        "preserves": false
+      },
+      "neutral": {
+        "mean": 0.01683197972306516,
+        "max": 0.037309837571228854,
+        "n": 5,
+        "preserves": false
+      },
+      "none": {
+        "mean": 0.005889661697437987,
+        "max": 0.008901894092559814,
+        "n": 5,
+        "preserves": true
+      },
+      "pass": {
+        "mean": 0.002302441283245571,
+        "max": 0.005591590597759932,
+        "n": 5,
+        "preserves": true
+      },
+      "type_check": {
+        "mean": 0.03672694772831164,
+        "max": 0.05694054067134857,
+        "n": 5,
+        "preserves": false
+      }
+    }
+  }
+}

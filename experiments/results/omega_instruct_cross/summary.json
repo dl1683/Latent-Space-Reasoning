@@ -1,0 +1,10 @@
+{
+  "n_readouts": 288,
+  "models": [
+    "stablelm_base",
+    "stablelm_instruct"
+  ],
+  "n_cells": 6,
+  "n_pairs": 2,
+  "n_continuations": 6
+}

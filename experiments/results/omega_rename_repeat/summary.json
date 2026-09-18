@@ -1,0 +1,428 @@
+{
+  "experiment": 77,
+  "name": "rename_repeat",
+  "n_readouts": 120,
+  "n_comparisons": 60,
+  "results": [
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.0019631385803222656,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "single_collision",
+      "tv": 0.021256685256958008,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "double_verbatim",
+      "tv": 0.032956600189208984,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "double_renamed",
+      "tv": 0.024250030517578125,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "double_mixed",
+      "tv": 0.06895256042480469,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "triple_verbatim",
+      "tv": 0.0638277530670166,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "triple_mixed",
+      "tv": 0.050632476806640625,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "single_identity",
+      "tv": 0.06520748138427734,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "double_identity",
+      "tv": 0.09240591526031494,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "identity_plus_read",
+      "tv": 0.09403634071350098,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.00455021858215332,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "single_collision",
+      "tv": 0.04868292808532715,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "double_verbatim",
+      "tv": 0.028829455375671387,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "double_renamed",
+      "tv": 0.023482084274291992,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "double_mixed",
+      "tv": 0.051405906677246094,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "triple_verbatim",
+      "tv": 0.04473865032196045,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "triple_mixed",
+      "tv": 0.023506879806518555,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "single_identity",
+      "tv": 0.04773867130279541,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "double_identity",
+      "tv": 0.056902408599853516,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "identity_plus_read",
+      "tv": 0.06654846668243408,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.00521087646484375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "single_collision",
+      "tv": 0.06171751022338867,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "double_verbatim",
+      "tv": 0.002013683319091797,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "double_renamed",
+      "tv": 0.008692741394042969,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "double_mixed",
+      "tv": 0.03829765319824219,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "triple_verbatim",
+      "tv": 0.03542685508728027,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "triple_mixed",
+      "tv": 0.0015149116516113281,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "single_identity",
+      "tv": 0.04501008987426758,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "double_identity",
+      "tv": 0.045354366302490234,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "identity_plus_read",
+      "tv": 0.06978678703308105,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.015382766723632812,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "single_collision",
+      "tv": 0.019694089889526367,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "double_verbatim",
+      "tv": 0.04017782211303711,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "double_renamed",
+      "tv": 0.011294364929199219,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "double_mixed",
+      "tv": 0.025197982788085938,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "triple_verbatim",
+      "tv": 0.0380859375,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "triple_mixed",
+      "tv": 0.021484375,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "single_identity",
+      "tv": 0.09146678447723389,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "double_identity",
+      "tv": 0.03925752639770508,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "identity_plus_read",
+      "tv": 0.031494140625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.0076770782470703125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "single_collision",
+      "tv": 0.04460704326629639,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "double_verbatim",
+      "tv": 0.06679964065551758,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "double_renamed",
+      "tv": 0.03866386413574219,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "double_mixed",
+      "tv": 0.04944181442260742,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "triple_verbatim",
+      "tv": 0.0668935775756836,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "triple_mixed",
+      "tv": 0.039306640625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "single_identity",
+      "tv": 0.07672452926635742,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "double_identity",
+      "tv": 0.017020463943481445,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "identity_plus_read",
+      "tv": 0.03173828125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.016653060913085938,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "single_collision",
+      "tv": 0.0473179817199707,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "double_verbatim",
+      "tv": 0.04117727279663086,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "double_renamed",
+      "tv": 0.03615856170654297,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "double_mixed",
+      "tv": 0.04147815704345703,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "triple_verbatim",
+      "tv": 0.035323143005371094,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "triple_mixed",
+      "tv": 0.04025840759277344,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "single_identity",
+      "tv": 0.06973648071289062,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "double_identity",
+      "tv": 0.01708984375,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "identity_plus_read",
+      "tv": 0.03173828125,
+      "flip": false
+    }
+  ]
+}

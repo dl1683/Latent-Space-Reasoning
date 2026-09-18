@@ -1,0 +1,13 @@
+{
+  "type": "state_reconstruction",
+  "n_observations": 120,
+  "treatments": [
+    "original",
+    "summary_nl",
+    "appended_overwrite",
+    "canonical_record",
+    "incomplete_record"
+  ],
+  "n_readouts": 240,
+  "elapsed_s": 210.72760343551636
+}

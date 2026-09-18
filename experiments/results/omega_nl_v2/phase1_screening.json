@@ -1,0 +1,1241 @@
+[
+  {
+    "pair_idx": 0,
+    "a": "He explained that the",
+    "b": "He stated that the",
+    "baseline_tv": 0.13940894596477107,
+    "status": "MARGINAL",
+    "top5_a": [
+      " number",
+      " problem",
+      " first",
+      " key",
+      " "
+    ],
+    "top5_b": [
+      " number",
+      " problem",
+      " first",
+      " United",
+      " only"
+    ]
+  },
+  {
+    "pair_idx": 1,
+    "a": "She believed that the",
+    "b": "She thought that the",
+    "baseline_tv": 0.34745890811968844,
+    "status": "DISTANT",
+    "top5_a": [
+      " most",
+      " key",
+      " best",
+      " world",
+      " only"
+    ],
+    "top5_b": [
+      " only",
+      " best",
+      " more",
+      " problem",
+      " first"
+    ]
+  },
+  {
+    "pair_idx": 2,
+    "a": "They announced that the",
+    "b": "They declared that the",
+    "baseline_tv": 0.31434271028202726,
+    "status": "DISTANT",
+    "top5_a": [
+      " first",
+      " number",
+      " price",
+      " ",
+      " company"
+    ],
+    "top5_b": [
+      " number",
+      " first",
+      " United",
+      " ",
+      " only"
+    ]
+  },
+  {
+    "pair_idx": 3,
+    "a": "He argued that the",
+    "b": "He claimed that the",
+    "baseline_tv": 0.27038844680177615,
+    "status": "DISTANT",
+    "top5_a": [
+      " United",
+      " only",
+      " government",
+      " world",
+      " problem"
+    ],
+    "top5_b": [
+      " number",
+      " United",
+      " government",
+      " first",
+      " problem"
+    ]
+  },
+  {
+    "pair_idx": 4,
+    "a": "She realized that the",
+    "b": "She noticed that the",
+    "baseline_tv": 0.36383678980500017,
+    "status": "DISTANT",
+    "top5_a": [
+      " problem",
+      " number",
+      " only",
+      " key",
+      " more"
+    ],
+    "top5_b": [
+      " number",
+      " average",
+      " amount",
+      " first",
+      " total"
+    ]
+  },
+  {
+    "pair_idx": 5,
+    "a": "He reported that the",
+    "b": "He announced that the",
+    "baseline_tv": 0.2919176269270705,
+    "status": "DISTANT",
+    "top5_a": [
+      " number",
+      " total",
+      " average",
+      " company",
+      " United"
+    ],
+    "top5_b": [
+      " United",
+      " number",
+      " government",
+      " company",
+      " "
+    ]
+  },
+  {
+    "pair_idx": 6,
+    "a": "She discovered that the",
+    "b": "She found that the",
+    "baseline_tv": 0.1543558724864064,
+    "status": "DISTANT",
+    "top5_a": [
+      " number",
+      " average",
+      " sum",
+      " amount",
+      " equation"
+    ],
+    "top5_b": [
+      " number",
+      " average",
+      " amount",
+      " first",
+      " problem"
+    ]
+  },
+  {
+    "pair_idx": 7,
+    "a": "They confirmed that the",
+    "b": "They verified that the",
+    "baseline_tv": 0.33201503547687594,
+    "status": "DISTANT",
+    "top5_a": [
+      " first",
+      " ",
+      " number",
+      " new",
+      " two"
+    ],
+    "top5_b": [
+      " number",
+      " two",
+      " ",
+      " system",
+      " new"
+    ]
+  },
+  {
+    "pair_idx": 8,
+    "a": "We arrived at the",
+    "b": "We got to the",
+    "baseline_tv": 0.3264305506204915,
+    "status": "DISTANT",
+    "top5_a": [
+      " station",
+      " airport",
+      " scene",
+      " museum",
+      " first"
+    ],
+    "top5_b": [
+      " park",
+      " beach",
+      " lake",
+      " station",
+      " store"
+    ]
+  },
+  {
+    "pair_idx": 9,
+    "a": "He returned to the",
+    "b": "He came back to the",
+    "baseline_tv": 0.32110568686555624,
+    "status": "DISTANT",
+    "top5_a": [
+      " United",
+      " city",
+      " UK",
+      " US",
+      " scene"
+    ],
+    "top5_b": [
+      " house",
+      " city",
+      " room",
+      " United",
+      " office"
+    ]
+  },
+  {
+    "pair_idx": 10,
+    "a": "She entered the room and",
+    "b": "She walked into the room and",
+    "baseline_tv": 0.25298780177567415,
+    "status": "DISTANT",
+    "top5_a": [
+      " the",
+      " saw",
+      " immediately",
+      " found",
+      " I"
+    ],
+    "top5_b": [
+      " the",
+      " everyone",
+      " I",
+      " said",
+      " saw"
+    ]
+  },
+  {
+    "pair_idx": 11,
+    "a": "They gathered at the",
+    "b": "They met at the",
+    "baseline_tv": 0.45648579762851765,
+    "status": "DISTANT",
+    "top5_a": [
+      " park",
+      " old",
+      " edge",
+      " house",
+      " lake"
+    ],
+    "top5_b": [
+      " beginning",
+      " same",
+      " station",
+      " train",
+      " school"
+    ]
+  },
+  {
+    "pair_idx": 12,
+    "a": "He sat down at the",
+    "b": "He took a seat at the",
+    "baseline_tv": 0.28444973476416124,
+    "status": "DISTANT",
+    "top5_a": [
+      " table",
+      " edge",
+      " piano",
+      " desk",
+      " end"
+    ],
+    "top5_b": [
+      " table",
+      " head",
+      " edge",
+      " end",
+      " back"
+    ]
+  },
+  {
+    "pair_idx": 13,
+    "a": "She would like to",
+    "b": "She wants to",
+    "baseline_tv": 0.41799783555783326,
+    "status": "DISTANT",
+    "top5_a": [
+      " be",
+      " have",
+      " go",
+      " see",
+      " know"
+    ],
+    "top5_b": [
+      " buy",
+      " make",
+      " know",
+      " get",
+      " go"
+    ]
+  },
+  {
+    "pair_idx": 14,
+    "a": "He was going to",
+    "b": "He planned to",
+    "baseline_tv": 0.37097995932894223,
+    "status": "DISTANT",
+    "top5_a": [
+      " be",
+      " the",
+      " buy",
+      " go",
+      " take"
+    ],
+    "top5_b": [
+      " go",
+      " spend",
+      " take",
+      " do",
+      " travel"
+    ]
+  },
+  {
+    "pair_idx": 15,
+    "a": "They needed to",
+    "b": "They had to",
+    "baseline_tv": 0.4045947289178895,
+    "status": "DISTANT",
+    "top5_a": [
+      " find",
+      " be",
+      " get",
+      " have",
+      " make"
+    ],
+    "top5_b": [
+      " go",
+      " wait",
+      " be",
+      " do",
+      " move"
+    ]
+  },
+  {
+    "pair_idx": 16,
+    "a": "She was supposed to",
+    "b": "She was meant to",
+    "baseline_tv": 0.2663084698355389,
+    "status": "DISTANT",
+    "top5_a": [
+      " be",
+      " have",
+      " go",
+      " arrive",
+      " give"
+    ],
+    "top5_b": [
+      " be",
+      " have",
+      " stay",
+      " die",
+      " go"
+    ]
+  },
+  {
+    "pair_idx": 17,
+    "a": "He was about to",
+    "b": "He was going to",
+    "baseline_tv": 0.5379930971027765,
+    "status": "DISTANT",
+    "top5_a": [
+      " leave",
+      " give",
+      " get",
+      " take",
+      " start"
+    ],
+    "top5_b": [
+      " be",
+      " the",
+      " buy",
+      " go",
+      " take"
+    ]
+  },
+  {
+    "pair_idx": 18,
+    "a": "Last Monday he",
+    "b": "On Monday he",
+    "baseline_tv": 0.5029417884129406,
+    "status": "DISTANT",
+    "top5_a": [
+      " was",
+      " had",
+      " went",
+      " got",
+      " took"
+    ],
+    "top5_b": [
+      " worked",
+      " had",
+      " was",
+      " went",
+      " started"
+    ]
+  },
+  {
+    "pair_idx": 19,
+    "a": "Yesterday morning she",
+    "b": "That morning she",
+    "baseline_tv": 0.20774186540816125,
+    "status": "DISTANT",
+    "top5_a": [
+      " was",
+      " had",
+      " said",
+      " went",
+      " found"
+    ],
+    "top5_b": [
+      " was",
+      " had",
+      " found",
+      " went",
+      " met"
+    ]
+  },
+  {
+    "pair_idx": 20,
+    "a": "Every day they",
+    "b": "Each day they",
+    "baseline_tv": 0.2808892853720902,
+    "status": "DISTANT",
+    "top5_a": [
+      " go",
+      " have",
+      " eat",
+      " take",
+      " spend"
+    ],
+    "top5_b": [
+      " have",
+      " can",
+      " go",
+      " spend",
+      " eat"
+    ]
+  },
+  {
+    "pair_idx": 21,
+    "a": "After dinner they",
+    "b": "Following dinner they",
+    "baseline_tv": 0.1792156032087412,
+    "status": "DISTANT",
+    "top5_a": [
+      " went",
+      " walked",
+      " decided",
+      " all",
+      " sat"
+    ],
+    "top5_b": [
+      " went",
+      " decided",
+      " walked",
+      " were",
+      " visited"
+    ]
+  },
+  {
+    "pair_idx": 22,
+    "a": "Before sunrise the",
+    "b": "Prior to sunrise the",
+    "baseline_tv": 0.2999507425696784,
+    "status": "DISTANT",
+    "top5_a": [
+      " first",
+      " next",
+      " sun",
+      " temperature",
+      " following"
+    ],
+    "top5_b": [
+      " sun",
+      " first",
+      " sky",
+      " moon",
+      " stars"
+    ]
+  },
+  {
+    "pair_idx": 23,
+    "a": "Most of the",
+    "b": "The majority of the",
+    "baseline_tv": 0.3546395077742847,
+    "status": "DISTANT",
+    "top5_a": [
+      " time",
+      " people",
+      " following",
+      " world",
+      " information"
+    ],
+    "top5_b": [
+      " world",
+      " time",
+      " population",
+      " people",
+      " "
+    ]
+  },
+  {
+    "pair_idx": 24,
+    "a": "All of the",
+    "b": "Every one of the",
+    "baseline_tv": 0.6380377360401515,
+    "status": "DISTANT",
+    "top5_a": [
+      " following",
+      " above",
+      " below",
+      " Following",
+      " students"
+    ],
+    "top5_b": [
+      " following",
+      " ",
+      " numbers",
+      " three",
+      " four"
+    ]
+  },
+  {
+    "pair_idx": 25,
+    "a": "Some of the",
+    "b": "A few of the",
+    "baseline_tv": 0.31471151385289353,
+    "status": "DISTANT",
+    "top5_a": [
+      " most",
+      " best",
+      " key",
+      " greatest",
+      " more"
+    ],
+    "top5_b": [
+      " most",
+      " best",
+      " questions",
+      " problems",
+      " more"
+    ]
+  },
+  {
+    "pair_idx": 26,
+    "a": "None of the",
+    "b": "Not one of the",
+    "baseline_tv": 0.6694345457902121,
+    "status": "DISTANT",
+    "top5_a": [
+      " above",
+      " following",
+      " previous",
+      " existing",
+      " current"
+    ],
+    "top5_b": [
+      " first",
+      " original",
+      " most",
+      " ",
+      " more"
+    ]
+  },
+  {
+    "pair_idx": 27,
+    "a": "Many of the",
+    "b": "A lot of the",
+    "baseline_tv": 0.5126482672747583,
+    "status": "DISTANT",
+    "top5_a": [
+      " problems",
+      " most",
+      " world",
+      " people",
+      " best"
+    ],
+    "top5_b": [
+      " time",
+      " problems",
+      " early",
+      " world",
+      " information"
+    ]
+  },
+  {
+    "pair_idx": 28,
+    "a": "The meeting was very",
+    "b": "The meeting was extremely",
+    "baseline_tv": 0.26878846179270344,
+    "status": "DISTANT",
+    "top5_a": [
+      " important",
+      " successful",
+      " long",
+      " interesting",
+      " productive"
+    ],
+    "top5_b": [
+      " important",
+      " successful",
+      " hot",
+      " __",
+      " long"
+    ]
+  },
+  {
+    "pair_idx": 29,
+    "a": "The project was quite",
+    "b": "The project was rather",
+    "baseline_tv": 0.3427372649880347,
+    "status": "DISTANT",
+    "top5_a": [
+      " a",
+      " challenging",
+      " complex",
+      " difficult",
+      " an"
+    ],
+    "top5_b": [
+      " large",
+      " a",
+      " difficult",
+      " complex",
+      " complicated"
+    ]
+  },
+  {
+    "pair_idx": 30,
+    "a": "The situation was incredibly",
+    "b": "The situation was remarkably",
+    "baseline_tv": 0.8043492556699456,
+    "status": "DISTANT",
+    "top5_a": [
+      " complex",
+      " tense",
+      " complicated",
+      " chaotic",
+      " frustrating"
+    ],
+    "top5_b": [
+      " similar",
+      " different",
+      " simple",
+      " complex",
+      " clear"
+    ]
+  },
+  {
+    "pair_idx": 31,
+    "a": "His performance was very",
+    "b": "His performance was extremely",
+    "baseline_tv": 0.30968084373539,
+    "status": "DISTANT",
+    "top5_a": [
+      " good",
+      " poor",
+      " ______",
+      " well",
+      " impressive"
+    ],
+    "top5_b": [
+      " good",
+      " poor",
+      " well",
+      " outstanding",
+      " __"
+    ]
+  },
+  {
+    "pair_idx": 32,
+    "a": "The road was very",
+    "b": "The road was extremely",
+    "baseline_tv": 0.48874153185879277,
+    "status": "DISTANT",
+    "top5_a": [
+      " long",
+      " narrow",
+      " muddy",
+      " crowded",
+      " slippery"
+    ],
+    "top5_b": [
+      " narrow",
+      " long",
+      " slippery",
+      " muddy",
+      " wet"
+    ]
+  },
+  {
+    "pair_idx": 33,
+    "a": "It was much better than",
+    "b": "It was far superior to",
+    "baseline_tv": 0.5789888028442476,
+    "status": "DISTANT",
+    "top5_a": [
+      " I",
+      " the",
+      " expected",
+      " my",
+      " it"
+    ],
+    "top5_b": [
+      " the",
+      " what",
+      " my",
+      " any",
+      " a"
+    ]
+  },
+  {
+    "pair_idx": 34,
+    "a": "She was much older than",
+    "b": "She was far older than",
+    "baseline_tv": 0.15095479562306002,
+    "status": "DISTANT",
+    "top5_a": [
+      " I",
+      " me",
+      " she",
+      " her",
+      " the"
+    ],
+    "top5_b": [
+      " I",
+      " she",
+      " the",
+      " her",
+      " he"
+    ]
+  },
+  {
+    "pair_idx": 35,
+    "a": "The problem was more complex than",
+    "b": "The problem was more difficult than",
+    "baseline_tv": 0.1009558919826307,
+    "status": "MARGINAL",
+    "top5_a": [
+      " I",
+      " expected",
+      " initially",
+      " anticipated",
+      " it"
+    ],
+    "top5_b": [
+      " I",
+      " expected",
+      " anticipated",
+      " it",
+      " we"
+    ]
+  },
+  {
+    "pair_idx": 36,
+    "a": "The document was signed by",
+    "b": "The document was approved by",
+    "baseline_tv": 0.4293021489966477,
+    "status": "DISTANT",
+    "top5_a": [
+      " the",
+      " a",
+      " ",
+      " President",
+      " both"
+    ],
+    "top5_b": [
+      " the",
+      " a",
+      " __",
+      " all",
+      " ____"
+    ]
+  },
+  {
+    "pair_idx": 37,
+    "a": "The building was designed by",
+    "b": "The building was created by",
+    "baseline_tv": 0.22569980533005352,
+    "status": "DISTANT",
+    "top5_a": [
+      " the",
+      " a",
+      " architect",
+      " an",
+      " which"
+    ],
+    "top5_b": [
+      " the",
+      " a",
+      " an",
+      "...",
+      " which"
+    ]
+  },
+  {
+    "pair_idx": 38,
+    "a": "The law was passed by",
+    "b": "The law was enacted by",
+    "baseline_tv": 0.02810309806317159,
+    "status": "ELIGIBLE_005",
+    "top5_a": [
+      " the",
+      " a",
+      " Congress",
+      " an",
+      " both"
+    ],
+    "top5_b": [
+      " the",
+      " a",
+      " Congress",
+      " an",
+      " which"
+    ]
+  },
+  {
+    "pair_idx": 39,
+    "a": "The book was written by",
+    "b": "The book was authored by",
+    "baseline_tv": 0.0966109020246206,
+    "status": "ELIGIBLE_010",
+    "top5_a": [
+      " a",
+      " the",
+      " an",
+      " someone",
+      " whom"
+    ],
+    "top5_b": [
+      " a",
+      " the",
+      " an",
+      " someone",
+      " whom"
+    ]
+  },
+  {
+    "pair_idx": 40,
+    "a": "Once upon a",
+    "b": "Long ago in a",
+    "baseline_tv": 0.951441449778249,
+    "status": "DISTANT",
+    "top5_a": [
+      " time",
+      " Time",
+      " lifetime",
+      "_time",
+      "=time"
+    ],
+    "top5_b": [
+      " small",
+      " village",
+      " land",
+      " time",
+      " quiet"
+    ]
+  },
+  {
+    "pair_idx": 41,
+    "a": "As a matter of",
+    "b": "As a point of",
+    "baseline_tv": 0.8220796238735405,
+    "status": "DISTANT",
+    "top5_a": [
+      " fact",
+      " policy",
+      " principle",
+      " interest",
+      " course"
+    ],
+    "top5_b": [
+      " interest",
+      " reference",
+      " departure",
+      " view",
+      " clarification"
+    ]
+  },
+  {
+    "pair_idx": 42,
+    "a": "For the sake of",
+    "b": "For the purpose of",
+    "baseline_tv": 0.7854958336874779,
+    "status": "DISTANT",
+    "top5_a": [
+      " the",
+      " this",
+      " simplicity",
+      " clarity",
+      " a"
+    ],
+    "top5_b": [
+      " this",
+      " the",
+      " these",
+      " calculating",
+      " a"
+    ]
+  },
+  {
+    "pair_idx": 43,
+    "a": "In the middle of the",
+    "b": "In the center of the",
+    "baseline_tv": 0.6876494250725186,
+    "status": "DISTANT",
+    "top5_a": [
+      " ",
+      " ocean",
+      " lake",
+      " night",
+      " river"
+    ],
+    "top5_b": [
+      " square",
+      " circle",
+      " coordinate",
+      " city",
+      " "
+    ]
+  },
+  {
+    "pair_idx": 44,
+    "a": "At the end of the",
+    "b": "At the close of the",
+    "baseline_tv": 0.6122953669521201,
+    "status": "DISTANT",
+    "top5_a": [
+      " ",
+      " year",
+      " first",
+      " day",
+      " month"
+    ],
+    "top5_b": [
+      " day",
+      " ",
+      " first",
+      " previous",
+      " year"
+    ]
+  },
+  {
+    "pair_idx": 45,
+    "a": "I wonder if the",
+    "b": "I wonder whether the",
+    "baseline_tv": 0.1405679494361458,
+    "status": "MARGINAL",
+    "top5_a": [
+      " following",
+      " number",
+      " answer",
+      " question",
+      " problem"
+    ],
+    "top5_b": [
+      " following",
+      " number",
+      " question",
+      " answer",
+      " use"
+    ]
+  },
+  {
+    "pair_idx": 46,
+    "a": "She asked if the",
+    "b": "She asked whether the",
+    "baseline_tv": 0.2848434540046536,
+    "status": "DISTANT",
+    "top5_a": [
+      " problem",
+      " new",
+      " answer",
+      " question",
+      " number"
+    ],
+    "top5_b": [
+      " new",
+      " number",
+      " problem",
+      " question",
+      " answer"
+    ]
+  },
+  {
+    "pair_idx": 47,
+    "a": "He wanted to know if the",
+    "b": "He wanted to know whether the",
+    "baseline_tv": 0.1830980737547886,
+    "status": "DISTANT",
+    "top5_a": [
+      " new",
+      " following",
+      " number",
+      " answer",
+      " two"
+    ],
+    "top5_b": [
+      " new",
+      " number",
+      " people",
+      " two",
+      " average"
+    ]
+  },
+  {
+    "pair_idx": 48,
+    "a": "He said he would",
+    "b": "He told them he would",
+    "baseline_tv": 0.15239297637049415,
+    "status": "DISTANT",
+    "top5_a": [
+      " not",
+      " like",
+      " be",
+      " do",
+      " have"
+    ],
+    "top5_b": [
+      " not",
+      " be",
+      " do",
+      " never",
+      " like"
+    ]
+  },
+  {
+    "pair_idx": 49,
+    "a": "She said she had",
+    "b": "She mentioned she had",
+    "baseline_tv": 0.21420055984715788,
+    "status": "DISTANT",
+    "top5_a": [
+      " no",
+      " to",
+      " been",
+      " a",
+      " not"
+    ],
+    "top5_b": [
+      " a",
+      " to",
+      " been",
+      " no",
+      " seen"
+    ]
+  },
+  {
+    "pair_idx": 50,
+    "a": "They said they were",
+    "b": "They indicated they were",
+    "baseline_tv": 0.37412100366427997,
+    "status": "DISTANT",
+    "top5_a": [
+      " going",
+      " in",
+      " not",
+      " just",
+      " trying"
+    ],
+    "top5_b": [
+      " not",
+      " in",
+      " going",
+      " looking",
+      " working"
+    ]
+  },
+  {
+    "pair_idx": 51,
+    "a": "He put the book on the",
+    "b": "He placed the book on the",
+    "baseline_tv": 0.09802654321473361,
+    "status": "ELIGIBLE_010",
+    "top5_a": [
+      " table",
+      " shelf",
+      " desk",
+      " floor",
+      " bed"
+    ],
+    "top5_b": [
+      " table",
+      " shelf",
+      " desk",
+      " floor",
+      " ground"
+    ]
+  },
+  {
+    "pair_idx": 52,
+    "a": "She threw the ball to the",
+    "b": "She tossed the ball to the",
+    "baseline_tv": 0.25128016288888794,
+    "status": "DISTANT",
+    "top5_a": [
+      " dog",
+      " other",
+      " boy",
+      " cat",
+      " ground"
+    ],
+    "top5_b": [
+      " dog",
+      " cat",
+      " child",
+      " boy",
+      " girl"
+    ]
+  },
+  {
+    "pair_idx": 53,
+    "a": "He poured the water into the",
+    "b": "He emptied the water into the",
+    "baseline_tv": 0.5003304899921143,
+    "status": "DISTANT",
+    "top5_a": [
+      " cup",
+      " glass",
+      " bowl",
+      " bucket",
+      " pot"
+    ],
+    "top5_b": [
+      " river",
+      " sink",
+      " sea",
+      " well",
+      " bowl"
+    ]
+  },
+  {
+    "pair_idx": 54,
+    "a": "She hung the coat on the",
+    "b": "She draped the coat on the",
+    "baseline_tv": 0.6419747243278312,
+    "status": "DISTANT",
+    "top5_a": [
+      " hook",
+      " wall",
+      " line",
+      " coat",
+      " h"
+    ],
+    "top5_b": [
+      " back",
+      " chair",
+      " hook",
+      " bed",
+      " floor"
+    ]
+  },
+  {
+    "pair_idx": 55,
+    "a": "He drove the car to the",
+    "b": "He took the car to the",
+    "baseline_tv": 0.7200233770760822,
+    "status": "DISTANT",
+    "top5_a": [
+      " city",
+      " market",
+      " store",
+      " station",
+      " airport"
+    ],
+    "top5_b": [
+      " mechanic",
+      " shop",
+      " repair",
+      " garage",
+      " car"
+    ]
+  },
+  {
+    "pair_idx": 56,
+    "a": "There was a large",
+    "b": "There stood a large",
+    "baseline_tv": 0.5125424953698436,
+    "status": "DISTANT",
+    "top5_a": [
+      " number",
+      ",",
+      " amount",
+      " group",
+      " gathering"
+    ],
+    "top5_b": [
+      ",",
+      " tree",
+      " and",
+      " number",
+      " building"
+    ]
+  },
+  {
+    "pair_idx": 57,
+    "a": "There were many",
+    "b": "There existed many",
+    "baseline_tv": 0.4255336720807163,
+    "status": "DISTANT",
+    "top5_a": [
+      " people",
+      " different",
+      " things",
+      " other",
+      " more"
+    ],
+    "top5_b": [
+      " different",
+      " people",
+      " types",
+      " such",
+      " other"
+    ]
+  },
+  {
+    "pair_idx": 58,
+    "a": "There was nothing but",
+    "b": "There was only",
+    "baseline_tv": 0.864682508886914,
+    "status": "DISTANT",
+    "top5_a": [
+      " a",
+      " the",
+      " silence",
+      " an",
+      " one"
+    ],
+    "top5_b": [
+      " one",
+      " a",
+      " ",
+      " enough",
+      " the"
+    ]
+  }
+]

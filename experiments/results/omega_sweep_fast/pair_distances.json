@@ -1,0 +1,7074 @@
+{
+  "strong_assert": [
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "none",
+      "tv": 0.12174832820892334
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_1",
+      "tv": 0.1265541911125183
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_2",
+      "tv": 0.0124063239491079
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_3",
+      "tv": 0.05217592074768618
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_1",
+      "tv": 0.11905019739060663
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_2",
+      "tv": 0.11524657637346536
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_3",
+      "tv": 0.07302252497174777
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "bare_nl",
+      "tv": 0.08565451383765321
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "pass",
+      "tv": 0.12596964836120605
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ellipsis",
+      "tv": 0.13941270040231757
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "identity",
+      "tv": 0.2455171845795121
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "observe",
+      "tv": 0.17010181258956436
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "verified",
+      "tv": 0.09043121337890625
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ok",
+      "tv": 0.08372318744659424
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "double_neutral",
+      "tv": 0.12958282232284546
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.1288679438875988
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.11517465781071223
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "type_check",
+      "tv": 0.2108703525736928
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "assert_true",
+      "tv": 0.1343587040901184
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "comment_var",
+      "tv": 0.13593518978450447
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "print_var",
+      "tv": 0.07701438665390015
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "none",
+      "tv": 0.06386661529541016
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_1",
+      "tv": 0.0676162838935852
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_2",
+      "tv": 0.009051718341652304
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_3",
+      "tv": 0.01164335320936516
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_1",
+      "tv": 0.10456813202472404
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_2",
+      "tv": 0.08412193338153884
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_3",
+      "tv": 0.04942566872341558
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "bare_nl",
+      "tv": 0.043835997581481934
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "pass",
+      "tv": 0.06294894218444824
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ellipsis",
+      "tv": 0.07626974582672119
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "identity",
+      "tv": 0.18101855291752145
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "observe",
+      "tv": 0.08727455139160156
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "verified",
+      "tv": 0.03232210874557495
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ok",
+      "tv": 0.028242945671081543
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "double_neutral",
+      "tv": 0.07906877994537354
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.10082606400828809
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.0906188964145258
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "type_check",
+      "tv": 0.08023207337828353
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "assert_true",
+      "tv": 0.057855188846588135
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "comment_var",
+      "tv": 0.13037216663360596
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "print_var",
+      "tv": 0.033338844776153564
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "none",
+      "tv": 0.09333306550979614
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_1",
+      "tv": 0.09682470560073853
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_2",
+      "tv": 0.014545304991770536
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_3",
+      "tv": 0.014257354487199336
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_1",
+      "tv": 0.019951352704083547
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_2",
+      "tv": 0.048483281454537064
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_3",
+      "tv": 0.05285034864209592
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "bare_nl",
+      "tv": 0.05702841281890869
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "pass",
+      "tv": 0.09815031290054321
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ellipsis",
+      "tv": 0.0996084213256836
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "identity",
+      "tv": 0.25081313628470525
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "observe",
+      "tv": 0.1470600962638855
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "verified",
+      "tv": 0.04848122596740723
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ok",
+      "tv": 0.04526066780090332
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "double_neutral",
+      "tv": 0.10047554969787598
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.03403808653820306
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.05420809984207153
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "type_check",
+      "tv": 0.13271927740424871
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "assert_true",
+      "tv": 0.06937885284423828
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "comment_var",
+      "tv": 0.14528961072210222
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "print_var",
+      "tv": 0.05816781520843506
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "none",
+      "tv": 0.08338344097137451
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_1",
+      "tv": 0.08835488557815552
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_2",
+      "tv": 0.007307577878236771
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_3",
+      "tv": 0.01367098093032837
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_1",
+      "tv": 0.03279905463568866
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_2",
+      "tv": 0.049515077262185514
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_3",
+      "tv": 0.06459865754004568
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "bare_nl",
+      "tv": 0.058369994163513184
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "pass",
+      "tv": 0.10368448495864868
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ellipsis",
+      "tv": 0.10260897874832153
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "identity",
+      "tv": 0.2539576712879352
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "observe",
+      "tv": 0.17939263582229614
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "verified",
+      "tv": 0.04495680332183838
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ok",
+      "tv": 0.040676116943359375
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "double_neutral",
+      "tv": 0.08923643827438354
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.04001796228112653
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.07113480567932129
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "type_check",
+      "tv": 0.11261177901178598
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "assert_true",
+      "tv": 0.07313936948776245
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "comment_var",
+      "tv": 0.18094579759053886
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "print_var",
+      "tv": 0.07193875312805176
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "none",
+      "tv": 0.11231446266174316
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_1",
+      "tv": 0.11013036966323853
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_2",
+      "tv": 0.02197005524067208
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_3",
+      "tv": 0.009956608118955046
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_1",
+      "tv": 0.04598861880367622
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_2",
+      "tv": 0.10592662543058395
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_3",
+      "tv": 0.0091083042207174
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "bare_nl",
+      "tv": 0.07169681787490845
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "pass",
+      "tv": 0.10641241073608398
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ellipsis",
+      "tv": 0.13660621643066406
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "identity",
+      "tv": 0.29146704662707634
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "observe",
+      "tv": 0.19086366891860962
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "verified",
+      "tv": 0.04931575059890747
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ok",
+      "tv": 0.04467129707336426
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "double_neutral",
+      "tv": 0.1010901927947998
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.060593574336962774
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.07099256856599823
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "type_check",
+      "tv": 0.10745498538017273
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "assert_true",
+      "tv": 0.06397634744644165
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "comment_var",
+      "tv": 0.16668228385969996
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "print_var",
+      "tv": 0.04212087392807007
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "none",
+      "tv": 0.07744473218917847
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_1",
+      "tv": 0.07887876033782959
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_2",
+      "tv": 0.01563853124389425
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_3",
+      "tv": 0.005108893092256039
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_1",
+      "tv": 0.03683013346744701
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_2",
+      "tv": 0.0975714007508941
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_3",
+      "tv": 0.018170512630604208
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "bare_nl",
+      "tv": 0.05021935701370239
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "pass",
+      "tv": 0.0770646333694458
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ellipsis",
+      "tv": 0.10202738156658597
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "identity",
+      "tv": 0.2663052307907492
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "observe",
+      "tv": 0.1770557766139973
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "verified",
+      "tv": 0.03542304039001465
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ok",
+      "tv": 0.03127321903593838
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "double_neutral",
+      "tv": 0.06977701187133789
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.05216416344046593
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.06009952235035598
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "type_check",
+      "tv": 0.10695441139978357
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "assert_true",
+      "tv": 0.0433383584022522
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "comment_var",
+      "tv": 0.13610057154437527
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "print_var",
+      "tv": 0.04989767074584961
+    }
+  ],
+  "strong_assert_2": [
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "none",
+      "tv": 0.00722193717956543
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_1",
+      "tv": 0.01663917303085327
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_2",
+      "tv": 0.03699678182601929
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_3",
+      "tv": 0.019287109375
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_1",
+      "tv": 0.038952886301558465
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_2",
+      "tv": 0.08133622852619737
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_3",
+      "tv": 0.0670711855054833
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "bare_nl",
+      "tv": 0.006720164732541889
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "pass",
+      "tv": 0.005261898040771484
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ellipsis",
+      "tv": 0.011371791362762451
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "identity",
+      "tv": 0.058276554045733064
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "observe",
+      "tv": 0.03969545841391664
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "verified",
+      "tv": 0.009997904300689697
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ok",
+      "tv": 0.0030164294003043324
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "double_neutral",
+      "tv": 0.03659266233444214
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.06720942596439272
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.033910813624970615
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "type_check",
+      "tv": 0.1285221034195274
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "assert_true",
+      "tv": 0.01475435495376587
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "comment_var",
+      "tv": 0.01763061387464404
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "print_var",
+      "tv": 0.050297592737479135
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "none",
+      "tv": 0.001709524542093277
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_1",
+      "tv": 0.005721390247344971
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_2",
+      "tv": 0.014252960681915283
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_3",
+      "tv": 0.005605638027191162
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_1",
+      "tv": 0.011177166423294693
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_2",
+      "tv": 0.026711706595961004
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_3",
+      "tv": 0.01729187578894198
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "bare_nl",
+      "tv": 0.010822146141435951
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "pass",
+      "tv": 0.002468349412083626
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ellipsis",
+      "tv": 0.002953076735138893
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "identity",
+      "tv": 0.03462133265566081
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "observe",
+      "tv": 0.006372815143549815
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "verified",
+      "tv": 0.0026784446090459824
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ok",
+      "tv": 0.003946729935705662
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "double_neutral",
+      "tv": 0.012758195400238037
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.025380202860105783
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.012393011536914855
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "type_check",
+      "tv": 0.05896957137156278
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "assert_true",
+      "tv": 0.006272561848163605
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "comment_var",
+      "tv": 0.004901645937934518
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "print_var",
+      "tv": 0.0244025849387981
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "none",
+      "tv": 0.008132344111800194
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_1",
+      "tv": 0.014805912971496582
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_2",
+      "tv": 0.03136146068572998
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_3",
+      "tv": 0.010142326354980469
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_1",
+      "tv": 0.04628541646525264
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_2",
+      "tv": 0.027240237221121788
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_3",
+      "tv": 0.021468130871653557
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "bare_nl",
+      "tv": 0.011945221573114395
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "pass",
+      "tv": 0.005957627668976784
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ellipsis",
+      "tv": 0.010912101715803146
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "identity",
+      "tv": 0.052660687681054696
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "observe",
+      "tv": 0.013717332243686542
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "verified",
+      "tv": 0.003604404628276825
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ok",
+      "tv": 0.00877938698977232
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "double_neutral",
+      "tv": 0.022677481174468994
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.01657711894949898
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.019113300659228116
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "type_check",
+      "tv": 0.05297887840424664
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "assert_true",
+      "tv": 0.016275632195174694
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "comment_var",
+      "tv": 0.01392313139513135
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "print_var",
+      "tv": 0.054194580792682245
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "none",
+      "tv": 0.008046731352806091
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_1",
+      "tv": 0.0116158127784729
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_2",
+      "tv": 0.024789154529571533
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_3",
+      "tv": 0.009319603443145752
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_1",
+      "tv": 0.03798375301994383
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_2",
+      "tv": 0.03698074817657471
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_3",
+      "tv": 0.00794167653657496
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "bare_nl",
+      "tv": 0.010920226573944092
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "pass",
+      "tv": 0.005156094208359718
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ellipsis",
+      "tv": 0.008083293214440346
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "identity",
+      "tv": 0.06188727542757988
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "observe",
+      "tv": 0.019026907393708825
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "verified",
+      "tv": 0.0046921223402023315
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ok",
+      "tv": 0.007033206173218787
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "double_neutral",
+      "tv": 0.01637279987335205
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.01101125800050795
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.010819232207722962
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "type_check",
+      "tv": 0.06269426993094385
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "assert_true",
+      "tv": 0.01109500415623188
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "comment_var",
+      "tv": 0.010017361957579851
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "print_var",
+      "tv": 0.06766375701408833
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "none",
+      "tv": 0.005940396338701248
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_1",
+      "tv": 0.006369113922119141
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_2",
+      "tv": 0.020633041858673096
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_3",
+      "tv": 0.00407630018889904
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_1",
+      "tv": 0.04260822886135429
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_2",
+      "tv": 0.06659227662021294
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_3",
+      "tv": 0.02534506906522438
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "bare_nl",
+      "tv": 0.029076188686303794
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "pass",
+      "tv": 0.01666189858224243
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ellipsis",
+      "tv": 0.024375709472224116
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "identity",
+      "tv": 0.0457038774038665
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "observe",
+      "tv": 0.03197546489536762
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "verified",
+      "tv": 0.012384038767777383
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ok",
+      "tv": 0.021253877988783643
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "double_neutral",
+      "tv": 0.008930749143473804
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.0037253136979416013
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.01735043345252052
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "type_check",
+      "tv": 0.048169252870138735
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "assert_true",
+      "tv": 0.02990787662565708
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "comment_var",
+      "tv": 0.03528835956240073
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "print_var",
+      "tv": 0.04547223055851646
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "none",
+      "tv": 0.006319659296423197
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_1",
+      "tv": 0.0061454176902771
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_2",
+      "tv": 0.013902544975280762
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_3",
+      "tv": 0.0024124998599290848
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_1",
+      "tv": 0.04477882437640801
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_2",
+      "tv": 0.038763951626606286
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_3",
+      "tv": 0.012989507406018674
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "bare_nl",
+      "tv": 0.027287414530292153
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "pass",
+      "tv": 0.015165182761847973
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ellipsis",
+      "tv": 0.027655242010951042
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "identity",
+      "tv": 0.035567113023716956
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "observe",
+      "tv": 0.023408992361510172
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "verified",
+      "tv": 0.010101431398652494
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ok",
+      "tv": 0.01724416494835168
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "double_neutral",
+      "tv": 0.007162034511566162
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.009877115488052368
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.013536517100874335
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "type_check",
+      "tv": 0.04009449522709474
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "assert_true",
+      "tv": 0.025979798287153244
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "comment_var",
+      "tv": 0.03595267253695056
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "print_var",
+      "tv": 0.0226162196486257
+    }
+  ],
+  "moderate_assert": [
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "none",
+      "tv": 0.007828712463378906
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_1",
+      "tv": 0.007779672741889954
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_2",
+      "tv": 0.018275029957294464
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_3",
+      "tv": 0.027124106884002686
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_1",
+      "tv": 0.054480131599120796
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_2",
+      "tv": 0.07081770547665656
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_3",
+      "tv": 0.06416831427486613
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "bare_nl",
+      "tv": 0.08952643722295761
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "pass",
+      "tv": 0.014611572027206421
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ellipsis",
+      "tv": 0.030067086219787598
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "identity",
+      "tv": 0.08340574312023818
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "observe",
+      "tv": 0.020977517764549702
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "verified",
+      "tv": 0.02690436691045761
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ok",
+      "tv": 0.022532179951667786
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "double_neutral",
+      "tv": 0.014151811599731445
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.05094609738443978
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.025989974878029898
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "type_check",
+      "tv": 0.13803570671007037
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "assert_true",
+      "tv": 0.005903229117393494
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "comment_var",
+      "tv": 0.004769091086927801
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "print_var",
+      "tv": 0.05515648814616725
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "none",
+      "tv": 0.012691181153059006
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_1",
+      "tv": 0.007819902151823044
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_2",
+      "tv": 0.013678830116987228
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_3",
+      "tv": 0.022063791751861572
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_1",
+      "tv": 0.018413902900647372
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_2",
+      "tv": 0.041980077570769936
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_3",
+      "tv": 0.03645006055012345
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "bare_nl",
+      "tv": 0.10245946393115446
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "pass",
+      "tv": 0.04566689202329144
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ellipsis",
+      "tv": 0.040079742087982595
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "identity",
+      "tv": 0.029453334485879168
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "observe",
+      "tv": 0.03586724301567301
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "verified",
+      "tv": 0.047923579812049866
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ok",
+      "tv": 0.04448207200039178
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "double_neutral",
+      "tv": 0.012836822774261236
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.018635986256413162
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.06619292497634888
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "type_check",
+      "tv": 0.04344911145744845
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "assert_true",
+      "tv": 0.09202432620804757
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "comment_var",
+      "tv": 0.07821017503738403
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "print_var",
+      "tv": 0.0691621876321733
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "none",
+      "tv": 0.04176688566803932
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_1",
+      "tv": 0.02954675629734993
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_2",
+      "tv": 0.036282294197008014
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_3",
+      "tv": 0.03758246451616287
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_1",
+      "tv": 0.046415338321821764
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_2",
+      "tv": 0.058529637346509844
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_3",
+      "tv": 0.07788066318607889
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "bare_nl",
+      "tv": 0.12183274980634451
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "pass",
+      "tv": 0.07052377238869667
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ellipsis",
+      "tv": 0.07961124181747437
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "identity",
+      "tv": 0.011621680576354265
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "observe",
+      "tv": 0.07662365262513049
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "verified",
+      "tv": 0.07167776580899954
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ok",
+      "tv": 0.079313504305901
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "double_neutral",
+      "tv": 0.03533493934082799
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.07884884357918054
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.11085461237234995
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "type_check",
+      "tv": 0.028057262708898634
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "assert_true",
+      "tv": 0.11607626080513
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "comment_var",
+      "tv": 0.05457554632448591
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "print_var",
+      "tv": 0.060704258328769356
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "none",
+      "tv": 0.03851881064474583
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_1",
+      "tv": 0.01804930716753006
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_2",
+      "tv": 0.025268016383051872
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_3",
+      "tv": 0.041751984506845474
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_1",
+      "tv": 0.06962274352554232
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_2",
+      "tv": 0.08553116011898965
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_3",
+      "tv": 0.11162236076779664
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "bare_nl",
+      "tv": 0.14609561068937182
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "pass",
+      "tv": 0.08772046118974686
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ellipsis",
+      "tv": 0.09640318155288696
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "identity",
+      "tv": 0.0113209025003016
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "observe",
+      "tv": 0.10089607769623399
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "verified",
+      "tv": 0.07884658547118306
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ok",
+      "tv": 0.09155753068625927
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "double_neutral",
+      "tv": 0.024411515332758427
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.10239861928857863
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.1264222722966224
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "type_check",
+      "tv": 0.007837444543838501
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "assert_true",
+      "tv": 0.14095408748835325
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "comment_var",
+      "tv": 0.08362546027638018
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "print_var",
+      "tv": 0.07733259379165247
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "none",
+      "tv": 0.07923662662506104
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_1",
+      "tv": 0.04198220442049205
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_2",
+      "tv": 0.054736541060265154
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_3",
+      "tv": 0.05143669247627258
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_1",
+      "tv": 0.08877567085437477
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_2",
+      "tv": 0.054741233703680336
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_3",
+      "tv": 0.08696133963530883
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "bare_nl",
+      "tv": 0.20424681901931763
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "pass",
+      "tv": 0.11250038829166442
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ellipsis",
+      "tv": 0.13904752483358607
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "identity",
+      "tv": 0.05228117015212774
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "observe",
+      "tv": 0.1254290046344977
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "verified",
+      "tv": 0.1191778632637579
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ok",
+      "tv": 0.12464232690399513
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "double_neutral",
+      "tv": 0.05967526021413505
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.09017933014547452
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.14454077888512984
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "type_check",
+      "tv": 0.031541143340291455
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "assert_true",
+      "tv": 0.18515096604824066
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "comment_var",
+      "tv": 0.08637367689516395
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "print_var",
+      "tv": 0.08524927258258685
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "none",
+      "tv": 0.06922812387347221
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_1",
+      "tv": 0.03234711987897754
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_2",
+      "tv": 0.043354994064429775
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_3",
+      "tv": 0.048833101987838745
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_1",
+      "tv": 0.1034992624190636
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_2",
+      "tv": 0.07657281760475598
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_3",
+      "tv": 0.10411988070700318
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "bare_nl",
+      "tv": 0.17219360917806625
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "pass",
+      "tv": 0.10176311805844307
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ellipsis",
+      "tv": 0.1348218321800232
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "identity",
+      "tv": 0.0630858758231625
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "observe",
+      "tv": 0.10966882412321866
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "verified",
+      "tv": 0.09848986653378233
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ok",
+      "tv": 0.10688881002715789
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "double_neutral",
+      "tv": 0.043197924707783386
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.09566836664453149
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.1280125235207379
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "type_check",
+      "tv": 0.00886265333974734
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "assert_true",
+      "tv": 0.1641031550243497
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "comment_var",
+      "tv": 0.10177073202794418
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "print_var",
+      "tv": 0.08861743501620367
+    }
+  ],
+  "misleading": [
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "none",
+      "tv": 0.018106995150446892
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_1",
+      "tv": 0.024036213755607605
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_2",
+      "tv": 0.031268074410036206
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_3",
+      "tv": 0.021337281446903944
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_1",
+      "tv": 0.11340067081619054
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_2",
+      "tv": 0.028769476106390357
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_3",
+      "tv": 0.005595289985649288
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "bare_nl",
+      "tv": 0.02540007419884205
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "pass",
+      "tv": 0.004147247411310673
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ellipsis",
+      "tv": 0.026302326004952192
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "identity",
+      "tv": 0.003984537208452821
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "observe",
+      "tv": 0.026995828695362434
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "verified",
+      "tv": 0.0019611273892223835
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ok",
+      "tv": 0.0133131742477417
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "double_neutral",
+      "tv": 0.02275710739195347
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.019676893251016736
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.003819214762188494
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "type_check",
+      "tv": 0.0169807969359681
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "assert_true",
+      "tv": 0.020064089447259903
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "comment_var",
+      "tv": 0.03374262136640027
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "print_var",
+      "tv": 0.006997233256697655
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "none",
+      "tv": 0.04501312971115112
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_1",
+      "tv": 0.022055361419916153
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_2",
+      "tv": 0.021242261631414294
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_3",
+      "tv": 0.04278128081932664
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_1",
+      "tv": 0.09789360989816487
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_2",
+      "tv": 0.011100269621238112
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_3",
+      "tv": 0.02590949321165681
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "bare_nl",
+      "tv": 0.05871880683116615
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "pass",
+      "tv": 0.028546497225761414
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ellipsis",
+      "tv": 0.06597470655106008
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "identity",
+      "tv": 0.0007995761698111892
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "observe",
+      "tv": 0.051441757881548256
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "verified",
+      "tv": 0.03736269474029541
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ok",
+      "tv": 0.04799397150054574
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "double_neutral",
+      "tv": 0.02270927419885993
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.04227170499507338
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.004434701637364924
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "type_check",
+      "tv": 0.004929409362375736
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "assert_true",
+      "tv": 0.014176848344504833
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "comment_var",
+      "tv": 0.03573370014782995
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "print_var",
+      "tv": 0.013782888650894165
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "none",
+      "tv": 0.04874643683433533
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_1",
+      "tv": 0.027652695775032043
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_2",
+      "tv": 0.027288541197776794
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_3",
+      "tv": 0.04445004928857088
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_1",
+      "tv": 0.06305235609761439
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_2",
+      "tv": 0.025555947446264327
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_3",
+      "tv": 0.003405582159757614
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "bare_nl",
+      "tv": 0.065697580575943
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "pass",
+      "tv": 0.019402489066123962
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ellipsis",
+      "tv": 0.04588562808930874
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "identity",
+      "tv": 0.01167090842500329
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "observe",
+      "tv": 0.03257750777993351
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "verified",
+      "tv": 0.029069676995277405
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ok",
+      "tv": 0.03343093395233154
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "double_neutral",
+      "tv": 0.034070469439029694
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.01559567078948021
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.02316163427894935
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "type_check",
+      "tv": 0.031943560810759664
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "assert_true",
+      "tv": 0.014967501163482666
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "comment_var",
+      "tv": 0.03702147118747234
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "print_var",
+      "tv": 0.026864975690841675
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "none",
+      "tv": 0.06611451506614685
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_1",
+      "tv": 0.030508343130350113
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_2",
+      "tv": 0.02914832765236497
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_3",
+      "tv": 0.06342816818505526
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_1",
+      "tv": 0.07706970639992505
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_2",
+      "tv": 0.016866835532709956
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_3",
+      "tv": 0.019729720894247293
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "bare_nl",
+      "tv": 0.0946710854768753
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "pass",
+      "tv": 0.03800259530544281
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ellipsis",
+      "tv": 0.06472691893577576
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "identity",
+      "tv": 0.019124846206977963
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "observe",
+      "tv": 0.03972390643320978
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "verified",
+      "tv": 0.05378096550703049
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ok",
+      "tv": 0.056920647621154785
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "double_neutral",
+      "tv": 0.03833280876278877
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.013968348503112793
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.018395927734673023
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "type_check",
+      "tv": 0.033271474414505064
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "assert_true",
+      "tv": 0.03447002172470093
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "comment_var",
+      "tv": 0.04498759261332452
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "print_var",
+      "tv": 0.02784307347610593
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "none",
+      "tv": 0.06313581764698029
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_1",
+      "tv": 0.03238112758845091
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_2",
+      "tv": 0.038801145274192095
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_3",
+      "tv": 0.04001526674255729
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_1",
+      "tv": 0.106347726425156
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_2",
+      "tv": 0.03295807127142325
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_3",
+      "tv": 0.018702838919125497
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "bare_nl",
+      "tv": 0.0687851756811142
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "pass",
+      "tv": 0.03079766035079956
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ellipsis",
+      "tv": 0.06984454393386841
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "identity",
+      "tv": 0.028139948844909668
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "observe",
+      "tv": 0.05627373268362135
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "verified",
+      "tv": 0.04824690520763397
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ok",
+      "tv": 0.056126952171325684
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "double_neutral",
+      "tv": 0.03643881808966398
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.028686946257948875
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.010270418599247932
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "type_check",
+      "tv": 0.037124200258404016
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "assert_true",
+      "tv": 0.028534770011901855
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "comment_var",
+      "tv": 0.05791506328387186
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "print_var",
+      "tv": 0.019302070140838623
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "none",
+      "tv": 0.06830647587776184
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_1",
+      "tv": 0.026348011568188667
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_2",
+      "tv": 0.029871074948459864
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_3",
+      "tv": 0.03889659512788057
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_1",
+      "tv": 0.08914639934664592
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_2",
+      "tv": 0.022072626801673323
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_3",
+      "tv": 0.0320292660035193
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "bare_nl",
+      "tv": 0.07589198648929596
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "pass",
+      "tv": 0.04809664189815521
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ellipsis",
+      "tv": 0.09021560288965702
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "identity",
+      "tv": 0.03874844312667847
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "observe",
+      "tv": 0.06100645661354065
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "verified",
+      "tv": 0.05025406926870346
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ok",
+      "tv": 0.06503839790821075
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "double_neutral",
+      "tv": 0.030479753855615854
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.015731990337371826
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.014312138257082552
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "type_check",
+      "tv": 0.051225218805484474
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "assert_true",
+      "tv": 0.04889063537120819
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "comment_var",
+      "tv": 0.0743354253936559
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "print_var",
+      "tv": 0.037737488746643066
+    }
+  ],
+  "misleading_2": [
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "none",
+      "tv": 0.019612345844507217
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_1",
+      "tv": 0.02567601203918457
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_2",
+      "tv": 0.039633531123399734
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_3",
+      "tv": 0.04941756511107087
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_1",
+      "tv": 0.05179583141580224
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_2",
+      "tv": 0.129410058259964
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_3",
+      "tv": 0.05496920086443424
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "bare_nl",
+      "tv": 0.03988103847950697
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "pass",
+      "tv": 0.01772366836667061
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ellipsis",
+      "tv": 0.03641733666881919
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "identity",
+      "tv": 0.060832083225250244
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "observe",
+      "tv": 0.07815672439755872
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "verified",
+      "tv": 0.03282049193512648
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ok",
+      "tv": 0.01693745981901884
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "double_neutral",
+      "tv": 0.02477270644158125
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.04690946725895628
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.03245810652151704
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "type_check",
+      "tv": 0.07409054040908813
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "assert_true",
+      "tv": 0.019724221900105476
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "comment_var",
+      "tv": 0.025158950127661228
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "print_var",
+      "tv": 0.07798708631889895
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "none",
+      "tv": 0.010907888412475586
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_1",
+      "tv": 0.01221311092376709
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_2",
+      "tv": 0.01858764886856079
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_3",
+      "tv": 0.01995408535003662
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_1",
+      "tv": 0.05793592531699687
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_2",
+      "tv": 0.12197858281433582
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_3",
+      "tv": 0.05433262011501938
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "bare_nl",
+      "tv": 0.020570808206684887
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "pass",
+      "tv": 0.025819703936576843
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ellipsis",
+      "tv": 0.04753988981246948
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "identity",
+      "tv": 0.040906821843236685
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "observe",
+      "tv": 0.05111218412639573
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "verified",
+      "tv": 0.020832359790802002
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ok",
+      "tv": 0.013038158416748047
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "double_neutral",
+      "tv": 0.006525695323944092
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.062415195163339376
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.02581629774067551
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "type_check",
+      "tv": 0.08747199864592403
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "assert_true",
+      "tv": 0.01785588264465332
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "comment_var",
+      "tv": 0.05069695005659014
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "print_var",
+      "tv": 0.0722683867206797
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "none",
+      "tv": 0.040093958377838135
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_1",
+      "tv": 0.029165148735046387
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_2",
+      "tv": 0.037138283252716064
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_3",
+      "tv": 0.036913275718688965
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_1",
+      "tv": 0.04731533792801201
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_2",
+      "tv": 0.1166787464171648
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_3",
+      "tv": 0.03830508701503277
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "bare_nl",
+      "tv": 0.05880697816610336
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "pass",
+      "tv": 0.042305901646614075
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ellipsis",
+      "tv": 0.0594489723443985
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "identity",
+      "tv": 0.03767755441367626
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "observe",
+      "tv": 0.08127202588366345
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "verified",
+      "tv": 0.03464549779891968
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ok",
+      "tv": 0.019047483801841736
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "double_neutral",
+      "tv": 0.019427895545959473
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.057949068723246455
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.02311156952055171
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "type_check",
+      "tv": 0.034038325829897076
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "assert_true",
+      "tv": 0.016025245189666748
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "comment_var",
+      "tv": 0.0677122792112641
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "print_var",
+      "tv": 0.04938875592779368
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "none",
+      "tv": 0.03115732967853546
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_1",
+      "tv": 0.0219535231590271
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_2",
+      "tv": 0.025626957416534424
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_3",
+      "tv": 0.030024230480194092
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_1",
+      "tv": 0.05224137217737734
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_2",
+      "tv": 0.13770528696477413
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_3",
+      "tv": 0.034182511270046234
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "bare_nl",
+      "tv": 0.0520953475497663
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "pass",
+      "tv": 0.05296452343463898
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ellipsis",
+      "tv": 0.05865473719313741
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "identity",
+      "tv": 0.030549461022019386
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "observe",
+      "tv": 0.08926391485147178
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "verified",
+      "tv": 0.027565717697143555
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ok",
+      "tv": 0.01717785745859146
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "double_neutral",
+      "tv": 0.014308810234069824
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.05194856727030128
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.019503667717799544
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "type_check",
+      "tv": 0.023273912316653877
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "assert_true",
+      "tv": 0.01582331955432892
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "comment_var",
+      "tv": 0.09125526528805494
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "print_var",
+      "tv": 0.053278994164429605
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "none",
+      "tv": 0.036109812557697296
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_1",
+      "tv": 0.02712571620941162
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_2",
+      "tv": 0.031143150408752263
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_3",
+      "tv": 0.033394575119018555
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_1",
+      "tv": 0.07637973199598491
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_2",
+      "tv": 0.19465050473809242
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_3",
+      "tv": 0.054820532677695155
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "bare_nl",
+      "tv": 0.043602438643574715
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "pass",
+      "tv": 0.042373791337013245
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ellipsis",
+      "tv": 0.06935186684131622
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "identity",
+      "tv": 0.01956974435597658
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "observe",
+      "tv": 0.1298223578487523
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "verified",
+      "tv": 0.02968662977218628
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ok",
+      "tv": 0.016498997807502747
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "double_neutral",
+      "tv": 0.03293639421463013
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.0828818071167916
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.02535048732534051
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "type_check",
+      "tv": 0.04295016854302958
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "assert_true",
+      "tv": 0.01766359806060791
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "comment_var",
+      "tv": 0.09417267359094694
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "print_var",
+      "tv": 0.08484267210587859
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "none",
+      "tv": 0.02117503434419632
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_1",
+      "tv": 0.017328739166259766
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_2",
+      "tv": 0.018908381462097168
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_3",
+      "tv": 0.022520720958709717
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_1",
+      "tv": 0.07118243083823472
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_2",
+      "tv": 0.19013948924839497
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_3",
+      "tv": 0.04906680807471275
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "bare_nl",
+      "tv": 0.02347739040851593
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "pass",
+      "tv": 0.043026745319366455
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ellipsis",
+      "tv": 0.06531831622123718
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "identity",
+      "tv": 0.019654542207717896
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "observe",
+      "tv": 0.11423124629072845
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "verified",
+      "tv": 0.022106647491455078
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ok",
+      "tv": 0.012249261140823364
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "double_neutral",
+      "tv": 0.018145263195037842
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.06911006837617606
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.020623590447939932
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "type_check",
+      "tv": 0.04670015559531748
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "assert_true",
+      "tv": 0.02010136842727661
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "comment_var",
+      "tv": 0.08830029331147671
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "print_var",
+      "tv": 0.09301285317633301
+    }
+  ],
+  "rewrite_pair": [
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "none",
+      "tv": 0.07265909877605736
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_1",
+      "tv": 0.07597476243972778
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_2",
+      "tv": 0.024819910526275635
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_3",
+      "tv": 0.0656777024269104
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_1",
+      "tv": 0.1076802909374237
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_2",
+      "tv": 0.11688774824142456
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_3",
+      "tv": 0.11420446634292603
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "bare_nl",
+      "tv": 0.0467565655708313
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "pass",
+      "tv": 0.08823971205856651
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ellipsis",
+      "tv": 0.05307397712022066
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "identity",
+      "tv": 0.04558828962035477
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "observe",
+      "tv": 0.07265672087669373
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "verified",
+      "tv": 0.09206128120422363
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ok",
+      "tv": 0.08361515402793884
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "double_neutral",
+      "tv": 0.12265205383300781
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.089903324842453
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.06340198195539415
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "type_check",
+      "tv": 0.004276026273146272
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "assert_true",
+      "tv": 0.04409176832996309
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "comment_var",
+      "tv": 0.09271091548725963
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "print_var",
+      "tv": 0.04041738109663129
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "none",
+      "tv": 0.08730112016201019
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_1",
+      "tv": 0.08420221623964608
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_2",
+      "tv": 0.053727030754089355
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_3",
+      "tv": 0.10130328056402504
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_1",
+      "tv": 0.08277593643288128
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_2",
+      "tv": 0.10381966651766561
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_3",
+      "tv": 0.09929623390780762
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "bare_nl",
+      "tv": 0.06681382656097412
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "pass",
+      "tv": 0.08942374587059021
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ellipsis",
+      "tv": 0.06585966487182304
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "identity",
+      "tv": 0.04604655224829912
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "observe",
+      "tv": 0.08114579319953918
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "verified",
+      "tv": 0.10646019736304879
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ok",
+      "tv": 0.09474492236040533
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "double_neutral",
+      "tv": 0.1035230701090768
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.07408440331346355
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.08344622823642567
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "type_check",
+      "tv": 0.017660768935456872
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "assert_true",
+      "tv": 0.07013196824118495
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "comment_var",
+      "tv": 0.0913436389528215
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "print_var",
+      "tv": 0.05561324238078669
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "none",
+      "tv": 0.09102643677033484
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_1",
+      "tv": 0.09936345391906798
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_2",
+      "tv": 0.06012907810509205
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_3",
+      "tv": 0.12275860994122922
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_1",
+      "tv": 0.08733369037508965
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_2",
+      "tv": 0.10673577152192593
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_3",
+      "tv": 0.10658645909279585
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "bare_nl",
+      "tv": 0.07989876414649189
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "pass",
+      "tv": 0.10360939777456224
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ellipsis",
+      "tv": 0.052728868555277586
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "identity",
+      "tv": 0.05229996656998992
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "observe",
+      "tv": 0.07641516160219908
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "verified",
+      "tv": 0.11787239997647703
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ok",
+      "tv": 0.11784653924405575
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "double_neutral",
+      "tv": 0.12810420198366046
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.07918062014505267
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.09352875826880336
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "type_check",
+      "tv": 0.037109539145603776
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "assert_true",
+      "tv": 0.03968070400878787
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "comment_var",
+      "tv": 0.10387750854715705
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "print_var",
+      "tv": 0.04722780827432871
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "none",
+      "tv": 0.08998106978833675
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_1",
+      "tv": 0.09020984312519431
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_2",
+      "tv": 0.08024355722591281
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_3",
+      "tv": 0.11235106852836907
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_1",
+      "tv": 0.07304539903998375
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_2",
+      "tv": 0.08897698018699884
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_3",
+      "tv": 0.08470081654377282
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "bare_nl",
+      "tv": 0.08366799121722579
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "pass",
+      "tv": 0.0920086782425642
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ellipsis",
+      "tv": 0.04921308974735439
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "identity",
+      "tv": 0.05010333890095353
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "observe",
+      "tv": 0.07018627785146236
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "verified",
+      "tv": 0.10471499525010586
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ok",
+      "tv": 0.09553521336056292
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "double_neutral",
+      "tv": 0.11761769442819059
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.0651311264373362
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.09105303505202755
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "type_check",
+      "tv": 0.03285868116654456
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "assert_true",
+      "tv": 0.040789471473544836
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "comment_var",
+      "tv": 0.09256849391385913
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "print_var",
+      "tv": 0.05326964985579252
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "none",
+      "tv": 0.0614573392085731
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_1",
+      "tv": 0.06505077099427581
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_2",
+      "tv": 0.047545714769512415
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_3",
+      "tv": 0.051533998688682914
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_1",
+      "tv": 0.05353960650973022
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_2",
+      "tv": 0.0679318003822118
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_3",
+      "tv": 0.0857073599472642
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "bare_nl",
+      "tv": 0.028618918266147375
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "pass",
+      "tv": 0.07161424623336643
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ellipsis",
+      "tv": 0.017435882473364472
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "identity",
+      "tv": 0.03273396706208587
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "observe",
+      "tv": 0.03235693532042205
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "verified",
+      "tv": 0.04939176933839917
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ok",
+      "tv": 0.045014873263426125
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "double_neutral",
+      "tv": 0.10650514904409647
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.04792214254848659
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.07429393276106566
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "type_check",
+      "tv": 0.0018590964609757066
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "assert_true",
+      "tv": 0.003830825677141547
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "comment_var",
+      "tv": 0.042273696744814515
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "print_var",
+      "tv": 0.04718990402761847
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "none",
+      "tv": 0.08747166697867215
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_1",
+      "tv": 0.06767202206538059
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_2",
+      "tv": 0.04624268598854542
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_3",
+      "tv": 0.06852625170722604
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_1",
+      "tv": 0.07015193998813629
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_2",
+      "tv": 0.08111838321201503
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_3",
+      "tv": 0.08646107628010213
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "bare_nl",
+      "tv": 0.047864258754998446
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "pass",
+      "tv": 0.09256067266687751
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ellipsis",
+      "tv": 0.0314058531075716
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "identity",
+      "tv": 0.042086104629561305
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "observe",
+      "tv": 0.046483735321089625
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "verified",
+      "tv": 0.07814382808282971
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ok",
+      "tv": 0.06612648640293628
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "double_neutral",
+      "tv": 0.11091085057705641
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.05374390562064946
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.07728079857770354
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "type_check",
+      "tv": 0.004147827276028693
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "assert_true",
+      "tv": 0.013876041281037033
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "comment_var",
+      "tv": 0.06626749760471284
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "print_var",
+      "tv": 0.07207081280648708
+    }
+  ],
+  "boundary_pair": [
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "none",
+      "tv": 0.03827631054446101
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_1",
+      "tv": 0.059411422291304916
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_2",
+      "tv": 0.017556607723236084
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_3",
+      "tv": 0.04530364274978638
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_1",
+      "tv": 0.06884826166788116
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_2",
+      "tv": 0.08323454856872559
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_3",
+      "tv": 0.06766402721405029
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "bare_nl",
+      "tv": 0.01808787212939933
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "pass",
+      "tv": 0.037006520200520754
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ellipsis",
+      "tv": 0.053410794818773866
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "identity",
+      "tv": 0.04695978222298436
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "observe",
+      "tv": 0.008137047057971358
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "verified",
+      "tv": 0.021897335856920108
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ok",
+      "tv": 0.005165329028386623
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "double_neutral",
+      "tv": 0.061532340827398
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.023955056443810463
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.08156929255346768
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "type_check",
+      "tv": 0.0030597150325775146
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "assert_true",
+      "tv": 0.027463287115097046
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "comment_var",
+      "tv": 0.12509512179531157
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "print_var",
+      "tv": 0.1119793034158647
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "none",
+      "tv": 0.013789457676466554
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_1",
+      "tv": 0.026179194450378418
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_2",
+      "tv": 0.0068511962890625
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_3",
+      "tv": 0.01402348279953003
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_1",
+      "tv": 0.035766966408118606
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_2",
+      "tv": 0.03556418418884277
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_3",
+      "tv": 0.0243455171585083
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "bare_nl",
+      "tv": 0.009465149836614728
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "pass",
+      "tv": 0.018283053301274776
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ellipsis",
+      "tv": 0.038848936557769775
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "identity",
+      "tv": 0.056888698891270906
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "observe",
+      "tv": 0.0076728761196136475
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "verified",
+      "tv": 0.003052792511880398
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ok",
+      "tv": 0.00865196983795613
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "double_neutral",
+      "tv": 0.03982341289520264
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.006897837680298835
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.040985286235809326
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "type_check",
+      "tv": 0.01614081859588623
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "assert_true",
+      "tv": 0.012341409921646118
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "comment_var",
+      "tv": 0.13146841526031494
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "print_var",
+      "tv": 0.0991430887952447
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "none",
+      "tv": 0.0341800881724339
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_1",
+      "tv": 0.02969505201326683
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_2",
+      "tv": 0.011067807674407959
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_3",
+      "tv": 0.02114623785018921
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_1",
+      "tv": 0.046599361405242234
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_2",
+      "tv": 0.08047819137573242
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_3",
+      "tv": 0.05871474742889404
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "bare_nl",
+      "tv": 0.03314857436635066
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "pass",
+      "tv": 0.006148934364318848
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ellipsis",
+      "tv": 0.020453155040740967
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "identity",
+      "tv": 0.03927144408226013
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "observe",
+      "tv": 0.07637040049303323
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "verified",
+      "tv": 0.007700050191488117
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ok",
+      "tv": 0.024165789713151753
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "double_neutral",
+      "tv": 0.04033769795205444
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.004843251372221857
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.0661102511221543
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "type_check",
+      "tv": 0.06316202878952026
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "assert_true",
+      "tv": 0.009652644395828247
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "comment_var",
+      "tv": 0.1017265370755922
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "print_var",
+      "tv": 0.07177072763442993
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "none",
+      "tv": 0.06123902113176882
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_1",
+      "tv": 0.034425263525918126
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_2",
+      "tv": 0.009161412715911865
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_3",
+      "tv": 0.02045130729675293
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_1",
+      "tv": 0.07382924971170723
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_2",
+      "tv": 0.0823601484298706
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_3",
+      "tv": 0.055016934871673584
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "bare_nl",
+      "tv": 0.047757921973243356
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "pass",
+      "tv": 0.011357620474882424
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ellipsis",
+      "tv": 0.0487242192029953
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "identity",
+      "tv": 0.055947457207366824
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "observe",
+      "tv": 0.06576218002010137
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "verified",
+      "tv": 0.0041840560734272
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ok",
+      "tv": 0.021409887936897576
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "double_neutral",
+      "tv": 0.052490322035737336
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.021291182143613696
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.06735772162210196
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "type_check",
+      "tv": 0.04851222038269043
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "assert_true",
+      "tv": 0.021361127495765686
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "comment_var",
+      "tv": 0.14668685715878382
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "print_var",
+      "tv": 0.09655427932739258
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "none",
+      "tv": 0.028804510831832886
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_1",
+      "tv": 0.04127683042315766
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_2",
+      "tv": 0.014507055282592773
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_3",
+      "tv": 0.031569063663482666
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_1",
+      "tv": 0.08980635000625625
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_2",
+      "tv": 0.1353535728994757
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_3",
+      "tv": 0.06726604700088501
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "bare_nl",
+      "tv": 0.027621477842330933
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "pass",
+      "tv": 0.012087821960449219
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ellipsis",
+      "tv": 0.05004635453224182
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "identity",
+      "tv": 0.08528624693281017
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "observe",
+      "tv": 0.0175536647439003
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "verified",
+      "tv": 0.007227981899632141
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ok",
+      "tv": 0.02036051597679034
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "double_neutral",
+      "tv": 0.04909876169404015
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.03687827743124217
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.07558754808269441
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "type_check",
+      "tv": 0.01477724313735962
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "assert_true",
+      "tv": 0.03185315430164337
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "comment_var",
+      "tv": 0.1326831299229525
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "print_var",
+      "tv": 0.0988101065158844
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "none",
+      "tv": 0.025388220383320004
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_1",
+      "tv": 0.03158860246185213
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_2",
+      "tv": 0.010375261306762695
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_3",
+      "tv": 0.02093195915222168
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_1",
+      "tv": 0.08581935754045844
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_2",
+      "tv": 0.10926470515551046
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_3",
+      "tv": 0.04750710725784302
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "bare_nl",
+      "tv": 0.029952159442473203
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "pass",
+      "tv": 0.010149789042770863
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ellipsis",
+      "tv": 0.04892757534980774
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "identity",
+      "tv": 0.10921006771968678
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "observe",
+      "tv": 0.025404762011021376
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "verified",
+      "tv": 0.006715137860737741
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ok",
+      "tv": 0.015274310135282576
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "double_neutral",
+      "tv": 0.03946302115218714
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.03305869532050565
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.055210966675076634
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "type_check",
+      "tv": 0.015830576419830322
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "assert_true",
+      "tv": 0.028171956539154053
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "comment_var",
+      "tv": 0.12787865288555622
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "print_var",
+      "tv": 0.11777889728546143
+    }
+  ],
+  "observe_pair": [
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "none",
+      "tv": 0.30277604976436123
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_1",
+      "tv": 0.15902757708681747
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_2",
+      "tv": 0.14247336355037987
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_3",
+      "tv": 0.21989121480146423
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_1",
+      "tv": 0.1901112233463209
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_2",
+      "tv": 0.1817936638253741
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_3",
+      "tv": 0.13125409395433962
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "bare_nl",
+      "tv": 0.2889387622126378
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "pass",
+      "tv": 0.2992922007397283
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ellipsis",
+      "tv": 0.31852361385244876
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "identity",
+      "tv": 0.12856935599120334
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "observe",
+      "tv": 0.12790246709482744
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "verified",
+      "tv": 0.28724293503910303
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "ok",
+      "tv": 0.26044893902144395
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "double_neutral",
+      "tv": 0.18160911265295
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.15383255446795374
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.18206917337374762
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "type_check",
+      "tv": 0.1659540082910098
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "assert_true",
+      "tv": 0.27663403400219977
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "comment_var",
+      "tv": 0.21513213886646554
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 1,
+      "continuation": "print_var",
+      "tv": 0.2792053191224113
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "none",
+      "tv": 0.26354063357575797
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_1",
+      "tv": 0.17086452600779012
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_2",
+      "tv": 0.08118593640392646
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_3",
+      "tv": 0.15517574781551957
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_1",
+      "tv": 0.10848544107284397
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_2",
+      "tv": 0.13800693867960945
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_3",
+      "tv": 0.11780326254665852
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "bare_nl",
+      "tv": 0.2608513820450753
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "pass",
+      "tv": 0.23180179786868393
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ellipsis",
+      "tv": 0.25350089941639453
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "identity",
+      "tv": 0.10148970186128281
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "observe",
+      "tv": 0.11300538125215098
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "verified",
+      "tv": 0.22391379240434617
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "ok",
+      "tv": 0.2199241779744625
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "double_neutral",
+      "tv": 0.1832824781886302
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.09149769722716883
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.15869877580553293
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "type_check",
+      "tv": 0.15266393474303186
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "assert_true",
+      "tv": 0.21560097578912973
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "comment_var",
+      "tv": 0.18987750553060323
+    },
+    {
+      "depth": 4,
+      "var": "x",
+      "val": 5,
+      "continuation": "print_var",
+      "tv": 0.2637921766145155
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "none",
+      "tv": 0.22906663484172896
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_1",
+      "tv": 0.15088843111880124
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_2",
+      "tv": 0.14995597541565076
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_3",
+      "tv": 0.1777105150395073
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_1",
+      "tv": 0.18650496704503894
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_2",
+      "tv": 0.14831741456873715
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_3",
+      "tv": 0.1168516167672351
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "bare_nl",
+      "tv": 0.23546334402635694
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "pass",
+      "tv": 0.23795370000880212
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ellipsis",
+      "tv": 0.2575152085046284
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "identity",
+      "tv": 0.09240964951459318
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "observe",
+      "tv": 0.14690645056543872
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "verified",
+      "tv": 0.21591056504985318
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "ok",
+      "tv": 0.20688870054436848
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "double_neutral",
+      "tv": 0.1738220639526844
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.13101901521440595
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.14805324346525595
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "type_check",
+      "tv": 0.12053034966811538
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "assert_true",
+      "tv": 0.2337104461621493
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "comment_var",
+      "tv": 0.13799353811191395
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 2,
+      "continuation": "print_var",
+      "tv": 0.19195903185755014
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "none",
+      "tv": 0.21912925416836515
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_1",
+      "tv": 0.17320675251539797
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_2",
+      "tv": 0.1844696745974943
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_3",
+      "tv": 0.20979537587845698
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_1",
+      "tv": 0.16121996520087123
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_2",
+      "tv": 0.1452233360032551
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_3",
+      "tv": 0.12295723223360255
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "bare_nl",
+      "tv": 0.2255698165972717
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "pass",
+      "tv": 0.21967555215815082
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ellipsis",
+      "tv": 0.22728483844548464
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "identity",
+      "tv": 0.08889092062599957
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "observe",
+      "tv": 0.14273862243862823
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "verified",
+      "tv": 0.19960535952122882
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "ok",
+      "tv": 0.1986195145873353
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "double_neutral",
+      "tv": 0.1938592222868465
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.1188951451331377
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.15706415881868452
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "type_check",
+      "tv": 0.09447960730176419
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "assert_true",
+      "tv": 0.18745026632677764
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "comment_var",
+      "tv": 0.11990077252266929
+    },
+    {
+      "depth": 4,
+      "var": "y",
+      "val": 6,
+      "continuation": "print_var",
+      "tv": 0.2023135256022215
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "none",
+      "tv": 0.21333026234060526
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_1",
+      "tv": 0.14227973454399034
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_2",
+      "tv": 0.20832935339421965
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_3",
+      "tv": 0.21692076127510518
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_1",
+      "tv": 0.18797045154497027
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_2",
+      "tv": 0.1975474298815243
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_3",
+      "tv": 0.1348879247379955
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "bare_nl",
+      "tv": 0.23335472773760557
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "pass",
+      "tv": 0.23781158379279077
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ellipsis",
+      "tv": 0.22855291271116585
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "identity",
+      "tv": 0.09930156101472676
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "observe",
+      "tv": 0.15684885391965508
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "verified",
+      "tv": 0.24155210005119443
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "ok",
+      "tv": 0.21720963943516836
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "double_neutral",
+      "tv": 0.16266164398984984
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.11816860921680927
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.17552942255861126
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "type_check",
+      "tv": 0.07328282610978931
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "assert_true",
+      "tv": 0.21074147848412395
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "comment_var",
+      "tv": 0.16293753823265433
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 3,
+      "continuation": "print_var",
+      "tv": 0.24090920254820958
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "none",
+      "tv": 0.23350265272893012
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_1",
+      "tv": 0.14233407814754173
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_2",
+      "tv": 0.18271912593627349
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_3",
+      "tv": 0.18527559703215957
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_1",
+      "tv": 0.18878765308181755
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_2",
+      "tv": 0.18061569292331114
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_3",
+      "tv": 0.12314279237762094
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "bare_nl",
+      "tv": 0.2569065458374098
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "pass",
+      "tv": 0.22816123251686804
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ellipsis",
+      "tv": 0.23724470648448914
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "identity",
+      "tv": 0.12473290576599538
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "observe",
+      "tv": 0.15614958200603724
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "verified",
+      "tv": 0.21666515048127621
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "ok",
+      "tv": 0.2001476574514527
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "double_neutral",
+      "tv": 0.16566673124907538
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "neutral_then_heavy",
+      "tv": 0.12028732476755977
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "heavy_then_neutral",
+      "tv": 0.18454989977180958
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "type_check",
+      "tv": 0.06550470093498006
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "assert_true",
+      "tv": 0.2027288512326777
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "comment_var",
+      "tv": 0.15956914413254708
+    },
+    {
+      "depth": 4,
+      "var": "z",
+      "val": 7,
+      "continuation": "print_var",
+      "tv": 0.2842454843921587
+    }
+  ]
+}

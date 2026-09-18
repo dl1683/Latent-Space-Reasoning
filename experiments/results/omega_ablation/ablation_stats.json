@@ -1,0 +1,740 @@
+{
+  "0.01": {
+    "strong_assert_2": {
+      "none": {
+        "mean": 0.005593160788218181,
+        "max": 0.008132344111800194,
+        "n": 6,
+        "preserves": true
+      },
+      "identity": {
+        "mean": 0.04999189210987728,
+        "max": 0.06188727542757988,
+        "n": 6,
+        "preserves": false
+      },
+      "type_check": {
+        "mean": 0.07175824745111943,
+        "max": 0.1285221034195274,
+        "n": 6,
+        "preserves": false
+      },
+      "just_var": {
+        "mean": 0.1349721592317413,
+        "max": 0.1571977762505412,
+        "n": 6,
+        "preserves": false
+      },
+      "just_equals_var": {
+        "mean": 0.03847848819471741,
+        "max": 0.07486622093711048,
+        "n": 6,
+        "preserves": false
+      },
+      "var_equals": {
+        "mean": 0.048023548350708246,
+        "max": 0.07608765829354525,
+        "n": 6,
+        "preserves": false
+      },
+      "var_equals_space": {
+        "mean": 0.06832485866228429,
+        "max": 0.08604253399244044,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_zero": {
+        "mean": 0.056156230178506426,
+        "max": 0.10304151492891833,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_one": {
+        "mean": 0.036648114895797335,
+        "max": 0.05816662311553955,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_none": {
+        "mean": 0.020229019813996274,
+        "max": 0.038359673897502944,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_str": {
+        "mean": 0.05682948114311633,
+        "max": 0.06829172227298841,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_self_plus": {
+        "mean": 0.11180604334610204,
+        "max": 0.14007073786342517,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_to_underscore": {
+        "mean": 0.016374414963744737,
+        "max": 0.03969545841391664,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_to_temp": {
+        "mean": 0.01230726856738329,
+        "max": 0.022665289172437042,
+        "n": 6,
+        "preserves": false
+      },
+      "double_identity": {
+        "mean": 0.061421443472985025,
+        "max": 0.08353944693226367,
+        "n": 6,
+        "preserves": false
+      },
+      "triple_identity": {
+        "mean": 0.06423764261126053,
+        "max": 0.09834256680915132,
+        "n": 6,
+        "preserves": false
+      },
+      "augmented_assign": {
+        "mean": 0.09042786341645599,
+        "max": 0.1118617815664038,
+        "n": 6,
+        "preserves": false
+      },
+      "comparison": {
+        "mean": 0.09277540136584624,
+        "max": 0.13801157084526494,
+        "n": 6,
+        "preserves": false
+      },
+      "is_check": {
+        "mean": 0.10907624123986655,
+        "max": 0.16117968547041528,
+        "n": 6,
+        "preserves": false
+      },
+      "repr_call": {
+        "mean": 0.07068602516665123,
+        "max": 0.11264268789091147,
+        "n": 6,
+        "preserves": false
+      }
+    },
+    "moderate_assert": {
+      "none": {
+        "mean": 0.007828712463378906,
+        "max": 0.007828712463378906,
+        "n": 1,
+        "preserves": true
+      },
+      "identity": {
+        "mean": 0.08340574312023818,
+        "max": 0.08340574312023818,
+        "n": 1,
+        "preserves": false
+      },
+      "type_check": {
+        "mean": 0.13803570671007037,
+        "max": 0.13803570671007037,
+        "n": 1,
+        "preserves": false
+      },
+      "just_var": {
+        "mean": 0.08060051006032154,
+        "max": 0.08060051006032154,
+        "n": 1,
+        "preserves": false
+      },
+      "just_equals_var": {
+        "mean": 0.11033053792198189,
+        "max": 0.11033053792198189,
+        "n": 1,
+        "preserves": false
+      },
+      "var_equals": {
+        "mean": 0.2476170111040119,
+        "max": 0.2476170111040119,
+        "n": 1,
+        "preserves": false
+      },
+      "var_equals_space": {
+        "mean": 0.2583155052852817,
+        "max": 0.2583155052852817,
+        "n": 1,
+        "preserves": false
+      },
+      "assign_zero": {
+        "mean": 0.16122556146001443,
+        "max": 0.16122556146001443,
+        "n": 1,
+        "preserves": false
+      },
+      "assign_one": {
+        "mean": 0.016528964042663574,
+        "max": 0.016528964042663574,
+        "n": 1,
+        "preserves": false
+      },
+      "assign_none": {
+        "mean": 0.21704188355943188,
+        "max": 0.21704188355943188,
+        "n": 1,
+        "preserves": false
+      },
+      "assign_str": {
+        "mean": 0.22813181759556755,
+        "max": 0.22813181759556755,
+        "n": 1,
+        "preserves": false
+      },
+      "assign_self_plus": {
+        "mean": 0.20200841274345294,
+        "max": 0.20200841274345294,
+        "n": 1,
+        "preserves": false
+      },
+      "assign_to_underscore": {
+        "mean": 0.020977517764549702,
+        "max": 0.020977517764549702,
+        "n": 1,
+        "preserves": false
+      },
+      "assign_to_temp": {
+        "mean": 0.029079439846100286,
+        "max": 0.029079439846100286,
+        "n": 1,
+        "preserves": false
+      },
+      "double_identity": {
+        "mean": 0.12584705790504813,
+        "max": 0.12584705790504813,
+        "n": 1,
+        "preserves": false
+      },
+      "triple_identity": {
+        "mean": 0.16866156551986933,
+        "max": 0.16866156551986933,
+        "n": 1,
+        "preserves": false
+      },
+      "augmented_assign": {
+        "mean": 0.2666096976608969,
+        "max": 0.2666096976608969,
+        "n": 1,
+        "preserves": false
+      },
+      "comparison": {
+        "mean": 0.10009931470267475,
+        "max": 0.10009931470267475,
+        "n": 1,
+        "preserves": false
+      },
+      "is_check": {
+        "mean": 0.10281314549501985,
+        "max": 0.10281314549501985,
+        "n": 1,
+        "preserves": false
+      },
+      "repr_call": {
+        "mean": 0.01044726197142154,
+        "max": 0.01044726197142154,
+        "n": 1,
+        "preserves": false
+      }
+    }
+  },
+  "0.02": {
+    "strong_assert_2": {
+      "none": {
+        "mean": 0.005593160788218181,
+        "max": 0.008132344111800194,
+        "n": 6,
+        "preserves": true
+      },
+      "identity": {
+        "mean": 0.04999189210987728,
+        "max": 0.06188727542757988,
+        "n": 6,
+        "preserves": false
+      },
+      "type_check": {
+        "mean": 0.07175824745111943,
+        "max": 0.1285221034195274,
+        "n": 6,
+        "preserves": false
+      },
+      "just_var": {
+        "mean": 0.1349721592317413,
+        "max": 0.1571977762505412,
+        "n": 6,
+        "preserves": false
+      },
+      "just_equals_var": {
+        "mean": 0.03847848819471741,
+        "max": 0.07486622093711048,
+        "n": 6,
+        "preserves": false
+      },
+      "var_equals": {
+        "mean": 0.048023548350708246,
+        "max": 0.07608765829354525,
+        "n": 6,
+        "preserves": false
+      },
+      "var_equals_space": {
+        "mean": 0.06832485866228429,
+        "max": 0.08604253399244044,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_zero": {
+        "mean": 0.056156230178506426,
+        "max": 0.10304151492891833,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_one": {
+        "mean": 0.036648114895797335,
+        "max": 0.05816662311553955,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_none": {
+        "mean": 0.020229019813996274,
+        "max": 0.038359673897502944,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_str": {
+        "mean": 0.05682948114311633,
+        "max": 0.06829172227298841,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_self_plus": {
+        "mean": 0.11180604334610204,
+        "max": 0.14007073786342517,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_to_underscore": {
+        "mean": 0.016374414963744737,
+        "max": 0.03969545841391664,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_to_temp": {
+        "mean": 0.01230726856738329,
+        "max": 0.022665289172437042,
+        "n": 6,
+        "preserves": false
+      },
+      "double_identity": {
+        "mean": 0.061421443472985025,
+        "max": 0.08353944693226367,
+        "n": 6,
+        "preserves": false
+      },
+      "triple_identity": {
+        "mean": 0.06423764261126053,
+        "max": 0.09834256680915132,
+        "n": 6,
+        "preserves": false
+      },
+      "augmented_assign": {
+        "mean": 0.09042786341645599,
+        "max": 0.1118617815664038,
+        "n": 6,
+        "preserves": false
+      },
+      "comparison": {
+        "mean": 0.09277540136584624,
+        "max": 0.13801157084526494,
+        "n": 6,
+        "preserves": false
+      },
+      "is_check": {
+        "mean": 0.10907624123986655,
+        "max": 0.16117968547041528,
+        "n": 6,
+        "preserves": false
+      },
+      "repr_call": {
+        "mean": 0.07068602516665123,
+        "max": 0.11264268789091147,
+        "n": 6,
+        "preserves": false
+      }
+    },
+    "moderate_assert": {
+      "none": {
+        "mean": 0.010259946808218956,
+        "max": 0.012691181153059006,
+        "n": 2,
+        "preserves": true
+      },
+      "identity": {
+        "mean": 0.056429538803058676,
+        "max": 0.08340574312023818,
+        "n": 2,
+        "preserves": false
+      },
+      "type_check": {
+        "mean": 0.09074240908375941,
+        "max": 0.13803570671007037,
+        "n": 2,
+        "preserves": false
+      },
+      "just_var": {
+        "mean": 0.05532533579389565,
+        "max": 0.08060051006032154,
+        "n": 2,
+        "preserves": false
+      },
+      "just_equals_var": {
+        "mean": 0.05896487693826202,
+        "max": 0.11033053792198189,
+        "n": 2,
+        "preserves": false
+      },
+      "var_equals": {
+        "mean": 0.19754964746243786,
+        "max": 0.2476170111040119,
+        "n": 2,
+        "preserves": false
+      },
+      "var_equals_space": {
+        "mean": 0.20551937239360996,
+        "max": 0.2583155052852817,
+        "n": 2,
+        "preserves": false
+      },
+      "assign_zero": {
+        "mean": 0.12446720688603818,
+        "max": 0.16122556146001443,
+        "n": 2,
+        "preserves": false
+      },
+      "assign_one": {
+        "mean": 0.08267509168945253,
+        "max": 0.14882121933624148,
+        "n": 2,
+        "preserves": false
+      },
+      "assign_none": {
+        "mean": 0.16832757080555893,
+        "max": 0.21704188355943188,
+        "n": 2,
+        "preserves": false
+      },
+      "assign_str": {
+        "mean": 0.17983962714788504,
+        "max": 0.22813181759556755,
+        "n": 2,
+        "preserves": false
+      },
+      "assign_self_plus": {
+        "mean": 0.20937829863396473,
+        "max": 0.21674818452447653,
+        "n": 2,
+        "preserves": false
+      },
+      "assign_to_underscore": {
+        "mean": 0.028422380390111357,
+        "max": 0.03586724301567301,
+        "n": 2,
+        "preserves": false
+      },
+      "assign_to_temp": {
+        "mean": 0.015598535144818015,
+        "max": 0.029079439846100286,
+        "n": 2,
+        "preserves": false
+      },
+      "double_identity": {
+        "mean": 0.08054270665161312,
+        "max": 0.12584705790504813,
+        "n": 2,
+        "preserves": false
+      },
+      "triple_identity": {
+        "mean": 0.11498865531757474,
+        "max": 0.16866156551986933,
+        "n": 2,
+        "preserves": false
+      },
+      "augmented_assign": {
+        "mean": 0.21405841506202705,
+        "max": 0.2666096976608969,
+        "n": 2,
+        "preserves": false
+      },
+      "comparison": {
+        "mean": 0.052512225112877786,
+        "max": 0.10009931470267475,
+        "n": 2,
+        "preserves": false
+      },
+      "is_check": {
+        "mean": 0.05786034994525835,
+        "max": 0.10281314549501985,
+        "n": 2,
+        "preserves": false
+      },
+      "repr_call": {
+        "mean": 0.05358013074146584,
+        "max": 0.09671299951151013,
+        "n": 2,
+        "preserves": false
+      }
+    }
+  },
+  "0.05": {
+    "strong_assert_2": {
+      "none": {
+        "mean": 0.005593160788218181,
+        "max": 0.008132344111800194,
+        "n": 6,
+        "preserves": true
+      },
+      "identity": {
+        "mean": 0.04999189210987728,
+        "max": 0.06188727542757988,
+        "n": 6,
+        "preserves": false
+      },
+      "type_check": {
+        "mean": 0.07175824745111943,
+        "max": 0.1285221034195274,
+        "n": 6,
+        "preserves": false
+      },
+      "just_var": {
+        "mean": 0.1349721592317413,
+        "max": 0.1571977762505412,
+        "n": 6,
+        "preserves": false
+      },
+      "just_equals_var": {
+        "mean": 0.03847848819471741,
+        "max": 0.07486622093711048,
+        "n": 6,
+        "preserves": false
+      },
+      "var_equals": {
+        "mean": 0.048023548350708246,
+        "max": 0.07608765829354525,
+        "n": 6,
+        "preserves": false
+      },
+      "var_equals_space": {
+        "mean": 0.06832485866228429,
+        "max": 0.08604253399244044,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_zero": {
+        "mean": 0.056156230178506426,
+        "max": 0.10304151492891833,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_one": {
+        "mean": 0.036648114895797335,
+        "max": 0.05816662311553955,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_none": {
+        "mean": 0.020229019813996274,
+        "max": 0.038359673897502944,
+        "n": 6,
+        "preserves": true
+      },
+      "assign_str": {
+        "mean": 0.05682948114311633,
+        "max": 0.06829172227298841,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_self_plus": {
+        "mean": 0.11180604334610204,
+        "max": 0.14007073786342517,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_to_underscore": {
+        "mean": 0.016374414963744737,
+        "max": 0.03969545841391664,
+        "n": 6,
+        "preserves": true
+      },
+      "assign_to_temp": {
+        "mean": 0.01230726856738329,
+        "max": 0.022665289172437042,
+        "n": 6,
+        "preserves": true
+      },
+      "double_identity": {
+        "mean": 0.061421443472985025,
+        "max": 0.08353944693226367,
+        "n": 6,
+        "preserves": false
+      },
+      "triple_identity": {
+        "mean": 0.06423764261126053,
+        "max": 0.09834256680915132,
+        "n": 6,
+        "preserves": false
+      },
+      "augmented_assign": {
+        "mean": 0.09042786341645599,
+        "max": 0.1118617815664038,
+        "n": 6,
+        "preserves": false
+      },
+      "comparison": {
+        "mean": 0.09277540136584624,
+        "max": 0.13801157084526494,
+        "n": 6,
+        "preserves": false
+      },
+      "is_check": {
+        "mean": 0.10907624123986655,
+        "max": 0.16117968547041528,
+        "n": 6,
+        "preserves": false
+      },
+      "repr_call": {
+        "mean": 0.07068602516665123,
+        "max": 0.11264268789091147,
+        "n": 6,
+        "preserves": false
+      }
+    },
+    "moderate_assert": {
+      "none": {
+        "mean": 0.02692203006396691,
+        "max": 0.04176688566803932,
+        "n": 6,
+        "preserves": true
+      },
+      "identity": {
+        "mean": 0.03312074970259952,
+        "max": 0.08340574312023818,
+        "n": 6,
+        "preserves": false
+      },
+      "type_check": {
+        "mean": 0.05019988419371657,
+        "max": 0.13803570671007037,
+        "n": 6,
+        "preserves": false
+      },
+      "just_var": {
+        "mean": 0.03136331413406879,
+        "max": 0.08060051006032154,
+        "n": 6,
+        "preserves": false
+      },
+      "just_equals_var": {
+        "mean": 0.034667009570209,
+        "max": 0.11033053792198189,
+        "n": 6,
+        "preserves": false
+      },
+      "var_equals": {
+        "mean": 0.17624101779074408,
+        "max": 0.2476170111040119,
+        "n": 6,
+        "preserves": false
+      },
+      "var_equals_space": {
+        "mean": 0.1961422181727054,
+        "max": 0.2583155052852817,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_zero": {
+        "mean": 0.15743447664620666,
+        "max": 0.20528123091207817,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_one": {
+        "mean": 0.09563393419375643,
+        "max": 0.14882121933624148,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_none": {
+        "mean": 0.1505476357851876,
+        "max": 0.21704188355943188,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_str": {
+        "mean": 0.16322185308672488,
+        "max": 0.22813181759556755,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_self_plus": {
+        "mean": 0.19359162124843957,
+        "max": 0.21674818452447653,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_to_underscore": {
+        "mean": 0.05989344134771576,
+        "max": 0.10089607769623399,
+        "n": 6,
+        "preserves": false
+      },
+      "assign_to_temp": {
+        "mean": 0.016114947356982157,
+        "max": 0.029079439846100286,
+        "n": 6,
+        "preserves": true
+      },
+      "double_identity": {
+        "mean": 0.05488655904385572,
+        "max": 0.12584705790504813,
+        "n": 6,
+        "preserves": false
+      },
+      "triple_identity": {
+        "mean": 0.09086903677477191,
+        "max": 0.16866156551986933,
+        "n": 6,
+        "preserves": false
+      },
+      "augmented_assign": {
+        "mean": 0.20302891632309183,
+        "max": 0.2666096976608969,
+        "n": 6,
+        "preserves": false
+      },
+      "comparison": {
+        "mean": 0.024022407587229583,
+        "max": 0.10009931470267475,
+        "n": 6,
+        "preserves": false
+      },
+      "is_check": {
+        "mean": 0.027815902916093666,
+        "max": 0.10281314549501985,
+        "n": 6,
+        "preserves": false
+      },
+      "repr_call": {
+        "mean": 0.08737789466492056,
+        "max": 0.12524388666497543,
+        "n": 6,
+        "preserves": false
+      }
+    }
+  }
+}

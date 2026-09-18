@@ -1,0 +1,19 @@
+{
+  "method": "rank_transfer",
+  "pairs": [
+    "minimal_ok_fine",
+    "minimal_ok_good",
+    "novar_confirmed",
+    "strong_assert_2",
+    "terse_ok_okay"
+  ],
+  "conts": [
+    "bare_nl",
+    "heavy",
+    "identity",
+    "neutral",
+    "observe",
+    "pass",
+    "type_check"
+  ]
+}

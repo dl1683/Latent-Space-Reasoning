@@ -1,0 +1,20 @@
+{
+  "nl_baselines_full": {
+    "said_mentioned": 0.06794360280036926,
+    "tired_exhausted": 0.06445211172103882,
+    "house_home": 0.0896599292755127,
+    "passive_voice": 0.028103096410632133
+  },
+  "nl_eligible_tau005": [
+    "passive_voice"
+  ],
+  "nl_eligible_tau010": [
+    "said_mentioned",
+    "tired_exhausted",
+    "house_home",
+    "passive_voice"
+  ],
+  "n_nl_obs": 40,
+  "n_code_obs": 40,
+  "n_readouts": 160
+}

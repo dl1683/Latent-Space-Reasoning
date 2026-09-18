@@ -1,0 +1,370 @@
+{
+  "n_readouts": 576,
+  "n_cells": 12,
+  "n_splits": 4,
+  "splits": [
+    {
+      "split_idx": 0,
+      "train_cells": [
+        [
+          4,
+          "x",
+          1
+        ],
+        [
+          4,
+          "x",
+          3
+        ],
+        [
+          4,
+          "y",
+          2
+        ],
+        [
+          4,
+          "y",
+          4
+        ],
+        [
+          4,
+          "z",
+          1
+        ],
+        [
+          4,
+          "z",
+          3
+        ]
+      ],
+      "test_cells": [
+        [
+          4,
+          "x",
+          5
+        ],
+        [
+          4,
+          "x",
+          7
+        ],
+        [
+          4,
+          "y",
+          6
+        ],
+        [
+          4,
+          "y",
+          8
+        ],
+        [
+          4,
+          "z",
+          5
+        ],
+        [
+          4,
+          "z",
+          9
+        ]
+      ],
+      "n_train_obs": 288,
+      "n_test_obs": 288,
+      "n_train_pairs": 144,
+      "n_test_pairs": 144,
+      "train_threshold": 0.1,
+      "train_f1": 0.2222222222222222,
+      "train_precision": 0.2222222222222222,
+      "train_recall": 0.2222222222222222,
+      "test_threshold_from_train": 0.1,
+      "test_f1": 0,
+      "test_precision": 0.0,
+      "test_recall": 0.0,
+      "test_tp": 0,
+      "test_fp": 6,
+      "test_fn": 6,
+      "test_tn": 132,
+      "test_correlation": 0.15642479579911536,
+      "test_oracle_threshold": 0.05,
+      "test_oracle_f1": 0.2285714285714286,
+      "n_train_flips": 9,
+      "n_test_flips": 6
+    },
+    {
+      "split_idx": 1,
+      "train_cells": [
+        [
+          4,
+          "x",
+          5
+        ],
+        [
+          4,
+          "x",
+          7
+        ],
+        [
+          4,
+          "y",
+          6
+        ],
+        [
+          4,
+          "y",
+          8
+        ],
+        [
+          4,
+          "z",
+          5
+        ],
+        [
+          4,
+          "z",
+          9
+        ]
+      ],
+      "test_cells": [
+        [
+          4,
+          "x",
+          1
+        ],
+        [
+          4,
+          "x",
+          3
+        ],
+        [
+          4,
+          "y",
+          2
+        ],
+        [
+          4,
+          "y",
+          4
+        ],
+        [
+          4,
+          "z",
+          1
+        ],
+        [
+          4,
+          "z",
+          3
+        ]
+      ],
+      "n_train_obs": 288,
+      "n_test_obs": 288,
+      "n_train_pairs": 144,
+      "n_test_pairs": 144,
+      "train_threshold": 0.05,
+      "train_f1": 0.2285714285714286,
+      "train_precision": 0.13793103448275862,
+      "train_recall": 0.6666666666666666,
+      "test_threshold_from_train": 0.05,
+      "test_f1": 0.17391304347826086,
+      "test_precision": 0.10810810810810811,
+      "test_recall": 0.4444444444444444,
+      "test_tp": 4,
+      "test_fp": 33,
+      "test_fn": 5,
+      "test_tn": 102,
+      "test_correlation": 0.2738230252654892,
+      "test_oracle_threshold": 0.1,
+      "test_oracle_f1": 0.2222222222222222,
+      "n_train_flips": 6,
+      "n_test_flips": 9
+    },
+    {
+      "split_idx": 2,
+      "train_cells": [
+        [
+          4,
+          "x",
+          1
+        ],
+        [
+          4,
+          "x",
+          7
+        ],
+        [
+          4,
+          "y",
+          2
+        ],
+        [
+          4,
+          "y",
+          8
+        ],
+        [
+          4,
+          "z",
+          1
+        ],
+        [
+          4,
+          "z",
+          9
+        ]
+      ],
+      "test_cells": [
+        [
+          4,
+          "x",
+          3
+        ],
+        [
+          4,
+          "x",
+          5
+        ],
+        [
+          4,
+          "y",
+          4
+        ],
+        [
+          4,
+          "y",
+          6
+        ],
+        [
+          4,
+          "z",
+          3
+        ],
+        [
+          4,
+          "z",
+          5
+        ]
+      ],
+      "n_train_obs": 288,
+      "n_test_obs": 288,
+      "n_train_pairs": 144,
+      "n_test_pairs": 144,
+      "train_threshold": 0.05,
+      "train_f1": 0.2380952380952381,
+      "train_precision": 0.14705882352941177,
+      "train_recall": 0.625,
+      "test_threshold_from_train": 0.05,
+      "test_f1": 0.15384615384615383,
+      "test_precision": 0.09375,
+      "test_recall": 0.42857142857142855,
+      "test_tp": 3,
+      "test_fp": 29,
+      "test_fn": 4,
+      "test_tn": 108,
+      "test_correlation": 0.2169801328093926,
+      "test_oracle_threshold": 0.02,
+      "test_oracle_f1": 0.18918918918918917,
+      "n_train_flips": 8,
+      "n_test_flips": 7
+    },
+    {
+      "split_idx": 3,
+      "train_cells": [
+        [
+          4,
+          "x",
+          3
+        ],
+        [
+          4,
+          "x",
+          5
+        ],
+        [
+          4,
+          "y",
+          4
+        ],
+        [
+          4,
+          "y",
+          6
+        ],
+        [
+          4,
+          "z",
+          3
+        ],
+        [
+          4,
+          "z",
+          5
+        ]
+      ],
+      "test_cells": [
+        [
+          4,
+          "x",
+          1
+        ],
+        [
+          4,
+          "x",
+          7
+        ],
+        [
+          4,
+          "y",
+          2
+        ],
+        [
+          4,
+          "y",
+          8
+        ],
+        [
+          4,
+          "z",
+          1
+        ],
+        [
+          4,
+          "z",
+          9
+        ]
+      ],
+      "n_train_obs": 288,
+      "n_test_obs": 288,
+      "n_train_pairs": 144,
+      "n_test_pairs": 144,
+      "train_threshold": 0.02,
+      "train_f1": 0.18918918918918917,
+      "train_precision": 0.1044776119402985,
+      "train_recall": 1.0,
+      "test_threshold_from_train": 0.02,
+      "test_f1": 0.18666666666666668,
+      "test_precision": 0.1044776119402985,
+      "test_recall": 0.875,
+      "test_tp": 7,
+      "test_fp": 60,
+      "test_fn": 1,
+      "test_tn": 76,
+      "test_correlation": 0.2388163061042739,
+      "test_oracle_threshold": 0.05,
+      "test_oracle_f1": 0.2380952380952381,
+      "n_train_flips": 7,
+      "n_test_flips": 8
+    }
+  ],
+  "aggregate": {
+    "train_f1_mean": 0.2195195195195195,
+    "train_f1_std": 0.018399917920567496,
+    "test_f1_mean": 0.12860646599777034,
+    "test_f1_std": 0.07516704364917463,
+    "test_correlation_mean": 0.22151106499456774,
+    "test_correlation_std": 0.042698841733415545,
+    "oracle_f1_mean": 0.21951951951951953,
+    "f1_gap": 0.0909130535217492,
+    "generalization_ratio": 0.5858543526300619
+  }
+}

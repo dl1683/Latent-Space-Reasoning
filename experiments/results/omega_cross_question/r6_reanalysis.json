@@ -1,0 +1,212 @@
+{
+  "n_obs": 200,
+  "n_pairs_no_comp": 80,
+  "n_pairs_filtered": 80,
+  "n_baseline_flippers": 0,
+  "comparison_excluded": {
+    "n_rows": 18,
+    "n_flips": 2,
+    "mean_tv": 0.06545713212754992
+  },
+  "transfer_auc_mean": 0.49756423769797636,
+  "same_q_auc_mean": 0.7759244273953785,
+  "fair_margin_transfer_mean": 0.38634016919698594,
+  "spearman_pairs": [
+    {
+      "qa": "addition",
+      "qb": "assert_eq",
+      "rho": -0.13519091847265222,
+      "p": 0.5927498112228585,
+      "n": 18
+    },
+    {
+      "qa": "addition",
+      "qb": "print_output",
+      "rho": 0.05675954592363261,
+      "p": 0.8229893024799763,
+      "n": 18
+    },
+    {
+      "qa": "assert_eq",
+      "qb": "print_output",
+      "rho": 0.651186790505676,
+      "p": 0.0034197801987985712,
+      "n": 18
+    }
+  ],
+  "pooled_spearman": {
+    "rho": 0.22161193118968608,
+    "p": 0.10728891041912585,
+    "n": 54
+  },
+  "certificate": {
+    "n_certified": 49,
+    "n_violated": 0,
+    "rate": 0.0
+  },
+  "transfer_results": [
+    {
+      "q_tv": "addition",
+      "q_flip": "addition",
+      "is_transfer": false,
+      "n": 18,
+      "n_flips": 2,
+      "tv_auc": 1.0,
+      "tv_ci": [
+        1.0,
+        1.0
+      ],
+      "margin_qtv_auc": 0.836490826508179,
+      "margin_qtv_ci": [
+        0.5333333333333333,
+        1.0
+      ],
+      "margin_qflip_auc": 0.828125
+    },
+    {
+      "q_tv": "addition",
+      "q_flip": "assert_eq",
+      "is_transfer": true,
+      "n": 18,
+      "n_flips": 3,
+      "tv_auc": 0.4853500583980413,
+      "tv_ci": [
+        0.06666666666666667,
+        0.8438541666666666
+      ],
+      "margin_qtv_auc": 0.5994898735446783,
+      "margin_qtv_ci": [
+        0.2884126984126984,
+        0.9375
+      ],
+      "margin_qflip_auc": 0.9444444444444444
+    },
+    {
+      "q_tv": "addition",
+      "q_flip": "print_output",
+      "is_transfer": true,
+      "n": 18,
+      "n_flips": 1,
+      "tv_auc": 0.17903203502562332,
+      "tv_ci": [
+        0.0,
+        0.375
+      ],
+      "margin_qtv_auc": 0.05979074299648844,
+      "margin_qtv_ci": [
+        0.0,
+        0.1875
+      ],
+      "margin_qflip_auc": 1.0
+    },
+    {
+      "q_tv": "assert_eq",
+      "q_flip": "addition",
+      "is_transfer": true,
+      "n": 18,
+      "n_flips": 2,
+      "tv_auc": 0.5204653992960445,
+      "tv_ci": [
+        0.0,
+        1.0
+      ],
+      "margin_qtv_auc": 0.151098970314615,
+      "margin_qtv_ci": [
+        0.0,
+        0.4
+      ],
+      "margin_qflip_auc": 0.828125
+    },
+    {
+      "q_tv": "assert_eq",
+      "q_flip": "assert_eq",
+      "is_transfer": false,
+      "n": 26,
+      "n_flips": 3,
+      "tv_auc": 0.5483125372168312,
+      "tv_ci": [
+        0.12,
+        0.88
+      ],
+      "margin_qtv_auc": 0.9631329119669156,
+      "margin_qtv_ci": [
+        0.875,
+        1.0
+      ],
+      "margin_qflip_auc": 0.9637681159420289
+    },
+    {
+      "q_tv": "assert_eq",
+      "q_flip": "print_output",
+      "is_transfer": true,
+      "n": 26,
+      "n_flips": 1,
+      "tv_auc": 0.9222813864559098,
+      "tv_ci": [
+        0.8,
+        1.0
+      ],
+      "margin_qtv_auc": 0.6336229446919266,
+      "margin_qtv_ci": [
+        0.44,
+        0.8258893280632404
+      ],
+      "margin_qflip_auc": 1.0
+    },
+    {
+      "q_tv": "print_output",
+      "q_flip": "addition",
+      "is_transfer": true,
+      "n": 18,
+      "n_flips": 2,
+      "tv_auc": 0.429563680587974,
+      "tv_ci": [
+        0.0,
+        0.8823529411764706
+      ],
+      "margin_qtv_auc": 0.2105776241487317,
+      "margin_qtv_ci": [
+        0.0,
+        0.5294117647058824
+      ],
+      "margin_qflip_auc": 0.828125
+    },
+    {
+      "q_tv": "print_output",
+      "q_flip": "assert_eq",
+      "is_transfer": true,
+      "n": 26,
+      "n_flips": 3,
+      "tv_auc": 0.4486928664242653,
+      "tv_ci": [
+        0.2319927536231884,
+        0.6666666666666666
+      ],
+      "margin_qtv_auc": 0.6634608594854758,
+      "margin_qtv_ci": [
+        0.4671929824561404,
+        0.8521022727272727
+      ],
+      "margin_qflip_auc": 0.9637681159420289
+    },
+    {
+      "q_tv": "print_output",
+      "q_flip": "print_output",
+      "is_transfer": false,
+      "n": 36,
+      "n_flips": 2,
+      "tv_auc": 0.7794607449693042,
+      "tv_ci": [
+        0.6285714285714286,
+        0.9117647058823529
+      ],
+      "margin_qtv_auc": 1.0,
+      "margin_qtv_ci": [
+        1.0,
+        1.0
+      ],
+      "margin_qflip_auc": 1.0
+    }
+  ],
+  "verdict": "NEGATIVE: omega is question-specific, no transfer"
+}

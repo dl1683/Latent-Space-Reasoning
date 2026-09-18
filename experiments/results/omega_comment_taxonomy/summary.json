@@ -1,0 +1,514 @@
+{
+  "n_readouts": 504,
+  "elapsed_s": 253.50222039222717,
+  "pairs": {
+    "strong_assert_2": {
+      "tau_0.01": {},
+      "tau_0.05": {
+        "identity_bare": {
+          "omega": 0.016443729400634766,
+          "mean": 0.016443729400634766,
+          "status": "PRESERVE"
+        },
+        "neutral_bare": {
+          "omega": 0.008098005055217072,
+          "mean": 0.008098005055217072,
+          "status": "PRESERVE"
+        },
+        "heavy_bare": {
+          "omega": 0.3921634464059025,
+          "mean": 0.3921634464059025,
+          "status": "AMPLIFY"
+        },
+        "auth_doc": {
+          "omega": 0.020314715802669525,
+          "mean": 0.020314715802669525,
+          "status": "PRESERVE"
+        },
+        "auth_spec": {
+          "omega": 0.029133307878510095,
+          "mean": 0.029133307878510095,
+          "status": "PRESERVE"
+        },
+        "auth_official": {
+          "omega": 0.025591383804567158,
+          "mean": 0.025591383804567158,
+          "status": "PRESERVE"
+        },
+        "safety_donot": {
+          "omega": 0.0165150411776267,
+          "mean": 0.0165150411776267,
+          "status": "PRESERVE"
+        },
+        "safety_warning": {
+          "omega": 0.019414961338043213,
+          "mean": 0.019414961338043213,
+          "status": "PRESERVE"
+        },
+        "safety_critical": {
+          "omega": 0.05676548597693909,
+          "mean": 0.05676548597693909,
+          "status": "AMPLIFY"
+        },
+        "depr_deprecated": {
+          "omega": 0.040059544146060944,
+          "mean": 0.040059544146060944,
+          "status": "PRESERVE"
+        },
+        "depr_todo": {
+          "omega": 0.013538934290409088,
+          "mean": 0.013538934290409088,
+          "status": "PRESERVE"
+        },
+        "depr_legacy": {
+          "omega": 0.09772097833047155,
+          "mean": 0.09772097833047155,
+          "status": "AMPLIFY"
+        },
+        "cert_verified": {
+          "omega": 0.021869899464945775,
+          "mean": 0.021869899464945775,
+          "status": "PRESERVE"
+        },
+        "cert_guaranteed": {
+          "omega": 0.02613763732369989,
+          "mean": 0.02613763732369989,
+          "status": "PRESERVE"
+        },
+        "cert_proven": {
+          "omega": 0.06214895971061196,
+          "mean": 0.06214895971061196,
+          "status": "AMPLIFY"
+        },
+        "uncert_notsure": {
+          "omega": 0.027078224258730188,
+          "mean": 0.027078224258730188,
+          "status": "PRESERVE"
+        },
+        "uncert_review": {
+          "omega": 0.029420653052511625,
+          "mean": 0.029420653052511625,
+          "status": "PRESERVE"
+        },
+        "uncert_fixme": {
+          "omega": 0.01085422933101654,
+          "mean": 0.01085422933101654,
+          "status": "PRESERVE"
+        },
+        "explain_assigns": {
+          "omega": 0.0590478777885437,
+          "mean": 0.0590478777885437,
+          "status": "AMPLIFY"
+        },
+        "explain_setting": {
+          "omega": 0.03595447540283203,
+          "mean": 0.03595447540283203,
+          "status": "PRESERVE"
+        },
+        "explain_identity": {
+          "omega": 0.012517089839093387,
+          "mean": 0.012517089839093387,
+          "status": "PRESERVE"
+        }
+      }
+    },
+    "minimal_ok_good": {
+      "tau_0.01": {
+        "identity_bare": {
+          "omega": 0.008525466873834375,
+          "mean": 0.0048712202631577385,
+          "status": "PRESERVE"
+        },
+        "neutral_bare": {
+          "omega": 0.06736682420887519,
+          "mean": 0.023544494699308416,
+          "status": "AMPLIFY"
+        },
+        "heavy_bare": {
+          "omega": 0.07932069755042903,
+          "mean": 0.047666468139505015,
+          "status": "AMPLIFY"
+        },
+        "auth_doc": {
+          "omega": 0.012690176401520148,
+          "mean": 0.006946927365788724,
+          "status": "AMPLIFY"
+        },
+        "auth_spec": {
+          "omega": 0.005382182280300185,
+          "mean": 0.0027042674606491345,
+          "status": "PRESERVE"
+        },
+        "auth_official": {
+          "omega": 0.015392956454888918,
+          "mean": 0.007867816626094282,
+          "status": "AMPLIFY"
+        },
+        "safety_donot": {
+          "omega": 0.0635063957888633,
+          "mean": 0.025735545766656286,
+          "status": "AMPLIFY"
+        },
+        "safety_warning": {
+          "omega": 0.0051781792572000995,
+          "mean": 0.0021599220992357003,
+          "status": "PRESERVE"
+        },
+        "safety_critical": {
+          "omega": 0.0028281360864639282,
+          "mean": 0.0014815327500400598,
+          "status": "PRESERVE"
+        },
+        "depr_deprecated": {
+          "omega": 0.0012563356940518133,
+          "mean": 0.000884416708140634,
+          "status": "PRESERVE"
+        },
+        "depr_todo": {
+          "omega": 0.0033887559548020363,
+          "mean": 0.0013919384218752384,
+          "status": "PRESERVE"
+        },
+        "depr_legacy": {
+          "omega": 0.00640560666215606,
+          "mean": 0.00283290731094894,
+          "status": "PRESERVE"
+        },
+        "cert_verified": {
+          "omega": 0.010987942885549273,
+          "mean": 0.004890262477420038,
+          "status": "AMPLIFY"
+        },
+        "cert_guaranteed": {
+          "omega": 0.01584436972916592,
+          "mean": 0.0073522933380445465,
+          "status": "AMPLIFY"
+        },
+        "cert_proven": {
+          "omega": 0.0034901215694844723,
+          "mean": 0.0018472178373485804,
+          "status": "PRESERVE"
+        },
+        "uncert_notsure": {
+          "omega": 0.0071573375462321565,
+          "mean": 0.004416010522982105,
+          "status": "PRESERVE"
+        },
+        "uncert_review": {
+          "omega": 0.026140099958865903,
+          "mean": 0.011762739749974572,
+          "status": "AMPLIFY"
+        },
+        "uncert_fixme": {
+          "omega": 0.007733829319477081,
+          "mean": 0.0035053519532084465,
+          "status": "PRESERVE"
+        },
+        "explain_assigns": {
+          "omega": 0.02197742367570754,
+          "mean": 0.007966731736087241,
+          "status": "AMPLIFY"
+        },
+        "explain_setting": {
+          "omega": 0.009571286711434368,
+          "mean": 0.006229960266500712,
+          "status": "PRESERVE"
+        },
+        "explain_identity": {
+          "omega": 0.02342717390274629,
+          "mean": 0.008842489874950843,
+          "status": "AMPLIFY"
+        }
+      },
+      "tau_0.05": {
+        "identity_bare": {
+          "omega": 0.008525466873834375,
+          "mean": 0.0048712202631577385,
+          "status": "PRESERVE"
+        },
+        "neutral_bare": {
+          "omega": 0.06736682420887519,
+          "mean": 0.023544494699308416,
+          "status": "AMPLIFY"
+        },
+        "heavy_bare": {
+          "omega": 0.07932069755042903,
+          "mean": 0.047666468139505015,
+          "status": "AMPLIFY"
+        },
+        "auth_doc": {
+          "omega": 0.012690176401520148,
+          "mean": 0.006946927365788724,
+          "status": "PRESERVE"
+        },
+        "auth_spec": {
+          "omega": 0.005382182280300185,
+          "mean": 0.0027042674606491345,
+          "status": "PRESERVE"
+        },
+        "auth_official": {
+          "omega": 0.015392956454888918,
+          "mean": 0.007867816626094282,
+          "status": "PRESERVE"
+        },
+        "safety_donot": {
+          "omega": 0.0635063957888633,
+          "mean": 0.025735545766656286,
+          "status": "AMPLIFY"
+        },
+        "safety_warning": {
+          "omega": 0.0051781792572000995,
+          "mean": 0.0021599220992357003,
+          "status": "PRESERVE"
+        },
+        "safety_critical": {
+          "omega": 0.0028281360864639282,
+          "mean": 0.0014815327500400598,
+          "status": "PRESERVE"
+        },
+        "depr_deprecated": {
+          "omega": 0.0012563356940518133,
+          "mean": 0.000884416708140634,
+          "status": "PRESERVE"
+        },
+        "depr_todo": {
+          "omega": 0.0033887559548020363,
+          "mean": 0.0013919384218752384,
+          "status": "PRESERVE"
+        },
+        "depr_legacy": {
+          "omega": 0.00640560666215606,
+          "mean": 0.00283290731094894,
+          "status": "PRESERVE"
+        },
+        "cert_verified": {
+          "omega": 0.010987942885549273,
+          "mean": 0.004890262477420038,
+          "status": "PRESERVE"
+        },
+        "cert_guaranteed": {
+          "omega": 0.01584436972916592,
+          "mean": 0.0073522933380445465,
+          "status": "PRESERVE"
+        },
+        "cert_proven": {
+          "omega": 0.0034901215694844723,
+          "mean": 0.0018472178373485804,
+          "status": "PRESERVE"
+        },
+        "uncert_notsure": {
+          "omega": 0.0071573375462321565,
+          "mean": 0.004416010522982105,
+          "status": "PRESERVE"
+        },
+        "uncert_review": {
+          "omega": 0.026140099958865903,
+          "mean": 0.011762739749974572,
+          "status": "PRESERVE"
+        },
+        "uncert_fixme": {
+          "omega": 0.007733829319477081,
+          "mean": 0.0035053519532084465,
+          "status": "PRESERVE"
+        },
+        "explain_assigns": {
+          "omega": 0.02197742367570754,
+          "mean": 0.007966731736087241,
+          "status": "PRESERVE"
+        },
+        "explain_setting": {
+          "omega": 0.009571286711434368,
+          "mean": 0.006229960266500712,
+          "status": "PRESERVE"
+        },
+        "explain_identity": {
+          "omega": 0.02342717390274629,
+          "mean": 0.008842489874950843,
+          "status": "PRESERVE"
+        }
+      }
+    }
+  },
+  "category_summary": {
+    "strong_assert_2_tau_0.01": {},
+    "strong_assert_2_tau_0.05": {
+      "control": {
+        "mean_omega": 0.13890172695391811,
+        "max_omega": 0.3921634464059025,
+        "min_omega": 0.008098005055217072
+      },
+      "authority": {
+        "mean_omega": 0.02501313582858226,
+        "max_omega": 0.029133307878510095,
+        "min_omega": 0.020314715802669525
+      },
+      "safety": {
+        "mean_omega": 0.030898496164203,
+        "max_omega": 0.05676548597693909,
+        "min_omega": 0.0165150411776267
+      },
+      "deprecation": {
+        "mean_omega": 0.05043981892231386,
+        "max_omega": 0.09772097833047155,
+        "min_omega": 0.013538934290409088
+      },
+      "certainty": {
+        "mean_omega": 0.03671883216641921,
+        "max_omega": 0.06214895971061196,
+        "min_omega": 0.021869899464945775
+      },
+      "uncertainty": {
+        "mean_omega": 0.02245103554741945,
+        "max_omega": 0.029420653052511625,
+        "min_omega": 0.01085422933101654
+      },
+      "explanation": {
+        "mean_omega": 0.035839814343489707,
+        "max_omega": 0.0590478777885437,
+        "min_omega": 0.012517089839093387
+      }
+    },
+    "minimal_ok_good_tau_0.01": {
+      "control": {
+        "mean_omega": 0.051737662877712864,
+        "max_omega": 0.07932069755042903,
+        "min_omega": 0.008525466873834375
+      },
+      "authority": {
+        "mean_omega": 0.01115510504556975,
+        "max_omega": 0.015392956454888918,
+        "min_omega": 0.005382182280300185
+      },
+      "safety": {
+        "mean_omega": 0.02383757037750911,
+        "max_omega": 0.0635063957888633,
+        "min_omega": 0.0028281360864639282
+      },
+      "deprecation": {
+        "mean_omega": 0.00368356610366997,
+        "max_omega": 0.00640560666215606,
+        "min_omega": 0.0012563356940518133
+      },
+      "certainty": {
+        "mean_omega": 0.010107478061399888,
+        "max_omega": 0.01584436972916592,
+        "min_omega": 0.0034901215694844723
+      },
+      "uncertainty": {
+        "mean_omega": 0.013677088941525048,
+        "max_omega": 0.026140099958865903,
+        "min_omega": 0.0071573375462321565
+      },
+      "explanation": {
+        "mean_omega": 0.018325294763296068,
+        "max_omega": 0.02342717390274629,
+        "min_omega": 0.009571286711434368
+      }
+    },
+    "minimal_ok_good_tau_0.05": {
+      "control": {
+        "mean_omega": 0.051737662877712864,
+        "max_omega": 0.07932069755042903,
+        "min_omega": 0.008525466873834375
+      },
+      "authority": {
+        "mean_omega": 0.01115510504556975,
+        "max_omega": 0.015392956454888918,
+        "min_omega": 0.005382182280300185
+      },
+      "safety": {
+        "mean_omega": 0.02383757037750911,
+        "max_omega": 0.0635063957888633,
+        "min_omega": 0.0028281360864639282
+      },
+      "deprecation": {
+        "mean_omega": 0.00368356610366997,
+        "max_omega": 0.00640560666215606,
+        "min_omega": 0.0012563356940518133
+      },
+      "certainty": {
+        "mean_omega": 0.010107478061399888,
+        "max_omega": 0.01584436972916592,
+        "min_omega": 0.0034901215694844723
+      },
+      "uncertainty": {
+        "mean_omega": 0.013677088941525048,
+        "max_omega": 0.026140099958865903,
+        "min_omega": 0.0071573375462321565
+      },
+      "explanation": {
+        "mean_omega": 0.018325294763296068,
+        "max_omega": 0.02342717390274629,
+        "min_omega": 0.009571286711434368
+      }
+    }
+  },
+  "framing_ratios": {
+    "strong_assert_2_tau_0.05": {
+      "neutral_bare": 0.4924676670308422,
+      "heavy_bare": 23.848814149834165,
+      "auth_doc": 1.2354080578512396,
+      "auth_spec": 1.7716971113247268,
+      "auth_official": 1.5563004705963643,
+      "safety_donot": 1.0043367155500127,
+      "safety_warning": 1.180690880092794,
+      "safety_critical": 3.4521053341310646,
+      "depr_deprecated": 2.4361592902711324,
+      "depr_todo": 0.8233493729157605,
+      "depr_legacy": 5.942750330511964,
+      "cert_verified": 1.3299841497088578,
+      "cert_guaranteed": 1.589520034469244,
+      "cert_proven": 3.77949297245264,
+      "uncert_notsure": 1.6467203758342621,
+      "uncert_review": 1.789171564169374,
+      "uncert_fixme": 0.6600831883427577,
+      "explain_assigns": 3.5909054661447004,
+      "explain_setting": 2.1865158764680297,
+      "explain_identity": 0.7612074812305168
+    },
+    "minimal_ok_good_tau_0.01": {
+      "neutral_bare": 7.90183402338136,
+      "heavy_bare": 9.303971116687258,
+      "auth_doc": 1.4885022239037418,
+      "auth_spec": 0.6313064562855453,
+      "auth_official": 1.8055265104755314,
+      "safety_donot": 7.449022643413422,
+      "safety_warning": 0.6073777933607976,
+      "safety_critical": 0.33172800133020264,
+      "depr_deprecated": 0.14736268554484097,
+      "depr_todo": 0.39748626145067933,
+      "depr_legacy": 0.7513496629510805,
+      "cert_verified": 1.2888376728402424,
+      "cert_guaranteed": 1.858475314448067,
+      "cert_proven": 0.40937600498994975,
+      "uncert_notsure": 0.8395244098829164,
+      "uncert_review": 3.0661194683768973,
+      "uncert_fixme": 0.9071443750738251,
+      "explain_assigns": 2.577855735169032,
+      "explain_setting": 1.1226700957351359,
+      "explain_identity": 2.7479051000299988
+    },
+    "minimal_ok_good_tau_0.05": {
+      "neutral_bare": 7.90183402338136,
+      "heavy_bare": 9.303971116687258,
+      "auth_doc": 1.4885022239037418,
+      "auth_spec": 0.6313064562855453,
+      "auth_official": 1.8055265104755314,
+      "safety_donot": 7.449022643413422,
+      "safety_warning": 0.6073777933607976,
+      "safety_critical": 0.33172800133020264,
+      "depr_deprecated": 0.14736268554484097,
+      "depr_todo": 0.39748626145067933,
+      "depr_legacy": 0.7513496629510805,
+      "cert_verified": 1.2888376728402424,
+      "cert_guaranteed": 1.858475314448067,
+      "cert_proven": 0.40937600498994975,
+      "uncert_notsure": 0.8395244098829164,
+      "uncert_review": 3.0661194683768973,
+      "uncert_fixme": 0.9071443750738251,
+      "explain_assigns": 2.577855735169032,
+      "explain_setting": 1.1226700957351359,
+      "explain_identity": 2.7479051000299988
+    }
+  }
+}

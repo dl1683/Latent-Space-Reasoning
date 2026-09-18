@@ -1,0 +1,20 @@
+{
+  "type": "boundary_syntax_crossover",
+  "n_observations": 96,
+  "arms": [
+    "empty",
+    "bare_var_nl",
+    "bare_var_semi",
+    "identity_nl",
+    "identity_semi",
+    "glued_identity",
+    "nonvar_expr",
+    "pass_stmt"
+  ],
+  "pairs": [
+    "strong_assert_2",
+    "boundary_pair"
+  ],
+  "n_readouts": 192,
+  "elapsed_s": 80.90365815162659
+}

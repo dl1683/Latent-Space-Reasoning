@@ -1,0 +1,570 @@
+{
+  "experiment": 79,
+  "name": "regime_classifier",
+  "n_readouts": 144,
+  "n_comparisons": 72,
+  "pair_data": {
+    "strong_explicit": {
+      "baseline": 0.02505151430765788,
+      "identity": 0.018414556980133057,
+      "heavy": 0.1036376953125,
+      "id_amp": 0.7350676192258764,
+      "hvy_amp": 4.136983259364065
+    },
+    "strong_assert": {
+      "baseline": 0.003908077875773112,
+      "identity": 0.05265208085378011,
+      "heavy": 0.05031522115071615,
+      "id_amp": 13.472628368073208,
+      "hvy_amp": 12.874672089476359
+    },
+    "medium_assert": {
+      "baseline": 0.009349664052327475,
+      "identity": 0.05047841866811117,
+      "heavy": 0.038838704427083336,
+      "id_amp": 5.398955340598065,
+      "hvy_amp": 4.1540213861924755
+    },
+    "assert_weak": {
+      "baseline": 0.056003729502360024,
+      "identity": 0.07016690572102864,
+      "heavy": 0.09275341033935547,
+      "id_amp": 1.2528970185471626,
+      "hvy_amp": 1.6562005988448822
+    },
+    "hedged": {
+      "baseline": 0.047660112380981445,
+      "identity": 0.03919152418772379,
+      "heavy": 0.08694712320963542,
+      "id_amp": 0.8223128782080462,
+      "hvy_amp": 1.824316369936452
+    },
+    "comment_generic": {
+      "baseline": 0.019037246704101562,
+      "identity": 0.006226062774658203,
+      "heavy": 0.04424269994099935,
+      "id_amp": 0.3270463881374612,
+      "hvy_amp": 2.324007280499616
+    },
+    "boundary": {
+      "baseline": 0.013237635294596354,
+      "identity": 0.07930926481882732,
+      "heavy": 0.03584925333658854,
+      "id_amp": 5.991195787906441,
+      "hvy_amp": 2.7081312136784974
+    },
+    "code_noise": {
+      "baseline": 0.028497854868570965,
+      "identity": 0.0500634511311849,
+      "heavy": 0.15340677897135416,
+      "id_amp": 1.7567445466359535,
+      "hvy_amp": 5.383099172862297
+    }
+  },
+  "results": [
+    {
+      "pair": "strong_explicit",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.04878687858581543,
+      "flip": false
+    },
+    {
+      "pair": "strong_explicit",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.04600977897644043,
+      "flip": false
+    },
+    {
+      "pair": "strong_explicit",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.08837890625,
+      "flip": false
+    },
+    {
+      "pair": "strong_explicit",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.024084091186523438,
+      "flip": false
+    },
+    {
+      "pair": "strong_explicit",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.0007252097129821777,
+      "flip": false
+    },
+    {
+      "pair": "strong_explicit",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.138427734375,
+      "flip": false
+    },
+    {
+      "pair": "strong_explicit",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.0022835731506347656,
+      "flip": false
+    },
+    {
+      "pair": "strong_explicit",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.008508682250976562,
+      "flip": false
+    },
+    {
+      "pair": "strong_explicit",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.0841064453125,
+      "flip": true
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.0019631385803222656,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.06520748138427734,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.05164337158203125,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.00455021858215332,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.04773867130279541,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.04232215881347656,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.00521087646484375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.04501008987426758,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.056980133056640625,
+      "flip": true
+    },
+    {
+      "pair": "medium_assert",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.012037277221679688,
+      "flip": false
+    },
+    {
+      "pair": "medium_assert",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.0347367525100708,
+      "flip": false
+    },
+    {
+      "pair": "medium_assert",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.03076648712158203,
+      "flip": false
+    },
+    {
+      "pair": "medium_assert",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.010144710540771484,
+      "flip": false
+    },
+    {
+      "pair": "medium_assert",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.053369760513305664,
+      "flip": false
+    },
+    {
+      "pair": "medium_assert",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.03356456756591797,
+      "flip": false
+    },
+    {
+      "pair": "medium_assert",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.00586700439453125,
+      "flip": false
+    },
+    {
+      "pair": "medium_assert",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.06332874298095703,
+      "flip": false
+    },
+    {
+      "pair": "medium_assert",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.05218505859375,
+      "flip": true
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.06742525100708008,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.101806640625,
+      "flip": true
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.07522773742675781,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.05126953125,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.06217002868652344,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.10950374603271484,
+      "flip": true
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.04931640625,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.0465240478515625,
+      "flip": false
+    },
+    {
+      "pair": "assert_weak",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.09352874755859375,
+      "flip": false
+    },
+    {
+      "pair": "hedged",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.058843135833740234,
+      "flip": false
+    },
+    {
+      "pair": "hedged",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.06221306324005127,
+      "flip": false
+    },
+    {
+      "pair": "hedged",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.06943702697753906,
+      "flip": false
+    },
+    {
+      "pair": "hedged",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.04883313179016113,
+      "flip": false
+    },
+    {
+      "pair": "hedged",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.03914642333984375,
+      "flip": false
+    },
+    {
+      "pair": "hedged",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.0794677734375,
+      "flip": false
+    },
+    {
+      "pair": "hedged",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.03530406951904297,
+      "flip": false
+    },
+    {
+      "pair": "hedged",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.016215085983276367,
+      "flip": false
+    },
+    {
+      "pair": "hedged",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.11193656921386719,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.012750625610351562,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.0013840198516845703,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.038068294525146484,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.0206298828125,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.008858203887939453,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.04232025146484375,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.023731231689453125,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.008435964584350586,
+      "flip": false
+    },
+    {
+      "pair": "comment_generic",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.05233955383300781,
+      "flip": false
+    },
+    {
+      "pair": "boundary",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.015382766723632812,
+      "flip": false
+    },
+    {
+      "pair": "boundary",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.09146678447723389,
+      "flip": false
+    },
+    {
+      "pair": "boundary",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.059814453125,
+      "flip": false
+    },
+    {
+      "pair": "boundary",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.0076770782470703125,
+      "flip": false
+    },
+    {
+      "pair": "boundary",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.07672452926635742,
+      "flip": false
+    },
+    {
+      "pair": "boundary",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.027587890625,
+      "flip": false
+    },
+    {
+      "pair": "boundary",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.016653060913085938,
+      "flip": false
+    },
+    {
+      "pair": "boundary",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.06973648071289062,
+      "flip": false
+    },
+    {
+      "pair": "boundary",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.020145416259765625,
+      "flip": true
+    },
+    {
+      "pair": "code_noise",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.02123284339904785,
+      "flip": false
+    },
+    {
+      "pair": "code_noise",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.0947265625,
+      "flip": false
+    },
+    {
+      "pair": "code_noise",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.15052413940429688,
+      "flip": true
+    },
+    {
+      "pair": "code_noise",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.02960515022277832,
+      "flip": false
+    },
+    {
+      "pair": "code_noise",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.026166915893554688,
+      "flip": false
+    },
+    {
+      "pair": "code_noise",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.15663909912109375,
+      "flip": false
+    },
+    {
+      "pair": "code_noise",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.03465557098388672,
+      "flip": false
+    },
+    {
+      "pair": "code_noise",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.029296875,
+      "flip": false
+    },
+    {
+      "pair": "code_noise",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.15305709838867188,
+      "flip": false
+    }
+  ]
+}

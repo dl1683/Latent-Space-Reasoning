@@ -1,0 +1,680 @@
+{
+  "experiment": 73,
+  "name": "amplification_stacking",
+  "n_readouts": 192,
+  "n_comparisons": 96,
+  "results": [
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "empty",
+      "tv": 0.0019631385803222656,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "identity",
+      "tv": 0.06520748138427734,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "collision",
+      "tv": 0.021256685256958008,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "print_val",
+      "tv": 0.01466679573059082,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "isinstance",
+      "tv": 0.039872050285339355,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "heavy",
+      "tv": 0.05164337158203125,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "identity+collision",
+      "tv": 0.0888671875,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "collision+identity",
+      "tv": 0.09602665901184082,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "identity+print",
+      "tv": 0.06053638458251953,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "identity+isinstance",
+      "tv": 0.06981194019317627,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "collision+print",
+      "tv": 0.09566855430603027,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "collision+isinstance",
+      "tv": 0.1081390380859375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "identity+heavy",
+      "tv": 0.061893463134765625,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "collision+heavy",
+      "tv": 0.08162975311279297,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "double_identity",
+      "tv": 0.09240591526031494,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "condition": "double_collision",
+      "tv": 0.032956600189208984,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "empty",
+      "tv": 0.00455021858215332,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "identity",
+      "tv": 0.04773867130279541,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "collision",
+      "tv": 0.04868292808532715,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "print_val",
+      "tv": 0.02770853042602539,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "isinstance",
+      "tv": 0.026717782020568848,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "heavy",
+      "tv": 0.04232215881347656,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "identity+collision",
+      "tv": 0.0738152265548706,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "collision+identity",
+      "tv": 0.10754036903381348,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "identity+print",
+      "tv": 0.09036660194396973,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "identity+isinstance",
+      "tv": 0.03803551197052002,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "collision+print",
+      "tv": 0.08515501022338867,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "collision+isinstance",
+      "tv": 0.08143943548202515,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "identity+heavy",
+      "tv": 0.08068466186523438,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "collision+heavy",
+      "tv": 0.09265327453613281,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "double_identity",
+      "tv": 0.056902408599853516,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "condition": "double_collision",
+      "tv": 0.028829455375671387,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "empty",
+      "tv": 0.00521087646484375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "identity",
+      "tv": 0.04501008987426758,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "collision",
+      "tv": 0.06171751022338867,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "print_val",
+      "tv": 0.05356311798095703,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "isinstance",
+      "tv": 0.03824186325073242,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "heavy",
+      "tv": 0.056980133056640625,
+      "flip": true
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "identity+collision",
+      "tv": 0.09890890121459961,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "collision+identity",
+      "tv": 0.10760211944580078,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "identity+print",
+      "tv": 0.08422255516052246,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "identity+isinstance",
+      "tv": 0.03903770446777344,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "collision+print",
+      "tv": 0.07076406478881836,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "collision+isinstance",
+      "tv": 0.08139729499816895,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "identity+heavy",
+      "tv": 0.11274147033691406,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "collision+heavy",
+      "tv": 0.11589241027832031,
+      "flip": true
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "double_identity",
+      "tv": 0.045354366302490234,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "condition": "double_collision",
+      "tv": 0.002013683319091797,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "empty",
+      "tv": 0.015382766723632812,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "identity",
+      "tv": 0.09146678447723389,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "collision",
+      "tv": 0.019694089889526367,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "print_val",
+      "tv": 0.041015625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "isinstance",
+      "tv": 0.00838625431060791,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "heavy",
+      "tv": 0.059814453125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "identity+collision",
+      "tv": 0.0612034797668457,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "collision+identity",
+      "tv": 0.0166015625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "identity+print",
+      "tv": 0.02490234375,
+      "flip": true
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "identity+isinstance",
+      "tv": 0.023681640625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "collision+print",
+      "tv": 0.00634765625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "collision+isinstance",
+      "tv": 0.08648848533630371,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "identity+heavy",
+      "tv": 0.034912109375,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "collision+heavy",
+      "tv": 0.02939605712890625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "double_identity",
+      "tv": 0.03925752639770508,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "condition": "double_collision",
+      "tv": 0.04017782211303711,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "empty",
+      "tv": 0.0076770782470703125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "identity",
+      "tv": 0.07672452926635742,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "collision",
+      "tv": 0.04460704326629639,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "print_val",
+      "tv": 0.03429985046386719,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "isinstance",
+      "tv": 0.015625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "heavy",
+      "tv": 0.027587890625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "identity+collision",
+      "tv": 0.024658203125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "collision+identity",
+      "tv": 0.0244140625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "identity+print",
+      "tv": 0.0263671875,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "identity+isinstance",
+      "tv": 0.02355194091796875,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "collision+print",
+      "tv": 0.04443359375,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "collision+isinstance",
+      "tv": 0.08164167404174805,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "identity+heavy",
+      "tv": 0.03570556640625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "collision+heavy",
+      "tv": 0.12042045593261719,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "double_identity",
+      "tv": 0.017020463943481445,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "condition": "double_collision",
+      "tv": 0.06679964065551758,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "empty",
+      "tv": 0.016653060913085938,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "identity",
+      "tv": 0.06973648071289062,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "collision",
+      "tv": 0.0473179817199707,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "print_val",
+      "tv": 0.029117584228515625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "isinstance",
+      "tv": 0.0087890625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "heavy",
+      "tv": 0.020145416259765625,
+      "flip": true
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "identity+collision",
+      "tv": 0.0400390625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "collision+identity",
+      "tv": 0.024169921875,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "identity+print",
+      "tv": 0.03275108337402344,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "identity+isinstance",
+      "tv": 0.01593017578125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "collision+print",
+      "tv": 0.0263671875,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "collision+isinstance",
+      "tv": 0.06922149658203125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "identity+heavy",
+      "tv": 0.0479736328125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "collision+heavy",
+      "tv": 0.09047698974609375,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "double_identity",
+      "tv": 0.01708984375,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "condition": "double_collision",
+      "tv": 0.04117727279663086,
+      "flip": false
+    }
+  ]
+}

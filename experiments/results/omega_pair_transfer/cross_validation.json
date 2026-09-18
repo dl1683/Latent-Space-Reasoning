@@ -1,0 +1,11 @@
+{
+  "method": "leave-one-pair-out",
+  "pairs": [
+    "strong_assert_2",
+    "terse_ok_okay",
+    "minimal_ok_good",
+    "minimal_ok_fine",
+    "novar_confirmed"
+  ],
+  "n_observations": 480
+}

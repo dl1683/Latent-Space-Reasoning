@@ -1,0 +1,29 @@
+{
+  "total_readouts": 312,
+  "train_continuations": [
+    "none",
+    "neutral",
+    "heavy",
+    "identity",
+    "type_check",
+    "pass"
+  ],
+  "test_continuations": [
+    "none",
+    "add_zero",
+    "bool_var",
+    "del_var",
+    "assign_none",
+    "floor_one",
+    "str_var"
+  ],
+  "tau_0.01_threshold_acc": 1.0,
+  "tau_0.01_n_test_cells": 12,
+  "tau_0.01_test_amplify_rate": 1.0,
+  "tau_0.02_threshold_acc": 0.75,
+  "tau_0.02_n_test_cells": 12,
+  "tau_0.02_test_amplify_rate": 0.75,
+  "tau_0.05_threshold_acc": 0.8333333333333334,
+  "tau_0.05_n_test_cells": 12,
+  "tau_0.05_test_amplify_rate": 0.5
+}

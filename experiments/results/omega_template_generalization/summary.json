@@ -1,0 +1,584 @@
+{
+  "experiment": 82,
+  "name": "template_generalization",
+  "n_readouts": 144,
+  "n_comparisons": 72,
+  "results": [
+    {
+      "template": "depth3_nested",
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.0019631385803222656,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.06520748138427734,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.05164337158203125,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "collision",
+      "tv": 0.021256685256958008,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.00455021858215332,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.04773867130279541,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.04232215881347656,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "collision",
+      "tv": 0.04868292808532715,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.00521087646484375,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.04501008987426758,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.056980133056640625,
+      "flip": true
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "collision",
+      "tv": 0.06171751022338867,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.015382766723632812,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.09146678447723389,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.059814453125,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "collision",
+      "tv": 0.019694089889526367,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.0076770782470703125,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.07672452926635742,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.027587890625,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "collision",
+      "tv": 0.04460704326629639,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.016653060913085938,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.06973648071289062,
+      "flip": false
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.020145416259765625,
+      "flip": true
+    },
+    {
+      "template": "depth3_nested",
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "collision",
+      "tv": 0.0473179817199707,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.0065381526947021484,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.04937314987182617,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.0516204833984375,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "collision",
+      "tv": 0.09093046188354492,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.006380438804626465,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.010009765625,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.12874412536621094,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "collision",
+      "tv": 0.017428040504455566,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.006353855133056641,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.01318359375,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.02108478546142578,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "collision",
+      "tv": 0.01534956693649292,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.03645133972167969,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.22351741790771484,
+      "flip": true
+    },
+    {
+      "template": "flat_single",
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.022522926330566406,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "collision",
+      "tv": 0.005560636520385742,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.019751548767089844,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.2668495178222656,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.05406379699707031,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "collision",
+      "tv": 0.007208347320556641,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.04115462303161621,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.2621917724609375,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.1026153564453125,
+      "flip": false
+    },
+    {
+      "template": "flat_single",
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "collision",
+      "tv": 0.022016525268554688,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.16064453125,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.1583251953125,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.07490527629852295,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "continuation": "collision",
+      "tv": 0.126708984375,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.0693502426147461,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.1617431640625,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.08220243453979492,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "continuation": "collision",
+      "tv": 0.015377283096313477,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.09377402067184448,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.1583251953125,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.106448233127594,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "continuation": "collision",
+      "tv": 0.0068359375,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "empty",
+      "tv": 0.03125464916229248,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "identity",
+      "tv": 0.008576273918151855,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "heavy",
+      "tv": 0.00830078125,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "continuation": "collision",
+      "tv": 0.0004107952117919922,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "empty",
+      "tv": 0.04838240146636963,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "identity",
+      "tv": 0.00616455078125,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "heavy",
+      "tv": 0.014785170555114746,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "continuation": "collision",
+      "tv": 0.01416015625,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "empty",
+      "tv": 0.0416254997253418,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "identity",
+      "tv": 0.00982666015625,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "heavy",
+      "tv": 0.02880859375,
+      "flip": false
+    },
+    {
+      "template": "class_method",
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "continuation": "collision",
+      "tv": 0.01846843957901001,
+      "flip": false
+    }
+  ]
+}

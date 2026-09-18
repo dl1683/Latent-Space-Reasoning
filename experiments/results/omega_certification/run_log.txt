@@ -1,0 +1,26 @@
+Started at 06:40:13
+
+=== Cell 0 starting at 06:40:13 ===
+Cell 0: depth=4 var=x val=1
+Loading model...
+STDERR:
+C:\Users\devan\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\cuda\__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml fCell 2: depth=4 var=y val=2
+CUDA available: False
+Loading model...
+STDERR:
+C:\Users\devan\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\cuda\__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]
+Loading weights:  17%|█▋        | 53/310 [00:00<00:00, 508.07it/s]
+Loading weights:  34%|███▎      | 104/310 [00:00<00:00, 448.85it/s]
+Loading weights:  48%|████▊     | 150/310 [00:00<00:00, 439.41it/s]
+Loading weights:  63%|██████▎   | 195/310 [00:00<00:00, 422.76it/s]
+Loading weights:  77%|███████▋  | 238/310 [00:00<00:00, 422.87it/s]
+Loading weights:  91%|█████████ | 281/310 [00:00<00:00, 423.42it/s]
+Loading weights: 100%|██████████| 310/310 [00:00<00:00, 440.53it/s]
+
+Exit code: 4294967295
+
+=== Cell 3 starting at 06:40:45 ===

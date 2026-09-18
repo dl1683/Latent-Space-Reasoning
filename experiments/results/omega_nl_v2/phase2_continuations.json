@@ -1,0 +1,86 @@
+[
+  {
+    "pair_idx": 38,
+    "a": "The law was passed by",
+    "b": "The law was enacted by",
+    "continuation": "none",
+    "cont_text": "",
+    "post_tv": 0.02810309806317159,
+    "baseline_tv": 0.02810309806317159,
+    "ratio": 1.0,
+    "amplified": false,
+    "tau": 0.05
+  },
+  {
+    "pair_idx": 38,
+    "a": "The law was passed by",
+    "b": "The law was enacted by",
+    "continuation": "neutral_period",
+    "cont_text": ". ",
+    "post_tv": 0.2963733987952126,
+    "baseline_tv": 0.02810309806317159,
+    "ratio": 10.545933339057822,
+    "amplified": true,
+    "tau": 0.05
+  },
+  {
+    "pair_idx": 38,
+    "a": "The law was passed by",
+    "b": "The law was enacted by",
+    "continuation": "neutral_comma",
+    "cont_text": ", and ",
+    "post_tv": 0.21123041839891898,
+    "baseline_tv": 0.02810309806317159,
+    "ratio": 7.516268061411036,
+    "amplified": true,
+    "tau": 0.05
+  },
+  {
+    "pair_idx": 38,
+    "a": "The law was passed by",
+    "b": "The law was enacted by",
+    "continuation": "negation",
+    "cont_text": " but not ",
+    "post_tv": 0.33849163497291535,
+    "baseline_tv": 0.02810309806317159,
+    "ratio": 12.04463771972885,
+    "amplified": true,
+    "tau": 0.05
+  },
+  {
+    "pair_idx": 38,
+    "a": "The law was passed by",
+    "b": "The law was enacted by",
+    "continuation": "temporal",
+    "cont_text": " and then later ",
+    "post_tv": 0.17097292072340695,
+    "baseline_tv": 0.02810309806317159,
+    "ratio": 6.083774832905797,
+    "amplified": true,
+    "tau": 0.05
+  },
+  {
+    "pair_idx": 38,
+    "a": "The law was passed by",
+    "b": "The law was enacted by",
+    "continuation": "elaboration",
+    "cont_text": " which was interesting because ",
+    "post_tv": 0.13185774019180457,
+    "baseline_tv": 0.02810309806317159,
+    "ratio": 4.691928978627479,
+    "amplified": true,
+    "tau": 0.05
+  },
+  {
+    "pair_idx": 38,
+    "a": "The law was passed by",
+    "b": "The law was enacted by",
+    "continuation": "contrast",
+    "cont_text": " although some would say ",
+    "post_tv": 0.1370773674138824,
+    "baseline_tv": 0.02810309806317159,
+    "ratio": 4.877660359927324,
+    "amplified": true,
+    "tau": 0.05
+  }
+]

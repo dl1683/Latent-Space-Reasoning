@@ -1,0 +1,344 @@
+{
+  "experiment": 72,
+  "name": "collision_forms",
+  "n_readouts": 96,
+  "n_comparisons": 48,
+  "results": [
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "form": "empty",
+      "tv": 0.0019631385803222656,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "form": "assign_match",
+      "tv": 0.021256685256958008,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "form": "assign_mismatch",
+      "tv": 0.0439453125,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "form": "print_match",
+      "tv": 0.01466679573059082,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "form": "assert_eq",
+      "tv": 0.023061513900756836,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "form": "type_match",
+      "tv": 0.04934287071228027,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "form": "isinstance_match",
+      "tv": 0.039872050285339355,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "x_1",
+      "form": "eval_var",
+      "tv": 0.015295028686523438,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "form": "empty",
+      "tv": 0.00455021858215332,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "form": "assign_match",
+      "tv": 0.04868292808532715,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "form": "assign_mismatch",
+      "tv": 0.0048160552978515625,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "form": "print_match",
+      "tv": 0.02770853042602539,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "form": "assert_eq",
+      "tv": 0.039887309074401855,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "form": "type_match",
+      "tv": 0.037661075592041016,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "form": "isinstance_match",
+      "tv": 0.026717782020568848,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_2",
+      "form": "eval_var",
+      "tv": 0.003745555877685547,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "form": "empty",
+      "tv": 0.00521087646484375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "form": "assign_match",
+      "tv": 0.06171751022338867,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "form": "assign_mismatch",
+      "tv": 0.00823974609375,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "form": "print_match",
+      "tv": 0.05356311798095703,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "form": "assert_eq",
+      "tv": 0.035448551177978516,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "form": "type_match",
+      "tv": 0.02294921875,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "form": "isinstance_match",
+      "tv": 0.03824186325073242,
+      "flip": false
+    },
+    {
+      "pair": "strong_assert",
+      "cell": "y_6",
+      "form": "eval_var",
+      "tv": 0.00327301025390625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "form": "empty",
+      "tv": 0.015382766723632812,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "form": "assign_match",
+      "tv": 0.019694089889526367,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "form": "assign_mismatch",
+      "tv": 0.016620635986328125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "form": "print_match",
+      "tv": 0.041015625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "form": "assert_eq",
+      "tv": 0.00927734375,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "form": "type_match",
+      "tv": 0.04949951171875,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "form": "isinstance_match",
+      "tv": 0.00838625431060791,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "x_1",
+      "form": "eval_var",
+      "tv": 0.021509647369384766,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "form": "empty",
+      "tv": 0.0076770782470703125,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "form": "assign_match",
+      "tv": 0.04460704326629639,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "form": "assign_mismatch",
+      "tv": 0.030878543853759766,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "form": "print_match",
+      "tv": 0.03429985046386719,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "form": "assert_eq",
+      "tv": 0.03000640869140625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "form": "type_match",
+      "tv": 0.00732421875,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "form": "isinstance_match",
+      "tv": 0.015625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_2",
+      "form": "eval_var",
+      "tv": 0.05416548252105713,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "form": "empty",
+      "tv": 0.016653060913085938,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "form": "assign_match",
+      "tv": 0.0473179817199707,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "form": "assign_mismatch",
+      "tv": 0.024080276489257812,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "form": "print_match",
+      "tv": 0.029117584228515625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "form": "assert_eq",
+      "tv": 0.01708984375,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "form": "type_match",
+      "tv": 0.01513671875,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "form": "isinstance_match",
+      "tv": 0.0087890625,
+      "flip": false
+    },
+    {
+      "pair": "boundary_pair",
+      "cell": "y_6",
+      "form": "eval_var",
+      "tv": 0.05111503601074219,
+      "flip": false
+    }
+  ]
+}
