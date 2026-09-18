@@ -149,7 +149,42 @@ Consequences (now part of the cycle's frozen expectations):
   N0 L-BFGS multi-init vs GD endpoint (max per-eigenvalue rel dev < 5% ⇒
   objective-determined).
 
-## 6. What each outcome licenses
+## 7. HP-C propositions (drafted 2026-09-18, before any HP-C run and before
+## the HP-B XE job reported; its endpoint signatures below are therefore
+## pre-registered predictions for the running experiment)
+
+**H1 (unigram softmax collapse).** For tied-embedding full-softmax CE on
+independent Zipf-distributed tokens, with d ≥ 2 there exist exact optima of
+the form w_i = u + α_i e with u·e = 1, α_i ∝ log p_i, in the ‖u‖ → ∞ limit:
+logits z_ij = K + log p_j + o(1), i.e. the target distribution is realized
+exactly. Consequences for the endpoint:
+(i) token norms UNIFORMIZE (‖w_i‖ → ‖u‖; the log-frequency spread is
+lower-order); (ii) the Gram/frame spectrum is TWO spikes (common direction u;
+frequency direction e) + floor — essentially rank 2, NOT a power law;
+(iii) therefore any power-law spectrum measured at finite training time on
+unigram data is a TRANSIENT (norm bulge read through the A2-biased
+estimator), not equilibrium structure; (iv) N1-t diverges from the measured
+spectrum because the learned coherence (common u) is directional structure
+that norm-preserving randomization destroys.
+XE endpoint signatures (frozen): norm spread (max‖w_i‖/min‖w_i‖ over top-d
+usage tokens) collapses toward O(1); top-2 eigenvalue share rises; fitted α
+drifts as the 2-spike shape replaces the transient profile. If instead a
+power law persists at convergence, H1 is refuted and the softmax equilibrium
+requires the margin-based theory the prior-art agent is currently scoping.
+
+**H2 (structured-data inheritance — HP-C core for real embeddings).** With
+co-occurrence structure, converged softmax training approximates a rank-d
+factorization of the log-conditional matrix M_ij = log P(j|i) (matrix-
+factorization view of SGNS; caveats: softmax ≠ LS, negatives sampling,
+regularization). Then the embedding spectrum INHERITS the top-d spectrum of
+M: the source of real-model power laws would be the DATA's correlation
+spectrum, with Zipf marginals entering through norms and the frequency
+direction but not directly through the spectral exponent. Distinguishing
+prediction from any usage-driven allocation theory: the embedding exponent
+should track the M-spectrum exponent across corpora at fixed (n, d), and be
+insensitive to marginal reweighting that preserves correlations. HP-C test
+(later, pre-registered separately): matched-corpus M-spectra vs trained
+embedding spectra.
 
 - A1 refutes mean field at the optimum: directional correlation is created by
   the OBJECTIVE itself (not just dynamics) — HP-C targets its structure.
