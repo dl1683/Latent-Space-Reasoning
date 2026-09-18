@@ -1,5 +1,42 @@
 # NOTEBOOK
 
+## Entry 120: The spectral estimator is biased; transient rate calibrated; undershoot signature identified (2026-09-18)
+
+**A2 (measurement validity).** Feeding known norm profiles through random
+directions at (d, γ) and applying the program's standard estimator (log-log
+OLS on top-90% of ranked frame eigenvalues):
+- On TRUE power-law profiles the estimator errs by up to ±0.19 (γ=4 inflates
+  shallow exponents; γ=16 deflates steep ones); the bias is asymptotic in d
+  by ~128 and depends only on (γ, profile exponent).
+- On FLAT input at γ=4 it manufactures α̂ ≈ 0.40–0.45 (γ=16: 0.20–0.23 —
+  matching the record's "flat init ≈ −0.25" readings).
+- On bulge (non-power-law) input it manufactures α̂ up to ~12, but the
+  quadratic-in-log curved alternative correctly rejects it (ΔR² 0.13–0.28).
+- Instrument note: rand_frame had ambient dimension = #(positive norms)
+  instead of d — found, fixed, a2/a3 killed and rerun BEFORE any result was
+  used; A1 and the theorem are unaffected.
+**Consequence:** every spectral exponent in the record is only comparable
+within fixed (γ, window); entry 101's cross-γ sweep embeds this bias — the
+"overcompleteness → flatter" direction may survive, its magnitude needs a
+bias-corrected rereading.
+
+**A3 (transient).** Independent exact-gradient pilot: α rises 0.53 → 1.03+
+over t=250..1250 — rich-get-richer at usage-proportional exponential rates,
+now verified on the exact dynamics. Calibrated ρ = 2.755 (first checkpoint
+only). Prediction map built on the A1-theorem endpoint. Inside the map: a
+saturated head-only random frame at γ_eff=1 reads α ≈ 1.15 (Marchenko–Pastur
+shape, not a power law) — therefore a late-time measured α BELOW the
+norm-only prediction (and below N1-t) is the dynamic signature of learned
+orthogonality: the theorem's mechanism showing up in the trajectory.
+
+**Standing state:** HP-B QSAE grid + XE arm running in background; scoring
+script frozen (analyze_hpb.py). Next theory target (HP-C): softmax-margin
+allocation — why retrieval geometry (exponential interference penalties)
+produces power laws where the quadratic objective provably cannot.
+
+Data: experiments/results/hpa_random_frame/{a2_spectral_map,a3_transient}.json
+Ledger: hpa_a2_result, hpa_a3_result
+
 ## Entry 119: Theorem — quadratic superposition optimum is sparse-exact storage; power laws need retrieval geometry or dynamics (2026-09-18)
 
 **Context.** Cycle HP (v2, theory/HD_POWER_LAW_ALLOCATION.md): why do trained
