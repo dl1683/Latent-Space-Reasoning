@@ -14,6 +14,32 @@ is not working — what would work for exploring this problem statement?"
 
 How does math change at high dimensions? This is the core research question.
 
+---
+
+## ACTIVE CYCLE HP: spectral law of Zipf-trained superposition codes (2026-09-18)
+
+Spec (pre-registered, frozen): theory/HD_POWER_LAW_ALLOCATION.md (v2 after a
+Droid design gate returned NO-GO on v1 with five fixes; both verdict and
+redesign are in the ledger). Established so far:
+
+**Theorem (licensed).** The quadratic superposition autoencoder
+L = Σ_i p_i ‖W^T W e_i − e_i‖² with d < n has global optimum = orthonormal
+exact storage of the top-d usage tokens, minimum loss Σ_{i>d} p_i (tail
+mass), optimal frame operator I_d (perfectly flat spectrum). Proof:
+L = tr((G−I)P(G−I)) with G PSD rank ≤ d; on ker G the factor acts as −I.
+Empirically matched by L-BFGS multi-init optima to 6 decimals at 6/6 configs.
+Mean-field (random-mixing) stationarity is REFUTED at the optimum
+(profile R² 0.00–0.08); the optimum anti-mixes.
+
+**Licensed consequence.** Power-law eigenspectra cannot arise from the
+quadratic objective's optimum; they require optimization dynamics (transients)
+or retrieval geometry (softmax margins). Pending: HP-A a2 (estimator
+validity / manufactured power laws), a3 (transient curves), HP-B (optimizer
+grid: QSAE dynamics branch predicts flat endpoints per P-E; XE softmax arm is
+the main event). No claim about real-model exponents yet.
+
+---
+
 The scope is broad and fundamental: the native mathematics of spaces where
 d >> 1. This includes but is not limited to neural network representations.
 Traditional ML, deep learning, pure mathematics — any domain where
