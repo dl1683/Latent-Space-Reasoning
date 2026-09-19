@@ -624,3 +624,34 @@ lambda^2 PR_W. The program's novel content is (ii)+(iii) — the connection
 of the law class to the FEATURE SPECTRUM through the weight distribution —
 not the CLT itself. Obligation downgraded from prove to verify-conditions-
 and-assemble.
+
+## 4h. THE ASSEMBLED THEOREM (2026-09-20; conditions verified inline)
+
+**Theorem (limit law for spectrum-weighted birthday statistics).** Let
+N ~ Multinomial(k; uniform on [d]) and S = sum_r w_r C(N_r, 2) with weights
+w_r >= 0 (w_r = the feature spectrum's channel masses). Then:
+
+(i) EXACT MOMENTS: E[S] = (1/2)(k)_2 p^2 W1 and Var(S) = (1/4)[W2 V +
+(W1^2 - W2) C] with V, C as in 4e — closed form, no approximations
+(validated 12/12, ratios 0.76-1.09).
+
+(ii) CLASSIFICATION: cv^2(S) is the exact closed form of (i); concentration
+iff it vanishes — governed in the dense regime (k = lambda d) by
+lambda^2 PR_W (weight participation ratio), in the sparse-birthday regime
+by the total collision intensity; steep weight spectra (PR_W = O(1))
+retain O(1) relative fluctuations at every density.
+
+(iii) ASYMPTOTIC NORMALITY: when Var(S) -> infinity and the max-cell
+variance share vanishes (max_r w_r^2 V / (4 Var(S)) -> 0; in the V-dominated
+regime this is max w^2/W2 -> 0, i.e. PR_W -> infinity), S is asymptotically
+normal — by the occupancy sum-function CLT (Holst 1972, conditional/
+martingale form; Karlin 1967 for unequal cell probabilities), whose
+conditions the exact formula lets us check in closed form.
+
+(iv) POISSON PHASE: near the birthday threshold (expected collisions O(1)),
+compound-Poisson limits obtain (classical; Wang 1989 for unequal p).
+
+The program's original content: (i)+(ii) — the exact spectrum-covariance
+and the identification of the FEATURE SPECTRUM as the classification
+variable connecting interference statistics to representation geometry.
+Arc status: theorem assembled and closed.
