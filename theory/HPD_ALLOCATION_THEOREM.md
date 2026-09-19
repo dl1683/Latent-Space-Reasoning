@@ -226,3 +226,42 @@ Two defects must be repaired before T4 proceeds (no HP-D simulations):
    freedom noted by review-2 is then fixed by the CE optimum +
    regularization (the balancing principle), not assumed.
 While paused, HP-E (theory/HPE_AGGREGATE_INTERFERENCE.md) carries the lead.
+
+## 7. REPAIRED FORMALIZATION (2026-09-19; implements the review-5 repairs)
+
+**Objective (full-distribution CE, matches real training).** Minimize over
+untied (H, W) in R^{d x n} x R^{d x n}:
+  L = -sum_i p_i sum_j P(j|i) log softmax_j(w_j . h_i).
+Error metric: excess = L - H(P(.|I)) (conditional entropy floor). No sampled
+target, no argmax, no external noise; all interference lives in the softmax
+competition, decoder-derived by construction.
+
+**Representability lemma (statement).** Zero-excess solutions exist iff some
+row-constant shift of the log-kernel, log P - 1 c^T, has rank <= d (Z = W^T H
+ranges over all rank-<=d matrices; softmax rows are shift-invariant).
+Approximate form: excess CE <= g(tail energy of the centered log-kernel
+beyond rank d), with g quadratic-ish via Pinsker-type bounds (to be pinned).
+
+**Planted-block log-kernel is approximately rank-(B+2).** log[(1-rho)p_j +
+rho/m 1_same] = logsumexp(log(1-rho)+log p_j, log rho - log m + M_ij) where
+M = block indicator. When one argument dominates, the logsumexp correction is
+additive-bounded; so log P = A_j + B-coeff*M_ij + E with ||E|| bounded by the
+mixture-transition sharpness; A (unigram) contributes rank 1-2, M
+(block-diagonal ones) contributes rank B. The representability defect at
+d < B is governed by the weighted low-rank compression of M.
+
+**Block-mass dichotomy (T4 in objective terms).** M has B equal singular
+values (sqrt(m) each), but USAGE block-masses decay by Zipf rank (block b
+carries mass W_b = sum of p over its ranks). The weighted rank-d compression
+of the kernel faces exactly the dropping-vs-superposing dichotomy of the
+quadratic theorem, now over blocks:
+- when block masses decay steeply (large s), keep-top-d-blocks + drop tail is
+  near-optimal (sparse-exact redux);
+- when masses are comparable, superposition (soft mixing of the remaining
+  B-d block directions) is forced, and the EXCESS CE of compression becomes
+  the retrieval-phase quantity: T4 boundary = where compression excess
+  crosses the entropy floor as a function of (B/d, rho, s, n).
+Pre-registered T4' target: for fixed (rho, s), the excess-CE phase boundary
+in (B, d) is sharp (concentration over the kernel ensemble); concrete
+conjecture: critical d*(B) proportional to the participation ratio of the
+block-mass sequence (bridging to the E-struct capacity law).
