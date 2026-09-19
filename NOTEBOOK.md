@@ -1,5 +1,31 @@
 # NOTEBOOK
 
+## Entry 126: Candidate B derivation program complete (2026-09-21)
+
+The hierarchical-kernel arc (review-7's second-ranked direction) now has a
+complete derivation chain, all numerically anchored: nested-bump
+orthogonality (tree property) -> exact level-bundle spectrum (rank 2^L-1
+confirmed to the digit; multiplicities (b-1)b^{ell-1}) -> bundle-scale law
+sqrt(m_ell) Delta_ell (geometric under geometric pi, matched) ->
+recursive-tail excess curve (level envelope x within-bundle Zipf block-mass
+tails — interpolating both validated regimes of the program in one object
+with an EMERGENT knee) -> CGF crossover with the phase boundary located
+(where the last strongly-gapped level falls below truncation rank).
+
+The family's (pi decay, s) plane spans the real-model exponent range — a
+laboratory for the compression theory across observed exponents. The
+pre-registered simulation (stepwise curve, within-bundle tails, crossover
+location) is designed and gated on the next review's verdict.
+
+Standing picture: FOUR complete theoretical structures — aggregate
+interference (exact + validated), Orlicz compression (exact identity +
+two-regime law + certificates), birthday limit laws (exact covariance +
+classification), hierarchical compression (this entry) — plus corpus
+assets for the gauge-safe observational side, HP-B closed with full
+provenance, and the review cadence as the empirical gate.
+
+Ledger: hpd_candidate_b_spec through hpd_cgf_crossover.
+
 ## Entry 125: The limit-law arc — birthday structure, exact covariance, λ²PR_W (2026-09-20)
 
 The review-7 lead arc closed its foundation cycle in one session: (1) the
