@@ -674,3 +674,26 @@ excess_CE*(d) for d between cumulative level ranks R_ell = sum_{l<=ell}
 stepwise with refinements inside bundles. Closed-form status: envelope law
 derived (this section); exact within-bundle refinement pending; the CGF
 (large-deviation) version beyond the Fisher regime pending.
+
+## 13d. The recursive-tail excess curve (2026-09-21)
+
+Within a level-ell bundle, the (b-1)b^{ell-1} Haar directions carry scales
+ordered by their block usage masses (larger-mass blocks -> larger sigma;
+matches the measured within-bundle ordering). Truncation inside a bundle
+keeps high-mass blocks first, so the WITHIN-bundle excess tail is the
+block-mass tail law of the planted-block cycle (validated there), at level
+scale Delta_ell^2. The complete Fisher-regime excess curve is therefore a
+RECURSIVE DOUBLE TAIL:
+
+  excess_CE*(d) ~ sum_{ell beyond kept levels} [level-ell total Fisher
+  energy] + sum_{kept ell} [ Delta_ell^2 x (block-mass tail beyond the
+  kept within-bundle directions) ]
+
+- across levels: geometric or power-law envelope set by pi decay;
+- within levels: Zipf block-mass tails set by s.
+
+The hierarchical family thus interpolates the two validated regimes of the
+whole program (planted-block tails; Fisher two-regime law) in one object
+with an EMERGENT knee, and its (pi decay, s) plane spans the real-model
+exponent range. Remaining: CGF-regime version, the phase boundary
+statement, and the pre-registered simulation (in that order).
