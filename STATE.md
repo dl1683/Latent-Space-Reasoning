@@ -2729,3 +2729,18 @@ word as written in each section header):
 - Closed toy program — licensed wording (Rounds 36–37; ENDED 2026-08-29)
 - NLM-007 — CLOSED (2026-08-29; audit #22 closing statement, verbatim)
 - NLM-007 — adoption-order record (Rounds 1–34; superseded orders kept verbatim), including the NLM-001 through NLM-006b verdict/lock sections, Rounds 10–33, audits #2–#20, and the four-cell evidence gate (2026-08-27 — 2026-08-29)
+
+**HP-G progress (2026-09-23):** G1-G3 complete — exact mean, contraction-
+operator covariance (Wick instance verified 0.989), triple-brute-force-
+certified variance counting, and the corrected L2 concentration criterion
+(matching stored gauss-arm data 0.0673 vs 0.0708; an ordered/unordered
+algebra slip caught by G5 validation itself, exhibit retracted). G4: the
+Gaussian universality class has a dimension-dependent stability boundary —
+**eta*(d) ~ d^{-1/2}** (crossover when the localized component's eta^2 d
+~ 1), confirmed by pre-registered bracketing at d = 512, 2048, 8192,
+32768 with the pinning cell landing inside the predicted bracket. Formal
+Lipschitz proof of the operator-level mechanism remains. This is the
+program's first dimension-asymptotic phase law for a universality class:
+direction ensembles within eta of Gaussian (in the contraction-operator
+sense) share the sharp interference frontier; beyond it the frontier
+broadens.
