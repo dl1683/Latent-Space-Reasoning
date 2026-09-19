@@ -255,3 +255,18 @@ caveat: eta* not bracketed below 0.4 at any d (the eta grid did not
 include enough small values at large d); the directional prediction is
 CONFIRMED, the eta* scaling law needs a finer grid (next cells, to be
 pre-registered with the same discipline).
+
+## 12d. eta*(d) bracketed (2026-09-23; finer pre-registered grid)
+
+eta*(512) in (0.30, 0.35]; eta*(2048) in (0.15, 0.25]; eta*(8192) in
+(0.15, 0.25] with strong margin at 0.25 (0.1312 vs line 0.0630). The
+crossover SHRINKS with d as registered. Candidate law from brackets:
+eta* ~ c/d^gamma with gamma in (0, 1/2]-ish from three points (log-log
+slope between midpoints ~ -0.5); a fourth d would pin the exponent.
+Mechanistic reading: the sparse component's contribution to the
+contraction operator scales like eta^2 d (its R ~ d weighted by the
+second-moment share eta), so departure when eta^2 d ~ 1, i.e.
+eta* ~ d^{-1/2} — CONSISTENT with the measured slope. Registered
+prediction for the pinning cell: d=32768, eta in {0.08, 0.12}: exceedance
+expected at 0.12 (eta^2 d = 47 >> 1) and within at 0.08 (eta^2 d = 21,
+borderline) under the d^{-1/2} law.
