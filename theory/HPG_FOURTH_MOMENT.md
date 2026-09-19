@@ -178,3 +178,28 @@ runner source is committed; audit pending). No theorem change: the two
 assemblies are both certified for their own ensembles. The audit (and, if
 confirmed, re-running one Gaussian cell with explicit unnormalized
 sampling) is G5's next step.
+
+## 11. CORRECTION: G5 caught an algebra error in sections 9-10 (2026-09-23)
+
+The criterion of section 9 used E[A_2] = k(k-1) tr(S^2) — the ORDERED-sum
+expectation — while the certified variance was for the UNORDERED sum
+A_2 = sum_{i<j}. Correct homogeneous Gaussian criterion:
+
+  E[A_2] = C(k,2) tr(S^2);
+  cv^2 = [2 + 6 t4/t2^2] / C(k,2)  +  4 k C(k-1,2) t4 / [C(k,2)^2 t2^2],
+  t2 = tr(S^2), t4 = tr(S^4).
+
+Isotropic: cv ~ 2/sqrt(C(k,2)) ~ 2*sqrt(2)/k — MATCHING the measured
+gauss-arm data (d=512,k=32: formula 0.0673 vs measured 0.0708) AND
+consistent in scale with 3h's unit-norm 2/k law.
+
+**RETRACTED: the section-9 "norm-fluctuation exhibit"** (the claimed
+order-of-magnitude Gaussian-vs-unit-norm gap was an artifact of this same
+ordered/unordered slip). The section-10 "convention audit" is resolved:
+no convention discrepancy — the stored data and the corrected formula
+agree. The genuine (smaller) norm-fluctuation effect remains to be
+quantified cleanly (Gaussian 2*sqrt(2)/k vs unit-norm 2/k at isotropic —
+a factor sqrt(2), not an order of magnitude). G5's first catch: the
+validation data caught a transcription error in the theorem document that
+three brute-force certifications of the VARIANCE did not catch (they
+certified Var, not the cv algebra downstream).
