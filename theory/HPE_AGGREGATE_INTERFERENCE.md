@@ -568,3 +568,22 @@ used sigma-biased placement vs the theory's uniform placement - an
 ensemble conflation to rerun.) Obligation: exact fixed-k covariance
 computation for sum_r w_r C(N_r, 2) under multinomial(k, uniform), then
 the law classification re-derived on the corrected structure.
+
+## 4e. EXACT fixed-k covariance: derived and VALIDATED 12/12 (2026-09-20)
+
+For S = sum_r w_r C(N_r,2), N ~ Multinomial(k, uniform p = 1/d), the exact
+variance follows from multinomial factorial moments ((n)_2^2 = (n)_4 +
+4(n)_3 + 2(n)_2; cross-covariance = -(k)_2(4k-6)p^4 — the negative fixed-k
+correlation):
+
+  Var(S) = (1/4)[ W2 * V + (W1^2 - W2) * C ],
+  V = (k)_4 p^4 + 4(k)_3 p^3 + 2(k)_2 p^2 - (k)_2^2 p^4,
+  C = -(k)_2 (4k-6) p^4,   W1 = sum w_r, W2 = sum w_r^2,
+  E[S] = (1/2)(k)_2 p^2 W1,   cv^2 = Var/E^2.
+
+Validation (uniform placement, d=512, alpha in {0.3,0.6,0.9,1.2} x lambda
+in {2,5,20}, 300 reps): predicted vs measured cv^2 ratios 0.76-1.09 —
+PASS 12/12 with zero free parameters. The refuted Poissonized model of 4d
+is superseded; the law-class question (Gaussian vs compound-Poisson
+asymptotics) now reads from the exact formula's asymptotics in (k, d,
+spectrum moments W1, W2).
