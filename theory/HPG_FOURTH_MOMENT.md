@@ -58,3 +58,31 @@ generalization, retires the family-by-family approach, and provides the
 universal object review-10 demanded: dimension enters through Sigma_d's
 spectrum and T_d's contraction norms — participation ratios of both —
 with the frontier sharpness the theorem's necessary-and-sufficient content.
+
+## 5. G1 and G2 executed (2026-09-22; two derivation slips caught en route)
+
+**G1 (mean, triangular-array general).** For independent features with
+E[f_i f_i^T] = Sigma_i (unit-energy scaled):
+  E[A_2] = sum_{i!=j} tr(Sigma_i Sigma_j);
+identical Sigma_i = Sigma (unit trace): E[A_2] = k(k-1) tr(Sigma^2)/(tr Sigma)^2
+— 3g restated in full generality. DONE.
+
+**G2 (variance via the fourth-moment contraction operator).** The
+shared-index covariance structure factors through the contraction operator
+  C_i[x] := map of symmetric x given by the fourth-moment tensor of f_i
+contracted on two slots; for Gaussian f_i (Wick):
+  C_i[x] = tr(x Sigma_i) Sigma_i + 2 Sigma_i x Sigma_i,
+and the exact pair-square covariance is
+  Cov( (f_i.f_j)^2, (f_i.f_l)^2 ) = tr(Sigma_j Sigma_i) tr(Sigma_l Sigma_i)
+       + 2 tr(Sigma_j Sigma_i Sigma_l Sigma_i) - tr(Sigma_j Sigma_i)tr(Sigma_l Sigma_i)
+     = ** 2 tr(Sigma_j Sigma_i Sigma_l Sigma_i) **.
+VERIFIED by vectorized Monte Carlo (d=64, power-law spectrum, 500k reps):
+E[(fi.fj)^2(fi.fl)^2]: MC 25.480 vs formula 25.763 (ratio 0.989; MC noise).
+This single contraction-operator formula is the general object: Gaussian
+directions give Wick's C_i; coordinate-sparse directions give the C_i whose
+spectral content reproduces the Psi functionals of 3l. G2's remaining
+write-up: the disjoint-pair variance term in the same operator language and
+the assembly into the total Var[A_2] (the counting is as in 3h).
+NOTE (honesty): two sign/convention slips in the first derivation attempts
+were caught by the verification discipline; the recorded formula above is
+the verified one.
