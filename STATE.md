@@ -33,10 +33,23 @@ Mean-field (random-mixing) stationarity is REFUTED at the optimum
 
 **Licensed consequence.** Power-law eigenspectra cannot arise from the
 quadratic objective's optimum; they require optimization dynamics (transients)
-or retrieval geometry (softmax margins). Pending: HP-A a2 (estimator
-validity / manufactured power laws), a3 (transient curves), HP-B (optimizer
-grid: QSAE dynamics branch predicts flat endpoints per P-E; XE softmax arm is
-the main event). No claim about real-model exponents yet.
+or retrieval geometry (softmax margins).
+
+**XE result (3 seeds, licensed 2026-09-19):** unigram tied-softmax training
+converges toward the H1 rank-2 collapse — top-2 eigenvalue share ≥ 0.984 at
+every checkpoint from t=3k, norm uniformization (spread 1.9 → 1.4), curved
+fits beat power law at 12/12 checkpoint-seeds (r²_pl only 0.54–0.71), and
+measured α ≫ the norms-only control (N1-t ≈ 0.22) — the fitted slopes are
+directional structure (collapse coherence), not norm allocation. Entry-101's
+"Zipf + cross-entropy → power-law eigenspectra" is an estimator artifact on
+a two-spike-plus-floor spectrum. Combined with the theorem: **usage alone
+does not produce power-law spectra in either toy objective**; live sources
+are structured organization (T2-PL), data-correlation inheritance (H2,
+gauge-fixed), or dynamics. HP-D (theory/HPD_ALLOCATION_THEOREM.md) targets
+the usage-weighted margin-allocation theorem, with T2-LOG conjecturing
+log-squared (power-law-free) allocation under uniform coherence — the folk
+"superposition over Zipf features" explanation would then be false in the
+fully specified model. HP-B QSAE grid (dynamics branch) still computing.
 
 ---
 

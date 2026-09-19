@@ -1,0 +1,21 @@
+{
+ "results": {
+  "0.002": {
+   "median_loss": 0.954419101632736,
+   "finite": true
+  },
+  "0.01": {
+   "median_loss": 0.7291149308521908,
+   "finite": true
+  },
+  "0.05": {
+   "median_loss": 0.5229591485830398,
+   "finite": true
+  },
+  "0.2": {
+   "median_loss": 0.38659839496494475,
+   "finite": true
+  }
+ },
+ "chosen_lr": 0.2
+}
