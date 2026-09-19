@@ -203,3 +203,25 @@ a factor sqrt(2), not an order of magnitude). G5's first catch: the
 validation data caught a transcription error in the theorem document that
 three brute-force certifications of the VARIANCE did not catch (they
 certified Var, not the cv algebra downstream).
+
+## 12. G4 opened: universality classes via contraction-operator separation
+## (2026-09-23; review-11 scope respected — uniform classes, not per-array)
+
+Probe: the diagonal contraction ratio R = sum_a E[f_a^4] / sum_a (E f_a^2)^2.
+Measured at d=512: Gaussian R = 3.0 (Wick baseline, dimension-free);
+coordinate-sparse R = 499.5 (~d, dimension-GROWING). The operators separate
+by a factor ~d on this probe.
+
+**Universality statement (target):** For any direction ensemble whose
+contraction operators satisfy a uniform operator-norm bound
+||C_i - C_i^Wick|| <= eps_d with eps_d -> 0, the G3 criterion and Gaussian
+rates carry over unchanged (the Gaussian is the universality class center).
+Conversely, ensembles with R(d) -> infinity (like coordinate-sparse,
+R ~ d) belong to different concentration classes (the Psi law). The scalar
+probe R stratifies: R = O(1) candidates for the Gaussian class;
+R -> infinity forces departure. Obligations: (i) prove the operator-norm
+sufficient condition implies criterion transfer; (ii) prove R -> infinity
+forces non-Gaussian rates for the weighted pair statistic (or find a
+counterexample — R is only a probe, not the full operator); (iii) place
+real-data feature ensembles (e.g., hidden-state direction distributions)
+by their R values — a measurable, dimension-dependent classifier.
