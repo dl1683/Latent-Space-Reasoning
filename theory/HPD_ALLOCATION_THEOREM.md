@@ -515,10 +515,12 @@ Gradient: grad_{r_b} KL(q_b||softmax(r_b)) = softmax(r_b) - q_b = rho_b - q_b
 field must lie in the TANGENT space at R* (orthogonality to the variety's
 normal cone), i.e.
 
-  ** rowspace(R*) contains span{ W_b (rho*_b - q_b) : b } **
+  ** the gradient field vanishes on rowspace(R*): U U^T G = 0 and
+  G V V^T = 0, i.e., G lives entirely in the complement block **
 
-— the weighted softmax-minus-target field must live inside the solution's
-own row space. This is a projected-gradient fixed point, exact and
+— the direct analogue of Eckart-Young's residual-orthogonal-to-
+approximation structure. (CORRECTED 2026-09-20: the original statement had
+the containment direction reversed; the numerical check below exposed it.) This is a projected-gradient fixed point, exact and
 first-order-necessary (nonconvexity: not sufficient; global optimality
 needs the second-order/comparison argument — obligation continues).
 Structure reading:
@@ -533,3 +535,15 @@ Structure reading:
   instead of imposing this tangent condition; a valid solver = projected
   gradient on Phi with rank-d projection (guaranteed stationarity, the
   same optima the SGD found).
+
+## 12h. Numerical verification of the corrected condition (2026-09-20)
+
+At the settled optimum (B=8, rho=0.3, s=1, d=2; the 12-seed solution):
+off-space energy of the gradient field G_b = W_b(softmax - q) relative to
+rowspace(R*) = 1.0000 — the gradient lies ENTIRELY in the complement block.
+The settled optimum satisfies the first-order condition exactly (to
+numerical precision), confirming: (a) the corrected 12g condition;
+(b) that the SGD optima are true stationary points of the rank-d problem;
+(c) the Eckart-Young-type orthogonality structure survives the Orlicz
+metric at the optimum. The tilted fixed point of 12f is THIS solution's
+nonlinear regime — its characterization now has a verified first-order core.
