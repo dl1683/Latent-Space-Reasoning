@@ -555,3 +555,16 @@ boundaries; the validation data is cleanly ordered by the refined theory
 (dense cv monotone in PR: 0.012/0.041/0.146; sparse cv ~ 1/sqrt(mean):
 1.31/1.43/5.19). Next: pin the dense boundary quantitatively (PR threshold
 vs lambda) with a pre-registered sweep.
+
+## 4d. Lindeberg sweep: Poissonization REFUTED at fixed k (2026-09-20)
+
+The zero-parameter prediction (cv^2 = sum v_r^2/(sum v_r)^2 over
+independent Poisson channels) failed 2/12, with measured cv^2 dropping
+~10x per 4x lambda at steep alpha while the prediction is lambda-free.
+Diagnosis: the fixed-k multinomial conditioning induces NEGATIVE
+between-channel correlations that are load-bearing for the weighted
+collision functional - not a bounded le-Cam correction. (The sweep also
+used sigma-biased placement vs the theory's uniform placement - an
+ensemble conflation to rerun.) Obligation: exact fixed-k covariance
+computation for sum_r w_r C(N_r, 2) under multinomial(k, uniform), then
+the law classification re-derived on the corrected structure.
