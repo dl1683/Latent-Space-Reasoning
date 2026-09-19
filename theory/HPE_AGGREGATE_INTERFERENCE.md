@@ -500,3 +500,40 @@ sum; (ii) Lyapunov condition in terms of N_eff gives Regime G'
 (quasi-Gaussian within CP when N_eff -> inf); (iii) the G-vs-CP boundary in
 terms of (rho_4, Psi) functionals; (iv) pre-registered validation on fresh
 (d, k, alpha, ensemble) cells against the predicted law classes.
+
+## 4b. Poissonized derivation: the two-corner phase diagram (2026-09-20)
+
+Coordinate-sparse directions, Sigma = diag(sigma_r): A_2 = 2c^4 sum_r
+sigma_r C(N_r, 2), N_r = features on channel r. Poissonization: N_r ~
+independent Poisson(lambda = k/d) (classical occupancy decoupling; the
+exact multinomial correction is a finite-k Fab-gap, bounded by standard
+le-Cam for the collision functional).
+
+**Per-channel moments (falling-factorial computation).** For N ~ Poi(lambda):
+E[C(N,2)] = lambda^2/2; Var(C(N,2)) = lambda^3 + lambda^2/2 + lambda/2.
+
+**Lindeberg ratio** for the independent-channel sum (post-Poissonization):
+  L = max_r sigma_r^2 Var(C(N_r,2)) / sum_r sigma_r^2 Var(C(N_r,2)).
+
+Two corners:
+- DENSE (lambda = k/d >> 1): Var ~ lambda^3 dominates; sigma_r^2 lambda^3
+  proportional across r -> L = max sigma^2 / sum sigma^2 = 1/PR(channel
+  masses). GAUSSIAN iff the channel-mass participation ratio diverges —
+  delocalized or moderately skewed spectra; steep spectra keep O(1)
+  relative fluctuations even densely.
+- SPARSE BIRTHDAY (lambda << 1): Var ~ lambda/2 (the rare single-collision
+  term); collisions at channel r occur w.p. ~ lambda^2/2 with weight
+  ~ 2c^4 sigma_r: the sum is compound Poisson with intensities
+  nu_r ~ k^2 sigma_r^2/(2d^2) and jumps w_r ~ 2c^4 sigma_r: effective
+  channel count N_eff ~ (sum nu_r w_r)^2 / sum (nu_r w_r)^2 ~
+  (sum sigma_r^3)^2 / sum sigma_r^4 — the THIRD-moment participation
+  ratio governs the sparse-birthday corner.
+
+**Phase statement (to be formalized).** The limiting law of A_2 is Gaussian
+in the dense corner iff PR(sigma^2-masses) -> infinity; compound-Poisson
+with O(1) fluctuations when the governing corner functional is O(1); the
+boundary interpolates via the Lindeberg ratio L(k, d, sigma). Different
+participation ratios (second-moment PR dense; third-moment PR sparse)
+rule different corners — the law class is NOT a single functional of the
+spectrum. Pre-registered validation grid: fresh cells crossing both
+corners (k/d in {0.05, 5} x alpha in {0, 0.5, 0.9}) with predicted classes.
