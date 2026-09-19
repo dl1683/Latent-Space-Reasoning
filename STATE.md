@@ -60,12 +60,15 @@ unproved T2-FLAT restatement. HP-B QSAE grid continues as confirmatory only.
    quadratic/projection readouts; the degree>=3 extension was REFUTED in its
    naive form (per-term law is ||T||^2/d^t, and no natural Theta(1) diagonal
    channel exists at degree>=3) — open with explicit obstruction.
-2. E-struct theorem (expectation level, validated): for unit-energy features
-   with covariance Sigma, per-pair interference = tr(Sigma^2)/(tr Sigma)^2
-   exactly; the absolute mean-field capacity is k* = Theta(sqrt(PR(Sigma))),
-   PR = participation ratio. Power-law corollary: for spectrum exponent
-   alpha > 1/2, k* = Theta(d^{1-alpha}) — a power-law spectrum taxes
-   quadratic mean-field computation by d^{alpha-1/2} relative to isotropy.
+2. E-struct (expectation level, validated; RESCOPED per review-6): for
+   unit-energy features with covariance Sigma, per-pair interference =
+   tr(Sigma^2)/(tr Sigma)^2 exactly; expected aggregate interference becomes
+   order one at k = Theta(sqrt(PR(Sigma))) in the specified expectation-
+   normalized quadratic model. A matching high-probability frontier is proved
+   ONLY in the isotropic case; anisotropic concentration at the crossing is
+   open. Power-law corollary restricted to 1/2 < alpha < 1: crossing at
+   Theta(d^{1-alpha}); at alpha = 1 the scale is Theta(log d); alpha > 1
+   Theta(1).
    Validated: per-pair exact to 0.4-2.4% at alpha <= 0.5; crossings bracketed
    in 8/8 cells (two registered formal fails carry diagnosed benign causes,
    logged). Pending rigor: concentration formalization and the matching

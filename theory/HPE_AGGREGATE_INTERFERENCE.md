@@ -248,12 +248,15 @@ where PR = (tr Sigma)^2/tr(Sigma^2) is the covariance participation ratio.
 Checks: isotropic Sigma = I -> 1/d (PR = d, k* = sqrt(d), recovers 3b);
 rank-1 Sigma -> 1 (PR = 1, k* = 1: parallel features maximally interfere).
 
-**E-struct Theorem (quadratic class).** The absolute mean-field capacity of
-unit-energy anisotropic features is
+**E-struct Theorem (quadratic class; expectation level).** For unit-energy
+anisotropic features the aggregate interference reaches order one at
 
-  k* = Theta(sqrt(PR(Sigma))),
+  k = Theta(sqrt(PR(Sigma)))   [absolute criterion];
 
-dimension entering ONLY through the spectral participation ratio.
+the RELATIVE criterion (A_2 = o(signal), signal = Theta(k)) crosses at
+k = Theta(PR(Sigma)). Dimension enters only through PR at the expectation
+level; high-probability statements are proved only for the isotropic case
+(review-6 scoping).
 
 **Corollary (power-law spectra — the program's bridge).** For
 Sigma = diag(l^{-alpha})_{l<=d}:
@@ -280,14 +283,17 @@ For unit-norm independent isotropic features and M = I (energy readout):
 
 **Exact mean.** E[A_2] = k(k-1)/d (3b, validated).
 
-**Exact variance (new).** For pair (i,j): E[Z^4] = 3/(d(d+2)), E[Z^2] = 1/d,
-so Var(Z^2) = (2d-2)/(d^2(d+2)). All covariances between distinct pair-squares
-VANISH IDENTICALLY: pairs sharing one index, say (i,j),(i,l), satisfy
-E[Z_ij^2 Z_il^2] = E_fi[ E[Z^2|f_i] E[Z^2|f_i] ] = (1/d)^2 = E[Z^2]^2 using
-conditional independence and ||f_i|| = 1 exactly; disjoint pairs are
-independent. Hence
+**Exact variance (CORRECTED 2026-09-19, review-6: A_2 = sum over ordered
+pairs counts (i,j) and (j,i), which are IDENTICAL for M = I).** Write
+A_2 = 2 * sum_{i<j} W_ij with W_ij = Z_ij^2. For each unordered pair:
+E[Z^4] = 3/(d(d+2)), E[Z^2] = 1/d, so Var(W) = (2d-2)/(d^2(d+2)).
+Covariances between unordered pair-squares vanish identically (share-one-
+index: E[Z_ij^2 Z_il^2] = E_fi[(1/d)(1/d)] = E[Z^2]^2 by conditional
+independence and ||f_i|| = 1; disjoint: independent). Hence
 
-  Var(A_2) = k(k-1) * (2d-2)/(d^2(d+2)),  cv(A_2) = sqrt(2/k^2 * (1+o(1))) ~ sqrt(2)/k.
+  Var(A_2) = 4 * C(k,2) * (2d-2)/(d^2(d+2)) = 2k(k-1)(2d-2)/(d^2(d+2)),
+  cv(A_2) ~ 2/k  (previously stated sqrt(2)/k - low by factor sqrt(2); the
+  two-phase conclusion is unchanged, constants corrected).
 
 **Two-phase conclusion (E2 + E3 for the isotropic quadratic class, proved).**
 By Chebyshev, A_2 in [E/2, 2E] with probability >= 1 - 8/k^2. Therefore:
