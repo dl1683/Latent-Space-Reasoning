@@ -101,3 +101,24 @@ the verified one.
   collision intensity), including counterexamples with identical second
   and fourth moments but different limits.
 - C_i to be defined without requiring Sigma^{-1}.
+
+## 7. G2 assembly complete (2026-09-22; homogeneous case, verified)
+
+Pair-variance term (conditional-on-f_i derivation):
+  E[(f_i.f_j)^4] = 3 E[(f_i^T S f_i)^2] = 3[tr(S^2)^2 + 2 tr(S^4)],
+  Var(W_ij) = E[W^2] - (EW)^2 = ** 2 tr(S^2)^2 + 6 tr(S^4) **.
+Verified: MC 54.961 vs formula 54.786 (ratio 1.0032, 400k reps, d=64
+power-law spectrum). (A wrong candidate formula in the first script was
+caught by the MC and corrected BEFORE recording.)
+
+Complete homogeneous variance (S_i = S for all i):
+  Var(A_2) = 2 C(k,2) [2 tr(S^2)^2 + 6 tr(S^4)]      (pair terms, unordered x2)
+           + 4 sum over shared-index triples 2 tr(S_j S_i S_l S_i)
+           = 2 C(k,2)[2 tr(S^2)^2 + 6 tr(S^4)] + 8 C(k,3)-counted
+             tr-terms (exact counting per 3h's structure).
+Isotropic anchor (S = I/d, tr(S^2)=1, tr(S^4)=1/d): Var(A_2) =
+2C(k,2)(2+6/d) + shared terms -> consistent with 3h's exact identity.
+Non-Gaussian directions: replace each Wick contraction by the C_i-operator
+contraction — the operator form is the theorem; Wick is one instance.
+Remaining: write the non-homogeneous counting precisely; then G3 with the
+review-11 quantifier corrections.
