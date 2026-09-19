@@ -43,14 +43,16 @@ fits beat power law at 12/12 checkpoint-seeds (r²_pl only 0.54–0.71), and
 measured α ≫ the norms-only control (N1-t ≈ 0.22) — the fitted slopes are
 directional structure (collapse coherence), not norm allocation. Entry-101's
 "Zipf + cross-entropy → power-law eigenspectra" is an estimator artifact on
-a two-spike-plus-floor spectrum. Combined with the theorem: **usage alone
-does not produce power-law spectra in either toy objective**; live sources
-are structured organization (T2-PL), data-correlation inheritance (H2,
-gauge-fixed), or dynamics. HP-D (theory/HPD_ALLOCATION_THEOREM.md) targets
-the usage-weighted margin-allocation theorem, with T2-LOG conjecturing
-log-squared (power-law-free) allocation under uniform coherence — the folk
-"superposition over Zipf features" explanation would then be false in the
-fully specified model. HP-B QSAE grid (dynamics branch) still computing.
+a two-spike-plus-floor spectrum. Scoped statement: in the specified
+diagonal QSAE optimum and the three tested unigram tied-softmax runs, usage
+alone did not yield genuine power-law spectra — this does not cover
+structured tasks or other objectives; both toy tasks are underconstrained
+(quadratic permits tail-dropping; unigram retrieval has no input-dependent
+requirement), a generalization boundary stated per review-4. HP-D
+(theory/HPD_ALLOCATION_THEOREM.md) targets the structured-retrieval
+phase-transition theorem T4 (critical d*(n, rho, s)); its earlier T2-LOG
+conjecture was withdrawn for a sign error (review-3) and replaced by the
+unproved T2-FLAT restatement. HP-B QSAE grid continues as confirmatory only.
 
 ---
 
