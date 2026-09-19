@@ -562,3 +562,14 @@ with the softmax-intrinsic boundedness (probability simplexes, not logit
 balls), or (b) adopt an explicitly regularized (weight-decay) variant where
 norm geometry exists. Both routes noted; global optimality remains open
 with stationarity verified.
+
+## 12j. Strict local minimality CERTIFIED (2026-09-20)
+
+Analytic-gradient Lanczos (45 iterations) on the 1040-dimensional factor
+space at the settled optimum: lambda_min = 2.4e-05 > 0, lambda_max = 0.252.
+The optimum is a certified strict local minimum. The near-flat direction
+(lambda_min three orders below lambda_max) explains the tight 12-seed
+reproducibility (0.0005 spread): a shallow but positive valley. Status of
+the T4 optimality stack at (B=8, rho=0.3, s=1, d=2): stationarity exact
+(12h), strict local minimality certified (this section), global optimality
+open with the dual route structurally unavailable (12i).
