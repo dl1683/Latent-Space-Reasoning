@@ -22,7 +22,7 @@ LLM latent spaces (d=768–4096+), kernel feature maps, embedding spaces, and hi
 
 5. **Meaning went undetected on the tested arithmetic panels.** Within the same operator family, meaning-preserving vs meaning-changing perturbations produce indistinguishable 11-bin output distributions (effect sizes +0.002/+0.008/−0.090 across 3 architectures, all consistent with zero). The answer-identity confound makes meaning inseparable from answer change in this domain.
 
-**Models tested:** Qwen3 (0.6B/1.7B, base and instruct), SmolLM2 (135M/360M/1.7B, base and instruct), Phi-1.5, StableLM-2-1.6B, CodeGen-350M. All experiments are CPU-only, deterministic, and fully logged.
+Findings 1–5 were observed across the tested arithmetic/code panels and model checkpoints (not established as universality claims). **Models tested:** Qwen3 (0.6B/1.7B, base and instruct), SmolLM2 (135M/360M/1.7B, base and instruct), Phi-1.5, StableLM-2-1.6B, CodeGen-350M. All experiments are CPU-only, deterministic, and fully logged.
 
 See [current state](STATE.md) and [experiment history](experiments/EXPERIMENTS.md).
 

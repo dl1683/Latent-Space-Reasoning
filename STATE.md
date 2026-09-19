@@ -297,12 +297,12 @@ Analytical derivations and proofs take priority over running code on specific mo
 
 **Analytical results derived (2026-09-18):**
 
-1. **Interference hierarchy:** In R^d, t-body interference terms in a degree-p
-   polynomial map scale as d^{-(t-1)/2} (RMS). Proven for p=2 (quadratic case):
-   1-body coefficients O(1), 2-body coefficients O(1/√d). General degree-p
-   conjecture: t-body O(d^{-(t-1)/2}). This is the HD analogue of the cluster
-   expansion (stat phys) and 1/N expansion (QFT). The "mean field" of HD spaces
-   is independent feature processing.
+1. **Interference hierarchy (rescoped 2026-09-19 per adversarial review):**
+   For isotropic random unit features and a suitably normalized fixed
+   quadratic form, an individual off-diagonal bilinear term has RMS O(d^{-1/2})
+   (shown). The general t-body and — crucially — the AGGREGATE k(d)-body laws
+   (combinatorial multiplicity vs per-term suppression) remain conjectural and
+   are the HP-E theorem target: candidate threshold k* = Theta(d^{(p-1)/p}).
 
 2. **Packing vs recoverable capacity (corrected 2026-09-19 per adversarial
    review):** Packing permits exponentially many candidate directions.
@@ -370,10 +370,9 @@ Analytical derivations and proofs take priority over running code on specific mo
 
 **Finding 10 (entry 113): Complementary specialization — weights and representations anti-correlate.**
 Hidden state spectra FLATTEN with depth (rho=+0.871, p<0.001) while weight
-spectra STEEPEN (rho=-0.891). Anti-correlated. The residual stream accumulates
-diverse information (flattening); MLP weights compensate by becoming more
-selective (steepening). This is an efficiency principle: weight specialization
-tracks representation diversity, not representation similarity.
+spectra STEEPEN (rho=-0.891) — oppositely moving fitted slopes in one model
+and sampled corpus, after normalization. Causal relationship and functional
+significance (accumulation, compensation, efficiency) are unestablished.
 
 **Finding 9 (entry 112): Spectral depth gradient — CONFIRMED CROSS-ARCHITECTURE.**
 MLP up_proj power-law exponent steepens monotonically with depth: SmolLM2 rho=-0.891,
