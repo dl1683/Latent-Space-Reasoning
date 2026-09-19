@@ -290,3 +290,25 @@ n = 512, B in {8, 32}, rho in {0.3, 0.7}, s in {0.5, 1.0}, d grid in
 {2, 4, 8, 16, 32, 64}; Adam, 3 seeds, best-of; measure excess CE vs the
 entropy floor. Targets: the shape of excess(d) — sharp knee vs gradual —
 and its dependence on (rho, s) at fixed B.
+
+## 9. Weighted-truncation prediction (pre-registered 2026-09-19 BEFORE the
+## locator data existed; runner launched, results pending)
+
+Mechanism: the centered block-kernel's M-component has B equal singular
+values; usage weighting makes the effective importance of block-direction b
+equal to its usage mass W_b (masses Zipf-ordered across blocks). The optimal
+rank-d truncation keeps the top-d block directions; by the section-8 lemma,
+
+  excess_CE(d) ~= 2 * c_rho * sum_{b > d} W_b   (for d < B; ~0 for d >= B),
+
+with c_rho the block-logit coefficient scale (mixture-gap order). Regime
+shapes this predicts for the locator curves (n=512):
+- s = 1.0: excess(d) ~ c * log(B/d) — logarithmic decay, knee at d ~ B;
+- s = 0.5: excess(d) ~ c' - c'' * sqrt(d) (tail mass ~ 2(sqrt(B)-sqrt(d)));
+- s = 1.5-type (not run; prediction for the extension): excess ~ d^{1-s}.
+Falsifiers, frozen: (a) if excess(d) decays smoothly as a single power law
+in d across BOTH s values with the same exponent, the block-mass mechanism
+is wrong; (b) if no knee at d ~ B appears, the rank-(B+2) approximability
+story is wrong; (c) if excess(d) is insensitive to rho, the mixture-gap
+coefficient story is wrong (it predicts c_rho growing as rho moves off
+extremes).
