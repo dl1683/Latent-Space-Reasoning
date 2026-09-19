@@ -94,10 +94,10 @@ for coordinate-sparse directions (exact at α=0 in both terms, both matching
 measurement; 1.7× quantified residual at the worst inhomogeneous cell; no
 free constants). Gaussian directions collapse both terms to the 2/k law.
 Net program statement: the spectrum (participation ratio) sets the mean
-interference frontier; for coordinate-sparse directions the sharpness is
-governed by the two functionals of 3l (exact at the homogeneous case, 1.7x
-residual elsewhere) — covariance alone does not suffice (settled by the
-two-ensemble test).
+interference frontier; for the TESTED coordinate-sparse ensemble, the two functionals of 3l
+predict frontier sharpness exactly in the homogeneous case and within a
+1.7x residual elsewhere; a general governing law is unproved. Covariance
+alone does not suffice (settled by the two-ensemble test).
 
 **HP-D Orlicz-compression arc (2026-09-19/20, verified chain):** for softmax
 rank-d compression, KL(q||softmax(z)) = log E_q[e^delta] - E_q[delta] — the

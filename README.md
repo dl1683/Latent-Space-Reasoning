@@ -10,7 +10,7 @@ LLM latent spaces (d=768–4096+), kernel feature maps, embedding spaces, and hi
 
 86 experiments across 10 language models established a consistent hierarchy in how code perturbations affect model output:
 
-**Position >> operator family >> sign >> answer identity >> meaning.**
+**On the tested arithmetic/code panels: a recurring position- and operator-dominated ordering; no separable meaning effect was detected (meaning was confounded with answer change in this domain).** Position and operator family dominated the ordering; the tested contrasts below that were not separable.
 
 1. **WHERE you modify code is the dominant factor.** After-expression edits (comments, whitespace, dead code) produce consistent, reliable effects. Expression-adjacent modifications (parenthesization, type casts, identity operations) produce heterogeneous, cell-specific effects. The reliability gap between position types is large (AA ≈ 0.7–0.9 vs DD ≈ 0.1–0.5) and universal across tested models.
 
