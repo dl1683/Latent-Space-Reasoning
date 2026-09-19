@@ -603,3 +603,25 @@ computation (full-space 2.4e-05; quotient 1.18e-05; both far below the 0.25
 spectral max — a genuine four-order near-flat valley), but a rigorous
 certificate requires an analytic or autodiff Hessian. The near-flat valley
 conclusion (explaining seed reproducibility) is robust.
+
+## 13. Candidate B specification (drafted 2026-09-21 for review adjudication)
+
+Family: hierarchical block kernels with GROWING block count B(d) (block tree
+of depth L, block masses decaying by level; B(d) ~ d^beta) and stochastic-
+block variants (random graph kernels, no construction-forced knee).
+
+Observable (gauge-invariant, per reviews 2/7): the OPTIMAL LOSS CURVE
+excess_CE*(d) and its distortion geometry — never factor spectra. The
+centered logit operator of the kernel is the intermediate object; its
+Fisher-metric spectrum enters only through the validated second-order law.
+
+Program (derivation before simulation): (i) compute the centered-logit and
+Fisher spectra of the hierarchical family analytically (block-tree
+structure makes the SVD recursive — closed forms plausible); (ii) predict
+excess_CE*(d) for d both below and above the effective block count, using
+the Fisher law in its validated regime and the CGF/large-deviation theory
+outside; (iii) derive the phase boundary in (beta, rho, s) where
+superposition (d < effective rank) stops being viable at given excess;
+(iv) only then pre-register the simulation. The distinctive content vs the
+planted-block cycle: the knee is emergent (growing kernel), not
+construction-forced, answering review-6's cheapest-confound objection.
