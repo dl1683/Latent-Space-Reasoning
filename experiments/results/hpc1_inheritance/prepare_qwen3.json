@@ -1,0 +1,1 @@
+{"tag": "qwen3", "vocab": 151669, "K": 8192, "window": 2, "tokens": 120000170, "docs": 1125223, "kept_mass": 0.8983438440128877, "nnz": 9220954, "gap_note": "pairs counted across dropped-rare-token gaps within window"}

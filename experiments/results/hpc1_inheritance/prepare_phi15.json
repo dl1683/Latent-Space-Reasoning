@@ -1,0 +1,1 @@
+{"tag": "phi15", "vocab": 50295, "K": 8192, "window": 2, "tokens": 117920086, "docs": 1165029, "kept_mass": 0.8888214939056269, "nnz": 9805511, "gap_note": "pairs counted across dropped-rare-token gaps within window"}

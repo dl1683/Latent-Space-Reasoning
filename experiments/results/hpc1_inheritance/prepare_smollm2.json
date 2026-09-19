@@ -1,0 +1,1 @@
+{"tag": "smollm2", "vocab": 49152, "K": 8192, "window": 2, "tokens": 120000249, "docs": 1112092, "kept_mass": 0.905773337186992, "nnz": 9399912, "gap_note": "pairs counted across dropped-rare-token gaps within window"}
