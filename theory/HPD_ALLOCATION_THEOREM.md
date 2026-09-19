@@ -417,3 +417,30 @@ low-rank approximation: variance-optimal projections are strictly suboptimal
 in KL by large factors in the large-deviation regime. Open: characterize the
 CGF-optimal residual structure (the negative-skew bias is the visible
 signature); this is the T4 completion target.
+
+## 12d. The variance-KL envelope and the negative-skew law (2026-09-20)
+
+Per row, KL = log E_q[e^delta] - E_q[delta] depends only on the q-distribution
+of delta. For FIXED variance v = Var_q(delta), the distribution minimizing KL
+is the solution of a moment problem: minimize log E e^delta s.t. E delta = 0,
+Var = v. The extremal is TWO-POINT (convex moment problem; extremal
+distributions are supported on <= 2 points):
+
+  delta = -alpha w.p. 1-pi,  delta = +beta w.p. pi,
+  alpha = pi*theta, beta = (1-pi)*theta, theta = sqrt(v/(pi(1-pi))),
+
+with KL*(v) = min_pi log( (1-pi) e^{-pi theta} + pi e^{(1-pi) theta} ).
+
+Small-v calculus: expanding in theta, the optimum has pi -> small... the
+envelope satisfies KL*(v) = v/2 - c v^{3/2} + O(v^2): the quadratic term is
+UNAVOIDABLE (matches: even the best cumulant structure cannot beat v/2 at
+leading order) but the discount is Theta(v^{3/2}), achieved by LEFT-SKEWED
+residuals with third cumulant kappa_3* = -c' sqrt(v) * v = -c' v^{3/2}-
+scaled — the measured kappa_3 = -0.0053 at the settled optimum is this
+signature. CONSEQUENCE: the CGF optimum accepts variance v_O ~ 7x the Fisher
+value v_F exactly when the envelope discount makes it worthwhile:
+v_O/2 - c v_O^{3/2} < v_F/2 requires v_O within the envelope's validity
+ball — the observed 6.2x/4.7x ratios are envelope quantities, computable
+from c. Obligations: exact c from the pi-optimization; numeric verification
+of the predicted v_O and kappa_3* against the settled optima; then the
+rank-d-constrained envelope (the true T4 compression law).
