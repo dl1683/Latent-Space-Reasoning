@@ -380,3 +380,22 @@ large-deviation compression functional is an exponential-moment object
 form only in the small-deviation regime (which is why s=0.5 far-below-knee
 agrees and s=1 does not). Deriving the exponential-metric Eckart-Young-type
 law is the open obligation that would complete T4's compression phase.
+
+## 12b. EXACT IDENTITY: compression = CGF metric (2026-09-19 evening)
+
+For any row, with delta = z - log q (logit residual against the target
+conditional q):
+
+  KL(q || softmax(z)) = log E_q[e^delta] - E_q[delta]
+
+— the CUMULANT GENERATING FUNCTION of delta under q, evaluated as a series:
+KL = sum_{m>=2} kappa_m(delta)/m!. The Fisher law (section 11) is exactly
+the kappa_2 term; the s=1 large-deviation gap (6.2x at d=2, 4.7x at d=4) is
+the higher-cumulant content; the near-knee super-efficiency is the optimizer
+exploiting cumulant cancellation beyond variance. The complete compression
+problem is thus rank-d approximation in the CGF metric — an exact, clean
+formulation. Testable immediately: evaluate the cumulant series at the
+settled optima (the 12-seed solutions) and check how much of the 6.2x gap
+kappa_3 + kappa_4 + ... explains. That numeric check is the next unit; the
+CGF-Eckart-Young characterization (which rank-d structure minimizes the CGF)
+is the derivation target that would complete T4.
