@@ -273,3 +273,34 @@ features with power-law Sigma at alpha in {0, 0.5, 0.75, 0.9}, d in
 (exact formula, no free constants); predicted A_2 crossing of 1 within a
 factor sqrt(2) of sqrt(PR). PASS if per-pair means within 10% and crossings
 within the factor-2 band across 8/8 (alpha, d) cells.
+
+## 3h. THE ISOTROPIC QUADRATIC THEOREM, COMPLETE (2026-09-19)
+
+For unit-norm independent isotropic features and M = I (energy readout):
+
+**Exact mean.** E[A_2] = k(k-1)/d (3b, validated).
+
+**Exact variance (new).** For pair (i,j): E[Z^4] = 3/(d(d+2)), E[Z^2] = 1/d,
+so Var(Z^2) = (2d-2)/(d^2(d+2)). All covariances between distinct pair-squares
+VANISH IDENTICALLY: pairs sharing one index, say (i,j),(i,l), satisfy
+E[Z_ij^2 Z_il^2] = E_fi[ E[Z^2|f_i] E[Z^2|f_i] ] = (1/d)^2 = E[Z^2]^2 using
+conditional independence and ||f_i|| = 1 exactly; disjoint pairs are
+independent. Hence
+
+  Var(A_2) = k(k-1) * (2d-2)/(d^2(d+2)),  cv(A_2) = sqrt(2/k^2 * (1+o(1))) ~ sqrt(2)/k.
+
+**Two-phase conclusion (E2 + E3 for the isotropic quadratic class, proved).**
+By Chebyshev, A_2 in [E/2, 2E] with probability >= 1 - 8/k^2. Therefore:
+- k = o(sqrt(d)): A_2 = o(1) w.h.p. — mean-field (independent-feature)
+  energy readout valid;
+- k = Omega(sqrt(d)): A_2 = Omega(k^2/d) = Omega(1) w.h.p. — aggregate
+  interference inescapable.
+Capacity frontier k* = Theta(sqrt(d)) with matching bounds and explicit
+constants, quadratic/projection class. Simulation agreement: cv predicted
+sqrt(2)/k vs measured 0.031-0.058 at k = 45 (higher-cumulant tail; same
+order).
+
+**Remaining for the full E-struct theorem:** the anisotropic variance
+identity (unit-energy features should inherit the exact-covariance-cancellation
+argument via conditional independence; verify the conditional moments carry
+the same cancellation) and the E3 quantifier order (fixed readout tensor).
