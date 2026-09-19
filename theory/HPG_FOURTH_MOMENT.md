@@ -122,3 +122,24 @@ Non-Gaussian directions: replace each Wick contraction by the C_i-operator
 contraction — the operator form is the theorem; Wick is one instance.
 Remaining: write the non-homogeneous counting precisely; then G3 with the
 review-11 quantifier corrections.
+
+## 8. G3 COUNTING DERIVED AND CERTIFIED (2026-09-23)
+
+Paper derivation (not guessed): for unordered A_2 = sum_{i<j} W_ij,
+  ** Var(A_2) = C(k,2) [2 tr(S^2)^2 + 6 tr(S^4)]
+              + 2 k C(k-1,2) tr(S^4) **
+(pair-square variances + unordered shared-index pair-of-pairs, each with
+Cov = 2 tr(S_j S_i S_l S_i) = 2 tr(S^4) in the homogeneous Gaussian case).
+Certified by brute force at three configurations:
+  d=8,  k=6:  ratio 0.9994
+  d=16, k=10: ratio 1.0021
+  d=4,  k=8:  ratio 1.0031
+(all within MC noise; 200k trials each). The 2x discrepancy of the earlier
+inline attempt was a wrong pair-of-pairs count (center-based C(k-1,2)
+per center, unordered, times 2Cov) — resolved by deriving on paper.
+The homogeneous Gaussian assembly is now COMPLETE and verified at three
+independent configurations. Non-Gaussian directions: same counting with
+the C_i-operator contractions replacing Wick. The L2-concentration
+criterion follows: Var/E^2 = [2 tr(S^2)^2 + 6 tr(S^4)] / [(k-1) tr(S^2)^2]
++ 2 tr(S^4)/[(k-1)(k-2) tr(S^2)^2/...] — the explicit criterion assembly
+is the next write-up step (G3 conclusion).
