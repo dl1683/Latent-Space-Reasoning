@@ -399,3 +399,21 @@ settled optima (the 12-seed solutions) and check how much of the 6.2x gap
 kappa_3 + kappa_4 + ... explains. That numeric check is the next unit; the
 CGF-Eckart-Young characterization (which rank-d structure minimizes the CGF)
 is the derivation target that would complete T4.
+
+## 12c. CGF decomposition at the settled optimum — MECHANISM REVISED
+## (2026-09-20; the data contradicts the naive "cumulants add on top" story)
+
+At (B=8, rho=0.3, s=1, d=2), the settled optimum (excess 0.0859, matching
+the 12-seed 0.0857) decomposes as: quadratic component AT THE OPTIMUM =
+0.0966 — SEVEN TIMES the Fisher-optimal quadratic value (0.0139) and ABOVE
+the true total; kappa_3 = -0.005, kappa_4 = +0.014 partially cancel (truncated
+series 0.105 vs exact 0.0859). Interpretation: the CGF-metric optimum is NOT
+the variance optimum plus perturbative corrections — it deliberately accepts
+~7x more logit-residual variance to obtain favorable higher-cumulant
+(negative-skew) structure. The compression metric changes the ARGMIN
+qualitatively, not just the value. This is the precise sense in which
+softmax compression is a genuinely different mathematical object from
+low-rank approximation: variance-optimal projections are strictly suboptimal
+in KL by large factors in the large-deviation regime. Open: characterize the
+CGF-optimal residual structure (the negative-skew bias is the visible
+signature); this is the T4 completion target.
