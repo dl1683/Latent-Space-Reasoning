@@ -1,5 +1,11 @@
 # STATE
 
+## SESSION STATUS: PAUSED by user (2026-09-23)
+
+Work paused at a natural boundary of the HP-G arc. Nothing running.
+Canonical resume point: AGENTS.md pause section. The standing record
+below is current and complete through the pause.
+
 ## CURRENT DIRECTION: Mathematics of High-Dimensional Spaces
 
 **Status: ACTIVE (user ruling, 2026-09-18).** A mid-file "HD MATH DIRECTION:
