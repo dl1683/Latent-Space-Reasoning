@@ -86,3 +86,18 @@ the assembly into the total Var[A_2] (the counting is as in 3h).
 NOTE (honesty): two sign/convention slips in the first derivation attempts
 were caught by the verification discipline; the recorded formula above is
 the verified one.
+
+## 6. Review-11 corrections (2026-09-22; scope restored)
+
+- The 0.989 MC verification is an IN-FAMILY implementation check (Gaussian
+  instance against the Gaussian-derived Wick contraction); it does not
+  validate the general theorem. Genuine validation requires non-Gaussian
+  anchors (coordinate-sparse anchor: the 3l/4e validated data serve).
+- Necessity in G3 holds for UNIFORM CLASSES with uniform integrability,
+  not for every triangular array (quantifier corrected).
+- Fourth moments determine the variance; they do NOT determine the limit
+  law. The G4 dichotomy is withdrawn pending a universality-class theorem
+  (de Jong/Hoeffding decomposition, maximal influence, Lindeberg,
+  collision intensity), including counterexamples with identical second
+  and fourth moments but different limits.
+- C_i to be defined without requiring Sigma^{-1}.

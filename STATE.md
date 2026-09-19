@@ -111,9 +111,10 @@ higher-cumulant structure (12 seeds within 0.0005; gap 6.2x/4.7x); whether
 these are global optima is open; (3) the variance-KL envelope is
 DEGENERATE (inf KL = 0 at any fixed variance via rare huge negative jumps)
 — polynomial moments do not govern KL compression; the one-sided
-exponential moment does (Orlicz scale); (4) the settled optimum satisfies
-the rank-d first-order condition EXACTLY (gradient field entirely in the
-complement block — Eckart-Young-type orthogonality verified at 1.0000);
+exponential moment does (Orlicz scale); (4) the best reproducible stationary solution satisfies the rank-d
+first-order condition to numerical tolerance (gradient field entirely in
+the complement block, off-space energy 1.0000); global optimality remains
+open;
 (5) the attempted SVD-based dual is unbounded without a norm constraint and
 the tested regularized dual is vacuous; no useful global dual certificate is
 currently known (simplex-native or regularized routes untested beyond these). T4 completion target stands as the tilted-SVD/two-fixed-point
