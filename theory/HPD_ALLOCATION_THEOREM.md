@@ -334,3 +334,29 @@ the inf-norm metric gap). The section-9 prediction stands with corrected
 mechanics: excess(d) tracks tail singular energy, shapes set by the W_b
 decay, knee at d ~ B (locator already confirms the knee at B = 8: excess
 0.126 (d=2) -> 0.051 (d=4) -> 0.0000 (d >= 8)).
+
+## 11. Fisher-metric compression law (2026-09-19; quantitative)
+
+The inf-norm lemma bound overestimates the measured excess 10-30x because KL
+weights logit deviations by P_ij itself: residual hides where conditional
+probability is small. The correct second-order object: center each row by
+its P-expectation and weight entries by sqrt(W_b P_bj) (context mass times
+conditional mass = the Fisher metric of the softmax model). Then
+
+  excess_CE(d) ~= (1/2) * tail Fisher energy beyond rank d  (Eckart-Young).
+
+Validation against the locator (rho = 0.3, B = 8):
+- s = 0.5: predicted 0.119 / measured 0.126 (d=2); 0.068 / 0.051 (d=4) —
+  agreement within 6-33%. QUANTITATIVE CONFIRMATION in the moderate-skew
+  regime.
+- s = 1.0: predicted 0.014 / measured 0.086 (d=2); 0.005 / 0.026 (d=4) —
+  second-order theory underestimates ~6x in the large-deviation regime
+  (higher-order KL terms; and/or optimizer local minima at best-of-3 Adam —
+  unresolved which; the B=32 locator rows and a stronger optimizer will
+  separate them).
+
+This is the quantitative form of T4's compression phase: excess(d) governed
+by the Fisher-metric spectrum of the task kernel, with the Zipf exponent
+entering through BOTH the context masses W_b and the conditional column
+weights. The steep-s regime is where the genuinely nonlinear theory must be
+built (open).
