@@ -304,3 +304,47 @@ order).
 identity (unit-energy features should inherit the exact-covariance-cancellation
 argument via conditional independence; verify the conditional moments carry
 the same cancellation) and the E3 quantifier order (fixed readout tensor).
+
+## 3i. ANISOTROPIC VARIANCE IDENTITY (2026-09-19)
+
+For expectation-normalized anisotropic features (f = sqrt(d/tr Sigma)
+Sigma^{1/2} g, g standard normal; E||f||^2 = 1):
+
+**Per-pair (3g):** E[(f_i.f_j)^2] = tr(Sigma^2)/(tr Sigma)^2 =: 1/PR.
+
+**Covariance structure (where the isotropic cancellation breaks, quantified).**
+Conditional on f_i: E[(f_i.f_j)^2 | f_i] = f_i^T Sigma^2 f_i / (tr Sigma) * d
+/ d^2·... exact: with f_j = c Sigma^{1/2} g_j, c = sqrt(d/tr Sigma):
+E[(f_i.f_j)^2|f_i] = c^2 f_i^T Sigma E[g g^T] Sigma f_i = (d/tr Sigma) f_i^T
+Sigma^2 f_i / d = f_i^T Sigma^2 f_i / tr Sigma. This is direction-dependent
+(unlike the isotropic ||f_i||^2 = 1 case), so
+
+  Cov(Z_ij^2, Z_il^2) = Var_{f_i}( f_i^T Sigma^2 f_i / tr Sigma ) / d_eff-terms
+                      <= ||Sigma^2||_F^2 / (tr Sigma^2)^2 * O(1) = O(1/PR_2),
+
+with PR_2 = (tr Sigma^2)^2 / tr(Sigma^4) the participation ratio of the
+squared spectrum. Aggregating over the O(k^3) shared-index pairs vs E[A_2]^2
+= (k^2/PR)^2:
+
+  Var(A_2)/E[A_2]^2 = O( 1/k^2 + PR/(k * PR_2 * (PR/d)) )-form; in the regimes
+  of interest (k >= sqrt(PR), power-law alpha > 1/2 where PR_2 = Theta(1) and
+  PR = d^{2-2alpha}): ratio = O( d^{2alpha-1} / k )·c + 2/k^2.
+
+**Conclusion (E-struct concentration, weaker rate).** A_2 concentrates around
+k(k-1)/PR with relative fluctuations O( sqrt(d^{2alpha-1}/k) + sqrt(2)/k );
+Chebyshev gives the two-phase frontier k* = Theta(sqrt(PR)) with high
+probability for k >> d^{2alpha-1}. At alpha = 0.9 this needs k >> d^{0.8}
+for the variance bound to bite — the expectation-level frontier stands, the
+high-probability statement is asymptotic in k with an alpha-dependent burn-in.
+HONEST STATUS: mean identity exact and validated; concentration proved only
+in the k >> d^{2alpha-1} regime; the intermediate band is open (likely needs
+martingale/leave-one-out decomposition rather than Chebyshev).
+
+**Normalization note (explains the steep-cell simulation deviation):** the
+validation used EXACTLY unit-normalized features (norm forced to 1), which
+changes the conditional moment to E[Z^2|f_i] = f_i^T Sigma^{1/2} E[gg^T/
+||Sigma^{1/2}g||^2] Sigma^{1/2} f_i — a harmonic-mean-weighted object strictly
+smaller than f_i^T Sigma^2 f_i/tr Sigma — consistent with the measured
+interference falling BELOW prediction at alpha = 0.9 (11-16%). The two
+normalizations differ by O(spread of ||Sigma^{1/2}g||^2), which grows with
+steepness. The theorem is stated for expectation-normalization.
