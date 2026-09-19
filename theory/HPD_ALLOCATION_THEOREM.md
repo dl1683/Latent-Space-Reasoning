@@ -573,3 +573,19 @@ reproducibility (0.0005 spread): a shallow but positive valley. Status of
 the T4 optimality stack at (B=8, rho=0.3, s=1, d=2): stationarity exact
 (12h), strict local minimality certified (this section), global optimality
 open with the dual route structurally unavailable (12i).
+
+## 12k. Regularized-dual route vacuous (2026-09-20; third and final duality
+## attempt)
+
+With lambda||R||_F^2 added, the inner dual problem is strictly convex with
+closed form (-sum sigma_i^2/(4 lambda)) and the DV bound valid. But the
+settled optimum carries ||R||_F^2 ~ 1.1e4: any lambda small enough to leave
+the problem unchanged makes the bound vacuous (0.41 vs 10930 feasible at
+lambda=1). The optimum lives far from every useful norm ball — the KL
+geometry is intrinsically norm-free there. SUMMARY OF CERTIFICATION
+ATTEMPTS: (1) metric-reweighting scheme - invalid; (2) unconstrained dual -
+unbounded inner; (3) regularized dual - vacuous at meaningful lambda.
+Standing result: strict local minimality certified + exact stationarity +
+multi-seed reproducibility. Global optimality is open and appears to resist
+duality for structural reasons; simplex-native formulations are the one
+untried route.
