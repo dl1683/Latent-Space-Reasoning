@@ -131,8 +131,10 @@ d=1024, Phi-1.5 d=2048):
    show TOP eigenspaces are 3-14x MORE sensitive (beta = +0.25 to +0.41).
    Entry 92's correlation was confounded — the model's multi-layer
    processing absorbs top-eigenspace perturbations, leaving tail residuals.
-   The power-law spectrum creates an AMPLIFICATION gradient (top amplified
-   more), with compensatory defense-in-depth through subsequent layers.
+   Controlled injection establishes greater LOCAL sensitivity in top
+   eigenspaces (amplification gradient); downstream compensation through
+   subsequent layers is one untested explanation for the natural-perturbation
+   reversal, not an established mechanism.
 
 7. **Information-theoretic eigenspace priority (entry 94).** The embedding's
    top eigenspace is NOT frequency-ordered but INFORMATION-ordered. Tokens with
@@ -165,16 +167,16 @@ d=1024, Phi-1.5 d=2048):
     power-law steepness. Most concentrated tokens (erank ~3) are rare
     vocabulary entries aligned with eigenvector 0 at 77-83%.
 
-**RESOLVED: why power law?** The theory-practice gap between formal superposition
-theory (tight frames) and real models (power-law spectra) is now understood:
-- Power law emerges from Zipfian training data + gradient descent (entry 101)
-- The mechanism is DIRECTIONAL STRUCTURE: training organizes tokens into
-  correlated eigenspace directions (entry 95)
-- The degree of organization depends on n/d ratio, not d alone (entry 101)
-- Information-theoretic priority allocates top eigenspaces to rare tokens (entry 94)
-- Tail eigenspaces are fragile under perturbation (entry 92)
-- Feature identity: SAE reconstruction ≠ causal feature identity (arXiv:2609.06862)
-- Fubini-Study metric: gauge-invariant alternative to cosine/L2 (arXiv:2602.02596)
+**CORRECTED (2026-09-19, adversarial review; supersedes "RESOLVED"):** The
+theory-practice gap between formal superposition theory (tight frames) and
+real models (power-law-like fitted slopes) is NOT resolved. Finite-time
+Zipf-trained models produced power-law-like fitted slopes, but the estimator
+can manufacture such slopes (HP-A A2), and unigram-softmax equilibrium
+evidence favors non-power-law structure (rank-2 collapse, HP-B XE interim).
+The structured-data explanation remains open; no mechanism is licensed.
+Retained context: fitted slopes co-vary with Zipf s and n/d (entry 101);
+directional organization exists relative to random baselines (entry 95);
+top-eigenspace allocation tracks token information (entry 94).
 
 **CLOSED PROGRAM: Frame Composition and Mixed Moments (2026-09-18)**
 
@@ -252,7 +254,9 @@ Final test: Weight-only tensor predictor ||ΔT||_F ≈ DU predictor ||DΔU||_F
 
 **What survives from this program:**
 1. D_k sufficiency is cleanly killed (entry 103) — valid structured negative
-2. Power-law eigenspectra from Zipfian training (entry 101) — positive finding
+2. Power-law-LIKE FITTED SLOPES from Zipfian training (entry 101) — status
+   downgraded 2026-09-19: estimator-manufacture and transient/equlibrium
+   structure both implicated (HP-A A2, HP-B XE interim); origin open
 3. Information-theoretic eigenspace priority (entry 94) — positive finding
 4. Gate/up Gram alignment exists descriptively (D1_norm ≈ 0.22) — but not compositionally meaningful
 5. Permutation damage is predicted by ||DΔU|| — the down-up product, not gate-up coupling
@@ -285,16 +289,19 @@ Analytical derivations and proofs take priority over running code on specific mo
    expansion (stat phys) and 1/N expansion (QFT). The "mean field" of HD spaces
    is independent feature processing.
 
-2. **Representation-computation gap:** Store O(exp(d)) features (packing bounds),
-   linear computation on O(√d) simultaneously (coherence-limited), bilinear
-   computation on O(1) simultaneously (dimension-independent). Width provides
-   representation capacity; intermediate width × depth provides computation.
-   The gap between representation and computation is exponential.
+2. **Packing vs recoverable capacity (corrected 2026-09-19 per adversarial
+   review):** Packing permits exponentially many candidate directions.
+   Recoverable simultaneous capacity depends on the decoder, task and error
+   model; no universal linear or bilinear capacity law is established
+   (orthonormal features permit a bilinear layer to compute k ≤ d diagonal
+   quantities exactly). Any capacity theorem must specify ensemble, task,
+   decoder, noise, error probability and k(d) before a threshold claim.
 
-3. **Rate-distortion optimal allocation:** For Zipf(s) inputs, optimal eigenvalue
-   exponent α* = s/2 (half the Zipf exponent). Proof: Lagrange optimization of
-   E = σ² Σ p_i/λ_i subject to Σ λ_i = P. This is the "mean-field" answer for
-   HD information allocation — becomes exact as d → ∞.
+3. **Scalar allocation benchmark (corrected 2026-09-19):** The scalar
+   resource-allocation problem (minimize σ² Σ p_i/λ_i s.t. Σλ_i = P) has
+   optimizer λ_i ∝ √p_i. Its interpretation as an eigenspectrum law or a
+   d → ∞ limit is unproved and, per the HP theorem, cannot describe quadratic-
+   loss equilibria; retained only as a labeled diagnostic.
 
 4. **Gauge symmetry of eigenspectra:** Embedding eigenspectra are GL(d) gauge-
    dependent. The training-chosen gauge has physical meaning through amplification
@@ -329,8 +336,10 @@ Analytical derivations and proofs take priority over running code on specific mo
 **Open targets from prior program (updated by entry 118):**
 1. Power-law spectra as computational structure (entries 92-95, 101, 118).
    Entry 118 overturns entry 92's tail vulnerability: controlled perturbations
-   show TOP eigenspaces are more sensitive (beta=+0.3). The power law creates
-   an amplification gradient with defense-in-depth compensation through layers.
+   show TOP eigenspaces are more sensitive (beta=+0.3) — an amplification
+   gradient. Whether later layers compensate (the natural-perturbation
+   reversal) is untested; fitted power-law exponents themselves now carry
+   estimator-bias caveats (HP-A A2) and their origin is open (HP cycle).
 2. The additive anti-pairing discovery (entry 110) may have implications for
    understanding why gated MLPs outperform additive MLPs — the gating mechanism
    decouples pairing from spectral structure, enabling richer computation.

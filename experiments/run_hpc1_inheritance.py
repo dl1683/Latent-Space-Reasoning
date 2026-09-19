@@ -22,7 +22,10 @@ DS = "Salesforce/wikitext"
 CFG = "wikitext-103-raw-v1"
 
 
-def get_texts(max_tokens_hint=120_000_000):
+MAX_TOKENS = 120_000_000
+
+
+def get_texts():
     from datasets import load_dataset
     ds = load_dataset(DS, CFG, split="train")
     return ds["text"]
@@ -47,7 +50,7 @@ def prepare(tag):
         ntok += len(ids)
         if i % 20000 == 0:
             print(" doc", i, "tokens", ntok)
-        if ntok >= max_tokens_hint:
+        if ntok >= MAX_TOKENS:
             break
     top = np.argsort(freq)[::-1][:K]
     kept_mass = freq[top].sum() / max(freq.sum(), 1)
