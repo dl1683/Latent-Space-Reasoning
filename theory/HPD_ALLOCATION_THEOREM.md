@@ -208,3 +208,21 @@ exponent-matching measurement stays PAUSED (gauge flaw; corpus asset kept).
 HP-B grids continue in background (dynamics branch evidence). Nothing in
 this document is claimed as proved until each lemma carries its proof and an
 evidence-gate pass.
+
+## 6. PAUSED for repair (2026-09-19, review-5)
+
+Two defects must be repaired before T4 proceeds (no HP-D simulations):
+1. **Observation model:** the kernel samples J|I but the decoder receives
+   only q = v_I; sampled-target argmax error includes irreducible Bayes
+   uncertainty (the conditional entropy of J|I), which is not interference.
+   Repair: full-distribution CE objective — minimize CE(P(.|i) ||
+   softmax(z(i))) — matching real training; error metric = CE excess over
+   H(J|I).
+2. **Representability:** tied logits W^T W are symmetric PSD; the target
+   log-kernel is symmetrizable only in special cases, so "exactly
+   representable iff d >= B+1" is WITHDRAWN pending proof. Repair: untied
+   code (query matrix H, key matrix W; Z = W^T H general rank-d), with the
+   tied/PSD variant stated as a separate constrained corollary; the gauge
+   freedom noted by review-2 is then fixed by the CE optimum +
+   regularization (the balancing principle), not assumed.
+While paused, HP-E (theory/HPE_AGGREGATE_INTERFERENCE.md) carries the lead.
