@@ -144,7 +144,57 @@ order for E3 (fixed T before the draw vs averaged T) still to be fixed;
 the averaged-T version is provable by this route; the fixed-T version needs
 the covariance bound uniform over T (operator-norm conditions).
 
+## 3e. General-t E1 lemma (Wick pairing statement; proof skeleton)
+
+**Lemma E1-general (CORRECTED 2026-09-19 after the E5 simulation refuted the
+registered d^{t-1} scaling; see §3f).** Let T be a fixed coefficient tensor
+and f_1, …, f_t independent uniform unit vectors. Then
+
+  E[T[f_1, …, f_t]²] = ‖T‖_F² / d^{t} + Λ(T, d),
+
+(each of the t vectors pairs its own two slot factors, contributing 1/d
+each; the original d^{t-1} was wrong and the simulation measured the d^t
+law to the digit: pair^2 x d^2 = 1, triple^2 x d^3 = 1 up to noise).
+
+where the remainder Λ collects the trace-type Wick pairings that pair slots
+filled by the SAME vector; each such pairing contracts two slots of T along
+the diagonal, contributing terms of the form ‖contraction of T‖²_F / d^{t−1}
+with additional 1/d-type factors relative to the leading term when t ≥ 3.
+In particular, if all slot-pair contractions of T are bounded by
+(1−ε)-fractionally smaller than ‖T‖_F² (genericity condition on T), then
+E[T[f_1,…,f_t]²] = Θ(‖T‖_F²/d^{t−1}).
+
+*Proof skeleton.* Expand the square as a double sum over slot-index tuples
+α, β: Σ T_α T_β E[Π_r f_{r,α_r} f_{r,β_r}] (r indexes the t distinct
+vectors). For each vector f_r, the moment E[Π over its 2m_r slot factors]
+vanishes unless its slot multiset pairs up; uniform-sphere moments give
+pair-products δ/d and higher corrections O(1/d^{1+m_r}). The leading Wick
+structure pairs α_r with β_r within each vector, yielding
+(1/d)^{Σ m_r} Σ_α T_α² with Σ m_r = t — giving ‖T‖_F²/d^{t−1} minus the
+corrections where pairings CROSS slots within a vector, which produce the
+diagonal contractions collected in Λ. ∎ (details to be written out; the
+t=2 case is §3b's exact identity with Λ = 0.)
+
+**Corollary (RESCOPED after the correction).** The Θ(1) diagonal signal
+channel is SPECIAL to quadratic projection structure (M = Σ v_l v_l^T with
+orthonormal {v_l} gives f^T M f = 1 exactly); single-vector moment
+structures do not provide a Θ(1) t=1 channel at degree t ≥ 3 (e.g. the
+diagonal cubic tensor gives Σ_a f_a³ with variance Θ(1/d)). Therefore:
+
+- the aggregate ladder k* = Θ(√d) is PROVED and validated for
+  quadratic/energy (projection-structured) readouts only;
+- the degree-p extension is OPEN and requires a new signal model for what
+  "computing k features with one degree-p form" means — the obstruction
+  (no natural Θ(1) diagonal channel at t ≥ 3) is now explicit;
+- candidate routes: (a) multi-family readouts (slots indexed by different
+  feature families with cross-family orthogonality), (b) structured-feature
+  extension (E-struct: covariance/effective-rank replacing d, per review-5
+  move 3), (c) restrict the program's capacity claims to the quadratic
+  class, which is the class real attention/logit bilinears live in.
+
 ## 4. Proof obligations (ordered, updated)
+
+E0: DONE. E1 general-t: stated §3e, write-up pending. Remaining:
 
 E0: DONE (§3b). E1 degree-3 channel: DONE in expectation (§3c); general-t
 exchangeability write-up pending. E2a skeleton: §3d; constants pending.
@@ -166,3 +216,22 @@ mean-field there), it is ensemble-explicit, and it directly quantifies when
 "almost-orthogonal packing" stops paying for computation. It also gives the
 correctly-specified foundation the reviewer demanded for any later capacity
 claim about real representations.
+
+## 3f. E5 anchor validation RESULTS (2026-09-19; runner
+experiments/run_hpe_anchor_check.py; data results/hpe_aggregate/)
+
+Pre-registered verdicts (P1-P4 frozen in the runner header before the run):
+- P1 (E[A_2] = k(k−1)/d within 5%): formal FAIL — 8/9 cells within 0.5-4.6%,
+  one small-k cell (d=128, k=4) at 13% (finite-size; mean 0.082 vs 0.094).
+  Substantively confirmed at k >= sqrt(d)/2.
+- P2 (concentration cv <= 5/sqrt(k)): PASS (max cv 0.66 at k=4 vs bound 2.5).
+- P3 (random-tensor ladder ratios in [0.5,2]): FAIL — and the failure is a
+  THEORY correction, not noise: measured pair²·d = 1/d and triple²·d² = 1/d
+  exactly, i.e. E[term²] = ‖T‖_F²/d^t (per-vector 1/d pairing), not the
+  registered d^{t-1} power. Lemma E1-general corrected accordingly.
+- P4 (A_2 crosses 1 near k = sqrt(d)): PASS (0.87-0.97 at k≈sqrt(d);
+  0.04-0.05 at sqrt(d)/4; 14.8-15.7 at 4·sqrt(d)).
+
+Net: the quadratic anchor is proved AND empirically validated (P1*, P2, P4);
+the general-t extension was refuted in its registered form and rescoped —
+the ladder is quadratic-specific until a degree>=3 signal model exists.
