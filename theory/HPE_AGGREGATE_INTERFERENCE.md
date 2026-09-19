@@ -104,9 +104,51 @@ earlier apparent vanishing of the hierarchy at unit norms was a tensor-scale
 artifact; the convention above is the one under which "mean-field = diagonal
 channel dominates" is the right question.
 
+## 3c. E1 for degree 3 and the CRITERION BIFURCATION (2026-09-19)
+
+Expansion of the trilinear readout on x = Σf_i: T[x,x,x] = Σ_{i=j=l} T[f_i]³
+(signal) + Σ_{two-same} T[f_i,f_i,f_j] + Σ_{all-distinct} T[f_i,f_j,f_l].
+Per-term variances under the §3b convention (Gaussian/sphere, Wick):
+- mixed-pair (two-same) channel: E[T[f_i,f_i,f_j]²] = Θ(1/d) (one cross
+  contraction) — same order as degree-2 pairs;
+- all-distinct triples: E[T[f_i,f_j,f_l]²] = Θ(1/d²) (two independent cross
+  contractions) — RMS d^{−1} = d^{−(t−1)/2} at t=3. Ladder confirmed in
+  expectation; general-t conjecture unchanged.
+
+**Criterion bifurcation (must be explicit in E4 — this changes the headline):**
+- ABSOLUTE mean-field validity (φ(Σf_i) = Σφ(f_i) + o(1)): requires
+  A_t = o(1) ∀t, i.e. k^t/d^{t−1} = o(1) → **k = o(d^{(p−1)/p})** — the
+  ladder, sublinear, binding at t=p.
+- RELATIVE validity (error o(signal), signal = Θ(k)): k^t/d^{t−1} = o(k) →
+  **k = o(d)** for every t — no ladder.
+Both are legitimate theorem statements; the ladder (absolute) is the sharper
+HD content (capacity below d). E4 will state both, ladder as headline with
+the criterion named. (Self-caught before review; recorded.)
+
+## 3d. E2a skeleton: variance of A_2 (concentration both ways)
+
+A_2 = Σ_{i≠j} Z_ij², Z_ij = f_i^T M f_j. Pair covariance structure:
+- disjoint index pairs: independent, covariance 0;
+- pairs sharing one index (i,j),(i,l): conditioning on f_i,
+  Cov = Var_fi(‖M^T f_i‖²)/d² = O(‖M‖_F⁴/d⁴ · c) = O((EZ²)²·c/d)-order;
+  count of such overlapping pairs: O(k³).
+So Var[A_2] = O(k³ · E²/d) with E = ‖M‖_F²/d², giving Var[A_2]/E[A_2]² =
+O(k³ E²/d)/(k⁴E²) = O(1/(kd)) ≪ 1 whenever k ≥ 1 — A_2 concentrates around
+its mean with room to spare (constants and the sphere-vs-Gaussian moment
+terms to be pinned in the write-up; the O(c/d) per-pair covariance decay is
+the load-bearing step — it is where isotropy enters quantitatively).
+E3's Paley–Zygmund route then needs the same bound (two-sided
+concentration), giving A_t = Θ(E[A_t]) w.h.p. — the failure phase at
+k = Ω(d^{(p−1)/p}) follows from E[A_t] = Ω(1) + concentration. Quantifier
+order for E3 (fixed T before the draw vs averaged T) still to be fixed;
+the averaged-T version is provable by this route; the fixed-T version needs
+the covariance bound uniform over T (operator-norm conditions).
+
 ## 4. Proof obligations (ordered, updated)
 
-E0: DONE (see 3b). Remaining:
+E0: DONE (§3b). E1 degree-3 channel: DONE in expectation (§3c); general-t
+exchangeability write-up pending. E2a skeleton: §3d; constants pending.
+Remaining:
 E1: exact E[A_t] under the convention (exchangeability argument).
 E2a: Var[A_t] ≤ C E[A_t]² (correlation structure of t-body squares).
 E2b: conclude negligible phase.
