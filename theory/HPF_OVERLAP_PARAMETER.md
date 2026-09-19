@@ -49,3 +49,23 @@ condition expressed through the kernel's Lambda.
 (iv) Out-of-family forward test (review-8 move 3): predict a real
 co-occurrence kernel's gauge-safe excess-CE curve BEFORE measuring
 (corpus assets staged), with Lambda measured from the kernel itself.
+
+## 5. Residual-level remainder bound (review-9 repair, step 1; verified)
+
+From the exact CGF identity and the pointwise Taylor inequality
+0 <= e^t - 1 - t - t^2/2 <= |t|^3 e^{max(t,0)}/6, the compression remainder
+satisfies (per row, after mean-centering corrections):
+
+  | KL - Var_q(delta)/2 | <= (1/6) E_q[ |delta - E_q delta|^3
+       e^{(delta - E_q delta)^+} ] + mean-shift terms.
+
+VERIFIED at the settled s=1 optimum: R = KL - Var/2 = -0.0107 (negative —
+the remainder subtracts, consistent with cumulant cancellation), bound =
+0.1014 >= |R| with 9.5x slack. The bound lives ENTIRELY on the residual's
+own norms — no kernel-level parameter appears. The identifiability question
+(review-9 move 1, second half): can ANY kernel-level functional (Lambda,
+Fisher spectrum, Renyi) control this residual quantity across kernels?
+Matched-kernel construction (equal Lambda and equal Fisher spectrum,
+different CGF tails) is the decisive test — if such kernels exist, the
+compression regime is residual-level state, not kernel-level parameter,
+and the gate must be stated on the OPTIMIZATION's solution, not the task.
