@@ -122,10 +122,10 @@ program with verified first-order core.
 directions the aggregate interference A_2 is a weighted birthday sum; its
 EXACT fixed-k multinomial covariance (derived; validated 12/12 zero-parameter,
 ratios 0.76–1.09) supersedes the refuted Poissonized model — the negative
-cross-covariance −(k)₂(4k−6)p⁴ is load-bearing. Law class governed by
-λ²·PR_W (density² × weight participation ratio): Gaussian concentration iff
-it diverges; persistent O(1) fluctuations when O(1); boundary computable in
-closed form. Poissonization itself was refuted 2/12 by a zero-parameter
+cross-covariance −(k)₂(4k−6)p⁴ is load-bearing. The exact variance formula gives relative concentration when its cv
+vanishes (in the dense regime governed by lambda^2 PR_W); asymptotic
+normality additionally requires variance growth and a max-cell/Lindeberg
+condition (4h, assembled). Poissonization itself was refuted 2/12 by a zero-parameter
 pre-registered test — the cycle (prediction → refutation → exact derivation
 → validation) is the arc's method signature.
 

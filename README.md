@@ -118,7 +118,7 @@ NOTEBOOK.md            Reverse-chronological running log (recent); older entries
 
 - **Behavioral consequences are claim-bearing; representational measurements are diagnostic scaffolding.** We study what models *do*, not what their hidden states "look like." This avoids the R^n projection trap (breakpoint #8).
 - **Instrument-first.** Before interpreting results, validate the instrument: baseline retrieval, self-patch controls, sham-patch controls, execution-mode checks.
-- **Reproducible.** CPU-only experiments, deterministic seeds, full configs logged. Every experiment in the ledger includes the command, config, and metrics.
+- **Reproducible.** CPU-only experiments, deterministic seeds, full configs logged. Claim-bearing empirical runs in the ledger include the command, config, and metrics; derived-theory rows carry their theory pointers.
 
 ## License
 

@@ -14,10 +14,12 @@ the Fisher recursive-tail envelope is tight far below representability
 efficiency near the knee (to 0.02). The steeper-pi probe (pre-registered)
 was DECISIVE: the family cannot reach the CGF large-deviation regime at
 any steepness — every pair shares the root, so contrasts stay bounded.
-CHARACTERIZATION (the family's capstone): the compression-law regime is
-governed by kernel OVERLAP GEOMETRY — nested kernels live in the Fisher
-regime at all parameters; disjoint kernels reach CGF. Five complete
-structures now stand.
+Scoped observation (review-8 correction): within the two constructions
+tested, the nested family stayed in the Fisher regime — plausibly
+construction-forced via the shared-root likelihood floor, not evidence of
+a general overlap law. The quantitative overlap-parameter theorem (max
+log-likelihood ratio / Rényi-type parameter, with an overlapping-family
+falsifier) is the adopted follow-up. Five complete structures now stand.
 
 Ledger: hpb2_staged_not_run, hpb2_construction_bug_fixed, hpb2_cycle_scored,
 hpb2_steeper_pi_decisive. Theory: HPD sections 13-13g.
