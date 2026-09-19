@@ -1,5 +1,51 @@
 # Experiments Log
 
+## HP-D Orlicz arc: optimality stack at the settled compression optimum (2026-09-20)
+
+### s=1 gap diagnosis (12 seeds x 6000 steps, frozen decision rule)
+
+At (B=8, rho=0.3, s=1): d=2 best 0.0857 (all seeds within 0.0005), 6.2x the
+Fisher prediction 0.0139; d=4 best 0.0253, 4.7x. VERDICT: genuine
+large-deviation gap — the optimizer is not the limitation; the quadratic
+expansion is. Runner: internal/s1_gap_lean.py (lean rerun after the original
+40-run job stalled under contention); data s1_gap_diagnosis.json.
+
+### CGF decomposition at the settled optimum
+
+Excess 0.0859 = quadratic component AT the optimum 0.0966 (7x the
+Fisher-optimal 0.0139, ABOVE the total) with kappa_3 = -0.005, kappa_4 =
++0.014 partially canceling. The CGF optimum accepts ~7x the variance to buy
+negative-skew cumulant structure: the argmin changes qualitatively.
+
+### Envelope numerics (withdrawn conjecture)
+
+The two-point variance-KL envelope's optimizer runs to the boundary; inf KL
+= 0 at any fixed variance (rare huge negative jumps). The v/2 - c v^{3/2}
+discount law is withdrawn; variance does not govern KL compression — the
+one-sided exponential moment does.
+
+### Stationarity and curvature certificates
+
+- Stationarity: off-space gradient energy = 1.0000 at the settled optimum
+  (gradient entirely in the complement block — E-Y-type orthogonality;
+  condition statement corrected en route, both directions recorded).
+- Lanczos Hessian (analytic gradients, 45 iters, 1040-dim factor space):
+  lambda_min = 2.4e-05 > 0, lambda_max = 0.252 — CERTIFIED STRICT LOCAL
+  MINIMUM; near-flat valley explains the 0.0005 seed spread.
+- Failed schemes, logged: alternating metric-reweighting (0.0117 invalid)
+  and unconstrained DV dual (unbounded inner problem; 0.390 spurious) —
+  both establish that KL compression lacks E-Y's norm geometry; the dual
+  route requires regularization or a simplex-native formulation.
+
+**Ledger:** hpd_s1_gap_verdict_d2, hpd_s1_gap_complete, hpd_cgf_decomposition,
+hpd_variance_kl_envelope (withdrawn), hpd_orlicz_correction, hpd_dv_core,
+hpd_tilted_svd_probe_invalid, hpd_first_order_characterization,
+hpd_first_order_verified, hpd_dual_attempt_failed, hpd_second_order_evidence,
+hpd_strict_local_certified
+**Theory:** theory/HPD_ALLOCATION_THEOREM.md sections 12-12j
+
+---
+
 ## HP-E: aggregate interference theorem — proved, corrected, validated (2026-09-19)
 
 ### Isotropic quadratic theorem (COMPLETE)
