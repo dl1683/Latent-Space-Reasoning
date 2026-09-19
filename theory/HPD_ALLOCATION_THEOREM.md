@@ -625,3 +625,31 @@ superposition (d < effective rank) stops being viable at given excess;
 (iv) only then pre-register the simulation. The distinctive content vs the
 planted-block cycle: the knee is emergent (growing kernel), not
 construction-forced, answering review-6's cheapest-confound objection.
+
+## 13b. Obligation (i) started: the hierarchical SVD structure (2026-09-21)
+
+Level-mixture kernel: P(j|i) = (1-rho)p_j + rho sum_ell pi_ell 1[i, j share
+a level-ell ancestor], b-ary tree depth L, level masses pi_ell decaying.
+Distinct conditionals = finest blocks (b^L rows types).
+
+**Nested-bump orthogonality (lemma, easy).** The row map sends block b' at
+level ell to a bump vector v_{b'} supported on b''s descendant tokens.
+Bumps at the SAME level have disjoint supports (orthogonal); bumps at
+DIFFERENT levels are nested but their CENTERED versions (row-mean removed)
+are orthogonal to coarser-level bumps when the coarser bump is constant on
+the finer block (the tree property: a level-(ell-1) bump is constant across
+each level-ell child block). Hence the centered log-kernel decomposes as an
+ORTHOGONAL sum over levels, with per-level rank (b-1) b^{ell-1} and
+per-direction scale set by the pi_ell mixture gaps and the within-level
+mass profile.
+
+**Consequences (to be completed):** (a) the centered-logit SVD is
+level-block-diagonal: singular values come in level bundles of
+multiplicity (b-1)b^{ell-1} with level scales — a power-law spectrum
+arises when pi_ell decays geometrically (each level contributes a decade);
+(b) rank-d truncation = level selection (whole levels in order of scale)
+plus within-level partial truncation — excess_CE*(d) is a STEPWISE-plus-
+refinement curve; (c) the emergent knee: superposition cost becomes
+nontrivial exactly when d crosses the cumulative level ranks — growing
+with L, not construction-pinned to a single B. This is the derivation
+target: closed-form excess_CE*(d) with an emergent, tunable knee.
