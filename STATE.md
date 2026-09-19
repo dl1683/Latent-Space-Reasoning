@@ -115,6 +115,17 @@ the tested regularized dual is vacuous; no useful global dual certificate is
 currently known (simplex-native or regularized routes untested beyond these). T4 completion target stands as the tilted-SVD/two-fixed-point
 program with verified first-order core.
 
+**HP-E limit-law arc (2026-09-20, exact + validated):** for localized
+directions the aggregate interference A_2 is a weighted birthday sum; its
+EXACT fixed-k multinomial covariance (derived; validated 12/12 zero-parameter,
+ratios 0.76–1.09) supersedes the refuted Poissonized model — the negative
+cross-covariance −(k)₂(4k−6)p⁴ is load-bearing. Law class governed by
+λ²·PR_W (density² × weight participation ratio): Gaussian concentration iff
+it diverges; persistent O(1) fluctuations when O(1); boundary computable in
+closed form. Poissonization itself was refuted 2/12 by a zero-parameter
+pre-registered test — the cycle (prediction → refutation → exact derivation
+→ validation) is the arc's method signature.
+
 ---
 
 The scope is broad and fundamental: the native mathematics of spaces where

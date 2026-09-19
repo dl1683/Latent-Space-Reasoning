@@ -1,5 +1,25 @@
 # NOTEBOOK
 
+## Entry 125: The limit-law arc — birthday structure, exact covariance, λ²PR_W (2026-09-20)
+
+The review-7 lead arc closed its foundation cycle in one session: (1) the
+two-corner insight (dense corner governed by channel-mass PR; sparse-birthday
+corner by a third-moment PR); (2) the registered corner thresholds tested —
+2/4, with both failures informative (gradual-in-PR boundary; total-intensity
+condition); (3) the zero-parameter Poissonized prediction REFUTED 2/12 —
+fixed-k conditioning is load-bearing, not a le-Cam correction; (4) the EXACT
+multinomial covariance derived ((n)₂² factorial-moment calculus; negative
+cross-covariance term) and VALIDATED 12/12 with ratios 0.76–1.09; (5) the
+law-class quantity identified: λ²·PR_W. Remaining: the CLT statement proper
+(asymptotic normality beyond second moments — multivariate occupancy CLT
+literature applies) and the G-to-CP boundary as a theorem rather than a
+closed-form computation.
+
+Ledger: hpe_limit_law_arc_opened, hpe_limit_law_two_corners,
+hpe_limit_law_validation, hpe_lindeberg_sweep_refuted (row restored after a
+repair-loop drop — both incidents logged), hpe_fixedk_validated,
+hpe_law_class_asymptotics. Theory: HP-E sections 4–4f.
+
 ## Entry 124: Strategy memo for the next review — four candidate arcs (2026-09-20)
 
 The two theorem families are complete to their current levels (HP-E:
