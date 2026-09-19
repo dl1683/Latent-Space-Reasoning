@@ -719,3 +719,17 @@ where the last strongly-gapped level falls below the truncation rank.
 This completes the derivation program; the pre-registered simulation
 (targets: stepwise curve + within-bundle tails + crossover location)
 awaits only the review's verdict on opening the cycle.
+
+## 13f. Empirical cycle results (2026-09-21; post construction-fix)
+
+Corrected kernel (root-inclusive tree; rank 32 representability): P1
+REFUTED — the excess curve is smooth log-convex steepening to EXACT zero
+at d = 32, not a staircase (the emergent knee is a steepening tail).
+P2 PASS — log-convex throughout (decay ratios 1.2 -> 18 increasing).
+P3 REFUTED at this configuration — no rho-amplified CGF gap; the Fisher
+recursive-tail envelope is TIGHT (1.08-1.28x) far below representability
+in BOTH rho arms, with the now-familiar super-quadratic efficiency near
+the knee (ratios to 0.02). Net: the two-regime structure generalizes
+across kernel families; the stepwise and CGF-embellishment predictions
+fail at pi-decay 1/2. Steeper-pi cells are the natural probe for whether
+the CGF regime is reachable in this family.
