@@ -312,3 +312,25 @@ is wrong; (b) if no knee at d ~ B appears, the rank-(B+2) approximability
 story is wrong; (c) if excess(d) is insensitive to rho, the mixture-gap
 coefficient story is wrong (it predicts c_rho growing as rho moves off
 extremes).
+
+## 10. Representability settled (2026-09-19; supersedes the B+2 sketch in 7)
+
+The planted-block kernel yields exactly B distinct conditional distributions
+(rows within a block identical; outside-part exactly (1-rho)p_j), so the
+log-kernel has AT MOST B distinct rows: rank exactly B (verified to 1e-15 at
+four configs; the bumps v_b are disjoint-supported, hence independent).
+Therefore, untied: exact zero-excess CE representation exists iff d >= B.
+The earlier "approximately rank-(B+2)" story was answering an irrelevant
+log-of-mixture question and is retired.
+
+**Row geometry:** row(b) = u + v_b, u = log(1-rho)p (shared), v_b supported
+on block b only (disjoint across b). Mean-plus-orthogonal-bumps: the leading
+singular direction is u; the remaining B-1 singular values are ~
+sqrt(n W_b)||v_b||-ordered — block usage enters THROUGH the spectrum. The
+compression problem below d = B is a usage-weighted low-rank fit of B
+points {u + v_b}; Eckart-Young tail energy beyond rank d is the excess
+proxy (section-8 lemma converts Frobenius intuition to the CE bound, up to
+the inf-norm metric gap). The section-9 prediction stands with corrected
+mechanics: excess(d) tracks tail singular energy, shapes set by the W_b
+decay, knee at d ~ B (locator already confirms the knee at B = 8: excess
+0.126 (d=2) -> 0.051 (d=4) -> 0.0000 (d >= 8)).
