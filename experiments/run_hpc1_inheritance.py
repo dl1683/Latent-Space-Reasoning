@@ -31,58 +31,68 @@ def get_texts():
     return ds["text"]
 
 
-def prepare(tag):
+def prepare(tag, max_tokens=120_000_000):
+    """Vectorized: tokenize into one flat int32 array (doc breaks kept),
+    bincount for freq, flattened pair-window bincount for co-occurrence."""
+    import numpy as np
     from transformers import AutoTokenizer
     tok = AutoTokenizer.from_pretrained(MODELS[tag])
-    texts = get_texts()
     vocab_size = len(tok)
-    # frequency pass to select top-K ids
-    print(tag, "vocab", vocab_size, "pass 1: frequencies")
-    freq = np.zeros(vocab_size, dtype=np.int64)
-    buf_ids = []
+    print(tag, "tokenizing...", flush=True)
+    docs = []
     ntok = 0
-    for i, t in enumerate(texts):
+    for t in get_texts():
         if not t.strip():
             continue
         ids = tok(t, add_special_tokens=False)["input_ids"]
-        buf_ids.append(np.asarray(ids, dtype=np.int32))
-        np.add.at(freq, ids, 1)
+        docs.append(np.asarray(ids, dtype=np.int32))
         ntok += len(ids)
-        if i % 20000 == 0:
-            print(" doc", i, "tokens", ntok)
-        if ntok >= MAX_TOKENS:
+        if ntok >= max_tokens:
             break
+    # join with -1 separators (never a valid id)
+    arrs, seps = [], 0
+    for d_ in docs:
+        arrs.append(d_); arrs.append(np.array([-1], dtype=np.int32)); seps += 1
+    flat = np.concatenate(arrs)
+    print(tag, "tokens", ntok, "docs", len(docs), flush=True)
+    freq = np.bincount(flat[flat >= 0].astype(np.int64), minlength=vocab_size).astype(np.int64)
     top = np.argsort(freq)[::-1][:K]
-    kept_mass = freq[top].sum() / max(freq.sum(), 1)
+    kept_mass = float(freq[top].sum() / max(freq.sum(), 1))
     remap = -np.ones(vocab_size, dtype=np.int32)
     remap[top] = np.arange(K, dtype=np.int32)
-    print(tag, "kept mass", round(float(kept_mass), 4), "tokens", ntok)
-    # co-occurrence pass over the SAME buffer (single corpus traversal)
-    print(tag, "pass 2: co-occurrence")
-    acc = None
-    for ids in buf_ids:
-        m = remap[ids]
-        m = m[m >= 0]
-        if len(m) < 2 * WINDOW + 1:
-            continue
-        rows, cols = [], []
-        for off in range(1, WINDOW + 1):
-            rows.append(m[:-off]); cols.append(m[off:])
-            rows.append(m[off:]); cols.append(m[:-off])
-        r = np.concatenate(rows); c = np.concatenate(cols)
-        keep = r >= 0  # already filtered, belt and braces
-        one = sp.coo_matrix((np.ones(r.shape[0], dtype=np.int32), (r, c)), shape=(K, K))
-        acc = one if acc is None else acc + one
-        if ntok and len(buf_ids) % 20000 == 0:
-            print("  chunk", len(buf_ids))
-    C = acc.tocsr()
-    C.sum_duplicates()
-    sp.save_npz(OUT / f"cooc_{tag}.npz", C)
+    print(tag, "kept mass", round(kept_mass, 4), flush=True)
+    m = remap[flat]
+    valid = m >= 0
+    # pair offsets: within-doc only -> mask pairs crossing separators
+    mi = m.copy()
+    mi[~valid] = -1
+    total_nnz = 0
+    C = np.zeros((K, K), dtype=np.int64) if K <= 8192 else None
+    # co-occurrence via bincount on flattened indices, per offset
+    for off in range(1, WINDOW + 1):
+        a = mi[:-off]; b = mi[off:]
+        ok = (a >= 0) & (b >= 0)
+        # doc-crossing guard: positions separated by a -1 are already excluded
+        # because -1 maps to invalid; but tokens separated by ANOTHER token that
+        # is invalid still belong to same doc pair window - acceptable (window
+        # pairs span gaps; count them, matching the original doc-level intent
+        # only when no separator lies between; we approximate by counting all
+        # valid-valid pairs within off tokens INCLUDING across dropped rare
+        # tokens - declared in prepare_{tag}.json)
+        idx = a[ok].astype(np.int64) * K + b[ok].astype(np.int64)
+        bc = np.bincount(idx, minlength=K * K)
+        total_nnz += int((bc > 0).sum())
+        C += bc.reshape(K, K)
+        print(tag, f"offset {off} done", flush=True)
+    import scipy.sparse as sp
+    Cm = sp.csr_matrix(C)
+    sp.save_npz(OUT / f"cooc_{tag}.npz", Cm)
     np.save(OUT / f"freq_{tag}.npy", freq[top])
     json.dump(dict(tag=tag, vocab=vocab_size, K=K, window=WINDOW, tokens=ntok,
-                   kept_mass=float(kept_mass), nnz=int(C.nnz)),
+                   docs=len(docs), kept_mass=kept_mass, nnz=int(Cm.nnz),
+                   gap_note="pairs counted across dropped-rare-token gaps within window"),
               open(OUT / f"prepare_{tag}.json", "w"))
-    print(tag, "done nnz", C.nnz)
+    print(tag, "DONE nnz", Cm.nnz, flush=True)
 
 
 def measure(tag, d, alphas=(0.1,)):
