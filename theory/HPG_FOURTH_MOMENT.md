@@ -143,3 +143,24 @@ the C_i-operator contractions replacing Wick. The L2-concentration
 criterion follows: Var/E^2 = [2 tr(S^2)^2 + 6 tr(S^4)] / [(k-1) tr(S^2)^2]
 + 2 tr(S^4)/[(k-1)(k-2) tr(S^2)^2/...] — the explicit criterion assembly
 is the next write-up step (G3 conclusion).
+
+## 9. G3 conclusion + the norm-fluctuation exhibit (2026-09-23)
+
+Explicit L2 criterion (Gaussian, homogeneous):
+  E[A_2] = k(k-1) tr(S^2);
+  Var[A_2] = C(k,2)[2 tr(S^2)^2 + 6 tr(S^4)] + 2 k C(k-1,2) tr(S^4)
+           = k(k-1)(k+2) tr(S^4) + 2 C(k,2) * 2 tr(S^2)^2 /... (keep the
+             two-term form);
+  cv^2 = [2 tr(S^2)^2 + 6 tr(S^4)] / [2(k-1) tr(S^2)^2]
+       + (k-2) tr(S^4) / [k(k-1) tr(S^2)^2].
+Concentration cv -> 0 iff both terms vanish: k -> infinity with the
+spectral ratio tr(S^4)/tr(S^2)^2 bounded — the explicit criterion.
+
+**The norm-fluctuation exhibit.** The isotropic reduction gives cv^2 ~
+(k+2)/(k(k-1)) ~ 1/k for GAUSSIAN directions, but 3h's exact identity gives
+cv^2 ~ 4/k^2 for UNIT-NORM (sphere-conditioned) directions — an
+order-of-magnitude concentration gap at the SAME covariance, caused purely
+by norm fluctuations (Gaussian norms fluctuate; sphere-conditioned do not).
+This is the theorem's own thesis exhibited inside its anchors: second
+moments do not determine concentration; the fourth-moment operator does.
+The general theorem covers both as different C_i operators.
