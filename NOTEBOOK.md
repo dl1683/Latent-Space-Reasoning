@@ -1,5 +1,39 @@
 # NOTEBOOK
 
+## Entry 124: Strategy memo for the next review — four candidate arcs (2026-09-20)
+
+The two theorem families are complete to their current levels (HP-E:
+aggregate-interference frontier, mean + sharpness + burn-in, all validated;
+HP-D: Orlicz compression, Fisher law + large-deviation structure +
+certified strict-local optimality, global duals exhausted with structural
+lessons). Candidates for the next arc, ranked by my current assessment:
+
+A. **First-principles real-model spectra (connective; high leverage).** The
+   validated compression theory IS the theory of what CE training does to a
+   structured kernel. Apply the Fisher/CGF laws to REAL co-occurrence
+   kernels (the HP-C1 WikiText corpus asset is prepared and tokenized for
+   three models) and predict real-embedding spectra from first principles —
+   the original "why power laws" question, now with a validated mechanism to
+   apply rather than slopes to fit. Delivers the program's first
+   theory-first account of real-model structure.
+
+B. **Hierarchical/random-graph kernels (review-6 move 3).** Replace the
+   construction-forced knee with growing-kernel families; derive CE
+   distortion asymptotics before simulation. The honest version of the T4
+   phase question without the trivial knee.
+
+C. **Structured-feature interference hierarchy (review-5 move 3).** Extend
+   HP-E from isotropic/localized directions to trained-feature ensembles —
+   effective-rank/cumulant versions; when does the PR frontier survive real
+   feature geometry?
+
+D. **Simplex-native global optimality (research-grade).** The one untried
+   certification route; mathematically deep, uncertain payoff.
+
+My ranking: A > B > C > D, because A converts everything built so far into
+a confrontation with real data through a validated mechanism, exactly the
+mission's test. The review should attack this ranking.
+
 ## Entry 123: The Orlicz arc — softmax compression is not low-rank approximation (2026-09-20)
 
 The chain, verified link by link: exact CGF identity for KL (logit residual
