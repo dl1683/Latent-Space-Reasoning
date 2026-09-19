@@ -82,7 +82,17 @@ interference (to a few %) but the sparse ensemble's concentration collapses
 (cv 21x, spread 14x at the crossing regime). The participation ratio is an
 EXPECTATION-LEVEL invariant only; the high-probability frontier requires a
 fourth-moment/localization functional of the direction distribution — the
-next invariant target (candidate: coordinate-kurtosis law for cv(A_2)).
+ Next invariant target (candidate: coordinate-kurtosis law for cv(A_2)).
+
+**HP-E localization law (2026-09-19, closed form):** the sharpness of the
+frontier is controlled by two computable functionals — cv²(A₂) ≈
+2(Ψ₁−1)/k² + 2(Ψ₂−1)/k with Ψ₁ = d²·trΣ⁴/(trΣ²)² and Ψ₂ = d·trΣ⁴/(trΣ²)²
+for coordinate-sparse directions (exact at α=0 in both terms, both matching
+measurement; 1.7× quantified residual at the worst inhomogeneous cell; no
+free constants). Gaussian directions collapse both terms to the 2/k law.
+Net program statement: the spectrum (participation ratio) sets the mean
+interference frontier; the direction distribution's localization (Ψ₁, Ψ₂)
+sets its sharpness — covariance alone provably does not suffice.
 
 ---
 
