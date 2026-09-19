@@ -67,6 +67,41 @@ structured coherence co-optimized with usage (T2-PL), data-correlation
 spectrum inheritance (H2 with gauge fixed — whitened/balanced observable,
 full-shape comparison only), or optimization dynamics.
 
+## 2b. Derivation progress notes (2026-09-19, pre-proof capture)
+
+Two independent channels both yield LOG-type allocation; both must be
+formalized as lemmas before T2-LOG is claimed:
+
+**L1 (subgaussian-max channel).** Under uniform coherence, the binding
+interference for retrieving pair (I, j) is the MAXIMUM competitor logit,
+whose scale is √(μ X_max · 2 log n_eff) (n_eff = effective count of
+near-max-norm competitors). Required: √x_j c_Ij ≥ √(μ X_max 2 log n_eff).
+Consequences: (i) the margin constraint is (to leading order) norm-SCALE
+free — it constrains geometry (c, μ) not budget; (ii) feasibility reads
+2μ log n_eff ≤ c²_min — a coherence-capacity condition recovering the
+interference-hierarchy bound in disguise (T3's job: make this exact with
+chaos tails); (iii) where norms DO bind (alignment heterogeneity c_Ij),
+x_j ∝ log(n_eff)/c²_Ij — logarithmic.
+
+**L2 (CE logit-margin channel).** Softmax excess loss for pair (I, j) forces
+z_j − z_k ≳ log(p_k/p_j)-type separations against every sizeable competitor
+(continuous version of the union bound; exact statement via the classical
+multinomial logistic margin bound). Under uniform coherence the separation
+requirement enters norms as x_j ≳ (log usage-ratios)²/c² — again
+logarithmic-squared in usage rank, consistent with the reliability-KKT
+sketch in §2.
+
+**Caveat to resolve (flagged, not hidden):** in the pure union-bound regime
+the problem is nearly norm-indifferent (L1-i) — allocation is determined by
+alignment heterogeneity and CE curvature, not raw norms. T2's formalization
+must therefore fix WHICH loss variant defines the budget-constrained problem
+(CE excess with explicit budget Σx = P and alignment profile c) before the
+allocation law is stated. Suspicion to test: power-law allocation can only
+enter through structured/heavy-tailed coherence (correlated interference) —
+if L1+L2 are proved as stated, T2-LOG follows for ALL uniform-coherence
+variants, and the folk "Zipf superposition ⇒ power law" claim is false
+across the entire uniform family.
+
 ## 3. Planned falsification arm (design AFTER derivation, before running)
 
 A margin-task simulation: hard-margin retrieval loss on Zipf tokens with
