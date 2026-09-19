@@ -31,9 +31,9 @@ def hier_P(n, b, L, rho, s, pi_decay):
     pi /= pi.sum()
     lvl = np.zeros((n, n))
     for ell in range(L):
-        A = np.array([t >> (L - 1 - ell) for t in range(n)])
+        A = np.array([t >> (L - ell) for t in range(n)])  # ell=0 root (1 block), ell=L-1 pairs
         same = A[:, None] == A[None, :]
-        lvl += pi[ell] * same / max(1, n >> (L - 1 - ell))
+        lvl += pi[ell] * same / max(1, n >> ell)  # block size at level ell = n/2^ell (root = n)
     return (1 - rho) * p[None, :] + rho * lvl, p
 
 
