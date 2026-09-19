@@ -354,3 +354,33 @@ smaller than f_i^T Sigma^2 f_i/tr Sigma — consistent with the measured
 interference falling BELOW prediction at alpha = 0.9 (11-16%). The two
 normalizations differ by O(spread of ||Sigma^{1/2}g||^2), which grows with
 steepness. The theorem is stated for expectation-normalization.
+
+## 3j. THE INTERFERENCE-KURTOSIS LAW (2026-09-19; derived after review-6's
+## covariance-insufficiency finding; matches the two-ensemble data)
+
+Define the INTERFERENCE KURTOSIS of the direction ensemble:
+  rho_4 = E[(u^T Sigma u')^4] / E[(u^T Sigma u')^2]^2
+(u, u' independent directions). For A_2 = 2 sum_{i<j} W_ij with W = Z^2 and
+pair-level covariances vanishing (section 3h argument, expectation-
+normalized convention):
+
+  Var(A_2) ~ 4 C(k,2) (E[W^2] - E[W]^2) = 2 k^2 mu^2 (rho_4 - 1),
+  cv(A_2) ~ sqrt(2 (rho_4 - 1)) / k.
+
+Checks against the covariance-sufficiency run (in-sample):
+- Gaussian directions: rho_4 = O(1) (~3 for the near-Gaussian Z) ->
+  cv ~ 2/k: predicted 2/128 = 0.016 vs measured 0.020 (alpha=0, k=128).
+- Coordinate-sparse: Z is a weighted collision indicator, rho_4 = Theta(d)
+  (alpha=0: exactly d) -> cv ~ sqrt(2d)/k: predicted sqrt(1024)/64 = 0.50
+  vs MEASURED 0.494 (alpha=0, k=64). Exact to 2%.
+The law cleanly separates the two ensembles the participation ratio could
+not: rho_4 is the fourth-moment/localization functional the high-probability
+frontier needs. Gaussianity of directions (rho_4 = O(1)) is the condition
+under which the isotropic high-probability theorem extends to anisotropic
+Sigma at cv ~ 2/k.
+
+**Pre-registered out-of-sample checks (frozen before running):** fresh seeds,
+alpha in {0, 0.5}, d in {256, 1024}, k in {48, 96}: (i) Gaussian-arm cv
+within [1, 3] x 2/k in all cells; (ii) sparse-arm cv within [0.7, 1.4] x
+sqrt(2 rho_4)/k with rho_4 computed numerically from its definition (no
+free constants); (iii) means remain ensemble-invariant within 5%.
