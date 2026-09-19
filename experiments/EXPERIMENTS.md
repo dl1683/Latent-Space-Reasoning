@@ -1,5 +1,51 @@
 # Experiments Log
 
+## HP-E: aggregate interference theorem — proved, corrected, validated (2026-09-19)
+
+### Isotropic quadratic theorem (COMPLETE)
+
+For unit-norm isotropic features and the energy readout M = I:
+E[A_2] = k(k-1)/d EXACTLY; Var(A_2) = k(k-1)(2d-2)/(d^2(d+2)) EXACTLY (all
+shared-index covariances vanish identically via conditional independence +
+exact unit norms); two-phase capacity frontier k* = Theta(sqrt(d)) with
+Chebyshev bounds (mean-field below, aggregate-interference failure above).
+
+### Validation (pre-registered, frozen header in the runner)
+
+P1 anchor: 8/9 cells within 0.5-4.6% (one k=4 finite-size cell 13%);
+P2 concentration: pass; P4 crossing at sqrt(d): pass (A_2 = 0.87-0.97 at
+k = sqrt(d), 14.8-15.7 at 4 sqrt(d)). P3 REFUTED the registered general-t
+power: measured E[term^2] = ||T||^2/d^t to the digit — lemma corrected; the
+Theta(1) diagonal channel is special to quadratic/projection structure, and
+the degree>=3 extension is open with that explicit obstruction.
+
+### E-struct theorem (anisotropic; expectation level + validated)
+
+Unit-energy features with covariance Sigma: per-pair interference =
+tr(Sigma^2)/(tr Sigma)^2 = 1/PR(Sigma) EXACTLY; capacity frontier
+k* = Theta(sqrt(PR)); power-law corollary k* = Theta(d^{1-alpha}) for
+alpha > 1/2 — a power-law spectrum taxes quadratic mean-field computation by
+d^{alpha-1/2} vs isotropy. Validated across alpha in {0,.5,.75,.9},
+d in {512,2048}: per-pair exact to 0.4-2.4% at alpha<=0.5; crossings
+bracketed 8/8; two formal registered fails carry diagnosed benign causes
+(exact-vs-expectation normalization at alpha=0.9; grid-gap). Variance
+identity: isotropic cancellation breaks under anisotropy, replaced by a
+PR(Sigma^2)-bounded covariance with alpha-dependent burn-in
+k >> d^{2alpha-1}; intermediate band open (martingale route suggested).
+
+**Data:** experiments/results/hpe_aggregate/{anchor,estruct}_{check,verdicts}.json
+**Runners:** experiments/run_hpe_{anchor,estruct}_check.py
+**Theory:** theory/HPE_AGGREGATE_INTERFERENCE.md sections 3b-3i
+**Ledger:** hpe_e5_anchor_validation, hpe_estruct_validation,
+hpe_isotropic_theorem_complete, hpe_anisotropic_variance
+**What we learned:** spectrum -> capacity is lawfully bridgeable via
+participation ratios (no fitted slopes); the naive degree-p ladder does not
+exist (per-vector 1/d pairing); trained power-law geometry REDUCES quadratic
+mean-field capacity relative to isotropy — the opposite of the packing
+intuition.
+
+---
+
 ## HP-A A1: QSAE optimum proven sparse-exact; mean field refuted (2026-09-18)
 
 ### Theorem (sparse-exact optimum of the quadratic superposition autoencoder)
