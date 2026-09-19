@@ -291,3 +291,21 @@ contribution eta^2 d reaches unity. Status: empirically established law
 with mechanistic derivation at the operator level; formal proof (the
 Lipschitz constant of the criterion in the operator perturbation being
 exactly the d^{1/2}-scaled quantity) is the remaining rigor obligation.
+
+## 12f. Formal obligation skeleton: why eta^2 d (2026-09-23)
+
+Both variance terms are LINEAR in each C_i (single contractions against
+PSD matrices of bounded trace). For the mixture ensemble the perturbation
+operator Delta_i = C_i - C_i^Wick has diagonal-probe mass
+  <I, Delta_i[I]>-form ~ eta(1-eta) * d  (one sparse spike of mass d per
+direction, weighted by the cross-second-moment share eta(1-eta)).
+The variance assembly contains ~k^2 pairs and ~k^3 shared triples, each
+contracting Delta linearly; the criterion cv^2 = Var/E^2 with E ~ k^2 t2
+gives perturbation ~ [k^2 * eta(1-eta) d * t2-scale] / k^4 t2^2 ~
+eta(1-eta) d / (k^2 t2) at isotropic t2 = 1/d: ~ eta(1-eta) d^2/k^2.
+Setting perturbation ~ criterion's own size O(1/k^2 * d) reproduces
+departure at eta ~ d^{-1/2} after resolving the k-cancellation (the
+k^2 pairs also carry the baseline). The exact bookkeeping — which
+k-powers cancel and which survive — is the remaining formal step; the
+measured law eta* ~ d^{-1/2} (12c-12e) is the target the bookkeeping
+must reproduce. Registered as obligation G4-formal.
