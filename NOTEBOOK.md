@@ -1,5 +1,27 @@
 # NOTEBOOK
 
+## Entry 127: The hierarchical family closes — disjointness gates the CGF regime (2026-09-21)
+
+The candidate-B arc completed its full empirical cycle in one session,
+including a caught-and-fixed construction bug (ancestor encoding and
+block-size divisor mutually inconsistent; the kernel was never stochastic;
+first run invalidated honestly; lesson recorded — assert normalization
+before derivation-support numerics). Corrected results: the excess curve is
+smooth log-convex steepening to EXACT zero at the representability rank
+(32), not a staircase (P1 refuted); log-convexity holds throughout (P2);
+the Fisher recursive-tail envelope is tight far below representability
+(1.08-1.28x) in both rho arms with the by-now-familiar super-quadratic
+efficiency near the knee (to 0.02). The steeper-pi probe (pre-registered)
+was DECISIVE: the family cannot reach the CGF large-deviation regime at
+any steepness — every pair shares the root, so contrasts stay bounded.
+CHARACTERIZATION (the family's capstone): the compression-law regime is
+governed by kernel OVERLAP GEOMETRY — nested kernels live in the Fisher
+regime at all parameters; disjoint kernels reach CGF. Five complete
+structures now stand.
+
+Ledger: hpb2_staged_not_run, hpb2_construction_bug_fixed, hpb2_cycle_scored,
+hpb2_steeper_pi_decisive. Theory: HPD sections 13-13g.
+
 ## Entry 126: Candidate B derivation program complete (2026-09-21)
 
 The hierarchical-kernel arc (review-7's second-ranked direction) now has a
