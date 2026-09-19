@@ -364,3 +364,19 @@ regime-structured (underestimate far-below-knee at steep s; possible
 overestimate near knee). The Fisher law is the leading quantitative object;
 the nonlinear corrections are bounded and regime-located. rho-sensitivity
 falsifier (c) survived: excess(0.7)/excess(0.3) = 2.8 at (s=.5,d=2).
+
+## 12. s=1 large-deviation verdict and the exponential-metric obligation
+## (2026-09-19)
+
+Empirical: at (B=8, rho=0.3, s=1, d=2), 12 independent optimizations agree
+to 0.0005 (best 0.0857) - the optimum is settled and sits 6.2x above the
+Fisher second-order prediction (0.0139). The optimizer is not the limit;
+the quadratic expansion is. Mechanism (hypothesis to derive): far below the
+knee at steep s, ANY rank-d solution leaves O(1) logit deviations on
+high-mass entries, where KL(P||Q) = E_P[log(P/Q)] costs e^{-delta} - delta -
+delta^2/2 ~ EXPONENTIAL in the deviation, not quadratic. The correct
+large-deviation compression functional is an exponential-moment object
+(E_P[e^{-delta}] subject to the rank-d constraint), reducing to the Fisher
+form only in the small-deviation regime (which is why s=0.5 far-below-knee
+agrees and s=1 does not). Deriving the exponential-metric Eckart-Young-type
+law is the open obligation that would complete T4's compression phase.
