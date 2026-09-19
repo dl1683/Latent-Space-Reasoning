@@ -87,9 +87,26 @@ spectral-normalized) and derive everything within it. OBLIGATION E0 (new,
 first): recompute the anchor under the fixed convention and restate the
 ladder exponents; do not carry entry-117's mixed conventions forward.
 
-## 4. Proof obligations (ordered)
+## 3b. E0 RESOLVED (2026-09-19): the convention and the exact anchor
 
-E0: fix the normalization convention; recompute t=2 anchor exactly.
+**Convention (fixed):** features f_i independent isotropic UNIT vectors
+(E[ff^T] = I/d); readout tensor normalized to the trace scale — for degree 2,
+M with ‖M‖_F² = Θ(d) and tr M = Θ(d) (e.g., M = I), so the per-feature
+diagonal channel is Θ(1) EXACTLY (f^T I f = 1). Entry-117's mixed
+conventions are retired: its O(d^{-1/2}) implicitly meant THIS regime.
+
+**Exact t=2 anchor (E1 for t=2, proved):** for i ≠ j,
+E[(f_i^T M f_j)²] = tr(M(I/d)M(I/d)) = ‖M‖_F²/d², hence
+E[A_2] = k(k−1)‖M‖_F²/d² = Θ(k²/d) at the convention. Signal channel
+Σ_i E[(f_i^T M f_i)²] = Θ(k). Negligibility A_2 = o(signal) iff k ≪ √d
+(up to tr constants): **k*(d) = Θ(√d) under the fixed convention.** The
+earlier apparent vanishing of the hierarchy at unit norms was a tensor-scale
+artifact; the convention above is the one under which "mean-field = diagonal
+channel dominates" is the right question.
+
+## 4. Proof obligations (ordered, updated)
+
+E0: DONE (see 3b). Remaining:
 E1: exact E[A_t] under the convention (exchangeability argument).
 E2a: Var[A_t] ≤ C E[A_t]² (correlation structure of t-body squares).
 E2b: conclude negligible phase.
