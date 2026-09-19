@@ -137,6 +137,60 @@ monotonicity REVERSED; withdrawn). Consequences of the corrected condition:
    Θ(log n) (packing-like) vs Θ(√n) (coherent-like); a sharp threshold with
    explicit constants is the theorem this program wants.
 
+## 5. The structured kernel and the T4 derivation (2026-09-19; repairs §2d)
+
+**5.1 Kernel (concrete, planted block).** Usage p_i = i^{-s}/H_{n,s};
+vocabulary split by rank into B equal blocks of size m = n/B. Transition:
+P(j | i) = (1−ρ)·p_j + ρ·(1/m)·1[block(j) = block(i)]. ρ = structure
+strength; ρ = 0 is the solved unigram case (H1). Target logits:
+z*_j(i) = log P(j|i) + c_i.
+
+**5.2 Decoder-derived logits (repair of §0's hand-written noise).** Tied
+retrieval, z_j(i) = w_j·w_i exactly. Misretrieval of (i, j) is the event
+∃k: z_k(i) ≥ z_j(i) − 0 (argmax) or, margin version, z_k(i) ≥ z_j(i) − m_ε.
+ALL interference is competitor logits z_k(i) = w_k·w_i — no external noise
+variable exists or is needed. Every statement below is about the joint law
+of {w_k·w_i}_{k} under the code ensemble.
+
+**5.3 Equilibrium ansatz (lemma to prove: optimality of decomposition).**
+w_j = a_j·f + b_j·u_{b(j)}, with f ⊥ span{u_b}: the frequency direction f
+carries the unigram part (a_j ∝ log-scale of p_j, per H1's mechanism) and
+the B signature vectors u_b (unit norm) carry block membership. The task is
+exactly representable iff d ≥ B+1; **the superposition regime is d < B.**
+
+**5.4 Interference law (lemma).** For i in block b, out-of-block competitor
+k in block b': z_k(i) = a_i a_k + b_i b_k (u_{b'}·u_b). Same-block target
+advantage: Δ_ij = b_i b_j (1 − u_{b(j)}·u_{b(i)}) + (a-terms, favorable
+since same-block targets need not beat the unigram part). With signature
+coherence μ = max_{b≠b'} u_{b'}·u_b: b_i b_k μ is the worst structured
+interference; the a-part is favorable (out-of-block frequent tokens have
+lower required log-prob, rare ones lower a_k).
+
+**5.5 Threshold route (T4a statement).** Usage-weighted error ≤ ε requires,
+for typical (i,j same-block): b_i b_j(1 − μ) ≥ max_k [a_i a_k + b_i b_k μ]
++ σ·√(2 log(n/ε))-type subgaussian slack (exact constant from the chaos
+analysis, T3). Two regimes fall out:
+- **Welch regime:** B signatures in d dims force μ ≥ √((B−d)/(d(B−1)))
+  (Welch bound; achievability caveats logged). Substituting gives the
+  feasibility inequality in (d, B, ρ, s, ε, budget P) — solve for
+  d*(B, ρ, s, ε, P). Conjectured form: d* linear-ish in B with a
+  structure-strength factor — a genuinely dimension-dependent threshold.
+- **Packing regime:** B > d(d+1)/2 — equiangular signatures unachievable;
+  μ jumps; the transition sharpens (candidate: d* ≥ c·B^{1/2} vs linear —
+  the phase boundary this theorem hunts).
+Budget coupling: Σ_j b_j² enters through the slack term — the allocation
+problem REDUX, now structured (b_j vs signature geometry jointly optimal),
+which is where any non-flat allocation law must live if it exists at all.
+
+**5.6 Proof obligations (open, ordered):** (i) prove 5.3's decomposition is
+near-optimal for the CE objective (variational argument or counterexample);
+(ii) prove 5.4's favorable-a-part claim exactly (it interacts with s);
+(iii) chaos/Hoeffding tail for the max over n competitors (T3 machinery,
+fixing normalization per review-3's point 2); (iv) solve the feasibility
+inequality in both regimes; (v) pre-register the simulation that tests the
+threshold before running it (planted-block retrieval at (n, B, d, ρ, s)
+grid around the predicted boundary).
+
 ## 3. Planned falsification arm (design AFTER derivation, before running)
 
 A margin-task simulation: hard-margin retrieval loss on Zipf tokens with
