@@ -265,3 +265,28 @@ Pre-registered T4' target: for fixed (rho, s), the excess-CE phase boundary
 in (B, d) is sharp (concentration over the kernel ensemble); concrete
 conjecture: critical d*(B) proportional to the participation ratio of the
 block-mass sequence (bridging to the E-struct capacity law).
+
+## 8. Excess-CE truncation bound (Pinsker-type; proved 2026-09-19)
+
+**Lemma.** Let z* = log P(.|i) + c_i (any exact logits) and zh any other
+logit row. Then per-context
+  KL(P_i || softmax(zh)) <= 2 * max_j |z*_j - zh_j|.
+*Proof.* log P_j/Q_j = (z*_j - zh_j) - [logZ(z*) - logZ(zh)], and
+|logZ(a) - logZ(b)| <= max_j |a_j - b_j| (1-Lipschitz of logsumexp). Hence
+|log P_j/Q_j| <= 2 max_j |z*_j - zh_j| for every j, and
+KL = sum_j P_j log(P_j/Q_j) <= sum_j P_j |log(P_j/Q_j)| <= 2*eps_i. ∎
+
+**Corollary (compression excess).** With zh the best rank-d reachable logits,
+excess CE <= 2 * E_i[ ||(L^c - L^c_d)_{i,:}||_inf ] — the usage-weighted
+worst-row deviation of the centered log-kernel from its rank-d truncation.
+The phase-boundary question is thus a WEIGHTED low-rank approximation
+problem with an inf-norm (per-row worst-case) metric — sharper than Frobenius
+and usage-weighted: high-usage contexts demand low row-error.
+
+**Numerical locator (exploratory derivation-support, logged as such; the
+eventual boundary CLAIM will be pre-registered after the structure is seen):
+direct CE optimization over (H, W) on a finite planted-block kernel,
+n = 512, B in {8, 32}, rho in {0.3, 0.7}, s in {0.5, 1.0}, d grid in
+{2, 4, 8, 16, 32, 64}; Adam, 3 seeds, best-of; measure excess CE vs the
+entropy floor. Targets: the shape of excess(d) — sharp knee vs gradual —
+and its dependence on (rho, s) at fixed B.
