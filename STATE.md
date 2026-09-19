@@ -75,8 +75,9 @@ review-backed provenance (reviews 3-4 demoted them; ~7h/run economics).
    Validated: per-pair exact to 0.4-2.4% at alpha <= 0.5; crossings bracketed
    in 8/8 cells (two registered formal fails carry diagnosed benign causes,
    logged). Pending rigor: concentration formalization and the matching
-   lower bound with quantifier order. This is the lawful spectrum->capacity
-   bridge the program sought (no fitted slopes involved).
+   lower bound with quantifier order. Scope (review-10): this is an exact
+   spectrum-to-expected-interference-onset relation for the specified
+   quadratic model; no operational capacity theorem is established.
 
 **HP-E covariance-sufficiency result (2026-09-19, review-6 lead unit,
 pre-registered):** at identical covariance, Gaussian-direction and
@@ -102,7 +103,7 @@ alone does not suffice (settled by the two-ensemble test).
 **HP-D Orlicz-compression arc (2026-09-19/20, verified chain):** for softmax
 rank-d compression, KL(q||softmax(z)) = log E_q[e^delta] - E_q[delta] — the
 cumulant generating function of the logit residual (EXACT identity).
-Consequences, all measured at settled optima: (1) the Fisher law is the
+Consequences measured at reproducible stationary solutions (global optimality open): (1) the Fisher law is the
 kappa_2 regime and holds where deviations are small (validated at s=0.5
 far-below-knee, points within 1.2x); (2) at the tested finite configuration, the best reproducible stationary
 solutions found accept ~7x the Fisher-optimal residual variance and exploit

@@ -14,7 +14,7 @@ LLM latent spaces (d=768–4096+), kernel feature maps, embedding spaces, and hi
 
 1. **WHERE you modify code is the dominant factor.** After-expression edits (comments, whitespace, dead code) produce consistent, reliable effects. Expression-adjacent modifications (parenthesization, type casts, identity operations) produce heterogeneous, cell-specific effects. The reliability gap between position types is large (AA ≈ 0.7–0.9 vs DD ≈ 0.1–0.5) and universal across tested models.
 
-2. **Sensitivity has multiplicative structure.** Behavioral distance decomposes as d[cell, pert] ≈ fragility[cell] × magnitude[pert], with R² = 0.82–0.88 in log space. This is a first-order Taylor approximation (small-angle regime), with a 12–25% structured residual from cell × perturbation group interaction.
+2. **Sensitivity has multiplicative structure.** Behavioral distance decomposes as d[cell, pert] ≈ fragility[cell] × magnitude[pert], with R² = 0.82–0.88 in log space. This multiplicative fit is consistent with a small-angle first-order approximation (12–25% structured residual from cell × perturbation group interaction); the fit alone does not establish the mechanism.
 
 3. **Models agree on what kinds of perturbations matter, but not on which expressions are vulnerable.** Within-model perturbation-type ordering correlates at +0.84 within architecture families. Cross-model cell vulnerability correlations are near zero. The perturbation-level structure transfers; the cell-level structure is model-specific.
 
