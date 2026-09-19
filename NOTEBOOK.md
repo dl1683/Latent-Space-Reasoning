@@ -1,5 +1,46 @@
 # NOTEBOOK
 
+## Entry 121: Review-2 pivot — allocation theorem opened; four overclaims corrected; prior-art gap confirmed (2026-09-19)
+
+**Review-2 (scheduled Droid, goal-aligned).** Verdict NEEDS-CORRECTION. Four
+overclaim fixes applied verbatim to STATE/README: (1) the
+"representation-computation gap" (exp(d) storage / √d linear / O(1) bilinear)
+is void — no universal capacity law exists without task/decoder/noise/error
+specification (orthonormal features give exact bilinear k ≤ d); (2) α* = s/2
+has no eigenspectrum or d→∞ interpretation; (3) "RESOLVED: why power law" →
+open, with estimator-manufacture and rank-2-collapse evidence; (4)
+"defense-in-depth" → one untested explanation. Strategy diagnosis accepted:
+the program was entering a spectral-exponent tunnel (one biased OLS slope,
+Gram matrices, RMT — scaffolding, not destination). H2 had a real
+identifiability flaw (factorization gauge AB^T = (AS)(BS^{−T})^T) — HP-C1
+exponent-matching measurement paused; prepared corpus kept as an asset.
+
+**Prior-art reconnaissance (background agent, cited in ledger).** The
+usage-weighted softmax-margin allocation theorem is verifiably unoccupied:
+neural collapse's balanced prediction is FLAT (consistent with our quadratic
+theorem); imbalanced/minority-collapse work gives geometry, no spectra;
+Elhage superposition treats unequal importances only numerically; formal
+superposition theory is equal-importance recovery; SGNS-PMI spectral
+inheritance is folklore without proof; MSE water-filling provably cannot
+origin power laws (our theorem — a point no published source makes).
+
+**HP-D opened (theory/HPD_ALLOCATION_THEOREM.md).** Full specification
+(ensemble/task/decoder/noise/error/budget), three target theorems. Key
+derivation insight from the first reduction: under uniform coherence the
+reliability-KKT gives x_j ≍ (m + √(2μX·log(1/p_j)))² — LOGARITHMIC-squared
+allocation, no power law. If T2-LOG proves out, the folk explanation
+("superposition over Zipf features ⇒ power-law spectra") is FALSE in the
+fully specified model, and measured power laws become signatures of
+structured organization, data-correlation inheritance, or dynamics — a
+clean, falsifiable, unoccupied theorem.
+
+**Standing compute:** HP-B main grid + XE seeds running (XE seed-0 interim
+supports rank-2 collapse / H1); HP-C1 prepare bug fixed but measurement
+paused per review.
+
+Ledger: droid_review_2hr_1, priorart_allocation_gap
+Theory: theory/HPD_ALLOCATION_THEOREM.md
+
 ## Entry 120: The spectral estimator is biased; transient rate calibrated; undershoot signature identified (2026-09-18)
 
 **A2 (measurement validity).** Feeding known norm profiles through random
