@@ -547,3 +547,18 @@ numerical precision), confirming: (a) the corrected 12g condition;
 (c) the Eckart-Young-type orthogonality structure survives the Orlicz
 metric at the optimum. The tilted fixed point of 12f is THIS solution's
 nonlinear regime — its characterization now has a verified first-order core.
+
+## 12i. Dual-bound attempt: withdrawn, with structural lesson (2026-09-20)
+
+The DV-based dual bound (fix mu, minimize the linearized inner problem by
+an anti-aligned top-d SVD) is INVALID: the inner problem is linear in R on
+the UNBOUNDED rank-d variety, so its infimum is -infinity unless the
+coefficient field vanishes; the closed form used applies only to
+nuclear-norm-CONSTRAINED variants. Structural lesson (recorded as content,
+not just error): KL compression intrinsically lacks the norm geometry that
+powers Eckart-Young duality — logits can scale freely because only entropy
+differences matter. Any T4 optimality theory must either (a) work directly
+with the softmax-intrinsic boundedness (probability simplexes, not logit
+balls), or (b) adopt an explicitly regularized (weight-decay) variant where
+norm geometry exists. Both routes noted; global optimality remains open
+with stationarity verified.
