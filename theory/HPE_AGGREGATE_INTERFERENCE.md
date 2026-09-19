@@ -384,3 +384,32 @@ alpha in {0, 0.5}, d in {256, 1024}, k in {48, 96}: (i) Gaussian-arm cv
 within [1, 3] x 2/k in all cells; (ii) sparse-arm cv within [0.7, 1.4] x
 sqrt(2 rho_4)/k with rho_4 computed numerically from its definition (no
 free constants); (iii) means remain ensemble-invariant within 5%.
+
+## 3k. Shared-index covariance closure (2026-09-19; explains the sparse
+## alpha=0.5 failure of the kurtosis law)
+
+The 3j law assumed pair-square covariances vanish. They do for Gaussian
+directions (conditional independence) and for sparse directions on
+HOMOGENEOUS spectra (alpha = 0: E[W_ij | u_i = e_r] = const in r). For
+sparse directions on inhomogeneous spectra:
+
+  E[W_ij | u_i = e_r] proportional to lambda_r^2,
+
+so Cov(W_ij, W_il) = Var_{r}(lambda_r^2)/(d^2 norms^4)-form is strictly
+positive, and with O(k^3) shared-index pairs the variance acquires a term
+
+  cv^2(A_2) ~ 2(rho_4 - 1)/k^2 + Psi/k,
+  Psi = c * d^2 * Var-coordinate(lambda^2) / (tr Sigma^2)^2,
+
+with c a convention constant to be derived carefully. Consistency checks:
+alpha = 0 -> Var(lambda^2) = 0 -> Psi = 0 (law passed there); alpha = 0.5 ->
+Psi large (measured cv^2 excess ~4.1 at d=256,k=48 vs the rho_4 prediction
+0.84; the rough Psi/k estimate overshoots ~14x - STRUCTURE confirmed,
+constants pending: the conditional-mean cross-terms need the exact
+normalization and a third-moment cancellation check).
+
+Net position: the localization control of the interference frontier is a
+PAIR of functionals - rho_4 (direction kurtosis) and Psi (localization x
+spectrum-inhomogeneity interaction) - with Gaussian directions collapsing
+both to the clean 2/k law. The completion obligation: exact constants and
+the high-probability frontier statement under (rho_4, Psi) bounds.
