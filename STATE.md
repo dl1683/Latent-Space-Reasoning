@@ -75,6 +75,15 @@ unproved T2-FLAT restatement. HP-B QSAE grid continues as confirmatory only.
    lower bound with quantifier order. This is the lawful spectrum->capacity
    bridge the program sought (no fitted slopes involved).
 
+**HP-E covariance-sufficiency result (2026-09-19, review-6 lead unit,
+pre-registered):** at identical covariance, Gaussian-direction and
+coordinate-sparse feature ensembles share the same expected aggregate
+interference (to a few %) but the sparse ensemble's concentration collapses
+(cv 21x, spread 14x at the crossing regime). The participation ratio is an
+EXPECTATION-LEVEL invariant only; the high-probability frontier requires a
+fourth-moment/localization functional of the direction distribution — the
+next invariant target (candidate: coordinate-kurtosis law for cv(A_2)).
+
 ---
 
 The scope is broad and fundamental: the native mathematics of spaces where
