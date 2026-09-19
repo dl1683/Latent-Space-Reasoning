@@ -54,6 +54,24 @@ phase-transition theorem T4 (critical d*(n, rho, s)); its earlier T2-LOG
 conjecture was withdrawn for a sign error (review-3) and replaced by the
 unproved T2-FLAT restatement. HP-B QSAE grid continues as confirmatory only.
 
+**HP-E results (2026-09-19, derived + numerically validated):**
+1. Quadratic aggregate law: E[A_2] = k(k-1)||M||_F^2/d^2 proved and validated
+   (P4 crossing at k = sqrt(d) confirmed; concentration confirmed). Scope:
+   quadratic/projection readouts; the degree>=3 extension was REFUTED in its
+   naive form (per-term law is ||T||^2/d^t, and no natural Theta(1) diagonal
+   channel exists at degree>=3) — open with explicit obstruction.
+2. E-struct theorem (expectation level, validated): for unit-energy features
+   with covariance Sigma, per-pair interference = tr(Sigma^2)/(tr Sigma)^2
+   exactly; the absolute mean-field capacity is k* = Theta(sqrt(PR(Sigma))),
+   PR = participation ratio. Power-law corollary: for spectrum exponent
+   alpha > 1/2, k* = Theta(d^{1-alpha}) — a power-law spectrum taxes
+   quadratic mean-field computation by d^{alpha-1/2} relative to isotropy.
+   Validated: per-pair exact to 0.4-2.4% at alpha <= 0.5; crossings bracketed
+   in 8/8 cells (two registered formal fails carry diagnosed benign causes,
+   logged). Pending rigor: concentration formalization and the matching
+   lower bound with quantifier order. This is the lawful spectrum->capacity
+   bridge the program sought (no fitted slopes involved).
+
 ---
 
 The scope is broad and fundamental: the native mathematics of spaces where
