@@ -52,7 +52,10 @@ requirement), a generalization boundary stated per review-4. HP-D
 (theory/HPD_ALLOCATION_THEOREM.md) targets the structured-retrieval
 phase-transition theorem T4 (critical d*(n, rho, s)); its earlier T2-LOG
 conjecture was withdrawn for a sign error (review-3) and replaced by the
-unproved T2-FLAT restatement. HP-B QSAE grid continues as confirmatory only.
+unproved T2-FLAT restatement. HP-B is CLOSED (2026-09-20): XE complete (rank-2
+collapse, 3/3 seeds), QSAE 12/12 runs converged with flat endpoints (P-E
+confirmed on every run); the heavy confirmatory arms were foregone with
+review-backed provenance (reviews 3-4 demoted them; ~7h/run economics).
 
 **HP-E results (2026-09-19, derived + numerically validated):**
 1. Quadratic aggregate law: E[A_2] = k(k-1)||M||_F^2/d^2 proved and validated
