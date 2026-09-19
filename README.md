@@ -18,7 +18,7 @@ LLM latent spaces (d=768–4096+), kernel feature maps, embedding spaces, and hi
 
 3. **Models agree on what kinds of perturbations matter, but not on which expressions are vulnerable.** Within-model perturbation-type ordering correlates at +0.84 within architecture families. Cross-model cell vulnerability correlations are near zero. The perturbation-level structure transfers; the cell-level structure is model-specific.
 
-4. **Expression adjacency drives heterogeneity.** The same semantic operation (e.g., wrapping in parentheses) produces a reliable cell-ranking when placed on its own line (O-O ≈ 0.66) but an unreliable one when adjacent to the expression (D-D ≈ 0.39). Token-level interaction between modification and expression tokens creates cell-specific, position-dependent noise.
+4. **Expression adjacency drives heterogeneity.** The same semantic operation (e.g., wrapping in parentheses) produces a reliable cell-ranking when placed on its own line (O-O ≈ 0.66) but an unreliable one when adjacent to the expression (D-D ≈ 0.39). Token-level interaction between modification and expression tokens is consistent with cell-specific, position-dependent noise (interaction vs syntactic novelty not isolated).
 
 5. **Meaning is undetectable in arithmetic.** Within the same operator family, meaning-preserving vs meaning-changing perturbations produce indistinguishable 11-bin output distributions (effect sizes +0.002/+0.008/−0.090 across 3 architectures, all consistent with zero). The answer-identity confound makes meaning inseparable from answer change in this domain.
 

@@ -31,9 +31,10 @@ Empirically matched by L-BFGS multi-init optima to 6 decimals at 6/6 configs.
 Mean-field (random-mixing) stationarity is REFUTED at the optimum
 (profile R² 0.00–0.08); the optimum anti-mixes.
 
-**Licensed consequence.** Power-law eigenspectra cannot arise from the
-quadratic objective's optimum; they require optimization dynamics (transients)
-or retrieval geometry (softmax margins).
+**Licensed consequence.** Power-law eigenspectra cannot be global optima of
+this diagonal quadratic objective; dynamics or assumptions absent from that
+objective (correlations, constraints, regularization, retrieval margins)
+are required.
 
 **XE result (3 seeds, licensed 2026-09-19):** unigram tied-softmax training
 converges toward the H1 rank-2 collapse — top-2 eigenvalue share ≥ 0.984 at
@@ -154,7 +155,8 @@ d=1024, Phi-1.5 d=2048):
    high intrinsic information (rare morphological fragments: strugg-, authent-)
    get top eigenspaces (70-78% energy in ev0). Context-dependent tokens (common
    words, proper names) get the tail. The model allocates frame energy by
-   information content, creating an optimal coding in high-d space.
+   top-eigenspace energy than selected common tokens (observation on selected
+   tokens); the governing variable and any optimality are unestablished.
 
 8. **Power-law spectra require directional structure, not just norm scaling
    (entry 95).** Monte Carlo test: random embedding directions with
@@ -322,10 +324,10 @@ Analytical derivations and proofs take priority over running code on specific mo
    fundamental representation property. Entry 92's "tail vulnerability" was
    overturned — see finding 6 above.
 
-5. **Computation capacity bounds:** For incoherent interference (random features),
-   k < √d features processed simultaneously. For coherent interference (worst case),
-   k < d^{1/4}. Real interference is between these extremes. Depth closes the gap:
-   each layer processes O(√d) features → n/√d layers for n total features.
+5. **Capacity bounds (corrected 2026-09-19 per adversarial review):** Particular
+   random-feature and error models may yield √d-type thresholds; no general
+   coherent-case or depth-capacity law is established. Any threshold claim
+   must fix ensemble, task, decoder, noise and error criterion first.
 
 **Connections to established mathematics (to formalize):**
 - Hoeffding decomposition (statistics): ANOVA-like variance decomposition on product spaces
