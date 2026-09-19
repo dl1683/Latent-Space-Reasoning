@@ -589,3 +589,17 @@ Standing result: strict local minimality certified + exact stationarity +
 multi-seed reproducibility. Global optimality is open and appears to resist
 duality for structural reasons; simplex-native formulations are the one
 untried route.
+
+## 12l. Certificate correction (2026-09-20; review-7 challenge verified)
+
+The 12j "certified" status is downgraded to EVIDENCE-GRADE: (a) GL(d)
+factorization orbits are exact zero modes (verified numerically at FD-noise
+level); (b) my colshift quotient basis was wrong — softmax column-shift
+invariance does NOT descend to a factor-space gauge (rank constraints block
+it; the corresponding directions carry genuine O(1) curvature); (c) the
+correct 4-dim GL(d)-quotient Lanczos gives lambda_min = 1.18e-05, positive
+but at the FD-Hessian noise boundary. Standing: positive curvature in every
+computation (full-space 2.4e-05; quotient 1.18e-05; both far below the 0.25
+spectral max — a genuine four-order near-flat valley), but a rigorous
+certificate requires an analytic or autodiff Hessian. The near-flat valley
+conclusion (explaining seed reproducibility) is robust.
