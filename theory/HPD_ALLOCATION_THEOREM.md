@@ -502,3 +502,34 @@ Obligations: (i) rigorous statement of the fixed-point map and its
 optimality (nonconvexity handled via the DV sup being exact per Z);
 (ii) solve the two fixed points in the block-kernel asymptotics;
 (iii) pre-registered numeric verification of the boundary.
+
+## 12g. Rigorous first-order characterization (obligation i, step 1; 2026-09-20)
+
+Reduction: the kernel has B distinct conditionals, so the problem is
+minimize Phi(R) = sum_b W_b KL(q_b || softmax(r_b)) over B x n matrices R
+of rank <= d (the full n x n logit matrix is the block-indicator lift of R,
+preserving rank).
+
+Gradient: grad_{r_b} KL(q_b||softmax(r_b)) = softmax(r_b) - q_b = rho_b - q_b
+(classical). First-order optimality on the rank-d variety: the gradient
+field must lie in the TANGENT space at R* (orthogonality to the variety's
+normal cone), i.e.
+
+  ** rowspace(R*) contains span{ W_b (rho*_b - q_b) : b } **
+
+— the weighted softmax-minus-target field must live inside the solution's
+own row space. This is a projected-gradient fixed point, exact and
+first-order-necessary (nonconvexity: not sufficient; global optimality
+needs the second-order/comparison argument — obligation continues).
+Structure reading:
+- Fisher law = the LINEARIZED fixed point: rho ~ q + q-residual (delta),
+  gradient ~ W_b q_b-compounded delta, condition reduces to the weighted
+  SVD projection of section 11 (validated regime).
+- Tilted regime = the NONLINEAR fixed point: rho* differs from q by the
+  exponential tilt on positive-residual entries; the condition forces the
+  row space to capture the tilt direction — the negative-skew/variance-
+  acceptance signatures of 12c follow.
+- The earlier alternating scheme failed because it reweighted the METRIC
+  instead of imposing this tangent condition; a valid solver = projected
+  gradient on Phi with rank-d projection (guaranteed stationarity, the
+  same optima the SGD found).
