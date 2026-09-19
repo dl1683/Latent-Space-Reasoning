@@ -444,3 +444,29 @@ ball — the observed 6.2x/4.7x ratios are envelope quantities, computable
 from c. Obligations: exact c from the pi-optimization; numeric verification
 of the predicted v_O and kappa_3* against the settled optima; then the
 rank-d-constrained envelope (the true T4 compression law).
+
+## 12e. CORRECTION: the envelope is degenerate; KL compression lives on the
+## exponential Orlicz scale (2026-09-20)
+
+Numerical pi-optimization of the two-point envelope shows the optimizer at
+the BOUNDARY (pi* -> 1): rare huge negative jumps (probability eps -> 0,
+magnitude ~ sqrt(v/eps) -> infinity) carry the variance while
+E_q e^delta -> 1, giving inf KL = 0 AT ANY FIXED VARIANCE. The v/2 - c v^1.5
+discount law of 12d is WRONG (withdrawn): the moment problem with only
+variance fixed is degenerate. The correct statement is stronger and cleaner:
+
+**KL compression is not governed by polynomial moments of the logit
+residual at all — it is governed by the exponential moment E_q[e^delta]
+(one-sided Orlicz scale).** Variance can be made arbitrarily large at
+negligible KL cost (negative tail), and arbitrarily small KL damage still
+requires controlling the POSITIVE exponential tail. This explains all three
+measured regimes at once: (a) the s=0.5 Fisher agreement (small-deviation
+regime where all metrics coincide); (b) the s=1 6x gap with 7x accepted
+variance (variance is the wrong statistic; the optimizer reshapes the
+exponential tail); (c) near-knee super-efficiency (positive-tail mass
+relocated to vanishing-q entries where e^delta is cheap).
+
+**T4 completion target (final form): an Eckart-Young-type theorem for rank-d
+approximation in the exponential-Orlicz metric log E_q e^delta — a
+functional-analytic object with no quadratic analogue, and the precise sense
+in which softmax compression is a genuinely different mathematical object.**
