@@ -188,7 +188,7 @@ def phase_main(lr):
                 lam_act = np.array(end["lam"])
                 rids = []
                 for _ in range(5):
-                    lam_mf = rand_frame(x, rngb)
+                    lam_mf = rand_frame(x, arm["d"], rngb)
                     m = min(len(lam_act), len(lam_mf))
                     la, lm = np.log(np.maximum(lam_act[:m], EPS)), np.log(np.maximum(lam_mf[:m], EPS))
                     rids.append(1 - ((la - lm) ** 2).sum() / ((la - la.mean()) ** 2).sum())
