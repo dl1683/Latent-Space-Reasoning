@@ -102,6 +102,41 @@ if L1+L2 are proved as stated, T2-LOG follows for ALL uniform-coherence
 variants, and the folk "Zipf superposition ⇒ power law" claim is false
 across the entire uniform family.
 
+## 2c. CORRECTION AND REDONE DERIVATION (2026-09-19; review-3 caught a sign
+## error in §2 — this section supersedes §2's monotonicity claim)
+
+The §2 marginal condition p_j ε_j t_j/(√x_j σ_j) = c with ε_j ≈ φ(t_j)/t_j
+gives, taking logs: t_j² = 2 log p_j + C(x, σ) — reliability margin grows
+with USAGE, not rarity (§2's "x_j ≍ (m + √(2μX·log(1/p_j)))²" had the
+monotonicity REVERSED; withdrawn). Consequences of the corrected condition:
+- Frequent tokens: t_j² → C — bounded margins; x_j ≈ (m + √C σ)².
+- Rare tokens: 2 log p_j + C < 0 — the tail linearization fails; the true
+  optimum floors them at minimal functional norms (sacrificed in the
+  usage-weighted sense; cf. minority collapse and the quadratic theorem's
+  tail-dropping).
+- Net: the optimal norm profile is FLAT UP TO LOG CORRECTIONS in this
+  specification — no power law in either monotonicity. This coheres with
+  all three toy results (sparse-exact optimum; XE normspread → 1.4; entry-95
+  random-norm flatness). **T2-LOG is restated as T2-FLAT:** under uniform
+  coherence and the reliability-KKT specification, budget-optimal allocation
+  is flat-with-log-corrections; no power-law allocation is optimal.
+
+## 2d. Repairs required before T2-FLAT is claimed (per review-3)
+
+1. Complete the specification: one CONCRETE structured transition kernel —
+   block model: vocabulary in B usage-ordered blocks; P(J|I) = within-block
+   association ρ + unigram remainder; alignment a_Ij derived from it.
+2. Derive the interference law FROM the decoder: misretrieval of (I, j) is
+   the event ∃k∉S_I: √x_k (v_k·v_I) ≥ √x_j (v_j·v_I) − m; the competitor
+   logit vector's joint subgaussian law (covariance from the coherence
+   profile) replaces the hand-written sum in §0.
+3. Prove allocation monotonicity (x* nondecreasing in p under the kernel).
+4. **T4 (phase transition — the dimension-dependent invariant target):** for
+   the block kernel, characterize the critical d*(n, ρ, s) below which
+   usage-weighted retrieval error stays bounded — candidate scalings
+   Θ(log n) (packing-like) vs Θ(√n) (coherent-like); a sharp threshold with
+   explicit constants is the theorem this program wants.
+
 ## 3. Planned falsification arm (design AFTER derivation, before running)
 
 A margin-task simulation: hard-margin retrieval loss on Zipf tokens with

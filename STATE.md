@@ -150,13 +150,11 @@ d=1024, Phi-1.5 d=2048):
    subsequent layers is one untested explanation for the natural-perturbation
    reversal, not an established mechanism.
 
-7. **Information-theoretic eigenspace priority (entry 94).** The embedding's
-   top eigenspace is NOT frequency-ordered but INFORMATION-ordered. Tokens with
-   high intrinsic information (rare morphological fragments: strugg-, authent-)
-   get top eigenspaces (70-78% energy in ev0). Context-dependent tokens (common
-   words, proper names) get the tail. The model allocates frame energy by
-   top-eigenspace energy than selected common tokens (observation on selected
-   tokens); the governing variable and any optimality are unestablished.
+7. **Information-theoretic eigenspace priority (entry 94; wording corrected
+   2026-09-19).** In the measured embedding, selected rare morphological
+   tokens (strugg-, authent-) had greater top-eigenspace energy than selected
+   common tokens (observation on selected tokens only). The governing
+   variable and any optimality are unestablished.
 
 8. **Power-law spectra require directional structure, not just norm scaling
    (entry 95).** Monte Carlo test: random embedding directions with
