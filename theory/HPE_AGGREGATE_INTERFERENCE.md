@@ -459,3 +459,44 @@ between sqrt(PR) and the burn-in the frontier is a broad distribution
 (measured: spread up to 17x at coordinate-sparse alpha = 0.5). This is the
 complete high-probability form of the aggregate-interference theorem family:
 mean frontier = participation ratio; sharpness = (Psi_1, Psi_2) burn-in.
+
+## 4. LIMIT-LAW CLASSIFICATION (new lead arc, adopted from review-7; opened
+## 2026-09-20)
+
+The target theorem. For unit-energy features with covariance Sigma and
+direction ensemble, classify the limiting law of the standardized aggregate
+A_2 as (d, k) grow:
+
+**Regime G (Gaussian concentration).** Delocalized directions (interference
+kurtosis rho_4 = O(1)): A_2 is a sum of k(k-1)/2 weakly dependent comparable
+pair-squares; standardized fluctuations are Theta(1/k) and asymptotically
+Gaussian (CLT for weakly dependent quadratic forms; measured: Gaussian-arm
+cv matches 2/k in 4/4 cells).
+
+**Regime CP (compound Poisson).** Localized directions (u supported on few
+coordinates): A_2 reduces to a WEIGHTED BIRTHDAY SUM — for coordinate-sparse
+directions, A_2 = sum_r w_r * C_r where C_r = #collisions on channel r
+~ Poisson(k^2 sigma_r^2-scale/d^2) and w_r = the channel weight. The law of
+A_2 is compound Poisson with intensity governed by the SPECTRUM; its
+concentration is controlled by the effective channel count
+
+  N_eff = (sum_r nu_r)^2 / sum_r nu_r^2,  nu_r = channel intensities,
+
+— a participation ratio of the COLLISION spectrum (distinct from, though
+related to, PR(Sigma)). A_2/E -> 1 with Gaussian rate iff N_eff -> infinity;
+for N_eff = O(1) (few dominant channels — steep spectra) fluctuations stay
+O(1) relative: NO sharp frontier at any k (measured: spread 17x at
+coordinate-sparse alpha = 0.5; cv ~ O(1)).
+
+**Unification.** The mean frontier (k* = sqrt(PR(Sigma))) and the LIMIT-LAW
+class both read participation ratios — but of different objects (feature
+covariance vs collision-intensity spectrum). A complete theorem states both,
+with the localization functionals (rho_4, Psi_1, Psi_2) controlling the
+G-to-CP crossover.
+
+**Derivation route (obligations).** (i) Poissonize the collision counts
+(classical occupancy), derive the characteristic function of the weighted
+sum; (ii) Lyapunov condition in terms of N_eff gives Regime G'
+(quasi-Gaussian within CP when N_eff -> inf); (iii) the G-vs-CP boundary in
+terms of (rho_4, Psi) functionals; (iv) pre-registered validation on fresh
+(d, k, alpha, ensemble) cells against the predicted law classes.
