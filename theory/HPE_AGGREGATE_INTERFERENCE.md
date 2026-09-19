@@ -413,3 +413,27 @@ PAIR of functionals - rho_4 (direction kurtosis) and Psi (localization x
 spectrum-inhomogeneity interaction) - with Gaussian directions collapsing
 both to the clean 2/k law. The completion obligation: exact constants and
 the high-probability frontier statement under (rho_4, Psi) bounds.
+
+## 3l. CLOSED FORM for the sparse ensemble (2026-09-19; corrects 3k's crude
+## Psi estimate)
+
+For coordinate-sparse directions and diagonal Sigma, with collision
+indicators: W_ij = c^4 sigma_{r_i}^2 delta_{r_i r_j}. Exact moments:
+E[W] = c^4 tr(Sigma^2)/d^2; E[W^2] = c^8 tr(Sigma^4)/d^2;
+E[W_ij W_il] = c^8 tr(Sigma^4)/d^3. With A_2 = 2 sum_{i<j} W_ij and
+pair-of-pairs sharing one index counted as C(k,3)*3:
+
+  cv^2(A_2) ~ 2(Psi_1 - 1)/k^2 + 2(Psi_2 - 1)/k,
+  Psi_1 = d^2 tr(Sigma^4)/(tr Sigma^2)^2,   Psi_2 = d tr(Sigma^4)/(tr Sigma^2)^2.
+
+Checks: alpha=0 -> Psi_1 = d (cv ~ sqrt(2d)/k, EXACT match to the measured
+0.494 at d=512,k=64 and to the rho_4 law) and Psi_2 = 1 (shared-index term
+vanishes exactly - the alpha=0 pass). alpha=0.5, d=256, k=48: predicted
+cv = 1.70 vs measured 2.21 (undershoot 1.7x; remaining source: higher
+collision-moment/k^4 triple terms - quantified residual, no free constants).
+
+Position: the localization control of the aggregate-interference frontier is
+now a CLOSED TWO-TERM law in two computable spectrum x localization
+functionals (Psi_1, Psi_2), exact on homogeneous spectra, 1.7x residual on
+the worst inhomogeneous cell. Gaussian directions: both terms collapse to
+O(1/k^2) (the 3h theorem). This completes 3j/3k to the stated accuracy.
