@@ -587,3 +587,24 @@ PASS 12/12 with zero free parameters. The refuted Poissonized model of 4d
 is superseded; the law-class question (Gaussian vs compound-Poisson
 asymptotics) now reads from the exact formula's asymptotics in (k, d,
 spectrum moments W1, W2).
+
+## 4f. Law-class asymptotics from the exact formula (2026-09-20)
+
+At k = lambda d, p = 1/d, expanding the 4e formula (falling-factorial
+asymptotics): V -> 2 lambda^2 + O(1/d)-mix, C -> -4 lambda^3/d, giving
+
+  cv^2 ~ 2 W2/(lambda^2 W1^2) - (4/(lambda d)) (1 - W2/W1^2) + higher order
+
+- Leading positive term: 2/(lambda^2 PR_W) with PR_W = W1^2/W2 the WEIGHT
+  participation ratio. Gaussian concentration requires lambda^2 PR_W -> inf
+  (plus lambda d -> inf for the correction).
+- For power-law weights: alpha < 1/2 -> PR_W = Theta(d): cv^2 ~ O(1/(lam^2
+  d)); alpha in (1/2, 1) -> PR_W = Theta(d^{2-2alpha}): cv^2 ~
+  2/(lambda^2 d^{2-2alpha}).
+- CAVEAT (flagged): at moderate lambda the two leading terms are the same
+  order (ratio 1/(2 lambda)); positivity requires the higher-order terms
+  that the leading expansion drops. The rigorous statement must carry the
+  expansion to the positivity-restoring order (or use the exact 4e formula
+  directly, which is closed-form anyway). Law-class summary at formula
+  level: Gaussian iff lambda^2 PR_W -> infinity; persistent O(1)
+  fluctuations iff lambda^2 PR_W = O(1); boundary exact via 4e.
