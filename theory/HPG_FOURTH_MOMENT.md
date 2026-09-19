@@ -164,3 +164,17 @@ by norm fluctuations (Gaussian norms fluctuate; sphere-conditioned do not).
 This is the theorem's own thesis exhibited inside its anchors: second
 moments do not determine concentration; the fourth-moment operator does.
 The general theorem covers both as different C_i operators.
+
+## 10. G5 first finding: ensemble-convention audit required (2026-09-23)
+
+Predicting the EXISTING cov_sufficiency Gaussian-arm data with the
+certified Gaussian assembly overpredicts cv by 1.5-4x (ratios 0.23-0.67),
+and the measured values track the UNIT-NORM law (cv ~ 2/k) rather than
+the Gaussian law (cv ~ 1/sqrt(k)). Diagnosis: this is the section-9
+norm-fluctuation exhibit appearing in validation — the assembly's
+predictions are ensemble-sharp, and comparing against stored data requires
+auditing which normalization each stored experiment actually used (the
+runner source is committed; audit pending). No theorem change: the two
+assemblies are both certified for their own ensembles. The audit (and, if
+confirmed, re-running one Gaussian cell with explicit unnormalized
+sampling) is G5's next step.
