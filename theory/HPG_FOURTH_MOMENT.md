@@ -225,3 +225,18 @@ forces non-Gaussian rates for the weighted pair statistic (or find a
 counterexample — R is only a probe, not the full operator); (iii) place
 real-data feature ensembles (e.g., hidden-state direction distributions)
 by their R values — a measurable, dimension-dependent classifier.
+
+## 12b. G4 obligation (i) first evidence: mixture ensemble (2026-09-23)
+
+Mixture f = sqrt(1-eta) Gaussian + sqrt(eta) coordinate-sparse (d=512,
+k=64, 800 reps): measured cv = 0.0355 / 0.0354 / 0.127 / 0.410 at
+eta = 0 / 0.1 / 0.5 / 0.9 vs Wick prediction 0.0316. INTERPRETATION
+(registered after seeing these numbers, so diagnostic not predictive):
+the Gaussian class tolerates small operator perturbations (eta=0.1 within
+noise of eta=0), then departs sharply — a crossover between eta=0.1 and
+0.5, consistent with (but not proving) the Lipschitz-transfer picture:
+criterion holds while the operator perturbation is small, breaks as the
+sparse component's O(d) contraction grows. The eta-crossover location and
+its scaling with d are the next pre-registered cells (prediction to
+freeze BEFORE running: crossover eta* shrinks as d grows, since the
+sparse operator's R ~ d enters at fixed eta).
