@@ -653,3 +653,24 @@ refinement curve; (c) the emergent knee: superposition cost becomes
 nontrivial exactly when d crosses the cumulative level ranks — growing
 with L, not construction-pinned to a single B. This is the derivation
 target: closed-form excess_CE*(d) with an emergent, tunable knee.
+
+## 13c. Bundle-scale law (2026-09-21; matched to the measured bundles)
+
+Level-ell directions are the tree Haar vectors (centered block indicators)
+at level ell. Their Fisher-weighted scale:
+
+  sigma_ell ~ sqrt(m_ell) * Delta_ell,
+
+m_ell = the usage mass captured by level-ell splits, Delta_ell = the
+level-ell logit gap (mixture log-ratio the level contributes). With
+geometric pi decay, Delta_ell decays geometrically -> bundle scales
+geometric in ell, MATCHING the measured bundles (50 -> 26 -> ~9 -> ~3 ->
+~1.4 avg for pi_decay = 1/2; ratio ~ 1/2 per level after the mass factor).
+With power-law pi (pi_ell ~ ell^{-t}), the envelope is a power law in the
+cumulative rank — the family spans power-law spectra with TUNABLE exponent
+through t, connecting to the real-model exponent range. The excess curve:
+excess_CE*(d) for d between cumulative level ranks R_ell = sum_{l<=ell}
+(b-1)b^{l-1} is dominated by the DROPPED levels' total Fisher tail —
+stepwise with refinements inside bundles. Closed-form status: envelope law
+derived (this section); exact within-bundle refinement pending; the CGF
+(large-deviation) version beyond the Fisher regime pending.
