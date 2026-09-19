@@ -608,3 +608,19 @@ asymptotics): V -> 2 lambda^2 + O(1/d)-mix, C -> -4 lambda^3/d, giving
   directly, which is closed-form anyway). Law-class summary at formula
   level: Gaussian iff lambda^2 PR_W -> infinity; persistent O(1)
   fluctuations iff lambda^2 PR_W = O(1); boundary exact via 4e.
+
+## 4g. CLT obligation resolution path (2026-09-20; literature anchored)
+
+The CLT component is CLASSICAL and should be cited, not re-proven: Holst
+(1972) gives asymptotic normality for sum-functions of occupancy numbers
+(martingale/conditional CLT); Karlin (1967) covers the birthday problem
+with UNEQUAL cell probabilities (exactly the weighted setting); Poisson
+limits emerge near the birthday threshold k^2 sum p^2 ~ 1; Stein-method
+bounds exist for error rates. The arc's theorem therefore ASSEMBLES:
+(i) classical occupancy CLT machinery (cite Holst/Karlin; verify
+conditions), (ii) the exact spectrum-driven second-moment formula of 4e
+(derived here, validated 12/12), (iii) the classification quantity
+lambda^2 PR_W. The program's novel content is (ii)+(iii) — the connection
+of the law class to the FEATURE SPECTRUM through the weight distribution —
+not the CLT itself. Obligation downgraded from prove to verify-conditions-
+and-assemble.
