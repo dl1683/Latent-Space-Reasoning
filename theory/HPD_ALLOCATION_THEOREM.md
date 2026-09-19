@@ -733,3 +733,17 @@ the knee (ratios to 0.02). Net: the two-regime structure generalizes
 across kernel families; the stepwise and CGF-embellishment predictions
 fail at pi-decay 1/2. Steeper-pi cells are the natural probe for whether
 the CGF regime is reachable in this family.
+
+## 13g. Steeper-pi probe: DISJOINTNESS gates the CGF regime (2026-09-21)
+
+Pre-registered probe (pi_decay 0.25/0.125, rho 0.3/0.7, d 2/5/11): the
+hierarchical family does NOT reach the large-deviation regime at any tested
+steepness (max measured/Fisher ratio 1.61 vs the 1.8 reachability
+threshold; all other cells 0.14-1.43). Mechanism: every token pair shares
+the root, so mixture probabilities never develop the extreme contrasts of
+disjoint blocks — logit gaps stay bounded as pi steepens. CHARACTERIZATION:
+the compression-law regime is governed by the kernel's OVERLAP GEOMETRY —
+nested (hierarchical) kernels live in the Fisher regime at all parameters;
+block-disjoint kernels reach the CGF regime. The two-family picture is
+complete: Fisher two-regime law universal; CGF regime = disjointness-gated.
+Family closed.
