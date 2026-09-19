@@ -697,3 +697,25 @@ whole program (planted-block tails; Fisher two-regime law) in one object
 with an EMERGENT knee, and its (pi decay, s) plane spans the real-model
 exponent range. Remaining: CGF-regime version, the phase boundary
 statement, and the pre-registered simulation (in that order).
+
+## 13e. CGF-regime crossover for the hierarchical family (2026-09-21)
+
+The recursive-tail curve (13d) is the second-order envelope. Its validity
+regime, per the 12-series findings: the Fisher law holds when the residual
+logit deviations are small; in the hierarchical family the dropped-level
+residuals carry deviations of size ~ Delta_ell (the level's logit gap).
+Crossover condition: the second-order curve is trustworthy for the levels
+where Delta_ell is small (deep, weakly-weighted levels); it UNDERESTIMATES
+(measured 4.7-6.2x on the planted-block analogue) for strongly-gapped
+dropped levels (coarse levels with large rho pi_ell). The full prediction:
+
+  excess_CE*(d) = recursive-tail (13d) for small-gap drops
+                + CGF-corrected (tilted) excess for large-gap drops,
+
+with the tilted solutions exhibiting the measured signatures (variance
+acceptance, negative skew). The phase boundary in (pi decay, rho, s):
+where the large-gap-dropped regime begins to dominate the excess — i.e.,
+where the last strongly-gapped level falls below the truncation rank.
+This completes the derivation program; the pre-registered simulation
+(targets: stepwise curve + within-bundle tails + crossover location)
+awaits only the review's verdict on opening the cycle.
