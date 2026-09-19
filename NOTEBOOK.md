@@ -1,5 +1,31 @@
 # NOTEBOOK
 
+## Entry 123: The Orlicz arc — softmax compression is not low-rank approximation (2026-09-20)
+
+The chain, verified link by link: exact CGF identity for KL (logit residual
+cumulants) -> settled-optimum decomposition showing the argmin itself
+changes (7x variance accepted for negative-skew structure; 12 seeds within
+0.0005) -> envelope degeneracy (variance nearly irrelevant; exponential
+moment governs) -> DV-duality core (self-consistent tilted SVD; Fisher law
+= degenerate-tilt fixed point) -> corrected and NUMERICALLY VERIFIED
+first-order condition (gradient entirely in the complement block, 1.0000 —
+E-Y orthogonality survives the Orlicz metric) -> dual-attempt withdrawal
+with the structural lesson (no norm geometry => no E-Y dual; simplex-native
+theory required).
+
+Program meaning: the question "what does rank-d softmax compression cost"
+has a genuinely nonlinear answer whose leading quadratic term (Fisher/E-Y)
+is provably wrong by 6x in the large-deviation regime — and the correct
+object (the CGF of the residual) has no quadratic analogue. This is the
+first structure in the program with no R^n counterpart in the classical
+low-rank toolkit. Two scheme failures logged honestly (metric-reweighting;
+unconstrained dual) — both informative about the geometry.
+
+Ledger: hpd_cgf_identity, hpd_cgf_decomposition, hpd_variance_kl_envelope
+(withdrawn), hpd_orlicz_correction, hpd_dv_core, hpd_tilted_svd_probe_invalid,
+hpd_first_order_characterization, hpd_first_order_verified,
+hpd_dual_attempt_failed. Theory: HPD sections 12-12i.
+
 ## Entry 122: HP-D becomes quantitative — representability at exactly B, Fisher-metric compression law (2026-09-19)
 
 **Representability settled (review-5 repair executed).** The planted-block
