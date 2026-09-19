@@ -537,3 +537,21 @@ participation ratios (second-moment PR dense; third-moment PR sparse)
 rule different corners — the law class is NOT a single functional of the
 spectrum. Pre-registered validation grid: fresh cells crossing both
 corners (k/d in {0.05, 5} x alpha in {0, 0.5, 0.9}) with predicted classes.
+
+## 4c. Validation results and refined conditions (2026-09-20)
+
+Registered corner thresholds: 2/4 passed; two refuted INFORMATIVELY.
+- Dense alpha=0.9 (PR=45): measured cv=0.146 vs registered >0.3 — Gaussian
+  concentration arrives GRADUALLY in the governing PR; PR=45 with lambda=5
+  already suffices. The dense-broad class requires PR genuinely O(1)-ish,
+  a quantitative boundary to be pinned, not a corner assumption.
+- Sparse alpha=0 (k=25, mean collisions ~0.6): measured cv=1.31 — the
+  compound-Poisson-to-Gaussian transition needs TOTAL INTENSITY -> infinity
+  (classical), an omitted condition; third-moment PR alone does not certify
+  concentration.
+Refined phase statement: the law class is governed by (lambda = k/d,
+channel-PR, third-moment PR, total collision intensity) with gradual
+boundaries; the validation data is cleanly ordered by the refined theory
+(dense cv monotone in PR: 0.012/0.041/0.146; sparse cv ~ 1/sqrt(mean):
+1.31/1.43/5.19). Next: pin the dense boundary quantitatively (PR threshold
+vs lambda) with a pre-registered sweep.
