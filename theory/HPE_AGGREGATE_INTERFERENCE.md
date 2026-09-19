@@ -235,3 +235,41 @@ Pre-registered verdicts (P1-P4 frozen in the runner header before the run):
 Net: the quadratic anchor is proved AND empirically validated (P1*, P2, P4);
 the general-t extension was refuted in its registered form and rescoped —
 the ladder is quadratic-specific until a degree>=3 signal model exists.
+
+## 3g. E-STRUCT LEMMA (derived 2026-09-19): anisotropic capacity = participation ratio
+
+**Setup.** Features f_i = sqrt(d/tr(Sigma)) * Sigma^{1/2} u_i with u_i
+uniform unit vectors (so E||f_i||^2 = 1: unit-energy features); quadratic
+energy readout. Per-pair interference:
+
+  E[(f_i . f_j)^2] = (d/tr Sigma)^2 * tr(Sigma^2)/d^2 = tr(Sigma^2)/(tr Sigma)^2 = 1/PR(Sigma),
+
+where PR = (tr Sigma)^2/tr(Sigma^2) is the covariance participation ratio.
+Checks: isotropic Sigma = I -> 1/d (PR = d, k* = sqrt(d), recovers 3b);
+rank-1 Sigma -> 1 (PR = 1, k* = 1: parallel features maximally interfere).
+
+**E-struct Theorem (quadratic class).** The absolute mean-field capacity of
+unit-energy anisotropic features is
+
+  k* = Theta(sqrt(PR(Sigma))),
+
+dimension entering ONLY through the spectral participation ratio.
+
+**Corollary (power-law spectra — the program's bridge).** For
+Sigma = diag(l^{-alpha})_{l<=d}:
+- alpha < 1/2: PR = Theta(d) -> k* = Theta(sqrt d) (isotropic-like);
+- alpha = 1/2: PR = Theta(d/log d);
+- alpha > 1/2: PR = Theta(d^{2-2alpha}) -> **k* = Theta(d^{1-alpha})**.
+
+Trained geometries in the record (alpha ~ 0.5-0.9) therefore sit at capacity
+frontiers d^{0.1}..d^{0.5}: a power-law spectrum taxes quadratic mean-field
+computation by d^{alpha-1/2} relative to isotropy. This is the lawful
+connection between spectral exponent and computation capacity the program
+has been hunting — spectrum -> capacity, not spectrum -> fitted slopes.
+
+**Pre-registered numeric check (frozen before running):** simulate unit-energy
+features with power-law Sigma at alpha in {0, 0.5, 0.75, 0.9}, d in
+{512, 2048}; predicted per-pair mean f_i.f_j squared = 1/PR(alpha, d)
+(exact formula, no free constants); predicted A_2 crossing of 1 within a
+factor sqrt(2) of sqrt(PR). PASS if per-pair means within 10% and crossings
+within the factor-2 band across 8/8 (alpha, d) cells.
