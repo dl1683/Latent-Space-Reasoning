@@ -186,6 +186,41 @@ insensitive to marginal reweighting that preserves correlations. HP-C test
 (later, pre-registered separately): matched-corpus M-spectra vs trained
 embedding spectra.
 
+## 8. HP-C1 pre-registration draft (H2 test: spectral inheritance from data)
+
+Status: DRAFT — frozen before any corpus M-spectrum is computed; final freeze
+waits only on the running prior-art report (to cite/avoid duplication), not
+on any data.
+
+**Question.** Do real-model embedding power-law exponents match the top-d
+spectrum of the log-conditional (co-occurrence) matrix of matched training-
+like data? (H2: inheritance from data structure; the toy results show both
+quadratic and unigram-softmax equilibria lack genuine power laws.)
+
+**Frozen choices.** Corpus: WikiText-103 train (~100M tokens; fallback: a
+The-Pile sample if download fails; fallback 2: local corpus with the mismatch
+logged). Per model (SmolLM2-135M, Qwen3-0.6B, Phi-1.5 — the three with
+existing embedding-spectrum records): tokenize with the model's own tokenizer;
+count symmetric-window (±2) co-occurrence C_ij; M_ij = log((C_ij + α)/(r_i +
+α·n)) with α = 0.1 (smoothing sensitivity checked at α ∈ {0.01, 1}); top-d
+singular values via randomized SVD (rank d = model width); exponent via the
+SAME battery (top-90% window, curved alternative, ΔR²).
+
+**Frozen verdicts.** Primary: |α_M − α_emb| ≤ 0.15 per model (same estimator
+on both objects) ⇒ inheritance supported (scope: this corpus-model pairing).
+All three |dev| > 0.30 with embedding exponents systematically shallower ⇒
+inheritance refuted at this pairing; optimization-bottleneck and margin-
+allocation stories survive. Mixed ⇒ inconclusive; report shape distances
+(log-space W1 over top-d) diagnostic only. Embedding spectra re-measured with
+the battery from cached weights; prior single-number readings retained as
+context.
+
+**Declared confounds (unavoidable, logged):** corpus ≠ actual training mix;
+tokenizer-vocab truncation; smoothing and window choices; d-window matching.
+
+**Cost:** CPU only; tokenization minutes, sparse counting minutes, randomized
+SVD minutes per model. One canonical runner `experiments/run_hpc1_inheritance.py`.
+
 ## 6. What each outcome licenses
 
 - A1 refutes mean field at the optimum: directional correlation is created by
