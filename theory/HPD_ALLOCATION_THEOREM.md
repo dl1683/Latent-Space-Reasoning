@@ -470,3 +470,35 @@ relocated to vanishing-q entries where e^delta is cheap).
 approximation in the exponential-Orlicz metric log E_q e^delta — a
 functional-analytic object with no quadratic analogue, and the precise sense
 in which softmax compression is a genuinely different mathematical object.**
+
+## 12f. The DV-duality core of Orlicz compression (2026-09-20)
+
+Gibbs/Donsker-Varadhan: log E_q[e^delta] = sup_mu [E_mu delta - KL(mu||q)].
+Hence per row (and summed with context weights w_i):
+
+  excess CE(Z) = sup_{mu_i} SUM_i w_i [ E_{mu_i} delta_i - E_{q_i} delta_i
+                                      - KL(mu_i || q_i) ],
+  delta_i = z_i - log q_i, Z = W^T H rank-d.
+
+First-order optimality over the factors (H, W): the gradient of the
+objective at the dual optimum involves (mu*_i - q_i) — i.e., the Fisher
+metric of the quadratic law is REWEIGHTED by the tilted measure mu*, and
+the optimal Z is an SVD-like solution in the mu*-weighted metric.
+Self-consistency: mu* itself depends on delta hence on Z.
+
+**T4 final formulation.** The rank-d Orlicz-compression optimum is a
+self-consistent tilted SVD: find (Z, {mu_i}) with Z the top-d
+mu-weighted-Fisher factorization of the centered log-kernel and mu_i the
+DV-tilt of the residual. Conjectured phase structure (to prove):
+- near-representability fixed point: mu* = q (tilt degenerate) -> the
+  Fisher law of section 11 (validated there);
+- far-below-knee at steep s: a second fixed point with mu* concentrated on
+  the bump heads (positive-residual entries) -> the 6x/4.7x regime, with
+  the variance acceptance and negative skew as its measurable signatures
+  (sections 12c, 12e);
+- the T4 phase boundary = where the second fixed point overtakes the first,
+  as a function of (d/B, rho, s).
+Obligations: (i) rigorous statement of the fixed-point map and its
+optimality (nonconvexity handled via the DV sup being exact per Z);
+(ii) solve the two fixed points in the block-kernel asymptotics;
+(iii) pre-registered numeric verification of the boundary.
