@@ -355,8 +355,12 @@ Validation against the locator (rho = 0.3, B = 8):
   unresolved which; the B=32 locator rows and a stronger optimizer will
   separate them).
 
-This is the quantitative form of T4's compression phase: excess(d) governed
-by the Fisher-metric spectrum of the task kernel, with the Zipf exponent
-entering through BOTH the context masses W_b and the conditional column
-weights. The steep-s regime is where the genuinely nonlinear theory must be
-built (open).
+Validation matrix extended to rho = 0.7 (locator rows): fisher/measured
+ratios 1.15 (s=.5,d=2), 0.44 (s=.5,d=4 - optimizer BEATS quadratic theory
+near the knee: nonlinear CE admits smarter-than-second-order solutions),
+3.06 (s=1,d=2 - underestimate far below knee, large-deviation regime), 1.05
+(s=1,d=4). Across all 8 measured points: 4 within factor 1.2; deviations
+regime-structured (underestimate far-below-knee at steep s; possible
+overestimate near knee). The Fisher law is the leading quantitative object;
+the nonlinear corrections are bounded and regime-located. rho-sensitivity
+falsifier (c) survived: excess(0.7)/excess(0.3) = 2.8 at (s=.5,d=2).
