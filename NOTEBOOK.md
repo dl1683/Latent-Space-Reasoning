@@ -1,5 +1,37 @@
 # NOTEBOOK
 
+## Entry 122: HP-D becomes quantitative — representability at exactly B, Fisher-metric compression law (2026-09-19)
+
+**Representability settled (review-5 repair executed).** The planted-block
+kernel has exactly B distinct conditionals, so its centered log-kernel has
+rank exactly B (1e-15, 4/4 configs; my B+2 mixture story was answering an
+irrelevant question — retired). Untied softmax: exact zero-excess CE
+representation iff d >= B. Row geometry: shared mean u + disjoint orthogonal
+bumps v_b; block usage enters through the singular spectrum sqrt(n W_b)||v_b||.
+
+**Fisher-metric compression law (the quantitative core).** The inf-norm
+lemma overestimates 10-30x because KL hides logit residual where P_ij is
+small; the tight second-order object weights entries by sqrt(W_b P_bj)
+(context mass x conditional mass = softmax Fisher metric):
+excess_CE(d) ~= half the tail Fisher energy beyond rank d (Eckart-Young).
+Validation (B=8, 8 points): 4 within factor 1.2; deviations regime-structured
+— underestimation far below the knee at steep s (large-deviation KL; 20-seed
+diagnosis running), one optimizer-beats-quadratic near the knee (s=.5,d=4,
+rho=.7 — nonlinear CE can be smarter than second order). Knee at d=B in
+16/16 cells; rho-sensitivity falsifier survived (excess ratio 2.8 for
+rho .3->.7). B=32 Fisher predictions committed BEFORE their rows exist
+(fisher_preds_B32.json) — a clean forward test of the law.
+
+**Program state.** HP-E: isotropic quadratic theorem complete (exact
+mean+variance, two phases); E-struct participation-ratio capacity
+k* = Theta(sqrt(PR)), power-law corollary d^{1-alpha} — validated. HP-D:
+chain now quantitative end-to-end in its validated regime. Open units:
+s=1 nonlinear theory, B=32 scoring, fixed-quantifier E3, E2a intermediate
+band, HP-C1 measurement (paused), T4 phase-boundary claim (awaiting locator).
+
+Ledger: hpd_representability_settled, hpd_fisher_compression_law,
+hpd_fisher_rho07; theory/HPD_ALLOCATION_THEOREM.md sections 8-11.
+
 ## Entry 121: Review-2 pivot — allocation theorem opened; four overclaims corrected; prior-art gap confirmed (2026-09-19)
 
 **Review-2 (scheduled Droid, goal-aligned).** Verdict NEEDS-CORRECTION. Four
