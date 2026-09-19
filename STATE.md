@@ -94,6 +94,25 @@ Net program statement: the spectrum (participation ratio) sets the mean
 interference frontier; the direction distribution's localization (Ψ₁, Ψ₂)
 sets its sharpness — covariance alone provably does not suffice.
 
+**HP-D Orlicz-compression arc (2026-09-19/20, verified chain):** for softmax
+rank-d compression, KL(q||softmax(z)) = log E_q[e^delta] - E_q[delta] — the
+cumulant generating function of the logit residual (EXACT identity).
+Consequences, all measured at settled optima: (1) the Fisher law is the
+kappa_2 regime and holds where deviations are small (validated at s=0.5
+far-below-knee, points within 1.2x); (2) at steep s the optimum is
+qualitatively different — accepts ~7x the variance-optimal residual to buy
+negative-skew cumulant structure (argmin changes, not just the value;
+12-seed settled optima, gap 6.2x/4.7x); (3) the variance-KL envelope is
+DEGENERATE (inf KL = 0 at any fixed variance via rare huge negative jumps)
+— polynomial moments do not govern KL compression; the one-sided
+exponential moment does (Orlicz scale); (4) the settled optimum satisfies
+the rank-d first-order condition EXACTLY (gradient field entirely in the
+complement block — Eckart-Young-type orthogonality verified at 1.0000);
+(5) E-Y-type duals are intrinsically unavailable without norm constraints
+(two logged scheme failures); optimality theory must be simplex-native or
+regularized. T4 completion target stands as the tilted-SVD/two-fixed-point
+program with verified first-order core.
+
 ---
 
 The scope is broad and fundamental: the native mathematics of spaces where
