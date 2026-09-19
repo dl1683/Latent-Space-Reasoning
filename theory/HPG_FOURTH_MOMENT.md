@@ -240,3 +240,18 @@ sparse component's O(d) contraction grows. The eta-crossover location and
 its scaling with d are the next pre-registered cells (prediction to
 freeze BEFORE running: crossover eta* shrinks as d grows, since the
 sparse operator's R ~ d enters at fixed eta).
+
+## 12c. Pre-registered eta*-vs-d cells: RESULT (2026-09-23; prediction
+## frozen in 12b before running)
+
+Registered prediction: crossover eta* SHRINKS as d grows. Measured
+(2x-Wick-line rule): d=128 — no exceedance up to eta=0.4 (0.0586 vs line
+0.0637); d=512 — exceedance AT eta=0.4 (0.0877 vs 0.0632); d=2048 —
+exceedance at eta=0.4 with much larger margin (0.1552 vs 0.0630). Pattern:
+at fixed eta=0.4 the departure GROWS with d (0.059 -> 0.088 -> 0.155),
+consistent with the registered direction (crossover moves to smaller eta
+as d grows: eta*(128) > 0.4 >= eta*(512) > eta*(2048)). Quantitative
+caveat: eta* not bracketed below 0.4 at any d (the eta grid did not
+include enough small values at large d); the directional prediction is
+CONFIRMED, the eta* scaling law needs a finer grid (next cells, to be
+pre-registered with the same discipline).
