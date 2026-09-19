@@ -217,6 +217,11 @@ context.
 
 **Declared confounds (unavoidable, logged):** corpus ≠ actual training mix;
 tokenizer-vocab truncation; smoothing and window choices; d-window matching.
+**Vocabulary cap (declared before any M-spectrum is computed):** co-occurrence
+vocabulary restricted to each tokenizer's K = 8192 most frequent tokens
+(covering the bulk of mass; tail mass logged) — full 152K² counting exceeds
+laptop memory. The comparison object is the top-d (d ≤ 2048) spectrum, which
+frequent-token structure dominates; the cap is part of the frozen design.
 
 **Cost:** CPU only; tokenization minutes, sparse counting minutes, randomized
 SVD minutes per model. One canonical runner `experiments/run_hpc1_inheritance.py`.
