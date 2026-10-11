@@ -179,6 +179,13 @@ def main(cfg, out):
         X = torch.cat([m.encode([B.sample_example(rng, 4, 0, "dev") for _ in range(32)], r) for _ in range(16)])
     var = X.float().var(0).sum().item()
     out.meta("p2_norm.json", {"dev_target_total_variance": var})
+    ev0 = dict(cfg, eval_tokens=cfg.get("eval_tokens", 8000))
+    m.eval()
+    for k in cfg["ks"]:  # direct re-encoding competence of the frozen encoder/reader (before updater training)
+        key = f"competence|test|k{k}"
+        if key not in out.done:
+            out.write({"key": key, "k": k, **B.acc_cell(m, ev0, "test", r, 0, k, cfg["eval_n"], 3)})
+    m.train()
     opt = torch.optim.AdamW(m.updater_params(), lr=cfg["lr"], weight_decay=0.0)
     total = cfg["presentations"] // cfg["batch"]
     t = common.timer()
@@ -211,7 +218,11 @@ def main(cfg, out):
                                **B.acc_cell(m, ev, split, r, u, k, cfg["eval_n"], 5)})
             key = f"p2causal|{split}|k{k}"
             if k >= 4 and key not in out.done:
-                out.write({"key": key, "arm": cfg["p2_arm"], "k": k, **edge_causal(m, r, k, split, cfg["causal_n"], 9)})
+                if B.QUERY["mode"] == "reach":  # predeclared truth-changing toggles with matched shams
+                    res = B.causal_tests(m, ev, split, r, k, cfg["causal_n"], 9)
+                else:
+                    res = edge_causal(m, r, k, split, cfg["causal_n"], 9)
+                out.write({"key": key, "arm": cfg["p2_arm"], "k": k, **res})
     # identity-plus-dev-mean-displacement control (evaluation only; built from dev data)
     if cfg.get("disp_control"):
         disp, cnt = {}, {}

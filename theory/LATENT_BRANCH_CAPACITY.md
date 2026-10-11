@@ -199,7 +199,7 @@ normalized MSE to the frozen encoder's updated-state target." Failure blocks thi
 [C] "These studies should continue as the highest-leverage pivot; explicit packing tests the ordinary-coding
 explanation, and neither study alone establishes native latent mathematics."
 
-## Amendment 3 (2026-10-11 ~23:55Z; contingent on the P1 stop rule; before any P1' or P2 data)
+## Amendment 3 (2026-10-11 ~23:30Z; contingent on the P1 stop rule; before any P1' or P2 data)
 
 Council: docs/council_2026_10_11/{brief_a3,codex_a3,droid_a3,brief_a3b,a3_signatures}.md. Both advisors declined
 the operator draft, each supplied replacement sentences; the conjunctive merge (all sentences of both) was

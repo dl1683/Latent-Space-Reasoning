@@ -1,6 +1,6 @@
 # Experiments Log
 
-## LOCKED: admission gate FAILS (2026-10-11 23:35Z)
+## LOCKED: admission gate FAILS (2026-10-11 23:15Z)
 
 Curriculum arm (Amendment 2), Qwen3-0.6B, 3 seeds, test split, corrected evaluator. k=1: no updates 0.97-0.99,
 one update 0.84-0.86, two updates ~0.76 (bar 0.90 at every update count). Branch-addressed edits: targeted
