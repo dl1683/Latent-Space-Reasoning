@@ -217,7 +217,8 @@ def spend():
     for run in sorted(by_run):
         lines.append(f"| {run} | {sum(1 for r in rows if r['run'] == run)} | {by_run[run]:.2f} |")
     lines += [f"| **total** | {len(rows)} | **{total:.2f}** |", "",
-              f"Live VMs now: {sum(1 for v in live.values() if v['status'] == 'RUNNING')}"]
+              f"Live VMs now: {sum(1 for v in live.values() if v['status'] == 'RUNNING')}; burn rate now: "
+              f"${sum(next((r['usd_per_hour'] for r in reversed(rows) if r['vm'] == n), 0) for n, v in live.items() if v['status'] == 'RUNNING'):.1f}/h"]
     (HERE / "SPEND.md").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
 
