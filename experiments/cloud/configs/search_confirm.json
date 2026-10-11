@@ -1,0 +1,752 @@
+{
+ "run": "search-confirm",
+ "kind": "search",
+ "machine": "a2-highgpu-1g",
+ "accelerator": null,
+ "usd_per_hour": 2.21,
+ "cost_cap_usd": 8.0,
+ "zones": [
+  "us-central1-a",
+  "us-central1-b",
+  "us-central1-c",
+  "us-central1-f",
+  "us-east1-b",
+  "us-west1-b",
+  "us-west4-b",
+  "us-east4-c",
+  "europe-west4-a",
+  "europe-west4-b"
+ ],
+ "requirements": [
+  "transformers>=5.12,<6",
+  "accelerate",
+  "jinja2>=3.1"
+ ],
+ "common": {
+  "families": [
+   "countdown",
+   "subsetsum"
+  ],
+  "split": "test",
+  "n": 512,
+  "mode": "direct",
+  "alphas": [
+   1.0
+  ],
+  "injects": [
+   "last"
+  ],
+  "temperature": 1.3,
+  "cot_budget": 1024,
+  "bs": 32,
+  "task_seed": 202,
+  "seed": 0,
+  "note": "Probe B confirmation: promoted on dev (Qwen3-8B, Qwen3-1.7B, Qwen3-4B, Qwen2.5-7B); text T=1.3 tuned on dev; latent cfg = dev-best per model; alpha 1.0, last position"
+ },
+ "shards": [
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 0,
+   "stop": 128,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 128,
+   "stop": 256,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 256,
+   "stop": 384,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 384,
+   "stop": 512,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 512,
+   "stop": 640,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 640,
+   "stop": 768,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 768,
+   "stop": 896,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 896,
+   "stop": 1024,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 0,
+   "stop": 128,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 128,
+   "stop": 256,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 256,
+   "stop": 384,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 384,
+   "stop": 512,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 512,
+   "stop": 640,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 640,
+   "stop": 768,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 768,
+   "stop": 896,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-8B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 896,
+   "stop": 1024,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 8,
+   "start": 0,
+   "stop": 128,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 8,
+   "start": 128,
+   "stop": 256,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 8,
+   "start": 256,
+   "stop": 384,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 8,
+   "start": 384,
+   "stop": 512,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 8,
+   "start": 512,
+   "stop": 640,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 8,
+   "start": 640,
+   "stop": 768,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 8,
+   "start": 768,
+   "stop": 896,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 8,
+   "start": 896,
+   "stop": 1024,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 32,
+   "start": 0,
+   "stop": 128,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 32,
+   "start": 128,
+   "stop": 256,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 32,
+   "start": 256,
+   "stop": 384,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 32,
+   "start": 384,
+   "stop": 512,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 32,
+   "start": 512,
+   "stop": 640,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 32,
+   "start": 640,
+   "stop": 768,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 32,
+   "start": 768,
+   "stop": 896,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "layer_fracs": [
+    0.67
+   ],
+   "budget": 32,
+   "start": 896,
+   "stop": 1024,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 0,
+   "stop": 128,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 128,
+   "stop": 256,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 256,
+   "stop": 384,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 384,
+   "stop": 512,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 512,
+   "stop": 640,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 640,
+   "stop": 768,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 768,
+   "stop": 896,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 8,
+   "start": 896,
+   "stop": 1024,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 0,
+   "stop": 128,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 128,
+   "stop": 256,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 256,
+   "stop": 384,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 384,
+   "stop": 512,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 512,
+   "stop": 640,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 640,
+   "stop": 768,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 768,
+   "stop": 896,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "layer_fracs": [
+    0.33
+   ],
+   "budget": 32,
+   "start": 896,
+   "stop": 1024,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 8,
+   "start": 0,
+   "stop": 128,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 8,
+   "start": 128,
+   "stop": 256,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 8,
+   "start": 256,
+   "stop": 384,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 8,
+   "start": 384,
+   "stop": 512,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 8,
+   "start": 512,
+   "stop": 640,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 8,
+   "start": 640,
+   "stop": 768,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 8,
+   "start": 768,
+   "stop": 896,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 8,
+   "start": 896,
+   "stop": 1024,
+   "skip_repair": false,
+   "es_generations": 2
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 32,
+   "start": 0,
+   "stop": 128,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 32,
+   "start": 128,
+   "stop": 256,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 32,
+   "start": 256,
+   "stop": 384,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 32,
+   "start": 384,
+   "stop": 512,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 32,
+   "start": 512,
+   "stop": 640,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 32,
+   "start": 640,
+   "stop": 768,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 32,
+   "start": 768,
+   "stop": 896,
+   "skip_repair": true,
+   "es_generations": 4
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "layer_fracs": [
+    0.5
+   ],
+   "budget": 32,
+   "start": 896,
+   "stop": 1024,
+   "skip_repair": true,
+   "es_generations": 4
+  }
+ ]
+}

@@ -57,8 +57,8 @@ def search(runs):
             line[a] = sum(T[p][a]["solved"] for p in pids) / len(pids)
             line[a + "_term"] = sum(T[p][a]["term"] for p in pids) / len(pids)
         line["noise_flip"] = sum(T[p]["noise"]["greedy_b1_vs_bB_flip_rate"] for p in pids) / len(pids)
-        for T, P in sorted(temps[m].items()):
-            line[f"sampleT{T}"] = sum(P.values()) / len(P)
+        for temp, PT in sorted(temps[m].items()):
+            line[f"sampleT{temp}"] = sum(PT.values()) / len(PT)
         best_text = max(("sample", "repair"), key=lambda a: line[a])
         cfgs = []
         for c, P in lat[m].items():

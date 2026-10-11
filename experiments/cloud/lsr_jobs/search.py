@@ -73,7 +73,7 @@ def text_arms(model, tok, cfg, it, rng):
                      "term": sum(o[2] for o in outs) / B, "ntok": sum(o[1] for o in outs)}
     convo = PROMPT[cfg["mode"]].format(q=it["prompt"])
     solved, used, terms, ntok = False, 0, [], 0
-    for c in range(B):
+    for c in (range(0) if cfg.get("skip_repair") else range(B)):
         o = gen(model, tok, [common.chat(tok, convo)], cfg, temperature=cfg["temperature"] if c else 0.0,
                 seed=rng.randrange(10 ** 9))[0]
         used += 1; terms.append(o[2]); ntok += o[1]
@@ -89,7 +89,8 @@ def text_arms(model, tok, cfg, it, rng):
                 pass
         convo = (PROMPT[cfg["mode"]].format(q=it["prompt"]) + f"\nA previous attempt was wrong: {fb}. "
                  "Use each listed number at most once. Try a different expression.")
-    res["repair"] = {"solved": solved, "first": used if solved else None, "term": sum(terms) / len(terms), "ntok": ntok}
+    res["repair"] = ({"solved": solved, "first": used if solved else None, "term": sum(terms) / len(terms), "ntok": ntok}
+                     if terms else {"solved": False, "first": None, "term": 1.0, "ntok": 0, "skipped": True})
     # batch-shape noise check: greedy at batch 1 vs within a batch of B identical prompts
     g1 = gen(model, tok, [p], cfg)[0][0]
     gB = gen(model, tok, [p] * B, cfg)
