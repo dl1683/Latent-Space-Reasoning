@@ -1,0 +1,7 @@
+**Do not sign as written.** Replace the P1′ and P2 provisions with:
+
+> **P1′:** Register this as a new, post-P1 curriculum study, not a comparable continuation of P1. Keep the same 300,000-collection cap and final evaluation schedule at every width; report presentations by width and stage. Use a frozen promotion-dev set, separate from checkpoint selection, and require the 0.95 threshold at two consecutive checks to reduce promotion on noise. Measure C90 on the registered test grid; report censoring at the actual tested boundary, not automatically at the final training `k_max`. Retain the 1,800 USD ceiling; if it cannot fund the registered runs, reduce scope before launch and state which comparisons are lost.
+
+> **P2:** Substitute the three LOCKED reachability-curriculum checkpoints as the frozen encoder/readout base and retain the registered updater arms, controls, held-out update pairs, budget, and thresholds. Recompute consistency targets from the frozen encoder on the *updated reachability graphs*. Score targeted edits on predeclared truth-changing toggles, with matched shams, and report all toggles separately. This is a reachability update-closure test, not a rescue of P1 or the failed gate.
+
+Part (a) can stand. Neither study alone establishes native latent mathematics; PR remains scaffolding, while selective edit and update-closed answerability are the claim-bearing tests.

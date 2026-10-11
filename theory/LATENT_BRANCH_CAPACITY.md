@@ -198,3 +198,28 @@ collection-paired improvement intervals, report training-seed spread, and define
 normalized MSE to the frozen encoder's updated-state target." Failure blocks this construction. Budget cap 900 USD.
 [C] "These studies should continue as the highest-leverage pivot; explicit packing tests the ordinary-coding
 explanation, and neither study alone establishes native latent mathematics."
+
+## Amendment 3 (2026-10-11 ~23:55Z; contingent on the P1 stop rule; before any P1' or P2 data)
+
+Council: docs/council_2026_10_11/{brief_a3,codex_a3,droid_a3,brief_a3b,a3_signatures}.md. Both advisors declined
+the operator draft, each supplied replacement sentences; the conjunctive merge (all sentences of both) was
+SIGNED by both (a3_signatures.md). Effective only if the P1 stop rule fires at the P1 exposure cap.
+(a) P1 stops as registered; seed-11 runs are reported as a stop-rule outcome; no capacity claim.
+(b) P1' — new post-P1 curriculum study, not a comparable continuation of P1. Same task, widths, seeds,
+measures, predictions, controls as P1, except: synchronized mastery curriculum within each seed — all widths
+start at k_max=1 and receive identical collections, selectors and optimizer steps; every 100 steps each width is
+evaluated on the same frozen 64-collection PROMOTION-dev set (separate from the checkpoint-selection dev set),
+selectors exhausted; the common k_max doubles only when BOTH r=64 and r=128 reach min-selector accuracy >= 0.95
+at the current k_max at two consecutive checks; smaller widths do not govern promotion. Every width receives
+300,000 presentations including training after k_max=64; checkpoints selected at matched exposure after that
+promotion by mean full-grid dev accuracy, else the final checkpoint; C90 measured on the registered test grid,
+censoring reported at the actual tested boundary (training-stage failure alone is not a capacity estimate).
+Pilot stop rule unchanged, evaluated at the cap before launching remaining seeds. 1,800 USD ceiling; scope is
+reduced and frozen before launch if needed; a later shortfall leaves the registration incomplete (never
+unequal exposure). Scaling concerns learned capacity under this shared recipe, not intrinsic capacity.
+Implementation: GCS barrier per check step (each width posts its result; all widths wait for r=64 and r=128).
+(c) P2 base: the three LOCKED gate curriculum checkpoints (reachability task, r=64, seeds 11/23/47) as frozen
+encoder/reader; updater arms, controls, held-out update pairs, thresholds and 900 USD ceiling unchanged;
+consistency targets = frozen encoder on the updated reachability graphs; direct re-encoding competence measured
+before updater training; targeted edits scored on predeclared truth-changing toggles with matched shams; all
+toggles reported separately. A reachability update-closure test, not a rescue of P1 or the gate.

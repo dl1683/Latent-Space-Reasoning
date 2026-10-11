@@ -163,7 +163,7 @@ def edge_causal(m, r, k, split, n, seed):
 
 def main(cfg, out):
     import subprocess
-    B.QUERY["mode"] = "edge"
+    B.QUERY["mode"] = cfg.get("query", "edge")
     torch.manual_seed(cfg["seed"])
     cfg["init_local"] = str(out.dir / "p1_best.pt")
     if cfg["init_ckpt"].startswith("gs://"):

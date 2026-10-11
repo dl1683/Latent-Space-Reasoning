@@ -406,6 +406,30 @@ def branch_pr(m, r_w, n=None, seed=0, k=4, u=2):
     return out
 
 
+def sync_post_and_wait(mst, step, r_w, acc, out):
+    """Post this width's promotion-dev result for `step`; block until the leader widths have posted theirs.
+    Existing posts are never overwritten (a resumed run reuses the original decision inputs)."""
+    import subprocess
+    import tempfile
+    import time
+    base = f"{mst['sync']}/step{step:06d}"
+    mine = f"{base}/r{r_w}.json"
+    if subprocess.run(["gcloud", "storage", "ls", mine], capture_output=True).returncode != 0:
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
+            json.dump({"r": r_w, "acc": acc}, f)
+        subprocess.run(["gcloud", "storage", "cp", f.name, mine], capture_output=True, check=True)
+    while True:
+        got = {}
+        for w in mst["leaders"]:
+            q = subprocess.run(["gcloud", "storage", "cat", f"{base}/r{w}.json"], capture_output=True, text=True)
+            if q.returncode == 0:
+                got[w] = json.loads(q.stdout)["acc"]
+        if len(got) == len(mst["leaders"]):
+            return got
+        out.beat()
+        time.sleep(15)
+
+
 def save(m, opt, step, path):
     torch.save({"model": {n: p.detach().cpu() for n, p in m.state_dict().items()
                           if "lora" in n or n.split(".")[0] in ("E", "D", "head")},
@@ -444,7 +468,26 @@ def main(cfg, out):
             order = list(range(pool)); random.Random(cfg["seed"] * 31 + p).shuffle(order)
         ids = order[off:off + eff_bs]
         cur = cfg.get("curriculum")  # Amendment 2: staged arm, [[start_frac, ks, updates], ...]
-        if cur:
+        mst = cfg.get("mastery")     # Amendment 3 (P1'): k_max doubles when dev min-selector acc at k_max >= thresh
+        if mst:
+            if step == step0 or "kmax" not in locals():
+                kmax = max([1] + [json.loads(l)["kmax_after"] for l in out.path.read_text().splitlines()
+                                  if json.loads(l)["key"].startswith("mastery|")]) if out.path.exists() else 1
+            if step > 0 and step % mst["check_every"] == 0 and kmax < 64 and f"mastery|step{step}" not in out.done:
+                # frozen promotion-dev set (seed 17), separate from the selection dev set (seed 0)
+                a = acc_cell(m, cfg, "dev", cfg["widths"][0], 0, kmax, mst["dev_n"], 17)["min_selector_acc"]
+                lead = sync_post_and_wait(mst, step, cfg["widths"][0], a, out)  # synchronized across widths (GCS barrier)
+                ok = all(lead[w] >= mst["thresh"] for w in mst["leaders"])
+                prev = [json.loads(l) for l in out.path.read_text().splitlines() if json.loads(l)["key"].startswith("mastery|")]
+                streak = (prev[-1]["streak"] + 1 if prev and prev[-1]["kmax"] == kmax else 1) if ok else 0
+                new_k = kmax * 2 if streak >= mst.get("consecutive", 2) else kmax
+                out.write({"key": f"mastery|step{step}", "step": step, "kmax": kmax, "own_min_selector_acc": a,
+                           "leaders": lead, "streak": 0 if new_k != kmax else streak, "kmax_after": new_k})
+                kmax = new_k
+                m.train()
+            ks_now = [2 ** i for i in range(int(math.log2(kmax)) + 1)]
+            exs = [collection(cfg["seed"] + 2000, step * eff_bs + j, "train", ks_now, cfg["train_updates"]) for j in range(eff_bs)]
+        elif cur:
             stage = [c for c in cur if step / total >= c[0]][-1]
             exs = [collection(cfg["seed"] + 1000, step * eff_bs + j, "train", stage[1], stage[2]) for j in range(eff_bs)]
         else:
@@ -484,7 +527,7 @@ def main(cfg, out):
             out.write({"key": f"dev|step{step + 1}", "step": step + 1, "dev_score": score, "dev_cells": cells,
                        "loss_recent": sum(hist[-cfg["eval_every"]:]) / len(hist[-cfg["eval_every"]:]), "sec": t()})
             save(m, opt, step + 1, ckpt)
-            sel_ok = not cfg.get("curriculum") or (step + 1) / total >= cfg["curriculum"][-1][0]
+            sel_ok = (not cfg.get("curriculum") or (step + 1) / total >= cfg["curriculum"][-1][0]) and                 (not cfg.get("mastery") or kmax >= 64 or step == total - 1)
             if sel_ok and score > best:
                 best = score
                 save(m, opt, step + 1, out.dir / "best.pt")
