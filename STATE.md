@@ -1,5 +1,18 @@
 # STATE
 
+## SESSION STATUS: ACTIVE — GCP latent-reasoning program (2026-10-11, user restart)
+
+The user restarted the project on Google Cloud ("restart latent space reasoning ... at scale ... be really
+aggressive"; wants the most latent, consequential bet, "risky is fine, explore fearlessly"). The 2026-09-23 pause
+is superseded. A three-round Codex+Droid council (docs/council_2026_10_11/) converged on the portfolio frozen in
+theory/LATENT_BRANCH_CAPACITY.md: flagship = causal, selectable latent branch capacity under a controlled
+width bottleneck in Qwen3-1.7B (sqrt(PR) capacity prediction, separate mechanism/utility/scaling verdicts),
+gated by a trained Qwen3-0.6B admission test; fast probes B (verifier-guided latent search) and C (frozen
+recurrent depth) run wide across ~16 open-weight checkpoints. Cross-model geometry (bet 4) deferred. Window
+ends 2026-10-16 (credit expiry 10-17); budget 5,000 USD, spend ledger experiments/cloud/SPEND.md. Runner:
+experiments/cloud/lsr_cloud.py (one Spot VM per shard, auto-off monitor self-tested on every VM before work).
+The HP-G confrontation resume pointer (below) is parked, not abandoned.
+
 ## SESSION STATUS: PAUSED by user (2026-09-23)
 
 Work paused at a natural boundary of the HP-G arc. Nothing running.

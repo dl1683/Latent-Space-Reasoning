@@ -1,0 +1,16 @@
+# Re-entry council, round 2 (converge)
+
+Round-1 answers: internal/council_gcp/codex_r1.md (Codex) and internal/council_gcp/droid_r1.md (Droid). Read both fresh, plus brief_r1.md for constraints.
+
+You agree on the shape: flagship = causal, selectable latent branch capacity measured under a controlled state-width bottleneck inside one backbone (not a cross-model width regression); fast probes = A branch retention/viability, B verifier-guided latent search, C frozen recurrent depth; Bet 4 deferred. Settle the remaining disagreements and output ONE frozen pre-registration both of you can sign.
+
+Operator facts (verified 2026-10-11 from the Cloud Billing catalog, us-central1 Spot, accelerator-only): L4 0.32 USD/GPU-h (a g2-standard-8 with 1xL4 is about 0.49 USD/h all-in); A100-40GB 1.76; A100-80GB 2.36; H100-80GB 5.57; H200 5.59; B200 4.95 per GPU slice (8xB200 about 40 USD/h all-in). Spot quota: L4 16 per region across 7+ regions (about 100 L4s possible), A100 64 per region, H100/H200/B200 64 per region. So wide sweeps on many L4/A100 VMs in parallel are cheap; B200 is cheaper per GPU than H100. Deadline: final verdicts by 2026-10-16. Budget 5,000 USD. The user explicitly wants breadth and aggression in testing (many models, sizes, seeds) and wants the most consequential, latent bet; risk is acceptable. Allowed models: Qwen2.5 and Qwen3 families (all sizes), Llama 3.x (if token available; treat as optional), OLMo 2, SmolLM2, Mistral, DeepSeek-R1-distill-Qwen, Phi. No Gemma, no OpenAI-anything.
+
+Decide:
+1. Probe A: frozen-model (Droid, L4, cheap) vs fine-tuned 0.6B (Codex)? Proposal from operator: run frozen first, wide, as an instrument and a cheap negative-or-positive; the fine-tuned version is the flagship admission gate. Agree or amend.
+2. Flagship widths and capacity definition: Codex 64/256/1024 with a 1.5-2.7x ratio band per 4x PR; Droid 128/512(/1024) with at least 1.5x between 128 and 1024 and capacity = largest k with at least 90 percent per-branch correctness. Pick one set of widths, one capacity definition, one numerical prediction (state the square-root-law number explicitly, and what result would refute it vs merely fail to support it).
+3. The flagship task: name the exact generator (for example random DAG reachability with k candidate targets, or constraint puzzles with k partial assignments), the late selector, and the bottleneck implementation (where the width-r state lives, what the continuation can and cannot attend to) concretely enough that an engineer can implement it today in torch with HuggingFace Qwen3-1.7B.
+4. Breadth: for probes B and C, list the model sweep (families, sizes) and seeds the operator should run wide, and the benchmark tasks (prefer exact-verifiable, held-out, non-truncation-confounded: e.g. GSM8K-style arithmetic, generated constraint/logic puzzles, Countdown, graph search). State matched-FLOP accounting rules in one paragraph.
+5. Per bet: final central claim, numeric predictions, kill criteria, first experiment, models, hardware, hours, USD. Total must stay under 5,000 with a reserve.
+
+Be concise. If you disagree with the other advisor on something material, say so and give the experiment that would settle it. Write markdown to your output file. No experiments, no spend, no tracked-file edits.
