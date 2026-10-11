@@ -206,6 +206,7 @@ def acc_cell(m, cfg, split, r_w, u, k, n, seed, bits=None, qmode="read"):
     ok = ok0 = oksh = okshuf = tot = 0
     un_ok = un_tot = ad_ok = ad_tot = 0
     pos_ok = [0] * k
+    un_pos_ok, un_pos_n = [0] * k, [0] * k
     jointok = 0
     zs = []
     bs = max(1, cfg["eval_tokens"] // (k * 22 + 40))
@@ -240,6 +241,8 @@ def acc_cell(m, cfg, split, r_w, u, k, n, seed, bits=None, qmode="read"):
                         pos_ok[j] += cv[:, j].sum().item()
                     addr = torch.tensor([[any(t == j for _, t in x["ops"]) for j in range(k)] for x in exs], device="cuda")
                     un_ok += cv[~addr].sum().item(); un_tot += (~addr).sum().item()
+                    for j in range(k):
+                        un_pos_ok[j] += cv[:, j][~addr[:, j]].sum().item(); un_pos_n[j] += (~addr[:, j]).sum().item()
                     ad_ok += cv[addr].sum().item(); ad_tot += addr.sum().item()
                 elif name == "zero":
                     ok0 += c.sum().item()
@@ -249,7 +252,10 @@ def acc_cell(m, cfg, split, r_w, u, k, n, seed, bits=None, qmode="read"):
                     oksh += c.sum().item()
         zs.append(z[:, :r_w].float().cpu())
     return {"acc": ok / tot, "acc_unaddressed": un_ok / max(1, un_tot), "acc_addressed": (ad_ok / ad_tot) if ad_tot else None,
-            "acc_by_selector": [x / n for x in pos_ok], "min_selector_acc": min(pos_ok) / n, "joint_acc": jointok / n, "acc_zero": ok0 / tot, "acc_shuffled": okshuf / tot,
+            "acc_by_selector": [x / n for x in pos_ok], "min_selector_acc": min(pos_ok) / n,
+            "unaddressed_acc_by_selector": [a / b if b else None for a, b in zip(un_pos_ok, un_pos_n)],
+            "min_unaddressed_selector_acc": min(a / b for a, b in zip(un_pos_ok, un_pos_n) if b) if any(un_pos_n) else None,
+            "joint_acc": jointok / n, "acc_zero": ok0 / tot, "acc_shuffled": okshuf / tot,
             "acc_sham_updates": (oksh / tot) if (zsham is not None) else None, "n_collections": n, "bits": bits,
             "qmode": qmode if bits else None}
 

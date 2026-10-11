@@ -48,8 +48,11 @@ def load(model_id, dtype=torch.bfloat16):
             "n_layers": model.config.num_hidden_layers, "d_model": model.config.hidden_size,
             "n_params": sum(p.numel() for p in model.parameters()), "dtype": str(dtype),
             "torch": torch.__version__, "gpu": torch.cuda.get_device_name(0)}
+    import hashlib
     import transformers
     info["transformers"] = transformers.__version__
+    info["tokenizer_revision"] = tok.init_kwargs.get("_commit_hash")
+    info["chat_template_sha256"] = hashlib.sha256((tok.chat_template or "").encode()).hexdigest()[:16]
     return model, tok, info
 
 

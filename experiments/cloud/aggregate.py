@@ -41,9 +41,9 @@ def search(runs):
     temps = defaultdict(lambda: defaultdict(dict))  # model -> T -> pid -> solved
     for run in runs:
         for r in rows(run):
-            m = r["_model"]
+            m = f"{r['_model']} B{r.get('budget')} {r['key'].split('|')[0]}"  # model x budget x split
             if "|text|" in r["key"]:
-                text[m][r["id"]] = r["arms"]
+                text[m].setdefault(r["id"], {}).update(r["arms"])
             elif "|sampleT" in r["key"]:
                 temps[m][r["temperature"]][r["id"]] = r["arms"]["sample"]["solved"]
             else:
@@ -54,9 +54,11 @@ def search(runs):
         pids = sorted(T)
         line = {"model": m, "n": len(pids)}
         for a in ("sample", "repair"):
-            line[a] = sum(T[p][a]["solved"] for p in pids) / len(pids)
-            line[a + "_term"] = sum(T[p][a]["term"] for p in pids) / len(pids)
-        line["noise_flip"] = sum(T[p]["noise"]["greedy_b1_vs_bB_flip_rate"] for p in pids) / len(pids)
+            ok = [p for p in pids if a in T[p] and not T[p][a].get("skipped")]
+            line[a] = sum(T[p][a]["solved"] for p in ok) / max(1, len(ok)) if ok else -1
+            line[a + "_term"] = sum(T[p][a]["term"] for p in ok) / len(ok) if ok else -1
+        nz = [p for p in pids if "noise" in T[p]]
+        line["noise_flip"] = sum(T[p]["noise"]["greedy_b1_vs_bB_flip_rate"] for p in nz) / max(1, len(nz))
         for temp, PT in sorted(temps[m].items()):
             line[f"sampleT{temp}"] = sum(PT.values()) / len(PT)
         best_text = max(("sample", "repair"), key=lambda a: line[a])

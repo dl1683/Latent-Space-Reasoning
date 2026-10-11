@@ -67,10 +67,16 @@ def text_arms(model, tok, cfg, it, rng):
     B = cfg["budget"]
     p = common.chat(tok, PROMPT[cfg["mode"]].format(q=it["prompt"]))
     res = {}
-    outs = gen(model, tok, [p] * B, cfg, temperature=cfg["temperature"], seed=rng.randrange(10 ** 9))
-    ok, _, _ = score_calls([o[0] for o in outs], it)
-    res["sample"] = {"solved": any(ok), "first": ok.index(True) + 1 if any(ok) else None,
-                     "term": sum(o[2] for o in outs) / B, "ntok": sum(o[1] for o in outs)}
+    if cfg.get("repair_only"):
+        outs = None
+    else:
+        outs = gen(model, tok, [p] * B, cfg, temperature=cfg["temperature"], seed=rng.randrange(10 ** 9))
+    if outs is None:
+        pass
+    else:
+        ok, _, _ = score_calls([o[0] for o in outs], it)
+        res["sample"] = {"solved": any(ok), "first": ok.index(True) + 1 if any(ok) else None,
+                         "term": sum(o[2] for o in outs) / B, "ntok": sum(o[1] for o in outs)}
     convo = PROMPT[cfg["mode"]].format(q=it["prompt"])
     solved, used, terms, ntok = False, 0, [], 0
     for c in (range(0) if cfg.get("skip_repair") else range(B)):
@@ -91,6 +97,8 @@ def text_arms(model, tok, cfg, it, rng):
                  "Use each listed number at most once. Try a different expression.")
     res["repair"] = ({"solved": solved, "first": used if solved else None, "term": sum(terms) / len(terms), "ntok": ntok}
                      if terms else {"solved": False, "first": None, "term": 1.0, "ntok": 0, "skipped": True})
+    if cfg.get("repair_only"):
+        return res
     # batch-shape noise check: greedy at batch 1 vs within a batch of B identical prompts
     g1 = gen(model, tok, [p], cfg)[0][0]
     gB = gen(model, tok, [p] * B, cfg)
