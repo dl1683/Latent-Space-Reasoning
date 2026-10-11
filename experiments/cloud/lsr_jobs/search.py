@@ -158,8 +158,17 @@ def main(cfg, out):
     tag = f"{split}|{cfg['mode']}|B{cfg['budget']}"
     for it in items:
         rng = random.Random(f"{cfg.get('seed', 0)}|{it['id']}")
+        for T in cfg.get("sample_temps", []):  # cheapest-remedy arm: best-of-B sampling at other temperatures
+            key = f"{tag}|sampleT{T}|{it['id']}"
+            if key not in out.done:
+                p = common.chat(tok, PROMPT[cfg["mode"]].format(q=it["prompt"]))
+                o = gen(model, tok, [p] * cfg["budget"], cfg, temperature=T, seed=rng.randrange(10 ** 9))
+                ok, _, _ = score_calls([x[0] for x in o], it)
+                out.write({"key": key, "id": it["id"], "family": it["family"], "temperature": T, "budget": cfg["budget"],
+                           "arms": {"sample": {"solved": any(ok), "first": ok.index(True) + 1 if any(ok) else None,
+                                               "term": sum(x[2] for x in o) / len(o), "ntok": sum(x[1] for x in o)}}})
         key = f"{tag}|text|{it['id']}"
-        if key not in out.done:
+        if key not in out.done and not cfg.get("skip_text"):
             t = common.timer()
             out.write({"key": key, "id": it["id"], "family": it["family"], "mode": cfg["mode"], "budget": cfg["budget"],
                        "arms": text_arms(model, tok, cfg, it, rng), "sec": t()})

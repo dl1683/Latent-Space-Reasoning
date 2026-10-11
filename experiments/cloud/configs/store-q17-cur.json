@@ -1,0 +1,196 @@
+{
+ "run": "store-q17-cur",
+ "kind": "branch",
+ "machine": "a3-highgpu-1g",
+ "accelerator": null,
+ "usd_per_hour": 6.25,
+ "zones": [
+  "us-central1-a",
+  "us-central1-c",
+  "us-east4-a",
+  "us-east4-b",
+  "us-east4-c",
+  "us-east5-a",
+  "us-west1-a",
+  "us-west1-b",
+  "us-east1-c",
+  "us-east1-d",
+  "us-south1-a",
+  "europe-west4-b",
+  "europe-west4-c"
+ ],
+ "cost_cap_usd": 110.0,
+ "idle_min": 30,
+ "grace_min": 45,
+ "disk_gb": 200,
+ "requirements": [
+  "transformers>=5.12,<6",
+  "accelerate",
+  "peft",
+  "jinja2>=3.1"
+ ],
+ "common": {
+  "model": "Qwen/Qwen3-1.7B",
+  "state_dim": 1024,
+  "widths": [
+   64,
+   256,
+   1024
+  ],
+  "lr": 0.0002,
+  "lora_r": 8,
+  "pool": 100000,
+  "batch": 64,
+  "passes": 3,
+  "train_ks": [
+   1,
+   2,
+   4,
+   8,
+   16,
+   32,
+   64
+  ],
+  "train_updates": [
+   0,
+   1,
+   2
+  ],
+  "answers_per_ex": 4,
+  "train_tokens": 32000,
+  "grad_ckpt": true,
+  "eval_every": 250,
+  "dev_n": 96,
+  "dev_ks": [
+   1,
+   4,
+   16,
+   64
+  ],
+  "eval_tokens": 32000,
+  "eval_n": 1024,
+  "eval_ks": [
+   1,
+   2,
+   4,
+   8,
+   16,
+   32,
+   64
+  ],
+  "eval_updates": [
+   0,
+   1,
+   2
+  ],
+  "quant_bits": [
+   2,
+   3,
+   4,
+   8
+  ],
+  "quant_ks": [
+   1,
+   4,
+   16
+  ],
+  "causal_ks": [],
+  "causal_n": 512,
+  "final_split": "test",
+  "variant": "storage",
+  "note": "FLAGSHIP storage (cur recipe) - launch only after gate PASS (prereg)",
+  "curriculum": [
+   [
+    0,
+    [
+     1
+    ],
+    [
+     0
+    ]
+   ],
+   [
+    0.1,
+    [
+     1,
+     2
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   [
+    0.2,
+    [
+     1,
+     2,
+     4
+    ],
+    [
+     0,
+     1,
+     2
+    ]
+   ],
+   [
+    0.3,
+    [
+     1,
+     2,
+     4,
+     8
+    ],
+    [
+     0,
+     1,
+     2
+    ]
+   ],
+   [
+    0.45,
+    [
+     1,
+     2,
+     4,
+     8,
+     16,
+     32
+    ],
+    [
+     0,
+     1,
+     2
+    ]
+   ],
+   [
+    0.6,
+    [
+     1,
+     2,
+     4,
+     8,
+     16,
+     32,
+     64
+    ],
+    [
+     0,
+     1,
+     2
+    ]
+   ]
+  ]
+ },
+ "shards": [
+  {
+   "seed": 11
+  },
+  {
+   "seed": 23
+  },
+  {
+   "seed": 47
+  }
+ ]
+}

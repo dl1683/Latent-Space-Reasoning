@@ -13,6 +13,13 @@ Spend: experiments/cloud/SPEND.md.
   Pilot v3 after the remedy (Qwen3-1.7B, n=24 dev): direct 64-token termination 0.875-0.958, CoT 2048-token
   termination 0.83-0.92 -> STILL below the 95% gate; capability interpretation stays blocked per family/arm.
 - **Gate throughput pilot (A100, 60 steps):** pipeline end to end; 10.6 s/step at batch 64; all cells at chance.
+- **Probe C instrument lesson (constant-answer artifact):** the graph shortest-path family has a modal
+  answer ("3") on 62-66% of items (generator keeps distances >= 3). In direct mode, dev-selected loops "gained"
+  by shifting the constant answer from "2" to "3" (Qwen2.5-0.5B test: base 0.091 -> loop 0.198 overall; graph
+  0.258 -> 0.586 with 3 distinct predictions, still below the 0.617 constant-answer baseline). Every C/B
+  comparison now reports the per-family constant-answer baseline and prediction diversity; graph direct-mode
+  cells are uninformative. Early CoT test reads on the admissible arithmetic family (termination 1.00): loops
+  0.727 -> 0.695 (Qwen2.5-0.5B), 0.055 -> 0.023 (Qwen3-0.6B) — no gain so far (screening, n=128/family).
 - **Admission gate (Qwen3-0.6B, 3 seeds, H100):** running. DEV observation (not a verdict): the frozen
   concurrent recipe emits a constant answer in every dev cell through step 750 in 3/3 seeds (loss 0.695-0.697).
 - **Diagnostics diag-k1 (k=1, u=0 only):** text positive control dev 0.984 (step 400); bottleneck state

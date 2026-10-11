@@ -1,0 +1,75 @@
+{
+ "run": "search-temps",
+ "kind": "search",
+ "machine": "a2-highgpu-1g",
+ "accelerator": null,
+ "usd_per_hour": 2.21,
+ "cost_cap_usd": 8.0,
+ "zones": [
+  "us-central1-a",
+  "us-central1-b",
+  "us-central1-c",
+  "us-central1-f",
+  "us-east1-b",
+  "us-west1-b",
+  "us-west4-b",
+  "us-east4-c",
+  "europe-west4-a",
+  "europe-west4-b"
+ ],
+ "requirements": [
+  "transformers>=5.12,<6",
+  "accelerate",
+  "jinja2>=3.1"
+ ],
+ "common": {
+  "families": [
+   "countdown",
+   "subsetsum"
+  ],
+  "split": "dev",
+  "n": 64,
+  "mode": "direct",
+  "budget": 8,
+  "layer_fracs": [],
+  "alphas": [
+   0.25,
+   1.0
+  ],
+  "injects": [
+   "last"
+  ],
+  "es_generations": 2,
+  "temperature": 0.8,
+  "cot_budget": 1024,
+  "bs": 16,
+  "task_seed": 101,
+  "seed": 0,
+  "sample_temps": [
+   0.5,
+   1.0,
+   1.3
+  ],
+  "skip_text": true
+ },
+ "shards": [
+  {
+   "model": "Qwen/Qwen3-8B"
+  },
+  {
+   "model": "Qwen/Qwen3-4B"
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B"
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct"
+  },
+  {
+   "model": "Qwen/Qwen3-0.6B"
+  },
+  {
+   "model": "Qwen/Qwen2.5-3B-Instruct"
+  }
+ ]
+}

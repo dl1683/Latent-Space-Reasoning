@@ -62,7 +62,7 @@
   "n_dev": 64,
   "n_test": 128,
   "task_seed": 101,
-  "bs": 96
+  "bs": 48
  },
  "shards": [
   {

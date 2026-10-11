@@ -78,13 +78,18 @@ def generate(model, tok, prompts, max_new, temperature=0.0, bs=16, seed=None, st
             kw.update(do_sample=True, temperature=temperature, top_p=0.95)
         else:
             kw.update(do_sample=False, temperature=None, top_p=None, top_k=None)
+        oom = False
         try:
             out = model.generate(**enc, **kw)
-        except torch.OutOfMemoryError:  # adaptive: split this batch in half and retry (logged via smaller batches)
+        except torch.OutOfMemoryError:  # adaptive: split this batch in half and retry
+            oom = True               # (retry OUTSIDE the handler so the failed attempt's tensors are freed)
+        if oom:
             del enc
+            import gc
+            gc.collect()
             torch.cuda.empty_cache()
             if bs <= 1:
-                raise
+                raise torch.OutOfMemoryError("OOM at batch size 1")
             res += generate(model, tok, prompts[b:b + bs], max_new, temperature, max(1, bs // 2),
                             None if seed is None else seed + b, stop)
             continue
