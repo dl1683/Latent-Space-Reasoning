@@ -1,0 +1,438 @@
+== gate-eval-cur/000 seed=11 variant=state model=Qwen/Qwen3-0.6B
+   r64    u0 k1   acc=0.981 unaddr=0.981 minsel=0.981 joint=0.981 zero=0.492 shuf=0.511 sham=None
+   r64    u0 k2   acc=0.965 unaddr=0.965 minsel=0.953 joint=0.937 zero=0.504 shuf=0.491 sham=None
+   r64    u0 k4   acc=0.889 unaddr=0.889 minsel=0.658 joint=0.604 zero=0.502 shuf=0.509 sham=None
+   r64    u0 k8   acc=0.716 unaddr=0.716 minsel=0.539 joint=0.051 zero=0.505 shuf=0.489 sham=None
+   r64    u0 k16  acc=0.609 unaddr=0.609 minsel=0.488 joint=0.000 zero=0.505 shuf=0.504 sham=None
+   r64    u0 k32  acc=0.555 unaddr=0.555 minsel=0.471 joint=0.000 zero=0.502 shuf=0.493 sham=None
+   r64    u0 k64  acc=0.534 unaddr=0.534 minsel=0.471 joint=0.000 zero=0.502 shuf=0.501 sham=None
+   r64    u1 k1   acc=0.837 unaddr=0.837 minsel=0.837 joint=0.837 zero=0.511 shuf=0.515 sham=0.8388671875
+   r64    u1 k2   acc=0.862 unaddr=0.876 minsel=0.858 joint=0.744 zero=0.503 shuf=0.503 sham=0.86083984375
+   r64    u1 k4   acc=0.804 unaddr=0.810 minsel=0.601 joint=0.424 zero=0.498 shuf=0.516 sham=0.697998046875
+   r64    u1 k8   acc=0.657 unaddr=0.658 minsel=0.486 joint=0.023 zero=0.500 shuf=0.498 sham=0.603515625
+   r64    u1 k16  acc=0.589 unaddr=0.589 minsel=0.492 joint=0.000 zero=0.494 shuf=0.493 sham=0.54803466796875
+   r64    u1 k32  acc=0.541 unaddr=0.541 minsel=0.467 joint=0.000 zero=0.498 shuf=0.498 sham=0.528533935546875
+   r64    u1 k64  acc=0.523 unaddr=0.523 minsel=0.463 joint=0.000 zero=0.496 shuf=0.499 sham=0.5135345458984375
+   r64    u2 k1   acc=0.758 unaddr=0.758 minsel=0.758 joint=0.758 zero=0.505 shuf=0.490 sham=0.7626953125
+   r64    u2 k2   acc=0.766 unaddr=0.779 minsel=0.764 joint=0.591 zero=0.510 shuf=0.506 sham=0.6865234375
+   r64    u2 k4   acc=0.739 unaddr=0.745 minsel=0.590 joint=0.316 zero=0.511 shuf=0.495 sham=0.610595703125
+   r64    u2 k8   acc=0.630 unaddr=0.630 minsel=0.494 joint=0.024 zero=0.495 shuf=0.490 sham=0.5460205078125
+   r64    u2 k16  acc=0.570 unaddr=0.571 minsel=0.490 joint=0.001 zero=0.504 shuf=0.498 sham=0.53033447265625
+   r64    u2 k32  acc=0.539 unaddr=0.541 minsel=0.488 joint=0.000 zero=0.502 shuf=0.502 sham=0.516448974609375
+   r64    u2 k64  acc=0.516 unaddr=0.517 minsel=0.457 joint=0.000 zero=0.501 shuf=0.502 sham=0.5101470947265625
+   r256   u0 k1   acc=0.983 unaddr=0.983 minsel=0.983 joint=0.983 zero=0.492 shuf=0.513 sham=None
+   r256   u0 k2   acc=0.966 unaddr=0.966 minsel=0.953 joint=0.938 zero=0.504 shuf=0.490 sham=None
+   r256   u0 k4   acc=0.888 unaddr=0.888 minsel=0.656 joint=0.602 zero=0.502 shuf=0.510 sham=None
+   r256   u0 k8   acc=0.714 unaddr=0.714 minsel=0.534 joint=0.052 zero=0.505 shuf=0.492 sham=None
+   r256   u0 k16  acc=0.609 unaddr=0.609 minsel=0.489 joint=0.000 zero=0.505 shuf=0.503 sham=None
+   r256   u0 k32  acc=0.554 unaddr=0.554 minsel=0.476 joint=0.000 zero=0.502 shuf=0.496 sham=None
+   r256   u0 k64  acc=0.534 unaddr=0.534 minsel=0.465 joint=0.000 zero=0.502 shuf=0.499 sham=None
+   r256   u1 k1   acc=0.838 unaddr=0.838 minsel=0.838 joint=0.838 zero=0.511 shuf=0.516 sham=0.837890625
+   r256   u1 k2   acc=0.862 unaddr=0.876 minsel=0.858 joint=0.744 zero=0.503 shuf=0.503 sham=0.86083984375
+   r256   u1 k4   acc=0.804 unaddr=0.810 minsel=0.601 joint=0.425 zero=0.498 shuf=0.515 sham=0.69384765625
+   r256   u1 k8   acc=0.656 unaddr=0.657 minsel=0.481 joint=0.025 zero=0.500 shuf=0.500 sham=0.599853515625
+   r256   u1 k16  acc=0.593 unaddr=0.593 minsel=0.497 joint=0.000 zero=0.494 shuf=0.495 sham=0.5528564453125
+   r256   u1 k32  acc=0.542 unaddr=0.542 minsel=0.464 joint=0.000 zero=0.498 shuf=0.499 sham=0.526275634765625
+   r256   u1 k64  acc=0.525 unaddr=0.525 minsel=0.460 joint=0.000 zero=0.496 shuf=0.498 sham=0.512420654296875
+   r256   u2 k1   acc=0.758 unaddr=0.758 minsel=0.758 joint=0.758 zero=0.505 shuf=0.490 sham=0.7587890625
+   r256   u2 k2   acc=0.766 unaddr=0.779 minsel=0.764 joint=0.591 zero=0.510 shuf=0.506 sham=0.69384765625
+   r256   u2 k4   acc=0.740 unaddr=0.745 minsel=0.578 joint=0.312 zero=0.511 shuf=0.496 sham=0.61083984375
+   r256   u2 k8   acc=0.629 unaddr=0.631 minsel=0.479 joint=0.025 zero=0.495 shuf=0.490 sham=0.5518798828125
+   r256   u2 k16  acc=0.568 unaddr=0.569 minsel=0.485 joint=0.001 zero=0.504 shuf=0.499 sham=0.52789306640625
+   r256   u2 k32  acc=0.538 unaddr=0.538 minsel=0.485 joint=0.000 zero=0.502 shuf=0.501 sham=0.51556396484375
+   r256   u2 k64  acc=0.518 unaddr=0.518 minsel=0.450 joint=0.000 zero=0.501 shuf=0.502 sham=0.50830078125
+   r1024  u0 k1   acc=0.983 unaddr=0.983 minsel=0.983 joint=0.983 zero=0.492 shuf=0.513 sham=None
+   r1024  u0 k2   acc=0.966 unaddr=0.966 minsel=0.953 joint=0.938 zero=0.504 shuf=0.490 sham=None
+   r1024  u0 k4   acc=0.891 unaddr=0.891 minsel=0.666 joint=0.609 zero=0.502 shuf=0.511 sham=None
+   r1024  u0 k8   acc=0.714 unaddr=0.714 minsel=0.533 joint=0.051 zero=0.505 shuf=0.497 sham=None
+   r1024  u0 k16  acc=0.609 unaddr=0.609 minsel=0.490 joint=0.000 zero=0.505 shuf=0.503 sham=None
+   r1024  u0 k32  acc=0.554 unaddr=0.554 minsel=0.475 joint=0.000 zero=0.502 shuf=0.497 sham=None
+   r1024  u0 k64  acc=0.533 unaddr=0.533 minsel=0.459 joint=0.000 zero=0.502 shuf=0.498 sham=None
+   r1024  u1 k1   acc=0.838 unaddr=0.838 minsel=0.838 joint=0.838 zero=0.511 shuf=0.516 sham=0.8388671875
+   r1024  u1 k2   acc=0.862 unaddr=0.876 minsel=0.858 joint=0.744 zero=0.503 shuf=0.503 sham=0.861328125
+   r1024  u1 k4   acc=0.805 unaddr=0.811 minsel=0.595 joint=0.421 zero=0.498 shuf=0.518 sham=0.70068359375
+   r1024  u1 k8   acc=0.658 unaddr=0.659 minsel=0.494 joint=0.023 zero=0.500 shuf=0.500 sham=0.59912109375
+   r1024  u1 k16  acc=0.591 unaddr=0.591 minsel=0.491 joint=0.000 zero=0.494 shuf=0.494 sham=0.55426025390625
+   r1024  u1 k32  acc=0.540 unaddr=0.540 minsel=0.482 joint=0.000 zero=0.498 shuf=0.499 sham=0.525665283203125
+   r1024  u1 k64  acc=0.523 unaddr=0.523 minsel=0.464 joint=0.000 zero=0.496 shuf=0.498 sham=0.513671875
+   r1024  u2 k1   acc=0.758 unaddr=0.758 minsel=0.758 joint=0.758 zero=0.505 shuf=0.490 sham=0.7587890625
+   r1024  u2 k2   acc=0.767 unaddr=0.779 minsel=0.764 joint=0.593 zero=0.510 shuf=0.507 sham=0.70751953125
+   r1024  u2 k4   acc=0.737 unaddr=0.742 minsel=0.571 joint=0.306 zero=0.511 shuf=0.492 sham=0.600830078125
+   r1024  u2 k8   acc=0.625 unaddr=0.627 minsel=0.479 joint=0.022 zero=0.495 shuf=0.491 sham=0.555419921875
+   r1024  u2 k16  acc=0.566 unaddr=0.568 minsel=0.477 joint=0.000 zero=0.504 shuf=0.498 sham=0.53253173828125
+   r1024  u2 k32  acc=0.540 unaddr=0.541 minsel=0.482 joint=0.000 zero=0.502 shuf=0.500 sham=0.516265869140625
+   r1024  u2 k64  acc=0.518 unaddr=0.518 minsel=0.453 joint=0.000 zero=0.501 shuf=0.503 sham=0.50921630859375
+   CAUSAL r64 k2: targeted=+0.2pp collateral=+0.2pp undo=0.0 adv_edit=0.381 adv_undo=0.711 sham_tgt=0.943
+   CAUSAL r64 k4: targeted=+0.2pp collateral=+1.4pp undo=2.0 adv_edit=0.418 adv_undo=0.615 sham_tgt=0.756
+   CAUSAL r256 k2: targeted=+0.2pp collateral=+0.2pp undo=0.0 adv_edit=0.383 adv_undo=0.705 sham_tgt=0.943
+   CAUSAL r256 k4: targeted=+0.0pp collateral=+1.2pp undo=None adv_edit=0.410 adv_undo=0.604 sham_tgt=0.742
+   CAUSAL r1024 k2: targeted=+0.2pp collateral=+0.2pp undo=0.0 adv_edit=0.381 adv_undo=0.697 sham_tgt=0.943
+   CAUSAL r1024 k4: targeted=+0.2pp collateral=+1.2pp undo=1.0 adv_edit=0.414 adv_undo=0.578 sham_tgt=0.762
+   PR r64: 1.8 (bias-corr 1.781733743471385, iso-null 63.5095329284668, top-PC share 0.7017446194068425) n=8192
+   PR r256: 1.8 (bias-corr 1.802832515060861, iso-null 248.28717041015625, top-PC share 0.6993317435217371) n=8192
+   PR r1024: 2.0 (bias-corr 1.9557085415796078, iso-null 909.8305053710938, top-PC share 0.666904121893366) n=8192
+   QUANT r64 b2 read u0 k1: acc=0.979
+   QUANT r64 b2 read u0 k4: acc=0.602
+   QUANT r64 b2 read u0 k16: acc=0.533
+   QUANT r64 b2 pass u2 k1: acc=0.764
+   QUANT r64 b2 pass u2 k4: acc=0.542
+   QUANT r64 b2 pass u2 k16: acc=0.513
+   QUANT r64 b3 read u0 k1: acc=0.981
+   QUANT r64 b3 read u0 k4: acc=0.877
+   QUANT r64 b3 read u0 k16: acc=0.604
+   QUANT r64 b3 pass u2 k1: acc=0.761
+   QUANT r64 b3 pass u2 k4: acc=0.719
+   QUANT r64 b3 pass u2 k16: acc=0.559
+   QUANT r64 b4 read u0 k1: acc=0.982
+   QUANT r64 b4 read u0 k4: acc=0.889
+   QUANT r64 b4 read u0 k16: acc=0.606
+   QUANT r64 b4 pass u2 k1: acc=0.758
+   QUANT r64 b4 pass u2 k4: acc=0.741
+   QUANT r64 b4 pass u2 k16: acc=0.567
+   QUANT r64 b8 read u0 k1: acc=0.981
+   QUANT r64 b8 read u0 k4: acc=0.889
+   QUANT r64 b8 read u0 k16: acc=0.609
+   QUANT r64 b8 pass u2 k1: acc=0.758
+   QUANT r64 b8 pass u2 k4: acc=0.740
+   QUANT r64 b8 pass u2 k16: acc=0.569
+   QUANT r256 b2 read u0 k1: acc=0.980
+   QUANT r256 b2 read u0 k4: acc=0.808
+   QUANT r256 b2 read u0 k16: acc=0.580
+   QUANT r256 b2 pass u2 k1: acc=0.761
+   QUANT r256 b2 pass u2 k4: acc=0.682
+   QUANT r256 b2 pass u2 k16: acc=0.545
+   QUANT r256 b3 read u0 k1: acc=0.984
+   QUANT r256 b3 read u0 k4: acc=0.881
+   QUANT r256 b3 read u0 k16: acc=0.602
+   QUANT r256 b3 pass u2 k1: acc=0.758
+   QUANT r256 b3 pass u2 k4: acc=0.737
+   QUANT r256 b3 pass u2 k16: acc=0.564
+   QUANT r256 b4 read u0 k1: acc=0.982
+   QUANT r256 b4 read u0 k4: acc=0.892
+   QUANT r256 b4 read u0 k16: acc=0.608
+   QUANT r256 b4 pass u2 k1: acc=0.759
+   QUANT r256 b4 pass u2 k4: acc=0.739
+   QUANT r256 b4 pass u2 k16: acc=0.567
+   QUANT r256 b8 read u0 k1: acc=0.982
+   QUANT r256 b8 read u0 k4: acc=0.890
+   QUANT r256 b8 read u0 k16: acc=0.608
+   QUANT r256 b8 pass u2 k1: acc=0.758
+   QUANT r256 b8 pass u2 k4: acc=0.741
+   QUANT r256 b8 pass u2 k16: acc=0.568
+   QUANT r1024 b2 read u0 k1: acc=0.981
+   QUANT r1024 b2 read u0 k4: acc=0.869
+   QUANT r1024 b2 read u0 k16: acc=0.605
+   QUANT r1024 b2 pass u2 k1: acc=0.757
+   QUANT r1024 b2 pass u2 k4: acc=0.708
+   QUANT r1024 b2 pass u2 k16: acc=0.554
+   QUANT r1024 b3 read u0 k1: acc=0.981
+   QUANT r1024 b3 read u0 k4: acc=0.888
+   QUANT r1024 b3 read u0 k16: acc=0.606
+   QUANT r1024 b3 pass u2 k1: acc=0.758
+   QUANT r1024 b3 pass u2 k4: acc=0.725
+   QUANT r1024 b3 pass u2 k16: acc=0.557
+   QUANT r1024 b4 read u0 k1: acc=0.981
+   QUANT r1024 b4 read u0 k4: acc=0.880
+   QUANT r1024 b4 read u0 k16: acc=0.605
+   QUANT r1024 b4 pass u2 k1: acc=0.758
+   QUANT r1024 b4 pass u2 k4: acc=0.715
+   QUANT r1024 b4 pass u2 k16: acc=0.556
+   QUANT r1024 b8 read u0 k1: acc=0.981
+   QUANT r1024 b8 read u0 k4: acc=0.881
+   QUANT r1024 b8 read u0 k16: acc=0.607
+   QUANT r1024 b8 pass u2 k1: acc=0.758
+   QUANT r1024 b8 pass u2 k4: acc=0.720
+   QUANT r1024 b8 pass u2 k16: acc=0.556
+   GATE: single-branch>=0.90 at all u: False; editable (>=2 branches, 20/5/80): False; PASS=False
+== gate-eval-cur/001 seed=23 variant=state model=Qwen/Qwen3-0.6B
+   r64    u0 k1   acc=0.968 unaddr=0.968 minsel=0.968 joint=0.968 zero=0.508 shuf=0.519 sham=None
+   r64    u0 k2   acc=0.964 unaddr=0.964 minsel=0.959 joint=0.929 zero=0.508 shuf=0.494 sham=None
+   r64    u0 k4   acc=0.965 unaddr=0.965 minsel=0.959 joint=0.865 zero=0.495 shuf=0.515 sham=None
+   r64    u0 k8   acc=0.762 unaddr=0.762 minsel=0.562 joint=0.095 zero=0.499 shuf=0.504 sham=None
+   r64    u0 k16  acc=0.642 unaddr=0.642 minsel=0.499 joint=0.000 zero=0.505 shuf=0.497 sham=None
+   r64    u0 k32  acc=0.570 unaddr=0.570 minsel=0.481 joint=0.000 zero=0.499 shuf=0.503 sham=None
+   r64    u0 k64  acc=0.537 unaddr=0.537 minsel=0.473 joint=0.000 zero=0.503 shuf=0.497 sham=None
+   r64    u1 k1   acc=0.845 unaddr=0.845 minsel=0.845 joint=0.845 zero=0.489 shuf=0.517 sham=0.48828125
+   r64    u1 k2   acc=0.860 unaddr=0.870 minsel=0.854 joint=0.744 zero=0.505 shuf=0.501 sham=0.732421875
+   r64    u1 k4   acc=0.834 unaddr=0.842 minsel=0.724 joint=0.496 zero=0.491 shuf=0.518 sham=0.64990234375
+   r64    u1 k8   acc=0.675 unaddr=0.676 minsel=0.516 joint=0.037 zero=0.497 shuf=0.491 sham=0.57470703125
+   r64    u1 k16  acc=0.600 unaddr=0.600 minsel=0.488 joint=0.000 zero=0.495 shuf=0.499 sham=0.534423828125
+   r64    u1 k32  acc=0.547 unaddr=0.548 minsel=0.466 joint=0.000 zero=0.498 shuf=0.503 sham=0.519927978515625
+   r64    u1 k64  acc=0.523 unaddr=0.523 minsel=0.474 joint=0.000 zero=0.498 shuf=0.500 sham=0.5122222900390625
+   r64    u2 k1   acc=0.763 unaddr=0.763 minsel=0.763 joint=0.763 zero=0.495 shuf=0.491 sham=0.4951171875
+   r64    u2 k2   acc=0.778 unaddr=0.790 minsel=0.773 joint=0.609 zero=0.490 shuf=0.507 sham=0.54736328125
+   r64    u2 k4   acc=0.763 unaddr=0.769 minsel=0.688 joint=0.365 zero=0.516 shuf=0.487 sham=0.52099609375
+   r64    u2 k8   acc=0.650 unaddr=0.656 minsel=0.515 joint=0.028 zero=0.495 shuf=0.491 sham=0.5238037109375
+   r64    u2 k16  acc=0.578 unaddr=0.580 minsel=0.497 joint=0.000 zero=0.504 shuf=0.506 sham=0.5076904296875
+   r64    u2 k32  acc=0.543 unaddr=0.543 minsel=0.480 joint=0.000 zero=0.496 shuf=0.499 sham=0.5069580078125
+   r64    u2 k64  acc=0.520 unaddr=0.520 minsel=0.467 joint=0.000 zero=0.501 shuf=0.503 sham=0.5053863525390625
+   r256   u0 k1   acc=0.968 unaddr=0.968 minsel=0.968 joint=0.968 zero=0.508 shuf=0.519 sham=None
+   r256   u0 k2   acc=0.964 unaddr=0.964 minsel=0.959 joint=0.929 zero=0.508 shuf=0.494 sham=None
+   r256   u0 k4   acc=0.965 unaddr=0.965 minsel=0.958 joint=0.864 zero=0.495 shuf=0.515 sham=None
+   r256   u0 k8   acc=0.760 unaddr=0.760 minsel=0.565 joint=0.088 zero=0.499 shuf=0.504 sham=None
+   r256   u0 k16  acc=0.643 unaddr=0.643 minsel=0.490 joint=0.000 zero=0.505 shuf=0.497 sham=None
+   r256   u0 k32  acc=0.571 unaddr=0.571 minsel=0.486 joint=0.000 zero=0.499 shuf=0.505 sham=None
+   r256   u0 k64  acc=0.538 unaddr=0.538 minsel=0.478 joint=0.000 zero=0.503 shuf=0.496 sham=None
+   r256   u1 k1   acc=0.846 unaddr=0.846 minsel=0.846 joint=0.846 zero=0.489 shuf=0.516 sham=0.48828125
+   r256   u1 k2   acc=0.860 unaddr=0.870 minsel=0.854 joint=0.744 zero=0.505 shuf=0.501 sham=0.73193359375
+   r256   u1 k4   acc=0.832 unaddr=0.840 minsel=0.725 joint=0.486 zero=0.491 shuf=0.520 sham=0.641845703125
+   r256   u1 k8   acc=0.675 unaddr=0.675 minsel=0.515 joint=0.037 zero=0.497 shuf=0.489 sham=0.5758056640625
+   r256   u1 k16  acc=0.600 unaddr=0.600 minsel=0.487 joint=0.000 zero=0.495 shuf=0.501 sham=0.5322265625
+   r256   u1 k32  acc=0.548 unaddr=0.549 minsel=0.461 joint=0.000 zero=0.498 shuf=0.505 sham=0.520477294921875
+   r256   u1 k64  acc=0.525 unaddr=0.525 minsel=0.476 joint=0.000 zero=0.498 shuf=0.501 sham=0.51123046875
+   r256   u2 k1   acc=0.762 unaddr=0.762 minsel=0.762 joint=0.762 zero=0.495 shuf=0.492 sham=0.4951171875
+   r256   u2 k2   acc=0.778 unaddr=0.790 minsel=0.773 joint=0.608 zero=0.490 shuf=0.506 sham=0.57763671875
+   r256   u2 k4   acc=0.763 unaddr=0.771 minsel=0.693 joint=0.366 zero=0.516 shuf=0.486 sham=0.522216796875
+   r256   u2 k8   acc=0.650 unaddr=0.655 minsel=0.523 joint=0.027 zero=0.495 shuf=0.490 sham=0.5225830078125
+   r256   u2 k16  acc=0.577 unaddr=0.579 minsel=0.492 joint=0.000 zero=0.504 shuf=0.505 sham=0.50909423828125
+   r256   u2 k32  acc=0.541 unaddr=0.541 minsel=0.479 joint=0.000 zero=0.496 shuf=0.496 sham=0.506195068359375
+   r256   u2 k64  acc=0.520 unaddr=0.519 minsel=0.460 joint=0.000 zero=0.501 shuf=0.503 sham=0.5035858154296875
+   r1024  u0 k1   acc=0.968 unaddr=0.968 minsel=0.968 joint=0.968 zero=0.508 shuf=0.519 sham=None
+   r1024  u0 k2   acc=0.964 unaddr=0.964 minsel=0.959 joint=0.929 zero=0.508 shuf=0.494 sham=None
+   r1024  u0 k4   acc=0.965 unaddr=0.965 minsel=0.958 joint=0.864 zero=0.495 shuf=0.515 sham=None
+   r1024  u0 k8   acc=0.760 unaddr=0.760 minsel=0.564 joint=0.094 zero=0.499 shuf=0.503 sham=None
+   r1024  u0 k16  acc=0.643 unaddr=0.643 minsel=0.493 joint=0.000 zero=0.505 shuf=0.498 sham=None
+   r1024  u0 k32  acc=0.569 unaddr=0.569 minsel=0.476 joint=0.000 zero=0.499 shuf=0.506 sham=None
+   r1024  u0 k64  acc=0.539 unaddr=0.539 minsel=0.479 joint=0.000 zero=0.503 shuf=0.497 sham=None
+   r1024  u1 k1   acc=0.846 unaddr=0.846 minsel=0.846 joint=0.846 zero=0.489 shuf=0.516 sham=0.48828125
+   r1024  u1 k2   acc=0.860 unaddr=0.870 minsel=0.854 joint=0.744 zero=0.505 shuf=0.501 sham=0.732421875
+   r1024  u1 k4   acc=0.832 unaddr=0.840 minsel=0.727 joint=0.487 zero=0.491 shuf=0.520 sham=0.649658203125
+   r1024  u1 k8   acc=0.673 unaddr=0.674 minsel=0.508 joint=0.038 zero=0.497 shuf=0.490 sham=0.5787353515625
+   r1024  u1 k16  acc=0.600 unaddr=0.600 minsel=0.490 joint=0.000 zero=0.495 shuf=0.500 sham=0.53497314453125
+   r1024  u1 k32  acc=0.548 unaddr=0.549 minsel=0.467 joint=0.000 zero=0.498 shuf=0.503 sham=0.5198974609375
+   r1024  u1 k64  acc=0.526 unaddr=0.527 minsel=0.471 joint=0.000 zero=0.498 shuf=0.502 sham=0.5097808837890625
+   r1024  u2 k1   acc=0.762 unaddr=0.762 minsel=0.762 joint=0.762 zero=0.495 shuf=0.492 sham=0.4951171875
+   r1024  u2 k2   acc=0.777 unaddr=0.790 minsel=0.773 joint=0.607 zero=0.490 shuf=0.507 sham=0.5625
+   r1024  u2 k4   acc=0.763 unaddr=0.773 minsel=0.695 joint=0.360 zero=0.516 shuf=0.485 sham=0.52197265625
+   r1024  u2 k8   acc=0.650 unaddr=0.656 minsel=0.511 joint=0.029 zero=0.495 shuf=0.488 sham=0.523681640625
+   r1024  u2 k16  acc=0.577 unaddr=0.578 minsel=0.500 joint=0.000 zero=0.504 shuf=0.504 sham=0.5115966796875
+   r1024  u2 k32  acc=0.541 unaddr=0.541 minsel=0.476 joint=0.000 zero=0.496 shuf=0.498 sham=0.505950927734375
+   r1024  u2 k64  acc=0.519 unaddr=0.519 minsel=0.465 joint=0.000 zero=0.501 shuf=0.502 sham=0.5040130615234375
+   CAUSAL r64 k2: targeted=+0.0pp collateral=+0.2pp undo=None adv_edit=0.387 adv_undo=0.701 sham_tgt=0.785
+   CAUSAL r64 k4: targeted=+3.5pp collateral=+5.1pp undo=0.0 adv_edit=0.410 adv_undo=0.621 sham_tgt=0.670
+   CAUSAL r256 k2: targeted=+0.0pp collateral=+0.2pp undo=None adv_edit=0.391 adv_undo=0.678 sham_tgt=0.785
+   CAUSAL r256 k4: targeted=+3.3pp collateral=+5.6pp undo=-0.058823529411764705 adv_edit=0.406 adv_undo=0.625 sham_tgt=0.660
+   CAUSAL r1024 k2: targeted=+0.0pp collateral=+0.0pp undo=None adv_edit=0.385 adv_undo=0.676 sham_tgt=0.787
+   CAUSAL r1024 k4: targeted=+3.3pp collateral=+5.8pp undo=-0.11764705882352941 adv_edit=0.410 adv_undo=0.623 sham_tgt=0.658
+   PR r64: 2.4 (bias-corr 2.4005944140315147, iso-null 63.491943359375, top-PC share 0.5144157062435778) n=8192
+   PR r256: 2.5 (bias-corr 2.4554881461904445, iso-null 248.2519989013672, top-PC share 0.5059307952051622) n=8192
+   PR r1024: 2.6 (bias-corr 2.645825831105864, iso-null 910.3080444335938, top-PC share 0.48380646227697516) n=8192
+   QUANT r64 b2 read u0 k1: acc=0.753
+   QUANT r64 b2 read u0 k4: acc=0.808
+   QUANT r64 b2 read u0 k16: acc=0.589
+   QUANT r64 b2 pass u2 k1: acc=0.346
+   QUANT r64 b2 pass u2 k4: acc=0.567
+   QUANT r64 b2 pass u2 k16: acc=0.520
+   QUANT r64 b3 read u0 k1: acc=0.968
+   QUANT r64 b3 read u0 k4: acc=0.961
+   QUANT r64 b3 read u0 k16: acc=0.638
+   QUANT r64 b3 pass u2 k1: acc=0.763
+   QUANT r64 b3 pass u2 k4: acc=0.750
+   QUANT r64 b3 pass u2 k16: acc=0.577
+   QUANT r64 b4 read u0 k1: acc=0.968
+   QUANT r64 b4 read u0 k4: acc=0.965
+   QUANT r64 b4 read u0 k16: acc=0.641
+   QUANT r64 b4 pass u2 k1: acc=0.762
+   QUANT r64 b4 pass u2 k4: acc=0.762
+   QUANT r64 b4 pass u2 k16: acc=0.579
+   QUANT r64 b8 read u0 k1: acc=0.968
+   QUANT r64 b8 read u0 k4: acc=0.965
+   QUANT r64 b8 read u0 k16: acc=0.642
+   QUANT r64 b8 pass u2 k1: acc=0.763
+   QUANT r64 b8 pass u2 k4: acc=0.762
+   QUANT r64 b8 pass u2 k16: acc=0.578
+   QUANT r256 b2 read u0 k1: acc=0.968
+   QUANT r256 b2 read u0 k4: acc=0.949
+   QUANT r256 b2 read u0 k16: acc=0.635
+   QUANT r256 b2 pass u2 k1: acc=0.763
+   QUANT r256 b2 pass u2 k4: acc=0.689
+   QUANT r256 b2 pass u2 k16: acc=0.558
+   QUANT r256 b3 read u0 k1: acc=0.968
+   QUANT r256 b3 read u0 k4: acc=0.963
+   QUANT r256 b3 read u0 k16: acc=0.641
+   QUANT r256 b3 pass u2 k1: acc=0.762
+   QUANT r256 b3 pass u2 k4: acc=0.761
+   QUANT r256 b3 pass u2 k16: acc=0.575
+   QUANT r256 b4 read u0 k1: acc=0.968
+   QUANT r256 b4 read u0 k4: acc=0.965
+   QUANT r256 b4 read u0 k16: acc=0.643
+   QUANT r256 b4 pass u2 k1: acc=0.762
+   QUANT r256 b4 pass u2 k4: acc=0.761
+   QUANT r256 b4 pass u2 k16: acc=0.577
+   QUANT r256 b8 read u0 k1: acc=0.968
+   QUANT r256 b8 read u0 k4: acc=0.965
+   QUANT r256 b8 read u0 k16: acc=0.642
+   QUANT r256 b8 pass u2 k1: acc=0.762
+   QUANT r256 b8 pass u2 k4: acc=0.762
+   QUANT r256 b8 pass u2 k16: acc=0.577
+   QUANT r1024 b2 read u0 k1: acc=0.968
+   QUANT r1024 b2 read u0 k4: acc=0.953
+   QUANT r1024 b2 read u0 k16: acc=0.638
+   QUANT r1024 b2 pass u2 k1: acc=0.763
+   QUANT r1024 b2 pass u2 k4: acc=0.736
+   QUANT r1024 b2 pass u2 k16: acc=0.566
+   QUANT r1024 b3 read u0 k1: acc=0.968
+   QUANT r1024 b3 read u0 k4: acc=0.965
+   QUANT r1024 b3 read u0 k16: acc=0.643
+   QUANT r1024 b3 pass u2 k1: acc=0.762
+   QUANT r1024 b3 pass u2 k4: acc=0.758
+   QUANT r1024 b3 pass u2 k16: acc=0.574
+   QUANT r1024 b4 read u0 k1: acc=0.968
+   QUANT r1024 b4 read u0 k4: acc=0.964
+   QUANT r1024 b4 read u0 k16: acc=0.641
+   QUANT r1024 b4 pass u2 k1: acc=0.762
+   QUANT r1024 b4 pass u2 k4: acc=0.761
+   QUANT r1024 b4 pass u2 k16: acc=0.573
+   QUANT r1024 b8 read u0 k1: acc=0.968
+   QUANT r1024 b8 read u0 k4: acc=0.965
+   QUANT r1024 b8 read u0 k16: acc=0.641
+   QUANT r1024 b8 pass u2 k1: acc=0.762
+   QUANT r1024 b8 pass u2 k4: acc=0.760
+   QUANT r1024 b8 pass u2 k16: acc=0.571
+   GATE: single-branch>=0.90 at all u: False; editable (>=2 branches, 20/5/80): False; PASS=False
+== gate-eval-cur/002 seed=47 variant=state model=Qwen/Qwen3-0.6B
+   r64    u0 k1   acc=0.989 unaddr=0.989 minsel=0.989 joint=0.989 zero=0.492 shuf=0.515 sham=None
+   r64    u0 k2   acc=0.985 unaddr=0.985 minsel=0.983 joint=0.972 zero=0.504 shuf=0.492 sham=None
+   r64    u0 k4   acc=0.984 unaddr=0.984 minsel=0.979 joint=0.937 zero=0.502 shuf=0.518 sham=None
+   r64    u0 k8   acc=0.831 unaddr=0.831 minsel=0.551 joint=0.180 zero=0.508 shuf=0.503 sham=None
+   r64    u0 k16  acc=0.681 unaddr=0.681 minsel=0.519 joint=0.000 zero=0.502 shuf=0.494 sham=None
+   r64    u0 k32  acc=0.605 unaddr=0.605 minsel=0.488 joint=0.000 zero=0.500 shuf=0.503 sham=None
+   r64    u0 k64  acc=0.556 unaddr=0.556 minsel=0.491 joint=0.000 zero=0.501 shuf=0.497 sham=None
+   r64    u1 k1   acc=0.856 unaddr=0.856 minsel=0.856 joint=0.856 zero=0.511 shuf=0.513 sham=0.6806640625
+   r64    u1 k2   acc=0.877 unaddr=0.891 minsel=0.873 joint=0.772 zero=0.503 shuf=0.500 sham=0.76513671875
+   r64    u1 k4   acc=0.892 unaddr=0.903 minsel=0.888 joint=0.650 zero=0.498 shuf=0.511 sham=0.773193359375
+   r64    u1 k8   acc=0.763 unaddr=0.767 minsel=0.538 joint=0.106 zero=0.503 shuf=0.497 sham=0.6737060546875
+   r64    u1 k16  acc=0.648 unaddr=0.648 minsel=0.514 joint=0.000 zero=0.497 shuf=0.495 sham=0.59893798828125
+   r64    u1 k32  acc=0.590 unaddr=0.590 minsel=0.505 joint=0.000 zero=0.499 shuf=0.501 sham=0.558258056640625
+   r64    u1 k64  acc=0.543 unaddr=0.543 minsel=0.475 joint=0.000 zero=0.496 shuf=0.500 sham=0.52960205078125
+   r64    u2 k1   acc=0.763 unaddr=0.763 minsel=0.763 joint=0.763 zero=0.505 shuf=0.495 sham=0.6435546875
+   r64    u2 k2   acc=0.775 unaddr=0.784 minsel=0.768 joint=0.608 zero=0.510 shuf=0.502 sham=0.6435546875
+   r64    u2 k4   acc=0.807 unaddr=0.820 minsel=0.801 joint=0.456 zero=0.511 shuf=0.488 sham=0.67578125
+   r64    u2 k8   acc=0.716 unaddr=0.721 minsel=0.523 joint=0.072 zero=0.497 shuf=0.489 sham=0.5819091796875
+   r64    u2 k16  acc=0.620 unaddr=0.622 minsel=0.494 joint=0.000 zero=0.502 shuf=0.500 sham=0.5494384765625
+   r64    u2 k32  acc=0.563 unaddr=0.564 minsel=0.493 joint=0.000 zero=0.502 shuf=0.499 sham=0.52545166015625
+   r64    u2 k64  acc=0.535 unaddr=0.534 minsel=0.469 joint=0.000 zero=0.501 shuf=0.499 sham=0.5138092041015625
+   r256   u0 k1   acc=0.990 unaddr=0.990 minsel=0.990 joint=0.990 zero=0.492 shuf=0.516 sham=None
+   r256   u0 k2   acc=0.985 unaddr=0.985 minsel=0.983 joint=0.972 zero=0.504 shuf=0.492 sham=None
+   r256   u0 k4   acc=0.985 unaddr=0.985 minsel=0.980 joint=0.939 zero=0.502 shuf=0.518 sham=None
+   r256   u0 k8   acc=0.831 unaddr=0.831 minsel=0.545 joint=0.178 zero=0.508 shuf=0.505 sham=None
+   r256   u0 k16  acc=0.681 unaddr=0.681 minsel=0.520 joint=0.000 zero=0.502 shuf=0.493 sham=None
+   r256   u0 k32  acc=0.604 unaddr=0.604 minsel=0.491 joint=0.000 zero=0.500 shuf=0.499 sham=None
+   r256   u0 k64  acc=0.556 unaddr=0.556 minsel=0.495 joint=0.000 zero=0.501 shuf=0.497 sham=None
+   r256   u1 k1   acc=0.856 unaddr=0.856 minsel=0.856 joint=0.856 zero=0.511 shuf=0.513 sham=0.6806640625
+   r256   u1 k2   acc=0.876 unaddr=0.890 minsel=0.871 joint=0.771 zero=0.503 shuf=0.500 sham=0.7880859375
+   r256   u1 k4   acc=0.891 unaddr=0.903 minsel=0.888 joint=0.648 zero=0.498 shuf=0.512 sham=0.77587890625
+   r256   u1 k8   acc=0.765 unaddr=0.768 minsel=0.546 joint=0.106 zero=0.503 shuf=0.498 sham=0.67236328125
+   r256   u1 k16  acc=0.647 unaddr=0.648 minsel=0.517 joint=0.000 zero=0.497 shuf=0.495 sham=0.60015869140625
+   r256   u1 k32  acc=0.589 unaddr=0.589 minsel=0.505 joint=0.000 zero=0.499 shuf=0.502 sham=0.55902099609375
+   r256   u1 k64  acc=0.544 unaddr=0.544 minsel=0.474 joint=0.000 zero=0.496 shuf=0.499 sham=0.528167724609375
+   r256   u2 k1   acc=0.757 unaddr=0.757 minsel=0.757 joint=0.757 zero=0.505 shuf=0.499 sham=0.580078125
+   r256   u2 k2   acc=0.773 unaddr=0.781 minsel=0.766 joint=0.605 zero=0.510 shuf=0.504 sham=0.62744140625
+   r256   u2 k4   acc=0.808 unaddr=0.820 minsel=0.800 joint=0.457 zero=0.511 shuf=0.488 sham=0.66748046875
+   r256   u2 k8   acc=0.716 unaddr=0.721 minsel=0.529 joint=0.073 zero=0.497 shuf=0.490 sham=0.58203125
+   r256   u2 k16  acc=0.618 unaddr=0.620 minsel=0.502 joint=0.000 zero=0.502 shuf=0.502 sham=0.55078125
+   r256   u2 k32  acc=0.563 unaddr=0.564 minsel=0.490 joint=0.000 zero=0.502 shuf=0.499 sham=0.526458740234375
+   r256   u2 k64  acc=0.535 unaddr=0.534 minsel=0.468 joint=0.000 zero=0.501 shuf=0.499 sham=0.5137939453125
+   r1024  u0 k1   acc=0.990 unaddr=0.990 minsel=0.990 joint=0.990 zero=0.492 shuf=0.516 sham=None
+   r1024  u0 k2   acc=0.985 unaddr=0.985 minsel=0.983 joint=0.972 zero=0.504 shuf=0.492 sham=None
+   r1024  u0 k4   acc=0.984 unaddr=0.984 minsel=0.979 joint=0.938 zero=0.502 shuf=0.518 sham=None
+   r1024  u0 k8   acc=0.832 unaddr=0.832 minsel=0.550 joint=0.174 zero=0.508 shuf=0.504 sham=None
+   r1024  u0 k16  acc=0.680 unaddr=0.680 minsel=0.521 joint=0.000 zero=0.502 shuf=0.494 sham=None
+   r1024  u0 k32  acc=0.605 unaddr=0.605 minsel=0.501 joint=0.000 zero=0.500 shuf=0.500 sham=None
+   r1024  u0 k64  acc=0.557 unaddr=0.557 minsel=0.494 joint=0.000 zero=0.501 shuf=0.497 sham=None
+   r1024  u1 k1   acc=0.856 unaddr=0.856 minsel=0.856 joint=0.856 zero=0.511 shuf=0.513 sham=0.673828125
+   r1024  u1 k2   acc=0.878 unaddr=0.892 minsel=0.874 joint=0.774 zero=0.503 shuf=0.501 sham=0.77392578125
+   r1024  u1 k4   acc=0.891 unaddr=0.903 minsel=0.888 joint=0.649 zero=0.498 shuf=0.512 sham=0.77587890625
+   r1024  u1 k8   acc=0.765 unaddr=0.768 minsel=0.542 joint=0.108 zero=0.503 shuf=0.499 sham=0.67333984375
+   r1024  u1 k16  acc=0.647 unaddr=0.648 minsel=0.508 joint=0.000 zero=0.497 shuf=0.496 sham=0.59808349609375
+   r1024  u1 k32  acc=0.588 unaddr=0.588 minsel=0.507 joint=0.000 zero=0.499 shuf=0.502 sham=0.561004638671875
+   r1024  u1 k64  acc=0.545 unaddr=0.545 minsel=0.474 joint=0.000 zero=0.496 shuf=0.499 sham=0.529388427734375
+   r1024  u2 k1   acc=0.758 unaddr=0.758 minsel=0.758 joint=0.758 zero=0.505 shuf=0.498 sham=0.587890625
+   r1024  u2 k2   acc=0.773 unaddr=0.779 minsel=0.763 joint=0.606 zero=0.510 shuf=0.504 sham=0.630859375
+   r1024  u2 k4   acc=0.808 unaddr=0.821 minsel=0.801 joint=0.458 zero=0.511 shuf=0.488 sham=0.66796875
+   r1024  u2 k8   acc=0.718 unaddr=0.723 minsel=0.526 joint=0.079 zero=0.497 shuf=0.490 sham=0.5799560546875
+   r1024  u2 k16  acc=0.619 unaddr=0.621 minsel=0.489 joint=0.000 zero=0.502 shuf=0.502 sham=0.5487060546875
+   r1024  u2 k32  acc=0.563 unaddr=0.565 minsel=0.490 joint=0.000 zero=0.502 shuf=0.498 sham=0.527130126953125
+   r1024  u2 k64  acc=0.535 unaddr=0.535 minsel=0.470 joint=0.000 zero=0.501 shuf=0.500 sham=0.51214599609375
+   CAUSAL r64 k2: targeted=+0.4pp collateral=+0.2pp undo=-2.0 adv_edit=0.391 adv_undo=0.688 sham_tgt=0.855
+   CAUSAL r64 k4: targeted=+0.2pp collateral=+0.0pp undo=-11.0 adv_edit=0.389 adv_undo=0.621 sham_tgt=0.799
+   CAUSAL r256 k2: targeted=+0.4pp collateral=+0.0pp undo=-3.5 adv_edit=0.393 adv_undo=0.684 sham_tgt=0.906
+   CAUSAL r256 k4: targeted=+0.4pp collateral=+0.0pp undo=-1.5 adv_edit=0.396 adv_undo=0.623 sham_tgt=0.818
+   CAUSAL r1024 k2: targeted=+0.4pp collateral=+0.2pp undo=-3.0 adv_edit=0.387 adv_undo=0.678 sham_tgt=0.902
+   CAUSAL r1024 k4: targeted=+0.4pp collateral=+0.0pp undo=-2.5 adv_edit=0.402 adv_undo=0.619 sham_tgt=0.828
+   PR r64: 3.0 (bias-corr 3.0268108499015502, iso-null 63.509376525878906, top-PC share 0.38593928112174225) n=8192
+   PR r256: 3.1 (bias-corr 3.0700631550897515, iso-null 248.1687774658203, top-PC share 0.39117273326606794) n=8192
+   PR r1024: 3.2 (bias-corr 3.2047108841601957, iso-null 910.7288208007812, top-PC share 0.3761466742400386) n=8192
+   QUANT r64 b2 read u0 k1: acc=0.825
+   QUANT r64 b2 read u0 k4: acc=0.790
+   QUANT r64 b2 read u0 k16: acc=0.614
+   QUANT r64 b2 pass u2 k1: acc=0.732
+   QUANT r64 b2 pass u2 k4: acc=0.622
+   QUANT r64 b2 pass u2 k16: acc=0.549
+   QUANT r64 b3 read u0 k1: acc=0.989
+   QUANT r64 b3 read u0 k4: acc=0.984
+   QUANT r64 b3 read u0 k16: acc=0.678
+   QUANT r64 b3 pass u2 k1: acc=0.774
+   QUANT r64 b3 pass u2 k4: acc=0.802
+   QUANT r64 b3 pass u2 k16: acc=0.609
+   QUANT r64 b4 read u0 k1: acc=0.989
+   QUANT r64 b4 read u0 k4: acc=0.984
+   QUANT r64 b4 read u0 k16: acc=0.680
+   QUANT r64 b4 pass u2 k1: acc=0.759
+   QUANT r64 b4 pass u2 k4: acc=0.808
+   QUANT r64 b4 pass u2 k16: acc=0.615
+   QUANT r64 b8 read u0 k1: acc=0.989
+   QUANT r64 b8 read u0 k4: acc=0.984
+   QUANT r64 b8 read u0 k16: acc=0.680
+   QUANT r64 b8 pass u2 k1: acc=0.762
+   QUANT r64 b8 pass u2 k4: acc=0.808
+   QUANT r64 b8 pass u2 k16: acc=0.619
+   QUANT r256 b2 read u0 k1: acc=0.990
+   QUANT r256 b2 read u0 k4: acc=0.981
+   QUANT r256 b2 read u0 k16: acc=0.676
+   QUANT r256 b2 pass u2 k1: acc=0.656
+   QUANT r256 b2 pass u2 k4: acc=0.786
+   QUANT r256 b2 pass u2 k16: acc=0.588
+   QUANT r256 b3 read u0 k1: acc=0.990
+   QUANT r256 b3 read u0 k4: acc=0.984
+   QUANT r256 b3 read u0 k16: acc=0.679
+   QUANT r256 b3 pass u2 k1: acc=0.754
+   QUANT r256 b3 pass u2 k4: acc=0.807
+   QUANT r256 b3 pass u2 k16: acc=0.617
+   QUANT r256 b4 read u0 k1: acc=0.990
+   QUANT r256 b4 read u0 k4: acc=0.984
+   QUANT r256 b4 read u0 k16: acc=0.680
+   QUANT r256 b4 pass u2 k1: acc=0.756
+   QUANT r256 b4 pass u2 k4: acc=0.808
+   QUANT r256 b4 pass u2 k16: acc=0.617
+   QUANT r256 b8 read u0 k1: acc=0.990
+   QUANT r256 b8 read u0 k4: acc=0.984
+   QUANT r256 b8 read u0 k16: acc=0.680
+   QUANT r256 b8 pass u2 k1: acc=0.758
+   QUANT r256 b8 pass u2 k4: acc=0.807
+   QUANT r256 b8 pass u2 k16: acc=0.617
+   QUANT r1024 b2 read u0 k1: acc=0.989
+   QUANT r1024 b2 read u0 k4: acc=0.981
+   QUANT r1024 b2 read u0 k16: acc=0.675
+   QUANT r1024 b2 pass u2 k1: acc=0.751
+   QUANT r1024 b2 pass u2 k4: acc=0.784
+   QUANT r1024 b2 pass u2 k16: acc=0.606
+   QUANT r1024 b3 read u0 k1: acc=0.990
+   QUANT r1024 b3 read u0 k4: acc=0.984
+   QUANT r1024 b3 read u0 k16: acc=0.682
+   QUANT r1024 b3 pass u2 k1: acc=0.759
+   QUANT r1024 b3 pass u2 k4: acc=0.803
+   QUANT r1024 b3 pass u2 k16: acc=0.612
+   QUANT r1024 b4 read u0 k1: acc=0.990
+   QUANT r1024 b4 read u0 k4: acc=0.984
+   QUANT r1024 b4 read u0 k16: acc=0.680
+   QUANT r1024 b4 pass u2 k1: acc=0.757
+   QUANT r1024 b4 pass u2 k4: acc=0.805
+   QUANT r1024 b4 pass u2 k16: acc=0.613
+   QUANT r1024 b8 read u0 k1: acc=0.990
+   QUANT r1024 b8 read u0 k4: acc=0.984
+   QUANT r1024 b8 read u0 k16: acc=0.681
+   QUANT r1024 b8 pass u2 k1: acc=0.757
+   QUANT r1024 b8 pass u2 k4: acc=0.806
+   QUANT r1024 b8 pass u2 k16: acc=0.613
+   GATE: single-branch>=0.90 at all u: False; editable (>=2 branches, 20/5/80): False; PASS=False
