@@ -1,5 +1,16 @@
 # Experiments Log
 
+## LOCKED: admission gate FAILS (2026-10-11 23:35Z)
+
+Curriculum arm (Amendment 2), Qwen3-0.6B, 3 seeds, test split, corrected evaluator. k=1: no updates 0.97-0.99,
+one update 0.84-0.86, two updates ~0.76 (bar 0.90 at every update count). Branch-addressed edits: targeted
+effect ~0 pp (bar 20 pp); edit-then-advance tracks the unedited graph (0.41). Storage C90 (every selector) = 2-4
+reachability answers. Width 64/256/1024 identical -> width scaling not tested. Consequence (pre-registered): no
+1.7B flagship escalation. What we learned: a 0.6B model with a single-vector bottleneck learns to STORE a few
+late-selectable answers but does not learn to APPLY edits to the stored state through a fresh-context pass;
+in one seed it ignores updates entirely. Next: Registrations P1 (random-access storage capacity vs width) and
+P2 (update closure with a consistency target).
+
 ## GCP latent-reasoning program (2026-10-11, running)
 
 Pre-registration: theory/LATENT_BRANCH_CAPACITY.md (+ Amendment 1). Runner: experiments/cloud/lsr_cloud.py.
