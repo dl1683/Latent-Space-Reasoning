@@ -13,6 +13,13 @@ ends 2026-10-16 (credit expiry 10-17); budget 5,000 USD, spend ledger experiment
 experiments/cloud/lsr_cloud.py (one Spot VM per shard, auto-off monitor self-tested on every VM before work).
 The HP-G confrontation resume pointer (below) is parked, not abandoned.
 
+Cross-project extraction (user direction, 2026-10-11): theory/CROSS_PROJECT_INSIGHTS.md distils Matrix Native
+Math and the LLM Genome lab (read-only) into LSR-relevant insights with source/status/effect. Decision-relevant:
+PR finite-sample bias (n=512 at r=1024 would void the 256->1024 test; need n>=8r or bias correction), a
+width-x-precision information ceiling that may bind at r=64, concurrent-formation collision risk in the
+mixed training recipe, near-block-diagonal update structure as the computation signature, and matched-norm
+random controls for B/C. Proposed amendments go through a re-council before any affected data.
+
 ## SESSION STATUS: PAUSED by user (2026-09-23)
 
 Work paused at a natural boundary of the HP-G arc. Nothing running.
