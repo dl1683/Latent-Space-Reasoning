@@ -50,7 +50,44 @@ def answers(ex):
     return [reachable(g) for g in apply(ex["graphs"], ex["ops"])]
 
 
+QUERY = {"mode": "reach"}  # "reach": selector = branch j (reachability); "edge": selector = 16*j + e (edge bit, P1)
+
+
+def n_sel(k):
+    return k if QUERY["mode"] == "reach" else 16 * k
+
+
+def branch_of(s_):
+    return s_ if QUERY["mode"] == "reach" else s_ // 16
+
+
+def gold_of(ex, s_):
+    if QUERY["mode"] == "reach":
+        return answers(ex)[s_]
+    return bool(apply(ex["graphs"], ex["ops"])[s_ // 16][s_ % 16])
+
+
+def query_text(s_):
+    if QUERY["mode"] == "reach":
+        return f"Graph G{s_ + 1}: is the sink reachable?"
+    return f"Graph G{s_ // 16 + 1}: is edge {s_ % 16} present?"
+
+
+def is_test_pattern(bits):
+    return (int("".join(map(str, bits)), 2) * 2654435761 % 2 ** 32) % 5 == 0  # 20% of 16-bit patterns: test only
+
+
 def sample_example(r, k, u, split, addressed_frac=0.5):
+    if QUERY["mode"] == "edge":  # P1: Bernoulli(1/2) bits, train/test graph patterns disjoint, no balancing needed
+        pair = list(r.choice(PAIRS[split]))
+        r.shuffle(pair)
+        ops = [(pair[i], (r.randrange(k) if (k > 1 and r.random() < addressed_frac) else None)) for i in range(u)]
+        graphs = []
+        while len(graphs) < k:
+            g = [int(r.random() < 0.5) for _ in range(16)]
+            if is_test_pattern(g) == (split == "test"):
+                graphs.append(g)
+        return {"graphs": graphs, "ops": ops, "k": k}
     """u update ops drawn from this split's edge pairs; each op global or branch-addressed (50/50).
     Each graph is rejection-sampled so its final answer is balanced (target drawn uniformly per graph)."""
     pair = list(r.choice(PAIRS[split]))
@@ -153,7 +190,7 @@ class BranchModel(torch.nn.Module):
 
     def answer(self, z, exs, js):
         if self.variant == "text":
-            texts = [encode_text(x) + " " + " ".join(op_text(o) for o in x["ops"]) + f" Graph G{j + 1}: is the sink reachable?"
+            texts = [encode_text(x) + " " + " ".join(op_text(o) for o in x["ops"]) + f" {query_text(j)}"
                      for x, j in zip(exs, js)]
             enc = self.tok(texts, return_tensors="pt", padding=True, add_special_tokens=False).to("cuda")
             return self.head(self.last_hidden(self.emb(enc["input_ids"]), enc["attention_mask"]).float()).squeeze(-1)
@@ -161,7 +198,7 @@ class BranchModel(torch.nn.Module):
             pre = [" ".join(op_text(o) for o in x["ops"]) + " " if x["ops"] else "" for x in exs]
         else:
             pre = [""] * len(exs)
-        h = self.ctx(z, [f"{p}Graph G{j + 1}: is the sink reachable?" for p, j in zip(pre, js)])
+        h = self.ctx(z, [f"{p}{query_text(j)}" for p, j in zip(pre, js)])
         return self.head(h.float()).squeeze(-1)
 
     def trainable(self):
@@ -178,10 +215,9 @@ def forward_loss(m, exs, r_w, n_ans, rng):
     z = m.advance(m.encode(exs, r_w), exs, r_w)
     rep, js, gold = [], [], []
     for x in exs:
-        fa = answers(x)
-        pick = rng.sample(range(x["k"]), min(x["k"], n_ans))
-        rep += [x] * len(pick); js += pick; gold += [fa[p] for p in pick]
-    zz = z.repeat_interleave(torch.tensor([min(x["k"], n_ans) for x in exs], device="cuda"), 0)
+        pick = rng.sample(range(n_sel(x["k"])), min(n_sel(x["k"]), n_ans))
+        rep += [x] * len(pick); js += pick; gold += [gold_of(x, p) for p in pick]
+    zz = z.repeat_interleave(torch.tensor([min(n_sel(x["k"]), n_ans) for x in exs], device="cuda"), 0)
     logit = m.answer(zz, rep, js)
     return F.binary_cross_entropy_with_logits(logit, torch.tensor(gold, device="cuda", dtype=torch.float))
 
@@ -205,8 +241,9 @@ def acc_cell(m, cfg, split, r_w, u, k, n, seed, bits=None, qmode="read"):
     rng = random.Random(f"eval|{seed}|{split}|{u}|{k}")
     ok = ok0 = oksh = okshuf = tot = 0
     un_ok = un_tot = ad_ok = ad_tot = 0
-    pos_ok = [0] * k
-    un_pos_ok, un_pos_n = [0] * k, [0] * k
+    S = n_sel(k)
+    pos_ok = [0] * S
+    un_pos_ok, un_pos_n = [0] * S, [0] * S
     jointok = 0
     zs = []
     bs = max(1, cfg["eval_tokens"] // (k * 22 + 40))
@@ -221,27 +258,27 @@ def acc_cell(m, cfg, split, r_w, u, k, n, seed, bits=None, qmode="read"):
             m.qbits_pass = None
             z = quantize(z, r_w, bits) if qmode == "read" else z
             zsham = m.advance(z0, exs, r_w, sham=True) if (u > 0 and m.variant == "state" and not bits) else None
-            rep = [x for x in exs for _ in range(k)]
-            js = [j for _ in exs for j in range(k)]
-            gold = torch.tensor([a for x in exs for a in answers(x)], device="cuda")
+            rep = [x for x in exs for _ in range(S)]
+            js = [j for _ in exs for j in range(S)]
+            gold = torch.tensor([gold_of(x, j) for x in exs for j in range(S)], device="cuda")
             for zz, name in ((z, "main"), (torch.zeros_like(z), "zero"), (z.roll(1, 0), "shuf"), (zsham, "sham")):
                 if zz is None:
                     continue
                 pred = []
                 for b in range(0, len(rep), 512):
-                    zr = zz.repeat_interleave(k, 0)[b:b + 512]
+                    zr = zz.repeat_interleave(S, 0)[b:b + 512]
                     pred.append(m.answer(zr, rep[b:b + 512], js[b:b + 512]) > 0)
                 pred = torch.cat(pred)
                 c = (pred == gold)
                 if name == "main":
                     ok += c.sum().item(); tot += len(c)
-                    jointok += c.view(len(exs), k).all(1).sum().item()
-                    cv = c.view(len(exs), k)
-                    for j in range(k):
+                    jointok += c.view(len(exs), S).all(1).sum().item()
+                    cv = c.view(len(exs), S)
+                    for j in range(S):
                         pos_ok[j] += cv[:, j].sum().item()
-                    addr = torch.tensor([[any(t == j for _, t in x["ops"]) for j in range(k)] for x in exs], device="cuda")
+                    addr = torch.tensor([[any(t == branch_of(j) for _, t in x["ops"]) for j in range(S)] for x in exs], device="cuda")
                     un_ok += cv[~addr].sum().item(); un_tot += (~addr).sum().item()
-                    for j in range(k):
+                    for j in range(S):
                         un_pos_ok[j] += cv[:, j][~addr[:, j]].sum().item(); un_pos_n[j] += (~addr[:, j]).sum().item()
                     ad_ok += cv[addr].sum().item(); ad_tot += addr.sum().item()
                 elif name == "zero":
@@ -344,7 +381,7 @@ def pr_stats(X):
             "top_pc_share": torch.linalg.eigvalsh(C)[-1].item() / t1, "n": n}
 
 
-def branch_pr(m, r_w, n=None, seed=0, k=4):
+def branch_pr(m, r_w, n=None, seed=0, k=4, u=2):
     """PR of branch-variation state differences: pairs differing in one graph, k=4, two global updates.
     Amendment 1: 8,192 independent pairs at every width, paired across widths (same seeded collections);
     centered uncorrected PR is primary; bias-corrected, isotropic-null and top-PC-removed are diagnostics."""
@@ -352,10 +389,10 @@ def branch_pr(m, r_w, n=None, seed=0, k=4):
     rng = random.Random(f"pr|{seed}")
     diffs = []
     while len(diffs) * 16 < n:
-        A = [sample_example(rng, k, 2, "test", addressed_frac=0.0) for _ in range(16)]
+        A = [sample_example(rng, k, u, "test", addressed_frac=0.0) for _ in range(16)]
         Bx = json.loads(json.dumps(A))
         for b in Bx:
-            b["graphs"][rng.randrange(k)] = [int(rng.random() < 0.5) for _ in range(16)]
+            b["graphs"][rng.randrange(k)] = sample_example(rng, 1, 0, "test")["graphs"][0]
         with torch.autocast("cuda", dtype=torch.bfloat16):
             d = m.advance(m.encode(Bx, r_w), Bx, r_w) - m.advance(m.encode(A, r_w), A, r_w)
         diffs.append(d[:, :r_w].float().cpu())
@@ -375,6 +412,7 @@ def save(m, opt, step, path):
 
 
 def main(cfg, out):
+    QUERY["mode"] = cfg.get("query", "reach")
     torch.manual_seed(cfg["seed"])
     m = BranchModel(cfg)
     out.meta("model_info.json", m.info)
@@ -455,15 +493,29 @@ def main(cfg, out):
     m.load_state_dict({k: v.cuda() for k, v in st["model"].items()}, strict=False)
     m.eval()
     split = cfg.get("final_split", "dev")
+    if cfg.get("bracket"):  # P1: capacity bracket on dev (coarse grid), then freeze the integer test grid
+        grid = sorted(cfg["eval_ks"])
+        for r_w in cfg["widths"]:
+            key = f"bracket|r{r_w}"
+            if key in out.done:
+                continue
+            dev = {k: acc_cell(m, cfg, "dev", r_w, 0, k, cfg["bracket_n"], 3)["min_selector_acc"] for k in grid}
+            last = max([0] + [k for k in grid if all(dev[j] >= 0.90 for j in grid if j <= k)])
+            first_fail = min([k for k in grid if k > last] + [grid[-1]])
+            test_grid = sorted({k for k in grid if k <= first_fail} | set(range(max(1, last), first_fail + 1)))
+            out.write({"key": key, "r": r_w, "dev_min_selector_acc": dev, "last_pass": last, "first_fail": first_fail,
+                       "test_grid": test_grid})
+        brackets = {json.loads(l)["r"]: json.loads(l)["test_grid"] for l in out.path.read_text().splitlines()
+                    if json.loads(l)["key"].startswith("bracket|")}
     for r_w in cfg["widths"]:
         for u in cfg["eval_updates"]:
-            for k in cfg["eval_ks"]:
+            for k in (brackets[r_w] if cfg.get("bracket") else cfg["eval_ks"]):
                 key = f"final|{split}|r{r_w}|u{u}|k{k}"
                 if key not in out.done:
                     out.write({"key": key, "split": split, "r": r_w, "u": u, "k": k, "best_step": st["step"],
                                **acc_cell(m, cfg, split, r_w, u, k, cfg["eval_n"], 1)})
         for b in cfg.get("quant_bits", []):
-            for qm, u in (("read", 0), ("pass", 2)):
+            for qm, u in [tuple(x) for x in cfg.get("quant_modes", [["read", 0], ["pass", 2]])]:
                 for k in cfg.get("quant_ks", cfg["eval_ks"]):
                     key = f"quant|{split}|r{r_w}|b{b}|{qm}|u{u}|k{k}"
                     if key not in out.done:
@@ -474,6 +526,7 @@ def main(cfg, out):
                 key = f"causal|{split}|r{r_w}|k{k}"
                 if key not in out.done:
                     out.write({"key": key, "split": split, "r": r_w, "k": k, **causal_tests(m, cfg, split, r_w, k, cfg["causal_n"], 2)})
+        if m.variant == "state":
             key = f"pr|r{r_w}"
             if key not in out.done and not cfg.get("skip_pr"):
-                out.write({"key": key, "r": r_w, **branch_pr(m, r_w)})
+                out.write({"key": key, "r": r_w, **branch_pr(m, r_w, u=cfg.get("pr_updates", 2))})

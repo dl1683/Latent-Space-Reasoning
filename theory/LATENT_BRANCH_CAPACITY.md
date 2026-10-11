@@ -151,3 +151,50 @@ UNADDRESSED selectors (the frozen rule), addressed-branch accuracy separately, a
 min_selector_acc for the "every selector position" capacity rule (also a review finding: the original
 evaluation pooled selectors). Final gate evaluation runs as a separate eval-only job (init_ckpt) on the
 dev-selected checkpoints with the corrected evaluator. Flagged for the next council round.
+
+## Pivot (2026-10-11 ~22:45Z): gate outlook, Registrations P1 and P2
+
+Council: docs/council_2026_10_11/{brief_pivot,codex_pivot,droid_pivot,brief_pivot2,codex_pivot2,droid_pivot2}.md.
+Both advisors: if the locked test confirms the dev numbers (curriculum arm: u=1 ~0.77, u=2 ~0.61 at k=1),
+the gate FAILS and the 1.7B flagship does not escalate under this registration; identical accuracy across
+nested widths makes the registered width-scaling test NOT TESTED (not refuted). Neither P1 nor P2 rescues it.
+Text below: operator merge (brief_pivot2) signed as written by Droid; signed by Codex conditional on five
+replacement sentences, which are incorporated verbatim (marked [C]).
+
+### Registration P1 — random-access storage capacity (frozen before any P1 data)
+Task: k labelled graphs with Bernoulli(1/2) edge bits (train and test graph PATTERNS disjoint: 20% of the 2^16
+patterns test-only); after compression a branch AND an edge are drawn and the answer is that bit (16 bits per
+graph must be retained). [C] "Only the compressed state crosses into readout; graph text, caches, and
+selectors are unavailable during encoding." Recipe: independent Qwen3-0.6B runs per r in {2,4,8,16,32,64,128}
+(128-d E/D, one fixed active mask per run, no shared trained parameters), seeds {11,23,47,59,71}; rank-8 LoRA,
+AdamW 2e-4, batch 64; 100,000-collection exposure; k schedule 10% k=1, 10% k in {1,2}, then uniform over powers of
+two to 64; final-answer loss only. [C] "Select checkpoints by mean dev accuracy over the training k grid; C90 is
+the largest k achieving 90% balanced accuracy at every branch-edge selector and every smaller integer k, tested
+through the dev-frozen bracket endpoint; define C80/C95 analogously." 1,024 test collections per k; all
+branch-edge selectors exhausted. Measures: C90 (primary), C80, C95, per-seed curves, censoring; branch-
+difference PR at k=4, u=0, n=8,192, width-paired, isotropic null; fixed-scale quantization 2/3/4/8 bits at
+readout and at compression; information bound with actual levels 16k(1 - H2(0.1)) <= r log2(levels); controls:
+zero/shuffled state, full-text positive control, explicit 16-bit-per-graph packing baseline at equal bit
+budget (analytic), batch-shape noise. Predictions: C90(16) >= 1, C90(64) >= 4, C90(128) >= 8; exponent
+log C90 = a + beta log PR with square-root band beta in [0.35, 0.65] and linear band [0.85, 1.15]; intervals
+resample training seeds and collection clusters. [C] "Exponent inference requires at least four widths with
+positive, uncensored capacities and an eightfold PR span; otherwise report 'not tested'; overlap with a
+predicted band does not establish that account." Stop rule: if the r=64 and r=128 pilots cannot reach 95% at
+k=1 on dev within the exposure allowance, the remaining widths stop. Budget cap 1,800 USD.
+Operator scheduling (declared before data): seed 11 runs at all seven widths first (they include the r=64/128
+pilots); seeds 23/47/59/71 launch only after the pilot stop rule is evaluated.
+
+### Registration P2 — update closure (frozen before any P2 data)
+Start from P1 r=64 checkpoints (seeds 11, 23, 47); freeze encoder and answer reader; train a separate updater
+(fresh-context update pass, same backbone with its own LoRA). Updates: toggle edge e in every graph (global) or
+in one named graph (addressed). Arms, matched presentations and FLOPs within 5%: answer-only vs answer +
+consistency (weight 1, MSE to the stop-gradient frozen-encoder state of the updated graphs, normalised by dev
+target variance); controls: shuffled-target consistency, identity-plus-dev-mean-displacement. k in {1,4},
+updates 0-2, training update pairs disjoint from held-out test pairs. Prediction: consistency improves two-
+update accuracy by >= 15 pp over answer-only, reaches 90% at every selector for k=1 and 4, halves the held-out
+defect; selective edits meet 20 pp targeted / 5 pp collateral / 80% undo after two further updates (undo
+recomputed). [C] "P2 permits at most 300,000 collection presentations per arm; require positive Holm-adjusted
+collection-paired improvement intervals, report training-seed spread, and define held-out defect as variance-
+normalized MSE to the frozen encoder's updated-state target." Failure blocks this construction. Budget cap 900 USD.
+[C] "These studies should continue as the highest-leverage pivot; explicit packing tests the ordinary-coding
+explanation, and neither study alone establishes native latent mathematics."
