@@ -246,9 +246,10 @@ def acc_cell(m, cfg, split, r_w, u, k, n, seed, bits=None, qmode="read"):
     un_pos_ok, un_pos_n = [0] * S, [0] * S
     jointok = 0
     zs = []
-    bs = max(1, cfg["eval_tokens"] // (k * 22 + 40))
+    bs = max(1, min(cfg["eval_tokens"], 8000) // (k * 22 + 40))  # hard cap: eval OOM at 32k tokens on 80 GB
     done = 0
     while done < n:
+        torch.cuda.empty_cache()
         exs = [sample_example(rng, k, u, split) for _ in range(min(bs, n - done))]
         done += len(exs)
         with torch.autocast("cuda", dtype=torch.bfloat16):

@@ -2,7 +2,7 @@
 # sc-bench-lsr-* VM boot: fetch bundle + shard from GCS, verify auto-off (self-test), run the shard,
 # sync results, delete self (fallback: power off). Resumable: prior partial results are pulled first.
 set -uo pipefail
-export HOME=/root DEBIAN_FRONTEND=noninteractive PYTHONUNBUFFERED=1 HF_XET_HIGH_PERFORMANCE=1
+export HOME=/root DEBIAN_FRONTEND=noninteractive PYTHONUNBUFFERED=1 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True HF_XET_HIGH_PERFORMANCE=1
 MD=http://metadata.google.internal/computeMetadata/v1/instance
 md() { curl -sf -H "Metadata-Flavor: Google" "$MD/$1"; }
 NAME=$(md name); JOB=$(md attributes/lsr-job); IDLE=$(md attributes/lsr-idle-min || echo 30)

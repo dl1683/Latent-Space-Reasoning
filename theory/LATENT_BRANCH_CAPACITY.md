@@ -152,7 +152,7 @@ min_selector_acc for the "every selector position" capacity rule (also a review 
 evaluation pooled selectors). Final gate evaluation runs as a separate eval-only job (init_ckpt) on the
 dev-selected checkpoints with the corrected evaluator. Flagged for the next council round.
 
-## Pivot (2026-10-11 ~22:45Z): gate outlook, Registrations P1 and P2
+## Pivot (2026-10-11 ~22:25Z): gate outlook, Registrations P1 and P2
 
 Council: docs/council_2026_10_11/{brief_pivot,codex_pivot,droid_pivot,brief_pivot2,codex_pivot2,droid_pivot2}.md.
 Both advisors: if the locked test confirms the dev numbers (curriculum arm: u=1 ~0.77, u=2 ~0.61 at k=1),
