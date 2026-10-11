@@ -1,0 +1,7 @@
+**I would not sign as written.** Step 250 of 4,687 is too early to call the concurrent gate stalled. The positive controls show that the state interface can learn the proximal task, not that the mixed-task run is free of bugs.
+
+Replace the draft with:
+
+> The frozen concurrent gate and its repair remain unchanged. Register the proposed curriculum as a separate, three-seed development arm with the stated stages, matched optimizer, learning rate, LoRA, widths, batch, step count, presentation cap and toggle balance. Select its checkpoint using the same dev score, only after the final stage boundary. Apply the frozen gate criteria to each arm separately; do not pool results. If both pass, use the concurrent arm for the flagship; if only the curriculum passes, use it and identify the flagship as curriculum-trained. If neither passes, do not escalate. Use locked test data only after that choice. Preserve the existing repair rule and report its use by arm. No result from one arm rescues a failure or scaling prediction in the other.
+
+**Rule out a bug first:** on mixed-training batches, check label balance and query targeting by cell, answer distributions, loss and gradients, and whether swapping or zeroing the state changes predictions. Replay the successful \(k=1,u=0\) diagnostic through the concurrent sampler. Constant output across every cell is consistent with a learning-dynamics stall, but does not establish one.

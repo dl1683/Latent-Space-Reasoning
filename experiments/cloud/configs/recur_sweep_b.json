@@ -1,10 +1,10 @@
 {
- "run": "recur-sweep-b",
+ "run": "recur-sw-b",
  "kind": "recur",
  "machine": "a2-highgpu-1g",
  "accelerator": null,
  "usd_per_hour": 2.21,
- "cost_cap_usd": 14.0,
+ "cost_cap_usd": 30.0,
  "zones": [
   "us-central1-a",
   "us-central1-b",
@@ -20,8 +20,6 @@
  "requirements": [
   "transformers>=5.12,<6",
   "accelerate",
-  "hf_transfer",
-  "peft",
   "jinja2>=3.1"
  ],
  "common": {
@@ -34,34 +32,37 @@
    "direct",
    "cot"
   ],
-  "cot_budget": 1024,
-  "blocks": [
-   [
-    0.25,
-    0.5
-   ],
-   [
-    0.33,
-    0.67
-   ],
-   [
-    0.5,
-    0.75
-   ],
-   [
-    0.25,
-    0.75
-   ]
+  "cot_budget": 2048,
+  "direct_budget": 64,
+  "centers": [
+   0.25,
+   0.5,
+   0.75
   ],
+  "block_width": 4,
   "loops": [
    2,
    4,
    8
   ],
-  "task_seed": 0,
+  "variants": [
+   [
+    "plain",
+    1.0
+   ],
+   [
+    "damp",
+    0.5
+   ],
+   [
+    "normmatch",
+    1.0
+   ]
+  ],
   "n_dev": 64,
-  "n_test": 200,
-  "bs": 48
+  "n_test": 128,
+  "task_seed": 101,
+  "bs": 24
  },
  "shards": [
   {
@@ -72,6 +73,9 @@
   },
   {
    "model": "allenai/OLMo-2-1124-7B-Instruct"
+  },
+  {
+   "model": "mistralai/Mistral-7B-Instruct-v0.3"
   }
  ]
 }

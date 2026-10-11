@@ -132,6 +132,8 @@ class BranchModel(torch.nn.Module):
         return self.last_hidden(embeds, am)
 
     def encode(self, exs, r):
+        if self.variant == "text":  # positive control: no bottleneck; the answer context sees the full text
+            return torch.zeros(len(exs), self.S, device="cuda")
         enc = self.tok([encode_text(x) for x in exs], return_tensors="pt", padding=True,
                        add_special_tokens=False).to("cuda")
         return self.compress(self.last_hidden(self.emb(enc["input_ids"]), enc["attention_mask"]), r)
@@ -141,7 +143,7 @@ class BranchModel(torch.nn.Module):
 
     def advance(self, z, exs, r, sham=False):
         """Apply each example's ops in order through the state (variant=state). Storage variant: no-op."""
-        if self.variant == "storage":
+        if self.variant in ("storage", "text"):
             return z
         for s in range(max(len(x["ops"]) for x in exs)):
             idx = [i for i, x in enumerate(exs) if len(x["ops"]) > s]  # ragged: rows with an s-th op
@@ -150,6 +152,11 @@ class BranchModel(torch.nn.Module):
         return z
 
     def answer(self, z, exs, js):
+        if self.variant == "text":
+            texts = [encode_text(x) + " " + " ".join(op_text(o) for o in x["ops"]) + f" Graph G{j + 1}: is the sink reachable?"
+                     for x, j in zip(exs, js)]
+            enc = self.tok(texts, return_tensors="pt", padding=True, add_special_tokens=False).to("cuda")
+            return self.head(self.last_hidden(self.emb(enc["input_ids"]), enc["attention_mask"]).float()).squeeze(-1)
         if self.variant == "storage":
             pre = [" ".join(op_text(o) for o in x["ops"]) + " " if x["ops"] else "" for x in exs]
         else:
@@ -378,7 +385,12 @@ def main(cfg, out):
         if off == 0 or step == step0:
             order = list(range(pool)); random.Random(cfg["seed"] * 31 + p).shuffle(order)
         ids = order[off:off + eff_bs]
-        exs = [collection(cfg["seed"], i, "train", ks, cfg["train_updates"]) for i in ids]
+        cur = cfg.get("curriculum")  # Amendment 2: staged arm, [[start_frac, ks, updates], ...]
+        if cur:
+            stage = [c for c in cur if step / total >= c[0]][-1]
+            exs = [collection(cfg["seed"] + 1000, step * eff_bs + j, "train", stage[1], stage[2]) for j in range(eff_bs)]
+        else:
+            exs = [collection(cfg["seed"], i, "train", ks, cfg["train_updates"]) for i in ids]
         r_w = rng.choice(cfg["widths"])
         for g in opt.param_groups:
             g["lr"] = cfg["lr"] * sched(step)
@@ -408,12 +420,14 @@ def main(cfg, out):
         if (step + 1) % cfg["eval_every"] == 0 or step == total - 1:
             # dev selection: mean balanced accuracy over a fixed small dev grid
             cells = {f"r{r}|u{u}|k{k}": acc_cell(m, cfg, "dev", r, u, k, cfg["dev_n"], 0)["acc"]
-                     for r in cfg["widths"] for u in (0, 1, 2) for k in cfg["dev_ks"]}
-            score = sum(v for c, v in cells.items() if "|u2|" in c) / sum(1 for c in cells if "|u2|" in c)
+                     for r in cfg["widths"] for u in cfg.get("dev_updates", (0, 1, 2)) for k in cfg["dev_ks"]}
+            uu = max(cfg.get("dev_updates", (0, 1, 2)))
+            score = sum(v for c, v in cells.items() if f"|u{uu}|" in c) / sum(1 for c in cells if f"|u{uu}|" in c)
             out.write({"key": f"dev|step{step + 1}", "step": step + 1, "dev_score": score, "dev_cells": cells,
                        "loss_recent": sum(hist[-cfg["eval_every"]:]) / len(hist[-cfg["eval_every"]:]), "sec": t()})
             save(m, opt, step + 1, ckpt)
-            if score > best:
+            sel_ok = not cfg.get("curriculum") or (step + 1) / total >= cfg["curriculum"][-1][0]
+            if sel_ok and score > best:
                 best = score
                 save(m, opt, step + 1, out.dir / "best.pt")
             m.train()
@@ -436,11 +450,11 @@ def main(cfg, out):
                     if key not in out.done:
                         out.write({"key": key, "split": split, "r": r_w, "u": u, "k": k, "best_step": st["step"],
                                    **acc_cell(m, cfg, split, r_w, u, k, cfg["eval_n"], 1, bits=b, qmode=qm)})
-        if m.variant == "state":
+        if m.variant == "state" and cfg.get("causal_ks"):
             for k in cfg["causal_ks"]:
                 key = f"causal|{split}|r{r_w}|k{k}"
                 if key not in out.done:
                     out.write({"key": key, "split": split, "r": r_w, "k": k, **causal_tests(m, cfg, split, r_w, k, cfg["causal_n"], 2)})
             key = f"pr|r{r_w}"
-            if key not in out.done:
+            if key not in out.done and not cfg.get("skip_pr"):
                 out.write({"key": key, "r": r_w, **branch_pr(m, r_w)})

@@ -156,6 +156,14 @@ def relaunch(run):
             create_vm(cfg, i, f"{BUCKET}/runs/{run}/shards/{i:03d}")
 
 
+def reap():
+    """Delete this program's powered-off (TERMINATED) VMs; their GPUs are already released."""
+    for v in list_vms():
+        if v["status"] == "TERMINATED":
+            gcloud("compute", "instances", "delete", v["name"], f"--zone={v['zone'].split('/')[-1]}", "--quiet", check=False)
+            print(f"reaped {v['name']}")
+
+
 def stop(run):
     for v in list_vms(None if run == "ALL" else run):
         gcloud("compute", "instances", "delete", v["name"], f"--zone={v['zone'].split('/')[-1]}", "--quiet", check=False)
@@ -165,7 +173,7 @@ def stop(run):
 def pull(run):
     dst = REPO / "experiments" / "results" / "cloud" / run
     dst.mkdir(parents=True, exist_ok=True)
-    gcloud("storage", "rsync", "-r", "-x", r".*heartbeat$", f"{BUCKET}/runs/{run}", str(dst))
+    gcloud("storage", "rsync", "-r", "-x", r".*heartbeat$|.*\.pt$", f"{BUCKET}/runs/{run}", str(dst))
     print(f"pulled to {dst}")
 
 
@@ -222,5 +230,7 @@ if __name__ == "__main__":
         pull(rest[0])
     elif cmd == "spend":
         spend()
+    elif cmd == "reap":
+        reap()
     elif cmd == "stop":
         stop(rest[0])

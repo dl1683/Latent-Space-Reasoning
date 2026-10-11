@@ -1,5 +1,18 @@
 # Experiments Log
 
+## GCP latent-reasoning program (2026-10-11, running)
+
+Pre-registration: theory/LATENT_BRANCH_CAPACITY.md (+ Amendment 1). Runner: experiments/cloud/lsr_cloud.py.
+Spend: experiments/cloud/SPEND.md.
+
+- **Runner smoke (L4):** auto-off self-test PASS; KV-safe layer looper exact at loops=1 (logit max diff 0.0);
+  identical-input reruns identical.
+- **Probe C pilot v1 (instrument fail, fixed):** truncation confound caught by evidence gate 1 — direct mode
+  0% termination at 16 tokens; CoT 37-42% at 384. Remedy (answer prefill + newline stop; CoT budget 1024)
+  before any interpretation. What we learned: Qwen3 non-thinking mode still reasons in "answer only" mode.
+- **Gate throughput pilot (A100, 60 steps):** pipeline end to end; 10.6 s/step at batch 64; all cells at chance.
+- **Admission gate (Qwen3-0.6B, 3 seeds, H100):** running.
+
 ## HP-D Orlicz arc: optimality stack at the settled compression optimum (2026-09-20)
 
 ### s=1 gap diagnosis (12 seeds x 6000 steps, frozen decision rule)

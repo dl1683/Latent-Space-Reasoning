@@ -110,27 +110,61 @@ class Looper:
         self.orig_n = model.config.num_hidden_layers
         self.orig_types = getattr(model.config, "layer_types", None)
 
-    def set(self, s, e, loops):
+    def set(self, s, e, loops, mode="plain", gamma=1.0):
+        """mode: plain | damp (h_in + gamma*(block(h_in) - h_in) per extra application) | normmatch (rescale each
+        extra application's output to the per-token norm of its input). Per-application relative change
+        ||out - in|| / ||in|| at the last position is recorded into self.trace while self.record is True."""
+        from collections import OrderedDict
         L = self.orig_layers
         order = list(range(0, e)) + list(range(s, e)) * (loops - 1) + list(range(e, len(L)))
         new = []
+        self.trace, self.record, self._hin = [], False, None
         for j, src in enumerate(order):
             if j == src:
                 new.append(L[src])
                 continue
             lay = copy.copy(L[src])
             lay._modules = dict(L[src]._modules)
+            for hk in ("_forward_hooks", "_forward_hooks_with_kwargs", "_forward_hooks_always_called",
+                       "_forward_pre_hooks", "_forward_pre_hooks_with_kwargs", "_backward_hooks", "_backward_pre_hooks"):
+                if hasattr(lay, hk):
+                    setattr(lay, hk, OrderedDict())
             att = copy.copy(L[src].self_attn)
             att.layer_idx = j
             lay._modules["self_attn"] = att
             if hasattr(lay, "layer_idx"):
                 lay.layer_idx = j
+            if src == s:
+                lay.register_forward_pre_hook(self._pre, with_kwargs=True)
+            if src == e - 1:
+                lay.register_forward_hook(self._post_factory(mode, gamma))
             new.append(lay)
         self.inner.layers = torch.nn.ModuleList(new)
         self.model.config.num_hidden_layers = len(new)
         if self.orig_types is not None:
             self.model.config.layer_types = [self.orig_types[i] for i in order]
         return len(new) / len(L)  # per-token layer-FLOP multiplier
+
+    def _pre(self, mod, args, kwargs):
+        h = args[0] if args else kwargs["hidden_states"]
+        self._hin = h
+        return None
+
+    def _post_factory(self, mode, gamma):
+        def post(mod, args, out):
+            h = out[0] if isinstance(out, tuple) else out
+            hin = self._hin
+            if hin is None or hin.shape != h.shape:
+                return out
+            if mode == "damp":
+                h = hin + gamma * (h - hin)
+            elif mode == "normmatch":
+                h = h * (hin.norm(dim=-1, keepdim=True) / h.norm(dim=-1, keepdim=True).clamp_min(1e-6))
+            if self.record:
+                self.trace.append(((h[:, -1] - hin[:, -1]).float().norm(dim=-1) /
+                                   hin[:, -1].float().norm(dim=-1).clamp_min(1e-6)).mean().item())
+            return (h,) + tuple(out[1:]) if isinstance(out, tuple) else h
+        return post
 
     def reset(self):
         self.inner.layers = self.orig_layers

@@ -24,7 +24,7 @@ def items_for(cfg, split):
 
 
 def run_arm(model, tok, cfg, items, mode, filler=0, budget=None, samples=1):
-    budget = budget or (cfg["cot_budget"] if mode == "cot" else 16)
+    budget = budget or (cfg["cot_budget"] if mode == "cot" else cfg.get("direct_budget", 64))
     prompts = [common.chat(tok, PROMPTS[mode].format(q=it["prompt"]) + (" ." * filler)) + (PREFILL if mode == "direct" else "")
                for it in items]
     outs = []
@@ -57,46 +57,77 @@ def main(cfg, out):
     out.meta("model_info.json", info)
     looper = common.Looper(model)
     L = info["n_layers"]
-    blocks = [(round(a * L), round(b * L)) for a, b in cfg["blocks"]]
+    bw = cfg.get("block_width", 4)
+    blocks = [(max(0, round(c * L) - bw // 2), min(L, max(0, round(c * L) - bw // 2) + bw)) for c in cfg["centers"]]
+    variants = [tuple(v) for v in cfg["variants"]]  # (mode, gamma)
+    grid = [(s, e, n, vm, g) for s, e in blocks for n in cfg["loops"] for vm, g in variants]
     dev = items_for(cfg, "dev")
-    best = {}
-    for mode in cfg["modes"]:
-        configs = [(0, 0, 1)] + [(s, e, n) for s, e in blocks for n in cfg["loops"]]
-        scores = {}
-        for s, e, n in configs:
-            key = f"dev|{mode}|{s}-{e}x{n}"
-            mult = looper.set(s, e, n) if n > 1 else 1.0
-            if key not in out.done:
-                t = common.timer()
-                rows = run_arm(model, tok, cfg, dev, mode)
-                out.write({"key": key, "phase": "dev", "mode": mode, "block": [s, e], "loops": n, "mult": mult,
-                           "summary": summarize(rows), "by_family": {f: summarize([r for r in rows if r["id"].startswith(f)])
-                                                                     for f in cfg["families"]},
-                           "rows": [{k: r[k] for k in ("id", "ok", "term", "ntok")} for r in rows], "sec": t()})
+    probe_prompts = [common.chat(tok, PROMPTS["cot"].format(q=it["prompt"])) for it in dev[:8]]
+    best, scores = {}, {}
+
+    def cfg_key(c):
+        s, e, n, vm, g = c
+        return "base" if n == 1 else f"{s}-{e}x{n}-{vm}{g}"
+
+    def run_dev(mode, c):
+        s, e, n, vm, g = c
+        key = f"dev|{mode}|{cfg_key(c)}"
+        if key not in out.done:
+            mult = looper.set(s, e, n, vm, g) if n > 1 else 1.0
+            trace = None
+            if n > 1:
+                looper.record = True
+                with __import__("torch").no_grad():
+                    enc = tok(probe_prompts, return_tensors="pt", padding=True, add_special_tokens=False).to("cuda")
+                    model(**enc)
+                looper.record = False
+                trace = looper.trace
+            t = common.timer()
+            rows = run_arm(model, tok, cfg, dev, mode)
             looper.reset()
-            scores[(s, e, n)] = next(r for r in [__import__("json").loads(l) for l in out.path.read_text().splitlines()]
-                                     if r["key"] == key)["summary"]["acc"]
-        base = scores[(0, 0, 1)]
-        cand = max((c for c in configs if c[2] > 1), key=lambda c: scores[c])
-        best[mode] = cand if scores[cand] > base else None
-        out.meta(f"selection_{mode}.json", {"baseline_dev_acc": base, "best": cand, "best_dev_acc": scores[cand],
+            out.write({"key": key, "phase": "dev", "mode": mode, "block": [s, e], "loops": n, "variant": [vm, g],
+                       "mult": mult, "divergence_per_application": trace, "summary": summarize(rows),
+                       "by_family": {f: summarize([r for r in rows if r["id"].startswith(f)]) for f in cfg["families"]},
+                       "rows": [{k: r[k] for k in ("id", "ok", "term", "ntok")} for r in rows], "sec": t()})
+        import json as _j
+        for line in out.path.read_text().splitlines():
+            r = _j.loads(line)
+            if r["key"] == key:
+                scores[(mode, c)] = r["summary"]["acc"]
+        return scores[(mode, c)]
+
+    base_c = (0, 0, 1, "plain", 1.0)
+    # direct mode: full dev grid (cheap). cot mode: base + 3 best direct configs + plain x2 at each block
+    # (declared before data: CoT at 2048 tokens is too costly for the full grid).
+    for mode in cfg["modes"]:
+        if mode == "direct" or "direct" not in cfg["modes"]:
+            cands = grid
+        else:
+            ranked = sorted(grid, key=lambda c: -scores.get(("direct", c), -1))[:3]
+            cands = list(dict.fromkeys(ranked + [(s, e, 2, "plain", 1.0) for s, e in blocks]))
+        base = run_dev(mode, base_c)
+        for c in cands:
+            run_dev(mode, c)
+        cand = max(cands, key=lambda c: scores[(mode, c)])
+        best[mode] = cand if scores[(mode, cand)] > base else None
+        out.meta(f"selection_{mode}.json", {"baseline_dev_acc": base, "best": cand, "best_dev_acc": scores[(mode, cand)],
                                             "admitted": best[mode] is not None})
     test = items_for(cfg, "test")
     for mode in cfg["modes"]:
-        arms = [("base", (0, 0, 1))]
+        arms = [("base", base_c)]
         if best[mode]:
             arms.append(("loop", best[mode]))
-        for name, (s, e, n) in arms:
+        for name, (s, e, n, vm, g) in arms:
             key = f"test|{mode}|{name}"
             if key in out.done:
                 continue
-            mult = looper.set(s, e, n) if n > 1 else 1.0
+            mult = looper.set(s, e, n, vm, g) if n > 1 else 1.0
             rows = run_arm(model, tok, cfg, test, mode)
             looper.reset()
             out.write({"key": key, "phase": "test", "mode": mode, "arm": name, "block": [s, e], "loops": n,
                        "mult": mult, "summary": summarize(rows), "rows": rows})
         if best[mode]:
-            s, e, n = best[mode]
+            s, e, n = best[mode][:3]
             mult = (L + (n - 1) * (e - s)) / L
             key = f"test|{mode}|flop_control"
             if key not in out.done:

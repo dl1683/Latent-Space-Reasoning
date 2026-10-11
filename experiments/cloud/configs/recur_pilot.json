@@ -26,8 +26,6 @@
  "requirements": [
   "transformers>=5.12,<6",
   "accelerate",
-  "hf_transfer",
-  "peft",
   "jinja2>=3.1"
  ],
  "common": {
@@ -40,20 +38,33 @@
    "direct",
    "cot"
   ],
-  "cot_budget": 1024,
-  "blocks": [
-   [
-    0.33,
-    0.67
-   ]
-  ],
+  "cot_budget": 2048,
   "loops": [
    2
   ],
-  "task_seed": 0,
+  "task_seed": 101,
   "n_dev": 8,
   "n_test": 8,
-  "bs": 32
+  "bs": 32,
+  "centers": [
+   0.5
+  ],
+  "block_width": 4,
+  "variants": [
+   [
+    "plain",
+    1.0
+   ],
+   [
+    "damp",
+    0.5
+   ],
+   [
+    "normmatch",
+    1.0
+   ]
+  ],
+  "direct_budget": 64
  },
  "shards": [
   {

@@ -1,0 +1,92 @@
+{
+ "run": "diag-k1",
+ "kind": "branch",
+ "machine": "a2-highgpu-1g",
+ "accelerator": null,
+ "usd_per_hour": 2.21,
+ "cost_cap_usd": 6.0,
+ "zones": [
+  "us-central1-a",
+  "us-central1-b",
+  "us-central1-c",
+  "us-central1-f",
+  "us-east1-b",
+  "us-west1-b",
+  "us-west4-b",
+  "us-east4-c",
+  "europe-west4-a",
+  "europe-west4-b"
+ ],
+ "requirements": [
+  "transformers>=5.12,<6",
+  "accelerate",
+  "peft",
+  "jinja2>=3.1"
+ ],
+ "common": {
+  "model": "Qwen/Qwen3-0.6B",
+  "state_dim": 1024,
+  "widths": [
+   1024
+  ],
+  "lr": 0.0002,
+  "lora_r": 8,
+  "pool": 25600,
+  "batch": 64,
+  "passes": 1,
+  "train_ks": [
+   1
+  ],
+  "train_updates": [
+   0
+  ],
+  "answers_per_ex": 4,
+  "train_tokens": 32000,
+  "grad_ckpt": true,
+  "eval_every": 50,
+  "dev_n": 256,
+  "dev_ks": [
+   1
+  ],
+  "eval_tokens": 32000,
+  "eval_n": 256,
+  "eval_ks": [
+   1
+  ],
+  "eval_updates": [
+   0
+  ],
+  "quant_bits": [],
+  "quant_ks": [
+   1,
+   4,
+   16
+  ],
+  "causal_ks": [],
+  "causal_n": 512,
+  "final_split": "dev",
+  "variant": "state",
+  "note": "DIAGNOSTIC (proximal rung i: k=1, u=0), not claim-bearing",
+  "seed": 11,
+  "dev_updates": [
+   0
+  ],
+  "skip_pr": true
+ },
+ "shards": [
+  {
+   "variant": "text"
+  },
+  {
+   "variant": "state"
+  },
+  {
+   "variant": "state",
+   "lr": 0.001
+  },
+  {
+   "variant": "text",
+   "lr": 0.001
+  }
+ ]
+}

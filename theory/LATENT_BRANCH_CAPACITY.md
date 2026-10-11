@@ -115,3 +115,27 @@ throughput pilot at chance, and a Probe C truncation pilot).
 > Apply frozen scaling exclusions without retrospective additions. Precision sensitivity alone cannot exempt a failed ratio prediction. The \(rb/16\) ceiling and interference/information crossover remain hypotheses requiring a task-specific distinguishability argument.
 >
 > **Signed: Codex advisor, 2026-10-11.** **Countersigned: Droid advisor, 2026-10-11** (docs/council_2026_10_11/droid_a1_countersign.md).
+
+## Amendment 2 (2026-10-11 ~19:20Z, before the curriculum arm or any locked evaluation)
+
+Trigger: at step 250/4687 every dev cell of the concurrent gate (3 seeds) equalled the dev base rate (constant
+output). Diagnostics (proximal rung i, k=1, u=0, same sampler code path): text positive control 0.984 dev,
+bottleneck state variant 0.926 and rising (lr 2e-4). Bug checks requested by both advisors: an independent
+DFS oracle agrees with the task oracle on 362,694/362,694 graph answers from the concurrent sampler; labels
+are balanced (0.48-0.51) in every (k, updates, addressed-ops) cell. Advisors (docs/council_2026_10_11/
+{brief,codex,droid}_a2.md) both declined the operator draft and wrote compatible replacements; merged text
+below (the one difference, whether the curriculum arm gets a repair, resolved to the stricter reading: none).
+
+> The concurrent arm and its frozen repair remain unchanged; step 250 is too early to call it stalled and it
+> keeps running. A curriculum arm is registered before launch: fresh, seed-matched initialisation (seeds 11,
+> 23, 47); optimizer, learning rate, LoRA, widths, batch size, optimizer steps and total presentations matched
+> exactly to the unrepaired concurrent arm, within existing caps; the curriculum receives no repair. Stage
+> boundaries are floor(fraction x total steps) at fractions 0, .10, .20, .30, .45, .60 with (k set, update set)
+> = ({1},{0}), ({1,2},{0,1}), ({1,2,4},{0,1,2}), ({1,2,4,8},{0,1,2}), ({1..32 powers},{0,1,2}),
+> ({1..64 powers},{0,1,2}); within a stage k and update count are uniform over the listed sets, width uniform
+> as frozen, 50/50 toggle mixture preserved. Presentations and token exposure are recorded by cell.
+> Checkpoints are selected only after the final boundary with the frozen dev score. Gate criteria apply to each
+> arm separately; results are not pooled; no result from one arm rescues a failure or scaling prediction in
+> the other. If both pass, the concurrent recipe is used for the flagship; if only the curriculum passes, the
+> flagship is curriculum-trained and labelled so; if neither passes, no escalation. The chosen recipe applies
+> to the flagship and the mandatory storage control alike and is frozen before any locked evaluation.
