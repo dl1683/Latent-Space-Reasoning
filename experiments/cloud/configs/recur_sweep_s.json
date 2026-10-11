@@ -1,0 +1,104 @@
+{
+ "run": "recur-sweep-s",
+ "kind": "recur",
+ "machine": "g2-standard-8",
+ "accelerator": "nvidia-l4:1",
+ "usd_per_hour": 0.49,
+ "cost_cap_usd": 4.0,
+ "zones": [
+  "us-central1-a",
+  "us-central1-b",
+  "us-central1-c",
+  "us-east1-b",
+  "us-east1-c",
+  "us-east1-d",
+  "us-east4-a",
+  "us-east4-c",
+  "us-west1-a",
+  "us-west1-b",
+  "us-west1-c",
+  "us-west4-a",
+  "us-west4-c",
+  "europe-west4-a",
+  "europe-west4-b",
+  "europe-west4-c"
+ ],
+ "requirements": [
+  "transformers>=5.12,<6",
+  "accelerate",
+  "hf_transfer",
+  "peft",
+  "jinja2>=3.1"
+ ],
+ "common": {
+  "families": [
+   "arith",
+   "graph",
+   "countdown"
+  ],
+  "modes": [
+   "direct",
+   "cot"
+  ],
+  "cot_budget": 1024,
+  "blocks": [
+   [
+    0.25,
+    0.5
+   ],
+   [
+    0.33,
+    0.67
+   ],
+   [
+    0.5,
+    0.75
+   ],
+   [
+    0.25,
+    0.75
+   ]
+  ],
+  "loops": [
+   2,
+   4,
+   8
+  ],
+  "task_seed": 0,
+  "n_dev": 64,
+  "n_test": 200,
+  "bs": 48
+ },
+ "shards": [
+  {
+   "model": "Qwen/Qwen3-0.6B"
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B"
+  },
+  {
+   "model": "Qwen/Qwen3-4B"
+  },
+  {
+   "model": "Qwen/Qwen2.5-0.5B-Instruct"
+  },
+  {
+   "model": "Qwen/Qwen2.5-1.5B-Instruct"
+  },
+  {
+   "model": "Qwen/Qwen2.5-3B-Instruct"
+  },
+  {
+   "model": "HuggingFaceTB/SmolLM2-360M-Instruct"
+  },
+  {
+   "model": "HuggingFaceTB/SmolLM2-1.7B-Instruct"
+  },
+  {
+   "model": "allenai/OLMo-2-0425-1B-Instruct"
+  },
+  {
+   "model": "microsoft/Phi-3-mini-4k-instruct"
+  }
+ ]
+}

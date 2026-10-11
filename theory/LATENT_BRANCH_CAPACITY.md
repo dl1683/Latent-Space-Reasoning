@@ -87,3 +87,31 @@ as an embedding) is weak, so a null would be uninformative. No claim rests on th
 Mechanism, utility and scaling get separate verdicts. A graph-only success licenses a graph-task result only.
 PR and covariance are scaffolding (the R^n check). The claim-bearing vocabulary is retained future, selective
 edit, restoration and update-closed answerability.
+
+## Amendment 1 (2026-10-11, before any claim-bearing data)
+
+Trigger: the cross-project extraction (theory/CROSS_PROJECT_INSIGHTS.md). Process: re-council round
+(docs/council_2026_10_11/{brief_a1,codex_a1,droid_a1,droid_a1_countersign}.md). Droid proposed text; Codex
+declined it as written and wrote the replacement below; Droid countersigned it unchanged. Operator
+implementation of the quantizer rule: symmetric uniform, clip at c = 4/sqrt(r), 2^b - 1 levels,
+round-to-nearest, inactive coordinates zero, no renormalisation (fixed before any data; scale depends on r only).
+At the time of signing, only non-claim-bearing instrument pilots had run (runner smoke, a 60-step gate
+throughput pilot at chance, and a Probe C truncation pilot).
+
+> ### Amendment 1, 2026-10-11 — Codex advisor
+>
+> This amendment precedes claim-bearing data for every affected comparison. All unmentioned frozen definitions, thresholds, controls, budgets and verdict rules remain unchanged. Sibling findings motivate diagnostics, not established LSR mechanisms.
+>
+> Replace PR sampling with 8,192 independent branch-variation pairs per width per training seed, at \(k=4\) after two global updates. Pair widths on the same collections. Center differences and use uncorrected PR as the sole primary admissibility statistic. Report uncertainty, the sampling- and centering-matched isotropic null, and development-defined top-component-removed PR separately; diagnostic estimators cannot replace primary PR after locked outcomes.
+>
+> Keep \(C_{90}\) and all frozen ratio bands primary. Report per-seed accuracy-by-\(k\) curves and \(C_{80},C_{95}\), using the frozen selector and smaller-\(k\) requirements; report unresolved boundaries as censored. Log development accuracy by width, \(k\), update count and toggle type. Preserve concurrent training and the frozen repair.
+>
+> Add evaluation-only quantization at 2, 3, 4 and 8 bits: separately after initial compression and every subsequent compression, and immediately before final readout only. Freeze quantizer type, scales, clipping, rounding and normalization on development data; keep inactive coordinates zero and prohibit sample-dependent scales or undeclared continuous bypasses. Disclose metadata costs.
+>
+> Add scaled-edit collateral curves, matched shams, sham E/D passages and finite-difference cross-branch responses. Geometric diagnostics require independently defined development bases and establish no structural necessity.
+>
+> Keep the storage/delayed-computation control mandatory. Random initialization is optional within existing caps. B may compare final-position/all-position search and public-feedback averaging; measure bf16 absorption and batch-shape noise. C may include norm-matched loops and three-layer blocks within its bounded dev sweep; measure trajectory divergence. Freeze promoted methods before confirmation and preserve all compute, termination and inference gates.
+>
+> Apply frozen scaling exclusions without retrospective additions. Precision sensitivity alone cannot exempt a failed ratio prediction. The \(rb/16\) ceiling and interference/information crossover remain hypotheses requiring a task-specific distinguishability argument.
+>
+> **Signed: Codex advisor, 2026-10-11.** **Countersigned: Droid advisor, 2026-10-11** (docs/council_2026_10_11/droid_a1_countersign.md).
