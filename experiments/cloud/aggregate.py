@@ -64,7 +64,7 @@ def search(runs):
         best_text = max(("sample", "repair"), key=lambda a: line[a])
         cfgs = []
         for c, P in lat[m].items():
-            common = [p for p in pids if p in P]
+            common = [p for p in pids if p in P and best_text in T[p] and not T[p][best_text].get("skipped")]
             if not common:
                 continue
             es = [P[p]["latent_es"]["solved"] for p in common]

@@ -1,0 +1,98 @@
+HuggingFaceTB/SmolLM2-1.7B-Instruct B8 dev n= 128 sample=0.070 repair=0.102 term(s/r)=1.00/1.00 noise_flip=0.148 
+    l  8 a1.0  last n= 128 es=0.031 rand=0.039 es-repair=-0.070 [-0.125,-0.016] term=1.00 abs=0.0029
+    l 12 a1.0  last n= 128 es=0.031 rand=0.031 es-repair=-0.070 [-0.125,-0.016] term=1.00 abs=0.0030
+    l  8 a0.25 last n= 128 es=0.023 rand=0.023 es-repair=-0.078 [-0.133,-0.031] term=1.00 abs=0.0066
+    l 16 a0.25 last n= 128 es=0.023 rand=0.016 es-repair=-0.078 [-0.133,-0.031] term=1.00 abs=0.0069
+    l 12 a0.25 last n= 128 es=0.016 rand=0.016 es-repair=-0.086 [-0.141,-0.039] term=1.00 abs=0.0072
+    l 16 a1.0  last n= 128 es=0.016 rand=0.039 es-repair=-0.086 [-0.141,-0.039] term=1.00 abs=0.0030
+HuggingFaceTB/SmolLM2-360M-Instruct B8 dev n= 128 sample=0.023 repair=0.008 term(s/r)=0.95/0.95 noise_flip=0.109 
+    l 11 a1.0  last n= 128 es=0.008 rand=0.016 es-sample=-0.016 [-0.039,+0.000] term=0.88 abs=0.0029
+    l 16 a1.0  last n= 128 es=0.008 rand=0.008 es-sample=-0.016 [-0.047,+0.016] term=0.92 abs=0.0031
+    l 21 a1.0  last n= 128 es=0.008 rand=0.000 es-sample=-0.016 [-0.047,+0.016] term=0.94 abs=0.0029
+    l 11 a0.25 last n= 128 es=0.000 rand=0.000 es-sample=-0.023 [-0.055,+0.000] term=0.92 abs=0.0069
+    l 16 a0.25 last n= 128 es=0.000 rand=0.008 es-sample=-0.023 [-0.055,+0.000] term=0.91 abs=0.0076
+    l 21 a0.25 last n= 128 es=0.000 rand=0.000 es-sample=-0.023 [-0.055,+0.000] term=0.91 abs=0.0063
+Qwen/Qwen2.5-0.5B-Instruct B8 dev          n= 128 sample=0.062 repair=0.023 term(s/r)=0.99/0.99 noise_flip=0.398 
+    l  8 a1.0  last n= 128 es=0.023 rand=0.000 es-sample=-0.039 [-0.086,+0.008] term=0.98 abs=0.0031
+    l 12 a1.0  last n= 128 es=0.023 rand=0.008 es-sample=-0.039 [-0.078,+0.000] term=0.98 abs=0.0030
+    l 12 a0.25 last n= 128 es=0.008 rand=0.000 es-sample=-0.055 [-0.094,-0.016] term=1.00 abs=0.0071
+    l  8 a0.25 last n= 128 es=0.000 rand=0.000 es-sample=-0.062 [-0.109,-0.023] term=1.00 abs=0.0075
+    l 16 a0.25 last n= 128 es=0.000 rand=0.000 es-sample=-0.062 [-0.109,-0.023] term=1.00 abs=0.0067
+    l 16 a1.0  last n= 128 es=0.000 rand=0.016 es-sample=-0.062 [-0.109,-0.023] term=0.99 abs=0.0029
+Qwen/Qwen2.5-1.5B-Instruct B8 dev          n= 128 sample=0.062 repair=0.070 term(s/r)=1.00/1.00 noise_flip=0.203 
+    l  9 a1.0  last n= 128 es=0.039 rand=0.039 es-repair=-0.031 [-0.078,+0.008] term=1.00 abs=0.0030
+    l 14 a1.0  last n= 128 es=0.023 rand=0.023 es-repair=-0.047 [-0.094,+0.000] term=1.00 abs=0.0029
+    l  9 a0.25 last n= 128 es=0.008 rand=0.008 es-repair=-0.062 [-0.117,-0.023] term=1.00 abs=0.0074
+    l 14 a0.25 last n= 128 es=0.008 rand=0.008 es-repair=-0.062 [-0.109,-0.023] term=1.00 abs=0.0068
+    l 19 a0.25 last n= 128 es=0.008 rand=0.016 es-repair=-0.062 [-0.109,-0.023] term=1.00 abs=0.0071
+    l 19 a1.0  last n= 128 es=0.000 rand=0.008 es-repair=-0.070 [-0.117,-0.031] term=1.00 abs=0.0030
+Qwen/Qwen2.5-3B-Instruct B8 dev            n= 128 sample=0.117 repair=0.062 term(s/r)=0.98/0.83 noise_flip=0.195 sampleT0.5=0.062 sampleT1.0=0.117 sampleT1.3=0.117
+    l 18 a1.0  last n= 128 es=0.070 rand=0.062 es-sample=-0.047 [-0.094,-0.008] term=0.98 abs=0.0029
+    l 12 a1.0  last n= 128 es=0.062 rand=0.055 es-sample=-0.055 [-0.102,-0.016] term=0.99 abs=0.0030
+    l 12 a0.25 last n= 128 es=0.055 rand=0.055 es-sample=-0.062 [-0.109,-0.023] term=0.99 abs=0.0069
+    l 18 a0.25 last n= 128 es=0.055 rand=0.047 es-sample=-0.062 [-0.109,-0.023] term=0.99 abs=0.0067
+    l 24 a0.25 last n= 128 es=0.055 rand=0.055 es-sample=-0.062 [-0.109,-0.023] term=0.99 abs=0.0072
+    l 24 a1.0  last n= 128 es=0.047 rand=0.070 es-sample=-0.070 [-0.117,-0.031] term=0.99 abs=0.0030
+Qwen/Qwen2.5-7B-Instruct B8 dev            n= 128 sample=0.164 repair=0.148 term(s/r)=0.99/0.97 noise_flip=0.070 sampleT0.5=0.148 sampleT1.0=0.188 sampleT1.3=0.227
+    l 14 a1.0  last n= 128 es=0.172 rand=0.203 es-sample=+0.008 [-0.047,+0.062] term=0.99 abs=0.0030
+    l  9 a1.0  last n= 128 es=0.164 rand=0.172 es-sample=+0.000 [-0.055,+0.055] term=0.99 abs=0.0030
+    l 19 a1.0  last n= 128 es=0.164 rand=0.172 es-sample=+0.000 [-0.055,+0.055] term=0.99 abs=0.0030
+    l 19 a0.25 last n= 128 es=0.102 rand=0.102 es-sample=-0.062 [-0.117,-0.016] term=0.98 abs=0.0073
+    l  9 a0.25 last n= 128 es=0.094 rand=0.102 es-sample=-0.070 [-0.125,-0.023] term=0.99 abs=0.0072
+    l 14 a0.25 last n= 128 es=0.094 rand=0.102 es-sample=-0.070 [-0.125,-0.023] term=0.99 abs=0.0072
+Qwen/Qwen3-0.6B B8 dev                     n= 128 sample=0.070 repair=0.070 term(s/r)=1.00/0.99 noise_flip=0.180 sampleT0.5=0.078 sampleT1.0=0.102 sampleT1.3=0.109
+    l 14 a1.0  last n= 128 es=0.070 rand=0.047 es-sample=+0.000 [-0.039,+0.039] term=1.00 abs=0.0031
+    l 14 a0.25 last n= 128 es=0.055 rand=0.031 es-sample=-0.016 [-0.062,+0.023] term=1.00 abs=0.0079
+    l 19 a1.0  last n= 128 es=0.055 rand=0.039 es-sample=-0.016 [-0.062,+0.023] term=1.00 abs=0.0030
+    l  9 a1.0  last n= 128 es=0.039 rand=0.047 es-sample=-0.031 [-0.062,-0.008] term=1.00 abs=0.0030
+    l 19 a0.25 last n= 128 es=0.039 rand=0.031 es-sample=-0.031 [-0.062,-0.008] term=1.00 abs=0.0074
+    l  9 a0.25 last n= 128 es=0.031 rand=0.039 es-sample=-0.039 [-0.078,-0.008] term=1.00 abs=0.0068
+Qwen/Qwen3-1.7B B8 dev                     n= 128 sample=0.016 repair=0.031 term(s/r)=1.00/1.00 noise_flip=0.047 sampleT0.5=0.016 sampleT1.0=0.023 sampleT1.3=0.039
+    l 19 a1.0  last n= 128 es=0.062 rand=0.086 es-repair=+0.031 [-0.016,+0.086] term=1.00 abs=0.0030
+    l 14 a1.0  last n= 128 es=0.047 rand=0.031 es-repair=+0.016 [-0.031,+0.062] term=1.00 abs=0.0029
+    l  9 a1.0  last n= 128 es=0.039 rand=0.055 es-repair=+0.008 [-0.031,+0.047] term=0.99 abs=0.0030
+    l 14 a0.25 last n= 128 es=0.016 rand=0.008 es-repair=-0.016 [-0.047,+0.008] term=1.00 abs=0.0067
+    l  9 a0.25 last n= 128 es=0.008 rand=0.008 es-repair=-0.023 [-0.055,+0.000] term=1.00 abs=0.0071
+    l 19 a0.25 last n= 128 es=0.008 rand=0.016 es-repair=-0.023 [-0.055,+0.000] term=1.00 abs=0.0072
+Qwen/Qwen3-4B B8 dev                       n= 128 sample=0.195 repair=0.203 term(s/r)=0.99/0.99 noise_flip=0.094 sampleT0.5=0.172 sampleT1.0=0.172 sampleT1.3=0.227
+    l 12 a1.0  last n= 128 es=0.180 rand=0.188 es-repair=-0.023 [-0.070,+0.023] term=1.00 abs=0.0029
+    l 18 a1.0  last n= 128 es=0.172 rand=0.172 es-repair=-0.031 [-0.086,+0.031] term=0.99 abs=0.0029
+    l 12 a0.25 last n= 128 es=0.148 rand=0.156 es-repair=-0.055 [-0.102,-0.008] term=1.00 abs=0.0068
+    l 18 a0.25 last n= 128 es=0.148 rand=0.164 es-repair=-0.055 [-0.102,-0.016] term=1.00 abs=0.0068
+    l 24 a1.0  last n= 128 es=0.133 rand=0.164 es-repair=-0.070 [-0.117,-0.031] term=1.00 abs=0.0029
+    l 24 a0.25 last n= 128 es=0.125 rand=0.141 es-repair=-0.078 [-0.133,-0.031] term=0.99 abs=0.0067
+Qwen/Qwen3-8B B8 dev                       n= 128 sample=0.086 repair=0.086 term(s/r)=0.99/0.99 noise_flip=0.086 sampleT0.5=0.078 sampleT1.0=0.094 sampleT1.3=0.125
+    l 12 a1.0  last n= 128 es=0.164 rand=0.164 es-sample=+0.078 [+0.016,+0.141] term=0.99 abs=0.0030
+    l 18 a1.0  last n= 128 es=0.156 rand=0.172 es-sample=+0.070 [+0.023,+0.117] term=0.99 abs=0.0029
+    l 24 a1.0  last n= 128 es=0.102 rand=0.133 es-sample=+0.016 [-0.023,+0.062] term=0.99 abs=0.0029
+    l 12 a0.25 last n= 128 es=0.070 rand=0.070 es-sample=-0.016 [-0.047,+0.016] term=0.98 abs=0.0075
+    l 18 a0.25 last n= 128 es=0.070 rand=0.070 es-sample=-0.016 [-0.047,+0.016] term=0.99 abs=0.0065
+    l 24 a0.25 last n= 128 es=0.070 rand=0.070 es-sample=-0.016 [-0.047,+0.016] term=0.98 abs=0.0067
+allenai/OLMo-2-0425-1B-Instruct B8 dev     n= 128 sample=0.023 repair=0.023 term(s/r)=1.00/0.98 noise_flip=0.117 
+    l  8 a1.0  last n= 128 es=0.016 rand=0.016 es-sample=-0.008 [-0.047,+0.031] term=1.00 abs=0.0030
+    l  5 a1.0  last n= 128 es=0.008 rand=0.016 es-sample=-0.016 [-0.047,+0.016] term=1.00 abs=0.0030
+    l 11 a0.25 last n= 128 es=0.008 rand=0.008 es-sample=-0.016 [-0.047,+0.016] term=1.00 abs=0.0071
+    l 11 a1.0  last n= 128 es=0.008 rand=0.008 es-sample=-0.016 [-0.047,+0.016] term=1.00 abs=0.0030
+    l  5 a0.25 last n= 128 es=0.000 rand=0.000 es-sample=-0.023 [-0.055,+0.000] term=1.00 abs=0.0072
+    l  8 a0.25 last n= 128 es=0.000 rand=0.000 es-sample=-0.023 [-0.055,+0.000] term=1.00 abs=0.0072
+allenai/OLMo-2-1124-7B-Instruct B8 dev     n= 128 sample=0.055 repair=0.062 term(s/r)=1.00/1.00 noise_flip=0.070 
+    l 16 a1.0  last n= 128 es=0.047 rand=0.039 es-repair=-0.016 [-0.047,+0.016] term=1.00 abs=0.0031
+    l 21 a1.0  last n= 128 es=0.039 rand=0.031 es-repair=-0.023 [-0.055,+0.000] term=1.00 abs=0.0030
+    l 11 a1.0  last n= 128 es=0.031 rand=0.039 es-repair=-0.031 [-0.070,+0.000] term=1.00 abs=0.0030
+    l 11 a0.25 last n= 128 es=0.016 rand=0.016 es-repair=-0.047 [-0.086,-0.016] term=1.00 abs=0.0072
+    l 16 a0.25 last n= 128 es=0.016 rand=0.023 es-repair=-0.047 [-0.086,-0.016] term=1.00 abs=0.0073
+    l 21 a0.25 last n= 128 es=0.016 rand=0.016 es-repair=-0.047 [-0.086,-0.016] term=1.00 abs=0.0072
+microsoft/Phi-3-mini-4k-instruct B8 dev    n= 128 sample=0.133 repair=0.188 term(s/r)=0.99/1.00 noise_flip=0.234 
+    l 16 a1.0  last n= 128 es=0.086 rand=0.094 es-repair=-0.102 [-0.180,-0.031] term=0.99 abs=0.0029
+    l 21 a1.0  last n= 128 es=0.062 rand=0.070 es-repair=-0.125 [-0.195,-0.055] term=0.99 abs=0.0030
+    l 11 a1.0  last n= 128 es=0.055 rand=0.062 es-repair=-0.133 [-0.211,-0.055] term=0.99 abs=0.0030
+    l 11 a0.25 last n= 128 es=0.039 rand=0.031 es-repair=-0.148 [-0.227,-0.070] term=1.00 abs=0.0071
+    l 16 a0.25 last n= 128 es=0.031 rand=0.055 es-repair=-0.156 [-0.227,-0.086] term=0.99 abs=0.0069
+    l 21 a0.25 last n= 128 es=0.023 rand=0.031 es-repair=-0.164 [-0.234,-0.094] term=1.00 abs=0.0074
+mistralai/Mistral-7B-Instruct-v0.3 B8 dev  n= 128 sample=0.062 repair=0.109 term(s/r)=0.94/0.97 noise_flip=0.203 
+    l 11 a0.25 last n= 128 es=0.023 rand=0.016 es-repair=-0.086 [-0.141,-0.039] term=0.94 abs=0.0072
+    l 21 a0.25 last n= 128 es=0.023 rand=0.016 es-repair=-0.086 [-0.141,-0.039] term=0.94 abs=0.0072
+    l 21 a1.0  last n= 128 es=0.023 rand=0.031 es-repair=-0.086 [-0.141,-0.031] term=0.94 abs=0.0030
+    l 11 a1.0  last n= 128 es=0.016 rand=0.023 es-repair=-0.094 [-0.141,-0.047] term=0.92 abs=0.0030
+    l 16 a0.25 last n= 128 es=0.016 rand=0.016 es-repair=-0.094 [-0.141,-0.047] term=0.94 abs=0.0072
+    l 16 a1.0  last n= 128 es=0.016 rand=0.023 es-repair=-0.094 [-0.148,-0.039] term=0.95 abs=0.0030

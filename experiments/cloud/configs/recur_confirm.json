@@ -1,0 +1,101 @@
+{
+ "run": "recur-confirm",
+ "kind": "recur",
+ "machine": "a2-highgpu-1g",
+ "accelerator": null,
+ "usd_per_hour": 2.21,
+ "cost_cap_usd": 15.0,
+ "zones": [
+  "us-central1-a",
+  "us-central1-b",
+  "us-central1-c",
+  "us-central1-f",
+  "us-east1-b",
+  "us-west1-b",
+  "us-west4-b",
+  "us-east4-c",
+  "europe-west4-a",
+  "europe-west4-b"
+ ],
+ "requirements": [
+  "transformers>=5.12,<6",
+  "accelerate",
+  "jinja2>=3.1"
+ ],
+ "common": {
+  "families": [
+   "arith",
+   "countdown"
+  ],
+  "cot_budget": 2048,
+  "direct_budget": 64,
+  "n_dev": 8,
+  "n_test": 512,
+  "task_seed": 202,
+  "bs": 32,
+  "centers": [
+   0.5
+  ],
+  "block_width": 4,
+  "loops": [
+   2
+  ],
+  "variants": [
+   [
+    "plain",
+    1.0
+   ]
+  ],
+  "note": "Probe C confirmation: dev-frozen direct-mode loop configs (selection_direct.json of recur-sw), 512 new problems per family"
+ },
+ "shards": [
+  {
+   "model": "Qwen/Qwen3-8B",
+   "frozen": {
+    "direct": [
+     7,
+     11,
+     2,
+     "normmatch",
+     1.0
+    ]
+   }
+  },
+  {
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "frozen": {
+    "direct": [
+     12,
+     16,
+     2,
+     "damp",
+     0.5
+    ]
+   }
+  },
+  {
+   "model": "Qwen/Qwen3-1.7B",
+   "frozen": {
+    "direct": [
+     19,
+     23,
+     2,
+     "damp",
+     0.5
+    ]
+   }
+  },
+  {
+   "model": "Qwen/Qwen3-4B",
+   "frozen": {
+    "direct": [
+     7,
+     11,
+     2,
+     "plain",
+     1.0
+    ]
+   }
+  }
+ ]
+}

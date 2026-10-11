@@ -1,0 +1,622 @@
+HuggingFaceTB/SmolLM2-1.7B-Instruct
+    dev|cot|10-14x2-plain1.0                     mult=1.17 acc=0.172 term=0.80 tok=544 {'arith': 0.42, 'graph': 0.09, 'countdown': 0.0} div=[0.44] 
+    dev|cot|16-20x2-normmatch1.0                 mult=1.17 acc=0.276 term=0.89 tok=401 {'arith': 0.53, 'graph': 0.25, 'countdown': 0.05} div=[0.19] 
+    dev|cot|16-20x2-plain1.0                     mult=1.17 acc=0.219 term=0.91 tok=324 {'arith': 0.28, 'graph': 0.38, 'countdown': 0.0} div=[0.56] 
+    dev|cot|16-20x4-plain1.0                     mult=1.50 acc=0.089 term=0.21 tok=1652 {'arith': 0.0, 'graph': 0.23, 'countdown': 0.03} div=[0.56, 0.34, 0.26] 
+    dev|cot|4-8x2-plain1.0                       mult=1.17 acc=0.000 term=0.84 tok=378 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.91] 
+    dev|cot|base                                 mult=1.00 acc=0.250 term=0.80 tok=550 {'arith': 0.48, 'graph': 0.25, 'countdown': 0.02}  
+    dev|direct|10-14x2-damp0.5                   mult=1.17 acc=0.078 term=0.99 tok=8 {'arith': 0.0, 'graph': 0.2, 'countdown': 0.03} div=[0.22] 
+    dev|direct|10-14x2-normmatch1.0              mult=1.17 acc=0.026 term=0.99 tok=8 {'arith': 0.02, 'graph': 0.03, 'countdown': 0.03} div=[0.27] 
+    dev|direct|10-14x2-plain1.0                  mult=1.17 acc=0.031 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.06, 'countdown': 0.03} div=[0.44] 
+    dev|direct|10-14x4-damp0.5                   mult=1.50 acc=0.031 term=0.98 tok=9 {'arith': 0.0, 'graph': 0.06, 'countdown': 0.03} div=[0.22, 0.18, 0.15] 
+    dev|direct|10-14x4-normmatch1.0              mult=1.50 acc=0.010 term=0.99 tok=10 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.03} div=[0.27, 0.18, 0.17] 
+    dev|direct|10-14x4-plain1.0                  mult=1.50 acc=0.016 term=0.96 tok=11 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.05} div=[0.44, 0.3, 0.23] 
+    dev|direct|10-14x8-damp0.5                   mult=2.17 acc=0.010 term=0.96 tok=12 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.03} div=[0.22, 0.18, 0.15, 0.13, 0.11, 0.1, 0.09] 
+    dev|direct|10-14x8-normmatch1.0              mult=2.17 acc=0.000 term=0.98 tok=14 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.27, 0.18, 0.17, 0.14, 0.13, 0.14, 0.16] 
+    dev|direct|10-14x8-plain1.0                  mult=2.17 acc=0.000 term=0.99 tok=13 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.44, 0.3, 0.23, 0.18, 0.16, 0.14, 0.13] 
+    dev|direct|16-20x2-damp0.5                   mult=1.17 acc=0.188 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.52, 'countdown': 0.05} div=[0.28] 
+    dev|direct|16-20x2-normmatch1.0              mult=1.17 acc=0.214 term=1.00 tok=7 {'arith': 0.0, 'graph': 0.59, 'countdown': 0.05} div=[0.19] 
+    dev|direct|16-20x2-plain1.0                  mult=1.17 acc=0.214 term=0.98 tok=10 {'arith': 0.0, 'graph': 0.58, 'countdown': 0.06} div=[0.56] 
+    dev|direct|16-20x4-damp0.5                   mult=1.50 acc=0.208 term=0.97 tok=11 {'arith': 0.0, 'graph': 0.61, 'countdown': 0.02} div=[0.28, 0.21, 0.18] 
+    dev|direct|16-20x4-normmatch1.0              mult=1.50 acc=0.198 term=0.97 tok=9 {'arith': 0.0, 'graph': 0.59, 'countdown': 0.0} div=[0.19, 0.13, 0.11] 
+    dev|direct|16-20x4-plain1.0                  mult=1.50 acc=0.245 term=0.84 tok=19 {'arith': 0.0, 'graph': 0.67, 'countdown': 0.06} div=[0.56, 0.34, 0.26] 
+    dev|direct|16-20x8-damp0.5                   mult=2.17 acc=0.214 term=0.66 tok=26 {'arith': 0.0, 'graph': 0.64, 'countdown': 0.0} div=[0.28, 0.21, 0.18, 0.15, 0.13, 0.11, 0.1] 
+    dev|direct|16-20x8-normmatch1.0              mult=2.17 acc=0.000 term=0.08 tok=60 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.19, 0.13, 0.11, 0.11, 0.11, 0.12, 0.14] 
+    dev|direct|16-20x8-plain1.0                  mult=2.17 acc=0.000 term=0.01 tok=64 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.56, 0.34, 0.26, 0.21, 0.17, 0.15, 0.13] 
+    dev|direct|4-8x2-damp0.5                     mult=1.17 acc=0.193 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.58, 'countdown': 0.0} div=[0.45] 
+    dev|direct|4-8x2-normmatch1.0                mult=1.17 acc=0.047 term=1.00 tok=4 {'arith': 0.0, 'graph': 0.14, 'countdown': 0.0} div=[0.61] 
+    dev|direct|4-8x2-plain1.0                    mult=1.17 acc=0.000 term=1.00 tok=4 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.91] 
+    dev|direct|4-8x4-damp0.5                     mult=1.50 acc=0.000 term=0.87 tok=15 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.45, 0.38, 0.34] 
+    dev|direct|4-8x4-normmatch1.0                mult=1.50 acc=0.000 term=0.84 tok=15 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.61, 0.62, 0.47] 
+    dev|direct|4-8x4-plain1.0                    mult=1.50 acc=0.000 term=0.53 tok=38 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.91, 0.68, 0.5] 
+    dev|direct|4-8x8-damp0.5                     mult=2.17 acc=0.000 term=0.48 tok=51 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.45, 0.38, 0.34, 0.28, 0.24, 0.21, 0.18] 
+    dev|direct|4-8x8-normmatch1.0                mult=2.17 acc=0.000 term=0.02 tok=63 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.61, 0.62, 0.47, 0.61, 0.65, 0.31, 0.28] 
+    dev|direct|4-8x8-plain1.0                    mult=2.17 acc=0.000 term=0.70 tok=28 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.91, 0.68, 0.5, 0.37, 0.3, 0.26, 0.23] 
+    dev|direct|base                              mult=1.00 acc=0.177 term=1.00 tok=7 {'arith': 0.0, 'graph': 0.47, 'countdown': 0.06}  
+    test|cot|base                                mult=1.00 acc=0.242 term=0.76 tok=626 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.586/0.016/102/0.98; countdown 0.000/0.000/75/0.55; graph 0.141/0.617/31/0.73
+    test|cot|flop_control                        mult=1.17 acc=0.242 term=0.76 tok=708 {}  budget x1.17
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.586/0.016/101/0.98; countdown 0.000/0.000/75/0.55; graph 0.141/0.617/30/0.73
+    test|cot|loop                                mult=1.17 acc=0.268 term=0.89 tok=389 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.516/0.016/118/0.98; countdown 0.023/0.000/67/0.82; graph 0.266/0.617/14/0.88
+    test|direct|base                             mult=1.00 acc=0.167 term=1.00 tok=7 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/50/1.00; countdown 0.023/0.000/118/0.99; graph 0.477/0.617/4/1.00
+    test|direct|flop_control                     mult=1.50 acc=0.167 term=1.00 tok=7 {}  54 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/44/1.00; countdown 0.000/0.000/96/1.00; graph 0.500/0.617/4/1.00
+    test|direct|loop                             mult=1.50 acc=0.182 term=0.85 tok=18 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.008/0.016/36/0.94; countdown 0.000/0.000/127/0.62; graph 0.539/0.617/4/1.00
+HuggingFaceTB/SmolLM2-360M-Instruct
+    dev|cot|14-18x2-plain1.0                     mult=1.12 acc=0.073 term=0.62 tok=904 {'arith': 0.06, 'graph': 0.12, 'countdown': 0.03} div=[0.31] 
+    dev|cot|22-26x2-normmatch1.0                 mult=1.12 acc=0.042 term=0.70 tok=736 {'arith': 0.02, 'graph': 0.09, 'countdown': 0.02} div=[0.17] 
+    dev|cot|22-26x2-plain1.0                     mult=1.12 acc=0.057 term=0.57 tok=997 {'arith': 0.03, 'graph': 0.14, 'countdown': 0.0} div=[0.49] 
+    dev|cot|6-10x2-damp0.5                       mult=1.12 acc=0.026 term=0.68 tok=805 {'arith': 0.03, 'graph': 0.05, 'countdown': 0.0} div=[0.22] 
+    dev|cot|6-10x2-normmatch1.0                  mult=1.12 acc=0.005 term=0.63 tok=874 {'arith': 0.02, 'graph': 0.0, 'countdown': 0.0} div=[0.22] 
+    dev|cot|6-10x2-plain1.0                      mult=1.12 acc=0.016 term=0.62 tok=923 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.0} div=[0.44] 
+    dev|cot|base                                 mult=1.00 acc=0.047 term=0.84 tok=472 {'arith': 0.08, 'graph': 0.05, 'countdown': 0.02}  
+    dev|direct|14-18x2-damp0.5                   mult=1.12 acc=0.042 term=0.97 tok=6 {'arith': 0.02, 'graph': 0.11, 'countdown': 0.0} div=[0.15] 
+    dev|direct|14-18x2-normmatch1.0              mult=1.12 acc=0.021 term=0.98 tok=6 {'arith': 0.02, 'graph': 0.05, 'countdown': 0.0} div=[0.22] 
+    dev|direct|14-18x2-plain1.0                  mult=1.12 acc=0.000 term=0.92 tok=10 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.31] 
+    dev|direct|14-18x4-damp0.5                   mult=1.38 acc=0.005 term=0.90 tok=12 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.02} div=[0.15, 0.13, 0.12] 
+    dev|direct|14-18x4-normmatch1.0              mult=1.38 acc=0.005 term=0.81 tok=19 {'arith': 0.02, 'graph': 0.0, 'countdown': 0.0} div=[0.22, 0.18, 0.19] 
+    dev|direct|14-18x4-plain1.0                  mult=1.38 acc=0.010 term=0.92 tok=12 {'arith': 0.0, 'graph': 0.03, 'countdown': 0.0} div=[0.31, 0.24, 0.23] 
+    dev|direct|14-18x8-damp0.5                   mult=1.88 acc=0.057 term=0.96 tok=10 {'arith': 0.0, 'graph': 0.16, 'countdown': 0.02} div=[0.15, 0.13, 0.12, 0.12, 0.12, 0.12, 0.12] 
+    dev|direct|14-18x8-normmatch1.0              mult=1.88 acc=0.010 term=0.91 tok=19 {'arith': 0.02, 'graph': 0.02, 'countdown': 0.0} div=[0.22, 0.18, 0.19, 0.23, 0.26, 0.28, 0.29] 
+    dev|direct|14-18x8-plain1.0                  mult=1.88 acc=0.005 term=0.96 tok=16 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.0} div=[0.31, 0.24, 0.23, 0.23, 0.22, 0.21, 0.21] 
+    dev|direct|22-26x2-damp0.5                   mult=1.12 acc=0.099 term=0.92 tok=9 {'arith': 0.0, 'graph': 0.3, 'countdown': 0.0} div=[0.24] 
+    dev|direct|22-26x2-normmatch1.0              mult=1.12 acc=0.125 term=0.91 tok=10 {'arith': 0.0, 'graph': 0.38, 'countdown': 0.0} div=[0.17] 
+    dev|direct|22-26x2-plain1.0                  mult=1.12 acc=0.099 term=0.85 tok=13 {'arith': 0.0, 'graph': 0.3, 'countdown': 0.0} div=[0.49] 
+    dev|direct|22-26x4-damp0.5                   mult=1.38 acc=0.094 term=0.35 tok=43 {'arith': 0.0, 'graph': 0.28, 'countdown': 0.0} div=[0.24, 0.2, 0.18] 
+    dev|direct|22-26x4-normmatch1.0              mult=1.38 acc=0.073 term=0.46 tok=37 {'arith': 0.0, 'graph': 0.22, 'countdown': 0.0} div=[0.17, 0.19, 0.24] 
+    dev|direct|22-26x4-plain1.0                  mult=1.38 acc=0.068 term=0.48 tok=35 {'arith': 0.0, 'graph': 0.2, 'countdown': 0.0} div=[0.49, 0.35, 0.28] 
+    dev|direct|22-26x8-damp0.5                   mult=1.88 acc=0.047 term=0.46 tok=37 {'arith': 0.0, 'graph': 0.14, 'countdown': 0.0} div=[0.24, 0.2, 0.18, 0.16, 0.14, 0.14, 0.13] 
+    dev|direct|22-26x8-normmatch1.0              mult=1.88 acc=0.016 term=0.16 tok=59 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.0} div=[0.17, 0.19, 0.24, 0.29, 0.33, 0.36, 0.34] 
+    dev|direct|22-26x8-plain1.0                  mult=1.88 acc=0.000 term=0.00 tok=64 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.49, 0.35, 0.28, 0.25, 0.23, 0.22, 0.21] 
+    dev|direct|6-10x2-damp0.5                    mult=1.12 acc=0.146 term=0.99 tok=5 {'arith': 0.0, 'graph': 0.44, 'countdown': 0.0} div=[0.22] 
+    dev|direct|6-10x2-normmatch1.0               mult=1.12 acc=0.141 term=1.00 tok=4 {'arith': 0.02, 'graph': 0.41, 'countdown': 0.0} div=[0.22] 
+    dev|direct|6-10x2-plain1.0                   mult=1.12 acc=0.078 term=1.00 tok=4 {'arith': 0.0, 'graph': 0.23, 'countdown': 0.0} div=[0.44] 
+    dev|direct|6-10x4-damp0.5                    mult=1.38 acc=0.068 term=0.99 tok=6 {'arith': 0.0, 'graph': 0.2, 'countdown': 0.0} div=[0.22, 0.2, 0.18] 
+    dev|direct|6-10x4-normmatch1.0               mult=1.38 acc=0.010 term=0.99 tok=5 {'arith': 0.0, 'graph': 0.03, 'countdown': 0.0} div=[0.22, 0.19, 0.18] 
+    dev|direct|6-10x4-plain1.0                   mult=1.38 acc=0.005 term=0.94 tok=12 {'arith': 0.02, 'graph': 0.0, 'countdown': 0.0} div=[0.44, 0.37, 0.31] 
+    dev|direct|6-10x8-damp0.5                    mult=1.88 acc=0.000 term=0.62 tok=31 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.22, 0.2, 0.18, 0.17, 0.16, 0.15, 0.14] 
+    dev|direct|6-10x8-normmatch1.0               mult=1.88 acc=0.000 term=0.83 tok=15 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.22, 0.19, 0.18, 0.18, 0.17, 0.17, 0.17] 
+    dev|direct|6-10x8-plain1.0                   mult=1.88 acc=0.000 term=0.95 tok=10 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.44, 0.37, 0.31, 0.28, 0.25, 0.21, 0.2] 
+    dev|direct|base                              mult=1.00 acc=0.089 term=0.99 tok=4 {'arith': 0.0, 'graph': 0.27, 'countdown': 0.0}  
+    test|cot|base                                mult=1.00 acc=0.052 term=0.83 tok=523 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.055/0.016/122/0.95; countdown 0.000/0.000/51/0.88; graph 0.102/0.617/29/0.66
+    test|cot|flop_control                        mult=1.12 acc=0.052 term=0.83 tok=567 {}  budget x1.12
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.055/0.016/122/0.95; countdown 0.000/0.000/51/0.88; graph 0.102/0.617/27/0.66
+    test|cot|loop                                mult=1.12 acc=0.031 term=0.61 tok=926 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.023/0.016/112/0.80; countdown 0.031/0.000/67/0.54; graph 0.039/0.617/19/0.50
+    test|direct|base                             mult=1.00 acc=0.112 term=1.00 tok=4 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/30/1.00; countdown 0.000/0.000/2/1.00; graph 0.336/0.617/3/1.00
+    test|direct|flop_control                     mult=1.12 acc=0.094 term=1.00 tok=4 {}  14 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/30/0.99; countdown 0.000/0.000/3/1.00; graph 0.281/0.617/4/1.00
+    test|direct|loop                             mult=1.12 acc=0.141 term=1.00 tok=4 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/30/1.00; countdown 0.000/0.000/7/1.00; graph 0.422/0.617/3/1.00
+Qwen/Qwen2.5-0.5B-Instruct
+    dev|cot|10-14x2-plain1.0                     mult=1.17 acc=0.089 term=0.93 tok=443 {'arith': 0.03, 'graph': 0.23, 'countdown': 0.0} div=[0.36] 
+    dev|cot|10-14x4-damp0.5                      mult=1.50 acc=0.104 term=0.91 tok=463 {'arith': 0.09, 'graph': 0.22, 'countdown': 0.0} div=[0.18, 0.15, 0.14] 
+    dev|cot|16-20x2-plain1.0                     mult=1.17 acc=0.172 term=0.80 tok=718 {'arith': 0.36, 'graph': 0.14, 'countdown': 0.02} div=[0.64] 
+    dev|cot|4-8x2-normmatch1.0                   mult=1.17 acc=0.276 term=0.80 tok=640 {'arith': 0.75, 'graph': 0.08, 'countdown': 0.0} div=[0.34] 
+    dev|cot|4-8x2-plain1.0                       mult=1.17 acc=0.177 term=0.85 tok=508 {'arith': 0.47, 'graph': 0.05, 'countdown': 0.02} div=[0.46] 
+    dev|cot|base                                 mult=1.00 acc=0.219 term=0.83 tok=604 {'arith': 0.53, 'graph': 0.11, 'countdown': 0.02}  
+    dev|direct|10-14x2-damp0.5                   mult=1.17 acc=0.094 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.27, 'countdown': 0.02} div=[0.18] 
+    dev|direct|10-14x2-normmatch1.0              mult=1.17 acc=0.146 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.42, 'countdown': 0.02} div=[0.34] 
+    dev|direct|10-14x2-plain1.0                  mult=1.17 acc=0.141 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.42, 'countdown': 0.0} div=[0.36] 
+    dev|direct|10-14x4-damp0.5                   mult=1.50 acc=0.214 term=1.00 tok=11 {'arith': 0.0, 'graph': 0.64, 'countdown': 0.0} div=[0.18, 0.15, 0.14] 
+    dev|direct|10-14x4-normmatch1.0              mult=1.50 acc=0.156 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.47, 'countdown': 0.0} div=[0.34, 0.31, 0.32] 
+    dev|direct|10-14x4-plain1.0                  mult=1.50 acc=0.109 term=1.00 tok=10 {'arith': 0.0, 'graph': 0.33, 'countdown': 0.0} div=[0.36, 0.31, 0.29] 
+    dev|direct|10-14x8-damp0.5                   mult=2.17 acc=0.000 term=1.00 tok=10 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.18, 0.15, 0.14, 0.14, 0.14, 0.13, 0.12] 
+    dev|direct|10-14x8-normmatch1.0              mult=2.17 acc=0.005 term=0.98 tok=10 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.0} div=[0.34, 0.31, 0.32, 0.3, 0.29, 0.31, 0.3] 
+    dev|direct|10-14x8-plain1.0                  mult=2.17 acc=0.000 term=0.99 tok=13 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.36, 0.31, 0.29, 0.25, 0.21, 0.19, 0.19] 
+    dev|direct|16-20x2-damp0.5                   mult=1.17 acc=0.193 term=0.99 tok=9 {'arith': 0.0, 'graph': 0.56, 'countdown': 0.02} div=[0.32] 
+    dev|direct|16-20x2-normmatch1.0              mult=1.17 acc=0.208 term=1.00 tok=10 {'arith': 0.0, 'graph': 0.62, 'countdown': 0.0} div=[0.37] 
+    dev|direct|16-20x2-plain1.0                  mult=1.17 acc=0.208 term=0.92 tok=19 {'arith': 0.0, 'graph': 0.62, 'countdown': 0.0} div=[0.64] 
+    dev|direct|16-20x4-damp0.5                   mult=1.50 acc=0.203 term=0.86 tok=31 {'arith': 0.0, 'graph': 0.61, 'countdown': 0.0} div=[0.32, 0.28, 0.24] 
+    dev|direct|16-20x4-normmatch1.0              mult=1.50 acc=0.208 term=0.90 tok=20 {'arith': 0.0, 'graph': 0.62, 'countdown': 0.0} div=[0.37, 0.32, 0.31] 
+    dev|direct|16-20x4-plain1.0                  mult=1.50 acc=0.208 term=0.74 tok=27 {'arith': 0.0, 'graph': 0.62, 'countdown': 0.0} div=[0.64, 0.48, 0.39] 
+    dev|direct|16-20x8-damp0.5                   mult=2.17 acc=0.198 term=0.69 tok=29 {'arith': 0.0, 'graph': 0.59, 'countdown': 0.0} div=[0.32, 0.28, 0.24, 0.22, 0.2, 0.18, 0.17] 
+    dev|direct|16-20x8-normmatch1.0              mult=2.17 acc=0.000 term=0.71 tok=34 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.37, 0.32, 0.31, 0.32, 0.31, 0.31, 0.35] 
+    dev|direct|16-20x8-plain1.0                  mult=2.17 acc=0.156 term=0.44 tok=41 {'arith': 0.0, 'graph': 0.47, 'countdown': 0.0} div=[0.64, 0.48, 0.39, 0.33, 0.29, 0.25, 0.21] 
+    dev|direct|4-8x2-damp0.5                     mult=1.17 acc=0.203 term=1.00 tok=8 {'arith': 0.02, 'graph': 0.59, 'countdown': 0.0} div=[0.23] 
+    dev|direct|4-8x2-normmatch1.0                mult=1.17 acc=0.214 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.62, 'countdown': 0.02} div=[0.34] 
+    dev|direct|4-8x2-plain1.0                    mult=1.17 acc=0.151 term=1.00 tok=8 {'arith': 0.02, 'graph': 0.44, 'countdown': 0.0} div=[0.46] 
+    dev|direct|4-8x4-damp0.5                     mult=1.50 acc=0.172 term=0.98 tok=8 {'arith': 0.0, 'graph': 0.52, 'countdown': 0.0} div=[0.23, 0.18, 0.15] 
+    dev|direct|4-8x4-normmatch1.0                mult=1.50 acc=0.182 term=0.98 tok=6 {'arith': 0.02, 'graph': 0.53, 'countdown': 0.0} div=[0.34, 0.25, 0.25] 
+    dev|direct|4-8x4-plain1.0                    mult=1.50 acc=0.000 term=0.93 tok=10 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.46, 0.3, 0.24] 
+    dev|direct|4-8x8-damp0.5                     mult=2.17 acc=0.000 term=0.65 tok=28 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.23, 0.18, 0.15, 0.14, 0.12, 0.11, 0.1] 
+    dev|direct|4-8x8-normmatch1.0                mult=2.17 acc=0.000 term=0.97 tok=5 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.34, 0.25, 0.25, 0.25, 0.22, 0.2, 0.2] 
+    dev|direct|4-8x8-plain1.0                    mult=2.17 acc=0.000 term=0.51 tok=43 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.46, 0.3, 0.24, 0.21, 0.18, 0.16, 0.15] 
+    dev|direct|base                              mult=1.00 acc=0.094 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.25, 'countdown': 0.03}  
+    test|cot|base                                mult=1.00 acc=0.289 term=0.85 tok=575 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.727/0.016/120/1.00; countdown 0.016/0.000/80/0.66; graph 0.125/0.617/27/0.88
+    test|cot|flop_control                        mult=1.17 acc=0.289 term=0.85 tok=628 {}  budget x1.17
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.727/0.016/120/1.00; countdown 0.016/0.000/80/0.66; graph 0.125/0.617/29/0.88
+    test|cot|loop                                mult=1.17 acc=0.273 term=0.80 tok=643 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.695/0.016/118/1.00; countdown 0.000/0.000/69/0.66; graph 0.125/0.617/34/0.73
+    test|direct|base                             mult=1.00 acc=0.091 term=1.00 tok=8 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/96/1.00; countdown 0.016/0.000/127/1.00; graph 0.258/0.617/3/1.00
+    test|direct|flop_control                     mult=1.17 acc=0.089 term=1.00 tok=8 {}  18 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.008/0.016/91/1.00; countdown 0.008/0.000/127/1.00; graph 0.250/0.617/3/1.00
+    test|direct|loop                             mult=1.17 acc=0.198 term=1.00 tok=8 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/93/1.00; countdown 0.008/0.000/128/1.00; graph 0.586/0.617/3/1.00
+Qwen/Qwen2.5-1.5B-Instruct
+    dev|cot|12-16x2-plain1.0                     mult=1.14 acc=0.458 term=0.98 tok=293 {'arith': 1.0, 'graph': 0.33, 'countdown': 0.05} div=[0.27] 
+    dev|cot|12-16x4-normmatch1.0                 mult=1.43 acc=0.312 term=1.00 tok=214 {'arith': 0.75, 'graph': 0.19, 'countdown': 0.0} div=[0.21, 0.13, 0.1] 
+    dev|cot|12-16x4-plain1.0                     mult=1.43 acc=0.219 term=0.98 tok=239 {'arith': 0.44, 'graph': 0.22, 'countdown': 0.0} div=[0.27, 0.18, 0.14] 
+    dev|cot|12-16x8-damp0.5                      mult=2.00 acc=0.151 term=0.96 tok=262 {'arith': 0.23, 'graph': 0.2, 'countdown': 0.02} div=[0.13, 0.11, 0.09, 0.08, 0.07, 0.07, 0.06] 
+    dev|cot|19-23x2-plain1.0                     mult=1.14 acc=0.208 term=0.90 tok=484 {'arith': 0.39, 'graph': 0.2, 'countdown': 0.03} div=[0.59] 
+    dev|cot|5-9x2-plain1.0                       mult=1.14 acc=0.411 term=0.94 tok=409 {'arith': 0.92, 'graph': 0.31, 'countdown': 0.0} div=[0.33] 
+    dev|cot|base                                 mult=1.00 acc=0.432 term=0.96 tok=386 {'arith': 0.95, 'graph': 0.34, 'countdown': 0.0}  
+    dev|direct|12-16x2-damp0.5                   mult=1.14 acc=0.062 term=1.00 tok=8 {'arith': 0.02, 'graph': 0.16, 'countdown': 0.02} div=[0.13] 
+    dev|direct|12-16x2-normmatch1.0              mult=1.14 acc=0.068 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.19, 'countdown': 0.02} div=[0.21] 
+    dev|direct|12-16x2-plain1.0                  mult=1.14 acc=0.083 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.23, 'countdown': 0.02} div=[0.27] 
+    dev|direct|12-16x4-damp0.5                   mult=1.43 acc=0.073 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.2, 'countdown': 0.02} div=[0.13, 0.11, 0.09] 
+    dev|direct|12-16x4-normmatch1.0              mult=1.43 acc=0.167 term=1.00 tok=7 {'arith': 0.0, 'graph': 0.48, 'countdown': 0.02} div=[0.21, 0.13, 0.1] 
+    dev|direct|12-16x4-plain1.0                  mult=1.43 acc=0.141 term=0.99 tok=7 {'arith': 0.0, 'graph': 0.42, 'countdown': 0.0} div=[0.27, 0.18, 0.14] 
+    dev|direct|12-16x8-damp0.5                   mult=2.00 acc=0.167 term=0.99 tok=7 {'arith': 0.0, 'graph': 0.48, 'countdown': 0.02} div=[0.13, 0.11, 0.09, 0.08, 0.07, 0.07, 0.06] 
+    dev|direct|12-16x8-normmatch1.0              mult=2.00 acc=0.073 term=0.93 tok=11 {'arith': 0.0, 'graph': 0.22, 'countdown': 0.0} div=[0.21, 0.13, 0.1, 0.09, 0.08, 0.07, 0.07] 
+    dev|direct|12-16x8-plain1.0                  mult=2.00 acc=0.000 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.27, 0.18, 0.14, 0.12, 0.11, 0.1, 0.09] 
+    dev|direct|19-23x2-damp0.5                   mult=1.14 acc=0.078 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.22, 'countdown': 0.02} div=[0.29] 
+    dev|direct|19-23x2-normmatch1.0              mult=1.14 acc=0.073 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.22, 'countdown': 0.0} div=[0.31] 
+    dev|direct|19-23x2-plain1.0                  mult=1.14 acc=0.083 term=0.99 tok=9 {'arith': 0.0, 'graph': 0.22, 'countdown': 0.03} div=[0.59] 
+    dev|direct|19-23x4-damp0.5                   mult=1.43 acc=0.083 term=0.98 tok=10 {'arith': 0.0, 'graph': 0.22, 'countdown': 0.03} div=[0.29, 0.26, 0.23] 
+    dev|direct|19-23x4-normmatch1.0              mult=1.43 acc=0.073 term=0.91 tok=19 {'arith': 0.0, 'graph': 0.22, 'countdown': 0.0} div=[0.31, 0.28, 0.29] 
+    dev|direct|19-23x4-plain1.0                  mult=1.43 acc=0.078 term=0.71 tok=27 {'arith': 0.0, 'graph': 0.23, 'countdown': 0.0} div=[0.59, 0.47, 0.39] 
+    dev|direct|19-23x8-damp0.5                   mult=2.00 acc=0.073 term=0.73 tok=26 {'arith': 0.0, 'graph': 0.22, 'countdown': 0.0} div=[0.29, 0.26, 0.23, 0.21, 0.2, 0.19, 0.18] 
+    dev|direct|19-23x8-normmatch1.0              mult=2.00 acc=0.000 term=0.49 tok=46 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.31, 0.28, 0.29, 0.35, 0.43, 0.46, 0.4] 
+    dev|direct|19-23x8-plain1.0                  mult=2.00 acc=0.078 term=0.46 tok=38 {'arith': 0.02, 'graph': 0.22, 'countdown': 0.0} div=[0.59, 0.47, 0.39, 0.33, 0.3, 0.28, 0.27] 
+    dev|direct|5-9x2-damp0.5                     mult=1.14 acc=0.047 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.14, 'countdown': 0.0} div=[0.16] 
+    dev|direct|5-9x2-normmatch1.0                mult=1.14 acc=0.057 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.16, 'countdown': 0.02} div=[0.31] 
+    dev|direct|5-9x2-plain1.0                    mult=1.14 acc=0.042 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.12, 'countdown': 0.0} div=[0.33] 
+    dev|direct|5-9x4-damp0.5                     mult=1.43 acc=0.042 term=1.00 tok=10 {'arith': 0.0, 'graph': 0.12, 'countdown': 0.0} div=[0.16, 0.13, 0.11] 
+    dev|direct|5-9x4-normmatch1.0                mult=1.43 acc=0.062 term=1.00 tok=10 {'arith': 0.0, 'graph': 0.19, 'countdown': 0.0} div=[0.31, 0.23, 0.21] 
+    dev|direct|5-9x4-plain1.0                    mult=1.43 acc=0.052 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.14, 'countdown': 0.02} div=[0.33, 0.23, 0.2] 
+    dev|direct|5-9x8-damp0.5                     mult=2.00 acc=0.047 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.12, 'countdown': 0.02} div=[0.16, 0.13, 0.11, 0.11, 0.1, 0.1, 0.09] 
+    dev|direct|5-9x8-normmatch1.0                mult=2.00 acc=0.026 term=0.99 tok=6 {'arith': 0.0, 'graph': 0.08, 'countdown': 0.0} div=[0.31, 0.23, 0.21, 0.21, 0.2, 0.19, 0.18] 
+    dev|direct|5-9x8-plain1.0                    mult=2.00 acc=0.000 term=0.80 tok=18 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.33, 0.23, 0.2, 0.19, 0.17, 0.15, 0.13] 
+    dev|direct|base                              mult=1.00 acc=0.047 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.14, 'countdown': 0.0}  
+    test|cot|base                                mult=1.00 acc=0.414 term=0.96 tok=363 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.984/0.016/121/1.00; countdown 0.000/0.000/102/0.91; graph 0.258/0.617/12/0.98
+    test|cot|flop_control                        mult=1.14 acc=0.414 term=0.97 tok=372 {}  budget x1.14
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.984/0.016/121/1.00; countdown 0.000/0.000/101/0.92; graph 0.258/0.617/12/0.98
+    test|cot|loop                                mult=1.14 acc=0.445 term=0.99 tok=284 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.953/0.016/120/1.00; countdown 0.016/0.000/113/0.97; graph 0.367/0.617/11/1.00
+    test|direct|base                             mult=1.00 acc=0.042 term=1.00 tok=8 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/90/1.00; countdown 0.031/0.000/128/0.99; graph 0.094/0.617/2/1.00
+    test|direct|flop_control                     mult=1.43 acc=0.052 term=1.00 tok=7 {}  44 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.008/0.016/98/1.00; countdown 0.039/0.000/128/1.00; graph 0.109/0.617/2/1.00
+    test|direct|loop                             mult=1.43 acc=0.156 term=0.99 tok=7 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/87/0.98; countdown 0.008/0.000/105/1.00; graph 0.461/0.617/5/1.00
+Qwen/Qwen2.5-3B-Instruct
+    dev|cot|16-20x2-plain1.0                     mult=1.11 acc=0.474 term=0.94 tok=421 {'arith': 0.95, 'graph': 0.38, 'countdown': 0.09} div=[0.24] 
+    dev|cot|16-20x8-plain1.0                     mult=1.78 acc=0.104 term=0.24 tok=1622 {'arith': 0.0, 'graph': 0.31, 'countdown': 0.0} div=[0.24, 0.16, 0.14, 0.13, 0.13, 0.13, 0.13] 
+    dev|cot|25-29x2-plain1.0                     mult=1.11 acc=0.396 term=0.94 tok=586 {'arith': 0.83, 'graph': 0.28, 'countdown': 0.08} div=[0.53] 
+    dev|cot|7-11x2-damp0.5                       mult=1.11 acc=0.432 term=0.92 tok=598 {'arith': 0.97, 'graph': 0.2, 'countdown': 0.12} div=[0.33] 
+    dev|cot|7-11x2-normmatch1.0                  mult=1.11 acc=0.443 term=0.88 tok=668 {'arith': 0.92, 'graph': 0.3, 'countdown': 0.11} div=[0.63] 
+    dev|cot|7-11x2-plain1.0                      mult=1.11 acc=0.406 term=0.86 tok=683 {'arith': 0.94, 'graph': 0.19, 'countdown': 0.09} div=[0.66] 
+    dev|cot|base                                 mult=1.00 acc=0.479 term=0.91 tok=589 {'arith': 0.98, 'graph': 0.34, 'countdown': 0.11}  
+    dev|direct|16-20x2-damp0.5                   mult=1.11 acc=0.062 term=1.00 tok=8 {'arith': 0.02, 'graph': 0.16, 'countdown': 0.02} div=[0.12] 
+    dev|direct|16-20x2-normmatch1.0              mult=1.11 acc=0.042 term=0.99 tok=7 {'arith': 0.0, 'graph': 0.12, 'countdown': 0.0} div=[0.24] 
+    dev|direct|16-20x2-plain1.0                  mult=1.11 acc=0.052 term=1.00 tok=7 {'arith': 0.0, 'graph': 0.12, 'countdown': 0.03} div=[0.24] 
+    dev|direct|16-20x4-damp0.5                   mult=1.33 acc=0.047 term=1.00 tok=7 {'arith': 0.0, 'graph': 0.11, 'countdown': 0.03} div=[0.12, 0.09, 0.08] 
+    dev|direct|16-20x4-normmatch1.0              mult=1.33 acc=0.016 term=0.98 tok=10 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.0} div=[0.24, 0.17, 0.14] 
+    dev|direct|16-20x4-plain1.0                  mult=1.33 acc=0.036 term=0.98 tok=9 {'arith': 0.0, 'graph': 0.11, 'countdown': 0.0} div=[0.24, 0.16, 0.14] 
+    dev|direct|16-20x8-damp0.5                   mult=1.78 acc=0.052 term=0.98 tok=10 {'arith': 0.0, 'graph': 0.16, 'countdown': 0.0} div=[0.12, 0.09, 0.08, 0.07, 0.06, 0.06, 0.06] 
+    dev|direct|16-20x8-normmatch1.0              mult=1.78 acc=0.042 term=0.98 tok=6 {'arith': 0.0, 'graph': 0.12, 'countdown': 0.0} div=[0.24, 0.17, 0.14, 0.14, 0.13, 0.12, 0.12] 
+    dev|direct|16-20x8-plain1.0                  mult=1.78 acc=0.161 term=0.96 tok=9 {'arith': 0.0, 'graph': 0.47, 'countdown': 0.02} div=[0.24, 0.16, 0.14, 0.13, 0.13, 0.13, 0.13] 
+    dev|direct|25-29x2-damp0.5                   mult=1.11 acc=0.083 term=0.99 tok=9 {'arith': 0.02, 'graph': 0.19, 'countdown': 0.05} div=[0.27] 
+    dev|direct|25-29x2-normmatch1.0              mult=1.11 acc=0.073 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.2, 'countdown': 0.02} div=[0.28] 
+    dev|direct|25-29x2-plain1.0                  mult=1.11 acc=0.068 term=0.99 tok=10 {'arith': 0.0, 'graph': 0.19, 'countdown': 0.02} div=[0.53] 
+    dev|direct|25-29x4-damp0.5                   mult=1.33 acc=0.052 term=0.97 tok=12 {'arith': 0.0, 'graph': 0.16, 'countdown': 0.0} div=[0.27, 0.22, 0.2] 
+    dev|direct|25-29x4-normmatch1.0              mult=1.33 acc=0.042 term=0.63 tok=32 {'arith': 0.0, 'graph': 0.12, 'countdown': 0.0} div=[0.28, 0.29, 0.31] 
+    dev|direct|25-29x4-plain1.0                  mult=1.33 acc=0.052 term=0.78 tok=24 {'arith': 0.0, 'graph': 0.16, 'countdown': 0.0} div=[0.53, 0.39, 0.33] 
+    dev|direct|25-29x8-damp0.5                   mult=1.78 acc=0.057 term=0.62 tok=33 {'arith': 0.0, 'graph': 0.17, 'countdown': 0.0} div=[0.27, 0.22, 0.2, 0.18, 0.17, 0.16, 0.15] 
+    dev|direct|25-29x8-normmatch1.0              mult=1.78 acc=0.021 term=0.29 tok=51 {'arith': 0.0, 'graph': 0.06, 'countdown': 0.0} div=[0.28, 0.29, 0.31, 0.34, 0.36, 0.41, 0.42] 
+    dev|direct|25-29x8-plain1.0                  mult=1.78 acc=0.016 term=0.25 tok=54 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.0} div=[0.53, 0.39, 0.33, 0.3, 0.27, 0.26, 0.24] 
+    dev|direct|7-11x2-damp0.5                    mult=1.11 acc=0.104 term=1.00 tok=9 {'arith': 0.02, 'graph': 0.23, 'countdown': 0.06} div=[0.33] 
+    dev|direct|7-11x2-normmatch1.0               mult=1.11 acc=0.151 term=0.99 tok=9 {'arith': 0.0, 'graph': 0.44, 'countdown': 0.02} div=[0.63] 
+    dev|direct|7-11x2-plain1.0                   mult=1.11 acc=0.094 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.27, 'countdown': 0.02} div=[0.66] 
+    dev|direct|7-11x4-damp0.5                    mult=1.33 acc=0.068 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.2, 'countdown': 0.0} div=[0.33, 0.28, 0.3] 
+    dev|direct|7-11x4-normmatch1.0               mult=1.33 acc=0.036 term=0.48 tok=43 {'arith': 0.0, 'graph': 0.11, 'countdown': 0.0} div=[0.63, 0.57, 0.58] 
+    dev|direct|7-11x4-plain1.0                   mult=1.33 acc=0.005 term=0.40 tok=52 {'arith': 0.02, 'graph': 0.0, 'countdown': 0.0} div=[0.66, 0.64, 0.7] 
+    dev|direct|7-11x8-damp0.5                    mult=1.78 acc=0.000 term=0.57 tok=48 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.33, 0.28, 0.3, 0.3, 0.27, 0.23, 0.2] 
+    dev|direct|7-11x8-normmatch1.0               mult=1.78 acc=0.031 term=0.94 tok=27 {'arith': 0.0, 'graph': 0.09, 'countdown': 0.0} div=[0.63, 0.57, 0.58, 0.47, 0.53, 0.4, 0.67] 
+    dev|direct|7-11x8-plain1.0                   mult=1.78 acc=0.000 term=1.00 tok=7 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.66, 0.64, 0.7, 0.41, 0.32, 0.25, 0.21] 
+    dev|direct|base                              mult=1.00 acc=0.083 term=0.99 tok=9 {'arith': 0.0, 'graph': 0.2, 'countdown': 0.05}  
+    test|cot|base                                mult=1.00 acc=0.497 term=0.91 tok=575 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.984/0.016/120/1.00; countdown 0.102/0.000/96/0.80; graph 0.406/0.617/12/0.93
+    test|direct|base                             mult=1.00 acc=0.122 term=1.00 tok=9 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/104/1.00; countdown 0.023/0.000/127/1.00; graph 0.344/0.617/5/1.00
+    test|direct|flop_control                     mult=1.78 acc=0.086 term=1.00 tok=8 {}  80 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/99/1.00; countdown 0.023/0.000/128/1.00; graph 0.234/0.617/5/1.00
+    test|direct|loop                             mult=1.78 acc=0.138 term=0.97 tok=8 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/53/0.94; countdown 0.000/0.000/6/0.98; graph 0.414/0.617/4/1.00
+Qwen/Qwen2.5-7B-Instruct
+    dev|cot|12-16x2-damp0.5                      mult=1.14 acc=0.526 term=0.97 tok=428 {'arith': 1.0, 'graph': 0.58, 'countdown': 0.0} div=[0.19] 
+    dev|cot|12-16x2-normmatch1.0                 mult=1.14 acc=0.510 term=0.97 tok=463 {'arith': 1.0, 'graph': 0.52, 'countdown': 0.02} div=[0.28] 
+    dev|cot|12-16x2-plain1.0                     mult=1.14 acc=0.505 term=0.98 tok=416 {'arith': 1.0, 'graph': 0.52, 'countdown': 0.0} div=[0.39] 
+    dev|cot|12-16x4-plain1.0                     mult=1.43 acc=0.458 term=0.96 tok=443 {'arith': 0.92, 'graph': 0.33, 'countdown': 0.12} div=[0.39, 0.24, 0.18] 
+    dev|cot|19-23x2-plain1.0                     mult=1.14 acc=0.490 term=0.94 tok=521 {'arith': 0.97, 'graph': 0.44, 'countdown': 0.06} div=[0.75] 
+    dev|cot|5-9x2-plain1.0                       mult=1.14 acc=0.359 term=0.90 tok=548 {'arith': 0.3, 'graph': 0.73, 'countdown': 0.05} div=[0.74] 
+    dev|cot|base                                 mult=1.00 acc=0.531 term=0.96 tok=487 {'arith': 1.0, 'graph': 0.58, 'countdown': 0.02}  
+    dev|direct|12-16x2-damp0.5                   mult=1.14 acc=0.219 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.53, 'countdown': 0.12} div=[0.19] 
+    dev|direct|12-16x2-normmatch1.0              mult=1.14 acc=0.214 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.53, 'countdown': 0.11} div=[0.28] 
+    dev|direct|12-16x2-plain1.0                  mult=1.14 acc=0.198 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.53, 'countdown': 0.06} div=[0.39] 
+    dev|direct|12-16x4-damp0.5                   mult=1.43 acc=0.198 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.48, 'countdown': 0.11} div=[0.19, 0.15, 0.12] 
+    dev|direct|12-16x4-normmatch1.0              mult=1.43 acc=0.156 term=0.99 tok=8 {'arith': 0.0, 'graph': 0.36, 'countdown': 0.11} div=[0.28, 0.17, 0.14] 
+    dev|direct|12-16x4-plain1.0                  mult=1.43 acc=0.214 term=1.00 tok=7 {'arith': 0.0, 'graph': 0.55, 'countdown': 0.09} div=[0.39, 0.24, 0.18] 
+    dev|direct|12-16x8-damp0.5                   mult=2.00 acc=0.203 term=1.00 tok=7 {'arith': 0.0, 'graph': 0.53, 'countdown': 0.08} div=[0.19, 0.15, 0.12, 0.1, 0.09, 0.09, 0.08] 
+    dev|direct|12-16x8-normmatch1.0              mult=2.00 acc=0.099 term=0.90 tok=19 {'arith': 0.02, 'graph': 0.25, 'countdown': 0.03} div=[0.28, 0.17, 0.14, 0.13, 0.13, 0.14, 0.16] 
+    dev|direct|12-16x8-plain1.0                  mult=2.00 acc=0.016 term=0.91 tok=13 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.03} div=[0.39, 0.24, 0.18, 0.16, 0.14, 0.13, 0.12] 
+    dev|direct|19-23x2-damp0.5                   mult=1.14 acc=0.156 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.47, 'countdown': 0.0} div=[0.37] 
+    dev|direct|19-23x2-normmatch1.0              mult=1.14 acc=0.161 term=1.00 tok=8 {'arith': 0.02, 'graph': 0.45, 'countdown': 0.02} div=[0.28] 
+    dev|direct|19-23x2-plain1.0                  mult=1.14 acc=0.135 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.41, 'countdown': 0.0} div=[0.75] 
+    dev|direct|19-23x4-damp0.5                   mult=1.43 acc=0.146 term=1.00 tok=10 {'arith': 0.0, 'graph': 0.44, 'countdown': 0.0} div=[0.37, 0.3, 0.26] 
+    dev|direct|19-23x4-normmatch1.0              mult=1.43 acc=0.141 term=0.97 tok=13 {'arith': 0.0, 'graph': 0.42, 'countdown': 0.0} div=[0.28, 0.29, 0.32] 
+    dev|direct|19-23x4-plain1.0                  mult=1.43 acc=0.151 term=0.96 tok=14 {'arith': 0.0, 'graph': 0.44, 'countdown': 0.02} div=[0.75, 0.52, 0.42] 
+    dev|direct|19-23x8-damp0.5                   mult=2.00 acc=0.161 term=0.94 tok=18 {'arith': 0.02, 'graph': 0.47, 'countdown': 0.0} div=[0.37, 0.3, 0.26, 0.24, 0.22, 0.21, 0.19] 
+    dev|direct|19-23x8-normmatch1.0              mult=2.00 acc=0.000 term=0.74 tok=27 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.28, 0.29, 0.32, 0.36, 0.35, 0.32, 0.3] 
+    dev|direct|19-23x8-plain1.0                  mult=2.00 acc=0.083 term=0.39 tok=44 {'arith': 0.0, 'graph': 0.25, 'countdown': 0.0} div=[0.75, 0.52, 0.42, 0.36, 0.32, 0.28, 0.25] 
+    dev|direct|5-9x2-damp0.5                     mult=1.14 acc=0.182 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.5, 'countdown': 0.05} div=[0.37] 
+    dev|direct|5-9x2-normmatch1.0                mult=1.14 acc=0.208 term=0.97 tok=12 {'arith': 0.0, 'graph': 0.62, 'countdown': 0.0} div=[0.69] 
+    dev|direct|5-9x2-plain1.0                    mult=1.14 acc=0.156 term=0.96 tok=13 {'arith': 0.0, 'graph': 0.47, 'countdown': 0.0} div=[0.74] 
+    dev|direct|5-9x4-damp0.5                     mult=1.43 acc=0.135 term=0.96 tok=11 {'arith': 0.0, 'graph': 0.39, 'countdown': 0.02} div=[0.37, 0.59, 0.76] 
+    dev|direct|5-9x4-normmatch1.0                mult=1.43 acc=0.000 term=0.98 tok=12 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.69, 0.97, 0.86] 
+    dev|direct|5-9x4-plain1.0                    mult=1.43 acc=0.000 term=0.98 tok=12 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.74, 1.57, 1.44] 
+    dev|direct|5-9x8-damp0.5                     mult=2.00 acc=0.000 term=0.97 tok=10 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.37, 0.59, 0.76, 0.92, 1.15, 1.29, 1.1] 
+    dev|direct|5-9x8-normmatch1.0                mult=2.00 acc=0.005 term=0.99 tok=10 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.0} div=[0.69, 0.97, 0.86, 0.83, 0.51, 0.28, 0.17] 
+    dev|direct|5-9x8-plain1.0                    mult=2.00 acc=0.000 term=0.97 tok=10 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.74, 1.57, 1.44, 1.14, 1.21, 1.2, 0.86] 
+    dev|direct|base                              mult=1.00 acc=0.167 term=0.99 tok=8 {'arith': 0.0, 'graph': 0.5, 'countdown': 0.0}  
+    test|cot|base                                mult=1.00 acc=0.552 term=0.96 tok=471 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 1.000/0.016/121/1.00; countdown 0.023/0.000/127/0.90; graph 0.633/0.617/8/0.97
+    test|direct|base                             mult=1.00 acc=0.172 term=1.00 tok=8 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/96/1.00; countdown 0.016/0.000/124/1.00; graph 0.500/0.617/3/1.00
+    test|direct|flop_control                     mult=1.14 acc=0.169 term=1.00 tok=9 {}  15 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/94/1.00; countdown 0.008/0.000/124/0.99; graph 0.500/0.617/3/1.00
+    test|direct|loop                             mult=1.14 acc=0.198 term=1.00 tok=8 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.008/0.016/104/1.00; countdown 0.078/0.000/128/1.00; graph 0.508/0.617/3/1.00
+Qwen/Qwen3-0.6B
+    dev|cot|12-16x2-plain1.0                     mult=1.14 acc=0.406 term=0.88 tok=455 {'arith': 0.66, 'graph': 0.52, 'countdown': 0.05} div=[0.45] 
+    dev|cot|12-16x4-plain1.0                     mult=1.43 acc=0.047 term=0.58 tok=962 {'arith': 0.0, 'graph': 0.14, 'countdown': 0.0} div=[0.45, 0.35, 0.29] 
+    dev|cot|19-23x2-damp0.5                      mult=1.14 acc=0.500 term=0.86 tok=555 {'arith': 0.88, 'graph': 0.5, 'countdown': 0.12} div=[0.32] 
+    dev|cot|19-23x2-plain1.0                     mult=1.14 acc=0.453 term=0.88 tok=527 {'arith': 0.75, 'graph': 0.47, 'countdown': 0.14} div=[0.64] 
+    dev|cot|5-9x2-plain1.0                       mult=1.14 acc=0.484 term=0.79 tok=693 {'arith': 0.94, 'graph': 0.34, 'countdown': 0.17} div=[0.52] 
+    dev|cot|base                                 mult=1.00 acc=0.547 term=0.84 tok=585 {'arith': 0.91, 'graph': 0.59, 'countdown': 0.14}  
+    dev|direct|12-16x2-damp0.5                   mult=1.14 acc=0.052 term=0.83 tok=19 {'arith': 0.0, 'graph': 0.12, 'countdown': 0.03} div=[0.22] 
+    dev|direct|12-16x2-normmatch1.0              mult=1.14 acc=0.010 term=0.85 tok=18 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.02} div=[0.35] 
+    dev|direct|12-16x2-plain1.0                  mult=1.14 acc=0.036 term=0.84 tok=18 {'arith': 0.0, 'graph': 0.11, 'countdown': 0.0} div=[0.45] 
+    dev|direct|12-16x4-damp0.5                   mult=1.43 acc=0.047 term=0.88 tok=14 {'arith': 0.0, 'graph': 0.14, 'countdown': 0.0} div=[0.22, 0.19, 0.17] 
+    dev|direct|12-16x4-normmatch1.0              mult=1.43 acc=0.000 term=0.91 tok=11 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.35, 0.3, 0.3] 
+    dev|direct|12-16x4-plain1.0                  mult=1.43 acc=0.135 term=0.95 tok=12 {'arith': 0.0, 'graph': 0.41, 'countdown': 0.0} div=[0.45, 0.35, 0.29] 
+    dev|direct|12-16x8-damp0.5                   mult=2.00 acc=0.089 term=0.97 tok=11 {'arith': 0.0, 'graph': 0.27, 'countdown': 0.0} div=[0.22, 0.19, 0.17, 0.15, 0.14, 0.14, 0.13] 
+    dev|direct|12-16x8-normmatch1.0              mult=2.00 acc=0.000 term=0.92 tok=12 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.35, 0.3, 0.3, 0.34, 0.37, 0.41, 0.4] 
+    dev|direct|12-16x8-plain1.0                  mult=2.00 acc=0.005 term=0.91 tok=15 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.0} div=[0.45, 0.35, 0.29, 0.26, 0.24, 0.21, 0.2] 
+    dev|direct|19-23x2-damp0.5                   mult=1.14 acc=0.099 term=0.91 tok=18 {'arith': 0.0, 'graph': 0.22, 'countdown': 0.08} div=[0.32] 
+    dev|direct|19-23x2-normmatch1.0              mult=1.14 acc=0.094 term=0.93 tok=16 {'arith': 0.0, 'graph': 0.23, 'countdown': 0.05} div=[0.25] 
+    dev|direct|19-23x2-plain1.0                  mult=1.14 acc=0.104 term=0.98 tok=13 {'arith': 0.0, 'graph': 0.25, 'countdown': 0.06} div=[0.64] 
+    dev|direct|19-23x4-damp0.5                   mult=1.43 acc=0.021 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.02} div=[0.32, 0.25, 0.2] 
+    dev|direct|19-23x4-normmatch1.0              mult=1.43 acc=0.016 term=0.99 tok=6 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.0} div=[0.25, 0.19, 0.17] 
+    dev|direct|19-23x4-plain1.0                  mult=1.43 acc=0.016 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.0} div=[0.64, 0.39, 0.29] 
+    dev|direct|19-23x8-damp0.5                   mult=2.00 acc=0.016 term=0.98 tok=7 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.0} div=[0.32, 0.25, 0.2, 0.17, 0.14, 0.13, 0.11] 
+    dev|direct|19-23x8-normmatch1.0              mult=2.00 acc=0.000 term=0.20 tok=52 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.25, 0.19, 0.17, 0.16, 0.16, 0.17, 0.17] 
+    dev|direct|19-23x8-plain1.0                  mult=2.00 acc=0.026 term=0.69 tok=24 {'arith': 0.0, 'graph': 0.08, 'countdown': 0.0} div=[0.64, 0.39, 0.29, 0.22, 0.18, 0.16, 0.14] 
+    dev|direct|5-9x2-damp0.5                     mult=1.14 acc=0.052 term=0.84 tok=23 {'arith': 0.02, 'graph': 0.11, 'countdown': 0.03} div=[0.26] 
+    dev|direct|5-9x2-normmatch1.0                mult=1.14 acc=0.089 term=0.94 tok=16 {'arith': 0.0, 'graph': 0.16, 'countdown': 0.11} div=[0.4] 
+    dev|direct|5-9x2-plain1.0                    mult=1.14 acc=0.083 term=0.84 tok=20 {'arith': 0.0, 'graph': 0.19, 'countdown': 0.06} div=[0.52] 
+    dev|direct|5-9x4-damp0.5                     mult=1.43 acc=0.068 term=0.84 tok=19 {'arith': 0.0, 'graph': 0.14, 'countdown': 0.06} div=[0.26, 0.22, 0.2] 
+    dev|direct|5-9x4-normmatch1.0                mult=1.43 acc=0.052 term=0.94 tok=13 {'arith': 0.0, 'graph': 0.12, 'countdown': 0.03} div=[0.4, 0.29, 0.25] 
+    dev|direct|5-9x4-plain1.0                    mult=1.43 acc=0.021 term=0.94 tok=12 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.02} div=[0.52, 0.4, 0.34] 
+    dev|direct|5-9x8-damp0.5                     mult=2.00 acc=0.047 term=0.97 tok=9 {'arith': 0.0, 'graph': 0.12, 'countdown': 0.02} div=[0.26, 0.22, 0.2, 0.18, 0.16, 0.15, 0.14] 
+    dev|direct|5-9x8-normmatch1.0                mult=2.00 acc=0.010 term=0.96 tok=12 {'arith': 0.0, 'graph': 0.03, 'countdown': 0.0} div=[0.4, 0.29, 0.25, 0.22, 0.24, 0.28, 0.3] 
+    dev|direct|5-9x8-plain1.0                    mult=2.00 acc=0.000 term=0.79 tok=22 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.52, 0.4, 0.34, 0.28, 0.24, 0.2, 0.18] 
+    dev|direct|base                              mult=1.00 acc=0.089 term=0.87 tok=21 {'arith': 0.0, 'graph': 0.19, 'countdown': 0.08}  
+    test|cot|base                                mult=1.00 acc=0.503 term=0.81 tok=633 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.914/0.016/121/1.00; countdown 0.094/0.000/112/0.47; graph 0.500/0.617/10/0.95
+    test|direct|base                             mult=1.00 acc=0.068 term=0.84 tok=22 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.016/0.016/100/0.52; countdown 0.031/0.000/107/0.99; graph 0.156/0.617/3/1.00
+    test|direct|flop_control                     mult=1.43 acc=0.076 term=0.82 tok=22 {}  37 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.008/0.016/100/0.47; countdown 0.023/0.000/83/1.00; graph 0.195/0.617/3/1.00
+    test|direct|loop                             mult=1.43 acc=0.143 term=0.90 tok=14 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/54/0.71; countdown 0.000/0.000/6/0.98; graph 0.430/0.617/2/1.00
+Qwen/Qwen3-1.7B
+    dev|cot|12-16x2-plain1.0                     mult=1.14 acc=0.641 term=0.85 tok=715 {'arith': 0.98, 'graph': 0.77, 'countdown': 0.17} div=[0.73] 
+    dev|cot|19-23x2-damp0.5                      mult=1.14 acc=0.594 term=0.81 tok=737 {'arith': 0.98, 'graph': 0.64, 'countdown': 0.16} div=[0.32] 
+    dev|cot|19-23x2-normmatch1.0                 mult=1.14 acc=0.641 term=0.79 tok=763 {'arith': 0.95, 'graph': 0.77, 'countdown': 0.2} div=[0.26] 
+    dev|cot|19-23x2-plain1.0                     mult=1.14 acc=0.620 term=0.81 tok=766 {'arith': 0.95, 'graph': 0.73, 'countdown': 0.17} div=[0.64] 
+    dev|cot|5-9x2-plain1.0                       mult=1.14 acc=0.552 term=0.80 tok=743 {'arith': 0.98, 'graph': 0.61, 'countdown': 0.06} div=[0.56] 
+    dev|cot|base                                 mult=1.00 acc=0.646 term=0.83 tok=658 {'arith': 0.98, 'graph': 0.67, 'countdown': 0.28}  
+    dev|direct|12-16x2-damp0.5                   mult=1.14 acc=0.193 term=0.95 tok=15 {'arith': 0.02, 'graph': 0.48, 'countdown': 0.08} div=[0.36] 
+    dev|direct|12-16x2-normmatch1.0              mult=1.14 acc=0.172 term=0.96 tok=12 {'arith': 0.02, 'graph': 0.42, 'countdown': 0.08} div=[0.42] 
+    dev|direct|12-16x2-plain1.0                  mult=1.14 acc=0.120 term=0.99 tok=11 {'arith': 0.0, 'graph': 0.31, 'countdown': 0.05} div=[0.73] 
+    dev|direct|12-16x4-damp0.5                   mult=1.43 acc=0.036 term=1.00 tok=10 {'arith': 0.0, 'graph': 0.08, 'countdown': 0.03} div=[0.36, 0.31, 0.28] 
+    dev|direct|12-16x4-normmatch1.0              mult=1.43 acc=0.062 term=0.91 tok=14 {'arith': 0.0, 'graph': 0.19, 'countdown': 0.0} div=[0.42, 0.4, 0.39] 
+    dev|direct|12-16x4-plain1.0                  mult=1.43 acc=0.026 term=0.99 tok=10 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.03} div=[0.73, 0.55, 0.44] 
+    dev|direct|12-16x8-damp0.5                   mult=2.00 acc=0.026 term=0.98 tok=10 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.03} div=[0.36, 0.31, 0.28, 0.25, 0.22, 0.2, 0.18] 
+    dev|direct|12-16x8-normmatch1.0              mult=2.00 acc=0.000 term=0.96 tok=15 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.42, 0.4, 0.39, 0.39, 0.37, 0.38, 0.38] 
+    dev|direct|12-16x8-plain1.0                  mult=2.00 acc=0.000 term=0.98 tok=11 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.73, 0.55, 0.44, 0.35, 0.29, 0.24, 0.2] 
+    dev|direct|19-23x2-damp0.5                   mult=1.14 acc=0.245 term=0.91 tok=20 {'arith': 0.03, 'graph': 0.61, 'countdown': 0.09} div=[0.32] 
+    dev|direct|19-23x2-normmatch1.0              mult=1.14 acc=0.240 term=0.92 tok=19 {'arith': 0.03, 'graph': 0.61, 'countdown': 0.08} div=[0.26] 
+    dev|direct|19-23x2-plain1.0                  mult=1.14 acc=0.234 term=0.95 tok=18 {'arith': 0.02, 'graph': 0.61, 'countdown': 0.08} div=[0.64] 
+    dev|direct|19-23x4-damp0.5                   mult=1.43 acc=0.219 term=0.95 tok=16 {'arith': 0.0, 'graph': 0.59, 'countdown': 0.06} div=[0.32, 0.24, 0.19] 
+    dev|direct|19-23x4-normmatch1.0              mult=1.43 acc=0.146 term=0.98 tok=15 {'arith': 0.0, 'graph': 0.41, 'countdown': 0.03} div=[0.26, 0.19, 0.15] 
+    dev|direct|19-23x4-plain1.0                  mult=1.43 acc=0.135 term=0.99 tok=8 {'arith': 0.02, 'graph': 0.34, 'countdown': 0.05} div=[0.64, 0.37, 0.27] 
+    dev|direct|19-23x8-damp0.5                   mult=2.00 acc=0.115 term=0.99 tok=8 {'arith': 0.02, 'graph': 0.28, 'countdown': 0.05} div=[0.32, 0.24, 0.19, 0.16, 0.14, 0.12, 0.11] 
+    dev|direct|19-23x8-normmatch1.0              mult=2.00 acc=0.000 term=0.80 tok=24 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.26, 0.19, 0.15, 0.13, 0.11, 0.1, 0.09] 
+    dev|direct|19-23x8-plain1.0                  mult=2.00 acc=0.104 term=0.99 tok=7 {'arith': 0.02, 'graph': 0.3, 'countdown': 0.0} div=[0.64, 0.37, 0.27, 0.21, 0.17, 0.15, 0.13] 
+    dev|direct|5-9x2-damp0.5                     mult=1.14 acc=0.182 term=0.90 tok=17 {'arith': 0.0, 'graph': 0.52, 'countdown': 0.03} div=[0.28] 
+    dev|direct|5-9x2-normmatch1.0                mult=1.14 acc=0.135 term=0.97 tok=8 {'arith': 0.02, 'graph': 0.39, 'countdown': 0.0} div=[0.4] 
+    dev|direct|5-9x2-plain1.0                    mult=1.14 acc=0.141 term=0.89 tok=18 {'arith': 0.02, 'graph': 0.36, 'countdown': 0.05} div=[0.56] 
+    dev|direct|5-9x4-damp0.5                     mult=1.43 acc=0.172 term=0.92 tok=16 {'arith': 0.02, 'graph': 0.44, 'countdown': 0.06} div=[0.28, 0.23, 0.19] 
+    dev|direct|5-9x4-normmatch1.0                mult=1.43 acc=0.094 term=0.98 tok=9 {'arith': 0.0, 'graph': 0.23, 'countdown': 0.05} div=[0.4, 0.28, 0.22] 
+    dev|direct|5-9x4-plain1.0                    mult=1.43 acc=0.208 term=0.97 tok=10 {'arith': 0.02, 'graph': 0.58, 'countdown': 0.03} div=[0.56, 0.38, 0.29] 
+    dev|direct|5-9x8-damp0.5                     mult=2.00 acc=0.198 term=0.98 tok=7 {'arith': 0.0, 'graph': 0.56, 'countdown': 0.03} div=[0.28, 0.23, 0.19, 0.17, 0.15, 0.13, 0.11] 
+    dev|direct|5-9x8-normmatch1.0                mult=2.00 acc=0.010 term=1.00 tok=7 {'arith': 0.0, 'graph': 0.03, 'countdown': 0.0} div=[0.4, 0.28, 0.22, 0.2, 0.18, 0.19, 0.2] 
+    dev|direct|5-9x8-plain1.0                    mult=2.00 acc=0.000 term=0.98 tok=9 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.56, 0.38, 0.29, 0.23, 0.19, 0.17, 0.15] 
+    dev|direct|base                              mult=1.00 acc=0.229 term=0.92 tok=20 {'arith': 0.02, 'graph': 0.61, 'countdown': 0.06}  
+    test|cot|base                                mult=1.00 acc=0.656 term=0.83 tok=657 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.969/0.016/120/1.00; countdown 0.266/0.000/122/0.52; graph 0.734/0.617/8/0.98
+    test|direct|base                             mult=1.00 acc=0.203 term=0.92 tok=20 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.016/0.016/91/0.77; countdown 0.055/0.000/122/1.00; graph 0.539/0.617/4/1.00
+    test|direct|flop_control                     mult=1.14 acc=0.219 term=0.93 tok=20 {}  13 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.023/0.016/100/0.80; countdown 0.078/0.000/123/0.99; graph 0.555/0.617/4/1.00
+    test|direct|loop                             mult=1.14 acc=0.214 term=0.93 tok=20 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.016/0.016/85/0.78; countdown 0.078/0.000/121/1.00; graph 0.547/0.617/4/1.00
+Qwen/Qwen3-4B
+    dev|cot|16-20x2-plain1.0                     mult=1.11 acc=0.594 term=0.79 tok=742 {'arith': 0.97, 'graph': 0.78, 'countdown': 0.03} div=[0.51] 
+    dev|cot|25-29x2-plain1.0                     mult=1.11 acc=0.604 term=0.84 tok=681 {'arith': 1.0, 'graph': 0.77, 'countdown': 0.05} div=[0.62] 
+    dev|cot|7-11x2-damp0.5                       mult=1.11 acc=0.599 term=0.85 tok=652 {'arith': 1.0, 'graph': 0.78, 'countdown': 0.02} div=[0.26] 
+    dev|cot|7-11x2-plain1.0                      mult=1.11 acc=0.562 term=0.81 tok=704 {'arith': 0.98, 'graph': 0.69, 'countdown': 0.02} div=[0.53] 
+    dev|cot|7-11x4-damp0.5                       mult=1.33 acc=0.526 term=0.82 tok=693 {'arith': 0.98, 'graph': 0.58, 'countdown': 0.02} div=[0.26, 0.2, 0.16] 
+    dev|cot|base                                 mult=1.00 acc=0.625 term=0.85 tok=646 {'arith': 1.0, 'graph': 0.83, 'countdown': 0.05}  
+    dev|direct|16-20x2-damp0.5                   mult=1.11 acc=0.193 term=1.00 tok=10 {'arith': 0.02, 'graph': 0.47, 'countdown': 0.09} div=[0.25] 
+    dev|direct|16-20x2-normmatch1.0              mult=1.11 acc=0.203 term=0.98 tok=11 {'arith': 0.0, 'graph': 0.47, 'countdown': 0.14} div=[0.43] 
+    dev|direct|16-20x2-plain1.0                  mult=1.11 acc=0.224 term=0.98 tok=11 {'arith': 0.02, 'graph': 0.52, 'countdown': 0.14} div=[0.51] 
+    dev|direct|16-20x4-damp0.5                   mult=1.33 acc=0.188 term=0.96 tok=12 {'arith': 0.02, 'graph': 0.41, 'countdown': 0.14} div=[0.25, 0.19, 0.15] 
+    dev|direct|16-20x4-normmatch1.0              mult=1.33 acc=0.089 term=0.84 tok=14 {'arith': 0.0, 'graph': 0.27, 'countdown': 0.0} div=[0.43, 0.31, 0.3] 
+    dev|direct|16-20x4-plain1.0                  mult=1.33 acc=0.125 term=0.92 tok=9 {'arith': 0.02, 'graph': 0.36, 'countdown': 0.0} div=[0.51, 0.32, 0.27] 
+    dev|direct|16-20x8-damp0.5                   mult=1.78 acc=0.104 term=0.74 tok=19 {'arith': 0.0, 'graph': 0.31, 'countdown': 0.0} div=[0.25, 0.19, 0.15, 0.14, 0.13, 0.12, 0.12] 
+    dev|direct|16-20x8-normmatch1.0              mult=1.78 acc=0.005 term=0.47 tok=36 {'arith': 0.02, 'graph': 0.0, 'countdown': 0.0} div=[0.43, 0.31, 0.3, 0.32, 0.34, 0.36, 0.36] 
+    dev|direct|16-20x8-plain1.0                  mult=1.78 acc=0.052 term=0.64 tok=26 {'arith': 0.0, 'graph': 0.16, 'countdown': 0.0} div=[0.51, 0.32, 0.27, 0.25, 0.23, 0.22, 0.21] 
+    dev|direct|25-29x2-damp0.5                   mult=1.11 acc=0.193 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.39, 'countdown': 0.19} div=[0.31] 
+    dev|direct|25-29x2-normmatch1.0              mult=1.11 acc=0.198 term=1.00 tok=9 {'arith': 0.02, 'graph': 0.39, 'countdown': 0.19} div=[0.3] 
+    dev|direct|25-29x2-plain1.0                  mult=1.11 acc=0.188 term=1.00 tok=8 {'arith': 0.02, 'graph': 0.38, 'countdown': 0.17} div=[0.62] 
+    dev|direct|25-29x4-damp0.5                   mult=1.33 acc=0.182 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.39, 'countdown': 0.16} div=[0.31, 0.25, 0.21] 
+    dev|direct|25-29x4-normmatch1.0              mult=1.33 acc=0.130 term=1.00 tok=11 {'arith': 0.0, 'graph': 0.36, 'countdown': 0.03} div=[0.3, 0.28, 0.27] 
+    dev|direct|25-29x4-plain1.0                  mult=1.33 acc=0.120 term=1.00 tok=5 {'arith': 0.0, 'graph': 0.33, 'countdown': 0.03} div=[0.62, 0.42, 0.32] 
+    dev|direct|25-29x8-damp0.5                   mult=1.78 acc=0.130 term=0.99 tok=6 {'arith': 0.0, 'graph': 0.36, 'countdown': 0.03} div=[0.31, 0.25, 0.21, 0.18, 0.16, 0.14, 0.13] 
+    dev|direct|25-29x8-normmatch1.0              mult=1.78 acc=0.005 term=0.44 tok=40 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.0} div=[0.3, 0.28, 0.27, 0.27, 0.27, 0.28, 0.29] 
+    dev|direct|25-29x8-plain1.0                  mult=1.78 acc=0.089 term=0.94 tok=10 {'arith': 0.0, 'graph': 0.27, 'countdown': 0.0} div=[0.62, 0.42, 0.32, 0.25, 0.21, 0.18, 0.16] 
+    dev|direct|7-11x2-damp0.5                    mult=1.11 acc=0.234 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.55, 'countdown': 0.16} div=[0.26] 
+    dev|direct|7-11x2-normmatch1.0               mult=1.11 acc=0.182 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.39, 'countdown': 0.16} div=[0.47] 
+    dev|direct|7-11x2-plain1.0                   mult=1.11 acc=0.260 term=1.00 tok=9 {'arith': 0.02, 'graph': 0.59, 'countdown': 0.17} div=[0.53] 
+    dev|direct|7-11x4-damp0.5                    mult=1.33 acc=0.240 term=0.99 tok=11 {'arith': 0.05, 'graph': 0.5, 'countdown': 0.17} div=[0.26, 0.2, 0.16] 
+    dev|direct|7-11x4-normmatch1.0               mult=1.33 acc=0.214 term=0.93 tok=14 {'arith': 0.0, 'graph': 0.59, 'countdown': 0.05} div=[0.47, 0.3, 0.27] 
+    dev|direct|7-11x4-plain1.0                   mult=1.33 acc=0.203 term=0.94 tok=15 {'arith': 0.0, 'graph': 0.61, 'countdown': 0.0} div=[0.53, 0.34, 0.27] 
+    dev|direct|7-11x8-damp0.5                    mult=1.78 acc=0.214 term=0.87 tok=19 {'arith': 0.0, 'graph': 0.64, 'countdown': 0.0} div=[0.26, 0.2, 0.16, 0.14, 0.13, 0.12, 0.12] 
+    dev|direct|7-11x8-normmatch1.0               mult=1.78 acc=0.010 term=0.93 tok=11 {'arith': 0.0, 'graph': 0.03, 'countdown': 0.0} div=[0.47, 0.3, 0.27, 0.26, 0.3, 0.41, 0.55] 
+    dev|direct|7-11x8-plain1.0                   mult=1.78 acc=0.005 term=0.83 tok=19 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.0} div=[0.53, 0.34, 0.27, 0.24, 0.23, 0.24, 0.28] 
+    dev|direct|base                              mult=1.00 acc=0.208 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.45, 'countdown': 0.17}  
+    test|cot|base                                mult=1.00 acc=0.630 term=0.85 tok=653 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 1.000/0.016/121/1.00; countdown 0.031/0.000/127/0.57; graph 0.859/0.617/5/0.98
+    test|direct|base                             mult=1.00 acc=0.227 term=1.00 tok=9 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/89/1.00; countdown 0.234/0.000/125/1.00; graph 0.445/0.617/4/1.00
+    test|direct|flop_control                     mult=1.11 acc=0.224 term=1.00 tok=9 {}  10 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.008/0.016/86/1.00; countdown 0.195/0.000/125/1.00; graph 0.469/0.617/4/1.00
+    test|direct|loop                             mult=1.11 acc=0.227 term=1.00 tok=10 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/92/0.99; countdown 0.172/0.000/124/1.00; graph 0.508/0.617/3/1.00
+Qwen/Qwen3-8B
+    dev|cot|16-20x2-plain1.0                     mult=1.11 acc=0.641 term=0.82 tok=777 {'arith': 1.0, 'graph': 0.88, 'countdown': 0.05} div=[0.53] 
+    dev|cot|16-20x4-plain1.0                     mult=1.33 acc=0.557 term=0.53 tok=1187 {'arith': 0.91, 'graph': 0.69, 'countdown': 0.08} div=[0.53, 0.37, 0.29] 
+    dev|cot|25-29x2-plain1.0                     mult=1.11 acc=0.656 term=0.83 tok=750 {'arith': 1.0, 'graph': 0.97, 'countdown': 0.0} div=[0.62] 
+    dev|cot|7-11x2-normmatch1.0                  mult=1.11 acc=0.641 term=0.81 tok=773 {'arith': 1.0, 'graph': 0.88, 'countdown': 0.05} div=[0.49] 
+    dev|cot|7-11x2-plain1.0                      mult=1.11 acc=0.641 term=0.82 tok=706 {'arith': 1.0, 'graph': 0.84, 'countdown': 0.08} div=[0.59] 
+    dev|cot|base                                 mult=1.00 acc=0.672 term=0.82 tok=767 {'arith': 1.0, 'graph': 0.94, 'countdown': 0.08}  
+    dev|direct|16-20x2-damp0.5                   mult=1.11 acc=0.146 term=1.00 tok=7 {'arith': 0.0, 'graph': 0.38, 'countdown': 0.06} div=[0.27] 
+    dev|direct|16-20x2-normmatch1.0              mult=1.11 acc=0.161 term=1.00 tok=9 {'arith': 0.03, 'graph': 0.38, 'countdown': 0.08} div=[0.34] 
+    dev|direct|16-20x2-plain1.0                  mult=1.11 acc=0.182 term=0.99 tok=9 {'arith': 0.02, 'graph': 0.42, 'countdown': 0.11} div=[0.53] 
+    dev|direct|16-20x4-damp0.5                   mult=1.33 acc=0.172 term=0.99 tok=9 {'arith': 0.0, 'graph': 0.41, 'countdown': 0.11} div=[0.27, 0.22, 0.18] 
+    dev|direct|16-20x4-normmatch1.0              mult=1.33 acc=0.135 term=0.78 tok=19 {'arith': 0.0, 'graph': 0.41, 'countdown': 0.0} div=[0.34, 0.26, 0.24] 
+    dev|direct|16-20x4-plain1.0                  mult=1.33 acc=0.182 term=0.92 tok=14 {'arith': 0.0, 'graph': 0.45, 'countdown': 0.09} div=[0.53, 0.37, 0.29] 
+    dev|direct|16-20x8-damp0.5                   mult=1.78 acc=0.172 term=0.81 tok=19 {'arith': 0.0, 'graph': 0.48, 'countdown': 0.03} div=[0.27, 0.22, 0.18, 0.16, 0.14, 0.13, 0.12] 
+    dev|direct|16-20x8-normmatch1.0              mult=1.78 acc=0.000 term=0.86 tok=17 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.34, 0.26, 0.24, 0.26, 0.29, 0.31, 0.32] 
+    dev|direct|16-20x8-plain1.0                  mult=1.78 acc=0.073 term=0.92 tok=13 {'arith': 0.02, 'graph': 0.2, 'countdown': 0.0} div=[0.53, 0.37, 0.29, 0.24, 0.21, 0.19, 0.17] 
+    dev|direct|25-29x2-damp0.5                   mult=1.11 acc=0.135 term=1.00 tok=4 {'arith': 0.02, 'graph': 0.39, 'countdown': 0.0} div=[0.31] 
+    dev|direct|25-29x2-normmatch1.0              mult=1.11 acc=0.125 term=1.00 tok=4 {'arith': 0.02, 'graph': 0.36, 'countdown': 0.0} div=[0.28] 
+    dev|direct|25-29x2-plain1.0                  mult=1.11 acc=0.104 term=1.00 tok=4 {'arith': 0.02, 'graph': 0.3, 'countdown': 0.0} div=[0.62] 
+    dev|direct|25-29x4-damp0.5                   mult=1.33 acc=0.089 term=0.99 tok=4 {'arith': 0.02, 'graph': 0.25, 'countdown': 0.0} div=[0.31, 0.25, 0.21] 
+    dev|direct|25-29x4-normmatch1.0              mult=1.33 acc=0.062 term=0.98 tok=13 {'arith': 0.02, 'graph': 0.16, 'countdown': 0.02} div=[0.28, 0.28, 0.3] 
+    dev|direct|25-29x4-plain1.0                  mult=1.33 acc=0.062 term=0.98 tok=8 {'arith': 0.0, 'graph': 0.19, 'countdown': 0.0} div=[0.62, 0.41, 0.32] 
+    dev|direct|25-29x8-damp0.5                   mult=1.78 acc=0.052 term=0.95 tok=15 {'arith': 0.0, 'graph': 0.16, 'countdown': 0.0} div=[0.31, 0.25, 0.21, 0.18, 0.16, 0.15, 0.14] 
+    dev|direct|25-29x8-normmatch1.0              mult=1.78 acc=0.000 term=0.34 tok=47 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.28, 0.28, 0.3, 0.33, 0.36, 0.37, 0.37] 
+    dev|direct|25-29x8-plain1.0                  mult=1.78 acc=0.005 term=0.42 tok=49 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.0} div=[0.62, 0.41, 0.32, 0.27, 0.23, 0.2, 0.18] 
+    dev|direct|7-11x2-damp0.5                    mult=1.11 acc=0.161 term=1.00 tok=4 {'arith': 0.03, 'graph': 0.45, 'countdown': 0.0} div=[0.3] 
+    dev|direct|7-11x2-normmatch1.0               mult=1.11 acc=0.182 term=1.00 tok=9 {'arith': 0.05, 'graph': 0.42, 'countdown': 0.08} div=[0.49] 
+    dev|direct|7-11x2-plain1.0                   mult=1.11 acc=0.177 term=1.00 tok=4 {'arith': 0.05, 'graph': 0.48, 'countdown': 0.0} div=[0.59] 
+    dev|direct|7-11x4-damp0.5                    mult=1.33 acc=0.146 term=0.98 tok=6 {'arith': 0.02, 'graph': 0.41, 'countdown': 0.02} div=[0.3, 0.33, 0.51] 
+    dev|direct|7-11x4-normmatch1.0               mult=1.33 acc=0.010 term=0.97 tok=7 {'arith': 0.0, 'graph': 0.03, 'countdown': 0.0} div=[0.49, 0.54, 0.63] 
+    dev|direct|7-11x4-plain1.0                   mult=1.33 acc=0.031 term=0.97 tok=8 {'arith': 0.0, 'graph': 0.09, 'countdown': 0.0} div=[0.59, 0.83, 1.53] 
+    dev|direct|7-11x8-damp0.5                    mult=1.78 acc=0.005 term=0.79 tok=23 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.0} div=[0.3, 0.33, 0.51, 0.84, 0.84, 0.56, 0.38] 
+    dev|direct|7-11x8-normmatch1.0               mult=1.78 acc=0.000 term=0.99 tok=7 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.49, 0.54, 0.63, 0.5, 0.42, 0.38, 0.35] 
+    dev|direct|7-11x8-plain1.0                   mult=1.78 acc=0.000 term=0.76 tok=28 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.59, 0.83, 1.53, 1.15, 0.59, 0.38, 0.28] 
+    dev|direct|base                              mult=1.00 acc=0.141 term=1.00 tok=3 {'arith': 0.02, 'graph': 0.41, 'countdown': 0.0}  
+    test|cot|base                                mult=1.00 acc=0.667 term=0.87 tok=699 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 1.000/0.016/121/1.00; countdown 0.055/0.000/113/0.61; graph 0.945/0.617/6/1.00
+    test|direct|base                             mult=1.00 acc=0.172 term=1.00 tok=3 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.008/0.016/94/1.00; countdown 0.000/0.000/2/1.00; graph 0.508/0.617/4/1.00
+    test|direct|flop_control                     mult=1.11 acc=0.154 term=1.00 tok=3 {}  10 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/98/1.00; countdown 0.000/0.000/2/1.00; graph 0.461/0.617/4/1.00
+    test|direct|loop                             mult=1.11 acc=0.198 term=1.00 tok=9 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.008/0.016/100/0.99; countdown 0.078/0.000/125/1.00; graph 0.508/0.617/5/1.00
+allenai/OLMo-2-0425-1B-Instruct
+    dev|cot|10-14x2-plain1.0                     mult=1.25 acc=0.089 term=0.80 tok=773 {'arith': 0.05, 'graph': 0.22, 'countdown': 0.0} div=[0.74] 
+    dev|cot|2-6x2-plain1.0                       mult=1.25 acc=0.182 term=0.76 tok=694 {'arith': 0.3, 'graph': 0.25, 'countdown': 0.0} div=[0.65] 
+    dev|cot|2-6x4-damp0.5                        mult=1.75 acc=0.083 term=0.77 tok=688 {'arith': 0.06, 'graph': 0.17, 'countdown': 0.02} div=[0.32, 0.24, 0.19] 
+    dev|cot|6-10x2-plain1.0                      mult=1.25 acc=0.135 term=0.83 tok=688 {'arith': 0.2, 'graph': 0.2, 'countdown': 0.0} div=[0.71] 
+    dev|cot|6-10x8-plain1.0                      mult=2.75 acc=0.026 term=0.02 tok=2019 {'arith': 0.0, 'graph': 0.08, 'countdown': 0.0} div=[0.71, 0.45, 0.36, 0.33, 0.32, 0.31, 0.29] 
+    dev|cot|base                                 mult=1.00 acc=0.245 term=0.76 tok=729 {'arith': 0.52, 'graph': 0.22, 'countdown': 0.0}  
+    dev|direct|10-14x2-damp0.5                   mult=1.25 acc=0.089 term=1.00 tok=5 {'arith': 0.0, 'graph': 0.25, 'countdown': 0.02} div=[0.37] 
+    dev|direct|10-14x2-normmatch1.0              mult=1.25 acc=0.073 term=1.00 tok=7 {'arith': 0.0, 'graph': 0.2, 'countdown': 0.02} div=[0.52] 
+    dev|direct|10-14x2-plain1.0                  mult=1.25 acc=0.094 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.27, 'countdown': 0.02} div=[0.74] 
+    dev|direct|10-14x4-damp0.5                   mult=1.75 acc=0.089 term=0.99 tok=8 {'arith': 0.0, 'graph': 0.27, 'countdown': 0.0} div=[0.37, 0.34, 0.31] 
+    dev|direct|10-14x4-normmatch1.0              mult=1.75 acc=0.005 term=0.27 tok=64 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.0} div=[0.52, 0.42, 0.4] 
+    dev|direct|10-14x4-plain1.0                  mult=1.75 acc=0.083 term=0.67 tok=49 {'arith': 0.0, 'graph': 0.25, 'countdown': 0.0} div=[0.74, 0.64, 0.51] 
+    dev|direct|10-14x8-damp0.5                   mult=2.75 acc=0.016 term=0.14 tok=59 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.0} div=[0.37, 0.34, 0.31, 0.28, 0.25, 0.22, 0.19] 
+    dev|direct|10-14x8-normmatch1.0              mult=2.75 acc=0.000 term=0.07 tok=64 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.52, 0.42, 0.4, 0.4, 0.38, 0.34, 0.31] 
+    dev|direct|10-14x8-plain1.0                  mult=2.75 acc=0.000 term=0.01 tok=64 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.74, 0.64, 0.51, 0.39, 0.31, 0.26, 0.22] 
+    dev|direct|2-6x2-damp0.5                     mult=1.25 acc=0.120 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.33, 'countdown': 0.03} div=[0.32] 
+    dev|direct|2-6x2-normmatch1.0                mult=1.25 acc=0.104 term=1.00 tok=5 {'arith': 0.0, 'graph': 0.31, 'countdown': 0.0} div=[0.53] 
+    dev|direct|2-6x2-plain1.0                    mult=1.25 acc=0.203 term=0.99 tok=9 {'arith': 0.02, 'graph': 0.58, 'countdown': 0.02} div=[0.65] 
+    dev|direct|2-6x4-damp0.5                     mult=1.75 acc=0.203 term=0.99 tok=24 {'arith': 0.0, 'graph': 0.59, 'countdown': 0.02} div=[0.32, 0.24, 0.19] 
+    dev|direct|2-6x4-normmatch1.0                mult=1.75 acc=0.026 term=0.93 tok=38 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.03} div=[0.53, 0.34, 0.29] 
+    dev|direct|2-6x4-plain1.0                    mult=1.75 acc=0.000 term=0.85 tok=60 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.65, 0.41, 0.32] 
+    dev|direct|2-6x8-damp0.5                     mult=2.75 acc=0.000 term=0.48 tok=60 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.32, 0.24, 0.19, 0.17, 0.15, 0.15, 0.15] 
+    dev|direct|2-6x8-normmatch1.0                mult=2.75 acc=0.000 term=0.54 tok=45 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.53, 0.34, 0.29, 0.28, 0.27, 0.29, 0.33] 
+    dev|direct|2-6x8-plain1.0                    mult=2.75 acc=0.000 term=0.86 tok=64 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.65, 0.41, 0.32, 0.3, 0.32, 0.4, 0.47] 
+    dev|direct|6-10x2-damp0.5                    mult=1.25 acc=0.073 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.22, 'countdown': 0.0} div=[0.35] 
+    dev|direct|6-10x2-normmatch1.0               mult=1.25 acc=0.115 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.34, 'countdown': 0.0} div=[0.55] 
+    dev|direct|6-10x2-plain1.0                   mult=1.25 acc=0.089 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.27, 'countdown': 0.0} div=[0.71] 
+    dev|direct|6-10x4-damp0.5                    mult=1.75 acc=0.089 term=1.00 tok=7 {'arith': 0.0, 'graph': 0.27, 'countdown': 0.0} div=[0.35, 0.27, 0.22] 
+    dev|direct|6-10x4-normmatch1.0               mult=1.75 acc=0.016 term=0.98 tok=31 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.0} div=[0.55, 0.35, 0.31] 
+    dev|direct|6-10x4-plain1.0                   mult=1.75 acc=0.031 term=1.00 tok=17 {'arith': 0.0, 'graph': 0.09, 'countdown': 0.0} div=[0.71, 0.45, 0.36] 
+    dev|direct|6-10x8-damp0.5                    mult=2.75 acc=0.016 term=1.00 tok=10 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.0} div=[0.35, 0.27, 0.22, 0.2, 0.19, 0.18, 0.18] 
+    dev|direct|6-10x8-normmatch1.0               mult=2.75 acc=0.010 term=0.21 tok=64 {'arith': 0.0, 'graph': 0.03, 'countdown': 0.0} div=[0.55, 0.35, 0.31, 0.28, 0.25, 0.23, 0.26] 
+    dev|direct|6-10x8-plain1.0                   mult=2.75 acc=0.177 term=0.75 tok=44 {'arith': 0.0, 'graph': 0.53, 'countdown': 0.0} div=[0.71, 0.45, 0.36, 0.33, 0.32, 0.31, 0.29] 
+    dev|direct|base                              mult=1.00 acc=0.099 term=1.00 tok=5 {'arith': 0.0, 'graph': 0.28, 'countdown': 0.02}  
+    test|cot|base                                mult=1.00 acc=0.258 term=0.79 tok=672 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.578/0.016/118/1.00; countdown 0.000/0.000/84/0.38; graph 0.195/0.617/10/1.00
+    test|direct|base                             mult=1.00 acc=0.089 term=1.00 tok=5 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/70/1.00; countdown 0.000/0.000/64/1.00; graph 0.266/0.617/3/1.00
+    test|direct|flop_control                     mult=1.25 acc=0.047 term=1.00 tok=4 {}  21 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.008/0.016/59/1.00; countdown 0.000/0.000/52/1.00; graph 0.133/0.617/3/1.00
+    test|direct|loop                             mult=1.25 acc=0.203 term=0.99 tok=7 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/56/0.98; countdown 0.008/0.000/96/1.00; graph 0.602/0.617/2/1.00
+allenai/OLMo-2-1124-7B-Instruct
+    dev|cot|14-18x2-plain1.0                     mult=1.12 acc=0.458 term=0.79 tok=844 {'arith': 0.89, 'graph': 0.41, 'countdown': 0.08} div=[0.75] 
+    dev|cot|22-26x2-normmatch1.0                 mult=1.12 acc=0.427 term=0.93 tok=695 {'arith': 0.92, 'graph': 0.33, 'countdown': 0.03} div=[0.37] 
+    dev|cot|22-26x2-plain1.0                     mult=1.12 acc=0.417 term=0.84 tok=742 {'arith': 0.91, 'graph': 0.33, 'countdown': 0.02} div=[0.64] 
+    dev|cot|22-26x4-damp0.5                      mult=1.38 acc=0.417 term=0.86 tok=735 {'arith': 0.81, 'graph': 0.41, 'countdown': 0.03} div=[0.32, 0.29, 0.25] 
+    dev|cot|6-10x2-plain1.0                      mult=1.12 acc=0.479 term=0.90 tok=574 {'arith': 0.95, 'graph': 0.42, 'countdown': 0.06} div=[0.57] 
+    dev|cot|base                                 mult=1.00 acc=0.458 term=0.83 tok=638 {'arith': 0.98, 'graph': 0.33, 'countdown': 0.06}  
+    dev|direct|14-18x2-damp0.5                   mult=1.12 acc=0.047 term=1.00 tok=5 {'arith': 0.0, 'graph': 0.12, 'countdown': 0.02} div=[0.37] 
+    dev|direct|14-18x2-normmatch1.0              mult=1.12 acc=0.057 term=1.00 tok=5 {'arith': 0.0, 'graph': 0.16, 'countdown': 0.02} div=[0.44] 
+    dev|direct|14-18x2-plain1.0                  mult=1.12 acc=0.026 term=1.00 tok=5 {'arith': 0.0, 'graph': 0.06, 'countdown': 0.02} div=[0.75] 
+    dev|direct|14-18x4-damp0.5                   mult=1.38 acc=0.005 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.02} div=[0.37, 0.31, 0.27] 
+    dev|direct|14-18x4-normmatch1.0              mult=1.38 acc=0.016 term=0.99 tok=7 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.0} div=[0.44, 0.34, 0.32] 
+    dev|direct|14-18x4-plain1.0                  mult=1.38 acc=0.000 term=0.99 tok=7 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.75, 0.53, 0.42] 
+    dev|direct|14-18x8-damp0.5                   mult=1.88 acc=0.010 term=1.00 tok=4 {'arith': 0.0, 'graph': 0.03, 'countdown': 0.0} div=[0.37, 0.31, 0.27, 0.24, 0.21, 0.19, 0.17] 
+    dev|direct|14-18x8-normmatch1.0              mult=1.88 acc=0.031 term=0.34 tok=60 {'arith': 0.0, 'graph': 0.09, 'countdown': 0.0} div=[0.44, 0.34, 0.32, 0.34, 0.35, 0.31, 0.28] 
+    dev|direct|14-18x8-plain1.0                  mult=1.88 acc=0.000 term=0.81 tok=26 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.75, 0.53, 0.42, 0.34, 0.28, 0.24, 0.21] 
+    dev|direct|22-26x2-damp0.5                   mult=1.12 acc=0.130 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.38, 'countdown': 0.02} div=[0.32] 
+    dev|direct|22-26x2-normmatch1.0              mult=1.12 acc=0.156 term=1.00 tok=5 {'arith': 0.0, 'graph': 0.47, 'countdown': 0.0} div=[0.37] 
+    dev|direct|22-26x2-plain1.0                  mult=1.12 acc=0.146 term=1.00 tok=5 {'arith': 0.0, 'graph': 0.44, 'countdown': 0.0} div=[0.64] 
+    dev|direct|22-26x4-damp0.5                   mult=1.38 acc=0.151 term=1.00 tok=5 {'arith': 0.0, 'graph': 0.45, 'countdown': 0.0} div=[0.32, 0.29, 0.25] 
+    dev|direct|22-26x4-normmatch1.0              mult=1.38 acc=0.099 term=0.84 tok=31 {'arith': 0.0, 'graph': 0.3, 'countdown': 0.0} div=[0.37, 0.36, 0.38] 
+    dev|direct|22-26x4-plain1.0                  mult=1.38 acc=0.125 term=0.98 tok=9 {'arith': 0.0, 'graph': 0.38, 'countdown': 0.0} div=[0.64, 0.5, 0.4] 
+    dev|direct|22-26x8-damp0.5                   mult=1.88 acc=0.125 term=0.93 tok=14 {'arith': 0.03, 'graph': 0.34, 'countdown': 0.0} div=[0.32, 0.29, 0.25, 0.23, 0.2, 0.18, 0.16] 
+    dev|direct|22-26x8-normmatch1.0              mult=1.88 acc=0.005 term=0.03 tok=63 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.0} div=[0.37, 0.36, 0.38, 0.39, 0.38, 0.36, 0.34] 
+    dev|direct|22-26x8-plain1.0                  mult=1.88 acc=0.005 term=0.07 tok=61 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.0} div=[0.64, 0.5, 0.4, 0.32, 0.27, 0.22, 0.19] 
+    dev|direct|6-10x2-damp0.5                    mult=1.12 acc=0.099 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.28, 'countdown': 0.02} div=[0.28] 
+    dev|direct|6-10x2-normmatch1.0               mult=1.12 acc=0.089 term=1.00 tok=5 {'arith': 0.0, 'graph': 0.27, 'countdown': 0.0} div=[0.49] 
+    dev|direct|6-10x2-plain1.0                   mult=1.12 acc=0.089 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.23, 'countdown': 0.03} div=[0.57] 
+    dev|direct|6-10x4-damp0.5                    mult=1.38 acc=0.094 term=1.00 tok=5 {'arith': 0.0, 'graph': 0.23, 'countdown': 0.05} div=[0.28, 0.23, 0.21] 
+    dev|direct|6-10x4-normmatch1.0               mult=1.38 acc=0.083 term=0.97 tok=19 {'arith': 0.0, 'graph': 0.25, 'countdown': 0.0} div=[0.49, 0.38, 0.39] 
+    dev|direct|6-10x4-plain1.0                   mult=1.38 acc=0.078 term=1.00 tok=4 {'arith': 0.0, 'graph': 0.22, 'countdown': 0.02} div=[0.57, 0.42, 0.38] 
+    dev|direct|6-10x8-damp0.5                    mult=1.88 acc=0.068 term=0.99 tok=9 {'arith': 0.0, 'graph': 0.2, 'countdown': 0.0} div=[0.28, 0.23, 0.21, 0.19, 0.18, 0.17, 0.17] 
+    dev|direct|6-10x8-normmatch1.0               mult=1.88 acc=0.010 term=0.99 tok=37 {'arith': 0.0, 'graph': 0.03, 'countdown': 0.0} div=[0.49, 0.38, 0.39, 0.4, 0.39, 0.38, 0.41] 
+    dev|direct|6-10x8-plain1.0                   mult=1.88 acc=0.052 term=0.62 tok=64 {'arith': 0.0, 'graph': 0.16, 'countdown': 0.0} div=[0.57, 0.42, 0.38, 0.35, 0.34, 0.36, 0.37] 
+    dev|direct|base                              mult=1.00 acc=0.104 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.28, 'countdown': 0.03}  
+    test|cot|base                                mult=1.00 acc=0.430 term=0.85 tok=617 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.953/0.016/121/1.00; countdown 0.031/0.000/106/0.55; graph 0.305/0.617/8/1.00
+    test|cot|flop_control                        mult=1.12 acc=0.430 term=0.85 tok=654 {}  budget x1.12
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.953/0.016/121/1.00; countdown 0.031/0.000/106/0.56; graph 0.305/0.617/8/1.00
+    test|cot|loop                                mult=1.12 acc=0.432 term=0.88 tok=642 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.922/0.016/122/1.00; countdown 0.031/0.000/108/0.62; graph 0.344/0.617/10/1.00
+    test|direct|base                             mult=1.00 acc=0.104 term=1.00 tok=6 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/74/1.00; countdown 0.008/0.000/123/1.00; graph 0.305/0.617/4/1.00
+    test|direct|flop_control                     mult=1.12 acc=0.117 term=1.00 tok=6 {}  11 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/73/1.00; countdown 0.008/0.000/119/1.00; graph 0.344/0.617/4/1.00
+    test|direct|loop                             mult=1.12 acc=0.146 term=1.00 tok=5 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/83/1.00; countdown 0.000/0.000/106/1.00; graph 0.438/0.617/4/1.00
+microsoft/Phi-3-mini-4k-instruct
+    dev|cot|14-18x4-normmatch1.0                 mult=1.38 acc=0.198 term=0.58 tok=1051 {'arith': 0.2, 'graph': 0.36, 'countdown': 0.03} div=[0.34, 0.22, 0.17] 
+    dev|cot|22-26x2-plain1.0                     mult=1.12 acc=0.526 term=0.84 tok=502 {'arith': 0.97, 'graph': 0.44, 'countdown': 0.17} div=[0.55] 
+    dev|cot|6-10x2-damp0.5                       mult=1.12 acc=0.505 term=0.79 tok=610 {'arith': 0.97, 'graph': 0.42, 'countdown': 0.12} div=[0.28] 
+    dev|cot|6-10x2-plain1.0                      mult=1.12 acc=0.500 term=0.86 tok=508 {'arith': 0.95, 'graph': 0.47, 'countdown': 0.08} div=[0.56] 
+    dev|cot|base                                 mult=1.00 acc=0.505 term=0.81 tok=565 {'arith': 1.0, 'graph': 0.34, 'countdown': 0.17}  
+    dev|direct|14-18x2-damp0.5                   mult=1.12 acc=0.214 term=1.00 tok=9 {'arith': 0.02, 'graph': 0.58, 'countdown': 0.05} div=[0.31] 
+    dev|direct|14-18x2-normmatch1.0              mult=1.12 acc=0.193 term=1.00 tok=9 {'arith': 0.02, 'graph': 0.56, 'countdown': 0.0} div=[0.34] 
+    dev|direct|14-18x2-plain1.0                  mult=1.12 acc=0.203 term=1.00 tok=9 {'arith': 0.02, 'graph': 0.53, 'countdown': 0.06} div=[0.62] 
+    dev|direct|14-18x4-damp0.5                   mult=1.38 acc=0.198 term=0.99 tok=10 {'arith': 0.02, 'graph': 0.53, 'countdown': 0.05} div=[0.31, 0.24, 0.19] 
+    dev|direct|14-18x4-normmatch1.0              mult=1.38 acc=0.219 term=0.98 tok=15 {'arith': 0.02, 'graph': 0.64, 'countdown': 0.0} div=[0.34, 0.22, 0.17] 
+    dev|direct|14-18x4-plain1.0                  mult=1.38 acc=0.104 term=0.97 tok=13 {'arith': 0.0, 'graph': 0.28, 'countdown': 0.03} div=[0.62, 0.39, 0.28] 
+    dev|direct|14-18x8-damp0.5                   mult=1.88 acc=0.062 term=0.90 tok=16 {'arith': 0.02, 'graph': 0.17, 'countdown': 0.0} div=[0.31, 0.24, 0.19, 0.16, 0.14, 0.12, 0.11] 
+    dev|direct|14-18x8-normmatch1.0              mult=1.88 acc=0.000 term=1.00 tok=6 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.34, 0.22, 0.17, 0.15, 0.14, 0.14, 0.15] 
+    dev|direct|14-18x8-plain1.0                  mult=1.88 acc=0.000 term=0.97 tok=6 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.62, 0.39, 0.28, 0.22, 0.18, 0.15, 0.14] 
+    dev|direct|22-26x2-damp0.5                   mult=1.12 acc=0.208 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.55, 'countdown': 0.08} div=[0.27] 
+    dev|direct|22-26x2-normmatch1.0              mult=1.12 acc=0.219 term=1.00 tok=8 {'arith': 0.02, 'graph': 0.56, 'countdown': 0.08} div=[0.2] 
+    dev|direct|22-26x2-plain1.0                  mult=1.12 acc=0.224 term=0.99 tok=9 {'arith': 0.0, 'graph': 0.58, 'countdown': 0.09} div=[0.55] 
+    dev|direct|22-26x4-damp0.5                   mult=1.38 acc=0.208 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.56, 'countdown': 0.06} div=[0.27, 0.22, 0.18] 
+    dev|direct|22-26x4-normmatch1.0              mult=1.38 acc=0.214 term=0.99 tok=9 {'arith': 0.0, 'graph': 0.59, 'countdown': 0.05} div=[0.2, 0.15, 0.13] 
+    dev|direct|22-26x4-plain1.0                  mult=1.38 acc=0.214 term=0.99 tok=10 {'arith': 0.0, 'graph': 0.55, 'countdown': 0.09} div=[0.55, 0.37, 0.27] 
+    dev|direct|22-26x8-damp0.5                   mult=1.88 acc=0.198 term=0.99 tok=10 {'arith': 0.0, 'graph': 0.53, 'countdown': 0.06} div=[0.27, 0.22, 0.18, 0.16, 0.14, 0.12, 0.11] 
+    dev|direct|22-26x8-normmatch1.0              mult=1.88 acc=0.036 term=0.95 tok=13 {'arith': 0.02, 'graph': 0.09, 'countdown': 0.0} div=[0.2, 0.15, 0.13, 0.11, 0.11, 0.13, 0.15] 
+    dev|direct|22-26x8-plain1.0                  mult=1.88 acc=0.198 term=0.83 tok=19 {'arith': 0.0, 'graph': 0.56, 'countdown': 0.03} div=[0.55, 0.37, 0.27, 0.22, 0.19, 0.17, 0.16] 
+    dev|direct|6-10x2-damp0.5                    mult=1.12 acc=0.219 term=1.00 tok=8 {'arith': 0.0, 'graph': 0.56, 'countdown': 0.09} div=[0.28] 
+    dev|direct|6-10x2-normmatch1.0               mult=1.12 acc=0.198 term=1.00 tok=8 {'arith': 0.02, 'graph': 0.52, 'countdown': 0.06} div=[0.28] 
+    dev|direct|6-10x2-plain1.0                   mult=1.12 acc=0.208 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.59, 'countdown': 0.03} div=[0.56] 
+    dev|direct|6-10x4-damp0.5                    mult=1.38 acc=0.208 term=1.00 tok=9 {'arith': 0.02, 'graph': 0.61, 'countdown': 0.0} div=[0.28, 0.23, 0.19] 
+    dev|direct|6-10x4-normmatch1.0               mult=1.38 acc=0.130 term=0.99 tok=10 {'arith': 0.02, 'graph': 0.36, 'countdown': 0.02} div=[0.28, 0.2, 0.17] 
+    dev|direct|6-10x4-plain1.0                   mult=1.38 acc=0.177 term=0.97 tok=13 {'arith': 0.02, 'graph': 0.48, 'countdown': 0.03} div=[0.56, 0.38, 0.28] 
+    dev|direct|6-10x8-damp0.5                    mult=1.88 acc=0.005 term=0.95 tok=15 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.0} div=[0.28, 0.23, 0.19, 0.16, 0.14, 0.13, 0.12] 
+    dev|direct|6-10x8-normmatch1.0               mult=1.88 acc=0.000 term=1.00 tok=5 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.28, 0.2, 0.17, 0.17, 0.22, 0.31, 0.35] 
+    dev|direct|6-10x8-plain1.0                   mult=1.88 acc=0.005 term=0.90 tok=20 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.02} div=[0.56, 0.38, 0.28, 0.23, 0.2, 0.2, 0.23] 
+    dev|direct|base                              mult=1.00 acc=0.224 term=1.00 tok=8 {'arith': 0.02, 'graph': 0.56, 'countdown': 0.09}  
+mistralai/Mistral-7B-Instruct-v0.3
+    dev|cot|14-18x2-plain1.0                     mult=1.12 acc=0.359 term=0.95 tok=440 {'arith': 0.59, 'graph': 0.48, 'countdown': 0.0} div=[0.66] 
+    dev|cot|14-18x4-plain1.0                     mult=1.38 acc=0.094 term=0.65 tok=954 {'arith': 0.03, 'graph': 0.25, 'countdown': 0.0} div=[0.66, 0.5, 0.39] 
+    dev|cot|14-18x8-damp0.5                      mult=1.88 acc=0.052 term=0.20 tok=1700 {'arith': 0.02, 'graph': 0.14, 'countdown': 0.0} div=[0.33, 0.29, 0.25, 0.22, 0.19, 0.18, 0.16] 
+    dev|cot|22-26x2-plain1.0                     mult=1.12 acc=0.380 term=0.97 tok=337 {'arith': 0.8, 'graph': 0.34, 'countdown': 0.0} div=[0.48] 
+    dev|cot|6-10x2-plain1.0                      mult=1.12 acc=0.391 term=0.98 tok=363 {'arith': 0.77, 'graph': 0.39, 'countdown': 0.02} div=[0.59] 
+    dev|cot|6-10x8-damp0.5                       mult=1.88 acc=0.031 term=0.67 tok=877 {'arith': 0.03, 'graph': 0.06, 'countdown': 0.0} div=[0.3, 0.25, 0.22, 0.21, 0.21, 0.22, 0.24] 
+    dev|cot|base                                 mult=1.00 acc=0.370 term=0.98 tok=315 {'arith': 0.75, 'graph': 0.36, 'countdown': 0.0}  
+    dev|direct|14-18x2-damp0.5                   mult=1.12 acc=0.057 term=0.99 tok=9 {'arith': 0.02, 'graph': 0.12, 'countdown': 0.03} div=[0.33] 
+    dev|direct|14-18x2-normmatch1.0              mult=1.12 acc=0.062 term=0.99 tok=10 {'arith': 0.02, 'graph': 0.14, 'countdown': 0.03} div=[0.38] 
+    dev|direct|14-18x2-plain1.0                  mult=1.12 acc=0.062 term=0.99 tok=9 {'arith': 0.02, 'graph': 0.14, 'countdown': 0.03} div=[0.66] 
+    dev|direct|14-18x4-damp0.5                   mult=1.38 acc=0.052 term=0.99 tok=10 {'arith': 0.03, 'graph': 0.12, 'countdown': 0.0} div=[0.33, 0.29, 0.25] 
+    dev|direct|14-18x4-normmatch1.0              mult=1.38 acc=0.057 term=0.87 tok=27 {'arith': 0.0, 'graph': 0.17, 'countdown': 0.0} div=[0.38, 0.29, 0.23] 
+    dev|direct|14-18x4-plain1.0                  mult=1.38 acc=0.156 term=0.95 tok=16 {'arith': 0.02, 'graph': 0.45, 'countdown': 0.0} div=[0.66, 0.5, 0.39] 
+    dev|direct|14-18x8-damp0.5                   mult=1.88 acc=0.115 term=0.78 tok=31 {'arith': 0.0, 'graph': 0.34, 'countdown': 0.0} div=[0.33, 0.29, 0.25, 0.22, 0.19, 0.18, 0.16] 
+    dev|direct|14-18x8-normmatch1.0              mult=1.88 acc=0.005 term=0.80 tok=26 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.0} div=[0.38, 0.29, 0.23, 0.2, 0.19, 0.19, 0.19] 
+    dev|direct|14-18x8-plain1.0                  mult=1.88 acc=0.031 term=0.30 tok=50 {'arith': 0.0, 'graph': 0.09, 'countdown': 0.0} div=[0.66, 0.5, 0.39, 0.32, 0.27, 0.24, 0.21] 
+    dev|direct|22-26x2-damp0.5                   mult=1.12 acc=0.042 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.12, 'countdown': 0.0} div=[0.24] 
+    dev|direct|22-26x2-normmatch1.0              mult=1.12 acc=0.047 term=1.00 tok=9 {'arith': 0.02, 'graph': 0.12, 'countdown': 0.0} div=[0.31] 
+    dev|direct|22-26x2-plain1.0                  mult=1.12 acc=0.052 term=1.00 tok=9 {'arith': 0.02, 'graph': 0.12, 'countdown': 0.02} div=[0.48] 
+    dev|direct|22-26x4-damp0.5                   mult=1.38 acc=0.042 term=0.99 tok=9 {'arith': 0.02, 'graph': 0.11, 'countdown': 0.0} div=[0.24, 0.2, 0.16] 
+    dev|direct|22-26x4-normmatch1.0              mult=1.38 acc=0.016 term=0.99 tok=12 {'arith': 0.0, 'graph': 0.05, 'countdown': 0.0} div=[0.31, 0.25, 0.23] 
+    dev|direct|22-26x4-plain1.0                  mult=1.38 acc=0.031 term=0.99 tok=10 {'arith': 0.0, 'graph': 0.09, 'countdown': 0.0} div=[0.48, 0.33, 0.25] 
+    dev|direct|22-26x8-damp0.5                   mult=1.88 acc=0.031 term=0.97 tok=12 {'arith': 0.0, 'graph': 0.09, 'countdown': 0.0} div=[0.24, 0.2, 0.16, 0.14, 0.13, 0.11, 0.1] 
+    dev|direct|22-26x8-normmatch1.0              mult=1.88 acc=0.005 term=0.14 tok=58 {'arith': 0.0, 'graph': 0.02, 'countdown': 0.0} div=[0.31, 0.25, 0.23, 0.23, 0.23, 0.22, 0.22] 
+    dev|direct|22-26x8-plain1.0                  mult=1.88 acc=0.036 term=0.49 tok=41 {'arith': 0.02, 'graph': 0.09, 'countdown': 0.0} div=[0.48, 0.33, 0.25, 0.21, 0.18, 0.16, 0.14] 
+    dev|direct|6-10x2-damp0.5                    mult=1.12 acc=0.047 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.11, 'countdown': 0.03} div=[0.3] 
+    dev|direct|6-10x2-normmatch1.0               mult=1.12 acc=0.062 term=1.00 tok=10 {'arith': 0.0, 'graph': 0.16, 'countdown': 0.03} div=[0.38] 
+    dev|direct|6-10x2-plain1.0                   mult=1.12 acc=0.036 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.08, 'countdown': 0.03} div=[0.59] 
+    dev|direct|6-10x4-damp0.5                    mult=1.38 acc=0.047 term=1.00 tok=8 {'arith': 0.02, 'graph': 0.09, 'countdown': 0.03} div=[0.3, 0.25, 0.22] 
+    dev|direct|6-10x4-normmatch1.0               mult=1.38 acc=0.073 term=0.98 tok=12 {'arith': 0.0, 'graph': 0.22, 'countdown': 0.0} div=[0.38, 0.3, 0.26] 
+    dev|direct|6-10x4-plain1.0                   mult=1.38 acc=0.094 term=0.99 tok=9 {'arith': 0.02, 'graph': 0.22, 'countdown': 0.05} div=[0.59, 0.44, 0.39] 
+    dev|direct|6-10x8-damp0.5                    mult=1.88 acc=0.099 term=0.98 tok=9 {'arith': 0.0, 'graph': 0.27, 'countdown': 0.03} div=[0.3, 0.25, 0.22, 0.21, 0.21, 0.22, 0.24] 
+    dev|direct|6-10x8-normmatch1.0               mult=1.88 acc=0.031 term=0.59 tok=39 {'arith': 0.0, 'graph': 0.09, 'countdown': 0.0} div=[0.38, 0.3, 0.26, 0.21, 0.18, 0.19, 0.22] 
+    dev|direct|6-10x8-plain1.0                   mult=1.88 acc=0.000 term=0.94 tok=16 {'arith': 0.0, 'graph': 0.0, 'countdown': 0.0} div=[0.59, 0.44, 0.39, 0.42, 0.49, 0.56, 0.54] 
+    dev|direct|base                              mult=1.00 acc=0.036 term=1.00 tok=9 {'arith': 0.0, 'graph': 0.11, 'countdown': 0.0}  
+    test|cot|base                                mult=1.00 acc=0.396 term=0.98 tok=346 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.820/0.016/119/1.00; countdown 0.016/0.000/68/0.93; graph 0.352/0.617/12/1.00
+    test|cot|flop_control                        mult=1.12 acc=0.396 term=0.98 tok=352 {}  budget x1.12
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.820/0.016/119/1.00; countdown 0.016/0.000/67/0.95; graph 0.352/0.617/12/1.00
+    test|cot|loop                                mult=1.12 acc=0.359 term=0.98 tok=376 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.727/0.016/121/1.00; countdown 0.008/0.000/61/0.94; graph 0.344/0.617/11/0.99
+    test|direct|base                             mult=1.00 acc=0.036 term=1.00 tok=9 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/100/1.00; countdown 0.031/0.000/128/1.00; graph 0.078/0.617/6/1.00
+    test|direct|flop_control                     mult=1.38 acc=0.044 term=1.00 tok=9 {}  31 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.008/0.016/100/1.00; countdown 0.031/0.000/128/1.00; graph 0.094/0.617/6/1.00
+    test|direct|loop                             mult=1.38 acc=0.151 term=0.92 tok=18 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.000/0.016/67/0.99; countdown 0.000/0.000/127/0.91; graph 0.453/0.617/5/0.88

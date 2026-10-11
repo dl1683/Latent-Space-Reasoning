@@ -97,9 +97,12 @@ def main(cfg, out):
         return scores[(mode, c)]
 
     base_c = (0, 0, 1, "plain", 1.0)
+    if cfg.get("frozen"):  # confirmation: dev-frozen config per mode, no dev phase
+        best = {m_: (tuple(c) if c else None) for m_, c in cfg["frozen"].items()}
+        cfg["modes"] = list(cfg["frozen"])
     # direct mode: full dev grid (cheap). cot mode: base + 3 best direct configs + plain x2 at each block
     # (declared before data: CoT at 2048 tokens is too costly for the full grid).
-    for mode in cfg["modes"]:
+    for mode in ([] if cfg.get("frozen") else cfg["modes"]):
         if mode == "direct" or "direct" not in cfg["modes"]:
             cands = grid
         else:

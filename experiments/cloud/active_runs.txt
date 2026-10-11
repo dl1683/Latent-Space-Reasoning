@@ -1,3 +1,11 @@
-gate-q06 search-dev-s search-dev-b
+gate-q06 
 diag-k1
 recur-sw-s recur-sw-b
+
+search-dev-s search-dev-b
+ 
+ search-confirm
+ search-confirm-r32
+ p1-s11
+ gate-eval-cur
+ recur-confirm
