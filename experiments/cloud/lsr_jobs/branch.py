@@ -222,7 +222,6 @@ def forward_loss(m, exs, r_w, n_ans, rng):
     return F.binary_cross_entropy_with_logits(logit, torch.tensor(gold, device="cuda", dtype=torch.float))
 
 
-@torch.no_grad()
 def quantize(z, r_w, bits):
     """Eval-only precision arm (Amendment 1). Fixed, sample-independent rule declared before any data:
     symmetric uniform quantizer on the active r coordinates, clip at c = 4/sqrt(r) (z is unit-norm, so a
@@ -236,6 +235,7 @@ def quantize(z, r_w, bits):
     return F.pad(torch.round(a / c * lv) * c / lv, (0, z.shape[1] - r_w))
 
 
+@torch.no_grad()
 def acc_cell(m, cfg, split, r_w, u, k, n, seed, bits=None, qmode="read"):
     """Balanced per-branch accuracy with selectors exhausted; custody controls on the same collections."""
     rng = random.Random(f"eval|{seed}|{split}|{u}|{k}")
@@ -365,7 +365,6 @@ def causal_tests(m, cfg, split, r_w, k, n, seed):
     return res
 
 
-@torch.no_grad()
 def pr_stats(X):
     """Sample PR, Gaussian bias-corrected PR (E tr S^2 = (1+1/n) tr Sig^2 + (tr Sig)^2/n), and the isotropic
     null PR at the same (n, r)."""
@@ -382,6 +381,7 @@ def pr_stats(X):
             "top_pc_share": torch.linalg.eigvalsh(C)[-1].item() / t1, "n": n}
 
 
+@torch.no_grad()
 def branch_pr(m, r_w, n=None, seed=0, k=4, u=2):
     """PR of branch-variation state differences: pairs differing in one graph, k=4, two global updates.
     Amendment 1: 8,192 independent pairs at every width, paired across widths (same seeded collections);
