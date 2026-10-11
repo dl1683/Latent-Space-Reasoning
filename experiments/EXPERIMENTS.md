@@ -7,11 +7,20 @@ Spend: experiments/cloud/SPEND.md.
 
 - **Runner smoke (L4):** auto-off self-test PASS; KV-safe layer looper exact at loops=1 (logit max diff 0.0);
   identical-input reruns identical.
-- **Probe C pilot v1 (instrument fail, fixed):** truncation confound caught by evidence gate 1 — direct mode
+- **Probe C pilot v1 (instrument fail; remedy configured, not yet validated):** truncation confound caught by evidence gate 1 — direct mode
   0% termination at 16 tokens; CoT 37-42% at 384. Remedy (answer prefill + newline stop; CoT budget 1024)
   before any interpretation. What we learned: Qwen3 non-thinking mode still reasons in "answer only" mode.
+  Pilot v3 after the remedy (Qwen3-1.7B, n=24 dev): direct 64-token termination 0.875-0.958, CoT 2048-token
+  termination 0.83-0.92 -> STILL below the 95% gate; capability interpretation stays blocked per family/arm.
 - **Gate throughput pilot (A100, 60 steps):** pipeline end to end; 10.6 s/step at batch 64; all cells at chance.
-- **Admission gate (Qwen3-0.6B, 3 seeds, H100):** running.
+- **Admission gate (Qwen3-0.6B, 3 seeds, H100):** running. DEV observation (not a verdict): the frozen
+  concurrent recipe emits a constant answer in every dev cell through step 750 in 3/3 seeds (loss 0.695-0.697).
+- **Diagnostics diag-k1 (k=1, u=0 only):** text positive control dev 0.984 (step 400); bottleneck state
+  variant 0.926 at step 250 (lr 2e-4); state at lr 1e-3 collapses to chance. Interface is learnable.
+- **Curriculum arm (Amendment 2, 3 seeds, H100):** DEV at step 1250 (seeds 23/47; still in stage k<=8):
+  k=1,u=0 0.94-0.97; k=4,u=0 0.74-0.84; k=1,u=1 0.73-0.78; u=2 0.60-0.73; k>=16 chance. Same sampler and
+  code as the stalled concurrent arm; only the k/update schedule differs (cf. CROSS_PROJECT_INSIGHTS A5).
+  What we learned so far: carrying a state forward through update passages is the hard part.
 
 ## HP-D Orlicz arc: optimality stack at the settled compression optimum (2026-09-20)
 

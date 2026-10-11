@@ -103,7 +103,7 @@ These are insights taken from two sibling projects, plus the trades between them
 - **Source:** GEN e283.
 - **MEASURED:** a random direction overlaps a k-of-N subspace at sqrt(k/N) (0.0604 = sqrt(10k/2.74M)). This is a clean real-network check of the concentration that HP-E assumes.
 - **Related MNM result:** compositions of structured operators saturate to dense at about sqrt(d) factors (Monarch; `results/monarch_growth_v1/REPORT.md`, 22/22 cells for q = 2–5; novelty unestablished). This is an independent appearance of sqrt(d) as a mixing scale.
-- **LSR effect:** HP-E's sqrt(d) is a general high-dimensional mixing scale, which supports keeping the flagship's d-scaling framing. Real weights have PR of about 0.1d (MNM `FIXED_M_COMPILER_V2.md` §14, two OPT matrices), so use d_eff = PR, never d.
+- **LSR effect:** sqrt(d) appears as a mixing scale in several unrelated mechanisms. That is an analogy (corrected after Droid review 1); it is not evidence for the flagship's capacity law, which remains a prediction. Real weights have PR of about 0.1d (MNM `FIXED_M_COMPILER_V2.md` §14, two OPT matrices), so use d_eff = PR, never d.
 
 ## B. Insights that bear on Probe B (latent search) and Probe C (recurrence)
 

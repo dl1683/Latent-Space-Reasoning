@@ -204,6 +204,8 @@ def acc_cell(m, cfg, split, r_w, u, k, n, seed, bits=None, qmode="read"):
     """Balanced per-branch accuracy with selectors exhausted; custody controls on the same collections."""
     rng = random.Random(f"eval|{seed}|{split}|{u}|{k}")
     ok = ok0 = oksh = okshuf = tot = 0
+    un_ok = un_tot = ad_ok = ad_tot = 0
+    pos_ok = [0] * k
     jointok = 0
     zs = []
     bs = max(1, cfg["eval_tokens"] // (k * 22 + 40))
@@ -233,6 +235,12 @@ def acc_cell(m, cfg, split, r_w, u, k, n, seed, bits=None, qmode="read"):
                 if name == "main":
                     ok += c.sum().item(); tot += len(c)
                     jointok += c.view(len(exs), k).all(1).sum().item()
+                    cv = c.view(len(exs), k)
+                    for j in range(k):
+                        pos_ok[j] += cv[:, j].sum().item()
+                    addr = torch.tensor([[any(t == j for _, t in x["ops"]) for j in range(k)] for x in exs], device="cuda")
+                    un_ok += cv[~addr].sum().item(); un_tot += (~addr).sum().item()
+                    ad_ok += cv[addr].sum().item(); ad_tot += addr.sum().item()
                 elif name == "zero":
                     ok0 += c.sum().item()
                 elif name == "shuf":
@@ -240,7 +248,8 @@ def acc_cell(m, cfg, split, r_w, u, k, n, seed, bits=None, qmode="read"):
                 else:
                     oksh += c.sum().item()
         zs.append(z[:, :r_w].float().cpu())
-    return {"acc": ok / tot, "joint_acc": jointok / n, "acc_zero": ok0 / tot, "acc_shuffled": okshuf / tot,
+    return {"acc": ok / tot, "acc_unaddressed": un_ok / max(1, un_tot), "acc_addressed": (ad_ok / ad_tot) if ad_tot else None,
+            "acc_by_selector": [x / n for x in pos_ok], "min_selector_acc": min(pos_ok) / n, "joint_acc": jointok / n, "acc_zero": ok0 / tot, "acc_shuffled": okshuf / tot,
             "acc_sham_updates": (oksh / tot) if (zsham is not None) else None, "n_collections": n, "bits": bits,
             "qmode": qmode if bits else None}
 
@@ -371,9 +380,13 @@ def main(cfg, out):
         m.load_state_dict({k: v.cuda() for k, v in st["model"].items()}, strict=False)
         opt.load_state_dict(st["opt"])
         step0 = st["step"]
+    if cfg.get("init_ckpt"):  # eval-only: evaluate a trained (dev-selected) checkpoint with the current code
+        import subprocess
+        subprocess.run(["gcloud", "storage", "cp", cfg["init_ckpt"], str(out.dir / "best.pt")], check=True)
+        step0 = total = 0
     ks = cfg["train_ks"]
     pool, eff_bs = cfg["pool"], cfg["batch"]
-    total = cfg["passes"] * pool // eff_bs
+    total = 0 if cfg.get("init_ckpt") else cfg["passes"] * pool // eff_bs
     sched = lambda s: min(1.0, (s + 1) / 100) * 0.5 * (1 + math.cos(math.pi * s / total))
     rng = random.Random(cfg["seed"] * 7919)
     order = list(range(pool))

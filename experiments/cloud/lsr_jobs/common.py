@@ -78,7 +78,16 @@ def generate(model, tok, prompts, max_new, temperature=0.0, bs=16, seed=None, st
             kw.update(do_sample=True, temperature=temperature, top_p=0.95)
         else:
             kw.update(do_sample=False, temperature=None, top_p=None, top_k=None)
-        out = model.generate(**enc, **kw)
+        try:
+            out = model.generate(**enc, **kw)
+        except torch.OutOfMemoryError:  # adaptive: split this batch in half and retry (logged via smaller batches)
+            del enc
+            torch.cuda.empty_cache()
+            if bs <= 1:
+                raise
+            res += generate(model, tok, prompts[b:b + bs], max_new, temperature, max(1, bs // 2),
+                            None if seed is None else seed + b, stop)
+            continue
         new = out[:, enc["input_ids"].shape[1]:]
         eos = {tok.eos_token_id, *([model.generation_config.eos_token_id] if isinstance(
             model.generation_config.eos_token_id, int) else (model.generation_config.eos_token_id or []))}

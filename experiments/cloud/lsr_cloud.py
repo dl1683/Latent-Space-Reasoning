@@ -144,13 +144,18 @@ def status(run=None):
             print(f"  shard {i:03d}: {s}")
 
 
-def relaunch(run):
+def relaunch(run, rebundle=False, retry_failed=False):
     cfg = json.loads(gcloud("storage", "cat", f"{BUCKET}/runs/{run}/config.json"))
+    if rebundle:  # running VMs keep the code they booted with; only (re)launched shards get the new bundle
+        upload_bundle(run, cfg)
     live = {v["name"] for v in list_vms(run) if v["status"] not in ("TERMINATED",)}
     for i in range(len(cfg["shards"])):
         if vm_name(run, i) in live:
             continue
         s = shard_state(run, i)
+        if retry_failed and s.startswith("failed"):
+            gcloud("storage", "rm", f"{BUCKET}/runs/{run}/shards/{i:03d}/out/done.json", check=False)
+            s = "started"
         if s in ("pending", "started"):
             print(f"shard {i}: {s}, relaunching")
             create_vm(cfg, i, f"{BUCKET}/runs/{run}/shards/{i:03d}")
@@ -225,7 +230,7 @@ if __name__ == "__main__":
     elif cmd == "status":
         status(rest[0] if rest else None)
     elif cmd == "relaunch":
-        relaunch(rest[0])
+        relaunch(rest[0], "--rebundle" in rest, "--retry-failed" in rest)
     elif cmd == "pull":
         pull(rest[0])
     elif cmd == "spend":

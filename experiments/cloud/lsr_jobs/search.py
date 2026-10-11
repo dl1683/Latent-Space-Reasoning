@@ -127,6 +127,7 @@ def latent_arms(model, tok, inj, cfg, it, rng, layer, alpha, inject):
     sigma, used, solved, terms, ntok = scale, 0, False, [], 0
     for _ in range(G):
         cand = mean[None, :] + unit(lam) * sigma
+        cand = cand / cand.norm(dim=-1, keepdim=True) * scale  # same norm as latent_rand: only direction is searched
         ok, sc, term, nt = evaluate(cand)
         used += lam; terms += term; ntok += nt
         if any(ok):

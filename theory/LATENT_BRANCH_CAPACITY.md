@@ -116,7 +116,7 @@ throughput pilot at chance, and a Probe C truncation pilot).
 >
 > **Signed: Codex advisor, 2026-10-11.** **Countersigned: Droid advisor, 2026-10-11** (docs/council_2026_10_11/droid_a1_countersign.md).
 
-## Amendment 2 (2026-10-11 ~19:20Z, before the curriculum arm or any locked evaluation)
+## Amendment 2 (2026-10-11 ~19:05Z, before the curriculum arm or any locked evaluation)
 
 Trigger: at step 250/4687 every dev cell of the concurrent gate (3 seeds) equalled the dev base rate (constant
 output). Diagnostics (proximal rung i, k=1, u=0, same sampler code path): text positive control 0.984 dev,
@@ -139,3 +139,15 @@ below (the one difference, whether the curriculum arm gets a repair, resolved to
 > the other. If both pass, the concurrent recipe is used for the flagship; if only the curriculum passes, the
 > flagship is curriculum-trained and labelled so; if neither passes, no escalation. The chosen recipe applies
 > to the flagship and the mandatory storage control alike and is frozen before any locked evaluation.
+
+## Deviation 1 (2026-10-11 ~19:20Z, found by Droid review 1, docs/council_2026_10_11/droid_review_1.md)
+
+The frozen text says a branch-addressed toggle "never targets the future query branch". The trainer
+(gate-q06, gate-q06-cur, launched before the review) supervises up to 4 random branches per collection,
+including addressed ones. The frozen rule, read literally, also conflicts with the pre-registered causal test
+(targeted effect is measured by querying the edited branch). Operator handling, decided before any gate
+verdict: training stays as launched (documented deviation); evaluation reports the primary accuracy on
+UNADDRESSED selectors (the frozen rule), addressed-branch accuracy separately, and per-selector accuracy with
+min_selector_acc for the "every selector position" capacity rule (also a review finding: the original
+evaluation pooled selectors). Final gate evaluation runs as a separate eval-only job (init_ckpt) on the
+dev-selected checkpoints with the corrected evaluator. Flagged for the next council round.
