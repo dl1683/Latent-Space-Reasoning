@@ -1,10 +1,14 @@
-"""Direction 1 (step-back council): native selectable information in a frozen pretrained residual state.
+"""Registration Q (step-back directions 1 and 2) on a frozen pretrained model.
 
-Donor: k four-choice facts in text, ending with a fixed closing word; the residual at the LAST position after layer
-l is the "state". Receiver: a fact-free question with a placeholder token at position 0 whose layer-l residual is
-replaced by the donor state (no donor tokens, no donor KV cache). Answer = argmax over the 4 option tokens.
-Controls: FULL (donor text + question in one context, no patch), NOPATCH (receiver alone), SHUFFLED (state of a
-different donor), and the selective test (donor' differs in exactly one fact: targeted change vs collateral).
+Facts: k labelled four-choice facts, balanced colors, names disjoint dev/test, two wording families; a fixed closing
+word ends the fact block; the selector question comes afterward. Answers = argmax over the 4 option first-tokens.
+Q1 (causal effective dimension): donor and receiver contexts differ in exactly one fact; at layer l and the closing
+position, patch into the receiver (its own context retained) the full donor-minus-receiver difference, its
+projection on the top-r dev principal subspace of single-fact differences, the complement, or a norm-matched random
+r-dim projection. Targeted effect: the receiver's answer about the changed fact follows the donor; collateral:
+accuracy change on other facts.
+Q2 (single-position capacity, spatial ladder): fact-free receiver with m placeholder positions whose layer-l
+residuals are replaced by the donor's last m positions (no donor KV, no other donor positions).
 """
 import random
 
@@ -14,124 +18,263 @@ from . import common
 
 NAMES = ["Bex", "Tarn", "Quill", "Mova", "Senn", "Dace", "Lorn", "Pim", "Vash", "Kell", "Rua", "Fen", "Joss", "Nim",
          "Oda", "Ryl", "Sable", "Tov", "Wren", "Yara", "Zed", "Cass", "Brin", "Hale", "Ivo", "Juno", "Kip", "Lux",
-         "Mara", "Nox", "Orin", "Pell"]
+         "Mara", "Nox", "Orin", "Pell", "Quor", "Rhee", "Sil", "Tay", "Ulm", "Vey", "Wyn", "Xan"]
 COLORS = ["red", "blue", "green", "yellow"]
+FAM = {
+    "W1": {"head": "Remember these facts.\n", "fact": "The {n} box is {c}.", "close": "\nRemembered.",
+           "q": " Question: What color is the {n} box? Answer: The {n} box is"},
+    "W2": {"head": "Inventory notes:\n", "fact": "- {n}'s crate: painted {c}", "close": "\nEnd of notes.",
+           "q": " Q: Which color was {n}'s crate painted? A: It was painted"},
+}
 
 
-def collection(rng, k, names_pool):
-    names = rng.sample(names_pool, k)
-    return {"names": names, "colors": [rng.randrange(4) for _ in names]}
+def collection(rng, k, pool):
+    return {"names": rng.sample(pool, k), "colors": [rng.randrange(4) for _ in range(k)]}
 
 
-def donor_text(c):
-    return "Remember these facts.\n" + "\n".join(f"The {n} box is {COLORS[v]}." for n, v in zip(c["names"], c["colors"])) + \
-        "\nRemembered."
+def block(c, f):
+    w = FAM[f]
+    return w["head"] + "\n".join(w["fact"].format(n=n, c=COLORS[v]) for n, v in zip(c["names"], c["colors"])) + w["close"]
 
 
-def question(name):
-    return f" Question: What color is the {name} box? Answer: The {name} box is"
+def changed(rng, c):
+    c2 = {"names": c["names"], "colors": list(c["colors"])}
+    i = rng.randrange(len(c["names"]))
+    c2["colors"][i] = (c2["colors"][i] + 1 + rng.randrange(3)) % 4
+    return c2, i
 
 
-class Patcher:
+class Hook:
+    """Replace/add residual at given (row, pos) after decoder layer `layer` during the prefill pass."""
+
     def __init__(self, model, layer):
-        self.state = None
-        self.model = model
-        model.model.layers[layer].register_forward_hook(self.hook)
+        self.edits = None  # list of (pos_tensor[B], value[B, D]) ; mode 'add' or 'set'
+        self.h = model.model.layers[layer].register_forward_hook(self.hook)
 
     def hook(self, mod, inp, out):
         hs = out[0] if isinstance(out, tuple) else out
-        if self.state is None or hs.shape[1] == 1:
+        if self.edits is None or hs.shape[1] == 1:
             return out
         hs = hs.clone()
-        hs[:, 0] = self.state.to(hs.dtype)
+        rows = torch.arange(hs.shape[0], device=hs.device)
+        for pos, val, mode in self.edits:
+            if mode == "add":
+                hs[rows, pos] = hs[rows, pos] + val.to(hs.dtype)
+            else:
+                hs[rows, pos] = val.to(hs.dtype)
         return (hs,) + tuple(out[1:]) if isinstance(out, tuple) else hs
 
-
-@torch.no_grad()
-def donor_states(model, tok, texts, layer, bs=32):
-    out = []
-    for i in range(0, len(texts), bs):
-        enc = tok(texts[i:i + bs], return_tensors="pt", padding=True, add_special_tokens=False).to("cuda")
-        hs = model(**enc, output_hidden_states=True).hidden_states[layer + 1]
-        out.append(hs[:, -1].float())  # left padding: last position is the closing word
-    return torch.cat(out)
+    def remove(self):
+        self.h.remove()
 
 
 @torch.no_grad()
-def answer(model, tok, prompts, opt_ids, patcher=None, states=None, bs=32):
+def run_prompts(model, tok, prompts, opt_ids, hook=None, edits_fn=None, bs=24):
+    """Right-padded batched scoring; edits_fn(batch_slice, enc) -> list of (pos, val, mode) for this batch."""
+    tok.padding_side = "right"
     preds = []
     for i in range(0, len(prompts), bs):
         enc = tok(prompts[i:i + bs], return_tensors="pt", padding=True, add_special_tokens=False).to("cuda")
-        if patcher is not None:
-            if tok.padding_side == "left":
-                raise ValueError("receiver must be right-padded so the placeholder is position 0")
-            patcher.state = states[i:i + bs]
+        if hook is not None and edits_fn is not None:
+            hook.edits = edits_fn(slice(i, i + bs), enc)
         logits = model(**enc).logits
-        if patcher is not None:
-            patcher.state = None
+        if hook is not None:
+            hook.edits = None
         last = enc["attention_mask"].sum(1) - 1
-        lg = logits[torch.arange(len(last)), last][:, opt_ids]
-        preds += lg.argmax(-1).tolist()
+        preds += logits[torch.arange(len(last)), last][:, opt_ids].argmax(-1).tolist()
     return preds
 
 
+@torch.no_grad()
+def states_at(model, tok, texts, layer, positions=None, bs=24):
+    """Layer-`layer` residuals at each text's last token (or last m tokens if positions=m)."""
+    tok.padding_side = "right"
+    out = []
+    for i in range(0, len(texts), bs):
+        enc = tok(texts[i:i + bs], return_tensors="pt", padding=True, add_special_tokens=False).to("cuda")
+        hs = model(**enc, output_hidden_states=True).hidden_states[layer + 1].float()
+        last = enc["attention_mask"].sum(1) - 1
+        if positions is None:
+            out.append(hs[torch.arange(len(last)), last])
+        else:
+            out.append(torch.stack([hs[torch.arange(len(last)), last - (positions - 1 - j)] for j in range(positions)], 1))
+    return torch.cat(out)
+
+
+def close_pos(tok, texts):
+    return torch.tensor([len(tok(t, add_special_tokens=False)["input_ids"]) - 1 for t in texts], device="cuda")
+
+
+def q1_cell(model, tok, opt_ids, layer, rng, cfg, k, fam, pool, n, basis):
+    """Returns per-variant targeted-follow and collateral-keep rates (lists per collection for clustering)."""
+    hook = Hook(model, layer)
+    variants = [("none", None), ("sham", None), ("full", None)] + [(f"{kind}{r}", r) for r in cfg["ranks"]
+                                                                 for kind in ("proj", "comp", "rand")]
+    res = {v: {"tgt": [], "coll": []} for v, _ in variants}
+    base_preds = None
+    n_coll_q = min(cfg["collateral_queries"], k - 1)
+    gen = torch.Generator(device="cpu").manual_seed(cfg["seed"] + 991)
+    for start in range(0, n, cfg["q1_batch"]):
+        cs = [collection(rng, k, pool) for _ in range(min(cfg["q1_batch"], n - start))]
+        pairs = [changed(rng, c) for c in cs]  # receiver = counterfactual, donor = original
+        donor_blocks = [block(c, fam) for c in cs]
+        recv_blocks = [block(c2, fam) for c2, _ in pairs]
+        hd = states_at(model, tok, donor_blocks, layer)
+        hr = states_at(model, tok, recv_blocks, layer)
+        delta = hd - hr
+        pos = close_pos(tok, recv_blocks)
+        # queries: changed fact (targeted) + n_coll_q other facts
+        qs, meta = [], []
+        for ci, ((c2, i), c) in enumerate(zip(pairs, cs)):
+            others = [j for j in range(k) if j != i]
+            rng.shuffle(others)
+            for j in [i] + others[:n_coll_q]:
+                qs.append(recv_blocks[ci] + FAM[fam]["q"].format(n=c["names"][j]))
+                meta.append((ci, j == i, c["colors"][j], c2["colors"][j]))
+        idx = torch.tensor([m[0] for m in meta], device="cuda")
+        for name, r in variants:
+            if name == "none":
+                dv = None
+            elif name == "sham":
+                z_ = torch.randn(delta.shape, generator=gen).cuda()
+                dv = z_ / z_.norm(dim=-1, keepdim=True) * delta.norm(dim=-1, keepdim=True)
+            elif name == "full":
+                dv = delta
+            else:
+                kind = name[:4]
+                if kind == "proj":
+                    U = basis[:, :r]
+                    dv = (delta @ U) @ U.T
+                elif kind == "comp":
+                    U = basis[:, :r]
+                    dv = delta - (delta @ U) @ U.T
+                else:
+                    R = torch.linalg.qr(torch.randn(delta.shape[1], r, generator=gen).cuda())[0]
+                    p = (delta @ R) @ R.T
+                    pu = (delta @ basis[:, :r]) @ basis[:, :r].T
+                    dv = p * (pu.norm(dim=-1, keepdim=True) / p.norm(dim=-1, keepdim=True).clamp_min(1e-6))
+            if dv is None:
+                preds = run_prompts(model, tok, qs, opt_ids)
+            else:
+                dvq, posq = dv[idx], pos[idx]
+                preds = run_prompts(model, tok, qs, opt_ids, hook,
+                                    lambda sl, enc: [(posq[sl], dvq[sl], "add")])
+            if name == "none":
+                base_preds = preds
+            per_c_t, per_c_k = {}, {}
+            for (ci, is_t, donor_col, recv_col), p, p0 in zip(meta, preds, base_preds):
+                if is_t:
+                    per_c_t[ci] = int(p == donor_col)
+                else:
+                    per_c_k.setdefault(ci, []).append(int(p != p0))  # collateral = paired answer flip vs unpatched
+            res[name]["tgt"] += [per_c_t[ci] for ci in sorted(per_c_t)]
+            res[name]["coll"] += [sum(v) / len(v) for _, v in sorted(per_c_k.items())]
+        cfg["_out"].beat()
+    hook.remove()
+    return res
+
+
+def fit_basis(model, tok, layer, rng, k, fam, pool, n):
+    deltas = []
+    for start in range(0, n, 64):
+        cs = [collection(rng, k, pool) for _ in range(min(64, n - start))]
+        hd = states_at(model, tok, [block(c, fam) for c in cs], layer)
+        hr = states_at(model, tok, [block(changed(rng, c)[0], fam) for c in cs], layer)
+        deltas.append(hd - hr)
+    X = torch.cat(deltas)
+    X = X - X.mean(0)
+    U, S, V = torch.linalg.svd(X, full_matrices=False)
+    ev = S ** 2
+    pr = (ev.sum() ** 2 / (ev ** 2).sum()).item()
+    return V.T.contiguous(), pr, (ev[:32] / ev.sum()).tolist()
+
+
+def q2_cell(model, tok, opt_ids, layer, rng, cfg, k, fam, pool, n, m):
+    hook = Hook(model, layer)
+    cs = [collection(rng, k, pool) for _ in range(n)]
+    blocks = [block(c, fam) for c in cs]
+    full = run_prompts(model, tok, [b + FAM[fam]["q"].format(n=c["names"][j]) for b, c in zip(blocks, cs) for j in range(k)],
+                       opt_ids)
+    gold = [c["colors"][j] for c in cs for j in range(k)]
+    st = states_at(model, tok, blocks, layer, positions=m)  # [n, m, D]
+    assert len(tok(" ." * m, add_special_tokens=False)["input_ids"]) == m, "placeholder must be m tokens"
+    recv = [" ." * m + FAM[fam]["q"].format(n=c["names"][j]) for c in cs for j in range(k)]
+    stq = st.repeat_interleave(k, 0)
+
+    def edits(states):
+        return lambda sl, enc: [(torch.full((enc["input_ids"].shape[0],), j, device="cuda", dtype=torch.long),
+                                 states[sl][:, j], "set") for j in range(m)]
+    patched = run_prompts(model, tok, recv, opt_ids, hook, edits(stq))
+    nopatch = run_prompts(model, tok, recv, opt_ids)
+    shuf = run_prompts(model, tok, recv, opt_ids, hook, edits(st.roll(1, 0).repeat_interleave(k, 0)))
+    # counterfactual donors
+    pairs = [changed(rng, c) for c in cs]
+    st2 = states_at(model, tok, [block(c2, fam) for c2, _ in pairs], layer, positions=m).repeat_interleave(k, 0)
+    patched2 = run_prompts(model, tok, recv, opt_ids, hook, edits(st2))
+    hook.remove()
+    per_sel = [sum(int(patched[ci * k + j] == gold[ci * k + j]) for ci in range(n)) / n for j in range(k)]
+    tgt, coll = [], []
+    for ci, (c2, i) in enumerate(pairs):
+        tgt.append(int(patched2[ci * k + i] == c2["colors"][i]))
+        others = [int(patched2[ci * k + j] != patched[ci * k + j]) for j in range(k) if j != i]  # flip rate
+        if others:
+            coll.append(sum(others) / len(others))
+    acc = lambda p: sum(int(a == b) for a, b in zip(p, gold)) / len(gold)
+    return {"full_acc": acc(full), "patched_acc": acc(patched), "patched_min_selector": min(per_sel),
+            "nopatch_acc": acc(nopatch), "shuffled_acc": acc(shuf), "targeted_follow": sum(tgt) / len(tgt),
+            "nopatch_follow_changed": sum(int(nopatch[ci * k + i] == c2["colors"][i]) for ci, (c2, i) in enumerate(pairs)) / n,
+            "collateral_flip": (sum(coll) / len(coll)) if coll else None, "n_collections": n,
+            "constant_answer_baseline": max(gold.count(v) for v in range(4)) / len(gold),
+            "paired": {"gold": gold, "patched": patched, "patched_cf": patched2}}
+
+
 def main(cfg, out):
+    cfg["_out"] = out
     model, tok, info = common.load(cfg["model"])
     out.meta("model_info.json", info)
     L = info["n_layers"]
     opt_ids = [tok(" " + c, add_special_tokens=False)["input_ids"][0] for c in COLORS]
-    assert len(set(opt_ids)) == 4, "option first tokens must be distinct"
+    assert len(set(opt_ids)) == 4
+    pools = {"dev": NAMES[:20], "test": NAMES[20:]}
     rng = random.Random(cfg["seed"])
-    split_names = {"dev": NAMES[:16], "test": NAMES[16:]}  # held-out names for test
-    for split in cfg["splits"]:
+    # layer choice on dev by Q1 full-patch targeted effect (W1, k=4)
+    key = "q|layer_choice"
+    if key not in out.done:
+        scores = {}
         for lf in cfg["layer_fracs"]:
             layer = int(round(lf * L))
-            patcher = Patcher(model, layer)
-            for k in cfg["ks"]:
-                key = f"native|{split}|l{layer}|k{k}"
+            basis = torch.eye(info["d_model"], device="cuda")[:, :max(cfg["ranks"])]
+            r_ = q1_cell(model, tok, opt_ids, layer, random.Random(f"dev{layer}"), {**cfg, "ranks": [1]}, 4, "W1",
+                         pools["dev"], cfg["dev_n"], basis)
+            scores[layer] = (sum(r_["full"]["tgt"]) / len(r_["full"]["tgt"])) - (sum(r_["none"]["tgt"]) / len(r_["none"]["tgt"]))
+        out.write({"key": key, "scores": scores, "layer": max(scores, key=scores.get)})
+    layer = [__import__("json").loads(l) for l in out.path.read_text().splitlines()
+             if __import__("json").loads(l)["key"] == key][0]["layer"]
+    for fam in cfg["families"]:
+        if "q1" in cfg["parts"]:
+            for k in cfg["q1_ks"]:
+                key = f"q1|{fam}|k{k}"
                 if key in out.done:
                     continue
-                cols = [collection(rng, k, split_names[split]) for _ in range(cfg["n"])]
-                # full-context ceiling
-                tok.padding_side = "left"
-                full_p = [donor_text(c) + question(c["names"][j]) for c in cols for j in range(k)]
-                gold = [c["colors"][j] for c in cols for j in range(k)]
-                full = answer(model, tok, full_p, opt_ids)
-                S = donor_states(model, tok, [donor_text(c) for c in cols], layer)
-                tok.padding_side = "right"
-                recv = [" ." + question(c["names"][j]) for c in cols for j in range(k)]
-                st = S.repeat_interleave(k, 0)
-                patched = answer(model, tok, recv, opt_ids, patcher, st)
-                nopatch = answer(model, tok, recv, opt_ids)
-                shuf = answer(model, tok, recv, opt_ids, patcher, S.roll(1, 0).repeat_interleave(k, 0))
-                # selective test: change fact i in the donor
-                cols2 = []
-                for c in cols:
-                    c2 = {"names": c["names"], "colors": list(c["colors"])}
-                    i = rng.randrange(k)
-                    c2["colors"][i] = (c2["colors"][i] + 1 + rng.randrange(3)) % 4
-                    c2["changed"] = i
-                    cols2.append(c2)
-                tok.padding_side = "left"
-                S2 = donor_states(model, tok, [donor_text(c) for c in cols2], layer)
-                tok.padding_side = "right"
-                patched2 = answer(model, tok, recv, opt_ids, patcher, S2.repeat_interleave(k, 0))
-                tgt_follow = coll_keep = coll_n = 0
-                for ci, c2 in enumerate(cols2):
-                    for j in range(k):
-                        idx = ci * k + j
-                        if j == c2["changed"]:
-                            tgt_follow += patched2[idx] == c2["colors"][j]
-                        else:
-                            coll_n += 1
-                            coll_keep += patched2[idx] == patched[idx]
-                acc = lambda p: sum(int(a == b) for a, b in zip(p, gold)) / len(gold)
-                per_sel = [sum(int(patched[ci * k + j] == gold[ci * k + j]) for ci in range(len(cols))) / len(cols)
-                           for j in range(k)]
-                out.write({"key": key, "split": split, "layer": layer, "k": k, "n_collections": len(cols),
-                           "full_acc": acc(full), "patched_acc": acc(patched), "patched_min_selector": min(per_sel),
-                           "nopatch_acc": acc(nopatch), "shuffled_acc": acc(shuf),
-                           "targeted_follow": tgt_follow / len(cols2), "collateral_keep": coll_keep / coll_n if coll_n else None})
-                out.beat()
-            del patcher
-            model.model.layers[layer]._forward_hooks.clear()
+                basis, pr, evf = fit_basis(model, tok, layer, random.Random(f"fit{fam}{k}"), k, fam, pools["dev"], cfg["fit_n"])
+                r_ = q1_cell(model, tok, opt_ids, layer, random.Random(f"test{fam}{k}"), cfg, k, fam, pools["test"],
+                             cfg["test_n"], basis)
+                summ = {v: {"targeted_follow": sum(d["tgt"]) / len(d["tgt"]),
+                            "collateral_flip": (sum(d["coll"]) / len(d["coll"])) if d["coll"] else None,
+                            "per_collection_tgt": d["tgt"]} for v, d in r_.items()}
+                sham = summ["sham"]["targeted_follow"]
+                fulle = summ["full"]["targeted_follow"] - sham
+                for v in summ:
+                    summ[v]["retention_vs_full"] = ((summ[v]["targeted_follow"] - sham) / fulle) if fulle > 0 else None
+                out.write({"key": key, "layer": layer, "family": fam, "k": k, "dev_delta_PR": pr,
+                           "dev_delta_energy_top32": evf, "variants": summ})
+        if "q2" in cfg["parts"]:
+            for k in cfg["q2_ks"]:
+                for m in cfg["ladder"]:
+                    key = f"q2|{fam}|k{k}|m{m}"
+                    if key in out.done:
+                        continue
+                    r_ = q2_cell(model, tok, opt_ids, layer, random.Random(f"q2{fam}{k}{m}"), cfg, k, fam, pools["test"],
+                                 cfg["test_n"], m)
+                    out.write({"key": key, "layer": layer, "family": fam, "k": k, "m": m, **r_})
+                    out.beat()

@@ -243,3 +243,19 @@ encoder-seed spread reported. Kill: FULL < 0.95 invalidates the instrument; STAT
 future-relevant information not decodable from the frozen state under this recipe (not proof of absence).
 Scope: graph holdout concerns reader training; encoder exposure may overlap. Success establishes
 future-information decodability, not update closure or native mathematics. Budget 50 USD.
+
+## Registration Q — native selectable information in a frozen pretrained model (2026-10-12 ~14:45Z, before data)
+
+Step-back council (docs/council_2026_10_11/{brief_stepback,codex_stepback,droid_stepback}.md) moved the program off
+the trained-bottleneck construction. Registration text: docs/council_2026_10_11/brief_q.md, signed by Codex and
+Droid with amendments (codex_q.md, droid_q.md), all incorporated: Q1 targeted effect = donor-answer rate under
+intervention minus a norm-matched random full-dimension SHAM (unpatched also reported); collateral = paired answer-
+flip rate on unchanged facts vs unpatched; retention = sham-subtracted effect / full-patch effect, fourfold rank
+growth claimed only when the rank-grid bounds establish it; full-patch mediation is conditional on the receiver's
+own context (not isolated storage). Q2 donors end with a fact-independent suffix of >= 8 tokens; m placeholder
+positions verified to be m tokens; identical collections across the spatial ladder; shuffled (length/position-
+matched) donors as sham; multi-position success = sufficiency under this transfer interface, single-position
+failure does not establish intrinsically distributed storage; a Q2 failure rejects this transplant interface only.
+Both: empirical constant-answer baseline per cell; paired outcomes retained; PCA is scaffolding — conclusions concern
+causal answerability. Model: Qwen3-8B (bf16); scaling to Qwen3-14B/32B and a 70B-class model only after the Q1 gate
+or the Q2 k=1 gate passes. Budget 60 USD (8B), 200 USD (scaling).
