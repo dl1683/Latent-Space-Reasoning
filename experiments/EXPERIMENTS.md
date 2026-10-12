@@ -1,5 +1,12 @@
 # Experiments Log
 
+## Q1-prime 8B smoke: gates pass 6/6, full sweep DEFERRED (2026-10-12 15:50, Codex hunt passed)
+
+- Full and rank-4 value-token patches: 100% donor-follow, sham 0%, collateral <=0.8%, frozen random ~0 (n=64 x 6 cells, dev).
+- Licensed: local mediation under retained receiver context; NOT context-dependent dimension or branch capacity.
+- What we learned: with 4 colour values the value-token difference is near-lexical (<=3-dim span), so r90=4 is near-forced;
+  the registered k-growth and cross-model predictions are not testable by this intervention. Amendment needed before more spend.
+
 ## Registration Q1-prime registered; 8B instrument validated (non-claim) (2026-10-12 ~15:38Z)
 
 - q8b-validate (Codex+Droid hunted): the 8B hook works and value-token donor replacement drives answers (98-100%
