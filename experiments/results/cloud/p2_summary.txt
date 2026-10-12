@@ -1,0 +1,109 @@
+== seed 11 arm answer
+   competence|dev|k1      acc=0.977 minsel=0.977 defect=None sham=None
+   competence|dev|k4      acc=0.888 minsel=0.652 defect=None sham=None
+   disp|test|k1|u1        acc=0.845 minsel=0.845 defect=None sham=0.8447265625
+   disp|test|k1|u2        acc=0.727 minsel=0.727 defect=None sham=0.7265625
+   disp|test|k4|u1        acc=0.798 minsel=0.604 defect=None sham=0.79833984375
+   disp|test|k4|u2        acc=0.717 minsel=0.562 defect=None sham=0.71728515625
+   p2|test|k1|u0          acc=0.980 minsel=0.980 defect=None sham=None
+   p2|test|k1|u1          acc=0.835 minsel=0.835 defect=1.5296389795839787 sham=0.8427734375
+   p2|test|k1|u2          acc=0.722 minsel=0.722 defect=2.463747777044773 sham=0.7265625
+   p2|test|k4|u0          acc=0.892 minsel=0.665 defect=None sham=None
+   p2|test|k4|u1          acc=0.739 minsel=0.604 defect=1.803248070180416 sham=0.642578125
+   p2|test|k4|u2          acc=0.689 minsel=0.590 defect=2.2369815185666084 sham=0.560791015625
+   CAUSAL p2causal|test|k4: targeted=+6.4pp collateral=+7.9pp undo=-0.18181818181818182 adv_inf_frac=0.55859375 adv_edit_inf=0.2867132867132867 edit&undo_inf=0.0034965034965034965
+== seed 11 arm consistency
+   competence|dev|k1      acc=0.977 minsel=0.977 defect=None sham=None
+   competence|dev|k4      acc=0.888 minsel=0.652 defect=None sham=None
+   p2|test|k1|u0          acc=0.980 minsel=0.980 defect=None sham=None
+   p2|test|k1|u1          acc=0.845 minsel=0.845 defect=0.6636967398226261 sham=0.8447265625
+   p2|test|k1|u2          acc=0.729 minsel=0.729 defect=1.4145886711776257 sham=0.728515625
+   p2|test|k4|u0          acc=0.892 minsel=0.665 defect=None sham=None
+   p2|test|k4|u1          acc=0.783 minsel=0.597 defect=0.41009659599512815 sham=0.7626953125
+   p2|test|k4|u2          acc=0.716 minsel=0.543 defect=0.8683155197650194 sham=0.6884765625
+   CAUSAL p2causal|test|k4: targeted=+4.9pp collateral=+7.4pp undo=-0.48 adv_inf_frac=0.55859375 adv_edit_inf=0.3321678321678322 edit&undo_inf=0.03146853146853147
+== seed 11 arm shuffled
+   competence|dev|k1      acc=0.977 minsel=0.977 defect=None sham=None
+   competence|dev|k4      acc=0.888 minsel=0.652 defect=None sham=None
+   p2|test|k1|u0          acc=0.980 minsel=0.980 defect=None sham=None
+   p2|test|k1|u1          acc=0.845 minsel=0.845 defect=2.3284586519002914 sham=0.8447265625
+   p2|test|k1|u2          acc=0.730 minsel=0.730 defect=2.439137727022171 sham=0.73046875
+   p2|test|k4|u0          acc=0.892 minsel=0.665 defect=None sham=None
+   p2|test|k4|u1          acc=0.649 minsel=0.511 defect=1.3325667679309845 sham=0.5888671875
+   p2|test|k4|u2          acc=0.615 minsel=0.521 defect=1.3927456438541412 sham=0.537841796875
+   CAUSAL p2causal|test|k4: targeted=+18.9pp collateral=+17.5pp undo=-0.061855670103092786 adv_inf_frac=0.55859375 adv_edit_inf=0.458041958041958 edit&undo_inf=0.0034965034965034965
+== seed 23 arm answer
+   competence|dev|k1      acc=0.965 minsel=0.965 defect=None sham=None
+   competence|dev|k4      acc=0.972 minsel=0.955 defect=None sham=None
+   disp|test|k1|u1        acc=0.849 minsel=0.849 defect=None sham=0.8486328125
+   disp|test|k1|u2        acc=0.734 minsel=0.734 defect=None sham=0.734375
+   disp|test|k4|u1        acc=0.882 minsel=0.874 defect=None sham=0.8818359375
+   disp|test|k4|u2        acc=0.802 minsel=0.774 defect=None sham=0.802490234375
+   p2|test|k1|u0          acc=0.976 minsel=0.976 defect=None sham=None
+   p2|test|k1|u1          acc=0.849 minsel=0.849 defect=2.598510906100273 sham=0.8271484375
+   p2|test|k1|u2          acc=0.748 minsel=0.748 defect=2.870824307203293 sham=0.4921875
+   p2|test|k4|u0          acc=0.969 minsel=0.958 defect=None sham=None
+   p2|test|k4|u1          acc=0.852 minsel=0.800 defect=2.1880012154579163 sham=0.79296875
+   p2|test|k4|u2          acc=0.692 minsel=0.635 defect=2.2646916583180428 sham=0.603271484375
+   CAUSAL p2causal|test|k4: targeted=+2.7pp collateral=+5.0pp undo=-3.9285714285714284 adv_inf_frac=0.55859375 adv_edit_inf=0.33916083916083917 edit&undo_inf=0.027972027972027972
+== seed 23 arm consistency
+   competence|dev|k1      acc=0.965 minsel=0.965 defect=None sham=None
+   competence|dev|k4      acc=0.972 minsel=0.955 defect=None sham=None
+   p2|test|k1|u0          acc=0.976 minsel=0.976 defect=None sham=None
+   p2|test|k1|u1          acc=0.857 minsel=0.857 defect=0.385253450833261 sham=0.8466796875
+   p2|test|k1|u2          acc=0.752 minsel=0.752 defect=0.73748361133039 sham=0.4912109375
+   p2|test|k4|u0          acc=0.969 minsel=0.958 defect=None sham=None
+   p2|test|k4|u1          acc=0.879 minsel=0.870 defect=0.4437894681468606 sham=0.74365234375
+   p2|test|k4|u2          acc=0.798 minsel=0.766 defect=0.9411784932017326 sham=0.65380859375
+   CAUSAL p2causal|test|k4: targeted=-0.2pp collateral=+0.3pp undo=None adv_inf_frac=0.55859375 adv_edit_inf=0.23426573426573427 edit&undo_inf=0.013986013986013986
+== seed 23 arm shuffled
+   competence|dev|k1      acc=0.965 minsel=0.965 defect=None sham=None
+   competence|dev|k4      acc=0.972 minsel=0.955 defect=None sham=None
+   p2|test|k1|u0          acc=0.976 minsel=0.976 defect=None sham=None
+   p2|test|k1|u1          acc=0.853 minsel=0.853 defect=1.7612468376755714 sham=0.708984375
+   p2|test|k1|u2          acc=0.767 minsel=0.767 defect=1.7960568815469742 sham=0.4970703125
+   p2|test|k4|u0          acc=0.969 minsel=0.958 defect=None sham=None
+   p2|test|k4|u1          acc=0.688 minsel=0.509 defect=1.7215113565325737 sham=0.636474609375
+   p2|test|k4|u2          acc=0.643 minsel=0.490 defect=1.5143660828471184 sham=0.588134765625
+   CAUSAL p2causal|test|k4: targeted=+24.6pp collateral=+32.7pp undo=-0.031746031746031744 adv_inf_frac=0.55859375 adv_edit_inf=0.2972027972027972 edit&undo_inf=0.006993006993006993
+== seed 47 arm answer
+   competence|dev|k1      acc=0.982 minsel=0.982 defect=None sham=None
+   competence|dev|k4      acc=0.988 minsel=0.980 defect=None sham=None
+   disp|test|k1|u1        acc=0.842 minsel=0.842 defect=None sham=0.841796875
+   disp|test|k1|u2        acc=0.731 minsel=0.731 defect=None sham=0.7314453125
+   disp|test|k4|u1        acc=0.886 minsel=0.881 defect=None sham=0.88623046875
+   disp|test|k4|u2        acc=0.812 minsel=0.794 defect=None sham=0.8115234375
+   p2|test|k1|u0          acc=0.992 minsel=0.992 defect=None sham=None
+   p2|test|k1|u1          acc=0.865 minsel=0.865 defect=1.1692398861050606 sham=0.7158203125
+   p2|test|k1|u2          acc=0.779 minsel=0.779 defect=1.805279590189457 sham=0.7314453125
+   p2|test|k4|u0          acc=0.987 minsel=0.980 defect=None sham=None
+   p2|test|k4|u1          acc=0.887 minsel=0.880 defect=1.094185832887888 sham=0.85107421875
+   p2|test|k4|u2          acc=0.815 minsel=0.801 defect=1.7005591243505478 sham=0.721435546875
+   CAUSAL p2causal|test|k4: targeted=+2.3pp collateral=+0.0pp undo=-1.8333333333333333 adv_inf_frac=0.55859375 adv_edit_inf=0.21328671328671328 edit&undo_inf=0.024475524475524476
+== seed 47 arm consistency
+   competence|dev|k1      acc=0.982 minsel=0.982 defect=None sham=None
+   competence|dev|k4      acc=0.988 minsel=0.980 defect=None sham=None
+   p2|test|k1|u0          acc=0.992 minsel=0.992 defect=None sham=None
+   p2|test|k1|u1          acc=0.869 minsel=0.869 defect=0.25823035929352045 sham=0.7001953125
+   p2|test|k1|u2          acc=0.785 minsel=0.785 defect=0.39551504515111446 sham=0.572265625
+   p2|test|k4|u0          acc=0.987 minsel=0.980 defect=None sham=None
+   p2|test|k4|u1          acc=0.882 minsel=0.873 defect=0.44650197960436344 sham=0.841552734375
+   p2|test|k4|u2          acc=0.799 minsel=0.791 defect=0.7810149993747473 sham=0.6943359375
+   CAUSAL p2causal|test|k4: targeted=+1.4pp collateral=+0.1pp undo=-11.857142857142858 adv_inf_frac=0.55859375 adv_edit_inf=0.24825174825174826 edit&undo_inf=0.01048951048951049
+== seed 47 arm shuffled
+   competence|dev|k1      acc=0.982 minsel=0.982 defect=None sham=None
+   competence|dev|k4      acc=0.988 minsel=0.980 defect=None sham=None
+   p2|test|k1|u0          acc=0.992 minsel=0.992 defect=None sham=None
+   p2|test|k1|u1          acc=0.870 minsel=0.870 defect=0.7315167598426342 sham=0.712890625
+   p2|test|k1|u2          acc=0.772 minsel=0.772 defect=0.7653799951076508 sham=0.7255859375
+   p2|test|k4|u0          acc=0.987 minsel=0.980 defect=None sham=None
+   p2|test|k4|u1          acc=0.864 minsel=0.786 defect=1.368755780160427 sham=0.74169921875
+   p2|test|k4|u2          acc=0.801 minsel=0.758 defect=1.5134839192032814 sham=0.62451171875
+   CAUSAL p2causal|test|k4: targeted=+2.7pp collateral=+2.0pp undo=-0.2857142857142857 adv_inf_frac=0.55859375 adv_edit_inf=0.23776223776223776 edit&undo_inf=0.013986013986013986
+== paired consistency - answer at u=2 (per seed; Holm over k)
+   seed 11 k4: diff=+0.027 CI95=[+0.012,+0.041] p=0.0000 holm_p=0.0000
+   seed 11 k1: diff=+0.007 CI95=[-0.002,+0.017] p=0.0835 holm_p=0.0835
+   seed 23 k4: diff=+0.106 CI95=[+0.092,+0.120] p=0.0000 holm_p=0.0000
+   seed 23 k1: diff=+0.004 CI95=[-0.013,+0.021] p=0.3553 holm_p=0.3553
+   seed 47 k1: diff=+0.006 CI95=[-0.005,+0.017] p=0.1663 holm_p=0.3325
+   seed 47 k4: diff=-0.016 CI95=[-0.025,-0.007] p=0.9995 holm_p=0.9995

@@ -1,5 +1,22 @@
 # Experiments Log
 
+## Registration P2 (update closure): registered prediction FAILS (2026-10-12 13:45Z, Codex error hunt passed)
+
+"At the tested exposure, consistency training reduces variance-normalised encoder-target defect but misses P2's
+registered answerability and selective-edit thresholds in all three seeds. This construction establishes neither
+update closure nor functional equivalence from reduced geometric defect." Paired two-update gains (consistency vs
+answer-only): k=1 +0.7/+0.4/+0.6 pp, k=4 +2.7/+10.6/-1.6 pp (bar +15 pp); defect k=1 u=2 reduced 1.74x/3.9x/4.6x;
+no arm reaches 0.90 at every selector; shuffled-target edits change the target only with large collateral.
+What we learned: moving the updated state closer (in squared distance) to the encoder's state for the updated
+graphs did not make the reader answer the updated question — a dissociation between geometric and functional
+closeness in this construction.
+
+## Registration P1-prime pilot: stop rule FIRES (2026-10-12 13:45Z)
+
+Synchronized mastery curriculum, seed 11: mean dev k=1 bit accuracy rose to 0.90 (r=64) / 0.96 (r=128) (vs ~0.60 under
+P1's schedule) but promotion needs every selector >= 0.95 at both leaders; max min-selector 0.64/0.86; k_max stayed 1.
+No positive C90 established; width scaling not tested; remaining seeds not launched.
+
 ## Registration P1: stop rule FIRED (2026-10-12 04:35Z)
 
 Random-access edge storage, Qwen3-0.6B, seed 11, independent widths r=2..128, registered schedule (20% easy then the
