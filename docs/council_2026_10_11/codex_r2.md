@@ -168,7 +168,7 @@ The material disagreement is that whole-state swaps and post-toggle reachability
 
 Even a complete pass does not automatically establish Nobel/Fields-level novelty or native mathematics. The useful vocabulary is **retained future, selective edit, restoration, and update-closed answerability**; PR remains scaffolding.
 
-Saved to [codex_r2.md](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/internal/council_gcp/codex_r2.md). No experiments, cloud actions, spend, or tracked-file edits occurred.
+Saved to [codex_r2.md](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/docs/council_2026_10_11/codex_r2.md). No experiments, cloud actions, spend, or tracked-file edits occurred.
 
 `bb_list` succeeded. Blackboard state access and synthesis were rejected because they require approval while the approval policy is `never`; no board entry or synthesis is claimed.
 

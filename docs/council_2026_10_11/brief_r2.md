@@ -1,6 +1,6 @@
 # Re-entry council, round 2 (converge)
 
-Round-1 answers: internal/council_gcp/codex_r1.md (Codex) and internal/council_gcp/droid_r1.md (Droid). Read both fresh, plus brief_r1.md for constraints.
+Round-1 answers: docs/council_2026_10_11/codex_r1.md (Codex) and docs/council_2026_10_11/droid_r1.md (Droid). Read both fresh, plus brief_r1.md for constraints.
 
 You agree on the shape: flagship = causal, selectable latent branch capacity measured under a controlled state-width bottleneck inside one backbone (not a cross-model width regression); fast probes = A branch retention/viability, B verifier-guided latent search, C frozen recurrent depth; Bet 4 deferred. Settle the remaining disagreements and output ONE frozen pre-registration both of you can sign.
 
