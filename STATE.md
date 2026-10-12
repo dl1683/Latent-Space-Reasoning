@@ -28,13 +28,7 @@ Evidence gate 1 (fresh Codex audit) corrected over-broad wording; licensed sente
 - Geometry observation: "These checkpoints show low branch-difference PR (1.8-3.2 vs isotropic nulls 63-910) and
   similar coarse-grid storage performance across nested widths; this does not identify what limits capacity."
 
-**Running / next.** Registrations P1 (random-access storage capacity vs independently trained widths) and P2
-(update closure with a self-derived consistency target); Amendment 3 (synchronized mastery curriculum P1';
-P2 on the locked gate checkpoints) activates only when the P1 stop rule fires at its exposure cap (P1 was
-interrupted by a Spot preemption + checkpoint-restore bug, now fixed; completion ~04:30Z 2026-10-12).
-Plumbing pilots of P2 and of the P1' sync barrier passed (dev-only, non-claim-bearing).
-Runner: experiments/cloud/lsr_cloud.py; spend ledger experiments/cloud/SPEND.md (budget 5,000 USD; ~$760 at
-2026-10-12 02:00Z). Window ends 2026-10-16. The HP-G confrontation resume pointer (below) is parked.
+**Running / next.** P1 and the P1' pilot fired their stop rules; P2's registered update prediction failed (update closure 0.84-0.86). Later registrations (value-token patching Q1', closing-state readout R, rename/reorder binding N, slot-index control, training-name ablation and its fixed-layer re-score) are recorded in experiments/EXPERIMENTS.md, most recent first. The 2026-10-12 strategy council (Codex and Droid) is complete: docs/council_2026_10_12_strategy_codex.md and docs/council_2026_10_12_strategy_droid.md. The direction decision is pending the coordinator. Spend: about $916 of the $5,000 LSR cap (experiments/cloud/SPEND.md). Runner: experiments/cloud/lsr_cloud.py.
 
 ## Standing record — earlier arcs (historical, not a run queue)
 
