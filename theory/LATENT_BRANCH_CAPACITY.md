@@ -282,10 +282,57 @@ reversed order or consolidation explains the gap; if the gap exists but moments 
 mechanism is rejected. Entity-clustered paired uncertainty. Conclusions restricted to optimizer/schedule effects;
 the Genome formation law is an analogy, not LSR evidence. Budget 300 USD.
 
-## Standing rule (2026-10-12 ~15:40Z, coordinator; after P3, Q and F were instrument-invalid)
+## Standing rule (2026-10-12, coordinator; after P3, Q and F were instrument-invalid)
 
 Every registered experiment's positive control runs and passes as a separate cheap smoke BEFORE the full run
 launches, with token alignment and hook/intervention effects asserted. No full sweep spends money until its
 instrument is shown to work. Registration Q is followed by a non-claim instrument validation (native.validate:
 full-prompt token-alignment asserts, measured post-hook residual and logit changes, flip rates under large
 perturbations, and a localized value-token positive control) before any Q1' registration or rerun.
+
+### Instrument validation result (q8b-validate, non-claim; Codex + Droid hunted)
+
+On the reported Qwen3-8B validation cells (W1/W2, k=4, n=128 each), closing-position additions flipped 0/128
+four-option answers; first-prompt diagnostics measured residual changes of 9.98-10.03x and maximum whole-vocabulary
+logit changes of 0.1875-0.875. Sparse (every-third-position) multi-position additions flipped 6.25-28.125%.
+Value-token donor replacement produced 98.44-100% donor-follow at layers 9/18 and 43.75-53.125% at layer 27, versus
+0% unpatched. This supports functioning interventions and localized mediation under retained receiver context; it
+does not establish that the closing position is absent from the answer path. The Q (closing-position) data remain
+without a verdict.
+
+## Registration Q1-prime (2026-10-12, before data; Codex + Droid amendments merged conjunctively)
+
+Object: conditional single-fact edit dimension. Q1-prime measures the rank needed for a causal answer
+intervention at a specified fact-value token, conditional on the receiver context, layer and readout. It does not
+measure intrinsic storage dimension or joint branch capacity, and four answer choices alone imply no rank bound.
+
+Models: frozen Qwen3-8B (d=4096); only after the 8B gates pass, Qwen3-14B, Qwen3-32B and Qwen2.5-72B-Instruct,
+each smoked and cost-checked separately. bf16; model and tokenizer revisions pinned and recorded. Layer: the
+zero-based decoder-layer output index round(0.25 x depth), validated only for 8B; no dev selection.
+
+Design: same fact generator and wording families W1/W2; k in {1,4,16}. Donor and receiver contexts differ in
+exactly one fact. At the changed fact's value token, the receiver gets one of these added: the full donor-minus-receiver
+difference; its projection on the top-r principal subspace of centered value-token single-fact differences, fitted
+separately per (model,k,family) on disjoint dev names (fit_n=2048 for the sweep); the complement; norm-matched
+random r-dim projections on 5 frozen random subspaces (seeded and fixed before test); and a norm-matched
+full-dimension random sham. r in {1,2,3,4,8,16,32,64}. Asserts: single-token distinct options; donor/receiver
+value-token alignment; the value token is an exact token-prefix position of the full query prompt. bf16 absorption
+of the full patch is measured.
+
+Metrics: targeted = donor-follow minus sham; collateral = paired answer flips on unchanged facts; retention =
+(variant - sham)/(full - sham). Paired predictions, collection ids, collateral outcomes, option frequencies,
+unpatched receiver accuracy and constant-answer baselines are retained. Simultaneous collection-bootstrap intervals
+are reported for gates, retention, r90 and comparisons.
+
+Gate per (model,k,family) cell: full donor-follow >= 0.80, full-minus-sham >= 0.80, and collateral <= 0.05 where
+k>1 (N/A at k=1). The gate is checked in a separate n=64 smoke on dev names before each model's sweep, then
+repeated on the test data. A failing cell is instrument-invalid and receives no rank verdict. r90 is the
+smallest grid rank with proj retention >= 0.90, defined only where the gate passes. Above the grid it is censored
+(">64"); when threshold uncertainty straddles a grid point it is inconclusive. Random-matches-top-r is judged
+with a predeclared equivalence margin of 0.10 in retention.
+
+Predictions (tests of this intervention only): r90 <= 8 at k=1; r90(k=16) >= 2 x r90(k=1); across models r90 is
+not proportional to d (r90(72B)/r90(8B) < 2 at a d ratio of 2). Kill: the gate fails at 8B; random projections
+match top-r within the margin; r90 undefined across cells. Test: 512 collections per (model,k,family). Budget 250
+USD; stop and leave the registration incomplete rather than exceed it. Reviews: internal/council_gcp
+brief_q1p / codex_q1p / droid_q1p (copied to docs/council_2026_10_11/).

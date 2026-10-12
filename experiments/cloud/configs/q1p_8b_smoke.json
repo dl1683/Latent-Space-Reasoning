@@ -1,0 +1,66 @@
+{
+ "run": "q1p-8b-smoke",
+ "kind": "native",
+ "machine": "a2-highgpu-1g",
+ "accelerator": null,
+ "usd_per_hour": 2.21,
+ "cost_cap_usd": 8.0,
+ "zones": [
+  "us-central1-a",
+  "us-central1-b",
+  "us-central1-c",
+  "us-central1-f",
+  "us-east1-b",
+  "us-west1-b",
+  "us-west4-b",
+  "us-east4-c",
+  "europe-west4-a",
+  "europe-west4-b"
+ ],
+ "requirements": [
+  "transformers>=5.12,<6",
+  "accelerate",
+  "jinja2>=3.1"
+ ],
+ "common": {
+  "model": "Qwen/Qwen3-8B",
+  "entry": "q1prime",
+  "seed": 0,
+  "layer_frac": 0.25,
+  "families": [
+   "W1",
+   "W2"
+  ],
+  "ks": [
+   1,
+   4,
+   16
+  ],
+  "ranks": [
+   1,
+   4,
+   16,
+   64
+  ],
+  "rand_seeds": 2,
+  "collateral_queries": 4,
+  "q1_batch": 32,
+  "fit_n": 512,
+  "test_n": 64,
+  "split": "dev",
+  "smoke": true,
+  "note": "Q1-prime positive-control smoke (standing rule); gate: full>=0.80, full-sham>=0.80, collateral<=0.05 (k>1); non-claim"
+ },
+ "shards": [
+  {
+   "families": [
+    "W1"
+   ]
+  },
+  {
+   "families": [
+    "W2"
+   ]
+  }
+ ]
+}

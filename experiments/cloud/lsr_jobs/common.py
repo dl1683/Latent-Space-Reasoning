@@ -36,13 +36,13 @@ class Out:
         (self.dir / name).write_text(json.dumps(obj, indent=2, default=str))
 
 
-def load(model_id, dtype=torch.bfloat16):
+def load(model_id, dtype=torch.bfloat16, device_map="cuda"):
     from transformers import AutoModelForCausalLM, AutoTokenizer
     tok = AutoTokenizer.from_pretrained(model_id)
     tok.padding_side = "left"
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
-    model = AutoModelForCausalLM.from_pretrained(model_id, dtype=dtype, device_map="cuda")
+    model = AutoModelForCausalLM.from_pretrained(model_id, dtype=dtype, device_map=device_map)
     model.eval()
     info = {"model": model_id, "revision": getattr(model.config, "_commit_hash", None),
             "n_layers": model.config.num_hidden_layers, "d_model": model.config.hidden_size,

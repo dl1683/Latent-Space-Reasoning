@@ -58,6 +58,7 @@ class Hook:
         hs = hs.clone()
         rows = torch.arange(hs.shape[0], device=hs.device)
         for pos, val, mode in self.edits:
+            pos, val = pos.to(hs.device), val.to(hs.device)
             if mode == "add":
                 hs[rows, pos] = hs[rows, pos] + val.to(hs.dtype)
             else:
@@ -80,8 +81,8 @@ def run_prompts(model, tok, prompts, opt_ids, hook=None, edits_fn=None, bs=24):
         logits = model(**enc).logits
         if hook is not None:
             hook.edits = None
-        last = enc["attention_mask"].sum(1) - 1
-        preds += logits[torch.arange(len(last)), last][:, opt_ids].argmax(-1).tolist()
+        last = (enc["attention_mask"].sum(1) - 1).to(logits.device)
+        preds += logits[torch.arange(len(last), device=logits.device), last][:, opt_ids].argmax(-1).tolist()
     return preds
 
 
@@ -400,3 +401,175 @@ def validate(cfg, out):
                        "value_token_patch_donor_follow": follow, "unpatched_donor_follow": base_follow,
                        "base_acc_recv": sum(int(p == pairs[i][0]["colors"][pairs[i][1]]) for i, p in enumerate(base)) / len(base)})
             out.beat()
+
+
+@torch.no_grad()
+def states_at_pos(model, tok, texts, layer, positions, bs=16):
+    """Layer-`layer` residual of each text at its given token position."""
+    tok.padding_side = "right"
+    out = []
+    for i in range(0, len(texts), bs):
+        enc = tok(texts[i:i + bs], return_tensors="pt", padding=True, add_special_tokens=False).to("cuda")
+        hs = model(**enc, output_hidden_states=True).hidden_states[layer + 1].float()
+        out.append(hs[torch.arange(hs.shape[0], device=hs.device),
+                      torch.tensor(positions[i:i + bs], device=hs.device)].to("cuda"))
+    return torch.cat(out)
+
+
+def q1p_pairs(tok, rng, k, fam, pool, n):
+    """Donor/receiver blocks differing in one fact, with the changed fact's value-token position (asserted equal)."""
+    rows = []
+    while len(rows) < n:
+        c = collection(rng, k, pool)
+        c2, i = changed(rng, c)
+        db, rb = block(c, fam), block(c2, fam)
+        pd, pr = value_positions(tok, db, c, fam)[i], value_positions(tok, rb, c2, fam)[i]
+        if pd != pr:  # multi-token values would misalign positions: reject
+            continue
+        rows.append((c, c2, i, db, rb, pr))
+    return rows
+
+
+def q1p_cell(model, tok, opt_ids, layer, rng, cfg, k, fam, pool, n, basis):
+    hook = Hook(model, layer)
+    gen = torch.Generator(device="cpu").manual_seed(cfg["seed"] + 4242)
+    variants = [("none", None), ("sham", None), ("full", None)] + [(f"{kd}{r}", r) for r in cfg["ranks"]
+                                                                 for kd in ("proj", "comp")] + \
+        [(f"rand{r}s{s_}", r) for r in cfg["ranks"] for s_ in range(cfg.get("rand_seeds", 5))]
+    frozen_R = {}  # frozen random subspaces (fixed before test), one per (rank, seed)
+    D_ = basis.shape[0]
+    for r in cfg["ranks"]:
+        for s_ in range(cfg.get("rand_seeds", 5)):
+            g_ = torch.Generator(device="cpu").manual_seed(10_000 + 97 * r + s_)
+            frozen_R[(r, s_)] = torch.linalg.qr(torch.randn(D_, r, generator=g_))[0].cuda()
+    res = {v: {"tgt": [], "coll": [], "coll_pairs": [], "tgt_pred": []} for v, _ in variants}
+    recv_gold = []
+    absorbed = []
+    n_coll_q = min(cfg["collateral_queries"], k - 1)
+    for start in range(0, n, cfg["q1_batch"]):
+        rows = q1p_pairs(tok, rng, k, fam, pool, min(cfg["q1_batch"], n - start))
+        hd = states_at_pos(model, tok, [r[3] for r in rows], layer, [r[5] for r in rows])
+        hr = states_at_pos(model, tok, [r[4] for r in rows], layer, [r[5] for r in rows])
+        delta = hd - hr
+        qs, meta = [], []
+        for ri, (c, c2, i, db, rb, p) in enumerate(rows):
+            others = [j for j in range(k) if j != i]
+            rng.shuffle(others)
+            for j in [i] + others[:n_coll_q]:
+                qs.append(rb + FAM[fam]["q"].format(n=c["names"][j]))
+                meta.append((ri, j == i, c["colors"][j]))
+            recv_gold.append(c2["colors"][i])
+        for q_, m_ in zip(qs, meta):  # value token is an exact token prefix position of the FULL query prompt
+            b_ids = tok(rows[m_[0]][4], add_special_tokens=False)["input_ids"]
+            assert tok(q_, add_special_tokens=False)["input_ids"][:rows[m_[0]][5] + 1] == b_ids[:rows[m_[0]][5] + 1]
+        idx = torch.tensor([m_[0] for m_ in meta], device="cuda")
+        pos_q = torch.tensor([rows[m_[0]][5] for m_ in meta], device="cuda")
+        base_preds = None
+        for name, r in variants:
+            if name == "none":
+                dv = None
+            elif name == "sham":
+                z_ = torch.randn(delta.shape, generator=gen).cuda()
+                dv = z_ / z_.norm(dim=-1, keepdim=True) * delta.norm(dim=-1, keepdim=True)
+            elif name == "full":
+                dv = delta
+            else:
+                kd = name[:4]
+                U = basis[:, :r]
+                if kd == "proj":
+                    dv = (delta @ U) @ U.T
+                elif kd == "comp":
+                    dv = delta - (delta @ U) @ U.T
+                else:
+                    R = frozen_R[(r, int(name.split("s")[-1]))]
+                    p_ = (delta @ R) @ R.T
+                    pu = (delta @ U) @ U.T
+                    dv = p_ * (pu.norm(dim=-1, keepdim=True) / p_.norm(dim=-1, keepdim=True).clamp_min(1e-6))
+            if name == "full":  # bf16 absorption: fraction of the patch lost when added to the bf16 residual
+                hb = hr.to(torch.bfloat16)
+                absorbed += (((hb + dv.to(torch.bfloat16)).float() - hb.float() - dv).norm(dim=-1)
+                             / dv.norm(dim=-1).clamp_min(1e-9)).tolist()
+            if dv is None:
+                preds = run_prompts(model, tok, qs, opt_ids)
+                base_preds = preds
+            else:
+                dvq = dv[idx]
+                preds = run_prompts(model, tok, qs, opt_ids, hook, lambda sl, enc: [(pos_q[sl], dvq[sl], "add")])
+            t_, c_, tp_ = {}, {}, {}
+            for (ri, is_t, donor_col), pr_, p0 in zip(meta, preds, base_preds):
+                if is_t:
+                    t_[ri] = int(pr_ == donor_col)
+                    tp_[ri] = pr_
+                else:
+                    c_.setdefault(ri, []).append(int(pr_ != p0))
+            res[name]["tgt"] += [t_[x] for x in sorted(t_)]
+            res[name]["tgt_pred"] += [tp_[x] for x in sorted(tp_)]
+            res[name]["coll"] += [sum(v) / len(v) for _, v in sorted(c_.items())]
+            res[name]["coll_pairs"] += [v for _, v in sorted(c_.items())]
+        cfg["_out"].beat()
+    hook.remove()
+    res["_absorbed_mean"] = sum(absorbed) / len(absorbed) if absorbed else None
+    res["_recv_gold"] = recv_gold
+    return res
+
+
+def fit_basis_value(model, tok, layer, rng, k, fam, pool, n):
+    rows = q1p_pairs(tok, rng, k, fam, pool, n)
+    X = torch.cat([states_at_pos(model, tok, [r[3] for r in rows[i:i + 64]], layer, [r[5] for r in rows[i:i + 64]])
+                   - states_at_pos(model, tok, [r[4] for r in rows[i:i + 64]], layer, [r[5] for r in rows[i:i + 64]])
+                   for i in range(0, len(rows), 64)])
+    Xc = X - X.mean(0)
+    _, S, Vh = torch.linalg.svd(Xc, full_matrices=False)
+    ev = S ** 2
+    return Vh.T.contiguous(), (ev.sum() ** 2 / (ev ** 2).sum()).item(), (ev[:64] / ev.sum()).tolist()
+
+
+def q1prime(cfg, out):
+    """Registration Q1-prime main entry (value-token causal effective dimension)."""
+    cfg["_out"] = out
+    model, tok, info = common.load(cfg["model"], device_map=cfg.get("device_map", "cuda"))
+    out.meta("model_info.json", info)
+    L = info["n_layers"]
+    layer = int(round(cfg["layer_frac"] * L))
+    opt_ids = [tok(" " + c, add_special_tokens=False)["input_ids"][0] for c in COLORS]
+    assert len(set(opt_ids)) == 4
+    pools = {"dev": NAMES[:20], "test": NAMES[20:]}
+    for fam in cfg["families"]:
+        for k in cfg["ks"]:
+            key = f"q1p|{fam}|k{k}"
+            if key in out.done:
+                continue
+            basis, pr, evf = fit_basis_value(model, tok, layer, random.Random(f"fitv{fam}{k}"), k, fam, pools["dev"],
+                                             cfg["fit_n"])
+            r_ = q1p_cell(model, tok, opt_ids, layer, random.Random(f"testv{fam}{k}"), cfg, k, fam, pools[cfg["split"]],
+                          cfg["test_n"], basis)
+            absorbed = r_.pop("_absorbed_mean")
+            gold = r_.pop("_recv_gold")
+            recv_acc = sum(int(a == b) for a, b in zip(r_["none"]["tgt_pred"], gold)) / len(gold)
+            summ = {v: {"targeted_follow": sum(d["tgt"]) / len(d["tgt"]),
+                        "collateral_flip": (sum(d["coll"]) / len(d["coll"])) if d["coll"] else None,
+                        "per_collection_tgt": d["tgt"], "per_collection_collateral": d["coll_pairs"],
+                        "tgt_pred": d["tgt_pred"], "option_freq": [d["tgt_pred"].count(o) / len(d["tgt_pred"])
+                                                                   for o in range(len(opt_ids))]}
+                    for v, d in r_.items()}
+            sham = summ["sham"]["targeted_follow"]
+            fulle = summ["full"]["targeted_follow"] - sham
+            for v in summ:
+                summ[v]["retention_vs_full"] = ((summ[v]["targeted_follow"] - sham) / fulle) if fulle > 0 else None
+            nseed = cfg.get("rand_seeds", 5)
+            rand_ret = {r: [summ[f"rand{r}s{s_}"]["retention_vs_full"] for s_ in range(nseed)] for r in cfg["ranks"]}
+            gate = (summ["full"]["targeted_follow"] >= 0.80 and fulle >= 0.80 and
+                    (k == 1 or (summ["full"]["collateral_flip"] or 0) <= 0.05))
+            r90 = None
+            if gate:
+                hit = [r for r in cfg["ranks"] if (summ["proj" + str(r)]["retention_vs_full"] or 0) >= 0.90]
+                r90 = hit[0] if hit else "censored_above_" + str(max(cfg["ranks"]))
+            out.write({"key": key, "model": cfg["model"], "d_model": info["d_model"], "layer": layer, "family": fam,
+                       "k": k, "split": cfg["split"], "n": cfg["test_n"], "dev_value_delta_PR": pr,
+                       "dev_energy_top64": evf, "gate_pass": gate, "r90": r90,
+                       "full_follow": summ["full"]["targeted_follow"], "gate_full_targeted_minus_sham": fulle,
+                       "bf16_absorbed_frac": absorbed, "receiver_unpatched_acc": recv_acc, "rand_retention_by_rank": rand_ret, "equivalence_margin": 0.10,
+                       "variants": summ, "tokenizer_revision": info.get("tokenizer_revision"),
+                       "model_revision": info.get("revision")})
+            if cfg.get("smoke") and not gate:
+                out.write({"key": "smoke_fail|" + fam + "|k" + str(k), "note": "instrument gate failed; no full sweep"})
