@@ -28,7 +28,9 @@ Evidence gate 1 (fresh Codex audit) corrected over-broad wording; licensed sente
 - Geometry observation: "These checkpoints show low branch-difference PR (1.8-3.2 vs isotropic nulls 63-910) and
   similar coarse-grid storage performance across nested widths; this does not identify what limits capacity."
 
-**Running / next.** P1 and the P1' pilot fired their stop rules; P2's registered update prediction failed (update closure 0.84-0.86). Later registrations (value-token patching Q1', closing-state readout R, rename/reorder binding N, slot-index control, training-name ablation and its fixed-layer re-score) are recorded in experiments/EXPERIMENTS.md, most recent first. The 2026-10-12 strategy council (Codex and Droid) is complete: docs/council_2026_10_12_strategy_codex.md and docs/council_2026_10_12_strategy_droid.md. The direction decision is pending the coordinator. Spend: about $916 of the $5,000 LSR cap (experiments/cloud/SPEND.md). Runner: experiments/cloud/lsr_cloud.py.
+**Running / next.** P1 and the P1' pilot fired their stop rules; P2's registered update prediction failed (update closure 0.84-0.86). Later registrations (value-token patching Q1', closing-state readout R, rename/reorder binding N, slot-index control, training-name ablation and its fixed-layer re-score) are recorded in experiments/EXPERIMENTS.md, most recent first. The 2026-10-12 strategy council (Codex and Droid) is complete: docs/council_2026_10_12_strategy_codex.md and docs/council_2026_10_12_strategy_droid.md. The direction decision is pending the coordinator.
+
+**Resume point (paused 2026-10-12 ~21:13Z, user paused for the night).** No LSR VMs are running and nothing is launched. The strategy council plan is waiting on the user's decisions: (1) model policy (whether Chinese-origin subjects such as Qwen3-8B may continue for LSR research), (2) schedule, (3) spend. Resume by reading the two council outputs above, then asking the user for those three decisions before any launch. Spend: about $916 of the $5,000 LSR cap (experiments/cloud/SPEND.md). Runner: experiments/cloud/lsr_cloud.py.
 
 ## Standing record — earlier arcs (historical, not a run queue)
 
