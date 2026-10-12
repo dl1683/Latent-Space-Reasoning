@@ -1,0 +1,16 @@
+Qwen/Qwen2.5-7B-Instruct B32 test          n=1024 sample=0.314 repair=0.317 term(s/r)=0.99/0.98 noise_flip=0.167 
+    l 14 a1.0  last n=1024 es=0.166 rand=0.175 es-repair=-0.151 [-0.179,-0.124] term=1.00 abs=0.0030
+Qwen/Qwen2.5-7B-Instruct B8 test           n=1024 sample=0.195 repair=0.174 term(s/r)=0.99/0.99 noise_flip=0.160 
+    l 14 a1.0  last n=1024 es=0.130 rand=0.132 es-sample=-0.065 [-0.089,-0.043] term=0.99 abs=0.0030
+Qwen/Qwen3-1.7B B32 test                   n=1024 sample=0.059 repair=0.143 term(s/r)=1.00/1.00 noise_flip=0.074 
+    l 19 a1.0  last n=1024 es=0.048 rand=0.055 es-repair=-0.095 [-0.116,-0.075] term=1.00 abs=0.0030
+Qwen/Qwen3-1.7B B8 test                    n=1024 sample=0.021 repair=0.063 term(s/r)=1.00/1.00 noise_flip=0.078 
+    l 19 a1.0  last n=1024 es=0.033 rand=0.037 es-repair=-0.030 [-0.047,-0.015] term=1.00 abs=0.0030
+Qwen/Qwen3-4B B32 test                     n=1024 sample=0.233 repair=0.325 term(s/r)=0.99/0.99 noise_flip=0.091 
+    l 12 a1.0  last n=1024 es=0.149 rand=0.165 es-repair=-0.176 [-0.202,-0.150] term=0.99 abs=0.0029
+Qwen/Qwen3-4B B8 test                      n=1024 sample=0.160 repair=0.210 term(s/r)=0.98/0.99 noise_flip=0.094 
+    l 12 a1.0  last n=1024 es=0.133 rand=0.136 es-repair=-0.077 [-0.099,-0.055] term=0.99 abs=0.0029
+Qwen/Qwen3-8B B32 test                     n=1024 sample=0.216 repair=0.223 term(s/r)=1.00/1.00 noise_flip=0.051 
+    l 12 a1.0  last n=1024 es=0.248 rand=0.248 es-repair=+0.025 [+0.000,+0.051] term=0.99 abs=0.0030
+Qwen/Qwen3-8B B8 test                      n=1024 sample=0.155 repair=0.155 term(s/r)=1.00/1.00 noise_flip=0.047 
+    l 12 a1.0  last n=1024 es=0.182 rand=0.197 es-sample=+0.026 [+0.005,+0.047] term=0.99 abs=0.0030

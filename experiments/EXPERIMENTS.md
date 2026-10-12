@@ -1,5 +1,14 @@
 # Experiments Log
 
+## Probe B (latent search): registered prediction FAILS (2026-10-12 00:27Z)
+
+14-checkpoint dev screen + 4-checkpoint confirmation (512 new problems/family, budgets 8 and 32, text arms at
+dev-tuned temperature with sequential feedback repair). Verifier-guided residual ES never beats a matched-norm
+random perturbation (14/14 dev, 4/4 confirm). Best latent-vs-text gap: Qwen3-8B +2.6 pp (B8) / +2.5 pp (B32),
+below the 5 pp bar and in one family only; at budget 32 text repair beats latent by 9-18 pp in the other three
+checkpoints. What we learned: on these public-verifier puzzles, the verifier's signal is better spent steering
+TEXT (repair) than steering the hidden state; the hidden-state "search" reduces to random diversity.
+
 ## Probe C (frozen recurrent depth): registered prediction FAILS (2026-10-12 00:10Z)
 
 14-checkpoint screen + 4-checkpoint confirmation (512 new problems/family, dev-frozen configs). CoT: every
