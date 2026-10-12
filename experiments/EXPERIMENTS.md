@@ -1,6 +1,6 @@
 # Experiments Log
 
-## Registration Q1-prime registered; 8B instrument validated (non-claim) (2026-10-12 ~15:45Z)
+## Registration Q1-prime registered; 8B instrument validated (non-claim) (2026-10-12 ~15:38Z)
 
 - q8b-validate (Codex+Droid hunted): the 8B hook works and value-token donor replacement drives answers (98-100%
   donor-follow at layers 9/18, 44-53% at layer 27, 0% unpatched). This does not establish that the closing position is
