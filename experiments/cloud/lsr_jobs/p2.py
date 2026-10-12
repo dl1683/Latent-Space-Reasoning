@@ -210,7 +210,7 @@ def main(cfg, out):
                                              "cons": sum(h[1] for h in hist[-25:]) / len(hist[-25:]), "sec": t()})
     m.eval()
     ev = dict(cfg, eval_tokens=cfg.get("eval_tokens", 32000))
-    for split in ("test",):
+    for split in (cfg.get("eval_split", "test"),):
         for k in cfg["ks"]:
             for u in (0, 1, 2):
                 key = f"p2|{split}|k{k}|u{u}"
@@ -238,8 +238,8 @@ def main(cfg, out):
         m.disp = {kk: v / cnt[kk] for kk, v in disp.items()}
         for k in cfg["ks"]:
             for u in (1, 2):
-                key = f"disp|test|k{k}|u{u}"
+                key = f"disp|{cfg.get('eval_split', 'test')}|k{k}|u{u}"
                 if key not in out.done:
                     out.write({"key": key, "arm": "identity_plus_mean_displacement", "k": k, "u": u,
-                               **B.acc_cell(m, ev, "test", r, u, k, cfg["eval_n"], 5)})
+                               **B.acc_cell(m, ev, cfg.get("eval_split", "test"), r, u, k, cfg["eval_n"], 5)})
         m.disp = None

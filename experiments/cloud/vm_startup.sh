@@ -15,7 +15,8 @@ RUN=${JOB%/shards/*}
 fail() { echo "FAIL $1"; gcloud storage cp $OUT/startup.log "$JOB/out/startup_fail_$(date +%s).log"; shutdown -h now; exit 1; }
 gcloud storage cp -r "$RUN/bundle/*" $W/ || fail bundle
 gcloud storage cp "$JOB/shard.json" $W/shard.json || fail shard
-gcloud storage cp "$JOB/out/results.jsonl" $OUT/results.jsonl >/dev/null 2>&1 && echo "RESUME $(wc -l < $OUT/results.jsonl) rows"
+gcloud storage rsync -r -x ".*startup.log$|.*automon.*" "$JOB/out" $OUT >/dev/null 2>&1 && [ -f $OUT/results.jsonl ] && echo "RESUME $(wc -l < $OUT/results.jsonl) rows, ckpt: $(ls $OUT/*.pt 2>/dev/null | tr '
+' ' ')"
 cat > $W/final_sync.sh <<EOS
 #!/bin/bash
 echo "{\"end\":\"\$(date -u +%FT%TZ)\",\"why\":\"\$1\"}" > $OUT/end_\$(date +%s).json
