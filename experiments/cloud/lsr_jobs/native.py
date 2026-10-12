@@ -310,3 +310,93 @@ def diag(cfg, out):
         hook.remove()
         out.write({"key": f"diag|k{k}", "layer": layer, "delta_over_h_mean": sum(ratio) / len(ratio),
                    "delta_over_h_max": max(ratio), "hook_pc_flip_rate": sum(int(a != b) for a, b in zip(base, pc)) / len(qs)})
+
+
+def value_positions(tok, text, c, fam):
+    """Token positions (in `text`) of each fact's value word; asserts the block is an exact token prefix."""
+    ids = tok(text, add_special_tokens=False)["input_ids"]
+    pos = []
+    tmpl = FAM[fam]["fact"]
+    upto_value = tmpl[:tmpl.index("{c}") + 3]  # fact text up to and including the value word
+    for j in range(len(c["names"])):
+        prev = [tmpl.format(n=n, c=COLORS[v]) for n, v in zip(c["names"][:j], c["colors"][:j])]
+        prefix = FAM[fam]["head"] + "".join(x + "\n" for x in prev) + upto_value.format(n=c["names"][j],
+                                                                                      c=COLORS[c["colors"][j]])
+        p_ids = tok(prefix, add_special_tokens=False)["input_ids"]
+        assert ids[:len(p_ids)] == p_ids, "fact prefix is not a token prefix of the full prompt"
+        pos.append(len(p_ids) - 1)  # the value token
+    return pos
+
+
+def validate(cfg, out):
+    """Non-claim instrument validation on the frozen model (registration Q follow-up, Codex hunt): token alignment,
+    post-hook residual change, logit change, flip rates for large perturbations at the closing position / at all
+    positions, and a localized causal positive control (SET the changed fact's value-token residual to the donor's)."""
+    model, tok, info = common.load(cfg["model"])
+    out.meta("model_info.json", info)
+    L = info["n_layers"]
+    opt_ids = [tok(" " + c, add_special_tokens=False)["input_ids"][0] for c in COLORS]
+    rng = random.Random(7)
+    for fam in ("W1", "W2"):
+        for lf in cfg["layer_fracs"]:
+            layer = int(round(lf * L))
+            k = 4
+            cs = [collection(rng, k, NAMES[:20]) for _ in range(cfg["n"])]
+            pairs = [changed(rng, c) for c in cs]
+            rb = [block(c2, fam) for c2, _ in pairs]
+            db = [block(c, fam) for c in cs]
+            qs = [rb[i] + FAM[fam]["q"].format(n=pairs[i][0]["names"][pairs[i][1]]) for i in range(len(cs))]
+            # token alignment: closing position and value positions are token prefixes of the FULL prompt
+            cpos, vpos, dvpos = [], [], []
+            for i in range(len(cs)):
+                full_ids = tok(qs[i], add_special_tokens=False)["input_ids"]
+                b_ids = tok(rb[i], add_special_tokens=False)["input_ids"]
+                assert full_ids[:len(b_ids)] == b_ids, "receiver block is not a token prefix of the full prompt"
+                cpos.append(len(b_ids) - 1)
+                vpos.append(value_positions(tok, qs[i], pairs[i][0], fam)[pairs[i][1]])
+                dvpos.append(value_positions(tok, db[i], cs[i], fam)[pairs[i][1]])
+            cpos_t = torch.tensor(cpos, device="cuda"); vpos_t = torch.tensor(vpos, device="cuda")
+            base = run_prompts(model, tok, qs, opt_ids)
+            hook = Hook(model, layer)
+            hr = states_at(model, tok, rb, layer)
+            big = torch.randn(len(qs), hr.shape[1], device="cuda")
+            big = big / big.norm(dim=-1, keepdim=True) * hr.norm(dim=-1, keepdim=True) * 10
+            # measured post-hook residual change at the hooked position (capture layer output)
+            captured = {}
+
+            def cap(mod, inp, o):
+                captured["h"] = (o[0] if isinstance(o, tuple) else o).detach()
+            hcap = model.model.layers[layer].register_forward_hook(cap)  # registered after Hook -> sees edited output
+            enc = tok([qs[0]], return_tensors="pt", add_special_tokens=False).to("cuda")
+            with torch.no_grad():
+                hook.edits = None; model(**enc); h0 = captured["h"][0, cpos[0]].float().clone()
+                l0 = model(**enc).logits[0, -1].float()
+                hook.edits = [(cpos_t[:1], big[:1], "add")]; l1 = model(**enc).logits[0, -1].float()
+                h1 = captured["h"][0, cpos[0]].float().clone(); hook.edits = None
+            hcap.remove()
+            pc_close = run_prompts(model, tok, qs, opt_ids, hook, lambda sl, enc: [(cpos_t[sl], big[sl], "add")])
+            # all positions: add the big vector at every position up to the closing token
+            pc_all = run_prompts(model, tok, qs, opt_ids, hook, lambda sl, enc: [
+                (torch.full((enc["input_ids"].shape[0],), p_, device="cuda", dtype=torch.long), big[sl], "add")
+                for p_ in range(0, int(cpos_t[sl].min().item()) + 1, 3)])
+            # localized causal positive control: SET value-token residual to the donor's value-token residual
+            dv_states = []
+            tok.padding_side = "right"
+            for i in range(0, len(db), 24):
+                e = tok(db[i:i + 24], return_tensors="pt", padding=True, add_special_tokens=False).to("cuda")
+                with torch.no_grad():
+                    hs = model(**e, output_hidden_states=True).hidden_states[layer + 1].float()
+                dv_states.append(hs[torch.arange(hs.shape[0]), torch.tensor(dvpos[i:i + 24], device="cuda")])
+            dv_states = torch.cat(dv_states)
+            vpatch = run_prompts(model, tok, qs, opt_ids, hook, lambda sl, enc: [(vpos_t[sl], dv_states[sl], "set")])
+            hook.remove()
+            follow = sum(int(p == cs[i]["colors"][pairs[i][1]]) for i, p in enumerate(vpatch)) / len(cs)
+            base_follow = sum(int(p == cs[i]["colors"][pairs[i][1]]) for i, p in enumerate(base)) / len(cs)
+            out.write({"key": f"validate|{fam}|l{layer}", "family": fam, "layer": layer, "n": len(cs),
+                       "post_hook_residual_change_over_h": ((h1 - h0).norm() / h0.norm()).item(),
+                       "max_abs_logit_change_close_add": (l1 - l0).abs().max().item(),
+                       "flip_rate_close_add_10x": sum(int(a != b) for a, b in zip(base, pc_close)) / len(base),
+                       "flip_rate_all_positions_add_10x": sum(int(a != b) for a, b in zip(base, pc_all)) / len(base),
+                       "value_token_patch_donor_follow": follow, "unpatched_donor_follow": base_follow,
+                       "base_acc_recv": sum(int(p == pairs[i][0]["colors"][pairs[i][1]]) for i, p in enumerate(base)) / len(base)})
+            out.beat()
