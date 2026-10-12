@@ -223,3 +223,23 @@ encoder/reader; updater arms, controls, held-out update pairs, thresholds and 90
 consistency targets = frozen encoder on the updated reachability graphs; direct re-encoding competence measured
 before updater training; targeted edits scored on predeclared truth-changing toggles with matched shams; all
 toggles reported separately. A reachability update-closure test, not a rescue of P1 or the gate.
+
+## Registration P3 — future distinguishability of the frozen state (2026-10-12 ~14:10Z, before data)
+
+Council: docs/council_2026_10_11/{brief_p3,codex_p3,droid_p3}.md; both signed with compatible amendments, merged
+here. Question: does the frozen gate state retain information that distinguishes futures? Encoders: the three
+LOCKED gate curriculum checkpoints (Qwen3-0.6B, r=64; GCS md5: 1yBrnTMt/xVlUZ6E9BH6Lg== z4bddh+pnQCli6pbxkp2BA== 4JaEjoCyD2n9ToAPY75scQ== ), frozen, eval mode; STATE =
+encode(...,64)[:, :64] before any update. Witnesses (dedicated sampler, both graphs' hashed test-pattern
+membership enforced — train/dev non-test patterns, test test-patterns — and toggle pairs from the 72/24/24 split;
+invalid pairs rejected without fallback): two k=1 graphs with the SAME current reachability whose reachability
+after the SAME two global toggles is OPPOSITE. Readers: fresh MLPs (2x256, ReLU), identical across arms; input =
+arm features + two ordered 16-way one-hots of the toggles; Adam 1e-3, batch 256, 30 epochs over 30,000 training
+witness pairs, selection each epoch on 512 dev pairs; 3 reader seeds. Arms (identical witnesses): STATE; SHUFFLED
+(state of a graph from a different witness pair in the same split, never the counterfactual); CURRENT (current
+reachability bit; 50% on witness pairs by construction); FULL (16 true edge bits; positive control). Test: 1,024
+held-out witness pairs per encoder seed. Predictions, applied per encoder seed averaging reader seeds: STATE >=
+0.90 and >= 20 pp above SHUFFLED and CURRENT; FULL >= 0.95; paired arm differences bootstrapped by witness pair;
+encoder-seed spread reported. Kill: FULL < 0.95 invalidates the instrument; STATE missing while FULL passes =
+future-relevant information not decodable from the frozen state under this recipe (not proof of absence).
+Scope: graph holdout concerns reader training; encoder exposure may overlap. Success establishes
+future-information decodability, not update closure or native mathematics. Budget 50 USD.
