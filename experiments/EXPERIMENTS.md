@@ -1,5 +1,13 @@
 # Experiments Log
 
+## Registration P1: stop rule FIRED (2026-10-12 04:35Z)
+
+Random-access edge storage, Qwen3-0.6B, seed 11, independent widths r=2..128, registered schedule (20% easy then the
+full k mix): dev k=1 accuracy flat at ~0.60 at every width from step 250 to the cap (r=64 0.603, r=128 0.624 vs the
+0.95 bar). Per the registration: remaining seeds not launched, no capacity claim. Amendment 3 activates (P1-prime
+synchronized mastery curriculum; P2 update closure on the locked gate checkpoints). Observation (descriptive): the
+same flat-at-chance-plus-epsilon signature as the concurrent gate arm.
+
 ## LOCKED: concurrent gate arm FAILS (2026-10-12 01:22Z)
 
 Frozen concurrent recipe, 3 seeds, test: seeds 11 and 47 stayed at constant output for the full run (all cells at
