@@ -222,6 +222,8 @@ def main(cfg, out):
     cfg["_out"] = out
     model, tok, info = common.load(cfg["model"], device_map=cfg.get("device_map", "cuda"), revision=cfg.get("revision"))
     out.meta("model_info.json", info)
+    if cfg.get("revision"):  # sweeps pin the smoke's resolved revision and refuse to run without custody
+        assert info.get("revision") == cfg["revision"] == info.get("tokenizer_revision"), "revision custody failed"
     check_options(tok)
     opt_ids = [tok(" " + c, add_special_tokens=False)["input_ids"][0] for c in COLORS]
     L = info["n_layers"]
@@ -238,6 +240,10 @@ def main(cfg, out):
         for site in cfg["sites"]:
             if site == "value":
                 layer = int(round(cfg["value_layer_frac"] * L))
+            elif cfg.get("post_layer"):  # sweep: layer frozen from the smoke's dev admission; no re-selection
+                if fam not in cfg["post_layer"]:
+                    continue
+                layer = cfg["post_layer"][fam]
             else:  # dev-only admission over candidate layers (full vs sham only), frozen before any test data
                 akey = f"q1pp|admit|{fam}"  # cheap; recomputed deterministically on resume (aggregate keeps last row)
                 adm = []
@@ -255,7 +261,7 @@ def main(cfg, out):
                     continue
             for k in cfg["ks"]:
                 key = f"q1pp|{site}|{fam}|k{k}"
-                if key in out.done:
+                if key in out.done or ("cells" in cfg and key not in cfg["cells"]):  # sweep: smoke-passing cells only
                     continue
                 fr = make_rows(tok, random.Random(f"fit|{site}|{fam}|{k}"), k, fam, DEV, cfg["fit_n"])
                 pm, U, fst = fit(deltas(model, tok, layer, fr, site), [r["pair"] for r in fr])
@@ -263,9 +269,9 @@ def main(cfg, out):
                                        cfg, k, fam, test_pool, cfg["test_n"], variant_list(cfg), pm, U, frozen)
                 s_ = summarize(res, rg, dg, ab, cfg, k)
                 ci = intervals(res, cfg, k)
-                if not s_["gate_pass"]:
-                    for c_ in ci["comparisons"].values():
-                        c_["contextual_claim"] = False  # no rank verdict in an instrument-invalid cell
+                if not s_["gate_pass"]:  # instrument-invalid cell: no rank intervals or claims at all
+                    ci = {"suppressed": "gate failed; no rank verdict", "full_minus_sham_ci95": ci["full_minus_sham_ci95"],
+                          "follow_ci95": ci["follow_ci95"]}
                 out.write({"key": key, **base, "site": site, "family": fam, "k": k, "layer": layer, "fit": fst,
                            **s_, "intervals": ci})
                 if cfg.get("smoke") and not s_["gate_pass"]:
