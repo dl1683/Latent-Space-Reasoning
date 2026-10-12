@@ -37,7 +37,19 @@ class P2Model(B.BranchModel):
         self.Eu = copy.deepcopy(self.E)
         self.Du = copy.deepcopy(self.D)
         self.lm.set_adapter("default")
+        self.flags()
+        for p_ in list(self.E.parameters()) + list(self.D.parameters()) + list(self.head.parameters()):
+            p_.requires_grad_(False)  # frozen encoder/reader
         self.disp = None  # identity-plus-mean-displacement control when set
+
+    def flags(self):
+        """peft's set_adapter flips requires_grad to the active adapter; re-assert: updater trainable, default frozen
+        (review 4: otherwise updater-LoRA grads can vanish at backward time)."""
+        for n, p_ in self.lm.named_parameters():
+            if ".updater." in n:
+                p_.requires_grad_(True)
+            elif "lora_" in n:
+                p_.requires_grad_(False)
 
     def updater_params(self):
         ps = [p for n, p in self.lm.named_parameters() if ".updater." in n]
@@ -51,6 +63,7 @@ class P2Model(B.BranchModel):
             y = (z + d)[:, :r]
             return F.pad(y / (y.norm(dim=-1, keepdim=True) + 1e-6), (0, self.S - r))
         self.lm.set_adapter("updater")
+        self.flags()
         try:
             enc = self.tok(op_texts, return_tensors="pt", padding=True, add_special_tokens=False).to("cuda")
             e = self.emb(enc["input_ids"])
@@ -61,6 +74,7 @@ class P2Model(B.BranchModel):
             return F.pad(y / (y.norm(dim=-1, keepdim=True) + 1e-6), (0, self.S - r))
         finally:
             self.lm.set_adapter("default")
+            self.flags()
 
     def advance(self, z, exs, r, sham=False):
         for s in range(max(len(x["ops"]) for x in exs)):
@@ -190,7 +204,20 @@ def main(cfg, out):
     total = cfg["presentations"] // cfg["batch"]
     t = common.timer()
     hist = []
-    for step in range(total):
+    ck = out.dir / "p2_ckpt.pt"
+    step0, upd_bearing = 0, 0
+    if ck.exists():  # resume (review 4): restore updater, optimizer, step, counters and RNG
+        st = torch.load(ck, map_location="cuda")
+        m.load_state_dict({k_: v.cuda() for k_, v in st["upd"].items()}, strict=False)
+        opt.load_state_dict(st["opt"])
+        step0, upd_bearing = st["step"], st["upd_bearing"]
+        rng.setstate(tuple(st["rng"][:1]) + (tuple(st["rng"][1]),) + tuple(st["rng"][2:]))
+
+    def save_p2(step_):
+        torch.save({"upd": {n: p_.detach().cpu() for n, p_ in m.state_dict().items()
+                            if ".updater." in n or n.split(".")[0] in ("Eu", "Du")},
+                    "opt": opt.state_dict(), "step": step_, "upd_bearing": upd_bearing, "rng": rng.getstate()}, ck)
+    for step in range(step0, total):
         exs = [B.sample_example(rng, rng.choice(cfg["ks"]), rng.choice(cfg["train_updates"]), "train")
                for _ in range(cfg["batch"])]
         for g in opt.param_groups:
@@ -202,12 +229,16 @@ def main(cfg, out):
         torch.nn.utils.clip_grad_norm_(m.updater_params(), 1.0)
         opt.step()
         hist.append((la, lc))
-        upd_bearing = upd_bearing + sum(1 for x in exs if x["ops"]) if step else sum(1 for x in exs if x["ops"])
+        upd_bearing += sum(1 for x in exs if x["ops"])
+        if (step + 1) % 250 == 0:
+            save_p2(step + 1)
         if step % 25 == 0:
             out.beat()
             out.meta("train_progress.json", {"step": step, "total": total, "update_bearing_presentations": upd_bearing,
                                              "ans": sum(h[0] for h in hist[-25:]) / len(hist[-25:]),
                                              "cons": sum(h[1] for h in hist[-25:]) / len(hist[-25:]), "sec": t()})
+    if total > step0:
+        save_p2(total)
     m.eval()
     ev = dict(cfg, eval_tokens=cfg.get("eval_tokens", 32000))
     for split in (cfg.get("eval_split", "test"),):

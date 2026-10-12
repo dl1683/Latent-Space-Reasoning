@@ -244,6 +244,7 @@ def acc_cell(m, cfg, split, r_w, u, k, n, seed, bits=None, qmode="read"):
     S = n_sel(k)
     pos_ok = [0] * S
     un_pos_ok, un_pos_n = [0] * S, [0] * S
+    per_coll = []
     jointok = 0
     zs = []
     bs = max(1, min(cfg["eval_tokens"], 8000) // (k * 22 + 40))  # hard cap: eval OOM at 32k tokens on 80 GB
@@ -275,6 +276,7 @@ def acc_cell(m, cfg, split, r_w, u, k, n, seed, bits=None, qmode="read"):
                     ok += c.sum().item(); tot += len(c)
                     jointok += c.view(len(exs), S).all(1).sum().item()
                     cv = c.view(len(exs), S)
+                    per_coll += cv.sum(1).tolist()  # collection-paired outcomes (same seeded collections across arms)
                     for j in range(S):
                         pos_ok[j] += cv[:, j].sum().item()
                     addr = torch.tensor([[any(t == branch_of(j) for _, t in x["ops"]) for j in range(S)] for x in exs], device="cuda")
@@ -293,7 +295,7 @@ def acc_cell(m, cfg, split, r_w, u, k, n, seed, bits=None, qmode="read"):
             "acc_by_selector": [x / n for x in pos_ok], "min_selector_acc": min(pos_ok) / n,
             "unaddressed_acc_by_selector": [a / b if b else None for a, b in zip(un_pos_ok, un_pos_n)],
             "min_unaddressed_selector_acc": min(a / b for a, b in zip(un_pos_ok, un_pos_n) if b) if any(un_pos_n) else None,
-            "joint_acc": jointok / n, "acc_zero": ok0 / tot, "acc_shuffled": okshuf / tot,
+            "joint_acc": jointok / n, "per_collection_correct": per_coll, "selectors_per_collection": S, "acc_zero": ok0 / tot, "acc_shuffled": okshuf / tot,
             "acc_sham_updates": (oksh / tot) if (zsham is not None) else None, "n_collections": n, "bits": bits,
             "qmode": qmode if bits else None}
 
@@ -304,7 +306,8 @@ def causal_tests(m, cfg, split, r_w, k, n, seed):
     Edits are oracle-certified answer-flip witnesses on the edited branch (declared evaluation stratification)."""
     rng = random.Random(f"causal|{seed}|{split}|{k}")
     agg = {k_: 0.0 for k_ in ("tgt_follow", "tgt_base", "coll_before", "coll_after", "undo_tgt", "undo_coll",
-                              "sham_tgt", "adv_edit_tgt", "adv_undo_tgt", "adv_edit_coll", "n_coll")}
+                              "sham_tgt", "adv_edit_tgt", "adv_undo_tgt", "adv_edit_coll", "n_coll",
+                              "adv_informative_n", "adv_edit_tgt_informative", "adv_edit_and_undo_distinguished")}
     cnt = 0
     while cnt < n:
         exs, edits = [], []
@@ -351,12 +354,22 @@ def causal_tests(m, cfg, split, r_w, k, n, seed):
             zua = m.advance(zu, exs, r_w)
             gold_e = torch.tensor([answers(g)[b] for g, b in zip(ge, js_t)], device="cuda")
             gold_u = torch.tensor([answers(x)[b] for x, b in zip(exs, js_t)], device="cuda")
-            agg["adv_edit_tgt"] += (q(za, base_ex, js_t) == gold_e).sum().item()
-            agg["adv_undo_tgt"] += (q(zua, base_ex, js_t) == gold_u).sum().item()
+            pa, pu_ = q(za, base_ex, js_t), q(zua, base_ex, js_t)
+            agg["adv_edit_tgt"] += (pa == gold_e).sum().item()
+            agg["adv_undo_tgt"] += (pu_ == gold_u).sum().item()
+            inf = gold_e != gold_u  # futures where the edit still matters after the two global updates
+            agg["adv_informative_n"] += inf.sum().item()
+            agg["adv_edit_tgt_informative"] += (pa == gold_e)[inf].sum().item()
+            agg["adv_edit_and_undo_distinguished"] += ((pa == gold_e) & (pu_ == gold_u))[inf].sum().item()
             go2 = torch.tensor([answers(g)[j] for g, o in zip(ge, others) for j in o], device="cuda")
             agg["adv_edit_coll"] += (q(za[idx], rep, jo) == go2).float().mean().item() * B
         cnt += B
-    res = {k_: v / cnt for k_, v in agg.items() if k_ != "n_coll"}
+    inf_n = agg["adv_informative_n"]
+    res = {k_: v / cnt for k_, v in agg.items() if k_ not in ("n_coll", "adv_informative_n", "adv_edit_tgt_informative",
+                                                               "adv_edit_and_undo_distinguished")}
+    res["adv_informative_frac"] = inf_n / cnt
+    res["adv_edit_tgt_informative"] = agg["adv_edit_tgt_informative"] / inf_n if inf_n else None
+    res["adv_edit_and_undo_distinguished_informative"] = agg["adv_edit_and_undo_distinguished"] / inf_n if inf_n else None
     res["targeted_effect_pp"] = 100 * (res["tgt_follow"] - (1 - res["tgt_base"]))
     res["collateral_loss_pp"] = 100 * (res["coll_before"] - res["coll_after"])
     induced = res["tgt_base"] - (1 - res["tgt_follow"])
@@ -430,10 +443,10 @@ def sync_post_and_wait(mst, step, r_w, acc, out):
         time.sleep(15)
 
 
-def save(m, opt, step, path, rng=None):
+def save(m, opt, step, path, rng=None, best=None):
     torch.save({"model": {n: p.detach().cpu() for n, p in m.state_dict().items()
                           if "lora" in n or n.split(".")[0] in ("E", "D", "head")},
-                "opt": opt.state_dict(), "step": step, "rng": rng.getstate() if rng else None}, path)
+                "opt": opt.state_dict(), "step": step, "rng": rng.getstate() if rng else None, "best": best}, path)
 
 
 def main(cfg, out):
@@ -463,6 +476,8 @@ def main(cfg, out):
     order = list(range(pool))
     t = common.timer()
     hist, best = [], -1.0
+    if ckpt.exists() and st.get("best") is not None:  # persist the dev-selection best across resume (review 4)
+        best = st["best"]
     m.train()
     for step in range(step0, total):
         p, off = divmod(step * eff_bs, pool)
@@ -533,11 +548,11 @@ def main(cfg, out):
             score = sum(v for c, v in cells.items() if f"|u{uu}|" in c) / sum(1 for c in cells if f"|u{uu}|" in c)
             out.write({"key": f"dev|step{step + 1}", "step": step + 1, "dev_score": score, "dev_cells": cells,
                        "loss_recent": sum(hist[-cfg["eval_every"]:]) / len(hist[-cfg["eval_every"]:]), "sec": t()})
-            save(m, opt, step + 1, ckpt, rng)
             sel_ok = (not cfg.get("curriculum") or (step + 1) / total >= cfg["curriculum"][-1][0]) and                 (not cfg.get("mastery") or kmax >= 64 or step == total - 1)
             if sel_ok and score > best:
                 best = score
                 save(m, opt, step + 1, out.dir / "best.pt")
+            save(m, opt, step + 1, ckpt, rng, best)
             m.train()
     # final evaluation from the dev-selected checkpoint
     st = torch.load(out.dir / "best.pt", map_location="cuda")
