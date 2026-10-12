@@ -209,6 +209,21 @@ def main(cfg, out):
             row = {"key": key, **base, "family": fam, "k": k, "layers": layers, "n_test": len(te),
                    "n_train_names": len(train_names), "n_heldout_names": len(held), "majority_class_acc": maj}
 
+            if cfg.get("ref_only"):  # fixed-layer re-score: per-slot linear reference only, per-collection vectors kept
+                from .readout import fit_reader
+                Ys = {s_: torch.tensor([c_ for _, c_ in sets[s_]]) for s_ in ("tr", "dv", "seen_orig", "renamed_orig")}
+                Hr = {s_: states(model, tok, texts[s_], layers, bs=EB) for s_ in Ys}
+                out.beat()
+                Yb = Ys["seen_orig"]
+                per = {}
+                for l in layers:
+                    ref = fit_reader(Hr["tr"][l].float(), Ys["tr"], Hr["dv"][l].float(), Ys["dv"], None, 0, cfg)
+                    per[l] = {"dev_acc": ref.dev_acc, **{s_: (ref.predict(Hr[s_][l].float()) == Ys[s_]).float().mean(1).tolist()
+                                                         for s_ in ("seen_orig", "renamed_orig")}}
+                    out.beat()
+                out.write({**row, "mode": "ref_only", "hist_mode_per_coll": (hist_mode(Yb) == Yb).float().mean(1).tolist(),
+                           "per_layer": per})
+                continue
             def stop(note):  # cheap gates run first; a failing gate aborts the cell before the expensive encodes
                 out.write({**row, "instrument_ok": False, "verdict": "instrument_invalid", "note": note})
                 if cfg.get("smoke"):

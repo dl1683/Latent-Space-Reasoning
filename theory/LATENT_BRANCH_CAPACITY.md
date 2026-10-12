@@ -617,3 +617,8 @@ Prediction: at k=4, the 20-name renamed accuracy is lower by >= 0.10 (interval e
 name count does not explain R's held-out gap.
 
 A separate positive-control smoke (W1 k=4, n_train 1024) runs first.
+Fixed-layer re-score (coordinator-approved, before data): the same seeded collections (seed_ns "nameabl") are
+scored with the per-slot linear reference at layers 9 AND 18 for both arms. The 20-vs-300 difference in
+renamed/orig accuracy is reported with an independent collection-bootstrap 95% interval (the arms' collections are
+not paired). The prediction is unchanged (>= 0.10 at k=4). The instrument gates passed on these identical states in
+the ablation run.
