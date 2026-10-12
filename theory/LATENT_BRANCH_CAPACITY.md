@@ -450,3 +450,42 @@ Pre-smoke amendments (Codex code hunt, docs/council_2026_10_11/codex_readout_cod
 - "About 3k dimensions" is a heuristic expectation, not a theorem.
 - At k=1 the DEV pool allows only 80 distinct facts, so train/dev overlap there.
 - Shuffle control permutes dev labels as well (CPU check showed dev-selection label leakage: k=1 shuffle 0.417 vs majority 0.29; fixed: 0.333 vs 0.292).
+
+### Registration R 8B smoke (non-claim; Codex hunt docs/council_2026_10_11/codex_readout_smoke_hunt.md)
+
+Smoke on Qwen3-8B (rev b968826), 512 TEST-name collections per cell:
+- Instrument gates pass in all 6 cells.
+- k=1: E1 holds.
+- k=4: E holds. Mean slot accuracy 0.80/0.83 vs histogram-mode 0.54/0.52; changed-slot margin +0.38/+0.42; r_req
+  8/16.
+- k=16: E fails (margin 0.01/0.03). First and last slots are readable; middle slots are near chance.
+- Dev collections (fresh, but with the 20 training names) read at about 1.0 (k=4) and 0.72/0.68 (k=16), at every
+  layer. Codex reconstructed the generator: zero train/dev duplicate collections at k=4/16. The gap is therefore
+  suggestive of name-population-dependent readability, but dev was used for selection.
+Licensed: "In this smoke, dev-selected linear readers recover slot-ordered colours beyond histogram information at
+k=4; k=16 misses registered E despite positive changed-slot margins."
+
+## Registration R Amendment 1 (smoke-informed; registered before the 8B full run)
+
+Added split: 2,048 fresh SEEN-name test collections (DEV names), never used for any selection, and asserted
+disjoint from train/dev collections at k>1; k=1 reuse is unavoidable and disclosed. The same frozen readers (layer,
+decay, epoch and seed chosen on dev) are scored on the unseen-name and seen-name tests.
+
+Claims per split:
+- E_seen / E1_seen: same thresholds and binding control as E.
+- r_req_seen: uses its own full-rank denominator and requires E_seen.
+- Seen-minus-unseen gap: reported with an independent collection-bootstrap interval.
+The unseen-name E remains the registered primary claim. Seeds carry a run namespace (seed_ns), so full-run test
+sets do not reuse smoke prefixes.
+
+Predictions (smoke-informed, labelled as such):
+- E_seen holds at k=4 and k=16 on 8B.
+- The seen-minus-unseen gap at k=16 is >= 0.15 with the interval excluding 0.
+- r_req_seen(k=16) >= 32.
+- Unseen-name E at k=16 still fails.
+
+Reading: a seen-name advantage would show that closing states carry slot-colour information that a linear reader
+decodes for familiar names but transfers only partly to novel names. It would not show name-addressable binding or
+use by the model.
+8B full run: n_train 8192, n_dev 1024, n_test 2048, n_test_seen 2048, ranks {1,2,3,4,6,8,12,16,24,32,48,64,96,128}, 3
+reader seeds. Scaling to 14B/32B/72B follows the instrument criterion, each with its own smoke.
