@@ -1,0 +1,9 @@
+1. **Bugs/overclaims:** “Unpaired” does not establish independence: both arms reuse RNG seeds before sampling different-sized name pools ([bindq.py:179]( /C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/cloud/lsr_jobs/bindq.py:179)). Replaying this code gives identical test colour vectors in 846/1024 W1 and 851/1024 W2 collections at k=4; independent-bootstrap CIs therefore need qualification. Only reader seed 0 runs ([bindq.py:220](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/cloud/lsr_jobs/bindq.py:220)). Fixed layers remove layer selection, but epoch and weight decay remain dev-selected ([readout.py:86](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/cloud/lsr_jobs/readout.py:86), [104](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/cloud/lsr_jobs/readout.py:104)); intervals condition on fitted readers, excluding training variability.
+
+2. **Registered prediction:** Not replicated: only W2/L9 reaches ≥0.10 (0.102); the other k=4 estimates are 0.084, 0.069, 0.080. W2/L9’s CI [0.090, 0.115] excludes zero, satisfying that cell’s registered point-estimate rule, but does not establish a population effect ≥0.10 ([registration:616](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/LATENT_BRANCH_CAPACITY.md:616), [diff:6](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/cloud/nameabl_8b_fixedlayer_diff.txt:6)).
+
+3. **Licensed sentence:** “These fitted per-slot linear readers show higher held-out-name accuracy after training on 300 names than 20 at both fixed layers and both tested k values; the k=4 ten-point prediction is not replicated.” This is readout scaffolding, not causal name binding or native mathematics.
+
+4. **Next:** Continue with a frozen replication using independent arm namespaces and multiple reader seeds before stronger interpretation.
+
+No files edited.

@@ -1,5 +1,9 @@
 # Experiments Log
 
+## Fixed-layer re-score: 300 names beat 20 by 0.06-0.10 at both layers; 10-point k=4 prediction not replicated (2026-10-12 20:39, Codex hunt passed)
+
+- These fitted per-slot linear readers show higher held-out-name accuracy after training on 300 names than 20 at both fixed layers and both tested k values; the k=4 ten-point prediction is not replicated.
+
 ## Training-name ablation: fewer names lowers held-out-name readout ~0.08-0.11; registered k=4 criterion met for W2 only (2026-10-12 20:06, Codex hunt passed)
 
 - Under the registered selection procedure, restricting reader training to 20 names reduces held-out-name linear readout accuracy in both families; only W2 meets the registered k=4 magnitude criterion, and differing selected layers limit causal attribution.
