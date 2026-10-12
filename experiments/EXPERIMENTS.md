@@ -1,5 +1,10 @@
 # Experiments Log
 
+## Training-name ablation: fewer names lowers held-out-name readout ~0.08-0.11; registered k=4 criterion met for W2 only (2026-10-12 20:06, Codex hunt passed)
+
+- Under the registered selection procedure, restricting reader training to 20 names reduces held-out-name linear readout accuracy in both families; only W2 meets the registered k=4 magnitude criterion, and differing selected layers limit causal attribution.
+- What we learned: name count explains part of R's held-out gap; layer choice is a live confound.
+
 ## N-control: slot queries read the closing state almost perfectly at k=4, even for novel names (2026-10-12 19:29, Codex hunt passed)
 
 - In this smoke, closing states support slot-indexed colour recovery above histogram mode across both templates and rename/reorder conditions; the tested name-query recipes remain inconclusive.
