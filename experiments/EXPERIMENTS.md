@@ -1,5 +1,11 @@
 # Experiments Log
 
+## Registration N binding smoke: gates pass, reader inconclusive; no full run (2026-10-12 18:58, Codex hunt passed)
+
+- All four N smoke cells pass the instrument gates but remain reader-inconclusive: the selected entity-query readers do not exceed histogram mode; these results establish neither name-addressable retrieval nor its absence.
+- What we learned: with 300 training names the entity-query reader cannot even reach the colour-mix baseline, so the
+  R readout's success may be slot-ordered or reader-specific. Next: slot-query control on the same states.
+
 ## Registration R closing-state readout: binding information readable at k=4; at k=16 only for seen names (2026-10-12 18:09, Codex hunt passed)
 
 - 8B's registered readers recover slot-ordered colour information beyond histogram information at k4; selected-layer unseen k16 fails E, while seen k16 passes. Larger-model smokes show the same qualitative split pattern.
