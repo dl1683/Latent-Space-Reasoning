@@ -208,3 +208,4 @@ experiments/results/cloud/*/
 experiments/cloud/launches.jsonl
 experiments/cloud/*.log
 experiments/cloud/active_runs.txt
+experiments/results/cloud/*_raw.jsonl

@@ -1,5 +1,11 @@
 # Experiments Log
 
+## Q1-prime Amendment A 8B value-site sweep: colour-pair means carry the whole edit; no contextual dimension; no scaling (2026-10-12 17:01, Codex hunt passed)
+
+- Across six layer-9 value-site cells with 512 TEST-name collections each, DEV-fitted colour-pair means achieved 99.61-100% donor-follow and retained >=90% of the sham-subtracted full effect; all gates passed, r90=0 with bootstrap CI [0,0], and no registered contextual-dimension comparison passed.
+- What we learned: on held-out names the value-token edit is fully lexical at this layer; the open question moves to whether
+  binding information is *readable* at the closing position (Registration R, smoke running).
+
 ## Q1-prime Amendment A 8B smoke: value-site effect is the colour-pair mean; closing site inadmissible (2026-10-12 16:18, Codex hunt passed)
 
 - On six 64-collection DEV smoke cells, layer-9 value-token interventions passed the registered gate; fitted colour-pair means alone achieved 100% donor-follow, while residual-only edits achieved 0%, licensing no contextual-dimension claim; closing-position admission failed in both families at layers 9/18/27.
