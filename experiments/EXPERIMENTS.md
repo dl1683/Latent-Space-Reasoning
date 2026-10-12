@@ -1,5 +1,12 @@
 # Experiments Log
 
+## Q1-prime Amendment A 8B smoke: value-site effect is the colour-pair mean; closing site inadmissible (2026-10-12 16:18, Codex hunt passed)
+
+- On six 64-collection DEV smoke cells, layer-9 value-token interventions passed the registered gate; fitted colour-pair means alone achieved 100% donor-follow, while residual-only edits achieved 0%, licensing no contextual-dimension claim; closing-position admission failed in both families at layers 9/18/27.
+- What we learned: the value-token edit is carried by the 12 lexical pair means (residual adds nothing); a single additive patch at the
+  closing token moves no answers at layers 9/18/27. Scaling is not warranted under the registered rule. Next lead (Codex): read the
+  closing state (held-out linear readers per fact slot, rank-bottleneck curve) before more writing.
+
 ## Q1-prime 8B smoke: gates pass 6/6, full sweep DEFERRED (2026-10-12 15:50, Codex hunt passed)
 
 - Full and rank-4 value-token patches: 100% donor-follow, sham 0%, collateral <=0.8%, frozen random ~0 (n=64 x 6 cells, dev).
