@@ -207,3 +207,4 @@ experiments/results/eligibility_reanalysis.md
 experiments/results/cloud/*/
 experiments/cloud/launches.jsonl
 experiments/cloud/*.log
+experiments/cloud/active_runs.txt

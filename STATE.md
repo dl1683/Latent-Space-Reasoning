@@ -1,24 +1,40 @@
 # STATE
 
-## SESSION STATUS: ACTIVE — GCP latent-reasoning program (2026-10-11, user restart)
+## SESSION STATUS: ACTIVE — GCP latent-reasoning program (2026-10-11/12, user restart)
 
 The user restarted the project on Google Cloud ("restart latent space reasoning ... at scale ... be really
-aggressive"; wants the most latent, consequential bet, "risky is fine, explore fearlessly"). The 2026-09-23 pause
-is superseded. A three-round Codex+Droid council (docs/council_2026_10_11/) converged on the portfolio frozen in
-theory/LATENT_BRANCH_CAPACITY.md: flagship = causal, selectable latent branch capacity under a controlled
-width bottleneck in Qwen3-1.7B (sqrt(PR) capacity prediction, separate mechanism/utility/scaling verdicts),
-gated by a trained Qwen3-0.6B admission test; fast probes B (verifier-guided latent search) and C (frozen
-recurrent depth) run wide across ~16 open-weight checkpoints. Cross-model geometry (bet 4) deferred. Window
-ends 2026-10-16 (credit expiry 10-17); budget 5,000 USD, spend ledger experiments/cloud/SPEND.md. Runner:
-experiments/cloud/lsr_cloud.py (one Spot VM per shard, auto-off monitor self-tested on every VM before work).
-The HP-G confrontation resume pointer (below) is parked, not abandoned.
+aggressive"; "risky is fine, explore fearlessly"). The 2026-09-23 pause is superseded. Framing unchanged: the
+mathematics of high-dimensional spaces; LLM latent spaces are one instance.
 
-Cross-project extraction (user direction, 2026-10-11): theory/CROSS_PROJECT_INSIGHTS.md distils Matrix Native
-Math and the LLM Genome lab (read-only) into LSR-relevant insights with source/status/effect. Decision-relevant:
-PR finite-sample bias (n=512 at r=1024 would void the 256->1024 test; need n>=8r or bias correction), a
-width-x-precision information ceiling that may bind at r=64, concurrent-formation collision risk in the
-mixed training recipe, near-block-diagonal update structure as the computation signature, and matched-norm
-random controls for B/C. Proposed amendments go through a re-council before any affected data.
+**Process.** Three-round Codex+Droid council (docs/council_2026_10_11/) froze the portfolio in
+theory/LATENT_BRANCH_CAPACITY.md: flagship = causal, selectable latent branch capacity under a width
+bottleneck (sqrt(PR) prediction), gated by a trained Qwen3-0.6B admission test; probes B (verifier-guided
+latent search) and C (frozen recurrent depth). Amendment 1 (after the user-directed cross-project extraction,
+theory/CROSS_PROJECT_INSIGHTS.md: Matrix Native Math + LLM Genome lab) added PR at 8,192 pairs with isotropic
+null, quantized-state arms, threshold sensitivity and per-cell logs. Amendment 2 registered a curriculum gate
+arm after the concurrent arm stalled. Deviation 1 (addressed toggles supervised in training) is logged.
+Evidence gate 1 (fresh Codex audit) corrected over-broad wording; licensed sentences below.
+
+**Verdicts (licensed wording, evidence gate 1).**
+- Gate, curriculum arm: "The documented curriculum construction fails admission in all three seeds; these
+  results license no flagship escalation and leave width scaling untested." (k=1: 0.97-0.99 storage, 0.84-0.86
+  after one update, ~0.76 after two; branch-addressed edits ~0 pp targeted effect.)
+- Gate, concurrent arm: "The frozen concurrent recipe fails admission in all three seeds; two seeds never left
+  constant output." The registered repair was inapplicable (full exposure cap already used).
+- Probe B: "The tested confirmation configurations miss the registered improvement threshold and show no
+  replicated ES advantage over random perturbations; matched-compute superiority remains unestablished."
+- Probe C: "No admissible tested configuration establishes the registered replicated recurrence benefit;
+  confounded cells remain instrument failures."
+- Geometry observation: "These checkpoints show low branch-difference PR (1.8-3.2 vs isotropic nulls 63-910) and
+  similar coarse-grid storage performance across nested widths; this does not identify what limits capacity."
+
+**Running / next.** Registrations P1 (random-access storage capacity vs independently trained widths) and P2
+(update closure with a self-derived consistency target); Amendment 3 (synchronized mastery curriculum P1';
+P2 on the locked gate checkpoints) activates only when the P1 stop rule fires at its exposure cap (P1 was
+interrupted by a Spot preemption + checkpoint-restore bug, now fixed; completion ~04:30Z 2026-10-12).
+Plumbing pilots of P2 and of the P1' sync barrier passed (dev-only, non-claim-bearing).
+Runner: experiments/cloud/lsr_cloud.py; spend ledger experiments/cloud/SPEND.md (budget 5,000 USD; ~$760 at
+2026-10-12 02:00Z). Window ends 2026-10-16. The HP-G confrontation resume pointer (below) is parked.
 
 ## SESSION STATUS: PAUSED by user (2026-09-23)
 

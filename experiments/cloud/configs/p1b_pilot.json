@@ -1,0 +1,139 @@
+{
+ "run": "p1b-pilot",
+ "kind": "branch",
+ "machine": "a2-highgpu-1g",
+ "accelerator": null,
+ "usd_per_hour": 2.21,
+ "cost_cap_usd": 4.0,
+ "zones": [
+  "us-central1-a",
+  "us-central1-b",
+  "us-central1-c",
+  "us-central1-f",
+  "us-east1-b",
+  "us-west1-b",
+  "us-west4-b",
+  "us-east4-c",
+  "europe-west4-a",
+  "europe-west4-b"
+ ],
+ "requirements": [
+  "transformers>=5.12,<6",
+  "accelerate",
+  "peft",
+  "jinja2>=3.1"
+ ],
+ "common": {
+  "model": "Qwen/Qwen3-0.6B",
+  "state_dim": 128,
+  "lr": 0.0002,
+  "lora_r": 8,
+  "query": "edge",
+  "pool": 12800,
+  "batch": 64,
+  "passes": 1,
+  "train_ks": [
+   1,
+   2,
+   4,
+   8,
+   16,
+   32,
+   64
+  ],
+  "train_updates": [
+   0
+  ],
+  "answers_per_ex": 4,
+  "train_tokens": 32000,
+  "grad_ckpt": true,
+  "eval_every": 100,
+  "dev_n": 16,
+  "dev_ks": [
+   1,
+   2,
+   4,
+   8,
+   16,
+   32,
+   64
+  ],
+  "dev_updates": [
+   0
+  ],
+  "eval_tokens": 32000,
+  "eval_n": 16,
+  "eval_ks": [
+   1,
+   2,
+   4,
+   8,
+   16,
+   32,
+   64
+  ],
+  "eval_updates": [
+   0
+  ],
+  "bracket": true,
+  "bracket_n": 16,
+  "quant_bits": [
+   2
+  ],
+  "quant_modes": [
+   [
+    "read",
+    0
+   ],
+   [
+    "pass",
+    0
+   ]
+  ],
+  "quant_ks": [
+   1
+  ],
+  "causal_ks": [],
+  "pr_updates": 0,
+  "final_split": "dev",
+  "variant": "state",
+  "note": "PLUMBING PILOT (sync barrier), non-claim-bearing, dev-only",
+  "skip_pr": true
+ },
+ "shards": [
+  {
+   "seed": 11,
+   "widths": [
+    64
+   ],
+   "mastery": {
+    "check_every": 50,
+    "dev_n": 16,
+    "thresh": 0.95,
+    "consecutive": 2,
+    "leaders": [
+     64,
+     128
+    ],
+    "sync": "gs://sc-bench-iqidis-artifacts/lsr/runs/p1b-pilot/sync/seed11"
+   }
+  },
+  {
+   "seed": 11,
+   "widths": [
+    128
+   ],
+   "mastery": {
+    "check_every": 50,
+    "dev_n": 16,
+    "thresh": 0.95,
+    "consecutive": 2,
+    "leaders": [
+     64,
+     128
+    ],
+    "sync": "gs://sc-bench-iqidis-artifacts/lsr/runs/p1b-pilot/sync/seed11"
+   }
+  }
+ ]
+}

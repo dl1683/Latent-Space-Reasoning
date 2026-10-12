@@ -48,7 +48,7 @@
   "eval_tokens": 8000,
   "causal_n": 512,
   "variant": "state",
-  "grad_ckpt": true,
+  "grad_ckpt": false,
   "note": "Registration P2 (Amendment 3c): update closure on the locked gate checkpoints"
  },
  "shards": [
