@@ -3,8 +3,9 @@
 ## Registration P1: stop rule FIRED (2026-10-12 04:35Z)
 
 Random-access edge storage, Qwen3-0.6B, seed 11, independent widths r=2..128, registered schedule (20% easy then the
-full k mix): dev k=1 accuracy flat at ~0.60 at every width from step 250 to the cap (r=64 0.603, r=128 0.624 vs the
-0.95 bar). Per the registration: remaining seeds not launched, no capacity claim. Amendment 3 activates (P1-prime
+full k mix): pooled dev k=1 bit accuracy flat at ~0.60 at every width from step 250 to the cap; the restarted r=64/r=128
+pilots finished step 1,562 (99,968 presentations) at 0.603/0.624 vs the 0.95 bar (48 dev collections x 16 selectors;
+an oracle constant answer per selector reaches only 0.566, so this is not a label artifact; Codex error hunt passed). Per the registration: remaining seeds not launched, no capacity claim. Amendment 3 activates (P1-prime
 synchronized mastery curriculum; P2 update closure on the locked gate checkpoints). Observation (descriptive): the
 same flat-at-chance-plus-epsilon signature as the concurrent gate arm.
 
