@@ -53,9 +53,8 @@ def load(model_id, dtype=torch.bfloat16, device_map="cuda", revision=None):
     info["transformers"] = transformers.__version__
     info["tokenizer_revision"] = tok.init_kwargs.get("_commit_hash")
     try:  # config/tokenizer _commit_hash is None in transformers 5: resolve the cached snapshot sha instead
-        from pathlib import Path as _P
-        from huggingface_hub import snapshot_download
-        sha = _P(snapshot_download(model_id, revision=revision, local_files_only=True)).name
+        from huggingface_hub import HfApi
+        sha = HfApi().model_info(model_id, revision=revision).sha  # hub commit (cached snapshots may be partial)
         info["revision"] = info["revision"] or sha
         info["tokenizer_revision"] = info["tokenizer_revision"] or sha
     except Exception as e:  # noqa: BLE001 - recorded, never fatal
