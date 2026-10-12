@@ -1,5 +1,7 @@
 # Amendment 3 request (2026-10-11 ~23:35Z): contingent on the P1 stop rule
 
+> **SUPERSEDED.** This operator draft proposed independent mastery promotion. The signed Amendment 3 (theory/LATENT_BRANCH_CAPACITY.md, Amendment 3 section) replaces it with synchronized promotion. Retained for the council record.
+
 Read theory/LATENT_BRANCH_CAPACITY.md (all sections incl. Registrations P1/P2), experiments/EXPERIMENTS.md (top: LOCKED gate verdict).
 
 Facts:

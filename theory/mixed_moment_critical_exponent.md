@@ -1,5 +1,7 @@
 # Mixed Moment Critical Exponent for Power-Law Frame Operators
 
+> **WITHDRAWN (2026-10-12).** The theorem below is withdrawn. Droid's adversarial review (NOTEBOOK.md, Entry 102, around line 726) found proof errors: the alpha = 1/2 case gives a log divergence, not a constant; the alpha < 1/2 rank contribution is O(1), not zero; H(s, delta) diverges for s > 1; the tail sum and the concentration step are wrong; and the measured exponents lie outside the alpha < 1 derivation range. The row-permutation argument also shows that these spectral quantities do not determine network function. The statements below are kept for provenance only and must not be cited as results.
+
 ## Setup
 
 Let d be a positive integer. Consider frame operators on R^d of the form
