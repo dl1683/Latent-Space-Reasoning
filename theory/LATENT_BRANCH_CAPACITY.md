@@ -538,7 +538,7 @@ Question: is the closing-state colour information that the readers recover addre
 invariance, and does it generalize to novel names? The alternative is that the readout reflects slot routing or
 name/length nuisance. Implementation: experiments/cloud/lsr_jobs/bindq.py.
 
-Names: deterministic syllable pseudo-names, exactly 2 tokens standalone and inside both families' fact prefixes
+Names: deterministic syllable pseudo-names that add exactly 2 tokens with a leading space (" n") and inside both families' fact prefixes (bare-string token counts vary)
 (length-matched). They are split into a TRAIN pool of 300 and a disjoint HELD-OUT pool of 200; the legacy NAMES are
 excluded.
 
@@ -578,3 +578,10 @@ claim follows.
 
 Sequence: 8B smoke (n_train 8192, n_dev 1024, n_test 1024, k in {4,16}), then the 8B full run (n_train 16384,
 n_test 2048, 2 reader seeds) on gate-passing, adequate cells.
+Pre-smoke amendments (Codex code hunt, docs/council_2026_10_11/codex_bindq_code.md):
+- The positive control runs first and the colour-free null second; a failing gate aborts the cell before the
+  remaining encodes.
+- N1/N2 require reader adequacy.
+- Per-epoch heartbeats are added.
+- k>1 is asserted.
+- Names are length-matched by token count with a leading space and in-family (not as bare strings).

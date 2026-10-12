@@ -99,6 +99,8 @@ class BiReader:
         rows, rows_d = rows.to(DEVICE), rows_d.to(DEVICE)
         best, keep = -1.0, None
         for _ in range(cfg["epochs"]):
+            if cfg.get("_beat"):
+                cfg["_beat"]()  # heartbeat per epoch (long fits must not trip the idle watchdog)
             perm = torch.randperm(len(rows), device=DEVICE)
             for i in range(0, len(rows), cfg["reader_bs"]):
                 r = rows[perm[i:i + cfg["reader_bs"]]]
@@ -151,6 +153,7 @@ def main(cfg, out):
     if cfg.get("revision"):
         assert info.get("revision") == cfg["revision"] == info.get("tokenizer_revision"), "revision custody failed"
     check_options(tok)
+    cfg["_beat"] = out.beat
     L = info["n_layers"]
     layers = sorted({int(round(f * L)) for f in cfg["layer_fracs"]})
     assert max(layers) <= L - 2
@@ -166,6 +169,7 @@ def main(cfg, out):
         qtexts = [FAM[fam]["head"] + t[:t.index("{n}")] + n for n in all_names]
         Qall = states(model, tok, qtexts, sorted(set(layers) | {vlayer}), bs=64)
         for k in cfg["ks"]:
+            assert k > 1, "rename x reorder needs k > 1 (a non-identity reorder)"
             key = f"bindq|{fam}|k{k}"
             if key in out.done:
                 continue
@@ -191,56 +195,70 @@ def main(cfg, out):
                     b_ = tok(x, add_special_tokens=False)["input_ids"]
                     q_ = tok(x + FAM[fam]["q"].format(n=n_[0]), add_special_tokens=False)["input_ids"]
                     assert q_[:len(b_)] == b_
-            H = {s: states(model, tok, texts[s], layers, bs=EB) for s in sets}
             rows = {s: query_rows(v, name_idx, k) for s, v in sets.items()}
-            out.beat()
+            maj = max((rows["seen_orig"][:, 2] == o).float().mean().item() for o in range(4))
+            row = {"key": key, **base, "family": fam, "k": k, "layers": layers, "n_test": len(te),
+                   "n_train_names": len(train_names), "n_heldout_names": len(held), "majority_class_acc": maj}
+
+            def stop(note):  # cheap gates run first; a failing gate aborts the cell before the expensive encodes
+                out.write({**row, "instrument_ok": False, "verdict": "instrument_invalid", "note": note})
+                if cfg.get("smoke"):
+                    out.write({"key": f"smoke_fail|{fam}|k{k}", "note": note})
             # gate 1: explicit-fact positive control on the queried fact's value-token state (vlayer)
             vp = {s: [value_positions(tok, x, {"names": n_, "colors": c_}, fam) for (n_, c_), x in zip(sets[s], texts[s])]
                   for s in ("tr", "dv", "seen_orig")}
             V = {s: states(model, tok, texts[s], [vlayer], vp[s], bs=EB)[vlayer].reshape(-1, info["d_model"]) for s in vp}
+            out.beat()
             vrows = {s: torch.stack([torch.arange(len(rows[s])), rows[s][:, 1], rows[s][:, 2]], 1) for s in vp}
-            pc = fit(V["tr"][:len(vrows["tr"])], Qall[vlayer], vrows["tr"], V["dv"], Qall[vlayer], vrows["dv"], cfg)
-            pc_acc = (pc.predict(V["seen_orig"], Qall[vlayer], vrows["seen_orig"]) == vrows["seen_orig"][:, 2]).float().mean().item()
-            # reader-adequacy diagnostic: entity reader on the MEAN of all facts' value-token states (a superposition
-            # that carries name+colour per fact); shows whether this reader family can address by name at all
+            pc = fit(V["tr"], Qall[vlayer], vrows["tr"], V["dv"], Qall[vlayer], vrows["dv"], cfg)
+            row["pc_value_token_acc"] = (pc.predict(V["seen_orig"], Qall[vlayer], vrows["seen_orig"])
+                                         == vrows["seen_orig"][:, 2]).float().mean().item()
+            # reader-adequacy diagnostic (not gated): entity reader on the MEAN of all facts' value-token states
             Sup = {s: V[s].view(-1, k, V[s].shape[-1]).float().mean(1) for s in V}
+            del V
             sp = fit(Sup["tr"], Qall[vlayer], rows["tr"], Sup["dv"], Qall[vlayer], rows["dv"], cfg)
-            sup_acc = (sp.predict(Sup["seen_orig"], Qall[vlayer], rows["seen_orig"]) == rows["seen_orig"][:, 2]).float().mean().item()
-            del V, Sup
+            row["superposition_pc_acc"] = (sp.predict(Sup["seen_orig"], Qall[vlayer], rows["seen_orig"])
+                                           == rows["seen_orig"][:, 2]).float().mean().item()
+            del Sup
+            if row["pc_value_token_acc"] < 0.95:
+                stop("positive control failed")
+                continue
             # layer selection on dev (seen names, original order)
-            per_layer = {}
-            for l in layers:
-                r_ = fit(H["tr"][l], Qall[l], rows["tr"], H["dv"][l], Qall[l], rows["dv"], cfg)
-                per_layer[l] = (r_, r_.dev_acc, {s: (r_.predict(H[s][l], Qall[l], rows[s]) == rows[s][:, 2]).float().mean().item()
-                                                 for s in quads})
-            lsel = max(layers, key=lambda l: per_layer[l][1])
-            rd = per_layer[lsel][0]
+            H = {s: states(model, tok, texts[s], layers, bs=EB) for s in ("tr", "dv")}
+            out.beat()
+            per_layer = {l: fit(H["tr"][l], Qall[l], rows["tr"], H["dv"][l], Qall[l], rows["dv"], cfg) for l in layers}
+            lsel = max(layers, key=lambda l: per_layer[l].dev_acc)
+            rd = per_layer[lsel]
+            row["layer"] = lsel
             # gate 2: colour-free nuisance null at the selected layer (labels unchanged, colour words removed)
             Hn = {s: states(model, tok, [block_text(n_, c_, fam, colour_free=True) for n_, c_ in sets[s]], [lsel], bs=EB)[lsel]
                   for s in ("tr", "dv", "seen_orig")}
             nul = fit(Hn["tr"], Qall[lsel], rows["tr"], Hn["dv"], Qall[lsel], rows["dv"], cfg)
-            null_acc = (nul.predict(Hn["seen_orig"], Qall[lsel], rows["seen_orig"]) == rows["seen_orig"][:, 2]).float().mean().item()
-            maj = max((rows["seen_orig"][:, 2] == o).float().mean().item() for o in range(4))
-            instrument_ok = pc_acc >= 0.95 and null_acc <= maj + 0.05
-            # per-collection accuracy for each quad (rows are collection-major, k per collection)
+            row["colour_free_null_acc"] = (nul.predict(Hn["seen_orig"], Qall[lsel], rows["seen_orig"])
+                                           == rows["seen_orig"][:, 2]).float().mean().item()
+            del Hn
+            if row["colour_free_null_acc"] > maj + 0.05:
+                stop("colour-free null above majority + 0.05")
+                continue
+            # quads (all layers, for the descriptive per-layer table); scoring at the dev-selected layer
+            for s in quads:
+                H[s] = states(model, tok, texts[s], layers, bs=EB)
+                out.beat()
             Yb = torch.tensor([c_ for _, c_ in te])
             hm = (hist_mode(Yb) == Yb).float().mean(1)  # identical colour multiset across the quad
             pcs = {s: (rd.predict(H[s][lsel], Qall[lsel], rows[s]) == rows[s][:, 2]).float().view(-1, k).mean(1) for s in quads}
-            res = {s: {"acc": boot_ci(v, B, 10 + i), "minus_hist_mode": boot_ci(v, B, 20 + i, hm)} for i, (s, v) in enumerate(pcs.items())}
+            res = {s: {"acc": boot_ci(v, B, 10 + i), "minus_hist_mode": boot_ci(v, B, 20 + i, hm)}
+                   for i, (s, v) in enumerate(pcs.items())}
             res["reorder_effect_seen"] = boot_ci(pcs["seen_reord"], B, 31, pcs["seen_orig"])
             res["rename_effect"] = boot_ci(pcs["renamed_orig"], B, 32, pcs["seen_orig"])
             adequate = res["seen_orig"]["acc"][0] > hm.mean().item()  # else inconclusive, never a negative verdict
-            n1 = instrument_ok and res["seen_reord"]["minus_hist_mode"][0] >= 0.10 and res["seen_reord"]["minus_hist_mode"][1] > 0 \
-                and res["reorder_effect_seen"][1] > -0.10
-            n2 = instrument_ok and res["renamed_reord"]["minus_hist_mode"][0] >= 0.10 and res["renamed_reord"]["minus_hist_mode"][1] > 0
-            out.write({"key": key, **base, "family": fam, "k": k, "layers": layers, "layer": lsel, "n_test": len(te),
-                       "n_train_names": len(train_names), "n_heldout_names": len(held), "pc_value_token_acc": pc_acc,
-                       "colour_free_null_acc": null_acc, "superposition_pc_acc": sup_acc,
-                       "reader_adequate": adequate, "verdict": ("instrument_invalid" if not instrument_ok else
-                                                                  "inconclusive_reader" if not adequate else "scored"), "majority_class_acc": maj, "instrument_ok": instrument_ok,
+            n1 = adequate and res["seen_reord"]["minus_hist_mode"][0] >= 0.10 and \
+                res["seen_reord"]["minus_hist_mode"][1] > 0 and res["reorder_effect_seen"][1] > -0.10
+            n2 = adequate and res["renamed_reord"]["minus_hist_mode"][0] >= 0.10 and res["renamed_reord"]["minus_hist_mode"][1] > 0
+            out.write({**row, "instrument_ok": True, "reader_adequate": adequate,
+                       "verdict": "scored" if adequate else "inconclusive_reader",
                        "hist_mode_acc": hm.mean().item(), "quads": res, "N1_seen_name_addressable": n1,
                        "N2_name_general_addressable": n2, "reader": {"kind": rd.kind, "R": rd.R, "dev_acc": rd.dev_acc},
-                       "dev_acc_by_layer": {l: v[1] for l, v in per_layer.items()},
-                       "quad_acc_by_layer": {l: v[2] for l, v in per_layer.items()}})
-            if cfg.get("smoke") and not instrument_ok:
-                out.write({"key": f"smoke_fail|{fam}|k{k}", "note": "positive control or colour-free null failed"})
+                       "dev_acc_by_layer": {l: r_.dev_acc for l, r_ in per_layer.items()},
+                       "quad_acc_by_layer": {l: {s: (r_.predict(H[s][l], Qall[l], rows[s]) == rows[s][:, 2]).float().mean().item()
+                                                 for s in quads} for l, r_ in per_layer.items()}})
