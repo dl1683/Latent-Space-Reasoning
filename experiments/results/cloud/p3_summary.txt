@@ -1,0 +1,21 @@
+== encoder seed 11 {'key': 'p3|sanity', 'test_future_rate': 0.5, 'test_pairs': 1024, 'train_pairs': 30000}
+   state     test_acc=0.731 per-reader=[0.726, 0.729, 0.737] dev=[0.742, 0.747, 0.75] both_correct=0.528
+   shuffled  test_acc=0.539 per-reader=[0.542, 0.539, 0.535] dev=[0.553, 0.548, 0.55] both_correct=0.276
+   current   test_acc=0.500 per-reader=[0.5, 0.5, 0.5] dev=[0.5, 0.5, 0.5] both_correct=0.000
+   full      test_acc=0.916 per-reader=[0.92, 0.913, 0.913] dev=[0.943, 0.929, 0.938] both_correct=0.838
+   state-shuffled: +0.192 CI95[+0.167,+0.218] (pair-clustered bootstrap)
+   state-current: +0.231 CI95[+0.214,+0.248] (pair-clustered bootstrap)
+== encoder seed 23 {'key': 'p3|sanity', 'test_future_rate': 0.5, 'test_pairs': 1024, 'train_pairs': 30000}
+   state     test_acc=0.735 per-reader=[0.734, 0.725, 0.747] dev=[0.757, 0.771, 0.757] both_correct=0.517
+   shuffled  test_acc=0.549 per-reader=[0.546, 0.547, 0.553] dev=[0.537, 0.542, 0.537] both_correct=0.303
+   current   test_acc=0.500 per-reader=[0.5, 0.5, 0.5] dev=[0.5, 0.5, 0.5] both_correct=0.000
+   full      test_acc=0.905 per-reader=[0.893, 0.906, 0.916] dev=[0.94, 0.938, 0.927] both_correct=0.816
+   state-shuffled: +0.186 CI95[+0.161,+0.213] (pair-clustered bootstrap)
+   state-current: +0.235 CI95[+0.219,+0.252] (pair-clustered bootstrap)
+== encoder seed 47 {'key': 'p3|sanity', 'test_future_rate': 0.5, 'test_pairs': 1024, 'train_pairs': 30000}
+   state     test_acc=0.751 per-reader=[0.749, 0.758, 0.747] dev=[0.752, 0.759, 0.759] both_correct=0.570
+   shuffled  test_acc=0.550 per-reader=[0.549, 0.545, 0.554] dev=[0.536, 0.528, 0.526] both_correct=0.302
+   current   test_acc=0.500 per-reader=[0.5, 0.5, 0.5] dev=[0.5, 0.5, 0.5] both_correct=0.000
+   full      test_acc=0.915 per-reader=[0.921, 0.917, 0.906] dev=[0.943, 0.945, 0.941] both_correct=0.835
+   state-shuffled: +0.202 CI95[+0.177,+0.227] (pair-clustered bootstrap)
+   state-current: +0.251 CI95[+0.233,+0.269] (pair-clustered bootstrap)

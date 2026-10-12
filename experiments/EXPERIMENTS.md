@@ -1,5 +1,11 @@
 # Experiments Log
 
+## Registration P3 (future distinguishability): INSTRUMENT INVALID (2026-10-12 14:20Z, Codex error hunt passed)
+
+"P3 is instrument-invalid under its registered FULL-control kill rule; descriptively, STATE scored 0.731-0.751,
+exceeding SHUFFLED by 18.6-20.2 pp and CURRENT by 23.1-25.1 pp, with unresolved SHUFFLED sampling-role confounding."
+(FULL positive control 0.905-0.916 < 0.95.)
+
 ## Registration P2 (update closure): registered prediction FAILS (2026-10-12 13:45Z, Codex error hunt passed)
 
 "At the tested exposure, consistency training reduces variance-normalised encoder-target defect but misses P2's
