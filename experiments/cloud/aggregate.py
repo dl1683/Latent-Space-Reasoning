@@ -169,5 +169,48 @@ def branch(runs):
                   f"PASS={single and edit}")
 
 
+def p2(runs):
+    """Registration P2: per seed x arm accuracy/defect/causal; collection-paired (consistency - answer) differences at
+    two updates for k in {1,4} with bootstrap 95% CIs (resampling collections) and Holm adjustment over the 2 k cells
+    per seed; registered predictions: >= +15 pp at u=2, >= 0.90 at every selector (k=1,4), held-out defect halved."""
+    cells = defaultdict(dict)  # (seed, arm) -> key -> row
+    for run in runs:
+        for sd in sorted((ROOT / run / "shards").glob("*/out")):
+            f, sh = sd / "results.jsonl", sd.parent / "shard.json"
+            if not f.exists() or not sh.exists():
+                continue
+            shard = json.loads(sh.read_text())
+            R = {json.loads(l)["key"]: json.loads(l) for l in f.read_text().splitlines()}
+            cells[(shard["seed"], shard["p2_arm"])].update(R)
+    for (seed, arm), R in sorted(cells.items()):
+        print(f"== seed {seed} arm {arm}")
+        for key in sorted(k for k in R if k.startswith(("p2|", "competence|", "disp|"))):
+            r = R[key]
+            print(f"   {key:22s} acc={r['acc']:.3f} minsel={r.get('min_selector_acc', float('nan')):.3f} "
+                  f"defect={r.get('defect')} sham={r.get('acc_sham_updates')}")
+        for key in sorted(k for k in R if k.startswith("p2causal|")):
+            r = R[key]
+            print(f"   CAUSAL {key}: targeted={r.get('targeted_effect_pp'):+.1f}pp collateral={r.get('collateral_loss_pp'):+.1f}pp "
+                  f"undo={r.get('undo_recovery')} adv_inf_frac={r.get('adv_informative_frac')} "
+                  f"adv_edit_inf={r.get('adv_edit_tgt_informative')} edit&undo_inf={r.get('adv_edit_and_undo_distinguished_informative')}")
+    print("== paired consistency - answer at u=2 (per seed; Holm over k)")
+    for seed in sorted({s for s, _ in cells}):
+        a, c = cells.get((seed, "answer"), {}), cells.get((seed, "consistency"), {})
+        res = []
+        for k in (1, 4):
+            key = f"p2|test|k{k}|u2"
+            if key not in a or key not in c:
+                continue
+            S = a[key]["selectors_per_collection"]
+            d = [(x - y) / S for x, y in zip(c[key]["per_collection_correct"], a[key]["per_collection_correct"])]
+            rng = random.Random(seed * 10 + k)
+            bs = sorted(sum(rng.choice(d) for _ in d) / len(d) for _ in range(4000))
+            p = sum(1 for b in bs if b <= 0) / len(bs)  # one-sided bootstrap p for improvement
+            res.append((k, sum(d) / len(d), bs[100], bs[3900], p))
+        m_ = len(res)
+        for rank, (k, mean, lo, hi, p) in enumerate(sorted(res, key=lambda t: t[4])):
+            print(f"   seed {seed} k{k}: diff={mean:+.3f} CI95=[{lo:+.3f},{hi:+.3f}] p={p:.4f} holm_p={min(1, p * (m_ - rank)):.4f}")
+
+
 if __name__ == "__main__":
-    {"search": search, "recur": recur, "branch": branch}[sys.argv[1]](sys.argv[2:])
+    {"search": search, "recur": recur, "branch": branch, "p2": p2}[sys.argv[1]](sys.argv[2:])
