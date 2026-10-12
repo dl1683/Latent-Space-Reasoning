@@ -8,6 +8,8 @@ recorded for the line in `experiments/ledger.jsonl`; files marked `untracked`
 were git-ignored (weights, caches, row-level evidence) and are regenerable only
 by re-running the runner recorded in the ledger.
 
+HISTORICAL as of 2026-10-12: the blanket binary/size deletion rules below record the 2026-09-05 cleanup only; they are not a current deletion policy or authorization. Retain current claim-bearing artifacts and use their specific custody rules.
+
 Rules applied:
 
 - Everywhere: `*.npz *.pt *.pth *.ckpt *.safetensors *.pkl *.npy *.gz`,

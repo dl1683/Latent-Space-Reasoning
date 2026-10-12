@@ -1,3 +1,4 @@
+# Superseded for Exp #58 by experiments/run_omega_cross_question.py (ledger exp58_cross_question_final); retained historical variant.
 """Omega Cross-Question Consequence Test (Experiment #58).
 
 THE omega transfer test: does TV measured under Q1 predict argmax flips

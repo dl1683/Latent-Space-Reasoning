@@ -1,3 +1,5 @@
+HISTORICAL as of 2026-10-12; current program: STATE.md
+
 # Archive Index (Do Not Start Here)
 
 This page is for readers who are already familiar with the promoted evidence path.

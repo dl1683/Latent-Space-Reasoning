@@ -256,6 +256,8 @@ include enough small values at large d); the directional prediction is
 CONFIRMED, the eta* scaling law needs a finer grid (next cells, to be
 pre-registered with the same discipline).
 
+> CORRECTION 2026-10-12: the exponent eta*(d) ~ d^{-1/2} is CONJECTURAL. The recorded brackets support a dimension-shrinking crossover, not an established exponent or universality theorem. Scaling (0.30, 0.35] at d=512 by sqrt(512/32768) = 1/8 yields (0.0375, 0.04375], disjoint from (0.08, 0.12] at d=32768; 0.32/8 = 0.04. Thus the historical "CONSISTENT", "LAW CONFIRMED" and "empirically established law" wording below is superseded; the two frozen cell classifications do not pin an asymptotic exponent. Numeric correction: eta^2 d at d=32768 is 471.8592 for eta=0.12 and 209.7152 for eta=0.08, not the historical 47 and 21. Section 12f remains an unfinished mechanism/proof attempt, not a derivation of a measured law.
+
 ## 12d. eta*(d) bracketed (2026-09-23; finer pre-registered grid)
 
 eta*(512) in (0.30, 0.35]; eta*(2048) in (0.15, 0.25]; eta*(8192) in
@@ -268,16 +270,16 @@ contraction operator scales like eta^2 d (its R ~ d weighted by the
 second-moment share eta), so departure when eta^2 d ~ 1, i.e.
 eta* ~ d^{-1/2} — CONSISTENT with the measured slope. Registered
 prediction for the pinning cell: d=32768, eta in {0.08, 0.12}: exceedance
-expected at 0.12 (eta^2 d = 47 >> 1) and within at 0.08 (eta^2 d = 21,
+expected at 0.12 (eta^2 d = 471.8592 >> 1 [corrected 2026-10-12; formerly 47]) and within at 0.08 (eta^2 d = 209.7152 [corrected 2026-10-12; formerly 21],
 borderline) under the d^{-1/2} law.
 
-## 12e. Pinning cell: d^{-1/2} LAW CONFIRMED (2026-09-23; cell frozen in
+## 12e. Pinning cell: historical LAW CONFIRMED claim superseded; exponent CONJECTURAL (2026-09-23; cell frozen in
 ## 12d before running)
 
 d=32768: eta=0.08 -> cv 0.0389 WITHIN (predicted borderline/within);
 eta=0.12 -> cv 0.0637 EXCEEDS (predicted exceedance). eta*(32768) in
 (0.08, 0.12], exactly the d^{-1/2} bracket (sqrt(512/32768) = 1/8 scaling
-of eta*(512) ~ 0.32 gives ~0.04-0.10). Across four dimensions the
+of eta*(512) ~ 0.32 gives 0.04 [corrected 2026-10-12; formerly ~0.04-0.10; outside the reported bracket]). Across four dimensions the
 universality-class crossover obeys
 
   ** eta*(d) ~ d^{-1/2}  (departure when eta^2 d ~ 1) **

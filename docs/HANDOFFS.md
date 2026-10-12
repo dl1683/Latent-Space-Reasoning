@@ -1,3 +1,5 @@
+> HISTORICAL as of 2026-10-12; the S65 routing below is superseded. Current GCP program: [STATE.md](../STATE.md).
+
 # Session handoff — 2026-09-14
 
 **PAUSED by user request, 2026-09-14.** This is a restartable session closeout,

@@ -2740,6 +2740,8 @@ word as written in each section header):
 - NLM-007 — CLOSED (2026-08-29; audit #22 closing statement, verbatim)
 - NLM-007 — adoption-order record (Rounds 1–34; superseded orders kept verbatim), including the NLM-001 through NLM-006b verdict/lock sections, Rounds 10–33, audits #2–#20, and the four-cell evidence gate (2026-08-27 — 2026-08-29)
 
+> CORRECTION 2026-10-12: the historical G4 exponent claim immediately below is superseded. eta*(d) ~ d^{-1/2} is CONJECTURAL: (0.30, 0.35] / 8 = (0.0375, 0.04375], disjoint from the reported d=32768 bracket (0.08, 0.12]. Only the dimension-shrinking crossover survives; no asymptotic phase law or general universality theorem is established. See theory/HPG_FOURTH_MOMENT.md, correction before section 12d, including the corrected eta^2 d arithmetic. The original progress text is retained as history.
+
 **HP-G progress (2026-09-23):** G1-G3 complete — exact mean, contraction-
 operator covariance (Wick instance verified 0.989), triple-brute-force-
 certified variance counting, and the corrected L2 concentration criterion

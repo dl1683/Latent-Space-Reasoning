@@ -34,11 +34,11 @@ beside termination.
 
 Curriculum arm (Amendment 2), Qwen3-0.6B, 3 seeds, test split, corrected evaluator. k=1: no updates 0.97-0.99,
 one update 0.84-0.86, two updates ~0.76 (bar 0.90 at every update count). Branch-addressed edits: targeted
-effect ~0 pp (bar 20 pp); edit-then-advance accuracy 0.41 (below chance). Coarse-grid storage (every selector) passes through k=2-4. Width 64/256/1024 identical -> width scaling not tested. Consequence (pre-registered): no
+effect ~0 pp (bar 20 pp); edit-then-advance accuracy 0.41 (below chance). Coarse-grid storage (every selector) passes through k=2-4. Width 64/256/1024 nearly identical -> width scaling not tested. Consequence (pre-registered): no
 1.7B flagship escalation. Licensed sentence (evidence gate 1): "The documented curriculum construction fails admission in all three
 seeds; these results license no flagship escalation and leave width scaling untested." (Storage C90 values are
 coarse-grid; main~sham at one seed does not prove updates are ignored; the 0.41 edit-then-advance accuracy is below
-chance but was not paired-scored against the unedited graph; the concurrent arm's verdict is pending.) Next: Registrations P1 (random-access storage capacity vs width) and
+chance but was not paired-scored against the unedited graph; the concurrent arm is recorded FAIL in all three seeds (ledger `gate_verdict_concurrent`); arms not pooled.) Next: Registrations P1 (random-access storage capacity vs width) and
 P2 (update closure with a consistency target).
 
 ## GCP latent-reasoning program (2026-10-11, running)
@@ -273,27 +273,33 @@ information theory, random matrix theory, kernel methods.
 
 ### Interference hierarchy (entry 117, analytical)
 
-Derived: in R^d, t-body interference terms in degree-p polynomial maps scale
+[WITHDRAWN 2026-09-19, see ledger hpe_e5_anchor_validation] Derived: in R^d, t-body interference terms in degree-p polynomial maps scale
 as d^{-(t-1)/2} (RMS). Proven for p=2 (quadratic). Connects to cluster
 expansion (stat phys), 1/N expansion (QFT), Hoeffding decomposition (statistics).
 The "mean field" of HD spaces is independent feature processing.
 
+Surviving scoped result: for isotropic independent unit features and the specified normalized quadratic readout, E[A2] = k(k-1)/d with exact variance and a crossing at Theta(sqrt(d)); no general degree-p hierarchy or operational capacity law follows (ledger `hpe_isotropic_theorem_complete`).
+
 ### Representation-computation gap (entry 117, analytical)
 
-Derived: store O(exp(d)) features (packing), linear computation on O(√d)
+[WITHDRAWN 2026-09-19, see ledger droid_review_2hr_1] Derived: store O(exp(d)) features (packing), linear computation on O(√d)
 simultaneously (coherence-limited), bilinear computation on O(1) simultaneously
 (dimension-independent). The gap is exponential. Training closes it by structuring
 weights. Intermediate dimension m provides computation bandwidth, not d.
 
+Correction: the gap is not a universal capacity law; orthonormal features permit exact bilinear computation up to k <= d (ledger `droid_review_2hr_1`; NOTEBOOK entry 121).
+
 ### Rate-distortion optimal allocation (entry 117, analytical)
 
-Proved: for Zipf(s) inputs, optimal eigenvalue exponent α* = s/2. Lagrange
+[WITHDRAWN 2026-09-19, see ledger droid_review_2hr_1] Proved: for Zipf(s) inputs, optimal eigenvalue exponent α* = s/2. Lagrange
 optimization. Observed model exponents (0.35-0.90) are steeper than optimal.
 The 1-body (mean-field) allocation becomes exact as d → ∞.
 
-**Theory notes:** scratchpad/interference_hierarchy.md, scratchpad/hd_computation_capacity.md
+Correction: the allocation calculation has no established eigenspectrum or d-to-infinity interpretation (ledger `droid_review_2hr_1`; NOTEBOOK entry 121).
+
+**Theory notes:** scratchpad/interference_hierarchy.md [artifact missing as of 2026-10-12], scratchpad/hd_computation_capacity.md [artifact missing as of 2026-10-12]
 **NOTEBOOK entry:** 117
-**What we learned:** HD spaces have a natural hierarchy where independent feature
+[WITHDRAWN 2026-09-19, see ledger hpe_e5_anchor_validation and droid_review_2hr_1] **What we learned:** HD spaces have a natural hierarchy where independent feature
 processing is the dominant term, with corrections suppressed by powers of d.
 This connects neural network architecture (depth, width, gating) to fundamental
 HD geometry. The representation-computation gap explains why transformers need

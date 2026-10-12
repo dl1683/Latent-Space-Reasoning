@@ -1,3 +1,5 @@
+HISTORICAL as of 2026-10-12; current program: STATE.md
+
 # Continuation-Refinement Calculus
 
 ## Role in the current direction (2026-09-13)

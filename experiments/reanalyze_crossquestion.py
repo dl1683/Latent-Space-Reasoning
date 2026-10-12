@@ -1,3 +1,4 @@
+# Historical variant only: this analyzer expects query/q1_print rows; canonical Exp #58 is experiments/run_omega_cross_question.py (question/print_output rows), so no behavior-changing redirect.
 """R6-corrected reanalysis of cross-question data (Experiment #58).
 
 Fixes 5 problems R6 identified:

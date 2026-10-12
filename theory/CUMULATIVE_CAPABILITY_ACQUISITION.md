@@ -1,3 +1,5 @@
+HISTORICAL as of 2026-10-12; current program: STATE.md
+
 # Cumulative Capability Acquisition
 
 Status: current direction preserved; research PAUSED by user request on 2026-09-14.

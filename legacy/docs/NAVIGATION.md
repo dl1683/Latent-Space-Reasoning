@@ -1,3 +1,5 @@
+HISTORICAL as of 2026-10-12; current program: STATE.md
+
 # Documentation Index
 
 The single index for this repository. Read [../README.md](../README.md) first.
