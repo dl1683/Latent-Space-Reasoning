@@ -12,3 +12,4 @@ summaries produced by `python experiments/cloud/aggregate.py {search|recur|branc
 | recur_summary.txt | recur-sw-s, recur-sw-b (probe C screen) |
 | recur_confirm_summary.txt | recur-confirm (probe C confirmation) |
 | gate_eval_cur_summary.txt | gate-eval-cur (locked admission gate, curriculum arm) |
+| gate_eval_conc_summary.txt | gate-eval-conc (locked admission gate, concurrent arm) |

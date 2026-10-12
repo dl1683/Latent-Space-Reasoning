@@ -142,7 +142,9 @@ def branch(runs):
             f = sd / "results.jsonl"
             if not f.exists():
                 continue
-            R = [json.loads(l) for l in f.read_text().splitlines()]
+            # rows can repeat after a restart that re-ran training (e.g. P1 two timelines): the LAST row per key
+            # is authoritative
+            R = list({r_["key"]: r_ for r_ in (json.loads(l) for l in f.read_text().splitlines())}.values())
             shard = json.loads((sd.parent / "shard.json").read_text()) if (sd.parent / "shard.json").exists() else {}
             print(f"== {run}/{sd.parent.name} seed={shard.get('seed')} variant={shard.get('variant')} model={shard.get('model')}")
             fin = [r for r in R if r["key"].startswith("final|")]
