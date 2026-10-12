@@ -181,10 +181,10 @@ def main(cfg, out):
     out.meta("p2_norm.json", {"dev_target_total_variance": var})
     ev0 = dict(cfg, eval_tokens=cfg.get("eval_tokens", 8000))
     m.eval()
-    for k in cfg["ks"]:  # direct re-encoding competence of the frozen encoder/reader (before updater training)
-        key = f"competence|test|k{k}"
+    for k in cfg["ks"]:  # direct re-encoding competence of the frozen encoder/reader, on DEV (never a test decision set)
+        key = f"competence|dev|k{k}"
         if key not in out.done:
-            out.write({"key": key, "k": k, **B.acc_cell(m, ev0, "test", r, 0, k, cfg["eval_n"], 3)})
+            out.write({"key": key, "k": k, **B.acc_cell(m, ev0, "dev", r, 0, k, min(cfg["eval_n"], 512), 3)})
     m.train()
     opt = torch.optim.AdamW(m.updater_params(), lr=cfg["lr"], weight_decay=0.0)
     total = cfg["presentations"] // cfg["batch"]
@@ -202,9 +202,11 @@ def main(cfg, out):
         torch.nn.utils.clip_grad_norm_(m.updater_params(), 1.0)
         opt.step()
         hist.append((la, lc))
+        upd_bearing = upd_bearing + sum(1 for x in exs if x["ops"]) if step else sum(1 for x in exs if x["ops"])
         if step % 25 == 0:
             out.beat()
-            out.meta("train_progress.json", {"step": step, "total": total, "ans": sum(h[0] for h in hist[-25:]) / len(hist[-25:]),
+            out.meta("train_progress.json", {"step": step, "total": total, "update_bearing_presentations": upd_bearing,
+                                             "ans": sum(h[0] for h in hist[-25:]) / len(hist[-25:]),
                                              "cons": sum(h[1] for h in hist[-25:]) / len(hist[-25:]), "sec": t()})
     m.eval()
     ev = dict(cfg, eval_tokens=cfg.get("eval_tokens", 32000))

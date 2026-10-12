@@ -430,10 +430,10 @@ def sync_post_and_wait(mst, step, r_w, acc, out):
         time.sleep(15)
 
 
-def save(m, opt, step, path):
+def save(m, opt, step, path, rng=None):
     torch.save({"model": {n: p.detach().cpu() for n, p in m.state_dict().items()
                           if "lora" in n or n.split(".")[0] in ("E", "D", "head")},
-                "opt": opt.state_dict(), "step": step}, path)
+                "opt": opt.state_dict(), "step": step, "rng": rng.getstate() if rng else None}, path)
 
 
 def main(cfg, out):
@@ -458,6 +458,8 @@ def main(cfg, out):
     total = 0 if cfg.get("init_ckpt") else cfg["passes"] * pool // eff_bs
     sched = lambda s: min(1.0, (s + 1) / 100) * 0.5 * (1 + math.cos(math.pi * s / total))
     rng = random.Random(cfg["seed"] * 7919)
+    if ckpt.exists() and st.get("rng") is not None:  # resume the training RNG exactly at the checkpoint
+        rng.setstate(tuple(st["rng"][:1]) + (tuple(st["rng"][1]),) + tuple(st["rng"][2:]))
     order = list(range(pool))
     t = common.timer()
     hist, best = [], -1.0
@@ -470,15 +472,20 @@ def main(cfg, out):
         cur = cfg.get("curriculum")  # Amendment 2: staged arm, [[start_frac, ks, updates], ...]
         mst = cfg.get("mastery")     # Amendment 3 (P1'): k_max doubles when dev min-selector acc at k_max >= thresh
         if mst:
-            if step == step0 or "kmax" not in locals():
-                kmax = max([1] + [json.loads(l)["kmax_after"] for l in out.path.read_text().splitlines()
-                                  if json.loads(l)["key"].startswith("mastery|")]) if out.path.exists() else 1
-            if step > 0 and step % mst["check_every"] == 0 and kmax < 64 and f"mastery|step{step}" not in out.done:
+            mrows = {json.loads(l)["step"]: json.loads(l) for l in out.path.read_text().splitlines()
+                     if json.loads(l)["key"].startswith("mastery|")} if out.path.exists() else {}
+            if step == step0 or "kmax" not in locals():  # resume: state as of the checkpoint step, not the latest row
+                prior = [r_ for s_, r_ in mrows.items() if s_ < step0]
+                kmax = max(prior, key=lambda r_: r_["step"])["kmax_after"] if prior else 1
+            if step in mrows:  # replay the recorded (synchronized) decision for this step
+                kmax = mrows[step]["kmax_after"]
+            elif step > 0 and step % mst["check_every"] == 0 and kmax < 64:
                 # frozen promotion-dev set (seed 17), separate from the selection dev set (seed 0)
                 a = acc_cell(m, cfg, "dev", cfg["widths"][0], 0, kmax, mst["dev_n"], 17)["min_selector_acc"]
                 lead = sync_post_and_wait(mst, step, cfg["widths"][0], a, out)  # synchronized across widths (GCS barrier)
                 ok = all(lead[w] >= mst["thresh"] for w in mst["leaders"])
-                prev = [json.loads(l) for l in out.path.read_text().splitlines() if json.loads(l)["key"].startswith("mastery|")]
+                prev = [json.loads(l) for l in out.path.read_text().splitlines()
+                        if json.loads(l)["key"].startswith("mastery|")] if out.path.exists() else []
                 streak = (prev[-1]["streak"] + 1 if prev and prev[-1]["kmax"] == kmax else 1) if ok else 0
                 new_k = kmax * 2 if streak >= mst.get("consecutive", 2) else kmax
                 out.write({"key": f"mastery|step{step}", "step": step, "kmax": kmax, "own_min_selector_acc": a,
@@ -526,7 +533,7 @@ def main(cfg, out):
             score = sum(v for c, v in cells.items() if f"|u{uu}|" in c) / sum(1 for c in cells if f"|u{uu}|" in c)
             out.write({"key": f"dev|step{step + 1}", "step": step + 1, "dev_score": score, "dev_cells": cells,
                        "loss_recent": sum(hist[-cfg["eval_every"]:]) / len(hist[-cfg["eval_every"]:]), "sec": t()})
-            save(m, opt, step + 1, ckpt)
+            save(m, opt, step + 1, ckpt, rng)
             sel_ok = (not cfg.get("curriculum") or (step + 1) / total >= cfg["curriculum"][-1][0]) and                 (not cfg.get("mastery") or kmax >= 64 or step == total - 1)
             if sel_ok and score > best:
                 best = score
@@ -546,7 +553,7 @@ def main(cfg, out):
             dev = {k: acc_cell(m, cfg, "dev", r_w, 0, k, cfg["bracket_n"], 3)["min_selector_acc"] for k in grid}
             last = max([0] + [k for k in grid if all(dev[j] >= 0.90 for j in grid if j <= k)])
             first_fail = min([k for k in grid if k > last] + [grid[-1]])
-            test_grid = sorted({k for k in grid if k <= first_fail} | set(range(max(1, last), first_fail + 1)))
+            test_grid = list(range(1, first_fail + 1))  # every integer through the frozen endpoint (review 3)
             out.write({"key": key, "r": r_w, "dev_min_selector_acc": dev, "last_pass": last, "first_fail": first_fail,
                        "test_grid": test_grid})
         brackets = {json.loads(l)["r"]: json.loads(l)["test_grid"] for l in out.path.read_text().splitlines()
