@@ -1,0 +1,15 @@
+interleaved          seed 1: final mean 0.899 {'color': 0.825, 'city': 0.897, 'instrument': 0.943, 'number': 0.932} | pre-cons mean 0.901 {'color': 0.907, 'city': 0.922, 'instrument': 0.92, 'number': 0.853}
+interleaved          seed 2: final mean 0.904 {'color': 0.91, 'city': 0.855, 'instrument': 0.922, 'number': 0.927} | pre-cons mean 0.896 {'color': 0.86, 'city': 0.895, 'instrument': 0.91, 'number': 0.917}
+interleaved          seed 3: final mean 0.911 {'color': 0.912, 'city': 0.912, 'instrument': 0.9, 'number': 0.917} | pre-cons mean 0.879 {'color': 0.88, 'city': 0.907, 'instrument': 0.94, 'number': 0.79}
+interleaved_moments  seed 1: final mean 0.996 {'color': 0.995, 'city': 0.99, 'instrument': 0.998, 'number': 1.0} | pre-cons mean 0.996 {'color': 1.0, 'city': 0.99, 'instrument': 0.995, 'number': 1.0}
+interleaved_moments  seed 2: final mean 0.995 {'color': 0.998, 'city': 0.985, 'instrument': 1.0, 'number': 0.998} | pre-cons mean 0.993 {'color': 0.993, 'city': 0.988, 'instrument': 0.995, 'number': 0.998}
+interleaved_moments  seed 3: final mean 0.744 {'color': 0.835, 'city': 0.772, 'instrument': 0.662, 'number': 0.705} | pre-cons mean 0.990 {'color': 0.988, 'city': 0.978, 'instrument': 0.998, 'number': 0.998}
+reversed             seed 1: final mean 0.927 {'color': 0.912, 'city': 0.963, 'instrument': 0.983, 'number': 0.85} | pre-cons mean 0.543 {'color': 0.99, 'city': 0.708, 'instrument': 0.29, 'number': 0.185}
+reversed             seed 2: final mean 0.927 {'color': 0.97, 'city': 0.953, 'instrument': 0.978, 'number': 0.807} | pre-cons mean 0.544 {'color': 1.0, 'city': 0.672, 'instrument': 0.273, 'number': 0.233}
+reversed             seed 3: final mean 0.932 {'color': 0.978, 'city': 0.97, 'instrument': 0.98, 'number': 0.8} | pre-cons mean 0.624 {'color': 0.998, 'city': 0.765, 'instrument': 0.475, 'number': 0.26}
+staged               seed 1: final mean 0.925 {'color': 0.84, 'city': 0.953, 'instrument': 0.94, 'number': 0.968} | pre-cons mean 0.438 {'color': 0.168, 'city': 0.258, 'instrument': 0.328, 'number': 0.998}
+staged               seed 2: final mean 0.933 {'color': 0.902, 'city': 0.94, 'instrument': 0.963, 'number': 0.927} | pre-cons mean 0.447 {'color': 0.26, 'city': 0.268, 'instrument': 0.34, 'number': 0.92}
+staged               seed 3: final mean 0.933 {'color': 0.922, 'city': 0.897, 'instrument': 0.973, 'number': 0.94} | pre-cons mean 0.468 {'color': 0.19, 'city': 0.372, 'instrument': 0.318, 'number': 0.993}
+seed 1: staged-positive-control(every family>=0.90, both orders)=False | staged-interleaved=0.02562500000000001 reversed-interleaved=0.02749999999999997 | moments vs staged/reversed: 0.071/0.069
+seed 2: staged-positive-control(every family>=0.90, both orders)=False | staged-interleaved=0.02937499999999993 reversed-interleaved=0.02312499999999995 | moments vs staged/reversed: 0.062/0.068
+seed 3: staged-positive-control(every family>=0.90, both orders)=False | staged-interleaved=0.022499999999999964 reversed-interleaved=0.02124999999999999 | moments vs staged/reversed: -0.189/-0.188

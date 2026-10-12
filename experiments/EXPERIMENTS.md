@@ -1,5 +1,14 @@
 # Experiments Log
 
+## Registration F (formation collisions, Qwen3-8B LoRA): INSTRUMENT INVALID (2026-10-12 14:50Z, Codex hunt passed)
+
+Staged positive control fails (no seed has both staged orders >= 0.90 in every family); staged - interleaved after
+consolidation +2.1 to +2.9 pp (bar 15). Licensed: "Sequential training shows substantial forgetting; interleaving
+retains more before consolidation" (pre-consolidation staged means 0.44-0.47 with earlier families at 0.17-0.37;
+interleaved 0.88-0.90). "The moments recipe reaches means 0.990-0.996 before consolidation, with unresolved optimizer
+confounds" (global-step bias correction inflates its effective step 1.5-1.9x). The Genome-style concurrent-formation
+penalty was not observed in this pretrained LoRA setting; the dominant effect was sequential forgetting.
+
 ## Registration P3 (future distinguishability): INSTRUMENT INVALID (2026-10-12 14:20Z, Codex error hunt passed)
 
 "P3 is instrument-invalid under its registered FULL-control kill rule; descriptively, STATE scored 0.731-0.751,

@@ -212,5 +212,32 @@ def p2(runs):
             print(f"   seed {seed} k{k}: diff={mean:+.3f} CI95=[{lo:+.3f},{hi:+.3f}] p={p:.4f} holm_p={min(1, p * (m_ - rank)):.4f}")
 
 
+def formation(runs):
+    """Registration F: per arm x seed final (post-consolidation) and pre-consolidation per-family accuracy;
+    staged positive control (>= 0.90 every family, both staged orders); staged - interleaved gaps per seed;
+    interleaved_moments vs both staged orders."""
+    rows = {}
+    for run in runs:
+        for sd in sorted((ROOT / run / "shards").glob("*/out")):
+            f = sd / "results.jsonl"
+            if not f.exists():
+                continue
+            R = {json.loads(l)["key"]: json.loads(l) for l in f.read_text().splitlines()}
+            if "f|final" in R:
+                rows[(R["f|final"]["arm"], R["f|final"]["seed"])] = R
+    for (arm, seed), R in sorted(rows.items()):
+        fin, pre = R["f|final"], R.get("f|pre_consolidation", {})
+        print(f"{arm:20s} seed {seed}: final mean {fin['mean_acc']:.3f} {({k: round(v, 3) for k, v in fin['family_acc'].items()})}"
+              f" | pre-cons mean {pre.get('mean_acc', float('nan')):.3f} {({k: round(v, 3) for k, v in pre.get('family_acc', {}).items()})}")
+    for seed in sorted({s for _, s in rows}):
+        g = lambda a: rows.get((a, seed), {}).get("f|final", {}).get("mean_acc")
+        st, rv, il, im = g("staged"), g("reversed"), g("interleaved"), g("interleaved_moments")
+        pc = all((a, seed) in rows and min(rows[(a, seed)]["f|final"]["family_acc"].values()) >= 0.90
+                 for a in ("staged", "reversed"))  # missing orders FAIL (Codex hunt)
+        print(f"seed {seed}: staged-positive-control(every family>=0.90, both orders)={pc} | staged-interleaved="
+              f"{(st - il) if None not in (st, il) else None} reversed-interleaved={(rv - il) if None not in (rv, il) else None}"
+              f" | moments vs staged/reversed: {None if None in (im, st) else round(im - st, 3)}/{None if None in (im, rv) else round(im - rv, 3)}")
+
+
 if __name__ == "__main__":
-    {"search": search, "recur": recur, "branch": branch, "p2": p2}[sys.argv[1]](sys.argv[2:])
+    {"search": search, "recur": recur, "branch": branch, "p2": p2, "formation": formation}[sys.argv[1]](sys.argv[2:])
