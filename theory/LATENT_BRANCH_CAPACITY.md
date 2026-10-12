@@ -489,3 +489,92 @@ decodes for familiar names but transfers only partly to novel names. It would no
 use by the model.
 8B full run: n_train 8192, n_dev 1024, n_test 2048, n_test_seen 2048, ranks {1,2,3,4,6,8,12,16,24,32,48,64,96,128}, 3
 reader seeds. Scaling to 14B/32B/72B follows the instrument criterion, each with its own smoke.
+
+### Registration R: descriptive per-layer table (k=16; coordinator request; NO new claim)
+
+Full-rank readers fitted per layer; registered layer selection is unchanged (dev, marked "yes"). Dev and seen-name
+accuracies agree within ~0.01 at every layer, so dev selection optimism does not explain the seen-name advantage.
+Unseen-name accuracy peaks at mid-depth (best 0.45-0.53 vs histogram-mode 0.38); E was not scored at
+non-selected layers. 8B is the full run; the larger models are smokes, so their numbers are not comparable.
+
+| model | family | layer (depth) | unseen k16 acc | seen k16 acc | dev acc | hist-mode | selected |
+|---|---|---|---|---|---|---|---|
+| Qwen3-8B (full) | W1 | 9 | 0.427 | 0.858 | 0.866 | 0.384 | yes |
+| Qwen3-8B (full) | W1 | 18 | 0.529 | 0.767 | 0.773 | 0.384 |  |
+| Qwen3-8B (full) | W1 | 27 | 0.474 | 0.667 | 0.670 | 0.384 |  |
+| Qwen3-8B (full) | W1 | 32 | 0.442 | 0.640 | 0.642 | 0.384 |  |
+| Qwen3-8B (full) | W2 | 9 | 0.447 | 0.813 | 0.815 | 0.384 | yes |
+| Qwen3-8B (full) | W2 | 18 | 0.493 | 0.734 | 0.732 | 0.384 |  |
+| Qwen3-8B (full) | W2 | 27 | 0.462 | 0.623 | 0.624 | 0.384 |  |
+| Qwen3-8B (full) | W2 | 32 | 0.425 | 0.602 | 0.601 | 0.384 |  |
+| Qwen3-14B (smoke) | W1 | 10 | 0.389 | 0.711 | 0.706 | 0.382 | yes |
+| Qwen3-14B (smoke) | W1 | 20 | 0.441 | 0.644 | 0.639 | 0.382 |  |
+| Qwen3-14B (smoke) | W1 | 30 | 0.426 | 0.558 | 0.554 | 0.382 |  |
+| Qwen3-14B (smoke) | W1 | 36 | 0.414 | 0.560 | 0.551 | 0.382 |  |
+| Qwen3-14B (smoke) | W2 | 10 | 0.411 | 0.694 | 0.691 | 0.386 | yes |
+| Qwen3-14B (smoke) | W2 | 20 | 0.442 | 0.611 | 0.614 | 0.386 |  |
+| Qwen3-14B (smoke) | W2 | 30 | 0.423 | 0.523 | 0.538 | 0.386 |  |
+| Qwen3-14B (smoke) | W2 | 36 | 0.383 | 0.516 | 0.521 | 0.386 |  |
+| Qwen3-32B (smoke) | W1 | 16 | 0.373 | 0.710 | 0.708 | 0.382 | yes |
+| Qwen3-32B (smoke) | W1 | 32 | 0.416 | 0.628 | 0.615 | 0.382 |  |
+| Qwen3-32B (smoke) | W1 | 48 | 0.448 | 0.592 | 0.585 | 0.382 |  |
+| Qwen3-32B (smoke) | W1 | 58 | 0.418 | 0.506 | 0.512 | 0.382 |  |
+| Qwen3-32B (smoke) | W2 | 16 | 0.434 | 0.690 | 0.698 | 0.386 | yes |
+| Qwen3-32B (smoke) | W2 | 32 | 0.439 | 0.654 | 0.655 | 0.386 |  |
+| Qwen3-32B (smoke) | W2 | 48 | 0.429 | 0.577 | 0.575 | 0.386 |  |
+| Qwen3-32B (smoke) | W2 | 58 | 0.398 | 0.512 | 0.510 | 0.386 |  |
+| Qwen2.5-72B (smoke) | W1 | 20 | 0.404 | 0.815 | 0.812 | 0.382 | yes |
+| Qwen2.5-72B (smoke) | W1 | 40 | 0.411 | 0.671 | 0.679 | 0.382 |  |
+| Qwen2.5-72B (smoke) | W1 | 60 | 0.453 | 0.590 | 0.592 | 0.382 |  |
+| Qwen2.5-72B (smoke) | W1 | 72 | 0.452 | 0.557 | 0.561 | 0.382 |  |
+| Qwen2.5-72B (smoke) | W2 | 20 | 0.419 | 0.807 | 0.812 | 0.386 | yes |
+| Qwen2.5-72B (smoke) | W2 | 40 | 0.403 | 0.646 | 0.646 | 0.386 |  |
+| Qwen2.5-72B (smoke) | W2 | 60 | 0.398 | 0.512 | 0.523 | 0.386 |  |
+| Qwen2.5-72B (smoke) | W2 | 72 | 0.385 | 0.489 | 0.492 | 0.386 |  |
+
+## Registration N: name-addressable binding at the closing state (rename x reorder; 2026-10-12, coordinator-approved, before data)
+
+Question: is the closing-state colour information that the readers recover addressable BY NAME, with order
+invariance, and does it generalize to novel names? The alternative is that the readout reflects slot routing or
+name/length nuisance. Implementation: experiments/cloud/lsr_jobs/bindq.py.
+
+Names: deterministic syllable pseudo-names, exactly 2 tokens standalone and inside both families' fact prefixes
+(length-matched). They are split into a TRAIN pool of 300 and a disjoint HELD-OUT pool of 200; the legacy NAMES are
+excluded.
+
+Reader: an entity-query reader receives the closing-token state h and the frozen model's own state q(n) of the
+queried name (its last token after the family's fact prefix, at the same layer). It never receives a slot index.
+Reader families: bilinear <A_c h, B q> + C_c h, and an MLP on [h; q]. The family, size and weight decay are chosen on
+dev (seen names, original order). The layer is chosen on dev from round({0.25,0.5,0.75} x depth). Name-state
+standardization uses training names only.
+
+Test quads, per base collection (seen-pool names, fresh IID colours, n_test):
+- seen/orig;
+- seen/reordered (a non-identity permutation moving names and colours together);
+- renamed/orig (each name mapped to a distinct held-out name);
+- renamed/reordered.
+Entity-colour bindings and the colour multiset are preserved within a quad; comparisons are collection-paired.
+
+Gates:
+- (a) explicit-fact positive control: the same reader on the queried fact's value-token state at round(0.25 x
+  depth), >= 0.95;
+- (b) colour-free nuisance null: colour words replaced by "here" with labels unchanged, <= majority + 0.05.
+Reader adequacy: if the chosen reader's seen/orig accuracy does not exceed the histogram-mode baseline, the cell is
+"inconclusive_reader" and receives no negative verdict. A superposition diagnostic (the same reader on the mean of
+all facts' value-token states) is reported, not gated. A CPU check on 0.5B showed the reader family can underfit.
+
+Claims (95% collection bootstrap):
+- N1 (seen-name addressable, order-invariant): seen/reordered accuracy - histogram-mode >= 0.10 with the interval
+  > 0, AND the interval of seen/reordered - seen/orig lies entirely above -0.10.
+- N2 (name-general addressable binding): renamed/reordered accuracy - histogram-mode >= 0.10 with the interval
+  > 0.
+
+Predictions: the instrument passes on 8B; N1 holds at k=4; N2 holds at k=4 and fails at k=16; reorder effect within
++/-0.05 at k=4. No prediction for N1 at k=16.
+
+Reading: N2 would show that the closing state supports name-keyed retrieval that generalizes to novel names, using
+the model's own name representation. Failure rejects this reader recipe at this data size, not storage. No causal
+claim follows.
+
+Sequence: 8B smoke (n_train 8192, n_dev 1024, n_test 1024, k in {4,16}), then the 8B full run (n_train 16384,
+n_test 2048, 2 reader seeds) on gate-passing, adequate cells.
