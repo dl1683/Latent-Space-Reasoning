@@ -1,11 +1,11 @@
 # LSR GCP spend ledger
 
-Updated 2026-10-12T14:21:45+00:00. Estimated from VM lifetimes x all-in Spot rate (Cloud Billing catalog, 2026-10-11). Budget 5,000 USD.
+Updated 2026-10-12T15:00:06+00:00. Estimated from VM lifetimes x all-in Spot rate (Cloud Billing catalog, 2026-10-11). Budget 5,000 USD.
 
 | run | VMs launched | est. USD |
 |---|---:|---:|
 | diag-k1 | 4 | 1.04 |
-| f8b | 12 | 1.04 |
+| f8b | 12 | 7.83 |
 | gate-eval-conc | 3 | 12.33 |
 | gate-eval-cur | 12 | 65.21 |
 | gate-pilot | 1 | 0.53 |
@@ -17,7 +17,9 @@ Updated 2026-10-12T14:21:45+00:00. Estimated from VM lifetimes x all-in Spot rat
 | p2 | 29 | 96.04 |
 | p2-pilot | 2 | 0.81 |
 | p3 | 3 | 0.65 |
-| q8b | 2 | 0.87 |
+| q8b | 2 | 0.76 |
+| q8b-diag | 1 | 0.14 |
+| q8b2 | 2 | 1.14 |
 | recur-confirm | 4 | 1.12 |
 | recur-pilot | 5 | 2.51 |
 | recur-sw-b | 6 | 36.23 |
@@ -29,6 +31,6 @@ Updated 2026-10-12T14:21:45+00:00. Estimated from VM lifetimes x all-in Spot rat
 | search-pilot | 4 | 0.30 |
 | search-temps | 6 | 3.62 |
 | smoke1 | 4 | 0.12 |
-| **total** | 334 | **922.59** |
+| **total** | 337 | **930.56** |
 
-Live VMs now: 13; burn rate now: $28.7/h
+Live VMs now: 1; burn rate now: $2.2/h
