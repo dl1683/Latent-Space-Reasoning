@@ -36,22 +36,30 @@ class Out:
         (self.dir / name).write_text(json.dumps(obj, indent=2, default=str))
 
 
-def load(model_id, dtype=torch.bfloat16, device_map="cuda"):
+def load(model_id, dtype=torch.bfloat16, device_map="cuda", revision=None):
     from transformers import AutoModelForCausalLM, AutoTokenizer
-    tok = AutoTokenizer.from_pretrained(model_id)
+    tok = AutoTokenizer.from_pretrained(model_id, revision=revision)
     tok.padding_side = "left"
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
-    model = AutoModelForCausalLM.from_pretrained(model_id, dtype=dtype, device_map=device_map)
+    model = AutoModelForCausalLM.from_pretrained(model_id, dtype=dtype, device_map=device_map, revision=revision)
     model.eval()
     info = {"model": model_id, "revision": getattr(model.config, "_commit_hash", None),
             "n_layers": model.config.num_hidden_layers, "d_model": model.config.hidden_size,
             "n_params": sum(p.numel() for p in model.parameters()), "dtype": str(dtype),
-            "torch": torch.__version__, "gpu": torch.cuda.get_device_name(0)}
+            "torch": torch.__version__, "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu"}
     import hashlib
     import transformers
     info["transformers"] = transformers.__version__
     info["tokenizer_revision"] = tok.init_kwargs.get("_commit_hash")
+    try:  # config/tokenizer _commit_hash is None in transformers 5: resolve the cached snapshot sha instead
+        from pathlib import Path as _P
+        from huggingface_hub import snapshot_download
+        sha = _P(snapshot_download(model_id, revision=revision, local_files_only=True)).name
+        info["revision"] = info["revision"] or sha
+        info["tokenizer_revision"] = info["tokenizer_revision"] or sha
+    except Exception as e:  # noqa: BLE001 - recorded, never fatal
+        info["revision_error"] = repr(e)
     info["chat_template_sha256"] = hashlib.sha256((tok.chat_template or "").encode()).hexdigest()[:16]
     return model, tok, info
 

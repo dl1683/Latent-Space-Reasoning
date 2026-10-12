@@ -336,3 +336,54 @@ not proportional to d (r90(72B)/r90(8B) < 2 at a d ratio of 2). Kill: the gate f
 match top-r within the margin; r90 undefined across cells. Test: 512 collections per (model,k,family). Budget 250
 USD; stop and leave the registration incomplete rather than exceed it. Reviews: internal/council_gcp
 brief_q1p / codex_q1p / droid_q1p (copied to docs/council_2026_10_11/).
+
+### Q1-prime 8B smoke result and deferral (Codex hunt, docs/council_2026_10_11/codex_q1p_smoke_hunt.md)
+
+Six 64-collection dev cells passed the gate; full and rank-4 value-token patches gave 100% donor-follow. With four
+colour values the value-token difference is near-lexical (at most a 3-dim pair span), so r90 <= 4 is near-forced
+and the registered k-growth and cross-model predictions are untestable by that intervention. The full sweep and
+scaling are deferred; they are replaced by Amendment A.
+
+## Q1-prime Amendment A (2026-10-12, coordinator-approved, registered before any amendment data)
+
+Object: whether single-fact edits carry context-dependent dimension beyond the lexical colour-pair component.
+Implementation: experiments/cloud/lsr_jobs/q1pp.py.
+
+Decomposition: donor and receiver differ in one fact (receiver colour a -> donor colour b). delta = donor minus
+receiver residual at the site. pm = the dev mean of delta for the ordered pair (a,b), giving 12 pair means fitted per
+(model,site,layer,k,family) on dev names. e = delta - pm. The residual basis U is the principal basis of e, fitted
+on dev AFTER pair-mean removal.
+
+Variants added at the site: none; sham (norm-matched random); full (delta); pm; resid (e alone); pm + top-r
+projection of e; and pm + projection of e on 5 frozen random r-dim subspaces, norm-matched to the top-r projection.
+r in {1,2,3,4,8}.
+
+Sites:
+(primary) "post": the identical closing token after all facts. Its layer is frozen by dev-only admission over
+round({0.25,0.5,0.75} x depth): k=4, n=64 dev collections, full vs sham only. The layer with the largest
+full-minus-sham is taken, and the site is admitted only if that layer passes the gate.
+(diagnostic) "value": the changed fact's value token at round(0.25 x depth).
+
+Gate (point estimates, per cell, on the cell's own data): full >= 0.80, full - sham >= 0.80, and full collateral
+<= 0.05 where k>1. Failing cells and inadmissible sites receive no rank verdict.
+
+Claim rule: contextual dimension at rank r is claimed only in a gate-passing cell where the collection-paired
+bootstrap intervals of BOTH [pm+top-r minus pm] and [pm+top-r minus mean over seeds of pm+random-r] exclude 0.
+Intervals are Bonferroni-simultaneous over the 2 x 5 comparisons per cell. r90 is the smallest r in {0,1,2,3,4,8}
+with retention (variant - sham)/(full - sham) >= 0.90, where r=0 means pm alone. It is reported with a bootstrap
+interval; above the grid it is censored as ">8".
+
+Instrument fixes: options are asserted to be single tokens both standalone and in-family; model and tokenizer
+revisions are resolved from the HF snapshot sha and recorded (a cfg revision pin is honoured); paired per-collection
+outcomes, option frequencies, unpatched receiver accuracy and constant-answer baselines are retained.
+
+Predictions (Codex): at the value site the pair mean explains most of the effect (pm retention >= 0.90, r90 = 0;
+no contextual claim). At the post site, single-position patches fail admission on 8B, consistent with the Q
+closing-position null.
+
+Sequence: separate smoke on Qwen3-8B (n=64 test-collections drawn from dev names, fit_n=512, k in {1,4,16},
+W1/W2). Only for admitted, gate-passing cells: full sweep (512 test collections from test names, fit_n=2048).
+Then 14B/32B/72B, each with its own smoke, only where the 8B post site is admitted or a value-site contextual
+claim survives; otherwise scaling is recorded as not warranted. Budget: within the remaining Q1-prime 250 USD.
+CPU mechanics check (Qwen2.5-0.5B, n=16, non-claim): value site pm = full (0.875-1.0) and resid alone 0.0; the post
+site was not admitted at layers 6/12.

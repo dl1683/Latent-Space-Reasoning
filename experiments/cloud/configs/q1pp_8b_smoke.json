@@ -1,0 +1,74 @@
+{
+ "run": "q1pp-8b-smoke",
+ "kind": "q1pp",
+ "machine": "a2-highgpu-1g",
+ "accelerator": null,
+ "usd_per_hour": 2.21,
+ "cost_cap_usd": 8.0,
+ "zones": [
+  "us-central1-a",
+  "us-central1-b",
+  "us-central1-c",
+  "us-central1-f",
+  "us-east1-b",
+  "us-west1-b",
+  "us-west4-b",
+  "us-east4-c",
+  "europe-west4-a",
+  "europe-west4-b"
+ ],
+ "requirements": [
+  "transformers>=5.12,<6",
+  "accelerate",
+  "jinja2>=3.1"
+ ],
+ "common": {
+  "model": "Qwen/Qwen3-8B",
+  "seed": 0,
+  "sites": [
+   "value",
+   "post"
+  ],
+  "ks": [
+   1,
+   4,
+   16
+  ],
+  "ranks": [
+   1,
+   2,
+   3,
+   4,
+   8
+  ],
+  "rand_seeds": 5,
+  "collateral_queries": 4,
+  "q1_batch": 32,
+  "fit_n": 512,
+  "test_n": 64,
+  "split": "dev",
+  "value_layer_frac": 0.25,
+  "post_layer_fracs": [
+   0.25,
+   0.5,
+   0.75
+  ],
+  "admit_k": 4,
+  "admit_n": 64,
+  "boot": 2000,
+  "smoke": true,
+  "note": "Q1-prime Amendment A positive-control smoke (non-claim)"
+ },
+ "shards": [
+  {
+   "families": [
+    "W1"
+   ]
+  },
+  {
+   "families": [
+    "W2"
+   ]
+  }
+ ]
+}
