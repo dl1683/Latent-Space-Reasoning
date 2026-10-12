@@ -1,5 +1,13 @@
 # Experiments Log
 
+## Registration Q1-prime registered; 8B instrument validated (non-claim) (2026-10-12 ~15:45Z)
+
+- q8b-validate (Codex+Droid hunted): the 8B hook works and value-token donor replacement drives answers (98-100%
+  donor-follow at layers 9/18, 44-53% at layer 27, 0% unpatched). This does not establish that the closing position is
+  absent from the answer path. Registration Q1-prime (theory/LATENT_BRANCH_CAPACITY.md) moves the patch to the
+  changed fact's value token, with frozen random controls, per-cell gates, and a separate n=64 8B smoke before any sweep.
+- What we learned: the earlier Q null came from where we patched, not from a dead hook.
+
 ## Registration Q (frozen Qwen3-8B, native selectable information): NO VERDICT — instrument unvalidated (2026-10-12 15:25Z)
 
 Licensed (Codex hunt): "Q1 mediation is unestablished; Q2 fails the tested transplant interface." Q1 full patches at the
