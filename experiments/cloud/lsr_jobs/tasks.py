@@ -121,7 +121,7 @@ def verify(pred, item):
     if c["type"] in ("countdown", "subsetsum"):
         if c["type"] == "subsetsum" and re.search(r"[-*]", pred):
             return False
-        if not re.fullmatch(r"[\d\s()+\-*]+", pred):
+        if not re.fullmatch(r"[\d\s()+\-*]+", pred) or "**" in pred:  # '**' (power) is not an allowed operation
             return False
         used = [int(x) for x in re.findall(r"\d+", pred)]
         pool = list(c["nums"])
@@ -140,7 +140,7 @@ def verify(pred, item):
 def partial_score(pred, item):
     """Public, answer-blind graded feedback for search (countdown: closeness to target; else 0/1 is unavailable)."""
     c = item["check"]
-    if c["type"] in ("countdown", "subsetsum") and pred and re.fullmatch(r"[\d\s()+\-*]+", pred):
+    if c["type"] in ("countdown", "subsetsum") and pred and "**" not in pred and re.fullmatch(r"[\d\s()+\-*]+", pred):
         try:
             v = eval(pred)
         except Exception:

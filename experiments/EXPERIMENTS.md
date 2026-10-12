@@ -4,10 +4,12 @@
 
 14-checkpoint dev screen + 4-checkpoint confirmation (512 new problems/family, budgets 8 and 32, text arms at
 dev-tuned temperature with sequential feedback repair). Verifier-guided residual ES never beats a matched-norm
-random perturbation (14/14 dev, 4/4 confirm). Best latent-vs-text gap: Qwen3-8B +2.6 pp (B8) / +2.5 pp (B32),
+random perturbation in any confirmation configuration (4/4). Best latent-vs-text gap: Qwen3-8B +2.6 pp (B8) / +2.5 pp (B32),
 below the 5 pp bar and in one family only; at budget 32 text repair beats latent by 9-18 pp in the other three
-checkpoints. What we learned: on these public-verifier puzzles, the verifier's signal is better spent steering
-TEXT (repair) than steering the hidden state; the hidden-state "search" reduces to random diversity.
+checkpoints. Licensed sentence (evidence gate 1): "The tested confirmation configurations miss the registered
+improvement threshold and show no replicated ES advantage over random perturbations; matched-compute superiority
+remains unestablished." (Correction: one dev cell had ES > random, Qwen3-0.6B l14: 0.070 vs 0.047; verifier calls
+and FLOPs were not exactly matched; the countdown verifier accepted '**', now fixed.)
 
 ## Probe C (frozen recurrent depth): registered prediction FAILS (2026-10-12 00:10Z)
 
@@ -15,19 +17,20 @@ TEXT (repair) than steering the hidden state; the hidden-state "search" reduces 
 dev-admitted loop lowered admissible-family accuracy (-3 to -9 pp); 8/14 models admitted no loop on dev.
 Direct mode: Qwen2.5-7B countdown +2.5 pp [0.4, 4.9] (< 3 pp bar); Qwen3-1.7B/4B null/negative; Qwen3-8B
 "+6.6 pp" is an artifact (the unlooped model emits empty answers for 507/512 problems; looping unblocks output).
-What we learned: looping middle blocks of frozen ordinary checkpoints does not add reasoning at matched
-compute on these tasks; instrument lessons: constant-answer baselines and empty-answer rates are mandatory
+Licensed sentence (evidence gate 1): "No admissible tested configuration establishes the registered
+replicated recurrence benefit; confounded cells remain instrument failures." (Controls matched nominal layer/token
+allowances, not measured FLOPs; the Qwen2.5-7B +2.5 pp interval extends above 3 pp.) Instrument lessons: constant-answer baselines and empty-answer rates are mandatory
 beside termination.
 
 ## LOCKED: admission gate FAILS (2026-10-11 23:15Z)
 
 Curriculum arm (Amendment 2), Qwen3-0.6B, 3 seeds, test split, corrected evaluator. k=1: no updates 0.97-0.99,
 one update 0.84-0.86, two updates ~0.76 (bar 0.90 at every update count). Branch-addressed edits: targeted
-effect ~0 pp (bar 20 pp); edit-then-advance tracks the unedited graph (0.41). Storage C90 (every selector) = 2-4
-reachability answers. Width 64/256/1024 identical -> width scaling not tested. Consequence (pre-registered): no
-1.7B flagship escalation. What we learned: a 0.6B model with a single-vector bottleneck learns to STORE a few
-late-selectable answers but does not learn to APPLY edits to the stored state through a fresh-context pass;
-in one seed it ignores updates entirely. Next: Registrations P1 (random-access storage capacity vs width) and
+effect ~0 pp (bar 20 pp); edit-then-advance accuracy 0.41 (below chance). Coarse-grid storage (every selector) passes through k=2-4. Width 64/256/1024 identical -> width scaling not tested. Consequence (pre-registered): no
+1.7B flagship escalation. Licensed sentence (evidence gate 1): "The documented curriculum construction fails admission in all three
+seeds; these results license no flagship escalation and leave width scaling untested." (Storage C90 values are
+coarse-grid; main~sham at one seed does not prove updates are ignored; the 0.41 edit-then-advance accuracy is below
+chance but was not paired-scored against the unedited graph; the concurrent arm's verdict is pending.) Next: Registrations P1 (random-access storage capacity vs width) and
 P2 (update closure with a consistency target).
 
 ## GCP latent-reasoning program (2026-10-11, running)

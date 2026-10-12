@@ -202,3 +202,8 @@ experiments/results/fable_*.md
 experiments/results/codex_*.md
 experiments/results/balanced_cell_review.md
 experiments/results/eligibility_reanalysis.md
+
+# GCP raw shard pulls (canonical copies in gs://sc-bench-iqidis-artifacts/lsr/runs/; see experiments/results/cloud/MANIFEST.md)
+experiments/results/cloud/*/
+experiments/cloud/launches.jsonl
+experiments/cloud/*.log
