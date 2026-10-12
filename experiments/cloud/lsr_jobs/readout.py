@@ -14,6 +14,7 @@ import torch.nn.functional as F
 
 from . import common
 from .native import FAM, NAMES, block, collection, value_positions
+from .q1pp import check_options
 
 DEV, TEST = NAMES[:20], NAMES[20:]
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -126,8 +127,10 @@ def main(cfg, out):
     out.meta("model_info.json", info)
     if cfg.get("revision"):
         assert info.get("revision") == cfg["revision"] == info.get("tokenizer_revision"), "revision custody failed"
+    check_options(tok)  # every colour is one token standalone and in-family
     L = info["n_layers"]
-    layers = sorted({min(L - 1, int(round(f * L))) for f in cfg["layer_fracs"]})
+    layers = sorted({int(round(f * L)) for f in cfg["layer_fracs"]})
+    assert max(layers) <= L - 2, "final layer output is normalized in HF hidden_states; use fracs < 1"
     vlayer = int(round(cfg["value_layer_frac"] * L))
     B, base = cfg["boot"], {"model": cfg["model"], "revision": info.get("revision"), "d_model": info["d_model"]}
     for fam in cfg["families"]:
@@ -141,7 +144,7 @@ def main(cfg, out):
             te_p = [(i, permuted(prng, c)) for i, c in enumerate(te)] if k > 1 else []
             te_p = [(i, c) for i, c in te_p if c is not None]
             # token alignment: the block (closing token last) is an exact token prefix of block + question
-            for c in te[:8]:
+            for c in te + tr[:256]:
                 b_ = tok(block(c, fam), add_special_tokens=False)["input_ids"]
                 q_ = tok(block(c, fam) + FAM[fam]["q"].format(n=c["names"][0]), add_special_tokens=False)["input_ids"]
                 assert q_[:len(b_)] == b_, "closing token is not a token prefix of the queried prompt"
@@ -167,8 +170,9 @@ def main(cfg, out):
             pred = full.predict(Cte[lsel])
             corr = (pred == Yte).float()  # N x k
             hm = (hist_mode(Yte) == Yte).float()
-            shuf = fit_reader(Ctr[lsel], Ytr[torch.randperm(len(Ytr), generator=torch.Generator().manual_seed(1))],
-                              Cdv[lsel], Ydv, None, 0, cfg)
+            g1 = torch.Generator().manual_seed(1)  # shuffle train AND dev labels: dev selection must not leak labels
+            shuf = fit_reader(Ctr[lsel], Ytr[torch.randperm(len(Ytr), generator=g1)],
+                              Cdv[lsel], Ydv[torch.randperm(len(Ydv), generator=g1)], None, 0, cfg)
             shuf_acc = (shuf.predict(Cte[lsel]) == Yte).float().mean().item()
             row = {"key": key, **base, "family": fam, "k": k, "layers": layers, "layer": lsel,
                    "n_train": len(tr), "n_test": len(te), "chance": 0.25,
@@ -191,18 +195,23 @@ def main(cfg, out):
                                   "minus_hist_mode": boot_ci((cp * ch).sum(1) / nz, B, 6, (hp * ch).sum(1) / nz)}
             # rank-bottleneck curve (shared learned projection), reader seeds
             curve = {}
-            for r in cfg["ranks"]:
-                accs = []
-                for s in range(cfg["reader_seeds"]):
-                    rr = fit_reader(Ctr[lsel], Ytr, Cdv[lsel], Ydv, r, s, cfg)
-                    accs.append((rr.predict(Cte[lsel]) == Yte).float().mean().item())
-                curve[r] = accs
-                out.beat()
+            row["instrument_ok"] = pc_acc >= 0.95 and shuf_acc <= row["majority_class_acc"] + 0.05
+            if k == 1:
+                row["E"] = row["instrument_ok"] and row["mean_slot_acc"][0] >= 0.90
+            else:
+                dh, bd = row["acc_minus_hist_mode"], row["binding"]["minus_hist_mode"]
+                row["E"] = row["instrument_ok"] and dh[0] >= 0.10 and dh[1] > 0 and bd[1] > 0
+            if row["instrument_ok"]:  # rank curve; the seed is chosen on DEV, test accuracy reported for that seed
+                for r in cfg["ranks"]:
+                    rs = [fit_reader(Ctr[lsel], Ytr, Cdv[lsel], Ydv, r, s, cfg) for s in range(cfg["reader_seeds"])]
+                    best = max(rs, key=lambda x: x.dev_acc)
+                    curve[r] = {"test_acc_dev_selected": (best.predict(Cte[lsel]) == Yte).float().mean().item(),
+                                "dev_acc_by_seed": [x.dev_acc for x in rs]}
+                    out.beat()
             fa = row["mean_slot_acc"][0]
             row["rank_curve"] = curve
-            hit = [r for r in cfg["ranks"] if fa > 0.25 and (max(curve[r]) - 0.25) / (fa - 0.25) >= 0.90]
-            row["r_req"] = hit[0] if hit else f">{max(cfg['ranks'])}"
-            row["instrument_ok"] = pc_acc >= 0.95 and shuf_acc <= row["majority_class_acc"] + 0.05
+            hit = [r for r in curve if fa > 0.25 and (curve[r]["test_acc_dev_selected"] - 0.25) / (fa - 0.25) >= 0.90]
+            row["r_req"] = (hit[0] if hit else f">{max(cfg['ranks'])}") if row["E"] else None
             out.write(row)
             if cfg.get("smoke") and not row["instrument_ok"]:
                 out.write({"key": f"smoke_fail|{fam}|k{k}", "note": "positive control or shuffle control failed"})

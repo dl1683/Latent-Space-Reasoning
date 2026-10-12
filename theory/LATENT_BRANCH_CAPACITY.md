@@ -394,7 +394,7 @@ Question: is fact-binding information linearly present at the closing position, 
 patches there move no answers (Q, Amendment A)? Implementation: experiments/cloud/lsr_jobs/readout.py.
 
 Features: the frozen residual at the closing token (last block token, before any question; asserted to be a token
-prefix of the queried prompt) at layers round({0.25,0.5,0.75,1.0} x depth). The layer is selected on dev by
+prefix of the queried prompt) at decoder-layer outputs round({0.25,0.5,0.75,0.9} x depth) (hidden_states[l+1]; the normalized final output is excluded). The layer is selected on dev by
 full-rank reader accuracy. Labels: the colour of every slot j=1..k.
 
 Readers:
@@ -439,3 +439,14 @@ CPU mechanics check (Qwen2.5-0.5B, n_test 128, non-claim):
   [0.15, 0.26], r_req 16.
 The shuffle gate was made relative to the majority class after the k=1 shuffle reached 0.344 (class prior at
 small n).
+Pre-smoke amendments (Codex code hunt, docs/council_2026_10_11/codex_readout_code.md):
+- Layer fractions are {0.25,0.5,0.75,0.9} (the final normalized output is excluded).
+- Closing-token alignment is asserted on all test collections plus 256 train collections; options are checked to be
+  single tokens.
+- E/E1 are computed in code. The rank curve runs and r_req is reported only when the instrument gate passes (r_req
+  only where E holds). The reader seed for each rank is chosen on dev, not test.
+- E licenses slot-ordered colour information beyond the colour histogram, not name-addressable binding. Slot-specific
+  heads and uncontrolled token lengths permit slot/position shortcuts.
+- "About 3k dimensions" is a heuristic expectation, not a theorem.
+- At k=1 the DEV pool allows only 80 distinct facts, so train/dev overlap there.
+- Shuffle control permutes dev labels as well (CPU check showed dev-selection label leakage: k=1 shuffle 0.417 vs majority 0.29; fixed: 0.333 vs 0.292).
