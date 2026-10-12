@@ -43,7 +43,10 @@ P2 (update closure with a consistency target).
 
 ## GCP latent-reasoning program (2026-10-11, running)
 
-Pre-registration: theory/LATENT_BRANCH_CAPACITY.md (+ Amendment 1). Runner: experiments/cloud/lsr_cloud.py.
+Pre-registration: theory/LATENT_BRANCH_CAPACITY.md — Amendment 1 (PR at 8,192 pairs + isotropic null, quantized-
+state arms, C80/C95, per-cell logs; motivated by theory/CROSS_PROJECT_INSIGHTS.md, the user-directed extraction from
+Matrix Native Math and the LLM Genome lab), Amendment 2 (curriculum gate arm), Deviation 1, Registrations P1/P2,
+Amendment 3 (contingent). Council and audits: docs/council_2026_10_11/. Runner: experiments/cloud/lsr_cloud.py.
 Spend: experiments/cloud/SPEND.md.
 
 - **Runner smoke (L4):** auto-off self-test PASS; KV-safe layer looper exact at loops=1 (logit max diff 0.0);
