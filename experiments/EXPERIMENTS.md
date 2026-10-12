@@ -1,6 +1,6 @@
 # Experiments Log
 
-## Registration F (formation collisions, Qwen3-8B LoRA): INSTRUMENT INVALID (2026-10-12 14:50Z, Codex hunt passed)
+## Registration F (formation collisions, Qwen3-8B LoRA): INSTRUMENT INVALID (2026-10-12 14:36Z, Codex hunt passed)
 
 Staged positive control fails (no seed has both staged orders >= 0.90 in every family); staged - interleaved after
 consolidation +2.1 to +2.9 pp (bar 15). Licensed: "Sequential training shows substantial forgetting; interleaving
