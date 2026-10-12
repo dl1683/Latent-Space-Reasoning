@@ -1,5 +1,13 @@
 # Experiments Log
 
+## LOCKED: concurrent gate arm FAILS (2026-10-12 01:22Z)
+
+Frozen concurrent recipe, 3 seeds, test: seeds 11 and 47 stayed at constant output for the full run (all cells at
+base rate); seed 23 learned k=1 storage (0.902) and nothing else. The registered repair (double exposure within
+caps) is inapplicable: the full cap was already used. Neither gate arm passes (arms not pooled): no escalation.
+Cross-project note (descriptive): concurrent mixture stalls, staged mixture learns — the same contrast the Genome
+lab reports for weight-space formation (CROSS_PROJECT_INSIGHTS A5); here n=3 seeds per arm, one task.
+
 ## Probe B (latent search): registered prediction FAILS (2026-10-12 00:27Z)
 
 14-checkpoint dev screen + 4-checkpoint confirmation (512 new problems/family, budgets 8 and 32, text arms at
