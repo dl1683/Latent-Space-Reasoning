@@ -195,7 +195,14 @@ def main(cfg, out):
                     b_ = tok(x, add_special_tokens=False)["input_ids"]
                     q_ = tok(x + FAM[fam]["q"].format(n=n_[0]), add_special_tokens=False)["input_ids"]
                     assert q_[:len(b_)] == b_
-            rows = {s: query_rows(v, name_idx, k) for s, v in sets.items()}
+            slotq = cfg.get("query") == "slot"  # N-control: same states/splits, slot-index query instead of name
+            if slotq:
+                rows = {s: torch.tensor([[ci, j, c] for ci, (_, cs_) in enumerate(v) for j, c in enumerate(cs_)])
+                        for s, v in sets.items()}
+                QQ = {l: torch.eye(k) for l in set(layers) | {vlayer}}
+            else:
+                rows = {s: query_rows(v, name_idx, k) for s, v in sets.items()}
+                QQ = Qall
             maj = max((rows["seen_orig"][:, 2] == o).float().mean().item() for o in range(4))
             row = {"key": key, **base, "family": fam, "k": k, "layers": layers, "n_test": len(te),
                    "n_train_names": len(train_names), "n_heldout_names": len(held), "majority_class_acc": maj}
@@ -210,14 +217,14 @@ def main(cfg, out):
             V = {s: states(model, tok, texts[s], [vlayer], vp[s], bs=EB)[vlayer].reshape(-1, info["d_model"]) for s in vp}
             out.beat()
             vrows = {s: torch.stack([torch.arange(len(rows[s])), rows[s][:, 1], rows[s][:, 2]], 1) for s in vp}
-            pc = fit(V["tr"], Qall[vlayer], vrows["tr"], V["dv"], Qall[vlayer], vrows["dv"], cfg)
-            row["pc_value_token_acc"] = (pc.predict(V["seen_orig"], Qall[vlayer], vrows["seen_orig"])
+            pc = fit(V["tr"], QQ[vlayer], vrows["tr"], V["dv"], QQ[vlayer], vrows["dv"], cfg)
+            row["pc_value_token_acc"] = (pc.predict(V["seen_orig"], QQ[vlayer], vrows["seen_orig"])
                                          == vrows["seen_orig"][:, 2]).float().mean().item()
             # reader-adequacy diagnostic (not gated): entity reader on the MEAN of all facts' value-token states
             Sup = {s: V[s].view(-1, k, V[s].shape[-1]).float().mean(1) for s in V}
             del V
-            sp = fit(Sup["tr"], Qall[vlayer], rows["tr"], Sup["dv"], Qall[vlayer], rows["dv"], cfg)
-            row["superposition_pc_acc"] = (sp.predict(Sup["seen_orig"], Qall[vlayer], rows["seen_orig"])
+            sp = fit(Sup["tr"], QQ[vlayer], rows["tr"], Sup["dv"], QQ[vlayer], rows["dv"], cfg)
+            row["superposition_pc_acc"] = (sp.predict(Sup["seen_orig"], QQ[vlayer], rows["seen_orig"])
                                            == rows["seen_orig"][:, 2]).float().mean().item()
             del Sup
             if row["pc_value_token_acc"] < 0.95:
@@ -226,15 +233,15 @@ def main(cfg, out):
             # layer selection on dev (seen names, original order)
             H = {s: states(model, tok, texts[s], layers, bs=EB) for s in ("tr", "dv")}
             out.beat()
-            per_layer = {l: fit(H["tr"][l], Qall[l], rows["tr"], H["dv"][l], Qall[l], rows["dv"], cfg) for l in layers}
+            per_layer = {l: fit(H["tr"][l], QQ[l], rows["tr"], H["dv"][l], QQ[l], rows["dv"], cfg) for l in layers}
             lsel = max(layers, key=lambda l: per_layer[l].dev_acc)
             rd = per_layer[lsel]
             row["layer"] = lsel
             # gate 2: colour-free nuisance null at the selected layer (labels unchanged, colour words removed)
             Hn = {s: states(model, tok, [block_text(n_, c_, fam, colour_free=True) for n_, c_ in sets[s]], [lsel], bs=EB)[lsel]
                   for s in ("tr", "dv", "seen_orig")}
-            nul = fit(Hn["tr"], Qall[lsel], rows["tr"], Hn["dv"], Qall[lsel], rows["dv"], cfg)
-            row["colour_free_null_acc"] = (nul.predict(Hn["seen_orig"], Qall[lsel], rows["seen_orig"])
+            nul = fit(Hn["tr"], QQ[lsel], rows["tr"], Hn["dv"], QQ[lsel], rows["dv"], cfg)
+            row["colour_free_null_acc"] = (nul.predict(Hn["seen_orig"], QQ[lsel], rows["seen_orig"])
                                            == rows["seen_orig"][:, 2]).float().mean().item()
             del Hn
             if row["colour_free_null_acc"] > maj + 0.05:
@@ -246,19 +253,25 @@ def main(cfg, out):
                 out.beat()
             Yb = torch.tensor([c_ for _, c_ in te])
             hm = (hist_mode(Yb) == Yb).float().mean(1)  # identical colour multiset across the quad
-            pcs = {s: (rd.predict(H[s][lsel], Qall[lsel], rows[s]) == rows[s][:, 2]).float().view(-1, k).mean(1) for s in quads}
+            pcs = {s: (rd.predict(H[s][lsel], QQ[lsel], rows[s]) == rows[s][:, 2]).float().view(-1, k).mean(1) for s in quads}
             res = {s: {"acc": boot_ci(v, B, 10 + i), "minus_hist_mode": boot_ci(v, B, 20 + i, hm)}
                    for i, (s, v) in enumerate(pcs.items())}
             res["reorder_effect_seen"] = boot_ci(pcs["seen_reord"], B, 31, pcs["seen_orig"])
             res["rename_effect"] = boot_ci(pcs["renamed_orig"], B, 32, pcs["seen_orig"])
+            # reference: Registration R's per-slot linear reader (closing state only) on the same states/splits
+            from .readout import fit_reader
+            Ys = {s: torch.tensor([c_ for _, c_ in sets[s]]) for s in sets}
+            ref = fit_reader(H["tr"][lsel].float(), Ys["tr"], H["dv"][lsel].float(), Ys["dv"], None, 0, cfg)
+            res["ref_per_slot_linear"] = {s: boot_ci((ref.predict(H[s][lsel].float()) == Ys[s]).float().mean(1), B, 40 + i)
+                                          for i, s in enumerate(quads)}
             adequate = res["seen_orig"]["acc"][0] > hm.mean().item()  # else inconclusive, never a negative verdict
             n1 = adequate and res["seen_reord"]["minus_hist_mode"][0] >= 0.10 and \
                 res["seen_reord"]["minus_hist_mode"][1] > 0 and res["reorder_effect_seen"][1] > -0.10
             n2 = adequate and res["renamed_reord"]["minus_hist_mode"][0] >= 0.10 and res["renamed_reord"]["minus_hist_mode"][1] > 0
             out.write({**row, "instrument_ok": True, "reader_adequate": adequate,
-                       "verdict": "scored" if adequate else "inconclusive_reader",
+                       "verdict": "scored" if adequate else "inconclusive_reader", "query": "slot" if slotq else "name",
                        "hist_mode_acc": hm.mean().item(), "quads": res, "N1_seen_name_addressable": n1,
                        "N2_name_general_addressable": n2, "reader": {"kind": rd.kind, "R": rd.R, "dev_acc": rd.dev_acc},
                        "dev_acc_by_layer": {l: r_.dev_acc for l, r_ in per_layer.items()},
-                       "quad_acc_by_layer": {l: {s: (r_.predict(H[s][l], Qall[l], rows[s]) == rows[s][:, 2]).float().mean().item()
+                       "quad_acc_by_layer": {l: {s: (r_.predict(H[s][l], QQ[l], rows[s]) == rows[s][:, 2]).float().mean().item()
                                                  for s in quads} for l, r_ in per_layer.items()}})

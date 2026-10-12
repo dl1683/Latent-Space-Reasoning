@@ -585,3 +585,21 @@ Pre-smoke amendments (Codex code hunt, docs/council_2026_10_11/codex_bindq_code.
 - Per-epoch heartbeats are added.
 - k>1 is asserted.
 - Names are length-matched by token count with a leading space and in-family (not as bare strings).
+
+### Registration N smoke result and N-control (2026-10-12, coordinator-approved, before control data)
+
+N smoke (Codex hunt docs/council_2026_10_11/codex_bindq_smoke_hunt.md): all 4 cells passed the gates but were
+reader-inconclusive (the entity-query reader never exceeded histogram mode); no full run.
+
+N-control: identical states and splits (same seed namespace and name pools), with a slot-index query (one-hot)
+replacing the name query. The reader family, budget, gates and selection are unchanged. Registration R's per-slot
+linear reader runs as a reference on the same states.
+
+Interpretation rule, fixed before data:
+- Slot-query reader >= histogram-mode + 0.10 (interval > 0) at k=4: the closing-state information is
+  slot-addressable, and the N failure is a name-selection difficulty. This does not prove binding absent.
+- Slot-query fails while the per-slot linear reader succeeds: reader/training inadequacy.
+- Both fail: the changed state/name population is implicated.
+
+Prediction: slot-query succeeds at k=4. CPU mechanics check (0.5B, non-claim): slot-query 0.71-0.79 vs histogram
+0.53; per-slot linear 0.64-0.68.
