@@ -387,3 +387,55 @@ Then 14B/32B/72B, each with its own smoke, only where the 8B post site is admitt
 claim survives; otherwise scaling is recorded as not warranted. Budget: within the remaining Q1-prime 250 USD.
 CPU mechanics check (Qwen2.5-0.5B, n=16, non-claim): value site pm = full (0.875-1.0) and resid alone 0.0; the post
 site was not admitted at layers 6/12.
+
+## Registration R: closing-state readout (2026-10-12, coordinator-approved, registered before any data)
+
+Question: is fact-binding information linearly present at the closing position, even though single additive
+patches there move no answers (Q, Amendment A)? Implementation: experiments/cloud/lsr_jobs/readout.py.
+
+Features: the frozen residual at the closing token (last block token, before any question; asserted to be a token
+prefix of the queried prompt) at layers round({0.25,0.5,0.75,1.0} x depth). The layer is selected on dev by
+full-rank reader accuracy. Labels: the colour of every slot j=1..k.
+
+Readers:
+- Full rank: per-slot linear 4-way readers (standardized features, AdamW, weight decay chosen on dev).
+- Rank curve: a shared learned rank-r projection with per-slot heads, best of the reader seeds.
+Data: train and dev collections use the 20 DEV names; test collections use the 20 disjoint TEST names. k in
+{1,4,16}, families W1/W2.
+
+Controls:
+- (a) Explicit-fact positive control: the same recipe on each fact's own value-token state at round(0.25 x
+  depth). It must reach >= 0.95.
+- (b) Label-shuffled reader: it must stay <= the majority-class rate + 0.05.
+- (c) Binding control: test collections with the same names and colour multiset but permuted slot colours, scored
+  on changed slots against the histogram-mode predictor. The histogram mode is the Bayes-optimal prediction from the
+  colour histogram alone.
+(a) and (b) form the instrument gate; failing cells are instrument-invalid.
+
+Claims (95% collection-bootstrap intervals):
+- E (binding information present, k>=4): mean slot accuracy minus histogram-mode >= 0.10 with the interval
+  excluding 0, AND changed-slot accuracy minus histogram-mode, with the interval excluding 0.
+- E1 (k=1): accuracy >= 0.90.
+- D (dimension): r_req = the smallest grid rank whose (acc - 0.25)/(full-rank acc - 0.25) >= 0.90. It is reported
+  only where E holds; above the grid it is censored.
+
+Predictions:
+- E holds at k=4 on 8B with a margin over histogram-mode >= 0.15.
+- At k=16 the mean margin is >= 0.05 and the worst slot is near chance.
+- k independent 4-way linear readouts need about 3k dimensions without interference, so r_req >= 2k at k=4, and
+  r_req(16) >= 2 x r_req(4) unless censored.
+
+Licensed reading: linear decodability shows recoverable information under this reader. A failure rejects this
+reader recipe, not storage. No causal or use claim follows.
+
+Sequence: an 8B smoke (n_train 2048, n_dev 512, n_test 512, ranks {1,2,4,8,16,32,64}, 2 reader seeds), then the
+8B full run (n_train 8192, n_dev 1024, n_test 2048, ranks {1,2,3,4,6,8,12,16,24,32,48,64,96,128}, 3 seeds) on
+gate-passing cells. Then 14B, 32B and 72B, each with its own smoke, if the 8B instrument gate passes; revisions are
+pinned per model.
+
+CPU mechanics check (Qwen2.5-0.5B, n_test 128, non-claim):
+- k=1: positive control 1.0, accuracy 0.93, r_req 4.
+- k=4: positive control 1.0, shuffle 0.215, accuracy 0.61 vs histogram-mode 0.52, changed-slot margin +0.20
+  [0.15, 0.26], r_req 16.
+The shuffle gate was made relative to the majority class after the k=1 shuffle reached 0.344 (class prior at
+small n).
