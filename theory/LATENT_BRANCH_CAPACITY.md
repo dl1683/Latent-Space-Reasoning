@@ -228,7 +228,10 @@ toggles reported separately. A reachability update-closure test, not a rescue of
 
 Council: docs/council_2026_10_11/{brief_p3,codex_p3,droid_p3}.md; both signed with compatible amendments, merged
 here. Question: does the frozen gate state retain information that distinguishes futures? Encoders: the three
-LOCKED gate curriculum checkpoints (Qwen3-0.6B, r=64; GCS md5: 1yBrnTMt/xVlUZ6E9BH6Lg== z4bddh+pnQCli6pbxkp2BA== 4JaEjoCyD2n9ToAPY75scQ== ), frozen, eval mode; STATE =
+LOCKED gate curriculum checkpoints (Qwen3-0.6B, r=64; GCS md5: 1yBrnTMt/xVlUZ6E9BH6Lg==
+ z4bddh+pnQCli6pbxkp2BA==
+ 4JaEjoCyD2n9ToAPY75scQ==
+ ), frozen, eval mode; STATE =
 encode(...,64)[:, :64] before any update. Witnesses (dedicated sampler, both graphs' hashed test-pattern
 membership enforced — train/dev non-test patterns, test test-patterns — and toggle pairs from the 72/24/24 split;
 invalid pairs rejected without fallback): two k=1 graphs with the SAME current reachability whose reachability
@@ -278,3 +281,11 @@ INTERLEAVED-MOMENTS within 5 pp of both staged orders closes the gap. Kill: no s
 reversed order or consolidation explains the gap; if the gap exists but moments do not close it, the optimizer-memory
 mechanism is rejected. Entity-clustered paired uncertainty. Conclusions restricted to optimizer/schedule effects;
 the Genome formation law is an analogy, not LSR evidence. Budget 300 USD.
+
+## Standing rule (2026-10-12 ~15:40Z, coordinator; after P3, Q and F were instrument-invalid)
+
+Every registered experiment's positive control runs and passes as a separate cheap smoke BEFORE the full run
+launches, with token alignment and hook/intervention effects asserted. No full sweep spends money until its
+instrument is shown to work. Registration Q is followed by a non-claim instrument validation (native.validate:
+full-prompt token-alignment asserts, measured post-hook residual and logit changes, flip rates under large
+perturbations, and a localized value-token positive control) before any Q1' registration or rerun.
