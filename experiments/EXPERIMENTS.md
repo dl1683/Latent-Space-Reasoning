@@ -1,5 +1,15 @@
 # Experiments Log
 
+## Registration R closing-state readout: binding information readable at k=4; at k=16 only for seen names (2026-10-12 18:09, Codex hunt passed)
+
+- 8B's registered readers recover slot-ordered colour information beyond histogram information at k4; selected-layer unseen k16 fails E, while seen k16 passes. Larger-model smokes show the same qualitative split pattern.
+- 8B full (n_test 2048 per split): unseen-name k4 0.80/0.83 vs colour-histogram 0.53; k16 0.43/0.45 vs 0.38 (E fails);
+  seen-name k16 0.86/0.81 (gap +0.43/+0.37); rank needed: unseen k4 6/12, seen k4 8, seen k16 48.
+- Not scaling evidence (different n_train/grids/seeds across models). Seen-name advantage is not yet name-addressable binding.
+- What we learned: the closing state is not empty - a frozen position that single additive patches cannot move still carries
+  linearly readable slot-colour information, far above the colour-mix baseline, and much more of it for familiar names.
+  Next decisive control: rename x reorder with an entity-query reader.
+
 ## Q1-prime Amendment A 8B value-site sweep: colour-pair means carry the whole edit; no contextual dimension; no scaling (2026-10-12 17:01, Codex hunt passed)
 
 - Across six layer-9 value-site cells with 512 TEST-name collections each, DEV-fitted colour-pair means achieved 99.61-100% donor-follow and retained >=90% of the sham-subtracted full effect; all gates passed, r90=0 with bootstrap CI [0,0], and no registered contextual-dimension comparison passed.
