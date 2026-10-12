@@ -132,6 +132,7 @@ def main(cfg, out):
     layers = sorted({int(round(f * L)) for f in cfg["layer_fracs"]})
     assert max(layers) <= L - 2, "final layer output is normalized in HF hidden_states; use fracs < 1"
     vlayer = int(round(cfg["value_layer_frac"] * L))
+    EB = cfg.get("enc_bs", 16)
     B, base = cfg["boot"], {"model": cfg["model"], "revision": info.get("revision"), "d_model": info["d_model"]}
     for fam in cfg["families"]:
         for k in cfg["ks"]:
@@ -159,12 +160,12 @@ def main(cfg, out):
                 q_ = tok(block(c, fam) + FAM[fam]["q"].format(n=c["names"][0]), add_special_tokens=False)["input_ids"]
                 assert q_[:len(b_)] == b_, "closing token is not a token prefix of the queried prompt"
             n_pc = cfg["n_pc"]
-            Ctr, Vtr = encode(model, tok, tr, fam, layers, vlayer)
-            Cdv, Vdv = encode(model, tok, dv, fam, layers, vlayer)
-            Cte, Vte = encode(model, tok, te, fam, layers, vlayer)
+            Ctr, Vtr = encode(model, tok, tr, fam, layers, vlayer, EB)
+            Cdv, Vdv = encode(model, tok, dv, fam, layers, vlayer, EB)
+            Cte, Vte = encode(model, tok, te, fam, layers, vlayer, EB)
 
             def enc_l(cs):
-                return encode(model, tok, cs, fam, layers)[0] if cs else {}
+                return encode(model, tok, cs, fam, layers, None, EB)[0] if cs else {}
             Cp, Cts, Ctsp = enc_l([c for _, c in te_p]), enc_l(ts), enc_l([c for _, c in ts_p])
             out.beat()
             Ytr, Ydv, Yte = labels(tr), labels(dv), labels(te)

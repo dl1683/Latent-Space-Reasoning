@@ -1,0 +1,83 @@
+{
+ "run": "readout-72b-smoke",
+ "kind": "readout",
+ "machine": "a2-highgpu-4g",
+ "accelerator": null,
+ "usd_per_hour": 8.84,
+ "cost_cap_usd": 30.0,
+ "zones": [
+  "us-central1-a",
+  "us-central1-b",
+  "us-central1-c",
+  "us-central1-f",
+  "us-east1-b",
+  "us-west1-b",
+  "us-west4-b",
+  "us-east4-c",
+  "europe-west4-a",
+  "europe-west4-b"
+ ],
+ "requirements": [
+  "transformers>=5.12,<6",
+  "accelerate",
+  "jinja2>=3.1"
+ ],
+ "common": {
+  "model": "Qwen/Qwen2.5-72B-Instruct",
+  "revision": "495f39366efef23836d0cfae4fbe635880d2be31",
+  "ks": [
+   1,
+   4,
+   16
+  ],
+  "layer_fracs": [
+   0.25,
+   0.5,
+   0.75,
+   0.9
+  ],
+  "value_layer_frac": 0.25,
+  "n_train": 2048,
+  "n_dev": 512,
+  "n_test": 512,
+  "n_pc": 512,
+  "ranks": [
+   1,
+   2,
+   4,
+   8,
+   16,
+   32,
+   64
+  ],
+  "reader_seeds": 2,
+  "wds": [
+   0.0,
+   0.01,
+   0.1
+  ],
+  "lr": 0.001,
+  "epochs": 40,
+  "reader_bs": 256,
+  "boot": 2000,
+  "smoke": true,
+  "note": "Registration R smoke on Qwen/Qwen2.5-72B-Instruct (non-claim)",
+  "enc_bs": 4,
+  "device_map": "auto",
+  "n_test_seen": 512,
+  "seed_ns": "smoke"
+ },
+ "shards": [
+  {
+   "families": [
+    "W1"
+   ]
+  },
+  {
+   "families": [
+    "W2"
+   ]
+  }
+ ],
+ "disk_gb": 450
+}
