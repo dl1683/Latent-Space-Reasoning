@@ -11,4 +11,5 @@ if __name__ == "__main__":
     cfg = json.load(open(sys.argv[1]))
     out = Out(sys.argv[2])
     out.meta("shard.json", cfg)
-    importlib.import_module(f".{KINDS[cfg['kind']]}", __package__).main(cfg, out)
+    mod = importlib.import_module(f".{KINDS[cfg['kind']]}", __package__)
+    getattr(mod, cfg.get("entry", "main"))(cfg, out)

@@ -21,9 +21,9 @@ NAMES = ["Bex", "Tarn", "Quill", "Mova", "Senn", "Dace", "Lorn", "Pim", "Vash", 
          "Mara", "Nox", "Orin", "Pell", "Quor", "Rhee", "Sil", "Tay", "Ulm", "Vey", "Wyn", "Xan"]
 COLORS = ["red", "blue", "green", "yellow"]
 FAM = {
-    "W1": {"head": "Remember these facts.\n", "fact": "The {n} box is {c}.", "close": "\nRemembered.",
+    "W1": {"head": "Remember these facts.\n", "fact": "The {n} box is {c}.", "close": "\nRemembered. Keep all of these facts in mind for later questions.",
            "q": " Question: What color is the {n} box? Answer: The {n} box is"},
-    "W2": {"head": "Inventory notes:\n", "fact": "- {n}'s crate: painted {c}", "close": "\nEnd of notes.",
+    "W2": {"head": "Inventory notes:\n", "fact": "- {n}'s crate: painted {c}", "close": "\nEnd of notes. The record above is complete and will be queried later.",
            "q": " Q: Which color was {n}'s crate painted? A: It was painted"},
 }
 
@@ -235,6 +235,10 @@ def main(cfg, out):
     L = info["n_layers"]
     opt_ids = [tok(" " + c, add_special_tokens=False)["input_ids"][0] for c in COLORS]
     assert len(set(opt_ids)) == 4
+    for f_ in FAM:  # registered amendment: fact-independent suffix of >= max(8, max m) tokens after the last fact
+        n_suffix = len(tok(FAM[f_]["close"], add_special_tokens=False)["input_ids"])
+        assert n_suffix >= max(8, max(cfg.get("ladder", [1]))), f"suffix too short for {f_}: {n_suffix} tokens"
+    out.meta("suffix_tokens.json", {f_: len(tok(FAM[f_]["close"], add_special_tokens=False)["input_ids"]) for f_ in FAM})
     pools = {"dev": NAMES[:20], "test": NAMES[20:]}
     rng = random.Random(cfg["seed"])
     # layer choice on dev by Q1 full-patch targeted effect (W1, k=4)
@@ -278,3 +282,31 @@ def main(cfg, out):
                                  cfg["test_n"], m)
                     out.write({"key": key, "layer": layer, "family": fam, "k": k, "m": m, **r_})
                     out.beat()
+
+
+def diag(cfg, out):
+    """Non-claim diagnostic for Q1: delta norm ratio at the closing position, and a hook positive control
+    (adding a random vector of 10x the hidden norm at the closing position must change some answers)."""
+    model, tok, info = common.load(cfg["model"])
+    L = info["n_layers"]
+    opt_ids = [tok(" " + c, add_special_tokens=False)["input_ids"][0] for c in COLORS]
+    layer = int(round(cfg["layer_frac"] * L))
+    rng = random.Random(5)
+    for k in (1, 4):
+        cs = [collection(rng, k, NAMES[:20]) for _ in range(64)]
+        pairs = [changed(rng, c) for c in cs]
+        db, rb = [block(c, "W1") for c in cs], [block(c2, "W1") for c2, _ in pairs]
+        hd, hr = states_at(model, tok, db, layer), states_at(model, tok, rb, layer)
+        ratio = ((hd - hr).norm(dim=-1) / hr.norm(dim=-1)).tolist()
+        pos = close_pos(tok, rb)
+        qs = [rb[i] + FAM["W1"]["q"].format(n=pairs[i][0]["names"][pairs[i][1]]) for i in range(len(cs))]
+        base = run_prompts(model, tok, qs, opt_ids)
+        hook = Hook(model, layer)
+        big = torch.randn(len(qs), hr.shape[1], device="cuda")
+        big = big / big.norm(dim=-1, keepdim=True) * hr.norm(dim=-1, keepdim=True) * 10
+        pc = run_prompts(model, tok, qs, opt_ids, hook, lambda sl, enc: [(pos[sl], big[sl], "add")])
+        # also: SET the closing state to the donor's (equivalent to full patch) and patch ALL positions of the
+        # changed fact line via a full donor-state swap at every position (upper bound: everything from the donor)
+        hook.remove()
+        out.write({"key": f"diag|k{k}", "layer": layer, "delta_over_h_mean": sum(ratio) / len(ratio),
+                   "delta_over_h_max": max(ratio), "hook_pc_flip_rate": sum(int(a != b) for a, b in zip(base, pc)) / len(qs)})
