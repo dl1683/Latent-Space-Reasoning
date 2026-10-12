@@ -197,12 +197,6 @@ class Looper:
             self.model.config.layer_types = self.orig_types
 
 
-def flops_per_token(info, layer_mult=1.0):
-    """Approximate forward FLOPs per token: 2 x non-embedding params x layer multiplier (attention term ignored;
-    contexts here are short, < 1k tokens, so it is a small, equal-direction correction)."""
-    return 2 * info["n_params_nonembed"] * layer_mult
-
-
 def nonembed_params(model):
     emb = model.get_input_embeddings().weight.numel()
     head = model.get_output_embeddings()
