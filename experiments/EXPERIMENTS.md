@@ -1,5 +1,13 @@
 # Experiments Log
 
+## Registration Q (frozen Qwen3-8B, native selectable information): NO VERDICT — instrument unvalidated (2026-10-12 15:25Z)
+
+Licensed (Codex hunt): "Q1 mediation is unestablished; Q2 fails the tested transplant interface." Q1 full patches at the
+closing position: 0/512 donor-following answers in every cell; Q2 transplants of the last 1-8 fact-independent suffix
+positions: chance (0.22-0.27) at k=1 and 4 while full context is 1.00. The hook positive control failed and token
+alignment was not asserted, so the zeros are not yet interpretable. (A first run, q8b, was voided: the registered
+>= 8-token suffix had not been applied and its "perfect m=8 transfer" was the last fact's own tokens.)
+
 ## Registration F (formation collisions, Qwen3-8B LoRA): INSTRUMENT INVALID (2026-10-12 14:36Z, Codex hunt passed)
 
 Staged positive control fails (no seed has both staged orders >= 0.90 in every family); staged - interleaved after

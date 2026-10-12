@@ -1,0 +1,132 @@
+{'key': 'q|layer_choice', 'scores': {'18': 0.0, '23': 0.0, '29': 0.0}, 'layer': 18}
+q1|W1|k1 layer 18 dev_delta_PR 5.23 top3_energy [0.296, 0.251, 0.196]
+     none targeted 0.0 collateral_flip None retention None
+     sham targeted 0.0 collateral_flip None retention None
+     full targeted 0.0 collateral_flip None retention None
+     proj1 targeted 0.0 collateral_flip None retention None
+     comp1 targeted 0.0 collateral_flip None retention None
+     rand1 targeted 0.0 collateral_flip None retention None
+     proj2 targeted 0.0 collateral_flip None retention None
+     comp2 targeted 0.0 collateral_flip None retention None
+     rand2 targeted 0.0 collateral_flip None retention None
+     proj3 targeted 0.0 collateral_flip None retention None
+     comp3 targeted 0.0 collateral_flip None retention None
+     rand3 targeted 0.0 collateral_flip None retention None
+     proj8 targeted 0.0 collateral_flip None retention None
+     comp8 targeted 0.0 collateral_flip None retention None
+     rand8 targeted 0.0 collateral_flip None retention None
+     proj32 targeted 0.0 collateral_flip None retention None
+     comp32 targeted 0.0 collateral_flip None retention None
+     rand32 targeted 0.0 collateral_flip None retention None
+q1|W1|k4 layer 18 dev_delta_PR 7.86 top3_energy [0.289, 0.143, 0.11]
+     none targeted 0.0 collateral_flip 0.0 retention None
+     sham targeted 0.0 collateral_flip 0.0 retention None
+     full targeted 0.0 collateral_flip 0.0 retention None
+     proj1 targeted 0.0 collateral_flip 0.0 retention None
+     comp1 targeted 0.0 collateral_flip 0.0 retention None
+     rand1 targeted 0.0 collateral_flip 0.0 retention None
+     proj2 targeted 0.0 collateral_flip 0.0 retention None
+     comp2 targeted 0.0 collateral_flip 0.0 retention None
+     rand2 targeted 0.0 collateral_flip 0.0 retention None
+     proj3 targeted 0.0 collateral_flip 0.0 retention None
+     comp3 targeted 0.0 collateral_flip 0.0 retention None
+     rand3 targeted 0.0 collateral_flip 0.0 retention None
+     proj8 targeted 0.0 collateral_flip 0.0 retention None
+     comp8 targeted 0.0 collateral_flip 0.0 retention None
+     rand8 targeted 0.0 collateral_flip 0.0 retention None
+     proj32 targeted 0.0 collateral_flip 0.0 retention None
+     comp32 targeted 0.0 collateral_flip 0.0 retention None
+     rand32 targeted 0.0 collateral_flip 0.0 retention None
+q1|W1|k16 layer 18 dev_delta_PR 42.14 top3_energy [0.092, 0.074, 0.048]
+     none targeted 0.0 collateral_flip 0.0 retention None
+     sham targeted 0.0 collateral_flip 0.0 retention None
+     full targeted 0.0 collateral_flip 0.0 retention None
+     proj1 targeted 0.0 collateral_flip 0.0 retention None
+     comp1 targeted 0.0 collateral_flip 0.0 retention None
+     rand1 targeted 0.0 collateral_flip 0.0 retention None
+     proj2 targeted 0.0 collateral_flip 0.0 retention None
+     comp2 targeted 0.0 collateral_flip 0.0 retention None
+     rand2 targeted 0.0 collateral_flip 0.0 retention None
+     proj3 targeted 0.0 collateral_flip 0.0 retention None
+     comp3 targeted 0.0 collateral_flip 0.0 retention None
+     rand3 targeted 0.0 collateral_flip 0.0 retention None
+     proj8 targeted 0.0 collateral_flip 0.0 retention None
+     comp8 targeted 0.0 collateral_flip 0.0 retention None
+     rand8 targeted 0.0 collateral_flip 0.0 retention None
+     proj32 targeted 0.0 collateral_flip 0.0 retention None
+     comp32 targeted 0.0 collateral_flip 0.0 retention None
+     rand32 targeted 0.0 collateral_flip 0.0 retention None
+q1|W2|k1 layer 18 dev_delta_PR 4.2 top3_energy [0.41, 0.213, 0.153]
+     none targeted 0.0 collateral_flip None retention None
+     sham targeted 0.0 collateral_flip None retention None
+     full targeted 0.0 collateral_flip None retention None
+     proj1 targeted 0.0 collateral_flip None retention None
+     comp1 targeted 0.0 collateral_flip None retention None
+     rand1 targeted 0.0 collateral_flip None retention None
+     proj2 targeted 0.0 collateral_flip None retention None
+     comp2 targeted 0.0 collateral_flip None retention None
+     rand2 targeted 0.0 collateral_flip None retention None
+     proj3 targeted 0.0 collateral_flip None retention None
+     comp3 targeted 0.0 collateral_flip None retention None
+     rand3 targeted 0.0 collateral_flip None retention None
+     proj8 targeted 0.0 collateral_flip None retention None
+     comp8 targeted 0.0 collateral_flip None retention None
+     rand8 targeted 0.0 collateral_flip None retention None
+     proj32 targeted 0.0 collateral_flip None retention None
+     comp32 targeted 0.0 collateral_flip None retention None
+     rand32 targeted 0.0 collateral_flip None retention None
+q1|W2|k4 layer 18 dev_delta_PR 11.36 top3_energy [0.228, 0.145, 0.073]
+     none targeted 0.0 collateral_flip 0.0 retention None
+     sham targeted 0.0 collateral_flip 0.0 retention None
+     full targeted 0.0 collateral_flip 0.0 retention None
+     proj1 targeted 0.0 collateral_flip 0.0 retention None
+     comp1 targeted 0.0 collateral_flip 0.0 retention None
+     rand1 targeted 0.0 collateral_flip 0.0 retention None
+     proj2 targeted 0.0 collateral_flip 0.0 retention None
+     comp2 targeted 0.0 collateral_flip 0.0 retention None
+     rand2 targeted 0.0 collateral_flip 0.0 retention None
+     proj3 targeted 0.0 collateral_flip 0.0 retention None
+     comp3 targeted 0.0 collateral_flip 0.0 retention None
+     rand3 targeted 0.0 collateral_flip 0.0 retention None
+     proj8 targeted 0.0 collateral_flip 0.0 retention None
+     comp8 targeted 0.0 collateral_flip 0.0 retention None
+     rand8 targeted 0.0 collateral_flip 0.0 retention None
+     proj32 targeted 0.0 collateral_flip 0.0 retention None
+     comp32 targeted 0.0 collateral_flip 0.0 retention None
+     rand32 targeted 0.0 collateral_flip 0.0 retention None
+q1|W2|k16 layer 18 dev_delta_PR 56.04 top3_energy [0.078, 0.058, 0.039]
+     none targeted 0.0 collateral_flip 0.0 retention None
+     sham targeted 0.0 collateral_flip 0.0 retention None
+     full targeted 0.0 collateral_flip 0.0 retention None
+     proj1 targeted 0.0 collateral_flip 0.0 retention None
+     comp1 targeted 0.0 collateral_flip 0.0 retention None
+     rand1 targeted 0.0 collateral_flip 0.0 retention None
+     proj2 targeted 0.0 collateral_flip 0.0 retention None
+     comp2 targeted 0.0 collateral_flip 0.0 retention None
+     rand2 targeted 0.0 collateral_flip 0.0 retention None
+     proj3 targeted 0.0 collateral_flip 0.0 retention None
+     comp3 targeted 0.0 collateral_flip 0.0 retention None
+     rand3 targeted 0.0 collateral_flip 0.0 retention None
+     proj8 targeted 0.0 collateral_flip 0.0 retention None
+     comp8 targeted 0.0 collateral_flip 0.0 retention None
+     rand8 targeted 0.0 collateral_flip 0.0 retention None
+     proj32 targeted 0.0 collateral_flip 0.0 retention None
+     comp32 targeted 0.0 collateral_flip 0.0 retention None
+     rand32 targeted 0.0 collateral_flip 0.0 retention None
+{'key': 'q|layer_choice', 'scores': {'18': 0.0, '23': 0.0, '29': 0.0}, 'layer': 18}
+q2|W1|k1|m1 {'layer': 18, 'family': 'W1', 'k': 1, 'm': 1, 'full_acc': 1.0, 'patched_acc': 0.254, 'patched_min_selector': 0.254, 'nopatch_acc': 0.262, 'shuffled_acc': 0.252, 'targeted_follow': 0.252, 'nopatch_follow_changed': 0.229, 'collateral_flip': None, 'n_collections': 512, 'constant_answer_baseline': 0.256}
+q2|W1|k1|m2 {'layer': 18, 'family': 'W1', 'k': 1, 'm': 2, 'full_acc': 1.0, 'patched_acc': 0.223, 'patched_min_selector': 0.223, 'nopatch_acc': 0.279, 'shuffled_acc': 0.244, 'targeted_follow': 0.268, 'nopatch_follow_changed': 0.244, 'collateral_flip': None, 'n_collections': 512, 'constant_answer_baseline': 0.271}
+q2|W1|k1|m4 {'layer': 18, 'family': 'W1', 'k': 1, 'm': 4, 'full_acc': 1.0, 'patched_acc': 0.266, 'patched_min_selector': 0.266, 'nopatch_acc': 0.264, 'shuffled_acc': 0.273, 'targeted_follow': 0.25, 'nopatch_follow_changed': 0.252, 'collateral_flip': None, 'n_collections': 512, 'constant_answer_baseline': 0.285}
+q2|W1|k1|m8 {'layer': 18, 'family': 'W1', 'k': 1, 'm': 8, 'full_acc': 1.0, 'patched_acc': 0.264, 'patched_min_selector': 0.264, 'nopatch_acc': 0.256, 'shuffled_acc': 0.264, 'targeted_follow': 0.238, 'nopatch_follow_changed': 0.254, 'collateral_flip': None, 'n_collections': 512, 'constant_answer_baseline': 0.271}
+q2|W1|k4|m1 {'layer': 18, 'family': 'W1', 'k': 4, 'm': 1, 'full_acc': 1.0, 'patched_acc': 0.249, 'patched_min_selector': 0.227, 'nopatch_acc': 0.249, 'shuffled_acc': 0.25, 'targeted_follow': 0.268, 'nopatch_follow_changed': 0.252, 'collateral_flip': 0.019, 'n_collections': 512, 'constant_answer_baseline': 0.254}
+q2|W1|k4|m2 {'layer': 18, 'family': 'W1', 'k': 4, 'm': 2, 'full_acc': 0.999, 'patched_acc': 0.26, 'patched_min_selector': 0.227, 'nopatch_acc': 0.253, 'shuffled_acc': 0.261, 'targeted_follow': 0.254, 'nopatch_follow_changed': 0.25, 'collateral_flip': 0.087, 'n_collections': 512, 'constant_answer_baseline': 0.255}
+q2|W1|k4|m4 {'layer': 18, 'family': 'W1', 'k': 4, 'm': 4, 'full_acc': 1.0, 'patched_acc': 0.253, 'patched_min_selector': 0.227, 'nopatch_acc': 0.262, 'shuffled_acc': 0.254, 'targeted_follow': 0.236, 'nopatch_follow_changed': 0.262, 'collateral_flip': 0.026, 'n_collections': 512, 'constant_answer_baseline': 0.262}
+q2|W1|k4|m8 {'layer': 18, 'family': 'W1', 'k': 4, 'm': 8, 'full_acc': 1.0, 'patched_acc': 0.257, 'patched_min_selector': 0.232, 'nopatch_acc': 0.269, 'shuffled_acc': 0.258, 'targeted_follow': 0.219, 'nopatch_follow_changed': 0.234, 'collateral_flip': 0.034, 'n_collections': 512, 'constant_answer_baseline': 0.268}
+q2|W2|k1|m1 {'layer': 18, 'family': 'W2', 'k': 1, 'm': 1, 'full_acc': 1.0, 'patched_acc': 0.271, 'patched_min_selector': 0.271, 'nopatch_acc': 0.258, 'shuffled_acc': 0.271, 'targeted_follow': 0.246, 'nopatch_follow_changed': 0.236, 'collateral_flip': None, 'n_collections': 512, 'constant_answer_baseline': 0.271}
+q2|W2|k1|m2 {'layer': 18, 'family': 'W2', 'k': 1, 'm': 2, 'full_acc': 1.0, 'patched_acc': 0.244, 'patched_min_selector': 0.244, 'nopatch_acc': 0.246, 'shuffled_acc': 0.266, 'targeted_follow': 0.252, 'nopatch_follow_changed': 0.234, 'collateral_flip': None, 'n_collections': 512, 'constant_answer_baseline': 0.271}
+q2|W2|k1|m4 {'layer': 18, 'family': 'W2', 'k': 1, 'm': 4, 'full_acc': 1.0, 'patched_acc': 0.236, 'patched_min_selector': 0.236, 'nopatch_acc': 0.23, 'shuffled_acc': 0.234, 'targeted_follow': 0.291, 'nopatch_follow_changed': 0.258, 'collateral_flip': None, 'n_collections': 512, 'constant_answer_baseline': 0.273}
+q2|W2|k1|m8 {'layer': 18, 'family': 'W2', 'k': 1, 'm': 8, 'full_acc': 1.0, 'patched_acc': 0.25, 'patched_min_selector': 0.25, 'nopatch_acc': 0.289, 'shuffled_acc': 0.25, 'targeted_follow': 0.256, 'nopatch_follow_changed': 0.229, 'collateral_flip': None, 'n_collections': 512, 'constant_answer_baseline': 0.289}
+q2|W2|k4|m1 {'layer': 18, 'family': 'W2', 'k': 4, 'm': 1, 'full_acc': 1.0, 'patched_acc': 0.25, 'patched_min_selector': 0.244, 'nopatch_acc': 0.244, 'shuffled_acc': 0.252, 'targeted_follow': 0.234, 'nopatch_follow_changed': 0.26, 'collateral_flip': 0.041, 'n_collections': 512, 'constant_answer_baseline': 0.259}
+q2|W2|k4|m2 {'layer': 18, 'family': 'W2', 'k': 4, 'm': 2, 'full_acc': 1.0, 'patched_acc': 0.253, 'patched_min_selector': 0.236, 'nopatch_acc': 0.242, 'shuffled_acc': 0.246, 'targeted_follow': 0.258, 'nopatch_follow_changed': 0.246, 'collateral_flip': 0.056, 'n_collections': 512, 'constant_answer_baseline': 0.261}
+q2|W2|k4|m4 {'layer': 18, 'family': 'W2', 'k': 4, 'm': 4, 'full_acc': 1.0, 'patched_acc': 0.242, 'patched_min_selector': 0.229, 'nopatch_acc': 0.233, 'shuffled_acc': 0.242, 'targeted_follow': 0.25, 'nopatch_follow_changed': 0.27, 'collateral_flip': 0.026, 'n_collections': 512, 'constant_answer_baseline': 0.27}
+q2|W2|k4|m8 {'layer': 18, 'family': 'W2', 'k': 4, 'm': 8, 'full_acc': 1.0, 'patched_acc': 0.252, 'patched_min_selector': 0.232, 'nopatch_acc': 0.263, 'shuffled_acc': 0.253, 'targeted_follow': 0.264, 'nopatch_follow_changed': 0.215, 'collateral_flip': 0.016, 'n_collections': 512, 'constant_answer_baseline': 0.263}
