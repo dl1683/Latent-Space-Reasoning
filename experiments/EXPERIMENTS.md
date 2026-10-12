@@ -1,5 +1,15 @@
 # Experiments Log
 
+## Probe C (frozen recurrent depth): registered prediction FAILS (2026-10-12 00:10Z)
+
+14-checkpoint screen + 4-checkpoint confirmation (512 new problems/family, dev-frozen configs). CoT: every
+dev-admitted loop lowered admissible-family accuracy (-3 to -9 pp); 8/14 models admitted no loop on dev.
+Direct mode: Qwen2.5-7B countdown +2.5 pp [0.4, 4.9] (< 3 pp bar); Qwen3-1.7B/4B null/negative; Qwen3-8B
+"+6.6 pp" is an artifact (the unlooped model emits empty answers for 507/512 problems; looping unblocks output).
+What we learned: looping middle blocks of frozen ordinary checkpoints does not add reasoning at matched
+compute on these tasks; instrument lessons: constant-answer baselines and empty-answer rates are mandatory
+beside termination.
+
 ## LOCKED: admission gate FAILS (2026-10-11 23:15Z)
 
 Curriculum arm (Amendment 2), Qwen3-0.6B, 3 seeds, test split, corrected evaluator. k=1: no updates 0.97-0.99,

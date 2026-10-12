@@ -1,0 +1,28 @@
+Qwen/Qwen2.5-7B-Instruct
+    test|direct|base                             mult=1.00 acc=0.020 term=1.00 tok=11 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.006/0.008/260/1.00; countdown 0.033/0.000/503/0.99
+    test|direct|flop_control                     mult=1.14 acc=0.011 term=1.00 tok=11 {}  13 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.004/0.008/263/1.00; countdown 0.018/0.000/496/1.00
+    test|direct|loop                             mult=1.14 acc=0.032 term=1.00 tok=10 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.006/0.008/288/1.00; countdown 0.059/0.000/510/1.00
+Qwen/Qwen3-1.7B
+    test|direct|base                             mult=1.00 acc=0.031 term=0.88 tok=29 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.012/0.008/234/0.77; countdown 0.051/0.000/479/1.00
+    test|direct|flop_control                     mult=1.14 acc=0.030 term=0.88 tok=29 {}  11 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.014/0.008/261/0.77; countdown 0.047/0.000/475/1.00
+    test|direct|loop                             mult=1.14 acc=0.027 term=0.87 tok=29 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.008/0.008/240/0.74; countdown 0.047/0.000/487/1.00
+Qwen/Qwen3-4B
+    test|direct|base                             mult=1.00 acc=0.080 term=1.00 tok=12 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.008/0.008/228/1.00; countdown 0.152/0.000/509/1.00
+    test|direct|flop_control                     mult=1.11 acc=0.077 term=1.00 tok=12 {}  9 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.002/0.008/236/1.00; countdown 0.152/0.000/504/1.00
+    test|direct|loop                             mult=1.11 acc=0.064 term=1.00 tok=13 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.012/0.008/251/1.00; countdown 0.117/0.000/501/1.00
+Qwen/Qwen3-8B
+    test|direct|base                             mult=1.00 acc=0.009 term=1.00 tok=4 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.018/0.008/288/1.00; countdown 0.000/0.000/6/1.00
+    test|direct|flop_control                     mult=1.11 acc=0.004 term=1.00 tok=4 {}  9 filler tokens
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.008/0.008/285/1.00; countdown 0.000/0.000/5/1.00
+    test|direct|loop                             mult=1.11 acc=0.037 term=1.00 tok=12 {}  
+        per-family acc / const-answer baseline / distinct preds / term: arith 0.008/0.008/272/1.00; countdown 0.066/0.000/508/1.00
