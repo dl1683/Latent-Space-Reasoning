@@ -1,0 +1,73 @@
+{
+ "run": "nameabl-8b-smoke",
+ "kind": "bindq",
+ "machine": "a2-highgpu-1g",
+ "accelerator": null,
+ "usd_per_hour": 2.21,
+ "cost_cap_usd": 6.0,
+ "zones": [
+  "us-central1-a",
+  "us-central1-b",
+  "us-central1-c",
+  "us-central1-f",
+  "us-east1-b",
+  "us-west1-b",
+  "us-west4-b",
+  "us-east4-c",
+  "europe-west4-a",
+  "europe-west4-b"
+ ],
+ "requirements": [
+  "transformers>=5.12,<6",
+  "accelerate",
+  "jinja2>=3.1"
+ ],
+ "common": {
+  "model": "Qwen/Qwen3-8B",
+  "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+  "ks": [
+   4
+  ],
+  "layer_fracs": [
+   0.25,
+   0.5,
+   0.75
+  ],
+  "value_layer_frac": 0.25,
+  "n_train": 1024,
+  "n_dev": 256,
+  "n_test": 256,
+  "n_train_names": 300,
+  "n_heldout_names": 200,
+  "bil_ranks": [
+   64
+  ],
+  "mlp_hidden": [
+   1024
+  ],
+  "wds": [
+   0.0,
+   0.01
+  ],
+  "lr": 0.001,
+  "epochs": 30,
+  "reader_bs": 1024,
+  "boot": 2000,
+  "smoke": true,
+  "seed_ns": "nameabl",
+  "enc_bs": 16,
+  "note": "20-vs-300 training-name ablation: positive-control smoke",
+  "query": "slot",
+  "families": [
+   "W1"
+  ]
+ },
+ "shards": [
+  {
+   "train_name_subset": 20
+  },
+  {
+   "train_name_subset": 300
+  }
+ ]
+}

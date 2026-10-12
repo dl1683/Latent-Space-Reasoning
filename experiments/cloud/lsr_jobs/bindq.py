@@ -159,11 +159,13 @@ def main(cfg, out):
     assert max(layers) <= L - 2
     vlayer = int(round(cfg["value_layer_frac"] * L))
     B, ns, EB = cfg["boot"], cfg.get("seed_ns", "smoke"), cfg.get("enc_bs", 16)
-    train_names, held = name_pools(tok, cfg)
+    train_names, held = name_pools(tok, cfg)  # held-out pool fixed by n_train_names; subset only the training names
+    if cfg.get("train_name_subset"):
+        train_names = train_names[:cfg["train_name_subset"]]
     all_names = train_names + held
     name_idx = {n: i for i, n in enumerate(all_names)}
     out.meta("name_pools.json", {"train": train_names, "heldout": held})
-    base = {"model": cfg["model"], "revision": info.get("revision"), "d_model": info["d_model"], "seed_ns": ns}
+    base = {"train_name_subset": len(train_names), "model": cfg["model"], "revision": info.get("revision"), "d_model": info["d_model"], "seed_ns": ns}
     for fam in cfg["families"]:
         t = FAM[fam]["fact"]
         qtexts = [FAM[fam]["head"] + t[:t.index("{n}")] + n for n in all_names]

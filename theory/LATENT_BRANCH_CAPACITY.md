@@ -603,3 +603,17 @@ Interpretation rule, fixed before data:
 
 Prediction: slot-query succeeds at k=4. CPU mechanics check (0.5B, non-claim): slot-query 0.71-0.79 vs histogram
 0.53; per-slot linear 0.64-0.68.
+
+### Training-name ablation (2026-10-12, coordinator-approved, before data)
+
+Design: the same length-matched pool and the fixed 200 held-out names. Training (and seen-test) names are either the
+first 20 or all 300 of the training pool. Everything else is held fixed: the 8,192-collection budget, layers, seeds
+(seed_ns "nameabl"), slot-query readers and the per-slot linear reference reader.
+
+Primary measure: the per-slot linear reader's renamed (held-out-name) accuracy, original order, at the dev-selected
+layer, compared 20 vs 300 with independent collection-bootstrap intervals.
+
+Prediction: at k=4, the 20-name renamed accuracy is lower by >= 0.10 (interval excluding 0). If the drop is < 0.05,
+name count does not explain R's held-out gap.
+
+A separate positive-control smoke (W1 k=4, n_train 1024) runs first.
