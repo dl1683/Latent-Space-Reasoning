@@ -1,5 +1,11 @@
 # Experiments Log
 
+## N-control: slot queries read the closing state almost perfectly at k=4, even for novel names (2026-10-12 19:29, Codex hunt passed)
+
+- In this smoke, closing states support slot-indexed colour recovery above histogram mode across both templates and rename/reorder conditions; the tested name-query recipes remain inconclusive.
+- k=4: 0.99 in all rename/reorder quads (baseline 0.53); k=16: 0.62-0.73 (baseline 0.38). Name queries fail on the same states.
+- What we learned: the information is slot-ordered and name-general with 300 training names; R's held-out gap likely (not proven) came from 20 names.
+
 ## Registration N binding smoke: gates pass, reader inconclusive; no full run (2026-10-12 18:58, Codex hunt passed)
 
 - All four N smoke cells pass the instrument gates but remain reader-inconclusive: the selected entity-query readers do not exceed histogram mode; these results establish neither name-addressable retrieval nor its absence.

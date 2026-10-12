@@ -270,8 +270,8 @@ def main(cfg, out):
             n2 = adequate and res["renamed_reord"]["minus_hist_mode"][0] >= 0.10 and res["renamed_reord"]["minus_hist_mode"][1] > 0
             out.write({**row, "instrument_ok": True, "reader_adequate": adequate,
                        "verdict": "scored" if adequate else "inconclusive_reader", "query": "slot" if slotq else "name",
-                       "hist_mode_acc": hm.mean().item(), "quads": res, "N1_seen_name_addressable": n1,
-                       "N2_name_general_addressable": n2, "reader": {"kind": rd.kind, "R": rd.R, "dev_acc": rd.dev_acc},
+                       "hist_mode_acc": hm.mean().item(), "quads": res, "N1_seen_name_addressable": None if slotq else n1,
+                       "N2_name_general_addressable": None if slotq else n2, "reader": {"kind": rd.kind, "R": rd.R, "dev_acc": rd.dev_acc},
                        "dev_acc_by_layer": {l: r_.dev_acc for l, r_ in per_layer.items()},
                        "quad_acc_by_layer": {l: {s: (r_.predict(H[s][l], QQ[l], rows[s]) == rows[s][:, 2]).float().mean().item()
                                                  for s in quads} for l, r_ in per_layer.items()}})
