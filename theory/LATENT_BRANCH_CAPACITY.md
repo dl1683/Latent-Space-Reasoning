@@ -259,3 +259,22 @@ failure does not establish intrinsically distributed storage; a Q2 failure rejec
 Both: empirical constant-answer baseline per cell; paired outcomes retained; PCA is scaffolding — conclusions concern
 causal answerability. Model: Qwen3-8B (bf16); scaling to Qwen3-14B/32B and a 70B-class model only after the Q1 gate
 or the Q2 k=1 gate passes. Budget 60 USD (8B), 200 USD (scaling).
+
+## Registration F — formation collisions in a pretrained model (2026-10-12 ~15:00Z, before data)
+
+Text: docs/council_2026_10_11/brief_f.md; Codex and Droid signed with amendments (codex_f.md, droid_f.md), all
+incorporated (implementation experiments/cloud/lsr_jobs/formation.py): Qwen3-8B + rank-16 LoRA; 4 families x 200
+fictional entities x 8 balanced options; 3 training wordings, 2 held-out question wordings (paraphrase transfer for
+TRAINED facts, not unseen facts). Numeric schedule: 2,000 total steps, batch 16, final 10% (200 steps) balanced
+consolidation; 450 single-family batches per family whose CONTENT is identical across arms (seeded by family, not
+arm) — arms differ only in order; LoRA initialisation paired across arms per seed (seeds 1,2,3). Custom AdamW
+(b1 0.9, b2 0.999, lr 1e-4, 50-step warmup then constant): INTERLEAVED-MOMENTS keeps family-specific first and second
+moments, updating only the active family's buffers, with global-step bias correction and the global lr schedule;
+other arms one shared buffer set. Consolidation: every arm resets to one fresh optimizer on identical balanced batches;
+evaluated immediately before and after. Reported at every 10%: per-family accuracy and option-choice frequencies
+(scoring is by 8-option logits, so no format failures). Criteria: both STAGED orders reach >= 0.90 in every family
+(else instrument invalid) and exceed INTERLEAVED by >= 15 pp after consolidation in the same >= 2 of 3 seeds;
+INTERLEAVED-MOMENTS within 5 pp of both staged orders closes the gap. Kill: no staged positive control; gap < 15 pp;
+reversed order or consolidation explains the gap; if the gap exists but moments do not close it, the optimizer-memory
+mechanism is rejected. Entity-clustered paired uncertainty. Conclusions restricted to optimizer/schedule effects;
+the Genome formation law is an analogy, not LSR evidence. Budget 300 USD.

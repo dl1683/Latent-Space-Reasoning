@@ -1,0 +1,9 @@
+# Registration F sign-off (step-back direction 3: formation collisions), 2026-10-12
+
+Read docs/council_2026_10_11/codex_stepback.md (direction 3) and droid_stepback.md (direction 3), theory/CROSS_PROJECT_INSIGHTS.md (A5), experiments/cloud/lsr_jobs/branch.py (training loop, for conventions) FIRST, citing file:line. Proposed registration:
+
+"Registration F (Qwen3-8B, frozen base + rank-16 LoRA on attention/MLP; bf16; H100 or A100-80GB). Facts: 4 families (color, city, instrument, number-word) x 200 fictional entities, each with one of 8 options; balanced; entities and option assignments fixed by seed 20261012. Training text: 3 wordings per fact; test: 2 held-out question wordings, scored by argmax over the 8 option first-tokens (distinctness asserted). Arms (identical examples, identical total optimizer steps, single-family batches of 16, AdamW lr 1e-4, linear warmup 50 steps then constant, then a common balanced consolidation phase of 10% of steps): STAGED (families 1->2->3->4, equal steps each), REVERSED (4->3->2->1), INTERLEAVED (round-robin by batch, one optimizer), INTERLEAVED-MOMENTS (round-robin, a separate AdamW state per family over the same parameters). 3 seeds. Primary measure: final held-out-wording accuracy per family, averaged over families; also per-family accuracy over training (every 10%).
+Positive control: STAGED final accuracy >= 0.90 on held-out wordings (else instrument invalid).
+Predictions: STAGED (and REVERSED) exceed INTERLEAVED by >= 15 pp in >= 2 of 3 seeds; INTERLEAVED-MOMENTS closes the gap to < 5 pp. Kill: no staged positive control; gap < 15 pp in >= 2 seeds; or reversed order / consolidation explains the gap. If the gap exists but moments do not close it, the optimizer-memory mechanism is rejected. Without a width dependence, any surviving effect is an optimizer/schedule result, not a high-dimensional law. Budget 300 USD."
+
+Answer in under 150 words: SIGN, or exact replacement sentences.
