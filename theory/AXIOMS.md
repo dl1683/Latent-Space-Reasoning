@@ -1,5 +1,9 @@
 # Native latent mathematics — living axioms
 
+> Current application: the unified [research program](RESEARCH_PROGRAM.md),
+> owner-directed 2026-10-13. Dated application/routing below is historical;
+> its definitions and conditional claims retain their original scopes.
+
 ## Philosophy and current application (2026-09-13)
 
 The denizen's world remains the enduring philosophy. Identity, moves, effort,

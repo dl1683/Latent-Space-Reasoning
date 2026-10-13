@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-09-07T13:09:59.2252223Z",
+  "id": "representation-frontier-v2-proof-result",
+  "type": "theory_evidence",
+  "status": "SCOPED_PROOF_GATE_GO",
+  "rigor": "PROVED local square-zero and rectangular constructions; universal semisimple comparison uses attributed Blaser 2000 theorem",
+  "registered_theory_sha256": "44a41ed9dcfa5c17cd8b77856a5c3b1dc77603b24310aab8d35468f0e542161b",
+  "delta_reviewed_theory_sha256": "23e81fc587432ce490e91cc1e38f9895cdff4ecd210f71ae9ea1d5810093c0c1",
+  "current_theory_sha256": "dd3fb418782f19d68db720a5a46aa09e440c27ffbedbaad37d872a962e262f2d",
+  "post_review_changes": "Status and draft labels only; mathematical text unchanged after delta review.",
+  "initial_review": "research/REVIEW_REPRESENTATION_FRONTIER_V2.md",
+  "initial_review_sha256": "28f352936ceff9a4e5ed442150023362711005fc0518f25db3d2798b09a5fa3d",
+  "delta_review": "research/REVIEW_REPRESENTATION_FRONTIER_V2_DELTA.md",
+  "delta_review_sha256": "96f99ad8460926e2053c784daaeefe99f0a9663bfb50b238516d282f60212474",
+  "reviewer_sessions": [
+    "01a07bed-cc03-75b0-a4af-7ec691ca5ba5",
+    "01a07bf7-a67a-7a23-9b31-8fced5da2a2f"
+  ],
+  "source_limit": "Blaser 2000 bound and stated hypotheses verified in primary publisher abstract; full original proof not inspected.",
+  "novelty_verified": false,
+  "runtime_advantage": false,
+  "no_experiment_run": true,
+  "mission_complete": false
+}

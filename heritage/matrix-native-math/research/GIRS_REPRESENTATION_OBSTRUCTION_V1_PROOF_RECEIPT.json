@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-09-07T13:16:09.9681080Z",
+  "id": "girs-representation-obstruction-v1-proof-result",
+  "type": "theory_evidence",
+  "status": "SCOPED_PROOF_GATE_GO",
+  "rigor": "PROVED: exact existence obstruction to Conjecture 2 as written in arxiv:1911.05858v3",
+  "reviewed_theory_sha256": "1517c007ff358dbc20f6fa0529cdf3f77f0af59a818b66cc1b5ca839425de9e7",
+  "current_theory_sha256": "46ea52895611452feb974d116586958162c2bfe3de48a426171af5c0c4175e9a",
+  "post_review_changes": "Status labels, rational-map terminology, and heuristic interpretation narrowed per reviewer; proof unchanged.",
+  "review_path": "research/REVIEW_GIRS_REPRESENTATION_OBSTRUCTION_V1.md",
+  "review_sha256": "fe1ba2dc30eae3879ab9bd06dea6d52a33ebdaa02bf5e1ed11b28b83a82afe14",
+  "reviewer_session": "01a07bf9-c15e-7b63-bcc5-71fe7c400e42",
+  "primary_pdf_sha256_verified_by_reviewer": "0f7f785f63b166154a7fdd9fe8748c309915cd8699e426ad79f5a0a5042fc381",
+  "explicit_matrix_witness": false,
+  "novelty_verified": false,
+  "mesh_conjecture_settled": false,
+  "runtime_advantage": false,
+  "no_experiment_run": true,
+  "mission_complete": false
+}

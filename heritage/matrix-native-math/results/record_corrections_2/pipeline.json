@@ -1,0 +1,67 @@
+{
+ "meta": {
+  "git_commit": "dc7434c8+uncommitted",
+  "numpy": "2.3.5",
+  "python": "3.13.7",
+  "blas_threads": [
+   [
+    "openblas",
+    1
+   ]
+  ],
+  "machine_load_percent_before": 62.7,
+  "numba": "0.62.1",
+  "numba_threads": 1,
+  "machine_load_percent_after": 48.1
+ },
+ "rows": [
+  {
+   "n_side": 16,
+   "N": 256,
+   "T": 16,
+   "t_dense_chain_s": 0.019255400002293754,
+   "t_compiled_kernel_s": 0.01827130000310717,
+   "t_fft2_eigenvalues_s": 0.00032860000283108093,
+   "t_fft2_full_matrix_s": 0.0010564000003796536,
+   "dense_over_compiled": 1.0538604258601867,
+   "compiled_over_fft2": 55.60346879394173,
+   "dense_over_fft2": 58.59829530248703,
+   "dense_over_fft2_full_matrix": 18.227375989562347,
+   "relerr_compiled_vs_fft2": 4.4097597826439986e-14,
+   "relerr_fft2_vs_dense_first_row": 5.225629050011399e-16,
+   "relerr_fft2_full_vs_dense": 6.159621363835565e-16
+  },
+  {
+   "n_side": 32,
+   "N": 1024,
+   "T": 16,
+   "t_dense_chain_s": 1.1211867000019993,
+   "t_compiled_kernel_s": 0.315478799999255,
+   "t_fft2_eigenvalues_s": 0.0005994999992253724,
+   "t_fft2_full_matrix_s": 0.007469399999536108,
+   "dense_over_compiled": 3.553920897393571,
+   "compiled_over_fft2": 526.2365311207544,
+   "dense_over_fft2": 1870.2030049219518,
+   "dense_over_fft2_full_matrix": 150.1039842653535,
+   "relerr_compiled_vs_fft2": 5.977554562197376e-14,
+   "relerr_fft2_vs_dense_first_row": 4.0503976008668025e-16,
+   "relerr_fft2_full_vs_dense": 4.745524963009237e-16
+  },
+  {
+   "n_side": 32,
+   "N": 1024,
+   "T": 64,
+   "t_dense_chain_s": 4.73407849999785,
+   "t_compiled_kernel_s": 1.3000330000031681,
+   "t_fft2_eigenvalues_s": 0.00211200000194367,
+   "t_fft2_full_matrix_s": 0.010487399998964975,
+   "dense_over_compiled": 3.6415064079037323,
+   "compiled_over_fft2": 615.5459274653172,
+   "dense_over_fft2": 2241.5144392239986,
+   "dense_over_fft2_full_matrix": 451.406306659903,
+   "relerr_compiled_vs_fft2": 2.390907084115115e-13,
+   "relerr_fft2_vs_dense_first_row": 1.0456592039367305e-15,
+   "relerr_fft2_full_vs_dense": 1.2874554950929758e-15
+  }
+ ]
+}

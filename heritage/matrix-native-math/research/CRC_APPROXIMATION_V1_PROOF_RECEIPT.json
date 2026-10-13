@@ -1,0 +1,61 @@
+{
+  "status": "PROOF_GO",
+  "terminal_token": "APPROXIMATION_CONSTRUCTION_REVIEWED",
+  "recorded_at": "2026-09-08T03:37:45.478278+00:00",
+  "review_thread_id": "01a07f0c-9876-7dd0-8a8b-2aa21f319320",
+  "exec_handle": 94021,
+  "exit_code": 0,
+  "usage": {
+    "input_tokens": 689363,
+    "cached_input_tokens": 604160,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 10464,
+    "reasoning_output_tokens": 5380
+  },
+  "bindings": [
+    {
+      "path": "research/CRC_APPROXIMATION_V1_PLAN.md",
+      "sha256": "bd47a90ab625df79fbb04c520398b735b004fee3955f738074081b524264524a"
+    },
+    {
+      "path": "research/CRC_APPROXIMATION_V1_REGISTRATION.json",
+      "sha256": "f9e3e8caa9a129b1b7b654564635abab2386d3ba0a3c47efc089d512938ac423"
+    },
+    {
+      "path": "research/CRC_APPROXIMATION_V1_DRAFT.md",
+      "sha256": "7243024dfedcc98b48389747b0afcbf465301df21175fdb67255f16213d14c5e"
+    },
+    {
+      "path": "research/CRC_FIXED_ORDER_CLOSURE_DISPOSITION.md",
+      "sha256": "425b7b6891936dc0e8704fd2b8faa6f68b4ea0e46a7b98c209c00f07ddd86045"
+    },
+    {
+      "path": "research/CR_TWO_FACTOR_PROOF_DISPOSITION.md",
+      "sha256": "f8f91032dbabd361a3c7976613d45766e0693db7bda7f7284998eed59431721f"
+    },
+    {
+      "path": "research/reviews/crc_approximation_v1/prompt.txt",
+      "sha256": "9206ff9eec03c04a7f641384e5f0077813be558fc37905229a0473834350d317"
+    },
+    {
+      "path": "research/reviews/crc_approximation_v1/launch_receipt.json",
+      "sha256": "a5debb0f39a8df0ad7f4842746968128b9b15054be0b3044f18e80394b7c610b"
+    },
+    {
+      "path": "research/reviews/crc_approximation_v1/events.jsonl",
+      "sha256": "bfd4262fe174cb24f6f2c03366851534db4f497a6c275494e126b4fa9097e9e0"
+    },
+    {
+      "path": "research/reviews/crc_approximation_v1/stderr.txt",
+      "sha256": "d52151f8ec8a46f74b51da2423302646213808acfd8ce0c6a76290305528a787"
+    },
+    {
+      "path": "research/reviews/crc_approximation_v1/final.txt",
+      "sha256": "b08ae9f25073e8e7bee8462ca7ad1bdb5d6569ade061f071e9ea71b854a347d7"
+    },
+    {
+      "path": "research/CRC_APPROXIMATION_V1_DISPOSITION.md",
+      "sha256": "126178046a0c857d1926526d39e40f5f15eb6d7e5a1316e277474a79e9e35f3e"
+    }
+  ]
+}

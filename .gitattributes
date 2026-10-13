@@ -11,5 +11,7 @@
 /experiments/results/relation_revision_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /experiments/results/acquisition_cache_integrity_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /experiments/results/conditional_port_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/heritage/** -text
+/docs/history/*.pdf -text
 /experiments/results/cached_donor_screen_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /experiments/results/encoder_continuation_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

@@ -1,5 +1,13 @@
 # NOTEBOOK
 
+## Unified program entry — 2026-10-13
+
+The owner unified the related programs in this repository. Current direction and
+execution authority: STATE.md; full ambition: theory/RESEARCH_PROGRAM.md; corrected
+inheritance: docs/UNIFIED_EVIDENCE.md. This is organizational preparation, not a new
+research result. Historical entries below retain their dated scope and corrections.
+Custody/review progress is in docs/CONSOLIDATION.md.
+
 ## Entry 127: The hierarchical family closes — disjointness gates the CGF regime (2026-09-21)
 
 The candidate-B arc completed its full empirical cycle in one session,

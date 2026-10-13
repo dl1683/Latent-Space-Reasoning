@@ -1,0 +1,178 @@
+[
+ {
+  "n": 4,
+  "L": 2,
+  "k": 1,
+  "layers": 2,
+  "params": 16,
+  "rank": 12,
+  "n2": 16,
+  "dense": false,
+  "sec": 0.0
+ },
+ {
+  "n": 4,
+  "L": 2,
+  "k": 2,
+  "layers": 4,
+  "params": 32,
+  "rank": 16,
+  "n2": 16,
+  "dense": true,
+  "sec": 0.0
+ },
+ {
+  "n": 8,
+  "L": 3,
+  "k": 1,
+  "layers": 3,
+  "params": 48,
+  "rank": 32,
+  "n2": 64,
+  "dense": false,
+  "sec": 0.0
+ },
+ {
+  "n": 8,
+  "L": 3,
+  "k": 2,
+  "layers": 6,
+  "params": 96,
+  "rank": 56,
+  "n2": 64,
+  "dense": false,
+  "sec": 0.0
+ },
+ {
+  "n": 8,
+  "L": 3,
+  "k": 3,
+  "layers": 9,
+  "params": 144,
+  "rank": 64,
+  "n2": 64,
+  "dense": true,
+  "sec": 0.0
+ },
+ {
+  "n": 16,
+  "L": 4,
+  "k": 1,
+  "layers": 4,
+  "params": 128,
+  "rank": 80,
+  "n2": 256,
+  "dense": false,
+  "sec": 0.0
+ },
+ {
+  "n": 16,
+  "L": 4,
+  "k": 2,
+  "layers": 8,
+  "params": 256,
+  "rank": 144,
+  "n2": 256,
+  "dense": false,
+  "sec": 0.1
+ },
+ {
+  "n": 16,
+  "L": 4,
+  "k": 3,
+  "layers": 12,
+  "params": 384,
+  "rank": 208,
+  "n2": 256,
+  "dense": false,
+  "sec": 0.3
+ },
+ {
+  "n": 16,
+  "L": 4,
+  "k": 4,
+  "layers": 16,
+  "params": 512,
+  "rank": 256,
+  "n2": 256,
+  "dense": true,
+  "sec": 0.5
+ },
+ {
+  "n": 32,
+  "L": 5,
+  "k": 1,
+  "layers": 5,
+  "params": 320,
+  "rank": 192,
+  "n2": 1024,
+  "dense": false,
+  "sec": 0.0
+ },
+ {
+  "n": 32,
+  "L": 5,
+  "k": 2,
+  "layers": 10,
+  "params": 640,
+  "rank": 352,
+  "n2": 1024,
+  "dense": false,
+  "sec": 2.0
+ },
+ {
+  "n": 32,
+  "L": 5,
+  "k": 3,
+  "layers": 15,
+  "params": 960,
+  "rank": 512,
+  "n2": 1024,
+  "dense": false,
+  "sec": 5.3
+ },
+ {
+  "n": 32,
+  "L": 5,
+  "k": 4,
+  "layers": 20,
+  "params": 1280,
+  "rank": 672,
+  "n2": 1024,
+  "dense": false,
+  "sec": 10.7
+ },
+ {
+  "n": 32,
+  "L": 5,
+  "k": 5,
+  "layers": 25,
+  "params": 1600,
+  "rank": 832,
+  "n2": 1024,
+  "dense": false,
+  "sec": 15.4
+ },
+ {
+  "n": 32,
+  "L": 5,
+  "k": 6,
+  "layers": 30,
+  "params": 1920,
+  "rank": 992,
+  "n2": 1024,
+  "dense": false,
+  "sec": 18.1
+ },
+ {
+  "n": 32,
+  "L": 5,
+  "k": 7,
+  "layers": 35,
+  "params": 2240,
+  "rank": 1024,
+  "n2": 1024,
+  "dense": true,
+  "sec": 24.9
+ }
+]

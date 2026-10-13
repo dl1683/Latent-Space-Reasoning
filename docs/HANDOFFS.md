@@ -1,4 +1,15 @@
-> HISTORICAL as of 2026-10-12; the S65 routing below is superseded. Current GCP program: [STATE.md](../STATE.md).
+## Current handoff — unified program, 2026-10-13
+
+All future research from the former four programs happens in this repository.
+Read [STATE.md](../STATE.md), [RESEARCH_PROGRAM.md](../theory/RESEARCH_PROGRAM.md),
+[UNIFIED_EVIDENCE.md](UNIFIED_EVIDENCE.md), [heritage](../heritage/README.md) and
+[ASSETS.md](ASSETS.md). Migration status and custody gates: [CONSOLIDATION.md](CONSOLIDATION.md).
+No historical run/cron/budget is automatically adopted. The paused optimizer-cross
+contract and unresolved cloud allocation decisions are preserved in current STATE.
+
+---
+
+> HISTORICAL: the S65 routing below is superseded. Root STATE governs all current work.
 
 # Session handoff — 2026-09-14
 

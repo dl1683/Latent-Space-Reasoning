@@ -1,0 +1,2938 @@
+{
+  "schema": 1,
+  "date": "2026-10-13",
+  "status": "historical-reference-only",
+  "source_basis": "working-tree bytes; source_head identifies history, not clean-content identity",
+  "imports": [
+    {
+      "destination": "heritage/computation-models/README.md",
+      "source_project": "new-computation-model",
+      "source_path": "README.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3981,
+      "sha256": "f0f5a53996958ec39c231c69b5047a3438fb86099c6fd600237d91c823cdf4b6"
+    },
+    {
+      "destination": "heritage/computation-models/ROUNDTABLE/LEASE_LINE_CLOSEOUT.md",
+      "source_project": "new-computation-model",
+      "source_path": "ROUNDTABLE/LEASE_LINE_CLOSEOUT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 8404,
+      "sha256": "1ed18916a58c7195760af0005be8248f5df20ee6b39ecc45077d6df3b57e80d9"
+    },
+    {
+      "destination": "heritage/computation-models/ROUNDTABLE/work/codex/r16_THEORY.md",
+      "source_project": "new-computation-model",
+      "source_path": "ROUNDTABLE/work/codex/r16_THEORY.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": false,
+      "bytes": 41155,
+      "sha256": "128326ff1be44a20b16230f52c15874bc295e621be62fc75acdee1ec0238a6b3"
+    },
+    {
+      "destination": "heritage/computation-models/ROUNDTABLE/work/codex/r16_environment.py",
+      "source_project": "new-computation-model",
+      "source_path": "ROUNDTABLE/work/codex/r16_environment.py",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 425,
+      "sha256": "7aeb4f313702a6506570c7a71e975266d1e1b8666a319bb7341dd01152ebd89c"
+    },
+    {
+      "destination": "heritage/computation-models/ROUNDTABLE/work/codex/r16_filtration.py",
+      "source_project": "new-computation-model",
+      "source_path": "ROUNDTABLE/work/codex/r16_filtration.py",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2563,
+      "sha256": "b7b5fda3110a08e5dfaf0986a0454c4a101f86476f7157ad8a05ff46b4582e8d",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/ROUNDTABLE/work/codex/r16_groups.py",
+      "source_project": "new-computation-model",
+      "source_path": "ROUNDTABLE/work/codex/r16_groups.py",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 8432,
+      "sha256": "662fa228b07f6abbca0886813e19b844fff16735c882311ce49797254b95475b"
+    },
+    {
+      "destination": "heritage/computation-models/ROUNDTABLE/work/codex/r16_literal.py",
+      "source_project": "new-computation-model",
+      "source_path": "ROUNDTABLE/work/codex/r16_literal.py",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": false,
+      "bytes": 6556,
+      "sha256": "660b34a9a50c9baaae1dc7d077e3c8b570f6cf2e3eb23f84d62ec1946c3f7076",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/ROUNDTABLE/work/codex/r16_orbits.py",
+      "source_project": "new-computation-model",
+      "source_path": "ROUNDTABLE/work/codex/r16_orbits.py",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 6583,
+      "sha256": "0ad59969b75f1ab36b8df2c8b5a69fcac9df5cd2ae30ff50d47d5ffb84824357"
+    },
+    {
+      "destination": "heritage/computation-models/ROUNDTABLE/work/droid/r19_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "ROUNDTABLE/work/droid/r19_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 31665,
+      "sha256": "5031cb06644da3615b40abca38cab134ab26e83718c68735328e589735dbdfcc"
+    },
+    {
+      "destination": "heritage/computation-models/ROUNDTABLE/work/droid/r19_SUMMARY.json",
+      "source_project": "new-computation-model",
+      "source_path": "ROUNDTABLE/work/droid/r19_SUMMARY.json",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 1376,
+      "sha256": "3031d9c10005cabd0ee9ce1ed9e2ede20088a353fd1816b232fb4d49f57d79b1",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/ROUNDTABLE/work/droid/r23_ERRATUM_PREFIX.md",
+      "source_project": "new-computation-model",
+      "source_path": "ROUNDTABLE/work/droid/r23_ERRATUM_PREFIX.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": false,
+      "bytes": 2764,
+      "sha256": "83b49427bdbf8298c223cd054667d4b657fb1369ea4102c15be0da42c3158c81",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/ROUNDTABLE/work/droid/r23_TRANSLATION.md",
+      "source_project": "new-computation-model",
+      "source_path": "ROUNDTABLE/work/droid/r23_TRANSLATION.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": false,
+      "bytes": 14524,
+      "sha256": "9b659c554709a2ab1a078e7b60ad2ac630ea9db9ceebe2f096aae540d6ef09cd",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/ROUNDTABLE/work/droid/r29_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "ROUNDTABLE/work/droid/r29_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": false,
+      "bytes": 15198,
+      "sha256": "8dd6a634cc939cbe1812b79b5d8a30cb4f2a623d950fcb6c32fc18af68cebc97",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/ROUNDTABLE/work/droid/r30_THEORY.md",
+      "source_project": "new-computation-model",
+      "source_path": "ROUNDTABLE/work/droid/r30_THEORY.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": false,
+      "bytes": 12119,
+      "sha256": "72d46738d2c8e084d5f43b970112856e0b8069fbf9c61e0525690e2b8608f7dd"
+    },
+    {
+      "destination": "heritage/computation-models/ROUNDTABLE/work/droid/r31_FINAL.md",
+      "source_project": "new-computation-model",
+      "source_path": "ROUNDTABLE/work/droid/r31_FINAL.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": false,
+      "bytes": 7444,
+      "sha256": "1581e38508171c156c42155e04e88cdc165213a51ed9057af3be2853d7629fb2"
+    },
+    {
+      "destination": "heritage/computation-models/docs/ATTEMPTS.md",
+      "source_project": "new-computation-model",
+      "source_path": "docs/ATTEMPTS.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 13073,
+      "sha256": "66c482facaead96c5b1034a5ed1ee634e4e1fae78c445e3a3af4d2d7e0c5bfd7"
+    },
+    {
+      "destination": "heritage/computation-models/docs/CLAIMS_LEDGER.md",
+      "source_project": "new-computation-model",
+      "source_path": "docs/CLAIMS_LEDGER.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 52686,
+      "sha256": "f6a08042e34eaf6a6d160fc4c346ef98274ea263e0e2e4349850e903d006a162"
+    },
+    {
+      "destination": "heritage/computation-models/docs/DECISIONS.md",
+      "source_project": "new-computation-model",
+      "source_path": "docs/DECISIONS.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3004,
+      "sha256": "5498bb8ad288853ecc11e46ae4e533f66ed8c96bbad86963f0a083eba2c6c1d5"
+    },
+    {
+      "destination": "heritage/computation-models/docs/FILE_MAP.md",
+      "source_project": "new-computation-model",
+      "source_path": "docs/FILE_MAP.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 44968,
+      "sha256": "d3fb17a49c69f5d261db966b605acf0b680ac12dbb3a2afe687a19d0c58ff8f5"
+    },
+    {
+      "destination": "heritage/computation-models/docs/LESSONS.md",
+      "source_project": "new-computation-model",
+      "source_path": "docs/LESSONS.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3446,
+      "sha256": "7c3ac123f265c95ee369be0083466a0abd7530728c5c38d52bb3636592173b30"
+    },
+    {
+      "destination": "heritage/computation-models/docs/MAP.md",
+      "source_project": "new-computation-model",
+      "source_path": "docs/MAP.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 1864,
+      "sha256": "6df106577aa016fd158bf3772fa8907bac037a9e8ade08d2df273f7b39ce5b8f"
+    },
+    {
+      "destination": "heritage/computation-models/docs/RESULTS.md",
+      "source_project": "new-computation-model",
+      "source_path": "docs/RESULTS.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 17882,
+      "sha256": "07c730c8d4866b6e33a95e0914c2d1a26d59b5480e91fe5912a6afb8ace8536b"
+    },
+    {
+      "destination": "heritage/computation-models/docs/STATUS.md",
+      "source_project": "new-computation-model",
+      "source_path": "docs/STATUS.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 6776,
+      "sha256": "4c4ebdd5184d3a77580103225ee34ca3a9772881b759239b851a47e3306eca3d"
+    },
+    {
+      "destination": "heritage/computation-models/experiments/cold_runner.py",
+      "source_project": "new-computation-model",
+      "source_path": "experiments/cold_runner.py",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 20188,
+      "sha256": "a8babd2f6d437fab50c9211ff481c8c700fd72ea9738915bc4179690152c7a79"
+    },
+    {
+      "destination": "heritage/computation-models/research/README.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/README.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 866,
+      "sha256": "5d45561e38b88d02f33c80460d84b87b70c56120926475907a4463f5ab1755cc"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/reviews/ADAPTIVE_FEASIBILITY_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/reviews/ADAPTIVE_FEASIBILITY_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4322,
+      "sha256": "d463d57f11a3d878db8c0e92e91871aac9e69ca4f1ed3cc74e60f1a13858b3d7",
+      "source_sha256": "4ede60428ac897f0cd5f5936426f0ef98573635887af992250b16a2924d496d6",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/reviews/ADAPTIVE_FEASIBILITY_REVIEW_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/reviews/ADAPTIVE_FEASIBILITY_REVIEW_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 9098,
+      "sha256": "da5a5c005cc1605c38eedb510aaea24dacd600bdb9c9dbc2f2637b17c55fd0a5",
+      "source_sha256": "96c4a172242ea52041d1ecffe45776196648036d236aeffd2475a1056d4b4009",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/reviews/ADAPTIVE_SEED_PRIORITY_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/reviews/ADAPTIVE_SEED_PRIORITY_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 10193,
+      "sha256": "d48fdb0cbe8b51c6c4e5f91eef375342a4ad964116d432f9faf346f6f0f79a51"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/reviews/CAT_COMPONENT_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/reviews/CAT_COMPONENT_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 6366,
+      "sha256": "c956c3ead904a27711ed06f1b809c2d0c8440c77f9e730b3a7545057eee780bd",
+      "source_sha256": "ac41a6475f01dc86967ec9a1ed2e7f8b59e022eab8dcb2584aac8ac53cd36202",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/reviews/CAT_COMPONENT_REVIEW_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/reviews/CAT_COMPONENT_REVIEW_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 9098,
+      "sha256": "8f5439f3c23a8ea7c9c538d921059869081cefa60cfa23807709865c1e1f8ab2",
+      "source_sha256": "cdda1d4a9a95b5f17dd5a86a13128f8c4e8425f504bddfc9a6cea86814549266",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/reviews/RECALL_TRANSLATION_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/reviews/RECALL_TRANSLATION_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2626,
+      "sha256": "24c515dcc39981f3b5f28862ac9472843f978f4186fa0a3987b2fed1ae0bdee6",
+      "source_sha256": "dd0ad67367b82890ed1e83966acfcb8e9a04926ddc04bb28a580206fd0b28b10",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/reviews/RECALL_TRANSLATION_REVIEW_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/reviews/RECALL_TRANSLATION_REVIEW_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 7840,
+      "sha256": "7d6fe34ab29e0ae9d5a5bc8242b9b2a748949c7f56f538baaab5e5e5607bb083",
+      "source_sha256": "371be336915fee61ac4020cf937d8ff24e3e571ab02e0768010f8f14980e3913",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/theory/ADAPTIVE_ERASURE_FEASIBILITY_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/theory/ADAPTIVE_ERASURE_FEASIBILITY_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5547,
+      "sha256": "3135ce537e5d594d62fc86a7c10c988894e7feb2cfaa82227550d3a883f72813"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/theory/CAT_COMPONENT_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/theory/CAT_COMPONENT_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 9646,
+      "sha256": "42896bedba9bf8ef5c3b12d082ec36335f723a710f366f9dfc99f80d64689997"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/theory/CAT_PEBBLE_PRETEST.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/theory/CAT_PEBBLE_PRETEST.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 11614,
+      "sha256": "24f5768d56b7ffb78756248cb3f94d9a9318f6c6b73faebed4678b185ce9cf7c",
+      "source_sha256": "20b99364fdeda8a401fb54e6436a40fc17a4d8a6cfde4f174081b7da3fa66ab9",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/theory/CAT_RECURSIVE_RECALL_CONSTRUCTION.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/theory/CAT_RECURSIVE_RECALL_CONSTRUCTION.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 8263,
+      "sha256": "303256114d28d79c3a3151bd03b26968a771517885ba16b56977cf05bc1db50b",
+      "source_sha256": "1d61b390379f493df4cfd2842a6bad7c0943e38615a4e5db7a1b96235c760989",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/theory/DELTA_TESTS_EXPERIMENT.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/theory/DELTA_TESTS_EXPERIMENT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5049,
+      "sha256": "cf1893d1fafdd0eaf4a4d0b08d33744d5829588ece1769bf957d8156ebff3648"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/theory/NEXT_DIALS_OCTOBER_4_RESULT.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/theory/NEXT_DIALS_OCTOBER_4_RESULT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 22011,
+      "sha256": "f630ed5730f12e84e998f85b0921b12ed08d155e511de67c299381255ce8381d",
+      "source_sha256": "00372ecd3c32d042cf88792a46fd11c51478d06cfcf7088667d99c910504ec9c",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/theory/QUESTION_DIFFERENT_DIALS.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/theory/QUESTION_DIFFERENT_DIALS.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 15855,
+      "sha256": "0517fffc96bef98840c62f5fba66fcecbd3ff5f8b7e4c04d0987942cbb7035e4",
+      "source_sha256": "2522315a207629aa822b65b616c3c8f75e0df76a8086ba1a1f7383554a140125",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/theory/QUESTION_OCTOBER_2.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/theory/QUESTION_OCTOBER_2.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4187,
+      "sha256": "77047af0da85a3db8e0a22ca0eb1d5b038660540c0ab4e64afd8d90e392d607f"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/theory/QUESTION_RESTART_RESULT.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/theory/QUESTION_RESTART_RESULT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 32929,
+      "sha256": "60f20842444e4237ae1238bb8fa7a5efff38942028765a17dfd9cdf918fd7d1d",
+      "source_sha256": "fccd3b2f9cc65598946b06c8e3cd862eb6d5f47e6788a9ef5ac56fe4d6c529a8",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/theory/RECALL_KERNEL_CONSTRUCTION.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/theory/RECALL_KERNEL_CONSTRUCTION.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 10228,
+      "sha256": "1e01edc6f8e843046966f0a7d8432148393ba0c8d4ac33428e82e17fecc1cb58",
+      "source_sha256": "39b1a03e53cc557aed3ea8e2b67f232dff543793983ccf7ccc85784e596e121a",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/theory/RECALL_KERNEL_REPAIR.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/theory/RECALL_KERNEL_REPAIR.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 6278,
+      "sha256": "9478b97293104701c3a533db6a72583ef95f416f1278441faa0e853b2e8e9582",
+      "source_sha256": "23fc095679c54931b478da7d64cdbe4b2f72ae506fcfc1f6945707df5efe9097",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/access-dials/theory/RECALL_TRANSLATION_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/access-dials/theory/RECALL_TRANSLATION_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5943,
+      "sha256": "0583f755e4a3820c928f04d364606e4be58f7bc2c90ff39de799db4925fa3c69"
+    },
+    {
+      "destination": "heritage/computation-models/research/decisions/STEERING_COMPACT_PROBE_DECISION.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/decisions/STEERING_COMPACT_PROBE_DECISION.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2683,
+      "sha256": "7330f4eb8b01c5f89429d34ee6af190c7d1fc526fb89e8d057c8becb62470ca8"
+    },
+    {
+      "destination": "heritage/computation-models/research/decisions/STEERING_CONTROLLER_DECISION.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/decisions/STEERING_CONTROLLER_DECISION.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2599,
+      "sha256": "578b10c7413e83e82834106e3d8f44d711e06b448f2e1de686faaa69532416b9"
+    },
+    {
+      "destination": "heritage/computation-models/research/decisions/STEERING_OCTOBER_2_DECISION.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/decisions/STEERING_OCTOBER_2_DECISION.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2857,
+      "sha256": "5d5e3254dc6a5d12b4b145a6c540bea203de75f64a7b01347e1d54c489e5acac"
+    },
+    {
+      "destination": "heritage/computation-models/research/decisions/STEERING_OCTOBER_3_DECISION.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/decisions/STEERING_OCTOBER_3_DECISION.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2643,
+      "sha256": "e89aaf73393ca7d516f5ca1bdaca94f5d3332937299054b5c0bf0559f8f5d20a"
+    },
+    {
+      "destination": "heritage/computation-models/research/decisions/STEERING_OCTOBER_4_DECISION.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/decisions/STEERING_OCTOBER_4_DECISION.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2945,
+      "sha256": "9e886acf5120d362e13d90f083f72486efcb67afc04da15dfbcd3727968e3a82"
+    },
+    {
+      "destination": "heritage/computation-models/research/decisions/STEERING_RESTART_DECISION.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/decisions/STEERING_RESTART_DECISION.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3174,
+      "sha256": "78e5792b236dc358d35cdbf42637e7596722d10feab5ffc7ff46fbf7c4c5f83d"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_BOUNDARY_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_BOUNDARY_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3576,
+      "sha256": "5e2dc0ab56321d529c9f26ae2d66151c23dc5e178d4b5a8c7091c850eced9754",
+      "source_sha256": "6ba7f34967e876daeb00ceedcff1b93dcfc359e9feda817fa3f5a86d919c4210",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_BOUNDARY_REVIEW_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_BOUNDARY_REVIEW_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5788,
+      "sha256": "571c54fb03546e6392254d98d46817c88147b30007c57a9a66d86f9514c3b55a",
+      "source_sha256": "ab8e682db0871f4ac90d97ef38e3c55405a526ac9dec079ae5dcf81e17629305",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_COMPACT_ADAPTIVITY_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_COMPACT_ADAPTIVITY_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4825,
+      "sha256": "3cd2cdd056013397e4c2e4b84b253ab55630de53c243be05f915bdf178e0b8f6"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_COMPACT_CONSTRUCTION_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_COMPACT_CONSTRUCTION_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5066,
+      "sha256": "8b88b7af9e2fa8af0a72fdf23ab2d4bc31da778b3837afea4751337550b64955",
+      "source_sha256": "fe145fa6beb78ccdc6ccdc89689fb236e7294002b6dff3baccab1bf9c4a6248f",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_COMPACT_CONTROL_DESIGN_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_COMPACT_CONTROL_DESIGN_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 11927,
+      "sha256": "e448920a7d52ab8c15bb7c8458e4cc16c7e4c351efe6d8d0aea939893f673994",
+      "source_sha256": "e9e4a12db0f9900cca99abaef1aab8a1edd88b896b5a67fd6336dc70cf14be3a",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_COMPACT_PROBE_DESIGN_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_COMPACT_PROBE_DESIGN_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 13977,
+      "sha256": "169519eb593d2a060946f9242f67dce07ff91dacc71c404c8d2f79c5e5da25a2",
+      "source_sha256": "bcfe42652de1c910515765ff6c520c7384e23d3bb9045fcc7258e9820e019e4c",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_DEPTH_TWO_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_DEPTH_TWO_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4978,
+      "sha256": "8aaaaeb1acc3056203ae02924926807259cfc102b8e7fa5405a192557155af84",
+      "source_sha256": "e15c1e5953e4927be71350f03471cccdb176673d52efaf035b53603e1c33ca31",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_FLAT_ENDPOINT_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_FLAT_ENDPOINT_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 7185,
+      "sha256": "6066568abdb70c4072e657d9844c0e82badd5694f22c29d7c7cf2b9ecb6b0b07",
+      "source_sha256": "35f47fa288d5f77b024121e59cad021ca7a6c6356425a68269509c85f8c3f7bc",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_INDEXED_MODEL_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_INDEXED_MODEL_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 7032,
+      "sha256": "eee2257ff7f95a27ca47de81c40840994cf561cd24f7409eed33ed79f42796e4",
+      "source_sha256": "bee22ae941b9e16b89603de48cde9f9cff9c88d2020dc85267ef2fafdb87d2ac",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_JOURNAL_DESIGN_REVIEW_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_JOURNAL_DESIGN_REVIEW_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 9464,
+      "sha256": "2646e26fefc372f61cd389e50e178b748c0c631d2680b4a8ba1e7e893e2b860f",
+      "source_sha256": "388c86d9b265c6ce8ee8120f9d91b6c6a7b3506db86c23a93e8d8a37fd630f23",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_PROBE_LAW_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_PROBE_LAW_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4699,
+      "sha256": "29f8cc76b6a2b4c6e812b7ea247c2f43c192e3326307b965fb9b7729371e3d52",
+      "source_sha256": "8d7fe52b3585cd841af41c7ccfb7cf0219b9588abd0b438c84bab164c9299885",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_RAM_COMPILER_DESIGN_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_RAM_COMPILER_DESIGN_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 9639,
+      "sha256": "b1a1b47ba2deffe5f4e3da5d9df5ac446c0b1ecee09927872caca3a63e50a1f5",
+      "source_sha256": "b0be16a9517585f0ff24410cf59cd816845be3d14c4ff404b9a40dd56bdea1db",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_RAM_FINAL_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_RAM_FINAL_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 9894,
+      "sha256": "bb3bc5e383490f3269599d2476b269348deb87fae4f26e13eeb424e9c03568fd",
+      "source_sha256": "332bf523f31442c653fa3e4d6fdc843a218a595a1b4c7b38e1b15dd0b7f549e6",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_TINY_6_CODE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_TINY_6_CODE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3858,
+      "sha256": "629ec805c01dca6e5fb361b9399fb8a29ad9e3c59622b48577f343f6ab279b05"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_TINY_6_DESIGN_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_TINY_6_DESIGN_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3218,
+      "sha256": "242508b1215697914ce5e876ba6e201225b536eb61b38f09e0be83246e08f72a",
+      "source_sha256": "846760eeb9ea7203c89bc5f0ce7ac9f4e34d9a1d98195fde3c6ae34358e9601c",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_TINY_6_LAUNCHER_REGATE_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_TINY_6_LAUNCHER_REGATE_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 1752,
+      "sha256": "129bae818c729e341a4cba3b96f6b9fa144053bb46e4c19d947a24cc62abfda6",
+      "source_sha256": "53790b0e18a8de755c31e7a67b9bd72cbfd1b2a56f32844e66f425a2c2bb95c3",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_TINY_6_LAUNCHER_REGATE_2.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_TINY_6_LAUNCHER_REGATE_2.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 1467,
+      "sha256": "d84e5753bbc20040a5ed2b3ffb7ff1db43f3c00ad7e80f94a9012c5f11001e5d"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_TINY_CERT_CODE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_TINY_CERT_CODE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4607,
+      "sha256": "223b645e426a8b7e17f0891ac93178c19439cc5fe3ffbb9a49292a297f413d18"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_TINY_CERT_DESIGN_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_TINY_CERT_DESIGN_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 6343,
+      "sha256": "552d7d1a12dabd5b8d9271e509bdba428accae714c2a0d8635df679de96a70a3",
+      "source_sha256": "bf346819a24b82d338bd4240ea4f53843206d2b30eb8438af2cc0be9346f66cd",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_TINY_CERT_FAILURE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_TINY_CERT_FAILURE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4962,
+      "sha256": "b3ac7d24bda72bde0eecdf52d53a1ec4863a8e7d1017b577b07987a15d8656b5",
+      "source_sha256": "6d10f9eb35df0e5ec7ff916ebb52112d88d1db822f6a9d4ab88b0f41410cdafe",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_TINY_CERT_RAW_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_TINY_CERT_RAW_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5404,
+      "sha256": "29511970811495c3c8148161a74fc7be7f9501f51357df3c99d16118963ea984",
+      "source_sha256": "4fb5d5c351e707149eb9d0d2a2948799ef21eae53acdf60b2f43774a8d58d14d",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_TINY_CERT_SMOKE_FAILURE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_TINY_CERT_SMOKE_FAILURE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 1739,
+      "sha256": "c3cea62d9f35fa8d88d05f0034136692abf11fd532dfe3e3767f709125ea33e4"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/ENDURANCE_UNIVERSAL_BOUND_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/ENDURANCE_UNIVERSAL_BOUND_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 8020,
+      "sha256": "09515484ae959b09d7659565bbaa161127a45002d976898aa3fcedf23c775701",
+      "source_sha256": "accd25acbde1cd60cc978a552fa3a0de155e4683305aae60cde3dad8a98541f8",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/reviews/HYGIENE_CONTROLLER_OUTCOME_REPORT.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/reviews/HYGIENE_CONTROLLER_OUTCOME_REPORT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2590,
+      "sha256": "72f921acf11c9e51d5a7ccf7701985b42b8b2d4170ca57eb8b4954dde927fd0e"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/COLD_RUNNER_SPEC.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/COLD_RUNNER_SPEC.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 9756,
+      "sha256": "2d0c66447456adc0a63b3f35bb57db502a8791d3f003452c15ae975d7be73742"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_BOUNDARY_MODEL_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_BOUNDARY_MODEL_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5470,
+      "sha256": "f0ab692cf629fd1f3c4f35d7e6600c3a09f5a6505b98f9ff776649b3c8d7ec97"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_COMPACT_ADAPTIVITY_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_COMPACT_ADAPTIVITY_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3856,
+      "sha256": "73aabcfa3e9291ca4b4f6b2b0684616cc39b8ab059b409ec68bc950b04718fd3"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_COMPACT_ALTERNATIVE_PRETEST.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_COMPACT_ALTERNATIVE_PRETEST.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3103,
+      "sha256": "f5f0c3aed4823103a0bd32e4b6655f6ad5e7716c0b602db7bb19a8e17c40c330"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_COMPACT_CONSTRUCTION.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_COMPACT_CONSTRUCTION.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 53598,
+      "sha256": "38619efa3c0568e4f11575333c28fee34912aa8c1cbb6ca4de16d947b7385ec8"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_COMPACT_CONSTRUCTION_SUBMISSION.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_COMPACT_CONSTRUCTION_SUBMISSION.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 768,
+      "sha256": "7d4250a41defe83c0f3ab7fad44bcaaa3e344c6fe6959384320ed3af12bb8ef3",
+      "source_sha256": "be706e8d6324de13d9782f49697ece2313031596734a47bbb29b583e5b79db30",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_COMPACT_CONTROL_PROTOCOL.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_COMPACT_CONTROL_PROTOCOL.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 7289,
+      "sha256": "84080b7baf4dc42885d59974c303e7222a66d49173f40284812af98f6fa2e60c"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_COMPACT_PROBE_MODEL_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_COMPACT_PROBE_MODEL_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 8519,
+      "sha256": "217c867350cd8d8d5be1820269639d9698cc6f0e5aa675f34242e6f03a1cf00d"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_COMPACT_PROBE_PROTOCOL.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_COMPACT_PROBE_PROTOCOL.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4392,
+      "sha256": "8059b17fd88f34d82f7e9d6f61ccd474a94c7a5385c06815c78d80dc5ab108db"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_CONTROLLER_REPAIR.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_CONTROLLER_REPAIR.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 11481,
+      "sha256": "3c0923b884b917fbacca19f12b956515b46ea71fd79f2ddc7015a0ccbabc825b"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_DEPTH_TWO_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_DEPTH_TWO_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4178,
+      "sha256": "ed7e6cbb14f40f5a6fc55422d5c2dc3ff9534ebf8f94107ee8c3ecce886f96b3"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_DESIGN_EXPERIMENT.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_DESIGN_EXPERIMENT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4816,
+      "sha256": "78ba2ef65240194a7d5651091c104bb7ff3dfb2e3e1d8c23b1e34b6e8c63b930"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_DESIGN_QUESTIONS.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_DESIGN_QUESTIONS.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2525,
+      "sha256": "b87d974186e0af3550044d0aca22f702a46de9f2e43c5909d9fba7618cca3a26"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_FATNODE_DESIGN_SKETCH.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_FATNODE_DESIGN_SKETCH.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 7322,
+      "sha256": "c811f2fa080c25f0ae496e4d9907d6e692cb211acb148246c0a30f5a04f681e7"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_FLAT_ENDPOINT_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_FLAT_ENDPOINT_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 6229,
+      "sha256": "b2b3ca4211bfc93e44bf6621e841ac3d6d5b4507e54b3bbd6a4a1f4af019bca5"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_INDEXED_MODEL_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_INDEXED_MODEL_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 9289,
+      "sha256": "3cd1732070d1874c36c3ad9fd267a03f0b98edd76ad27faa0078954ea2fb3129"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_PROBE_LAW_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_PROBE_LAW_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5395,
+      "sha256": "664de7af7984bbf7c83743a45df74fd376ecfbe724c6fb4cfe9b91c3d541cf7e"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_RAM_COMPILER_BUILD.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_RAM_COMPILER_BUILD.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 22945,
+      "sha256": "650ad0f4637d36ff8b55d8c5e8666ff52a2b02fe367c0d09119daf2e691b185c"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_RAM_CONTROLLER_PROTOCOL.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_RAM_CONTROLLER_PROTOCOL.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3384,
+      "sha256": "032d02f4dd3a63562bb114073c231d08361abb9240c59173937e108629e8df7a"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_RAM_LOWERING_REPAIR.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_RAM_LOWERING_REPAIR.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 18002,
+      "sha256": "34628271e1b8e8e3f51fb617f2a83adbd3daab657402091ee8d7782f3953800c"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_TIGHT_LOSS_QUESTION_RESULT.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_TIGHT_LOSS_QUESTION_RESULT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 8807,
+      "sha256": "cabc68bfecb6c5704e41221afebcbd918688f0158b5b914fef5ff3fd7b558b01",
+      "source_sha256": "f2652d148bd8986455e2fd659d05823da3de78fdd645decc681db639fb5eaf06",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_TINY_CERT_FLUSH_REPAIR.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_TINY_CERT_FLUSH_REPAIR.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2406,
+      "sha256": "484f77ea5a31ba03a51ea15ae02370d4d386dba4f194f305b69527b7f056c742"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_TINY_CERT_PROTOCOL.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_TINY_CERT_PROTOCOL.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5857,
+      "sha256": "4e622f4e89ae706cc6cd84acd1d3962d86fdf4f7212a172f470dc2c715c604aa"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/ENDURANCE_UNIVERSAL_BOUND_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/ENDURANCE_UNIVERSAL_BOUND_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 7145,
+      "sha256": "288da6942fa7bcdaa4896fda00c49bb13d9ad4bc91c1e54e42df117686adce85"
+    },
+    {
+      "destination": "heritage/computation-models/research/endurance/theory/INCUMBENT_FLATLOG_FRONTIER.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/endurance/theory/INCUMBENT_FLATLOG_FRONTIER.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5397,
+      "sha256": "2f83a51b61a46ff8faa229324cc238b37b2286ae7d13b59d17df96d49b62a450"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/ATOMIC_COMPILER_REVIEW_2.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/ATOMIC_COMPILER_REVIEW_2.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4063,
+      "sha256": "87149955477d942958ce1c81e6f2838813a097dcf04f0577642a5c5cafdf057c"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/ATOMIC_ERASURE_REVIEW_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/ATOMIC_ERASURE_REVIEW_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 22364,
+      "sha256": "45ae8414ab433d9a97fdf84c808fbecde289dd0ae6f1aca38ef46129d48a85fe",
+      "source_sha256": "a0c51c7705522c31a10fe11afef5b24474c3108787be46d9ae8022239360cf34",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/ATOMIC_EVIDENCE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/ATOMIC_EVIDENCE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2934,
+      "sha256": "bd8c1233f57f05b702cc52d55f64642470001aa2030aba8071ea936a09718514",
+      "source_sha256": "1e4a97e525a00fd23d88014d14aac55398c7b71936eed3ecc123b929e90435bf",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/CORRELATION_LOCAL_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/CORRELATION_LOCAL_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4491,
+      "sha256": "6ca314c206ab163c4dc88facf19673e59b4834c52f265d2fd75f5d5abf2f1830",
+      "source_sha256": "9ca15332f459fb733e464c7dbded8c23a9c7d00b9cc1531f16c71c343bbe0b35",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/ERASURE_OBSERVER_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/ERASURE_OBSERVER_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5048,
+      "sha256": "d3c91a8bb9474e7c7c4e7468735d86ed4a452abd6fa91e6a7e7f5f937430b0fb",
+      "source_sha256": "24f428c2acf31083c6bed677b4d0bf32f7170c7b1cfe5edfeb64ae76e34a0321",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/GENERAL_MASKED_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/GENERAL_MASKED_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4618,
+      "sha256": "dbfaac35b3f2e33c72c162854cb009e8124cfa83d51b945aa63197ca6fbd6790",
+      "source_sha256": "7fac00e413c4804e7c7095d59daf4343ff39511e01a60b813b7819eeef2443df",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/MASKED_BLOCK_CODE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/MASKED_BLOCK_CODE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2756,
+      "sha256": "47045e4a3afa23a98adcc9627ba1a3b73359b56b6acaebd9922ffad2fe06ea89",
+      "source_sha256": "834ea90c93467ec7d89f990e9b9eee2ee1136509fd12da5502025ffc4264cef2",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/MASKED_BLOCK_FULL_EVIDENCE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/MASKED_BLOCK_FULL_EVIDENCE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4890,
+      "sha256": "037b25d3054b8631cf5ddc2f694822181a2ad7c05424763aa95dee9da69cda82",
+      "source_sha256": "2b7b1834105d595d06b99a904551f000acb064c7c5ef46ba6da222a42c74cd36",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/MASKED_BLOCK_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/MASKED_BLOCK_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5162,
+      "sha256": "8bf2e4769aef70768d0ba615ad88fbbbb7e7ea7a58fc9b3ba219898653208dd7",
+      "source_sha256": "a6c08140df79406d11c5726586a667c1a8471c9b25a49c3de4702b4d0a923b3f",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/MASK_SOURCE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/MASK_SOURCE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5146,
+      "sha256": "799dd7f3d23b4b75286b270b52819f0cae84afc6f42e83891e7b54ed48e16bc0",
+      "source_sha256": "da2ff9b011820a03760b3ac3124f7793db5866d448b9d5ad0abd2f2701815b54",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/METER_CODE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/METER_CODE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3943,
+      "sha256": "330e6451f3d285f14a6754d0cb0e67a64e8f0bebad762b87b515a8c1cfc2ec35",
+      "source_sha256": "3b971c865b0e1522a3e81ce1ba62862a679f82b31010f480b1a04291c5f3f14c",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/METER_CODE_REVIEW_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/METER_CODE_REVIEW_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3136,
+      "sha256": "1a8013b029b0ffd1a8a79d39bedd519d7210c68ff9e65cd5128b79be9e2405ce",
+      "source_sha256": "425b6bd3d9face2c48a8543f0b5730380a52750a6f44647fd7c6593bf8a99d4c",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/METER_FULL_EVIDENCE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/METER_FULL_EVIDENCE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2615,
+      "sha256": "f07f4f1c26bf49cb9747e49e34fe6b451419555935c6035a717c92dea4b893ce",
+      "source_sha256": "b3450c4ef85ae1c81643fa4fbd952ee7ee533fc8117f5255c3e46a1cba15335c",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/METER_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/METER_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 8398,
+      "sha256": "4aee1d988996db5e6279aa59f7ab5575f3e1c3a0ceb2df55ae0d615780d57fa5",
+      "source_sha256": "390a1bb9061efe40cb1b0dce30650f9a009a78bed334edf0959525b97815e31a",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/MIN_ATOM_BRANCH_ERRATUM.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/MIN_ATOM_BRANCH_ERRATUM.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2137,
+      "sha256": "9b4f00a88ebffdd5cc18a2f26a18fef36c1dd8aeb6d5d55a17481733c49268dc"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/MIN_ATOM_BRANCH_ERRATUM_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/MIN_ATOM_BRANCH_ERRATUM_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3160,
+      "sha256": "51010244c558b6961bafef0160356dfdaef9efe30e1132d8ee7a1145a08459e7",
+      "source_sha256": "fa6373bd073f1fd18ec7c4ccf258df7ddd1f8f922dd2f676e4e8928d05c881ba",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/MIN_ATOM_BRANCH_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/MIN_ATOM_BRANCH_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4159,
+      "sha256": "24ec014952bcbb849f340350f78c8fc4efdd24514b69105f8d9a21fc82ffc4c6",
+      "source_sha256": "24b2720c4eed9075bd62ac8a799cf8f500dbd9308d9cafbe5159f68267e303c0",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/OCTOBER_MILESTONE_REVIEW_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/OCTOBER_MILESTONE_REVIEW_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 10628,
+      "sha256": "c1f4bb0fb8fc3fba9128bbb8043b0589722834284e5c13013d808c93e8e1b013",
+      "source_sha256": "f54390a9718016d27b1fa56f7dd86b6d5ebd79a1c84ea8e37ab20b62b903e06e",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/PRIOR_UNCERTAINTY_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/PRIOR_UNCERTAINTY_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 6545,
+      "sha256": "d2c968d3c2b654597c4da73d21ed3cd83924d28479bfeee17b189cb913e67914"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/RESTART_EBC_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/RESTART_EBC_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 26076,
+      "sha256": "0b1baced0d6d9d16277da23868a64ea9f9fbe42678cf93aa78e26f01643ef7c7",
+      "source_sha256": "cad80ec88d42513adbbfdab0bfa7bac787480d6f6d1b48249df25cf6ca25f6a9",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/RETURNED_CONTEXT_THRESHOLD_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/RETURNED_CONTEXT_THRESHOLD_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 10887,
+      "sha256": "dc351049d345e14d0aa775fa3605e5cd99bce8bded204ba7154c612aecc12804",
+      "source_sha256": "9062c65ee28b1aa66ad67e4f51beebb6145761964256eb04712e4102103198c3",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/RETURNED_FAIR_BIT_CODE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/RETURNED_FAIR_BIT_CODE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3919,
+      "sha256": "23e05561bcd53cb108464e153be974e3974b87d2c2d2f8b21822585511012a5c",
+      "source_sha256": "d477c04b99d55137e35d9f5e1794cc266a7019ec97b4aa954465677504fa8d53",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/RETURNED_FAIR_BIT_FULL_EVIDENCE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/RETURNED_FAIR_BIT_FULL_EVIDENCE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3488,
+      "sha256": "b1d8bfff8d30113067790482c78fdb36215de54cbaf0213c878ca2c7b0b5fa33",
+      "source_sha256": "2bf7cc90b4e7d0aab17e0e86b7d939cc600495bcafffed639156083e2cf9f2ff",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/RETURNED_FAIR_BIT_REVIEW_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/RETURNED_FAIR_BIT_REVIEW_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 9679,
+      "sha256": "74983e2d5d9485bee1f2a07ab83ccad3def4e7f3a029dd6388c436b3c6e250a1",
+      "source_sha256": "d2f8c56a4e9c8c36f475a98b1696d644831c0ab7ea2f9a3781892bd9e37438a2",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/ROBUST_ERASURE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/ROBUST_ERASURE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 7771,
+      "sha256": "a091a91678a7e49b98a98765b9c1465a9dfdde512403516fcb7e7924fc16a32f",
+      "source_sha256": "d2a6a212d143742f804d08bb0d24887743558c0aa02ef0f276be26f267c396f8",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/SNAPSHOT_CODE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/SNAPSHOT_CODE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5908,
+      "sha256": "00fc754931650691df5b165c575d51d72fcf8ee15ee5d7c2becad24272671845",
+      "source_sha256": "4832d93f881e315ec10f88f3942545b5e23344af465776696508d860627ffe0f",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/SUCCINCT_ERASURE_REVIEW_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/SUCCINCT_ERASURE_REVIEW_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 7241,
+      "sha256": "dc20f9dc2e63e73318eb1a825d06787bc8102427728f6a2fde226a4d639c0016",
+      "source_sha256": "aa2754fe31b9b3e8bb17c8f60b284aa194bec6bfef91c6cdd7ec9bca27b26895",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/SUCCINCT_ERASURE_REVIEW_2.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/SUCCINCT_ERASURE_REVIEW_2.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4994,
+      "sha256": "7c857bd9ad0ac3170b0e34a88e1e5417d6d6a9cbb6c3165bbe32818c849a328c",
+      "source_sha256": "0ed24ca738d22c88614f0f1cf960729492769d1c448ad87b773756021fb5f525",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/SUCCINCT_PRIOR_FULL_EVIDENCE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/SUCCINCT_PRIOR_FULL_EVIDENCE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3915,
+      "sha256": "7ab3af83ab2606772ae020f9812cef695b47376c9753271f9c5f83fbcb22849b",
+      "source_sha256": "3c7f19bc434a3ee4ce2dea17f1935ee653d7fa856d57e375a45a3dc11e256140",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/THRESHOLD_CODE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/THRESHOLD_CODE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4339,
+      "sha256": "2e2d4b9030183833c69a4d2896ee2e6cff0ace06107814008528209f1d957404",
+      "source_sha256": "7316d4eff8cd01dbb43c722023821c849781c2fb0b224c70100688c8d89604a6",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/THRESHOLD_FULL_EVIDENCE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/THRESHOLD_FULL_EVIDENCE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3328,
+      "sha256": "585e0df12a011842860100078630790d0ace05a9e81b17f81becd677f4befb2c",
+      "source_sha256": "a8f0164ad4fb251f073d5ccfdbff438fce977536e3c78ed4121c9695624bb386",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/TOTAL_LOCAL_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/TOTAL_LOCAL_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5146,
+      "sha256": "39e7299d22bac6d3d811a1daa5ceb1202993bb4cb7379948faf7298d3db06ec1",
+      "source_sha256": "150f3d94f5cbef4c2c4c4d5e85c7ead991e1cb36738656377d0ad0b7fcd9f061",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/UNIFORM_BRANCH_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/UNIFORM_BRANCH_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5711,
+      "sha256": "c74e3896cb8dd24e0afb356c45f96d2886f99bc6d1f53daf1d5b11171dda8b89",
+      "source_sha256": "fe78a17f2457b5e2665495acdf292122aebc93534a8956c098405b048fcae70b",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/WEIGHTED_ERASURE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/WEIGHTED_ERASURE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5685,
+      "sha256": "2465c4cac60d2b0278684f0a98ffa72f3144a6f47253d1d5ae69084f69bb1378",
+      "source_sha256": "b47755616594841e767f6038666dee1d50031c0b6548a130f44f75b6e327d37b",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/WEIGHTED_ROBUST_EVIDENCE_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/WEIGHTED_ROBUST_EVIDENCE_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4170,
+      "sha256": "215237e2a6d35d4f2252104c05be704d15bfaa651d51752c88965fd6e6f0c2ec",
+      "source_sha256": "3d569bd6d120d2c640a78c914d117d67ac6bcee212a37754043a1ba28ebe7091",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/WINDOW_DESIGN_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/WINDOW_DESIGN_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4686,
+      "sha256": "7f47c38a6b7017bb98f879bc42b19bf5ccc7559bd055d3064c0febfa0c0ea49a",
+      "source_sha256": "5f253cd2f3a6f10a9ad101666a24ca339f74ae7955fc76be1488d9c3961e969a",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/reviews/WINDOW_DESIGN_REVIEW_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/reviews/WINDOW_DESIGN_REVIEW_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 7266,
+      "sha256": "b1a2414858fa8dbb1b2f2c636551f381189000f5b9cba513ff7a2075d7b17c40",
+      "source_sha256": "f21be1bbf3c40e4b75cd27d7f392b993e485965d38bbe60e9046002fcf5590b2",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/ATOMIC_ERASURE_FRONTIER.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/ATOMIC_ERASURE_FRONTIER.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5979,
+      "sha256": "561d8505f02faacce6f803a471a8c4d063a0ca57d33d361afb9a90c9ab1d6f42"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/ATOMIC_ERASURE_PROOF.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/ATOMIC_ERASURE_PROOF.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 8866,
+      "sha256": "ffb0f7862fb326f1a92956a9afff9ef5cc923d26202d7f981e5190a2d6f3e1ed"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/CORRELATION_LOCAL_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/CORRELATION_LOCAL_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4555,
+      "sha256": "765f24aa1358e48b9ca269d57514c29c5779cad57ae4f8d4a9ab48698fed0133"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/ERASURE_OBSERVER_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/ERASURE_OBSERVER_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 7552,
+      "sha256": "dfa7c17cc5aaf9c918ea1ec950077d66684c9abd98aa698df6bec69b1d75abf2"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/GENERAL_MASKED_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/GENERAL_MASKED_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5582,
+      "sha256": "d02ef5a907bcdc8f9336c9a56c465e9b7d167769ca4f5bb849bb0382b0680e80"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/MASKED_BLOCK_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/MASKED_BLOCK_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 6243,
+      "sha256": "2e29cae8c146f078663ab468a8c925d91d08f5def1f90a0b28250d95cbbaa281"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/MASKED_BLOCK_EXPERIMENT.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/MASKED_BLOCK_EXPERIMENT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5802,
+      "sha256": "cc1b6b47ed93a5065cb0485050e5e5e0ffbb60992970264f54bf7948bb27ced2"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/MASK_SOURCE_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/MASK_SOURCE_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4834,
+      "sha256": "a5123424759d80633b6741aef20f4eca815e726155d7969a79a790f8461671d9"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/METER_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/METER_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 7744,
+      "sha256": "9527e10c5bca813af379810b9ceed6c40291a14df4e5d5889bfdfc23e2f279b7"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/METER_EXPERIMENT.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/METER_EXPERIMENT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5583,
+      "sha256": "6f2fa67cf0ad0ac67fc58424ee118bd64deac641b62507d715ffde1668624bf7"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/MIN_ATOM_BRANCH_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/MIN_ATOM_BRANCH_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4306,
+      "sha256": "c1d1f93ce82412071072f3c34cfbbf022eeffa5988ef1f6cea34cd57477b02cc"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/OPERATING_BINDING_CONSTRUCTION.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/OPERATING_BINDING_CONSTRUCTION.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 8392,
+      "sha256": "2d15a1ef3cea12b403da962bde529c31afdf255c7fe481da32ba165171b9a285",
+      "source_sha256": "9f0e8bae2b469023e04b077c0cea324478688fbdc32df7ae2fe2c0e5ca2a64bd",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/PRIOR_UNCERTAINTY_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/PRIOR_UNCERTAINTY_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 8299,
+      "sha256": "8fe0128ee9f547a74dba62d2542530176e1f2e1ab7cbaa73dba19e9f428aa901"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/RETURNED_CONTEXT_THRESHOLD_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/RETURNED_CONTEXT_THRESHOLD_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 7391,
+      "sha256": "19d389f0d70f0cd3e42cd6d1b68ddcaaca5dee1e53bcaf46d7e79e2e23cef8b7"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/RETURNED_FAIR_BIT_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/RETURNED_FAIR_BIT_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 6903,
+      "sha256": "8ffa1a57ce1b581c3dc57a4d491e88e89158547a8f90428db3de8e3cd2689681"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/ROBUST_ERASURE_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/ROBUST_ERASURE_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 6455,
+      "sha256": "e55adb163b828423fe477c64ee2e9a0f6e91d8bef21bce67e5e04574df7eebff"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/STATISTICAL_CONTEXT_MODEL.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/STATISTICAL_CONTEXT_MODEL.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 10577,
+      "sha256": "faeb26509309476a12e8bb46882b4164e5eb2442bb60e0ad3836fa204584cf39"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/SUCCINCT_ERASURE_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/SUCCINCT_ERASURE_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 10696,
+      "sha256": "c84b31b4292d176015ac6c17a701fcebcbd4effe74953b9c25a0a1089008d760"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/THRESHOLD_LAW_EXPERIMENT.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/THRESHOLD_LAW_EXPERIMENT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 6333,
+      "sha256": "b296086228a7fda8ad722280faed288b5d44001cf7efb271345423aa27318c67"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/TOTAL_LOCAL_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/TOTAL_LOCAL_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 5024,
+      "sha256": "f3248ac3f2c446a85fca753bd4a8d33ae06950e67d74544ab5d2261daa3b51f5"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/UNIFORM_BRANCH_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/UNIFORM_BRANCH_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4495,
+      "sha256": "029e65858a01abb53554d23b5664b64489787663a3663fa6d7e4f87d89a33a56"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/WEIGHTED_ENTROPY_COROLLARY.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/WEIGHTED_ENTROPY_COROLLARY.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 2566,
+      "sha256": "ab43c5a17cf54ad17c2afbeead02e4a01ac422714bf9920e14c3e986e4f69805"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/WEIGHTED_ERASURE_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/WEIGHTED_ERASURE_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 6642,
+      "sha256": "225fed71f44ec6f718220b9b03b102246653103eacf29e5305ad7a8218954633"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/WINDOW_DESIGN_CANDIDATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/WINDOW_DESIGN_CANDIDATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 7952,
+      "sha256": "51c7c9045339fb1501ca7893bf16758f68cd9392feb2bd8a6caee8a79fd194ed"
+    },
+    {
+      "destination": "heritage/computation-models/research/erasure/theory/WINDOW_DESIGN_EXPERIMENT.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/erasure/theory/WINDOW_DESIGN_EXPERIMENT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 6812,
+      "sha256": "6c1837efe9866bf199ed312303ee4eea063b67aad304d593b54e674849201340"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/reviews/ADVERSARIAL_REVIEW.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/reviews/ADVERSARIAL_REVIEW.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 4376,
+      "sha256": "c93182558010fb336129459386d7e5415d324ef1f2f685b2ce957ee281483b5a"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/reviews/METHOD_REVIEW_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/reviews/METHOD_REVIEW_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 3400,
+      "sha256": "90736fcb6c7f91fe4acae728f4feed41fc2111ecbed503fc65f51f0ce29c399f"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/reviews/PROGRAM_REVIEW_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/reviews/PROGRAM_REVIEW_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 11323,
+      "sha256": "a596544ee0f5e5aec3941601f223d095074997afb3464183869090b6e599f6a6",
+      "source_sha256": "c32dd04c6873de67362c80cafa4f4b9df75165a7d45e5e5acca419a50af0e353",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/reviews/PROGRAM_REVIEW_2.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/reviews/PROGRAM_REVIEW_2.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 9867,
+      "sha256": "a2c73243f9e23da0b2607ec27834db1ad24bb2544f92599c1174cc420a5fd115"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/reviews/PROOF_REVIEW_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/reviews/PROOF_REVIEW_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 24234,
+      "sha256": "2ac245efe0ee7852139f37e8802718724febe09cb570d9a9409cc9ff3ff85da6"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/reviews/PROOF_REVIEW_2.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/reviews/PROOF_REVIEW_2.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 14957,
+      "sha256": "ce96d71744610151f6fbc9c397f928f139cc3b3d00a6b74ff79e68817c01cabd"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/reviews/PROOF_REVIEW_3.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/reviews/PROOF_REVIEW_3.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 29420,
+      "sha256": "9f5b1988a744a7610b64f740e9315fd2d7f54f2866d184ae45f7562e9add1f73"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/reviews/PROOF_REVIEW_4.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/reviews/PROOF_REVIEW_4.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 26858,
+      "sha256": "da3e7e735924a69c95a48eb76b917fc41a83e4d740d36e2876803af799bcb01d"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/reviews/PROOF_REVIEW_5.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/reviews/PROOF_REVIEW_5.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 29118,
+      "sha256": "4a6e60ed2af79282e7181b8f47595ca97314f8a81658a973e1d6348c238b8c60"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/reviews/PROOF_REVIEW_6.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/reviews/PROOF_REVIEW_6.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 12715,
+      "sha256": "ac2a4b2cea5219d8bec68b3cb104b686ad117283823c98c44075758a8421e860"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/reviews/TERMINAL_GATE_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/reviews/TERMINAL_GATE_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 24972,
+      "sha256": "310a5b9c0be73e9767397d709930a4137a61a1e736ea1d0ee54a09da6adcec98"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/reviews/TERMINAL_GATE_2.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/reviews/TERMINAL_GATE_2.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 19499,
+      "sha256": "9d5445b91ae4d37319b44ad97feca4a70acbfbbb699bd6f9455da2cbe8482ae7"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/ABSORPTION_BOUNDARY_CONJECTURE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/ABSORPTION_BOUNDARY_CONJECTURE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 9210,
+      "sha256": "794ba68a9364a9327b1a99734d77cbc4112a0248d2a10174a83be28188f16979"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/ACDFT_DISCRETE_WIDENING_RESULT.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/ACDFT_DISCRETE_WIDENING_RESULT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 15276,
+      "sha256": "4b83012fc9c4444176089fce4afa8eb62706bdfda35448352f09c4b6de42c3c1"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/ACDFT_LEMMA.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/ACDFT_LEMMA.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 22675,
+      "sha256": "5ecedb3e2dd19c5d6d09ed3d2209908c21f72805f7650e9b6fe2e28278352e37"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/ACDFT_PROJECTION_CONSTANT_ATTACK.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/ACDFT_PROJECTION_CONSTANT_ATTACK.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 15477,
+      "sha256": "3e611d44e92d50a65c6cdc8cd70c0f854b8719a184c0a9143bddbb8a17df9742"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/ACDFT_REGIME_WIDENING.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/ACDFT_REGIME_WIDENING.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 12068,
+      "sha256": "446c9e1d5e277ea86b5edc021b4c042f3eb924eb63d3048528c004aee2cbbd11"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/ACDFT_REGIME_WIDENING_RESULT.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/ACDFT_REGIME_WIDENING_RESULT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 21699,
+      "sha256": "511d43713a7c4cfd77e31d66011b78586d0a16a10257d63d26de6d3d82f46e22"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/AUDIT_EXTROPIC.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/AUDIT_EXTROPIC.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 26091,
+      "sha256": "b576b4aab2841a9672a2cd84ae55e9e098bc85061aa1e35756a3a1f611ae3f50"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/BLSD.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/BLSD.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 30636,
+      "sha256": "863ae075d9354f13610449ce787bc6d8ca0aca75966427953ac582fbeea97d27"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/CALIBRATION_PROTOCOL.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/CALIBRATION_PROTOCOL.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 6643,
+      "sha256": "1a1611d45772b7e1fd22994d28f03ed2643cbdcf3972d1a292185b46fba062e8"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/CLASS_GATE.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/CLASS_GATE.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 32772,
+      "sha256": "8ba2e3552ce60de341f10b2f7abcd3cfa956f3446dcf2b7f4ee598dbd9093ddb"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/DESIGN_GATE_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/DESIGN_GATE_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 42193,
+      "sha256": "dd91d4fd35e9fc9fb6415d884cf22904fc7afc82da5bfd113d6952724995a10c"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/DESIGN_GATE_2.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/DESIGN_GATE_2.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 38549,
+      "sha256": "3de87e95a667e68d7056377c541a0277c882c948bef3fabe7547f037cf250956"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/DESIGN_GATE_3.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/DESIGN_GATE_3.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 24501,
+      "sha256": "da56ce1dfee87ce82484a29aab3d9e860f981c9175cac49d4bbadc173a2f66c1"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/FLAGSHIP_RESULT.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/FLAGSHIP_RESULT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 16125,
+      "sha256": "6ac757ed673f694a8e826569151d7e7bf574bc2f56d7eeff8367ea5fc678e571"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/FORMATION_ROUTER.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/FORMATION_ROUTER.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 25438,
+      "sha256": "1ba59d96e7d6b3d032a57c9cbdf4cb3efed0d5d7866b8e5ce8cd2cd1a0a82b47"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/FSTT2C.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/FSTT2C.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 47516,
+      "sha256": "1f37f4b595f6b92210fa06b43112b3521aa9f3b3b8df15ba11c50f5445df4c84"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/GATE2_BRIEF.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/GATE2_BRIEF.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 8246,
+      "sha256": "c0f96c2c49a087a8c327f7eca14c8716a38328da987569071cee0173ceddf79f"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/GRAVEYARD_ANALYSIS.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/GRAVEYARD_ANALYSIS.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 125919,
+      "sha256": "eff04c8fca81e84d89e220d95cc6ecc310041b29d5dfed9b12397c6b140ea803"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/PFPWO.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/PFPWO.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 28841,
+      "sha256": "f5773bf8642c6a49bb03f51c8b171bcb57e264c410f762bbb0123fd30d1d1118"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/REFRAME_DIALOGUE_1.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/REFRAME_DIALOGUE_1.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 41848,
+      "sha256": "777323070fae126ee5cab0cbad531c3323902c54c992e80722e67363cd6e9c44"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/REFRAME_ROUND3.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/REFRAME_ROUND3.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 31653,
+      "sha256": "93a67824627e876791b7daa492076feb202109391457ecced2c58f1c3c9ec75c"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/REFRAME_ROUND4.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/REFRAME_ROUND4.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 30216,
+      "sha256": "dde48c12896c2354e81befcef9060c0b32a81dcff371c1576dbf7efd194b70c8"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/SWEEP_RESULT.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/SWEEP_RESULT.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 11971,
+      "sha256": "eb78911497a822aff1adfa9fb826034f72925f1a0039670c8416b68bd1a3f339"
+    },
+    {
+      "destination": "heritage/computation-models/research/july-program/theory/UNSIGNED_CERT_FIBRE_LEMMA.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/july-program/theory/UNSIGNED_CERT_FIBRE_LEMMA.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 10087,
+      "sha256": "2d8472f50014e16b1af3192536977592a4135ff51f9728056a93cf317241d41d"
+    },
+    {
+      "destination": "heritage/computation-models/research/lease/LEASE_THEOREMS.md",
+      "source_project": "new-computation-model",
+      "source_path": "research/lease/LEASE_THEOREMS.md",
+      "source_head": "335ef66cb0dfb3e959c5000e5b2c6cc443317e44",
+      "source_tracked": true,
+      "bytes": 21532,
+      "sha256": "245d63eb70a475b75ff5e5665607509a84c1a4d3598d3e7f30bdc2fcb6e05ff4"
+    },
+    {
+      "destination": "heritage/matrix-native-math/EXPERIMENTS.md",
+      "source_project": "matrix-native-math",
+      "source_path": "EXPERIMENTS.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 43972,
+      "sha256": "0ef56dc67e4ec39e45fbe905e9e6f08462c55d7caa84f735deadb43ee1c93337"
+    },
+    {
+      "destination": "heritage/matrix-native-math/README.md",
+      "source_project": "matrix-native-math",
+      "source_path": "README.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 4683,
+      "sha256": "a18e153197be138f60deb6a0122b236c1a9e41d13cfee110122c7d7ab11c27bd"
+    },
+    {
+      "destination": "heritage/matrix-native-math/RESEARCH_MONOGRAPH.md",
+      "source_project": "matrix-native-math",
+      "source_path": "RESEARCH_MONOGRAPH.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 110632,
+      "sha256": "6a6842bd0bd9a3d89ea4736ca618aa19e268162ee31c503e2d92cedd4c01bd2d"
+    },
+    {
+      "destination": "heritage/matrix-native-math/code/closed_descriptor_atlas.py",
+      "source_project": "matrix-native-math",
+      "source_path": "code/closed_descriptor_atlas.py",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 5735,
+      "sha256": "dba9f417f7191f5c28c699c6d48f6917b30423e24f4cf3a5d5db9c69fd334b3f"
+    },
+    {
+      "destination": "heritage/matrix-native-math/code/contract_plane_table.py",
+      "source_project": "matrix-native-math",
+      "source_path": "code/contract_plane_table.py",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 25702,
+      "sha256": "70993b054649f4521a087e4cb8cb7b82bf7632596622896fe30b1ea6e0ae051e"
+    },
+    {
+      "destination": "heritage/matrix-native-math/code/digit_gemm.py",
+      "source_project": "matrix-native-math",
+      "source_path": "code/digit_gemm.py",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 103679,
+      "sha256": "d81d4c4a8c6e65f1c2026e59d96fccc3b1135600d9eb176ed70432e7f9d50179"
+    },
+    {
+      "destination": "heritage/matrix-native-math/code/experiments/tree_composition_v1.py",
+      "source_project": "matrix-native-math",
+      "source_path": "code/experiments/tree_composition_v1.py",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 12571,
+      "sha256": "e53e36635400302fc7ff518ae62b11d6ead9abd0b64e4e80355ced954b46e5af",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/code/floor_ldr_checks.py",
+      "source_project": "matrix-native-math",
+      "source_path": "code/floor_ldr_checks.py",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 38878,
+      "sha256": "2a4d235deae54b1c9b0c5e6ff3017f1b27fa98f6c9bc24737c1725bef53e3630"
+    },
+    {
+      "destination": "heritage/matrix-native-math/code/monarch_growth.py",
+      "source_project": "matrix-native-math",
+      "source_path": "code/monarch_growth.py",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 4778,
+      "sha256": "74e96ed4e1eff57b2e1a383bd9fc28fb8d3ef0cfc7ef6ed15c62935d4a400413"
+    },
+    {
+      "destination": "heritage/matrix-native-math/code/near_algebra_blockwise.py",
+      "source_project": "matrix-native-math",
+      "source_path": "code/near_algebra_blockwise.py",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 6476,
+      "sha256": "ab939fe5225fcdd687abce94a0994c916cb40bbdcabd3ac69c399f0865495eaa"
+    },
+    {
+      "destination": "heritage/matrix-native-math/code/near_algebra_groupalg.py",
+      "source_project": "matrix-native-math",
+      "source_path": "code/near_algebra_groupalg.py",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 5547,
+      "sha256": "472d6a1c1578f042807c4269f15c1df89565bba32aff53e7dd0f3c004564853f"
+    },
+    {
+      "destination": "heritage/matrix-native-math/code/near_algebra_probe.py",
+      "source_project": "matrix-native-math",
+      "source_path": "code/near_algebra_probe.py",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 4615,
+      "sha256": "2fa4096c8a090931553fe3aef5db73eb947550935111f20d9d5a333722f2aeda"
+    },
+    {
+      "destination": "heritage/matrix-native-math/code/ozaki_engine.py",
+      "source_project": "matrix-native-math",
+      "source_path": "code/ozaki_engine.py",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 202798,
+      "sha256": "0b9fcc90579a1bfef02ecc3a00a5e9f5fd4c507191953186403e5890c8b8e2da"
+    },
+    {
+      "destination": "heritage/matrix-native-math/code/repr_automaton.py",
+      "source_project": "matrix-native-math",
+      "source_path": "code/repr_automaton.py",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 20720,
+      "sha256": "aaa1abd240492b949d85b2d0881d48d2b30d0b6683abd74dbdc2b935bcb942eb"
+    },
+    {
+      "destination": "heritage/matrix-native-math/code/small_algebra_probe.py",
+      "source_project": "matrix-native-math",
+      "source_path": "code/small_algebra_probe.py",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 13265,
+      "sha256": "4761b19540961099acd0aa3a445f1bb1a8f04278d068d572be2548170beeb5ff"
+    },
+    {
+      "destination": "heritage/matrix-native-math/code/tree_composition.py",
+      "source_project": "matrix-native-math",
+      "source_path": "code/tree_composition.py",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 8490,
+      "sha256": "4cea16834982d732e4a35efc7c694ed648e5098a71da9f6900f9533323fae1cd",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/experiments/ledger.jsonl",
+      "source_project": "matrix-native-math",
+      "source_path": "experiments/ledger.jsonl",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 2238453,
+      "sha256": "78d86dfedf856ee37b27c86bf5659a13757a9cfe91d7013f0b662f5b133616a0",
+      "source_sha256": "a380fbee6576dac47f6a2d2451d64ee602f89b6d02d633d93878474894a9eafa",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/CARRIER_NEAR_ALGEBRA_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/CARRIER_NEAR_ALGEBRA_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 6002,
+      "sha256": "f24fa423f2466396495d435ac70bb7b56a474dec353dc2caf027fd78a64f1900"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/COUNTING_THEOREM_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/COUNTING_THEOREM_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 10170,
+      "sha256": "fe8baf8eb2e605ae9153012c413b2f17ef365bdf1b2c94dff56e66dfdd0a6fc5"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/CRC_APPROXIMATION_V1_DISPOSITION.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/CRC_APPROXIMATION_V1_DISPOSITION.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 1709,
+      "sha256": "126178046a0c857d1926526d39e40f5f15eb6d7e5a1316e277474a79e9e35f3e"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/CRC_APPROXIMATION_V1_DRAFT.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/CRC_APPROXIMATION_V1_DRAFT.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 7372,
+      "sha256": "7243024dfedcc98b48389747b0afcbf465301df21175fdb67255f16213d14c5e"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/CRC_APPROXIMATION_V1_PROOF_RECEIPT.json",
+      "source_project": "matrix-native-math",
+      "source_path": "research/CRC_APPROXIMATION_V1_PROOF_RECEIPT.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 2264,
+      "sha256": "dd45a9ea92a444abb5da006cb75a73fa504d01d70fdf6bd9eb1b030f3de8f39c",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/CRC_FIXED_ORDER_CLOSURE_DISPOSITION.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/CRC_FIXED_ORDER_CLOSURE_DISPOSITION.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 2493,
+      "sha256": "425b7b6891936dc0e8704fd2b8faa6f68b4ea0e46a7b98c209c00f07ddd86045",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/CRC_FIXED_ORDER_CLOSURE_DRAFT.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/CRC_FIXED_ORDER_CLOSURE_DRAFT.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 10006,
+      "sha256": "dd5a5c37fdf623b05d6a057021388e9cfcf8f0eccaf4c5ddd4438beef4774783",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/CRC_FIXED_ORDER_CLOSURE_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/CRC_FIXED_ORDER_CLOSURE_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 4714,
+      "sha256": "27907488807e6602e785b7f8f81cd82b92294429457fc96fdea0dbe3fa6bd3d5"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/CURRENT_EVIDENCE.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/CURRENT_EVIDENCE.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 30355,
+      "sha256": "b79682fe19930d1ddc1494ea90db2ae10ab2f35726c1c81c1cc7dad447e99994"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/CURRENT_FOCUS.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/CURRENT_FOCUS.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 87245,
+      "sha256": "063ed37a0a363af754b9941df80f1bf004dfe30c64ae43bb30f036c930c09806",
+      "source_sha256": "5851bfb9ffb989fc604d16dbadc7b7f2d16b448dfdf3576d360015720e66651c",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/DEEP_ANATOMY_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/DEEP_ANATOMY_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 14995,
+      "sha256": "b722deb59d971d6caeb57a1e7b545d28ee0a239ddff0cd12e9a6ef91ccd1a673"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/DEEP_ANATOMY_V2_EXPLORATION.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/DEEP_ANATOMY_V2_EXPLORATION.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 7462,
+      "sha256": "e06ce902414543b7f00d6c7ed0e73c1a2607e60b89de0fdd75c58c63c02d09fd"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/DIGIT_GEMM_COMPLEXITY_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/DIGIT_GEMM_COMPLEXITY_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 43385,
+      "sha256": "d1b0cd98ad433a0dbecc2a4e48de76509fe2fe20b8440304a3fb46007463be6e"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/FIXED_M_COMPILER_V2.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/FIXED_M_COMPILER_V2.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 30631,
+      "sha256": "b59a991f8369e65fd121f28e495f73e7de960fa07c626f239284ba28403be378"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/FLOOR_LDR_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/FLOOR_LDR_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 70943,
+      "sha256": "163e0e58cd8bd4fa5352c241a739f237a841f6f4aeb00e4a0fa06ed97ac013a9"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/FRAMEWORK_FLOOR_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/FRAMEWORK_FLOOR_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 31990,
+      "sha256": "9aec44326062e651956c678476e4954c5c2d957a537afffeff6ac15b9cfea807"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/GIRS_EXPLICIT_APPROXIMATION_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/GIRS_EXPLICIT_APPROXIMATION_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 10986,
+      "sha256": "4448a0f3386ddf43c7fac0d177838b8e27d37f4e9f47164a9d1f509b23d9b6de"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/GIRS_EXPLICIT_APPROXIMATION_V1_PROOF_RECEIPT.json",
+      "source_project": "matrix-native-math",
+      "source_path": "research/GIRS_EXPLICIT_APPROXIMATION_V1_PROOF_RECEIPT.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 1502,
+      "sha256": "5740d495b7c18b0e06efb5400d42a90be271692899f246854a9cb059673cbc41",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/GIRS_REPRESENTATION_OBSTRUCTION_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/GIRS_REPRESENTATION_OBSTRUCTION_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 9567,
+      "sha256": "46ea52895611452feb974d116586958162c2bfe3de48a426171af5c0c4175e9a"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/GIRS_REPRESENTATION_OBSTRUCTION_V1_PROOF_RECEIPT.json",
+      "source_project": "matrix-native-math",
+      "source_path": "research/GIRS_REPRESENTATION_OBSTRUCTION_V1_PROOF_RECEIPT.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 1147,
+      "sha256": "6dd6b2ad3ffbf11565dcc7dd9ce53cf2118bba03fe3f78cc95a64916271e88d9",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/MATRIX_NATIVE_INFORMATION_THEORY.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/MATRIX_NATIVE_INFORMATION_THEORY.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 8362,
+      "sha256": "bfeccd754c1eb3563bc9c39acd914d9975c27d6f96bdfa8e73ae9dcb8c267147"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/MONARCH_GROWTH_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/MONARCH_GROWTH_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 4824,
+      "sha256": "0e4e27052320f1200fb74f584133e2dc9df5cec4c48af16865520eb00535af1f"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/NEAR_ALGEBRA_JET_GATE_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/NEAR_ALGEBRA_JET_GATE_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 3607,
+      "sha256": "137598bca6b196f19cd12edcf619f20f0ac9735a59556e866bd1a34067c855e9"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/NONLINEAR_COMPOSITION_SCOPE_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/NONLINEAR_COMPOSITION_SCOPE_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 11080,
+      "sha256": "a08e3eda6a0050277d1cdeb3b28d30027a0e4d7e36e98516280b3eaeea5fb653"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/NONLINEAR_COMPOSITION_SCOPE_V1_PROOF_RECEIPT.json",
+      "source_project": "matrix-native-math",
+      "source_path": "research/NONLINEAR_COMPOSITION_SCOPE_V1_PROOF_RECEIPT.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 2153,
+      "sha256": "71b6f436b2a9611cdd87c959335745cc8b4134d5d82a1d62eccf2e010eefc120",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/OZAKI_FAIR_ENGINE_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/OZAKI_FAIR_ENGINE_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 60866,
+      "sha256": "c095ebb11fe53c926f9f4386d4351ed8198a1a1b99802e3edcbddb9eb8c5842c"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/PROGRAM.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/PROGRAM.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 15220,
+      "sha256": "1423562a258d2869037fd99a1d10058e2381aeeb53bc5663ce4def7a5d5afe15"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/RECT_FLOOR_SCORE_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/RECT_FLOOR_SCORE_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 30849,
+      "sha256": "a0b29782c2889f2b7bf67327e7bfcd89466dff175b5a85abe017a00358d8445f"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/REPRESENTATION_FRONTIER_V2.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/REPRESENTATION_FRONTIER_V2.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 13161,
+      "sha256": "dd3fb418782f19d68db720a5a46aa09e440c27ffbedbaad37d872a962e262f2d"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/REPRESENTATION_FRONTIER_V2_PROOF_RECEIPT.json",
+      "source_project": "matrix-native-math",
+      "source_path": "research/REPRESENTATION_FRONTIER_V2_PROOF_RECEIPT.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 1429,
+      "sha256": "7807d6912ca7d33ce9628088041ca8c0aa9806a120139cdc2b895c98ee1f8b99",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/REPR_AUTOMATON_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/REPR_AUTOMATON_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 20447,
+      "sha256": "e39f4e8874e7ea7a982f7f65a586b28f1ea97a0bfb74a226d984cb6167f54995"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/REVIEW_GIRS_EXPLICIT_APPROXIMATION_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/REVIEW_GIRS_EXPLICIT_APPROXIMATION_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 6870,
+      "sha256": "6805c5ae5525e38cd18af29f7f910f0c2d879687ba2533b414418e6553899620",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/REVIEW_GIRS_REPRESENTATION_OBSTRUCTION_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/REVIEW_GIRS_REPRESENTATION_OBSTRUCTION_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 8283,
+      "sha256": "95e504d324d9fba8c931fc884ef7d57bfb2437b86eef02fa562f871aa4d25b2c",
+      "source_sha256": "fe1ba2dc30eae3879ab9bd06dea6d52a33ebdaa02bf5e1ed11b28b83a82afe14",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/REVIEW_NONLINEAR_COMPOSITION_SCOPE_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/REVIEW_NONLINEAR_COMPOSITION_SCOPE_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 7538,
+      "sha256": "ea5fed96054f4585c83e401989104a4346fac778f4b2e9bec16139fa633b91fe",
+      "source_sha256": "78f18f821c39d6f467124093fc15c68b1246837a18abcfe9744c1eaa74868984",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/REVIEW_REPRESENTATION_FRONTIER_V2.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/REVIEW_REPRESENTATION_FRONTIER_V2.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 13708,
+      "sha256": "4d456b6d93190f72fc6331532f281b8c23bde5ccfe930866940411edf9900ffb",
+      "source_sha256": "28f352936ceff9a4e5ed442150023362711005fc0518f25db3d2798b09a5fa3d",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/REVIEW_TREE_COMPOSITION_FRONTIER_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/REVIEW_TREE_COMPOSITION_FRONTIER_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 9245,
+      "sha256": "cafe8c0dff87225721e4d97ff1538711f125d00c09062b49624565440ea73c77",
+      "source_sha256": "e3665a9e9cbc000c56c0f0153dc5fb31a7f88fa7a6bef0f94da1cb1bbddc632a",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/SUBALGEBRA_LANDSCAPE_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/SUBALGEBRA_LANDSCAPE_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 13109,
+      "sha256": "21333158ad9140d6172daf3419fe2950d7c068ea44c5a5830dabda3429612700"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/TREE_COMPOSITION_FRONTIER_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/TREE_COMPOSITION_FRONTIER_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 9659,
+      "sha256": "847715cd06c2601223687d70472de82ab7ea36735ad1441c36de47a6995aaca7"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/TREE_NATIVE_REDUCTION_V1.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/TREE_NATIVE_REDUCTION_V1.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 11344,
+      "sha256": "29348f867ad7a655d1719356d76b2432f3f07fa873a4036019dc58b3d7f41acb"
+    },
+    {
+      "destination": "heritage/matrix-native-math/research/TWO_AXIS_COMPLEXITY.md",
+      "source_project": "matrix-native-math",
+      "source_path": "research/TWO_AXIS_COMPLEXITY.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 30821,
+      "sha256": "f40f953d79c8aa877be016cda2c524089263f2f76c47f92836dd3358bf96aa69"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/certificate_law_v1/study.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/certificate_law_v1/study.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 38425,
+      "sha256": "591da5eaf8f4033a2f81387334485b67fec16afddb9119d812a612c1799d6534"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/closed_descriptor_atlas_v1/ATLAS.md",
+      "source_project": "matrix-native-math",
+      "source_path": "results/closed_descriptor_atlas_v1/ATLAS.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 9457,
+      "sha256": "1ec818df9ee8c0ac759dd2a56448a676e31ef821a15211344bc3f73ffb6bc575"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/contract_plane_table_v1/table.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/contract_plane_table_v1/table.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 86684,
+      "sha256": "df63ff93a8db8d617bd7bbb7f0b0773304eacfcc37f4041107814b1bcda2ea14"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/monarch_growth_v1/REPORT.md",
+      "source_project": "matrix-native-math",
+      "source_path": "results/monarch_growth_v1/REPORT.md",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 9856,
+      "sha256": "59e8cd0aa7cc63d3a156566686b489540d642220918201e5206a9ac4f62e6d87"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/monarch_growth_v1/butterfly_growth.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/monarch_growth_v1/butterfly_growth.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 2243,
+      "sha256": "cf2e86d8b5555b0b9210c7460e4d52610247c05afb4ef97ee00cf5246e12701c"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/monarch_growth_v1/generic_rank.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/monarch_growth_v1/generic_rank.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 2828,
+      "sha256": "23da7e772199a137f2af0419017cd6f1d85f8f89db015d952d5f10c377d43262"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/monarch_growth_v1/transvection_graph.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/monarch_growth_v1/transvection_graph.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 685,
+      "sha256": "38ce5779e7bbc0f81006fb474f34ffa6566c4c96a7fae47f891c81a07c234d5c"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/near_algebra_probe_v1/blockwise.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/near_algebra_probe_v1/blockwise.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 3848,
+      "sha256": "fc16d6a1eb46d3f336e1be7d2f81ca0cd8fb3cce2397e3053d88893f1df2eb73"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/near_algebra_probe_v1/blockwise_aligned.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/near_algebra_probe_v1/blockwise_aligned.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 3846,
+      "sha256": "1742822cd38f08669b98d4212de9b29c7223d0481ebe113386dc1589c646a6ea"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/near_algebra_probe_v1/blockwise_lowrank.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/near_algebra_probe_v1/blockwise_lowrank.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 3839,
+      "sha256": "23dd63d28d210eb8b1378f24befa1e992c5473c0c76611cfd2ff369fe5f5bf11"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/near_algebra_probe_v1/blockwise_smooth_potential.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/near_algebra_probe_v1/blockwise_smooth_potential.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 3842,
+      "sha256": "f6118c32a36bec4617043ae63ae8fc7146d5b12097a6fcd105c81a808b94104e"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/near_algebra_probe_v1/groupalg_S4.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/near_algebra_probe_v1/groupalg_S4.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 4437,
+      "sha256": "941a226eec81af35e5a7d4adf38f4e1b94a619e17fcf47895359574088898399"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/near_algebra_probe_v1/groupalg_S5.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/near_algebra_probe_v1/groupalg_S5.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 4452,
+      "sha256": "ab0cd441ddefc0c96cbcb797a73fa07b1daee3c1e77ea3ffa1a11641db16cf23"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/near_algebra_probe_v1/probe.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/near_algebra_probe_v1/probe.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 9445,
+      "sha256": "ad39890b2058d957f88063d49f2f7cd0717403a476b2540d45cc86b2834c0a5c"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/near_algebra_probe_v1/workload_pilot.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/near_algebra_probe_v1/workload_pilot.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 1313,
+      "sha256": "84b1b41c653ebba3b6500dcbcce64250e034de7a025e2a9a0cbf4f464bd83229"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/record_corrections_2/labeling.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/record_corrections_2/labeling.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 1405,
+      "sha256": "4a63e39e24dd9ad1df7c1b8a7d73f6f11ea1db2fab5dfe271e67073e3c808303"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/record_corrections_2/pipeline.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/record_corrections_2/pipeline.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 2129,
+      "sha256": "d67014c73b08b45a13662569afd29eff519e76849c30835e1ab24ad550950073"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/record_corrections_2/wedderburn_m24_nb64_T16.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/record_corrections_2/wedderburn_m24_nb64_T16.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 1010,
+      "sha256": "eecb44366271da86b8fc69ee059e4b387ae28582553481cd8e653481c7b86f42"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/record_corrections_2/wedderburn_m32_nb48_T16.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/record_corrections_2/wedderburn_m32_nb48_T16.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 1010,
+      "sha256": "4697019abd12e4b533b20f21fb4711b3bb2fe84933e822d64b6f9d2915ff01ff"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/record_corrections_2/wedderburn_m48_nb32_T16.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/record_corrections_2/wedderburn_m48_nb32_T16.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 1009,
+      "sha256": "6527b72c586068f43b6351c318588610b08fa0476b267dfcde6289232866fff7"
+    },
+    {
+      "destination": "heritage/matrix-native-math/results/tree_composition_v1/correctness.json",
+      "source_project": "matrix-native-math",
+      "source_path": "results/tree_composition_v1/correctness.json",
+      "source_head": "fdf73bb1033f86c5ebc739a6e2bf9d1cb251be5a",
+      "source_tracked": true,
+      "bytes": 11532,
+      "sha256": "c6feef8682da643c1a583b6fc9c6e2fe3a942dfd55c0af55c376516317ea9790",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/neural-dissection/INBOX_from_matrix-native-math.md",
+      "source_project": "llm-genome",
+      "source_path": "INBOX_from_matrix-native-math.md",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 5720,
+      "sha256": "0d4b5661efc00b460f3b49afa9f9ae1afaa01d43c3b0740741c60beb456de8f9"
+    },
+    {
+      "destination": "heritage/neural-dissection/PAUSED.md",
+      "source_project": "llm-genome",
+      "source_path": "PAUSED.md",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 9528,
+      "sha256": "61afa452082ca517d9e43f0e79479dc5aeb0ca5fd36ec5a75de80405113ee843"
+    },
+    {
+      "destination": "heritage/neural-dissection/README.md",
+      "source_project": "llm-genome",
+      "source_path": "README.md",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 16639,
+      "sha256": "fc70b69c3b773dad5abe92af75ec7e906b31190fd2cc1baf0f0ea5f53767419e",
+      "source_sha256": "a098d0a7663b0058338b048a9818ec98b5cac5310487b257ea96952b5ceedb14",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/neural-dissection/REPLY_to_matrix-native-math.md",
+      "source_project": "llm-genome",
+      "source_path": "REPLY_to_matrix-native-math.md",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 6186,
+      "sha256": "27e504d706fffed865a766f513165c7357c5c889fb17fe1e3394969eba89b165"
+    },
+    {
+      "destination": "heritage/neural-dissection/THE_LAWS_V2.md",
+      "source_project": "llm-genome",
+      "source_path": "THE_LAWS_V2.md",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 6571,
+      "sha256": "79e8dd735931f6ddb0d16b4d8c6e36e2eab1f0bcba68d057206d7911677126da"
+    },
+    {
+      "destination": "heritage/neural-dissection/THE_LAWS_V3.md",
+      "source_project": "llm-genome",
+      "source_path": "THE_LAWS_V3.md",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 30582,
+      "sha256": "8d5cf39e3e4b8ed0c8e1962f8318a1fe63ae96466947f90fada65b0efe121135"
+    },
+    {
+      "destination": "heritage/neural-dissection/excerpts/THINKING_selected.md",
+      "source_project": "llm-genome",
+      "source_path": "THINKING.md",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "source_sha256": "527393a625d86e314355db6f45e3583a51bd4169d53536555dd0ef42d435413d",
+      "source_line_ranges": [
+        [
+          1,
+          111
+        ],
+        [
+          913,
+          1104
+        ],
+        [
+          2125,
+          2174
+        ],
+        [
+          14339,
+          14371
+        ],
+        [
+          14434,
+          14484
+        ]
+      ],
+      "bytes": 35923,
+      "sha256": "b38a6e8370c10b7803716efa338235f718dd3a563cf5f696ffaa8b2c97a2061e",
+      "kind": "contextual-excerpt-with-original-line-numbers",
+      "status": "historical; corrected interpretation in unified map"
+    },
+    {
+      "destination": "heritage/neural-dissection/lab/common.py",
+      "source_project": "llm-genome",
+      "source_path": "lab/common.py",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 15934,
+      "sha256": "0d1ddfde2c8d9c75e9c484ed0942597261b6b99752a770b89c23fa54290ae198"
+    },
+    {
+      "destination": "heritage/neural-dissection/lab/e284_buffer_missile.py",
+      "source_project": "llm-genome",
+      "source_path": "lab/e284_buffer_missile.py",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 116761,
+      "sha256": "ff781753c02b7245b5933650349a8ec61ca949e173be75fc2b077b31d2df7105"
+    },
+    {
+      "destination": "heritage/neural-dissection/lab/e288_error_gated.py",
+      "source_project": "llm-genome",
+      "source_path": "lab/e288_error_gated.py",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 250799,
+      "sha256": "640b074bd7af48a078c93b5dfa1658827e1875916c1a602a28e92bc93fe4179a",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/neural-dissection/lab/e290_coupling_ladder.py",
+      "source_project": "llm-genome",
+      "source_path": "lab/e290_coupling_ladder.py",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 140868,
+      "sha256": "c838066f79c1be6edc976cc067cd9fb59b3883e85660d2db945a1ee3e731d426"
+    },
+    {
+      "destination": "heritage/neural-dissection/lab/e299_embalming.py",
+      "source_project": "llm-genome",
+      "source_path": "lab/e299_embalming.py",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 88375,
+      "sha256": "3d6ded4a69002d9d443234833cbbe97a1d2322aa4e9707b065997ea66bdcf849"
+    },
+    {
+      "destination": "heritage/neural-dissection/lab/e326_survive_rungs.py",
+      "source_project": "llm-genome",
+      "source_path": "lab/e326_survive_rungs.py",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 134582,
+      "sha256": "93e07cdd0614a98686a95b5bfb126770d3824d8d5b9e0080ed8165b08f588ed2"
+    },
+    {
+      "destination": "heritage/neural-dissection/lab/e347_optimizer_cross.py",
+      "source_project": "llm-genome",
+      "source_path": "lab/e347_optimizer_cross.py",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 140837,
+      "sha256": "ff8ab6aef22d58408c41e6af4c82dc5de451638d35d438621982dab2bdc437e5"
+    },
+    {
+      "destination": "heritage/neural-dissection/lab/g1b_continuity.py",
+      "source_project": "llm-genome",
+      "source_path": "lab/g1b_continuity.py",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 70679,
+      "sha256": "8a50e426ba001d46257ff6554ab4a59eec143352eb289a81c2a04d97514d3ff4"
+    },
+    {
+      "destination": "heritage/neural-dissection/lab/x57_key_channel.py",
+      "source_project": "llm-genome",
+      "source_path": "lab/x57_key_channel.py",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 104818,
+      "sha256": "c6c059a4842286d1aeaaec94c6e689e13bbabea5270502c3bcf89977ae78530c",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/neural-dissection/lab/x66_oracle.py",
+      "source_project": "llm-genome",
+      "source_path": "lab/x66_oracle.py",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 154724,
+      "sha256": "f66fc3101c400c1aaac585c023fe6bf7baa5e07c2d7fd97c963555499b36814a",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/neural-dissection/reference/NEURO_AI_LAB.md",
+      "source_project": "llm-genome",
+      "source_path": "reference/NEURO_AI_LAB.md",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 5488,
+      "sha256": "5ac97f9c4c9fa519aff102dd3dbe68d3588e5d0f77851d028d6cf18ab1cf8976",
+      "source_sha256": "22e4f16966da33d995ee762468a027b867c379625b4579c37f844bd29fedcc19",
+      "public_transform": "Personal absolute home/workspace prefix redaction; source line count preserved; reference-only"
+    },
+    {
+      "destination": "heritage/neural-dissection/scratch/INDEX.md",
+      "source_project": "llm-genome",
+      "source_path": "scratch/INDEX.md",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 3609,
+      "sha256": "e7abd36ce0a84f833b3e2d478c006550267735401600a3290cd9c6146573c4e9"
+    },
+    {
+      "destination": "heritage/neural-dissection/scratch/_w059_reread.py",
+      "source_project": "llm-genome",
+      "source_path": "scratch/_w059_reread.py",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 2537,
+      "sha256": "0e480acbeb2fbb61fe5a020c0225d7968b9525c76c92d45b08225b36d944b323",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/neural-dissection/scratch/_w059_scale.py",
+      "source_project": "llm-genome",
+      "source_path": "scratch/_w059_scale.py",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 1223,
+      "sha256": "a4254d2579481d833c5f8a24537a74243b6c81524ef661bae1f5eaa7420dd406",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/neural-dissection/scratch/_w060_align2.py",
+      "source_project": "llm-genome",
+      "source_path": "scratch/_w060_align2.py",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 2986,
+      "sha256": "1e3bd7256187323f8775a592d8e2352d2e5f213233ca21ae659b0539ed2a52a5",
+      "selection": "explicit correction/proof-spine supplement; historical reference-only"
+    },
+    {
+      "destination": "heritage/neural-dissection/scratch/post_paper_programs.md",
+      "source_project": "llm-genome",
+      "source_path": "scratch/post_paper_programs.md",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 19555,
+      "sha256": "4674bb75b28db4d49d974b957eefb7957ee7553c282e07577380a7d337d73945"
+    },
+    {
+      "destination": "heritage/neural-dissection/scratch/preg_substrate_wave.md",
+      "source_project": "llm-genome",
+      "source_path": "scratch/preg_substrate_wave.md",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 6136,
+      "sha256": "e19268fac4b731fce65167ea5ef46220311bf71a7748fb61bba59dd139bff001"
+    },
+    {
+      "destination": "heritage/neural-dissection/scratch/preg_w059b_wall_perturbation.md",
+      "source_project": "llm-genome",
+      "source_path": "scratch/preg_w059b_wall_perturbation.md",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 2844,
+      "sha256": "5432a77a6ba411ace2934d7aef250a6ecbfb454fb93e332f31c6b388e2002ee3"
+    },
+    {
+      "destination": "heritage/neural-dissection/scratch/substrate_crossing_matrix.md",
+      "source_project": "llm-genome",
+      "source_path": "scratch/substrate_crossing_matrix.md",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 3781,
+      "sha256": "c9050db6d61371466d1f8f5121378c481e8f4c9302c16b3d17731ad509835330"
+    },
+    {
+      "destination": "heritage/neural-dissection/scratch/substrate_survey.md",
+      "source_project": "llm-genome",
+      "source_path": "scratch/substrate_survey.md",
+      "source_head": "e6b1ad0265c7ecfc25ce588c762c0c2f20262594",
+      "source_tracked": true,
+      "bytes": 18318,
+      "sha256": "e0724b3f2126bab5698eb8a1b77be8e2a26ff12dc1303fdc959f610e239d444f"
+    }
+  ]
+}

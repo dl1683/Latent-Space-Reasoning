@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-09-07T14:02:49.268889+00:00",
+  "id": "girs-explicit-approximation-v1-proof-go",
+  "type": "proof_gate",
+  "status": "GO_SCOPED_THEORY_ONLY",
+  "theory_path": "research/GIRS_EXPLICIT_APPROXIMATION_V1.md",
+  "reviewed_theory_sha256": "6db2946bc9ae36b3499258e6e81239195e3d0bd5f578a726695a4c9ef2832e67",
+  "current_theory_sha256": "4448a0f3386ddf43c7fac0d177838b8e27d37f4e9f47164a9d1f509b23d9b6de",
+  "review_path": "research/REVIEW_GIRS_EXPLICIT_APPROXIMATION_V1.md",
+  "review_sha256": "6805c5ae5525e38cd18af29f7f910f0c2d879687ba2533b414418e6553899620",
+  "reviewer_session": "01a07c29-6e69-7211-9631-6784d695d36a",
+  "registration_path": "research/GIRS_EXPLICIT_APPROXIMATION_V1_REGISTRATION.json",
+  "registration_sha256": "6c6273b2cc1364fa885aae980f70249c888a62d5c9d2936a490ff7031e123a33",
+  "predecessor_sha256": "46ea52895611452feb974d116586958162c2bfe3de48a426171af5c0c4175e9a",
+  "source_waldschmidt_pdf_sha256": "f72fbc36a4c61d66af5ef06f3ace79b3757868cc05226915402f721756b8137f",
+  "source_girs_v3_pdf_sha256": "0f7f785f63b166154a7fdd9fe8748c309915cd8699e426ad79f5a0a5042fc381",
+  "post_review_changes": [
+    "status and review/receipt links",
+    "explicit nilpotent-shift block form already checked by reviewer",
+    "clarify Gray-code traversal leaves physical vertex assignments fixed",
+    "distinguish dense output write cost from rank-r materialization arithmetic"
+  ],
+  "implementation_authorized": false,
+  "novelty_claim": false,
+  "mission_complete": false
+}

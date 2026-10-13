@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-09-07T14:13:24.453411+00:00",
+  "id": "nonlinear-composition-scope-v1-proof-receipt",
+  "type": "proof_gate_receipt",
+  "status": "MATHEMATICAL_GO_DOCUMENTARY_CORRECTION_APPLIED",
+  "theory_path": "research/NONLINEAR_COMPOSITION_SCOPE_V1.md",
+  "reviewed_theory_sha256": "3881a0ec56be07fb3713bf9ea4a81abb43f08e16b7a35b32749ba65147ee72da",
+  "current_theory_sha256": "a08e3eda6a0050277d1cdeb3b28d30027a0e4d7e36e98516280b3eaeea5fb653",
+  "review_path": "research/REVIEW_NONLINEAR_COMPOSITION_SCOPE_V1.md",
+  "review_sha256": "78f18f821c39d6f467124093fc15c68b1246837a18abcfe9744c1eaa74868984",
+  "reviewer_session": "01a07c33-719c-7063-a347-76faf1025435",
+  "registration_path": "research/NONLINEAR_COMPOSITION_SCOPE_V1_REGISTRATION.json",
+  "registration_sha256": "53894b53a0ad2395513586baab57ce9ee6010eb8a780cb3bd99dcffe9729f30a",
+  "registration_policy": "Original registration unchanged; this receipt binds its reviewed candidate and corrected current revision.",
+  "documentary_correction": "Sam Raskin replaced with Sam Gunningham, independently checked against source title page and required by reviewer. No mathematical correction was requested.",
+  "post_review_changes": [
+    "status and review/receipt links",
+    "instructor attribution and course section references",
+    "fixed degree metadata and per-product operation count clarified",
+    "projector formula explicitly accepted by reviewer",
+    "narrative attack and next research boundary appended"
+  ],
+  "landscape_path": "research/SUBALGEBRA_LANDSCAPE_V1.md",
+  "landscape_before_sha256": "e3857f8eac1cf552f3297d319eea8314737bd0e47ec590095932b4bde5d53bc0",
+  "landscape_after_sha256": "21333158ad9140d6172daf3419fe2950d7c068ea44c5a5830dabda3429612700",
+  "landscape_change": "Withdraw unrestricted closure iff algebra claim; preserve genuine linear-subalgebra and measurement scope.",
+  "exact_review_probes": {
+    "decodings": 208,
+    "ordered_compositions": 10816,
+    "integer_group_elements": 52,
+    "degrees": [
+      1,
+      2,
+      3,
+      5
+    ]
+  },
+  "implementation_authorized": false,
+  "novelty_claim": false,
+  "mission_complete": false
+}

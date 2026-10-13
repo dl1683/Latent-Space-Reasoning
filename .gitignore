@@ -93,6 +93,8 @@ Thumbs.db
 
 # Project specific
 history/
+!/docs/history/
+!/docs/history/**
 benchmarks/results/
 training/data/synthetic/
 data/
@@ -209,3 +211,11 @@ experiments/cloud/launches.jsonl
 experiments/cloud/*.log
 experiments/cloud/active_runs.txt
 experiments/results/cloud/*_raw.jsonl
+
+# Unified research: recovered private heritage assets and archive receipts are local.
+assets/
+archives/
+heritage/**/__pycache__/
+heritage/**/.env
+heritage/**/AGENTS.md
+heritage/**/CLAUDE.md

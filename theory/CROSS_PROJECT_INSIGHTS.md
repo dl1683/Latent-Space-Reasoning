@@ -1,5 +1,10 @@
 # Cross-project insights for LSR (2026-10-11)
 
+> Historical extraction. The projects are now unified here; use
+> [UNIFIED_EVIDENCE](../docs/UNIFIED_EVIDENCE.md) and [heritage](../heritage/README.md)
+> for current corrected reading and relocation. Original absolute source paths
+> below describe the capture environment, not surviving research homes.
+
 These are insights taken from two sibling projects, plus the trades between them. Both repos stay separate and read-only.
 
 - **Matrix Native Math (MNM):** `C:/Users/devan/OneDrive/Desktop/Projects/matrix-native-math`, the public mirror `C:/Users/devan/matrix-native-public`, and `C:/Users/devan/matrix-native-public_claims_check.md`.

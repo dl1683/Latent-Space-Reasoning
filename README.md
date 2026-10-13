@@ -1,131 +1,96 @@
 # Latent Space Reasoning
 
-> *How does math change at high dimensions? The phenomena that emerge — concentration of measure, almost-orthogonal packing, interference, distance uniformity — are not curiosities but the native physics of these spaces.*
+**Intelligence that keeps its understanding—and learns to compute differently.**
 
-This project studies the **mathematics of high-dimensional spaces**: the geometry, algebra, and analysis that become qualitatively different when d >> 1. The scope spans neural network representations, traditional machine learning, and pure high-dimensional mathematics — any domain where high-dimensional structure determines behavior.
+We investigate persistent latent memory, the mathematics of high-dimensional spaces
+and neural networks, and new ways to construct, train, and execute intelligent
+systems. The ambition is to make learned knowledge reusable, revisable and cheaper
+to compute with, rather than reconstructing every problem through repeated language
+generation.
 
-LLM latent spaces (d=768–4096+), kernel feature maps, embedding spaces, and high-dimensional statistical models all operate in regimes where low-dimensional intuition fails. Understanding *how* it fails — and what replaces it — is the research question.
+*Can a machine keep an unfinished thought, change part of it, combine it with new
+knowledge, and continue reasoning without rebuilding everything?*
 
-## Empirical foundation: perturbation sensitivity in language models
+This is the sole research home for the former Latent Space Reasoning, Matrix Native
+Math, LLM Genome / Neural Dissection Lab, and New Computation Model programs.
+Their evidence and failures now inform one program. Its organizing tracks are:
 
-86 experiments across 10 language models established a consistent hierarchy in how code perturbations affect model output:
+| Track | Central question |
+|---|---|
+| **Latent memory and long-context computation** | What must a persistent state preserve to answer unexpected later questions, simulate consequences, and repair understanding without replaying the whole history? |
+| **New model construction, training and inference** | Can new representations, layer operations and learning procedures reuse pretrained knowledge while reducing the complete cost of capability? |
 
-**On the tested arithmetic/code panels: a recurring position- and operator-dominated ordering; no separable meaning effect was detected (meaning was confounded with answer change in this domain).** Position and operator family dominated the ordering; the tested contrasts below that were not separable.
+High-dimensional mathematics, neural dissection, matrix-native arithmetic,
+representation-changing algorithms, capability interoperability and computational
+model theory are shared foundations. They remain substantive research ambitions,
+including beyond AI. A new computational framework may emerge from this work; it is
+not an established result or a required starting assumption.
 
-1. **WHERE you modify code is the dominant factor.** After-expression edits (comments, whitespace, dead code) produce consistent, reliable effects. Expression-adjacent modifications (parenthesization, type casts, identity operations) produce heterogeneous, cell-specific effects. The reliability gap between position types is large (AA ≈ 0.7–0.9 vs DD ≈ 0.1–0.5) and universal across tested models.
+## The approach
 
-2. **Sensitivity has multiplicative structure.** Behavioral distance decomposes as d[cell, pert] ≈ fragility[cell] × magnitude[pert], with R² = 0.82–0.88 in log space. This multiplicative fit is consistent with a small-angle first-order approximation (12–25% structured residual from cell × perturbation group interaction); the fit alone does not establish the mechanism.
+Build representations that preserve useful relationships and support operations:
+addressing, composition, selective revision, branching and continued computation.
+Compare several carriers rather than assuming one giant embedding is sufficient.
+Keep exact evidence recoverable and measure when compressed state needs reopening.
 
-3. **Models agree on what kinds of perturbations matter, but not on which expressions are vulnerable.** Within-model perturbation-type ordering correlates at +0.84 within architecture families. Cross-model cell vulnerability correlations are near zero. The perturbation-level structure transfers; the cell-level structure is model-specific.
+Reuse pretrained encoders, embeddings and model computations where useful. Explore
+new learned readers, updaters and layer operations. Ask which expensive computation
+they actually replace and which capabilities survive. Mathematical theory,
+construction and experiments develop together.
 
-4. **Expression adjacency drives heterogeneity.** The same semantic operation (e.g., wrapping in parentheses) produces a reliable cell-ranking when placed on its own line (O-O ≈ 0.66) but an unreliable one when adjacent to the expression (D-D ≈ 0.39). Token-level interaction between modification and expression tokens is consistent with cell-specific, position-dependent noise (interaction vs syntactic novelty not isolated).
+**Construction, training, conversion, memory, retrieval, precision, repair and
+fallback all count.** Fewer generated tokens or model calls alone is not a win.
 
-5. **Meaning went undetected on the tested arithmetic panels.** Within the same operator family, meaning-preserving vs meaning-changing perturbations produce indistinguishable 11-bin output distributions (effect sizes +0.002/+0.008/−0.090 across 3 architectures, all consistent with zero). The answer-identity confound makes meaning inseparable from answer change in this domain.
+## What the evidence currently supports
 
-Findings 1–5 were observed across the tested arithmetic/code panels and model checkpoints (not established as universality claims). **Models tested:** Qwen3 (0.6B/1.7B, base and instruct), SmolLM2 (135M/360M/1.7B, base and instruct), Phi-1.5, StableLM-2-1.6B, CodeGen-350M. The historical arithmetic/code experiments used CPU execution. The current GCP program also runs GPU experiments through `experiments/cloud/lsr_cloud.py`; see [STATE.md](STATE.md) for current scope and verdicts.
+- Conditional mathematics of future distinctions, selective writes and composition;
+  scoped high-dimensional interference and allocation results.
+- Concrete neural-dissection observations about formation, readout, forgetting and
+  maintenance, with architecture/optimizer/scale limitations.
+- Matrix-representation growth, closure and approximation constraints, alongside
+  engineering experiments whose claims changed under stronger specialist baselines.
+- Scoped resource/restoration theorems and a substantial negative record showing
+  why equal-access conventional implementations must be taken seriously.
 
-See [current state](STATE.md) and [experiment history](experiments/EXPERIMENTS.md).
+**We have not established a general persistent latent reasoning architecture,
+arbitrary capability transfer, a new model of computation, or an end-to-end
+efficiency advantage.** The latest compressed-state constructions failed their
+registered admission criteria; that constrains those constructions, not the mission.
+See the [corrected evidence map](docs/UNIFIED_EVIDENCE.md).
 
-## Research history
+## Start here
 
-**GCP latent-reasoning program (2026-10-11/12 restart, ACTIVE):** causal, selectable latent branch capacity under a width bottleneck, verifier-guided latent search, and frozen recurrent depth.
-Both tested gate recipes fail admission; no flagship escalation is licensed and width scaling remains untested.
-The tested search confirmation configurations miss the registered improvement threshold; matched-compute superiority remains unestablished.
-No admissible tested configuration establishes the registered replicated recurrence benefit; confounded cells remain instrument failures.
-P1 and P2 are recorded: P1 and the P1' pilot fired their stop rules and P2's registered prediction failed; the closing-state readout, rename/reorder binding and training-name studies followed ([experiments/EXPERIMENTS.md](experiments/EXPERIMENTS.md)). [STATE.md](STATE.md) governs current allocation. Earlier entries below retain their dated framing.
+1. [Research program](theory/RESEARCH_PROGRAM.md): full ambition, two tracks,
+   operational contracts, shared foundations and construction questions.
+2. [Current state](STATE.md): execution status, inherited verdicts and resume boundaries.
+3. [Unified evidence](docs/UNIFIED_EVIDENCE.md): usable results, corrections, failed
+   approaches and what a cross-foundation transfer must establish.
+4. [Research library](heritage/README.md): selected original mathematics, reference
+   code and source records with provenance.
+5. [Assets and recovery](docs/ASSETS.md): datasets, checkpoints, historical evidence
+   and how to recover selected local artifacts.
+6. [Experiment record](experiments/EXPERIMENTS.md): existing results and negatives;
+   new work continues in this repository.
+7. [Research history](docs/RESEARCH_HISTORY.md): earlier arcs, breakpoint vocabulary
+   and the provenance of the shared foundations.
 
-1. **General mathematics of high-dimensional spaces** (current, ACTIVE per user ruling 2026-09-18): Analytical/theoretical exploration of how math changes when d >> 1. Scope: pure math, statistical physics, information theory, random matrix theory, kernel methods. Results so far: the exact quadratic aggregate-interference theorem for isotropic random unit features and the specified normalized quadratic readout (exact mean and variance, two-phase crossing at Theta(sqrt d); degree-3+ signal model open after the naive general-t law was refuted), the sparse-exact-optimum theorem (the specified diagonal quadratic superposition autoencoder has a sparse-exact, flat-spectrum global optimum), estimator-validity constraints on measured spectral exponents, and the unigram-softmax rank-2 collapse result (corrected 2026-09-19: earlier "representation-computation gap" and "α* = s/2" claims were overclaims — no universal capacity law or eigenspectrum interpretation is established). The behavioral transfer data is exhausted (intrinsically rank-3), so open work is analytical/proof-first on genuinely high-dimensional objects with numeric predictions pre-registered before data is touched. LLM latent spaces are one instance studied now in the current GCP program; [STATE.md](STATE.md) governs current allocation.
-2. **Perturbation sensitivity** (empirical foundation): 86 experiments across 10 models characterizing the sensitivity hierarchy. Balanced factorial designs, 69 cells × 24 perturbation types, full-logit and 11-bin readouts.
-3. **Spectral/frame analysis** (closed 2026-09-18): Tensor composition line killed by row-permutation argument. Power-law-like fitted slopes observed after Zipfian training — origin unresolved (estimator bias and equilibrium structure both implicated; see HP cycle). Information-theoretic eigenspace priority observed. Spectral steepening descriptive but not predictive.
-4. **Omega modulus** (closed 2026-09-17): ~28,000 readouts across 5 architectures. Cross-architecture amplification confirmed; mechanism unresolved; cross-question transfer negative.
-5. **Cumulative capability acquisition** (S1–S65, closed): explored cross-model grafting, reasoning over encoders. No artifact established.
-6. **Prior program** ([legacy/](legacy/README.md)): latent perturbation, diffusion repair, aggregation. Produced the nine breakpoints below.
+## Repository map
 
-## A Depth-Dependent Readout Effect
-
-In one Qwen3-1.7B prompt family, deeply nested bindings were less likely to be read out correctly, and one fixed appended comment — `# No changes.` — **raised mean correct-value probability by up to 12.6 percentage points**. The observed change grew with nesting depth on this panel.
-
-| Depth | σ (no suffix) | σ (+1 suffix) | Gain (pp) |
-|-------|--------------|---------------|-----------|
-| d1 (shallow) | 0.958 | 0.970 | +1.2 (already accessible) |
-| d2 | 0.897 | 0.945 | **+4.9** |
-| d3 | 0.792 | 0.900 | **+10.8** |
-| d4 (deep) | 0.753 | 0.880 | **+12.6** |
-
-*Qwen3-1.7B-Base (pure transformer). σ = mean P(correct value) over n=27 cells per condition (3 variable names × 9 values). Suffix: `# No changes.\n` appended once.*
-
-### Why this matters
-
-**For AI inference:** One appended fixed comment line produced a meaningful response gain at deep nesting in this model and prompt family. That makes suffix-conditioned readout a concrete inference control to test across transformer systems; transfer, latency, and end-to-end cost remain open measurements.
-
-**For evaluation:** The result shows that a nested-reasoning score can depend materially on the text immediately before readout. It does not establish that the answer was already encoded or that extra computation alone caused the gain; it makes those mechanisms experimentally separable.
-
-**For latent-space theory:** The measured response is depth-dependent and suffix-sensitive. The historical unresolved question is how to separate lexical cueing, position, added computation, and attention-state change before testing a transition law across templates, tasks, and architectures. This panel is deferred; the old [strategy boundary](theory/CUMULATIVE_CAPABILITY_ACQUISITION.md#next-work-boundary) is HISTORICAL as of 2026-10-12; current program: [STATE.md](STATE.md).
-
-### Key findings
-
-1. **The tested content contrast exceeds the variable-mention contrast.** In a 2×2 crossover, the assertion-versus-misleading contrast was 6.3× the variable-mention effect. This rules out variable mention alone as the explanation on that panel; it does not isolate meaning from every surface feature. Responses also differed between paraphrases, as described below.
-
-2. **No stable operator algebra on the response simplex.** Lumpability of the (correct-digit, shadow-digit, residual) projection was high (R² = 0.79–0.98 across 7 role types), but the fitted stochastic-matrix operator did not survive composition: behavioral equivalence between surfaces was not preserved under a second suffix (amplification 2.6–13×), and a scalar logit-bias model fit the single-suffix data as well. The simplex operators are a diagnostic, not a native coordinate system.
-
-3. **Single-count maximum with depth scaling.** Among tested suffix counts {0, 1, 2, 4}, suffix count 1 yields the highest σ at all depths d2–d4. The absolute gain rises from 1.2 pp at d1 to 12.6 pp at d4.
-
-4. **Responses are surface-specific, not role-specific.** Different surface texts within the same semantic class produce detectably different response shifts (within-class coefficient of variation 0.33–0.51). The model distinguishes paraphrases that humans consider equivalent; no role-level operator was established.
-
-5. **Order effects are positional, not compositional.** Applying suffix A then suffix M produces a measurably different output distribution than M then A (median TV = 0.068). Controlled experiments with three independent token-matched filler pairs confirm the order effect is real and consistent (cross-pair correlation 0.69–0.92), but a scalar gain fit absorbs it: the effect direction is positional and the magnitude is context-dependent. A later reading of the same filler data showed that equal-length, position-matched blocks do not produce equal effects either (differences above 0.002 in at least 23 of 24 roots for every filler), so "position" here means the relative offsets to earlier content together with the content of the appended block, not token count alone.
-
-6. **Presentation differences survive a neutral continuation and are exposed by a reassignment announcement.** On a 24-cell panel with three same-meaning surface pairs, the neutral comment `# No changes.` kept all 32 initially close pairs within 0.01 total variation on the 11-bin readout, while the comment `# Reassigning {var} now.` separated 29 of them. This is a reduced-readout, unmatched-position observation about which continuations reveal which distinctions; it establishes nothing about erasure or about the full next-token law.
-
-## Supporting foundation: which distinctions can a model safely forget?
-
-The supporting theory studies interchangeability of histories relative to a family of future questions: two histories are interchangeable for a question family if every question in the family answers the same, and the organizing quantity is how much a later action can re-separate histories that were interchangeable before it. Results so far are mathematical and conditional: exact selective overwrite has a lens structure (preserved context times store); transition-closed realization sets give history-length-independent error bounds; a finite behavioral state budget of N places turns local update errors of size ε into a lifetime error of at most (N−1)ε, sharp; contraction is a sufficient but not necessary certificate. A trained 17K-parameter overwrite cell realized perfect fact replacement on its training panel without being a contraction on its state cube, which closed the coordinate-certificate route. No real-model artifact has been established. That prior line leaves open whether genuinely close real-model histories exist on a matched-position, full-law interface and which matched continuations separate them; it is not the current run queue.
-
-## Nine Breakpoints: Design Constraints for Native Mathematics
-
-The first nine breakpoint themes summarize constraints from the Phase 1 experiments. They are clues about tested interfaces and constructions, not universal failures of vector mathematics. The registry also contains later themes; the underlying audited records control their scope.
-
-| # | Breakpoint | What it means |
-|---|-----------|---------------|
-| 1 | **Presence =/= causation** | A concept can be strongly decodable yet have zero causal effect. Linear probes find ghosts. |
-| 2 | **Single-site =/= distributed** | Specific interventions show whole-state dependence for factual recall. |
-| 3 | **Vector distance =/= semantic distance** | Points close in cosine can be behaviorally different. |
-| 4 | **Fixed dimensions =/= fixed structure** | Effective dimensionality may be context- and task-dependent. |
-| 5 | **Vector composition =/= computational composition** | The model composes through its forward pass, not through vector arithmetic. |
-| 6 | **Observation =/= state** | The act of choosing what to probe constrains what you can find. |
-| 7 | **Snapshot =/= computation** | A representation at layer *l* can't be understood without the trajectory through all layers. |
-| 8 | **R^n tools find R^n structure** | PCA finds linear structure because PCA *is* linear structure. The measurement imposes itself on the answer. |
-| 9 | **Metric blindness to composition** | Four fact-worlds with cosine ~1.000 produce dramatically different behavioral outcomes under intervention. |
-
-Full details: [`theory/BREAKPOINT_REGISTRY.md`](theory/BREAKPOINT_REGISTRY.md)
-
-## Method: Scope-Variable Binding (SVB)
-
-Python lexical scoping as a probe for latent-space depth structure. Nested `def` blocks create scope depth 1–4, each shadowing a variable. The model processes the code and must report the value at the outermost scope. The response is decomposed into an 11-bin probability distribution ({digit 0–9, OTHER}).
-
-**Observable:** σ (scope binding fidelity) = P(model outputs the correct outer value).
-
-## Repository structure
-
-```
-theory/               Axioms, breakpoint registry, continuation-refinement calculus (CR-1 to CR-16)
-  closed/             Theory of closed lines (archived, headers mark status)
-experiments/           Core experiment runners and bounded strategy probes
-  config/              Experiment configurations (JSON)
-  results/             Result files (small; every result.json kept; bulk dumps listed in MANIFEST.md)
-  ledger.jsonl         Machine-readable experiment log
-  EXPERIMENTS.md       Human-readable experiment summaries, newest first
-docs/                  Archived state, notebook, and handoffs
-legacy/                Prior program (archived)
-STATE.md               Canonical current state of all claims
-NOTEBOOK.md            Reverse-chronological running log (recent); older entries in docs/
+```text
+theory/                  Unified program and mathematical work
+experiments/             Active experiment code, configurations and evidence ledger
+heritage/                Historical source library; reference-only, no launch queues
+docs/                    Evidence synthesis, custody, handoffs and research history
+tools/                   Repository utilities, including selective asset recovery
+assets/                  Local recovered data/checkpoints; ignored by Git
+legacy/                  Earlier LSR program, preserved as historical evidence
+STATE.md                 Current authority for status and allocation
+NOTEBOOK.md              Research journal; historical entries retain their scope
 ```
 
-## Methodology
+Existing LSR code and evidence paths are retained. Historical scripts and old
+"READY" instructions are not automatically adopted experiments. Preparation of the
+unified program does not launch compute or restore retired automation.
 
-- **Behavioral consequences are claim-bearing; representational measurements are diagnostic scaffolding.** We study what models *do*, not what their hidden states "look like." This avoids the R^n projection trap (breakpoint #8).
-- **Instrument-first.** Before interpreting results, validate the instrument: baseline retrieval, self-patch controls, sham-patch controls, execution-mode checks.
-- **Reproducible.** Historical CPU experiments and current GCP GPU experiments (`experiments/cloud/lsr_cloud.py`), with seeds and configs logged. Claim-bearing empirical runs in the ledger include the command, config, and metrics; derived-theory rows carry their theory pointers.
-
-## License
-
-MIT
+Licensed under [MIT](LICENSE) for repository-owned material. External data, model
+assets and third-party dependencies retain their own terms.

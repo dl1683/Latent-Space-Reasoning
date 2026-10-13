@@ -1,0 +1,36 @@
+{
+ "meta": {
+  "git_commit": "dc7434c8+uncommitted",
+  "numpy": "2.3.5",
+  "python": "3.13.7",
+  "blas_threads": [
+   [
+    "openblas",
+    1
+   ]
+  ],
+  "machine_load_percent_before": 32.4,
+  "numba": "0.62.1",
+  "numba_threads": 1,
+  "note": "bound fused_emitter.py line 19 replaced by `M = members[k]` for this run (does not type under this numba)",
+  "machine_load_percent_after": 21.9
+ },
+ "rows": [
+  {
+   "m": 32,
+   "nb": 48,
+   "N": 1536,
+   "T": 16,
+   "t_dense_chain_s": 3.338860299998487,
+   "t_emitter_s_cast_off_clock": 0.11807500000213622,
+   "t_cast_to_complex128_s": 0.11970379999911529,
+   "t_fft_batched_specialist_s": 0.04178450000108569,
+   "emitter_over_specialist": 2.8258086132194538,
+   "emitter_plus_cast_over_specialist": 5.690598188205514,
+   "dense_over_emitter": 28.27745331304747,
+   "dense_over_specialist": 79.90667113192052,
+   "relerr_emitter_vs_dense": 6.275454626818709e-14,
+   "relerr_specialist_vs_dense": 7.668525226260349e-15
+  }
+ ]
+}

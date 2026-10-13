@@ -1,0 +1,28 @@
+[
+ {
+  "n": 16,
+  "butterfly_components": 1,
+  "monarch_components": 1,
+  "hss1_components": 1,
+  "ldr_rank_le_1_edges": 0,
+  "ldr_rank_le_1_components": 16,
+  "ldr_rank_le_2_edges": 58,
+  "ldr_rank_le_2_components": 1,
+  "ldr_rank_le_3_edges": 240,
+  "ldr_rank_le_3_components": 1,
+  "butterfly_min_factors_for_density": 4
+ },
+ {
+  "n": 32,
+  "butterfly_components": 1,
+  "monarch_components": null,
+  "hss1_components": 1,
+  "ldr_rank_le_1_edges": 0,
+  "ldr_rank_le_1_components": 32,
+  "ldr_rank_le_2_edges": 122,
+  "ldr_rank_le_2_components": 1,
+  "ldr_rank_le_3_edges": 992,
+  "ldr_rank_le_3_components": 1,
+  "butterfly_min_factors_for_density": 6
+ }
+]
