@@ -23,12 +23,17 @@ local custody, not an off-device backup or portable research environment.
 | Source | Custody | Source retirement |
 |---|---|---|
 | Matrix-native mathematics | Verified archive and recovery | Exact source root removed and verified absent |
-| Neural dissection / Genome | Verified archive and recovery | Files removed; empty root is still locked by an editor workspace |
+| Neural dissection / Genome | Verified archive and recovery | Files removed; empty root remains after earlier editor lock and subsequent policy rejection |
 | Computational models | Verified archive and recovery | Exact source root removed and verified absent |
 
 Private acceptance, immediate guards and actual partial-removal observations are
 recorded in `internal/unification/`. A final three-root retirement receipt is not
-yet recorded. Disposable-copy cleanup and final publication closeout remain pending.
+yet recorded. Disposable-copy cleanup passed: exactly 12 duplicate staging files
+and three temporary restored verification Git directories were removed, totaling
+100,157,560,097 logical file bytes. Final archives, sidecars and useful recovered
+evidence remain intact. This is not a measured physical free-space increase.
+Automatic approval review rejected removal of the remaining empty Genome directory
+with the stated reason "blocked by policy"; final retirement remains pending.
 
 ## Changes and preserved boundaries
 

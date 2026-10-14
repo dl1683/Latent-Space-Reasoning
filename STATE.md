@@ -23,8 +23,11 @@ the multi-round direction and readiness reviews. All three complete source archi
 member/container readback, Git/data/checkpoint recovery and fresh source-byte checks
 have passed. Matrix-native and computation-model source roots are removed. Genome's
 files are removed under the recorded guard, but its empty source directory remains
-locked by an editor workspace. The final retirement receipt and cleanup/publication
-closeout remain pending; the migration goal is not complete.
+awaiting release/removal. Verified disposable-copy cleanup is complete: duplicate
+staging archives and temporary restored Git databases were removed while final
+archives and useful recovery samples were preserved. Automatic approval review
+blocked removal of the remaining empty Genome root. The final three-root retirement
+receipt and migration closeout remain pending; the migration goal is not complete.
 
 ## Scientific starting point
 

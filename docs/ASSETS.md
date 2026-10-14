@@ -29,9 +29,12 @@ and are deliberately not committed.
 
 All three relocation and recovery exercises passed. Matrix-native and computation-
 model source roots are removed; Genome's files are removed and its empty root awaits
-release of an editor lock. Acceptance passed, but the final three-root retirement
-receipt and disposable-copy cleanup are still pending. Recovery commands below are
-available without reopening the original working trees.
+removal after an editor lock and a subsequent policy rejection. Acceptance passed,
+but the final three-root retirement
+receipt is still pending. Duplicate staging archives and temporary restored Git
+verification databases have been removed after renewed custody verification;
+final archives, sidecars and useful recovered evidence remain available. Recovery
+commands below are available without reopening the original working trees.
 
 The [asset tool](../tools/heritage_assets.py) lists receipt records or restores
 explicitly selected ordinary file bytes with member SHA-256 verification:
