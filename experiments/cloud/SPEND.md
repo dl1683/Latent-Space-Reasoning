@@ -44,7 +44,8 @@ Estimate snapshot 2026-10-14T11:58:30+00:00; authorization synchronized 2026-10-
 | smoke1 | 4 | 0.12 |
 | **total** | 361 | **918.39** |
 
-At the recorded snapshot: live VMs 0; burn rate $0.0/h (not rechecked during documentation sync).
+Live check 2026-10-14T16:46:12+00:00 under the sc-bench config: live LSR VMs 0; burn rate $0.0/h.
 
 Gemma 4 31B instrument controls (2026-10-14 UTC clock; run names carry 2026-10-15): 3 VM launches, a2-highgpu-2g Spot at 4.42 USD/h, europe-west4-a. Run 1 (gemma4-controls-2026-10-15): first VM crashed on a config-attribute bug, relaunched after the fix, done 10:55:54Z; estimated 0.44 VM-h = 1.96 USD (conservative: both launches charged to the done marker). Run 2 (v2, five controls): 11:09:58Z to 11:17:51Z, 0.13 VM-h = 0.58 USD. The recorded control attempts were reaped; snapshot live VMs 0. Rows added by hand: `lsr_cloud.py spend` could not be re-run cleanly (the dispatcher has uncommitted edits by another agent), so regenerate before relying on this figure.
 
+Last ledger entries: gemma4-controls-2026-10-15 and gemma4-controls-v2-2026-10-15 (1.96 + 0.58 USD, above); no launches since. Pending, not launched: E1 alignment/hook smoke and S0 memory-port smoke, each gated on a ready queue row and a fresh Codex LAUNCHABLE review. A100-80GB quota is 0; candidate shapes are a2-highgpu-2g (2 x A100-40GB, 4.42 USD/h planning rate) or a3-highgpu-2g (2 x H100, rate to verify). Figures are hand-maintained; regenerate with `lsr_cloud.py spend` once the dispatcher edits settle.
