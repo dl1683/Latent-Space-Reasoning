@@ -32,9 +32,31 @@ REPO = HERE.parent.parent
 REGISTRY = HERE / "launches.jsonl"  # one row per VM creation: run, shard, vm, zone, rate, created
 
 
+def gcloud_env():
+    """Pass only SDK essentials; shell-injected variables can exceed Windows limits."""
+    keep = {"systemroot", "temp", "tmp", "userprofile", "appdata", "localappdata", "home",
+            "cloudsdk_active_config_name", "cloudsdk_config",
+            "http_proxy", "https_proxy", "all_proxy", "no_proxy"}
+    env = {k: v for k, v in os.environ.items() if k.lower() in keep}
+    entries, seen, size = [], set(), 0
+    for entry in os.environ.get("PATH", "").split(os.pathsep):
+        entry = entry.strip().strip('"')
+        if not entry or not os.path.isdir(entry):
+            continue
+        key = os.path.normcase(os.path.abspath(entry))
+        added = len(entry) + bool(entries)
+        if key in seen or size + added >= 8000:
+            continue
+        entries.append(entry)
+        seen.add(key)
+        size += added
+    env["PATH"] = os.pathsep.join(entries)
+    return env
+
+
 def gcloud(*args, check=True):
     proj = [] if args[0] == "storage" else [f"--project={PROJECT}"]
-    p = subprocess.run([*GCLOUD, *args, *proj], capture_output=True, text=True)
+    p = subprocess.run([*GCLOUD, *args, *proj], capture_output=True, text=True, env=gcloud_env())
     if check and p.returncode != 0:
         raise RuntimeError(p.stderr.strip()[-2000:])
     return p.stdout
