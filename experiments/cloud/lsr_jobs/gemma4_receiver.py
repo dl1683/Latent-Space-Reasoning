@@ -39,9 +39,9 @@ or model_output.past_key_values, which alias the same mutable HF cache.
 The complete Gemma4ForCausalLM decoder is called, not a surrogate head.
 This initial route is text/prefix-only: horizon must be 0 (no recurrent
 workspace passes); multimodal processor integration is outside PT1.
-The pinned multimodal checkpoint has top-level Gemma4ForConditionalGeneration;
-a verified extraction mapping to this text stem (LM head and embedding scaling
-included) is required before real weights can be used here.
+load_receiver uses the staged Gemma4ForConditionalGeneration text decoder and
+real LM head with shared parameters. Strict keys/scales are checked on load;
+actual-weight logit/answer parity remains a separate cloud-only check.
 Source-free attachment needs only saved memory/role/type/time tensors and
 connector state, never source text. Envelope validation is caller-owned.
 assert_prefix_used checks random-model mechanics over all text logits only;
@@ -54,18 +54,292 @@ lengths therefore differ from a concatenated token-weighted batch.
 from __future__ import annotations
 
 import argparse
+import copy
 from dataclasses import dataclass
 import hashlib
 import io
 import json
 import math
 import os
+import re
 from pathlib import Path
 import sys
 from unittest.mock import patch
 
 import torch
 from torch import nn
+
+
+# Exact namespace exclusions for text extraction, never a blanket unexpected-key waiver.
+MODALITY_PREFIXES = ("model.vision_tower.", "model.audio_tower.",
+                     "model.embed_vision.", "model.embed_audio.")
+TEXT_PREFIX = "model.language_model."
+
+
+def _require(ok, reason):
+    if not ok:
+        raise ValueError(reason)
+
+
+def _offline():
+    os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", HF_DATASETS_OFFLINE="1")
+
+
+def _sha256(path):
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        for chunk in iter(lambda: stream.read(4 * 1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _json_file(path):
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            _require(key not in result, "duplicate JSON key: " + key)
+            result[key] = value
+        return result
+    return json.loads(Path(path).read_text(encoding="utf-8"), object_pairs_hook=unique)
+
+
+def _validate_staged(cfg, root):
+    """Rehash the complete staged manifest immediately before offline loading.
+
+    A digest binds bytes to an operator-provided pin, not to a remote repository.
+    The operator is responsible for that provenance and exclusive staging custody.
+    """
+    _require(root.is_dir() and not root.is_symlink(), "missing/symlink staged root")
+    paths = list(root.rglob("*"))
+    _require(not any(p.is_symlink() for p in paths), "symlink in staged assets")
+    marker = root / "_COMPLETE"
+    _require(marker.is_file(), "staging incomplete")
+    manifest = root / "_manifest_sha256.txt"
+    _require(re.fullmatch(r"[0-9a-f]{64}", cfg.get("weights_manifest_sha256", "")) is not None,
+             "pinned manifest SHA-256 required")
+    _require(_sha256(manifest) == cfg["weights_manifest_sha256"], "manifest pin mismatch")
+    listed = set()
+    for line in manifest.read_text(encoding="utf-8").splitlines():
+        match = re.fullmatch(r"([0-9a-f]{64})  (.+)", line)
+        _require(match is not None, "malformed manifest")
+        name = match[2]
+        # Historical primary manifests use ./; accept exactly one such prefix.
+        name = name.removeprefix("./")
+        _require(name and not any(p in ("", ".", "..") for p in name.split("/"))
+                 and "\\" not in name and ":" not in name and not name.startswith("/")
+                 and name not in listed and name not in ("_manifest_sha256.txt", "_COMPLETE"),
+                 "unsafe/duplicate manifest path")
+        listed.add(name)
+        _require((root / name).is_file() and _sha256(root / name) == match[1], "staged bytes mismatch: " + name)
+    actual = {p.relative_to(root).as_posix() for p in paths if p.is_file()}
+    _require(actual == listed | {"_manifest_sha256.txt", "_COMPLETE"}, "unlisted/missing staged assets")
+    _require({"config.json", "tokenizer_config.json", "tokenizer.json"} <= listed,
+             "complete config/tokenizer files required")
+    return sorted(listed)
+
+
+def _checkpoint_keys(root):
+    """Check physical safetensor keys against the index, including excluded towers."""
+    from safetensors import safe_open
+    index_path = root / "model.safetensors.index.json"
+    if index_path.is_file():
+        weight_map = _json_file(index_path)["weight_map"]
+        _require(isinstance(weight_map, dict) and weight_map, "empty weight map")
+        shards = sorted(set(weight_map.values()))
+    else:
+        weight_map = None
+        shards = ["model.safetensors"]
+    found = {}
+    for name in shards:
+        _require(isinstance(name, str) and re.fullmatch(r"[A-Za-z0-9_.-]+\.safetensors", name),
+                 "unsafe checkpoint shard path")
+        with safe_open(root / name, framework="pt", device="cpu") as handle:
+            for key in handle.keys():
+                _require(key not in found, "duplicate checkpoint tensor")
+                found[key] = name
+    _require(weight_map is None or found == weight_map, "index/physical tensor mismatch")
+    _require({p.name for p in root.glob("*.safetensors")} == set(shards), "unindexed safetensor shard")
+    return set(found)
+
+
+def _key_contract(keys, expected, tied):
+    """Only an explicitly configured tied head/embedding alias may be omitted."""
+    embedding = TEXT_PREFIX + "embed_tokens.weight"
+    head = "lm_head.weight"
+    missing = set(expected) - set(keys)
+    aliases = {embedding, head}
+    _require(not (set(keys) - set(expected)), "unexpected checkpoint keys: " + str(sorted(set(keys)-set(expected))))
+    _require(not missing or (tied and missing < aliases and aliases - missing <= set(keys)),
+             "missing checkpoint keys: " + str(sorted(missing)))
+    for key in keys:
+        _require(key == head or key.startswith(TEXT_PREFIX) or key.startswith(MODALITY_PREFIXES),
+                 "unclassified checkpoint key: " + key)
+    return sorted(missing)
+
+
+def _extract_text(original):
+    """Reuse the actual text decoder AND real LM head; allocate no duplicate text weights."""
+    from accelerate import init_empty_weights
+    from transformers import Gemma4ForCausalLM
+    _require(original.config.model_type == "gemma4", "requires multimodal Gemma4 checkpoint")
+    config = copy.deepcopy(original.config.text_config)
+    config._attn_implementation = original.model.language_model.config._attn_implementation
+    with init_empty_weights():
+        stem = Gemma4ForCausalLM(config)
+    stem.model = original.model.language_model
+    stem.lm_head = original.lm_head
+    _validate_text(stem)
+    return stem.eval()
+
+
+def _validate_text(stem):
+    c = stem.config
+    _require(len(stem.model.layers) == c.num_hidden_layers, "truncated text stem")
+    embedding = stem.get_input_embeddings()
+    expected_scale = torch.tensor(c.hidden_size**0.5, dtype=embedding.weight.dtype,
+                                  device=embedding.weight.device)
+    _require(torch.equal(embedding.embed_scale.to(expected_scale), expected_scale), "embedding scale mismatch")
+    _require(stem.lm_head.weight.shape == (c.vocab_size, c.hidden_size), "missing/wrong LM head")
+    if c.tie_word_embeddings:
+        _require(stem.lm_head.weight is embedding.weight, "configured tied head is not tied")
+    if c.hidden_size_per_layer_input:
+        ple = stem.model.embed_tokens_per_layer
+        _require(ple.weight.shape == (c.vocab_size_per_layer_input,
+                                      c.num_hidden_layers*c.hidden_size_per_layer_input), "PLE shape mismatch")
+        scale = torch.tensor(c.hidden_size_per_layer_input**0.5, dtype=ple.weight.dtype, device=ple.weight.device)
+        _require(torch.equal(ple.embed_scale.to(scale), scale), "PLE scale mismatch")
+
+
+def _check_tied_values(root, keys, tied):
+    """If both aliases are serialized, refuse inconsistent values before HF ties them."""
+    aliases = (TEXT_PREFIX + "embed_tokens.weight", "lm_head.weight")
+    if not tied or not set(aliases) <= keys:
+        return
+    from contextlib import ExitStack
+    from safetensors import safe_open
+    index = root / "model.safetensors.index.json"
+    locations = _json_file(index)["weight_map"] if index.is_file() else dict.fromkeys(aliases, "model.safetensors")
+    with ExitStack() as stack:
+        tensors = [stack.enter_context(safe_open(root / locations[k], framework="pt", device="cpu")).get_slice(k)
+                   for k in aliases]
+        _require(tensors[0].get_shape() == tensors[1].get_shape(), "tied alias shapes differ")
+        for start in range(0, tensors[0].get_shape()[0], 256):
+            _require(torch.equal(tensors[0][start:start+256], tensors[1][start:start+256]),
+                     "tied alias values differ")
+
+
+def _placement(cfg):
+    placement = cfg.get("placement")
+    _require(isinstance(placement, dict), "explicit measured placement required")
+    device_map = placement.get("device_map")
+    _require(isinstance(device_map, dict) and device_map and
+             all(isinstance(k, str) and isinstance(v, str) and
+                 (v == "cpu" or re.fullmatch(r"cuda:[0-9]+", v)) for k, v in device_map.items()),
+             "explicit device_map only; no auto/disk/offload")
+    devices = set(device_map.values())
+    _require(len(devices) == 1 or "cpu" not in devices, "CPU offload is forbidden")
+    _require(isinstance(placement.get("measurement_id"), str) and placement["measurement_id"].strip(),
+             "placement measurement provenance required")
+    headroom = placement.get("min_free_fraction")
+    _require(type(headroom) in (int, float) and math.isfinite(headroom) and .1 <= headroom < 1,
+             "placement requires >=10% headroom")
+    return copy.deepcopy(placement)
+
+
+def _load_original(cfg):
+    from accelerate import init_empty_weights
+    from transformers import AutoTokenizer, Gemma4Config, Gemma4ForConditionalGeneration
+    _offline()
+    for field in ("revision", "tokenizer_revision"):
+        _require(isinstance(cfg.get(field), str) and re.fullmatch(r"[0-9a-f]{40}", cfg[field]),
+                 "immutable " + field + " required")
+    _require(cfg.get("model") in ("google/gemma-4-31B", "google/gemma-4-E2B", "google/gemma-4-E4B"),
+             "explicit admitted Gemma identity required")
+    if cfg["model"] == "google/gemma-4-31B":
+        _require(cfg["revision"] == "5bbc2fb1c1b2c611d06e3d9f23c170ba21659d89", "wrong primary revision")
+    _require(cfg.get("model_local") == "/opt/lsr/weights", "model_local must be /opt/lsr/weights")
+    _require(cfg.get("allow_hf_download") is False, "downloads must be explicitly disabled")
+    placement = _placement(cfg)
+    root = Path(cfg["model_local"])
+    files = _validate_staged(cfg, root)
+    config = Gemma4Config.from_pretrained(root, local_files_only=True)
+    _require(config.model_type == "gemma4", "not a multimodal Gemma4 config")
+    backend = cfg.get("attn_implementation")
+    _require(backend in ("eager", "sdpa"), "explicit supported attention backend required")
+    dtype = cfg.get("dtype")
+    _require(dtype in ("float32", "float16", "bfloat16"), "explicit floating dtype required")
+    config._attn_implementation = backend
+    with init_empty_weights():
+        skeleton = Gemma4ForConditionalGeneration(config)
+    keys = _checkpoint_keys(root)
+    _require(config.tie_word_embeddings == config.text_config.tie_word_embeddings,
+             "outer/text tied-embedding configuration disagreement")
+    omitted = _key_contract(keys, skeleton.state_dict(), config.tie_word_embeddings)
+    _check_tied_values(root, keys, config.tie_word_embeddings)
+    del skeleton
+    model, info = Gemma4ForConditionalGeneration.from_pretrained(
+        root, config=config, local_files_only=True, trust_remote_code=False,
+        dtype=getattr(torch, dtype), attn_implementation=backend,
+        device_map=placement["device_map"], output_loading_info=True)
+    _require(not info.get("unexpected_keys") and not info.get("mismatched_keys") and not info.get("error_msgs")
+             and set(info.get("missing_keys", [])) <= set(omitted), "non-strict checkpoint load: " + str(info))
+    _require(not any(p.is_meta for p in model.parameters()), "unmaterialized checkpoint parameter")
+    for name, parameter in model.named_parameters(remove_duplicate=False):
+        matches = [prefix for prefix in placement["device_map"] if not prefix or name.startswith(prefix+".")]
+        _require(matches, "placement does not cover parameter: " + name)
+        expected_device = placement["device_map"][max(matches, key=len)]
+        _require(str(parameter.device) == expected_device, "parameter placement mismatch: " + name)
+    # Physical files were hash-checked. Staging must stay exclusively owned during use.
+    tok = AutoTokenizer.from_pretrained(root, local_files_only=True, trust_remote_code=False)
+    model.eval().requires_grad_(False)
+    return tok, model, {"files": files, "omitted_tied_aliases": omitted,
+                        "checkpoint_key_count": len(keys), "placement": placement}
+
+
+def _stem_info(cfg, stem, audit):
+    import transformers
+    c = stem.config
+    return {"model": cfg["model"], "revision": cfg["revision"],
+            "tokenizer_revision": cfg["tokenizer_revision"], "model_local": cfg["model_local"],
+            "weights_manifest_sha256": cfg["weights_manifest_sha256"],
+            "architecture": type(stem).__name__, "config": c.to_dict(),
+            "extraction": {"model.language_model.*": "model.*", "lm_head.weight": "lm_head.weight"},
+            "allowed_excluded_modality_prefixes": list(MODALITY_PREFIXES),
+            "head": "original lm_head module (shared parameters)",
+            "tied_embeddings": c.tie_word_embeddings, "embedding_scale": c.hidden_size**0.5,
+            "final_logit_softcapping": c.final_logit_softcapping,
+            "D_memory": cfg.get("memory_dim", c.hidden_size), "D_stem": c.hidden_size,
+            "layers": c.num_hidden_layers, "layer_types": list(c.layer_types),
+            "PLE": {"width": c.hidden_size_per_layer_input, "prefix_policy": "zero token identity + native context projection"},
+            "num_kv_shared_layers": c.num_kv_shared_layers, "attention_k_eq_v": c.attention_k_eq_v,
+            "sliding_window": c.sliding_window, "dtype": cfg["dtype"],
+            "backend": cfg["attn_implementation"], "audit": audit,
+            "torch_version": torch.__version__, "transformers_version": transformers.__version__,
+            "parameter_dtypes": sorted({str(p.dtype) for p in stem.parameters()}),
+            "parameter_devices": sorted({str(p.device) for p in stem.parameters()}),
+            "transformers_model_source_sha256": _sha256(sys.modules[type(stem).__module__].__file__),
+            "receiver_sha256": _sha256(__file__),
+            "actual_weight_parity": "UNRUN; separate actual-checkpoint-map required"}
+
+
+def load_receiver(cfg):
+    """Cloud-only, staged bytes only. No placement guessing, downloads or retries.
+
+    cfg is the flat A/B/C receiver contract. Placement module names refer to the
+    ORIGINAL multimodal model, since its real decoder/head are shared on extraction.
+    All towers are loaded once and discarded after extraction; budget that peak.
+    """
+    tok, original, audit = _load_original(cfg)
+    stem = _extract_text(original)
+    c = stem.config
+    connector = MemoryResampler(ResamplerConfig(
+        memory_dim=cfg.get("memory_dim", c.hidden_size), hidden_size=c.hidden_size,
+        attention_dim=cfg.get("attention_dim", 64), num_heads=cfg.get("num_heads", 4)))
+    connector.to(device=stem.get_input_embeddings().weight.device,
+                 dtype=stem.get_input_embeddings().weight.dtype)
+    receiver = Gemma4Receiver(stem, connector)
+    return {"tok": tok, "receiver": receiver, "connector": connector,
+            "stem_info": _stem_info(cfg, stem, audit)}
 
 
 @dataclass(frozen=True)
@@ -553,24 +827,313 @@ def _tiny_check():
             "scope": "scaled random architecture mechanics only; no weights or launch verdict"}
 
 
+@torch.no_grad()
+def _greedy(model, ids, mask, max_new_tokens, eos_ids=()):
+    """Same physical positions, BOS and deterministic recomputation for both routes."""
+    sequence, mask = ids.clone(), mask.clone()
+    answer = []
+    terminated = False
+    for _ in range(max_new_tokens):
+        positions = torch.arange(sequence.shape[1], device=sequence.device).unsqueeze(0)
+        logits = model(input_ids=sequence, attention_mask=mask, position_ids=positions,
+                       use_cache=False, return_dict=True).logits
+        token = logits[:, -1].argmax(-1, keepdim=True).to(sequence.device)
+        answer.append(token.item())
+        sequence = torch.cat((sequence, token), 1)
+        mask = torch.cat((mask, torch.ones_like(token)), 1)
+        if token.item() in eos_ids:
+            terminated = True
+            break
+    return {"tokens": answer, "terminated": terminated, "budget_exhausted": not terminated}
+
+
+@torch.no_grad()
+def _compare_map(original, mapped, ids, mask, *, atol, rtol, max_new_tokens, eos_ids=()):
+    positions = torch.arange(ids.shape[1], device=ids.device).unsqueeze(0)
+    kwargs = dict(input_ids=ids, attention_mask=mask, position_ids=positions,
+                  use_cache=False, return_dict=True)
+    a = original(**kwargs).logits
+    b = mapped(**kwargs).logits.to(a.device)
+    _require(torch.isfinite(a).all() and torch.isfinite(b).all(), "nonfinite mapping logits")
+    error = (a.float() - b.float()).abs()
+    _require(torch.allclose(a, b, atol=atol, rtol=rtol), "full/mapped logit mismatch: " + str(error.max().item()))
+    first = _greedy(original, ids, mask, max_new_tokens, eos_ids)
+    second = _greedy(mapped, ids, mask, max_new_tokens, eos_ids)
+    _require(first == second, "full/mapped generated answer mismatch")
+    return {"max_abs_logit_error": error.max().item(), "mean_abs_logit_error": error.mean().item(),
+            "logit_shape": list(a.shape), "atol": atol, "rtol": rtol,
+            "answer": first, "same_answer": True, "input_ids": ids.tolist(),
+            "attention_mask": mask.tolist(), "position_ids": positions.tolist()}
+
+
+def _expect_value_error(fn):
+    try:
+        fn()
+    except ValueError:
+        return
+    raise AssertionError("negative contract accepted")
+
+
+def _checkpoint_map_check():
+    """Real RANDOM multimodal modules, synthetic dictionaries; effects raise."""
+    from transformers import AutoTokenizer, Gemma4Config, Gemma4TextConfig, Gemma4VisionConfig, Gemma4ForConditionalGeneration
+    import tempfile
+    results = {}
+    with patch("transformers.PreTrainedModel.from_pretrained", side_effect=AssertionError("loader forbidden")), \
+         patch("socket.socket.connect", side_effect=AssertionError("network forbidden")):
+        for ple_width, shared, tied in ((0, 0, True), (4, 2, True), (4, 2, False)):
+            torch.manual_seed(1701)
+            text = Gemma4TextConfig(vocab_size=64, hidden_size=32, intermediate_size=64,
+                num_hidden_layers=4, num_attention_heads=4, num_key_value_heads=2,
+                head_dim=8, global_head_dim=8, num_global_key_value_heads=2,
+                num_kv_shared_layers=shared, hidden_size_per_layer_input=ple_width,
+                vocab_size_per_layer_input=64, max_position_embeddings=128, sliding_window=8,
+                layer_types=["sliding_attention", "full_attention"]*2, tie_word_embeddings=tied,
+                bos_token_id=2, eos_token_id=1, pad_token_id=0)
+            vision = Gemma4VisionConfig(hidden_size=16, intermediate_size=32, num_hidden_layers=1,
+                num_attention_heads=2, num_key_value_heads=2, head_dim=8, patch_size=2,
+                pooling_kernel_size=1, position_embedding_size=16)
+            config = Gemma4Config(text_config=text, vision_config=vision, audio_config=None,
+                                  tie_word_embeddings=tied, image_token_id=60, video_token_id=61, audio_token_id=62)
+            config._attn_implementation = "eager"
+            original = Gemma4ForConditionalGeneration(config).float().cpu().eval()
+            expected = original.state_dict()
+            # Independent synthetic checkpoint reconstruction uses strict=True.
+            clone = Gemma4ForConditionalGeneration(copy.deepcopy(config)).float().cpu().eval()
+            clone.load_state_dict(expected, strict=True)
+            stem = _extract_text(clone)
+            assert stem.model is clone.model.language_model and stem.lm_head is clone.lm_head
+            _key_contract(expected, expected, tied)
+            no_head = set(expected) - {"lm_head.weight"}
+            if tied:
+                assert _key_contract(no_head, expected, tied) == ["lm_head.weight"]
+            else:
+                _expect_value_error(lambda: _key_contract(no_head, expected, tied))
+            _expect_value_error(lambda: _key_contract(set(expected)-{"lm_head.weight", TEXT_PREFIX+"embed_tokens.weight"}, expected, tied))
+            _expect_value_error(lambda: _key_contract(set(expected)|{TEXT_PREFIX+"unknown.weight"}, expected, tied))
+            _expect_value_error(lambda: _key_contract(set(expected)|{"model.unknown_tower.weight"}, expected, tied))
+            missing_layer = set(expected)-{next(k for k in expected if ".layers.0." in k and k.startswith(TEXT_PREFIX))}
+            _expect_value_error(lambda: _key_contract(missing_layer, expected, tied))
+            ids = torch.tensor([[2, 9, 7, 13, 4]], dtype=torch.long)
+            comparisons = [_compare_map(original, stem, x, torch.ones_like(x), atol=1e-6, rtol=1e-6,
+                                         max_new_tokens=4, eos_ids=(1,)) for x in (ids, ids[:, :2])]
+            # A head with the right shape but wrong scale must fail numerical parity.
+            saved_head = stem.lm_head
+            stem.lm_head = nn.Linear(32, 64, bias=False)
+            with torch.no_grad():
+                stem.lm_head.weight.copy_(saved_head.weight * .5)
+            _expect_value_error(lambda: _compare_map(original, stem, ids, torch.ones_like(ids),
+                                                     atol=1e-6, rtol=1e-6, max_new_tokens=1))
+            stem.lm_head = saved_head
+            with torch.no_grad():
+                stem.model.embed_tokens.embed_scale.mul_(.5)
+            _expect_value_error(lambda: _validate_text(stem))
+            with torch.no_grad():
+                stem.model.embed_tokens.embed_scale.mul_(2)
+            if ple_width:
+                with torch.no_grad():
+                    stem.model.embed_tokens_per_layer.embed_scale.mul_(.5)
+                _expect_value_error(lambda: _validate_text(stem))
+                with torch.no_grad():
+                    stem.model.embed_tokens_per_layer.embed_scale.mul_(2)
+                missing_ple = set(expected)-{TEXT_PREFIX+"embed_tokens_per_layer.weight"}
+                _expect_value_error(lambda: _key_contract(missing_ple, expected, tied))
+            receiver = Gemma4Receiver(stem, MemoryResampler(ResamplerConfig(12, 32))).eval()
+            # One dev-only bounded scale remedy, no sweep and no production default change.
+            memory = torch.randn(1, 4, 12)
+            prefix = receiver.connector(memory)
+            target = stem.get_input_embeddings()(ids).detach().norm(dim=-1).mean()
+            scale_remedy = ple_width == 4 and shared == 2 and tied
+            scaled = (prefix * (target / prefix.detach().norm(dim=-1, keepdim=True).clamp_min(1e-6))
+                      if scale_remedy else prefix)
+            labels = ids.clone()
+            labels[:, :3] = -100
+            loss = receiver(ids, prefix_states=scaled, labels=labels)["loss"]
+            loss.backward()
+            grad = math.sqrt(sum(p.grad.float().square().sum().item()
+                                for p in receiver.connector.parameters() if p.grad is not None))
+            assert math.isfinite(grad) and grad > 0 and all(p.grad is None for p in stem.parameters())
+            scale_probe = {"dev_only": True, "scale_remedy_applied": scale_remedy,
+                           "bounded_steps": 1, "prefix_norm_before": prefix.detach().norm(dim=-1).mean().item(),
+                           "prefix_norm_after": scaled.detach().norm(dim=-1).mean().item(),
+                           "token_norm_target": target.item(), "connector_grad_norm": grad, "loss": loss.item()}
+            results[f"ple{ple_width}_shared{shared}_tied{tied}"] = {
+                "comparisons": comparisons, "scale_probe": scale_probe, "strict_state_keys": len(expected),
+                "excluded_modality_keys": sorted(k for k in expected if k.startswith(MODALITY_PREFIXES)),
+                "head_ple_embedding_negative_controls": "PASS", "independent_strict_clone": True}
+        # Exercise the production loader wiring with explicit intercepted dependencies.
+        # These mocks never claim disk/actual-weight validation; staging is tested below.
+        cfg = {"model": "google/gemma-4-E2B", "revision": "a"*40, "tokenizer_revision": "b"*40,
+               "model_local": "/opt/lsr/weights", "allow_hf_download": False,
+               "weights_manifest_sha256": "c"*64, "dtype": "float32", "attn_implementation": "eager",
+               "memory_dim": 12, "attention_dim": 24, "num_heads": 4,
+               "placement": {"device_map": {"": "cpu"}, "measurement_id": "synthetic-only", "min_free_fraction": .1}}
+        with patch(__name__+"._validate_staged", return_value=["synthetic"]) as staged, \
+             patch(__name__+"._checkpoint_keys", return_value=set(expected)), \
+             patch(__name__+"._check_tied_values"), \
+             patch.object(Gemma4Config, "from_pretrained", return_value=config) as config_loader, \
+             patch.object(Gemma4ForConditionalGeneration, "from_pretrained", return_value=(clone, {})) as model_loader, \
+             patch.object(AutoTokenizer, "from_pretrained", return_value=object()) as tokenizer_loader:
+            loaded = load_receiver(cfg)
+            assert set(loaded) == {"tok", "receiver", "connector", "stem_info"}
+            assert loaded["receiver"].connector is loaded["connector"]
+            assert loaded["connector"].config.attention_dim == 24
+            assert loaded["stem_info"]["D_memory"] == 12 and loaded["stem_info"]["D_stem"] == 32
+            for mock_loader in (config_loader, model_loader, tokenizer_loader):
+                assert mock_loader.call_args.kwargs["local_files_only"] is True
+                assert str(mock_loader.call_args.args[0]) == str(Path("/opt/lsr/weights"))
+            for change in ({"revision": "main"}, {"tokenizer_revision": None}, {"model_local": "google/gemma-4-E2B"},
+                           {"allow_hf_download": True}, {"model": "other/model"},
+                           {"model": "google/gemma-4-31B"}, {"placement": {"device_map": "auto"}}):
+                _expect_value_error(lambda: load_receiver({**cfg, **change}))
+            model_loader.return_value = (clone, {"missing_keys": [TEXT_PREFIX+"norm.weight"]})
+            _expect_value_error(lambda: load_receiver(cfg))
+            results["loader_wiring"] = {"distinct_identity_path_pins": True, "local_files_only": True,
+                "single_connector": True, "bad_identity_pin_path_placement_and_missing_text_rejected": True,
+                "scope": "intercepted random-model dependencies; not a real pretrained load"}
+        # Files here contain synthetic text bytes and tensor headers only; never pretrained assets.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name in ("config.json", "tokenizer_config.json", "tokenizer.json"):
+                (root/name).write_text("{}", encoding="utf-8")
+            (root/"_COMPLETE").write_text("", encoding="utf-8")
+            manifest = root/"_manifest_sha256.txt"
+            manifest.write_text("".join(f"{_sha256(root/name)}  ./{name}\n" for name in
+                                       ("config.json", "tokenizer_config.json", "tokenizer.json")), encoding="utf-8")
+            cfg = {"weights_manifest_sha256": _sha256(manifest)}
+            assert len(_validate_staged(cfg, root)) == 3
+            (root/"config.json").write_text("corrupt", encoding="utf-8")
+            _expect_value_error(lambda: _validate_staged(cfg, root))
+            from safetensors.torch import save_file
+            aliases = {TEXT_PREFIX+"embed_tokens.weight": torch.ones(3, 4), "lm_head.weight": torch.ones(3, 4)}
+            save_file(aliases, root/"model.safetensors")
+            assert _checkpoint_keys(root) == set(aliases)
+            _check_tied_values(root, set(aliases), True)
+            aliases["lm_head.weight"] *= .5
+            save_file(aliases, root/"model.safetensors")
+            _expect_value_error(lambda: _check_tied_values(root, set(aliases), True))
+            index = {"weight_map": dict.fromkeys(aliases, "model.safetensors")}
+            (root/"model.safetensors.index.json").write_text(json.dumps(index), encoding="utf-8")
+            assert _checkpoint_keys(root) == set(aliases)
+            index["weight_map"]["unexpected"] = "model.safetensors"
+            (root/"model.safetensors.index.json").write_text(json.dumps(index), encoding="utf-8")
+            _expect_value_error(lambda: _checkpoint_keys(root))
+        for bad in ({}, {"placement": {"device_map": "auto"}},
+                    {"placement": {"device_map": {"": "cpu"}, "measurement_id": "x", "min_free_fraction": .09}}):
+            _expect_value_error(lambda: _placement(bad))
+        _expect_value_error(lambda: ResamplerConfig(12, 32, 65, 4))
+        _expect_value_error(lambda: ResamplerConfig(12, 32, workspace_positions=7))
+    return {"status": "PASS", "check": "checkpoint-map-contract", "variants": results,
+            "staging_corruption_rejected": True, "strict_key_accounting": True,
+            "scope": "random architectures and synthetic checkpoints only; actual parity UNRUN"}
+
+
+def _actual_checkpoint_map(cfg, out_path):
+    """Cloud operator only: shared original/mapped weights; no duplicated text allocation.
+
+    Mapping tolerances, raw prompts and decode budget MUST be predeclared in cfg.
+    This is a mapping/gradient smoke, never the separate semantic competence smoke.
+    """
+    test = cfg.get("mapping_check", {})
+    prompts = test.get("prompts")
+    _require(isinstance(prompts, list) and len(prompts) >= 2 and
+             all(isinstance(p, str) and p.strip() for p in prompts), "predeclared representative prompts required")
+    for name in ("atol", "rtol"):
+        _require(type(test.get(name)) in (int, float) and math.isfinite(test[name]) and test[name] >= 0,
+                 "predeclared finite " + name + " required")
+    _require(type(test.get("max_new_tokens")) is int and 1 <= test["max_new_tokens"] <= 64,
+             "bounded predeclared decode budget required")
+    placement = _placement(cfg)
+    devices = sorted(set(placement["device_map"].values()))
+    _require(all(d.startswith("cuda:") for d in devices), "actual checkpoint check is cloud GPU only")
+    _require(sys.platform == "linux" and Path("/opt/lsr/weights").is_dir(), "cloud staged root required")
+    out = Path(out_path)
+    out.mkdir(parents=True, exist_ok=False)
+    for device in devices:
+        torch.cuda.reset_peak_memory_stats(device)
+    receipt = {"status": "FAIL", "semantic_smoke": "UNRUN", "scope": "actual checkpoint mapping mechanics"}
+    try:
+        tok, original, audit = _load_original(cfg)
+        stem = _extract_text(original)
+        connector = MemoryResampler(ResamplerConfig(cfg.get("memory_dim", stem.config.hidden_size),
+            stem.config.hidden_size, cfg.get("attention_dim", 64), cfg.get("num_heads", 4))).to(
+                device=stem.get_input_embeddings().weight.device, dtype=stem.get_input_embeddings().weight.dtype)
+        receiver = Gemma4Receiver(stem, connector).eval()
+        eos = tok.eos_token_id
+        eos = () if eos is None else ((eos,) if isinstance(eos, int) else tuple(eos))
+        comparisons = []
+        for prompt in prompts:
+            enc = tok(prompt, add_special_tokens=True, return_tensors="pt")
+            ids = enc["input_ids"].to(stem.get_input_embeddings().weight.device)
+            mask = enc["attention_mask"].to(ids.device)
+            detail = _compare_map(original, stem, ids, mask, atol=test["atol"], rtol=test["rtol"],
+                                  max_new_tokens=test["max_new_tokens"], eos_ids=eos)
+            detail["decoded_answer"] = tok.decode(detail["answer"]["tokens"], skip_special_tokens=False)
+            with torch.no_grad():
+                baseline = stem(input_ids=ids, attention_mask=mask, use_cache=False).logits
+                for memory in (None, torch.empty(1, 0, connector.config.memory_dim,
+                                               device=ids.device, dtype=connector.queries.dtype)):
+                    assert torch.equal(receiver(ids, memory, attention_mask=mask)["logits"], baseline)
+            comparisons.append(detail)
+        # Real prefix backward; freezing must retain the path into connector parameters.
+        memory = torch.randn(1, 4, connector.config.memory_dim, device=ids.device, dtype=connector.queries.dtype)
+        labels = torch.full_like(ids, -100)
+        labels[:, -1] = ids[:, -1]
+        loss = receiver(ids, memory, attention_mask=mask, labels=labels)["loss"]
+        _require(loss.requires_grad and torch.isfinite(loss), "lost differentiable loss")
+        loss.backward()
+        gradients = [p.grad for p in connector.parameters() if p.grad is not None]
+        grad_norm = math.sqrt(sum(g.float().square().sum().item() for g in gradients))
+        _require(math.isfinite(grad_norm) and grad_norm > 0 and all(p.grad is None for p in stem.parameters()),
+                 "bad connector/stem gradient path")
+        receipt.update(comparisons=comparisons, stem_info=_stem_info(cfg, stem, audit),
+                       prefix_backward={"loss": loss.item(), "grad_norm": grad_norm},
+                       shared_parameters=True, bos_token_id=tok.bos_token_id, eos_token_id=tok.eos_token_id)
+        memory_stats = {}
+        for device in devices:
+            free, total = torch.cuda.mem_get_info(device)
+            peak = torch.cuda.max_memory_reserved(device)
+            # Peak allocator use plus current non-allocator use bounds this process's observed headroom.
+            current_reserved = torch.cuda.memory_reserved(device)
+            peak_free = free - max(0, peak-current_reserved)
+            memory_stats[device] = {"free_bytes": free, "total_bytes": total,
+                "peak_allocated_bytes": torch.cuda.max_memory_allocated(device), "peak_reserved_bytes": peak,
+                "conservative_peak_free_fraction": peak_free/total}
+            _require(peak_free/total >= placement["min_free_fraction"], "insufficient measured peak headroom")
+        receipt.update(status="PASS", memory=memory_stats)
+        receipt["stem_info"]["actual_weight_parity"] = "PASS in this receipt only"
+    except Exception as exc:
+        receipt["reason"] = repr(exc)
+        raise
+    finally:
+        (out/"checkpoint_map.json").write_text(json.dumps(receipt, indent=2, default=str)+"\n", encoding="utf-8")
+    return receipt
+
+
 def _cli(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", required=True)
     parser.add_argument("--offline", action="store_true")
     parser.add_argument("--device", choices=["cpu"], default="cpu")
     parser.add_argument("--threads", type=int, choices=[1, 2], default=2)
+    parser.add_argument("--config")
+    parser.add_argument("--out")
     args = parser.parse_args(argv)
-    if args.check != "tiny-gemma":
+    if args.check not in ("tiny-gemma", "checkpoint-map-contract", "actual-checkpoint-map"):
         print(json.dumps({"status": "UNKNOWN_CHECK", "check": args.check, "exit_code": 2}))
         return 2
-    if not args.offline:
+    if not args.offline and args.check != "actual-checkpoint-map":
         parser.error("--offline required")
     os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", HF_DATASETS_OFFLINE="1",
                       OMP_NUM_THREADS=str(args.threads), MKL_NUM_THREADS=str(args.threads))
     torch.set_num_threads(args.threads)
     torch.set_num_interop_threads(args.threads)
     try:
-        receipt = _tiny_check()
+        if args.check == "actual-checkpoint-map":
+            _require(args.config and args.out, "--config and --out required")
+            receipt = _actual_checkpoint_map(_json_file(args.config), args.out)
+        else:
+            receipt = _tiny_check() if args.check == "tiny-gemma" else _checkpoint_map_check()
     except Exception as exc:
         print(json.dumps({"status": "FAIL", "check": args.check, "reason": repr(exc), "exit_code": 1}))
         return 1

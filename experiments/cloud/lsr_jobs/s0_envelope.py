@@ -20,6 +20,7 @@ import sys
 WIDTH = 5376
 MEMORY_POSITIONS = 16
 SCHEMA_VERSION = "s0-envelope/1"
+WIDTH_SCHEMA_VERSION = "s0-envelope/2"
 ROLE_IDS = {"observation": 0, "user_input": 1, "generated": 2, "derived": 3}
 DTYPES = {"bool": 1, "uint8": 1, "int8": 1, "int16": 2, "int32": 4,
           "int64": 8, "float16": 2, "bfloat16": 2, "float32": 4, "float64": 8}
@@ -179,16 +180,27 @@ def _origin(rec, branch):
     _require(_permissions(rec["permissions"]), "bad origin permissions")
 
 
-def verify_envelope(env):
+def _contract(expected_width, expected_schema):
+    _require(type(expected_width) is int and expected_width > 0, "invalid expected width")
+    _require(expected_schema in (SCHEMA_VERSION, WIDTH_SCHEMA_VERSION), "invalid expected schema")
+    _require(expected_schema != SCHEMA_VERSION or expected_width == WIDTH,
+             "legacy schema requires 5376 width")
+
+
+def verify_envelope(env, *, expected_width=WIDTH, expected_schema=SCHEMA_VERSION):
     """One strict validator for construction, direct calls and reload."""
+    _contract(expected_width, expected_schema)
     _fields(env, ("meta", "payload", "mask", "index_map", "digest"), "envelope")
     m = env["meta"]
     _fields(m, ("schema", "type", "branch", "origin", "n_positions",
-                "temporal_horizon", "compute_budget"), "meta")
-    _require(m["schema"] == SCHEMA_VERSION and m["type"] == "memory-data/1", "bad schema/type")
+                "temporal_horizon", "compute_budget") +
+            (("width",) if expected_schema == WIDTH_SCHEMA_VERSION else ()), "meta")
+    _require(m["schema"] == expected_schema and m["type"] == "memory-data/1", "bad schema/type")
+    if expected_schema == WIDTH_SCHEMA_VERSION:
+        _require(type(m["width"]) is int and m["width"] == expected_width, "pinned width mismatch")
     _require(_text(m["branch"]), "invalid branch")
     t = native_tensor(env["payload"])
-    _require(len(t.shape) == 2 and t.shape[1] == WIDTH and
+    _require(len(t.shape) == 2 and t.shape[1] == expected_width and
              0 <= t.shape[0] <= MEMORY_POSITIONS, "payload shape/capacity")
     n = t.shape[0]
     _require(type(m["n_positions"]) is int and m["n_positions"] == n, "position count")
@@ -225,36 +237,40 @@ def verify_envelope(env):
 
 
 def make_envelope(payload_rows=None, branch="main", origin=None, index_map=None,
-                  mask=None, *, latent_steps=0, temporal_horizon=None):
+                  mask=None, *, latent_steps=0, temporal_horizon=None,
+                  expected_width=WIDTH, expected_schema=SCHEMA_VERSION):
     """Tensor [rows, WIDTH]; nonempty input requires one origin per row."""
-    t = NativeTensor("bfloat16", (0, WIDTH), b"") if payload_rows is None else native_tensor(payload_rows)
+    _contract(expected_width, expected_schema)
+    t = NativeTensor("bfloat16", (0, expected_width), b"") if payload_rows is None else native_tensor(payload_rows)
     _require(len(t.shape) == 2, "payload must be a matrix")
     n = t.shape[0]
-    env = {"meta": {"schema": SCHEMA_VERSION, "type": "memory-data/1", "branch": branch,
+    env = {"meta": {"schema": expected_schema, "type": "memory-data/1", "branch": branch,
                     "origin": copy.deepcopy([] if origin is None and n == 0 else origin),
                     "n_positions": n, "temporal_horizon": copy.deepcopy(
                         {"as_of": None, "max_age": None} if temporal_horizon is None else temporal_horizon),
                     "compute_budget": {"latent_steps": latent_steps}},
            "payload": t, "mask": copy.deepcopy([1] * n if mask is None else mask),
            "index_map": copy.deepcopy(list(range(n)) if index_map is None else index_map), "digest": ""}
+    if expected_schema == WIDTH_SCHEMA_VERSION:
+        env["meta"]["width"] = expected_width
     try:
         env["digest"] = _digest(env)
     except (TypeError, ValueError) as exc:
         raise S0EnvelopeError("invalid metadata encoding") from exc
-    verify_envelope(env)
+    verify_envelope(env, expected_width=expected_width, expected_schema=expected_schema)
     return env
 
 
-def empty_envelope():
-    return make_envelope()
+def empty_envelope(*, expected_width=WIDTH, expected_schema=SCHEMA_VERSION):
+    return make_envelope(expected_width=expected_width, expected_schema=expected_schema)
 
 
-def serialize_envelope(env):
-    verify_envelope(env)
+def serialize_envelope(env, *, expected_width=WIDTH, expected_schema=SCHEMA_VERSION):
+    verify_envelope(env, expected_width=expected_width, expected_schema=expected_schema)
     return _json({**_content(env), "digest": env["digest"]})
 
 
-def deserialize_envelope(blob, *, as_torch=False):
+def deserialize_envelope(blob, *, as_torch=False, expected_width=WIDTH, expected_schema=SCHEMA_VERSION):
     def unique(pairs):
         result = {}
         for key, value in pairs:
@@ -267,13 +283,13 @@ def deserialize_envelope(blob, *, as_torch=False):
         raise S0EnvelopeError("malformed JSON: " + str(exc)) from exc
     _fields(obj, ("meta", "payload", "mask", "index_map", "digest"), "envelope")
     obj["payload"] = _unwire(obj["payload"])
-    verify_envelope(obj)
+    verify_envelope(obj, expected_width=expected_width, expected_schema=expected_schema)
     if as_torch:
         obj["payload"] = to_torch(obj["payload"])
     return obj
 
 
-def select(envelopes, host_context):
+def select(envelopes, host_context, *, expected_width=WIDTH, expected_schema=SCHEMA_VERSION):
     """Pure row filter -> (selected envelopes, refusal dicts).
 
     Host permissions must contain ALL row permissions; read is mandatory.
@@ -282,6 +298,7 @@ def select(envelopes, host_context):
     Horizon receipts are replaced; callers must supply all current host policy.
     Unrepresentable offsets are row refusals even when max_age is unbounded.
     """
+    _contract(expected_width, expected_schema)
     _fields(host_context, ("branch", "as_of", "max_age", "permissions"), "host context")
     h = host_context
     _require(_text(h["branch"]) and _time(h["as_of"]), "invalid branch/as-of")
@@ -290,7 +307,7 @@ def select(envelopes, host_context):
     selected, refusals = [], []
     for e, env in enumerate(envelopes):
         try:
-            m = verify_envelope(env)
+            m = verify_envelope(env, expected_width=expected_width, expected_schema=expected_schema)
         except S0EnvelopeError as exc:
             refusals.append({"envelope": e, "row": None, "reasons": [str(exc)]})
             continue
@@ -320,17 +337,18 @@ def select(envelopes, host_context):
                 keep.append(i)
         if keep:
             t = native_tensor(env["payload"])
-            stride = WIDTH * DTYPES[t.dtype]
-            payload = NativeTensor(t.dtype, (len(keep), WIDTH),
+            stride = expected_width * DTYPES[t.dtype]
+            payload = NativeTensor(t.dtype, (len(keep), expected_width),
                                    b"".join(t.data[i*stride:(i+1)*stride] for i in keep))
             selected.append(make_envelope(payload, m["branch"], [m["origin"][i] for i in keep],
                                           [env["index_map"][i] for i in keep], [1]*len(keep),
                                           latent_steps=m["compute_budget"]["latent_steps"],
-                                          temporal_horizon={"as_of": h["as_of"], "max_age": h["max_age"]}))
+                                          temporal_horizon={"as_of": h["as_of"], "max_age": h["max_age"]},
+                                          expected_width=expected_width, expected_schema=expected_schema))
     return selected, refusals
 
 
-def role_time_tensors(selected):
+def role_time_tensors(selected, *, expected_width=WIDTH, expected_schema=SCHEMA_VERSION):
     """Return (int64 roles, float64 event offsets), physical prefix order.
 
     Offset = event_time - selected as_of, finite float64 seconds (no scaling
@@ -339,7 +357,7 @@ def role_time_tensors(selected):
     """
     roles, times = [], []
     for env in selected:
-        m = verify_envelope(env)
+        m = verify_envelope(env, expected_width=expected_width, expected_schema=expected_schema)
         as_of = m["temporal_horizon"]["as_of"]
         _require(as_of is not None and all(env["mask"]), "select before conditioning")
         for rec in m["origin"]:
@@ -647,9 +665,48 @@ def check_views():
         _reject(lambda: native_tensor(x))
 
 
+def check_configurable_width():
+    host = {"branch": "main", "as_of": 20, "max_age": None, "permissions": ["read"]}
+    for width in (12, 32, 1536, WIDTH):
+        contract = dict(expected_width=width, expected_schema=WIDTH_SCHEMA_VERSION)
+        for dtype in DTYPES:
+            stride = width * DTYPES[dtype]
+            payload = NativeTensor(dtype, (2, width), b"\x01"*stride + b"\x02"*stride)
+            origins = copy.deepcopy(_fixture()["meta"]["origin"])
+            origins[0]["permissions"].append("private")
+            env = make_envelope(payload, origin=origins, index_map=[7, 3], **contract)
+            wire = serialize_envelope(env, **contract)
+            loaded = deserialize_envelope(wire, **contract)
+            got, refused = select([loaded], host, **contract)
+            assert len(got) == 1 and refused[0]["reasons"] == ["permission"]
+            assert got[0]["payload"] == NativeTensor(dtype, (1, width), b"\x02"*stride)
+            assert got[0]["index_map"] == [3] and got[0]["meta"]["origin"] == [origins[1]]
+            assert list(role_time_tensors(got, **contract)[1]) == [-10]
+            _reject(lambda: deserialize_envelope(wire, expected_width=width+1,
+                                                 expected_schema=WIDTH_SCHEMA_VERSION))
+            _reject(lambda: deserialize_envelope(wire))
+            bad = copy.deepcopy(env)
+            bad["meta"]["width"] += 1
+            bad["digest"] = _digest(bad)
+            _reject(lambda: verify_envelope(bad, **contract))
+        empty = empty_envelope(**contract)
+        assert deserialize_envelope(serialize_envelope(empty, **contract), **contract) == empty
+        assert empty["payload"].shape == (0, width)
+        assert select([empty], host, **contract) == ([], [])
+        _reject(lambda: deserialize_envelope(serialize_envelope(empty, **contract),
+                                             expected_width=width+1, expected_schema=WIDTH_SCHEMA_VERSION))
+    # The default contract still round-trips the original schema without rewriting it.
+    legacy = _fixture()
+    assert "width" not in legacy["meta"]
+    assert deserialize_envelope(serialize_envelope(legacy)) == legacy
+    _reject(lambda: empty_envelope(expected_width=12))
+    print("widths=12,32,1536,5376 all 10 dtypes; survivor bytes/index/origin/time; empty/wrong-width/legacy PASS")
+
+
 CHECKS = {"origin": check_origin, "schema": check_schema, "digest": check_digest,
           "roundtrip": check_roundtrip, "selection": check_selection, "offline": check_offline,
-          "numeric": check_numeric, "views": check_views}
+          "numeric": check_numeric, "views": check_views,
+          "configurable-width": check_configurable_width}
 
 
 def main():
