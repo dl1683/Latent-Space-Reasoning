@@ -1,0 +1,490 @@
+{
+  "status": "PASS",
+  "total_cases": 12,
+  "singular_pivot_refusal_verified": true,
+  "tolerance_bounds_used": [
+    "1/7168",
+    "1/4096"
+  ],
+  "cases_executed": [
+    {
+      "case_id": "case_01_fixture1_A1",
+      "S": "1",
+      "F": [
+        [
+          "1"
+        ]
+      ],
+      "G": [
+        [
+          "1"
+        ]
+      ],
+      "S_direct_corrected": "3/2",
+      "S_capsule_corrected": "3/2",
+      "assertions": {
+        "S_is_1": true,
+        "F_is_1": true,
+        "direct_equals_capsule": true,
+        "G_is_1": true,
+        "S_direct_corrected_is_3_2": true,
+        "S_capsule_corrected_is_3_2": true
+      },
+      "all_passed": true
+    },
+    {
+      "case_id": "case_02_fixture1_A2",
+      "S": "1",
+      "F": [
+        [
+          "1"
+        ]
+      ],
+      "G": [
+        [
+          "1/2"
+        ]
+      ],
+      "S_direct_corrected": "5/3",
+      "S_capsule_corrected": "5/3",
+      "assertions": {
+        "S_is_1": true,
+        "F_is_1": true,
+        "direct_equals_capsule": true,
+        "G_is_1_2": true,
+        "S_direct_corrected_is_5_3": true,
+        "S_capsule_corrected_is_5_3": true
+      },
+      "all_passed": true
+    },
+    {
+      "case_id": "case_03_fixture2_D_zero",
+      "S_actual": "1",
+      "S_proxy": "1",
+      "absolute_error": "0",
+      "bound_1_7168": "1/7168",
+      "assertions": {
+        "error_within_1_7168": true
+      },
+      "all_passed": true
+    },
+    {
+      "case_id": "case_04_fixture2_D_partial_dyadic",
+      "S_actual": "28669/21501",
+      "S_proxy": "4/3",
+      "absolute_error": "1/21501",
+      "bound_1_7168": "1/7168",
+      "assertions": {
+        "error_within_1_7168": true
+      },
+      "all_passed": true
+    },
+    {
+      "case_id": "case_05_fixture2_D_identity",
+      "S_actual": "6143/4095",
+      "S_proxy": "3/2",
+      "absolute_error": "1/8190",
+      "bound_1_7168": "1/7168",
+      "assertions": {
+        "error_within_1_7168": true
+      },
+      "all_passed": true
+    },
+    {
+      "case_id": "case_06_fixture3_negative_offdiag_witness",
+      "S_G_plus_baseline": "1",
+      "S_G_minus_baseline": "1",
+      "S_G_plus_D": "81/65",
+      "S_G_minus_D": "79/63",
+      "exact_gap": "32/4095",
+      "two_epsilon0": "1/2048",
+      "assertions": {
+        "share_baseline": true,
+        "responses_differ": true,
+        "gap_is_32_4095": true,
+        "gap_exceeds_2_epsilon0": true
+      },
+      "all_passed": true,
+      "scientific_note": "Finite witness separating two packed worlds by exact gap 32/4095 > 2*epsilon0 (epsilon0=1/4096); this finite witness is NOT quadratic bit proof."
+    },
+    {
+      "case_id": "case_07_fixture4_hadamard_8x8_Da",
+      "HTH_is_4I": true,
+      "S_actual": "54103077291329/40576454808898",
+      "S_proxy": "4/3",
+      "absolute_error": "3412638395/121729364426694",
+      "bound_1_7168": "1/7168",
+      "assertions": {
+        "hadamard_orthogonal_HTH_is_4I": true,
+        "error_within_1_7168": true
+      },
+      "all_passed": true
+    },
+    {
+      "case_id": "case_08_fixture4_hadamard_8x8_Db_identity",
+      "HTH_is_4I": true,
+      "S_actual": "6143/4095",
+      "S_proxy": "3/2",
+      "absolute_error": "1/8190",
+      "bound_1_7168": "1/7168",
+      "assertions": {
+        "hadamard_orthogonal_HTH_is_4I": true,
+        "error_within_1_7168": true
+      },
+      "all_passed": true
+    },
+    {
+      "case_id": "case_09_fixture5_resolvent_singular_PSD",
+      "resolvent_R": [
+        [
+          "72/395",
+          "48/395"
+        ],
+        [
+          "48/395",
+          "32/395"
+        ]
+      ],
+      "resolvent_RHS": [
+        [
+          "72/395",
+          "48/395"
+        ],
+        [
+          "48/395",
+          "32/395"
+        ]
+      ],
+      "resolvent_identity_holds": true,
+      "det_D": "0",
+      "is_singular": true,
+      "assertions": {
+        "ordered_resolvent_identity_exact": true,
+        "det_D_is_zero": true
+      },
+      "all_passed": true
+    },
+    {
+      "case_id": "case_10_fixture5_resolvent_noncommuting_PSD",
+      "resolvent_R": [
+        [
+          "62464/248311",
+          "24288/248311"
+        ],
+        [
+          "24288/248311",
+          "46080/248311"
+        ]
+      ],
+      "resolvent_RHS": [
+        [
+          "62464/248311",
+          "24288/248311"
+        ],
+        [
+          "24288/248311",
+          "46080/248311"
+        ]
+      ],
+      "resolvent_identity_holds": true,
+      "noncommuting_with_Delta": true,
+      "assertions": {
+        "ordered_resolvent_identity_exact": true,
+        "noncommuting_with_Delta": true
+      },
+      "all_passed": true
+    },
+    {
+      "case_id": "case_11_fixture6_addition_and_retraction",
+      "D_current": [
+        [
+          "1/4",
+          "1/4"
+        ],
+        [
+          "1/4",
+          "1/4"
+        ]
+      ],
+      "T2": [
+        [
+          "1/4",
+          "1/4"
+        ],
+        [
+          "1/4",
+          "1/4"
+        ]
+      ],
+      "S_current": "113/97",
+      "S_direct_T2": "113/97",
+      "assertions": {
+        "current_D_equals_T2": true,
+        "S_current_equals_S_direct": true,
+        "S_current_is_113_97": true
+      },
+      "all_passed": true,
+      "accounting_statement": "Historical terms are not supplied free: retraction requires caller to supply the term (or charged event log); current state retains only cumulative D."
+    },
+    {
+      "case_id": "case_12_fixture7_eight_port_acquisition_witness",
+      "y_true": "33/31",
+      "K1_initial": {
+        "x": [
+          "1/16",
+          "1/16",
+          "1/16",
+          "1/16",
+          "1/16",
+          "1/16",
+          "1/16",
+          "1/16"
+        ],
+        "H": [
+          [
+            "0",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4"
+          ],
+          [
+            "1/4",
+            "0",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4"
+          ],
+          [
+            "1/4",
+            "1/4",
+            "0",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4"
+          ],
+          [
+            "1/4",
+            "1/4",
+            "1/4",
+            "0",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4"
+          ],
+          [
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "0",
+            "1/4",
+            "1/4",
+            "1/4"
+          ],
+          [
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "0",
+            "1/4",
+            "1/4"
+          ],
+          [
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "0",
+            "1/4"
+          ],
+          [
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "0"
+          ]
+        ],
+        "q": [
+          "7/64",
+          "7/64",
+          "7/64",
+          "7/64",
+          "7/64",
+          "7/64",
+          "7/64",
+          "7/64"
+        ],
+        "k": "7/128",
+        "b": "7/128",
+        "k_plus_b": "7/64",
+        "p": "17/16",
+        "interval": [
+          "129/128",
+          "75/64"
+        ],
+        "width": "21/128",
+        "true_error": "1/496"
+      },
+      "K2_promoted": {
+        "x": [
+          "2/31",
+          "2/31",
+          "2/31",
+          "2/31",
+          "2/31",
+          "2/31",
+          "2/31",
+          "2/31"
+        ],
+        "H": [
+          [
+            "0",
+            "0",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4"
+          ],
+          [
+            "0",
+            "0",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4"
+          ],
+          [
+            "1/4",
+            "1/4",
+            "0",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4"
+          ],
+          [
+            "1/4",
+            "1/4",
+            "1/4",
+            "0",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4"
+          ],
+          [
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "0",
+            "1/4",
+            "1/4",
+            "1/4"
+          ],
+          [
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "0",
+            "1/4",
+            "1/4"
+          ],
+          [
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "0",
+            "1/4"
+          ],
+          [
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "1/4",
+            "0"
+          ]
+        ],
+        "q": [
+          "3/31",
+          "3/31",
+          "7/62",
+          "7/62",
+          "7/62",
+          "7/62",
+          "7/62",
+          "7/62"
+        ],
+        "k": "54/961",
+        "b": "366/6727",
+        "k_plus_b": "24/217",
+        "p": "33/31",
+        "interval": [
+          "969/961",
+          "255/217"
+        ],
+        "width": "1122/6727",
+        "true_error": "0"
+      },
+      "intersection_interval": [
+        "969/961",
+        "75/64"
+      ],
+      "intersection_width": "10059/61504",
+      "completions": {
+        "S_G_plus": "17/16",
+        "S_G_minus": "16/15",
+        "gap": "1/240"
+      },
+      "assertions": {
+        "k1_plus_b1_is_7_64": true,
+        "k2_plus_b2_is_744_6727": true,
+        "strict_increase_k_plus_b": true,
+        "true_initial_error_is_1_496": true,
+        "true_promoted_error_is_0": true,
+        "interval_1_contains_y": true,
+        "interval_2_contains_y": true,
+        "intersection_contains_y": true,
+        "intersection_contained_in_interval_1": true,
+        "intersection_nonincreasing_width": true,
+        "response_G_plus_is_17_16": true,
+        "response_G_minus_is_16_15": true,
+        "completions_gap_is_1_240": true,
+        "completions_gap_exceeds_2_epsilon0": true
+      },
+      "all_passed": true,
+      "scientific_note": "Finite witness demonstrating certificate non-monotonicity under port acquisition and repair via interval intersection; completions separated by exact gap 1/240 > 2*epsilon0 (epsilon0=1/4096). This finite witness is NOT proof of universal propositions."
+    }
+  ]
+}

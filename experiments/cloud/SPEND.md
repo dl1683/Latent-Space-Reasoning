@@ -1,6 +1,6 @@
 # LSR GCP spend ledger
 
-Updated 2026-10-14T11:58:30+00:00. Estimated from VM lifetimes x all-in Spot rate (Cloud Billing catalog, 2026-10-11). Budget 5,000 USD.
+Estimate snapshot 2026-10-14T11:58:30+00:00; authorization synchronized 2026-10-15. Estimated from VM lifetimes x all-in Spot rate (Cloud Billing catalog, 2026-10-11). The former 5,000 USD cap is historical: owner direction 2026-10-15 removes per-program spend caps. Compute credit only; "Scale Y1 - AI" expires 2026-10-17.
 
 | run | VMs launched | est. USD |
 |---|---:|---:|
@@ -44,7 +44,7 @@ Updated 2026-10-14T11:58:30+00:00. Estimated from VM lifetimes x all-in Spot rat
 | smoke1 | 4 | 0.12 |
 | **total** | 361 | **918.39** |
 
-Live VMs now: 0; burn rate now: $0.0/h
+At the recorded snapshot: live VMs 0; burn rate $0.0/h (not rechecked during documentation sync).
 
-Gemma 4 31B instrument controls (2026-10-14 UTC clock; run names carry 2026-10-15): 3 VM launches, a2-highgpu-2g Spot at 4.42 USD/h, europe-west4-a. Run 1 (gemma4-controls-2026-10-15): first VM crashed on a config-attribute bug, relaunched after the fix, done 10:55:54Z; estimated 0.44 VM-h = 1.96 USD (conservative: both launches charged to the done marker). Run 2 (v2, five controls): 11:09:58Z to 11:17:51Z, 0.13 VM-h = 0.58 USD. Both VMs reaped; live VMs 0. Rows added by hand: `lsr_cloud.py spend` could not be re-run cleanly (the dispatcher has uncommitted edits by another agent), so regenerate before relying on this figure.
+Gemma 4 31B instrument controls (2026-10-14 UTC clock; run names carry 2026-10-15): 3 VM launches, a2-highgpu-2g Spot at 4.42 USD/h, europe-west4-a. Run 1 (gemma4-controls-2026-10-15): first VM crashed on a config-attribute bug, relaunched after the fix, done 10:55:54Z; estimated 0.44 VM-h = 1.96 USD (conservative: both launches charged to the done marker). Run 2 (v2, five controls): 11:09:58Z to 11:17:51Z, 0.13 VM-h = 0.58 USD. The recorded control attempts were reaped; snapshot live VMs 0. Rows added by hand: `lsr_cloud.py spend` could not be re-run cleanly (the dispatcher has uncommitted edits by another agent), so regenerate before relying on this figure.
 

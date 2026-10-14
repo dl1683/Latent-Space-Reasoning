@@ -28,6 +28,27 @@ point here from their README/About and status/resume entrypoints. Current custod
 boundaries remain in STATE.md and docs/CONSOLIDATION.md. Migration ledger entries
 are organizational and excluded from scientific denominators. No old run is adopted.
 
+### Supervisor documentation sync — 2026-10-15
+
+- Current authority is in STATE.md: Claude coordinator supervises; Codex/Droid think and review; Z Code implements; agy handles grunt work/custody; the cloud operator executes only ready entries. Owner authorized Google Cloud experiments, all GPU on cloud, compute credit only, caps removed; credit expires 2026-10-17.
+- Gemma 4 amendment G4 is admitted. Instrument controls v1/v2 passed within the recorded scope; results and fresh v1 review are linked from STATE and the experiment log. V2 reports numerical batch-shape differences with unchanged option argmax. No learned or economic result exists.
+- Correction proof review passed with fixes applied, including grid legality and the independent-graph transfer boundary. E1 remains NOT-READY; Z Code owns the must-fix list and a second review is required. E2 remains conditional on E1.
+- Documentation sync inspected existing evidence only; no model, cloud job or experiment was run. Recorded spend remains estimated, with no live infrastructure refresh.
+
+### Analytical construction, proof review, and cloud queue design — 2026-10-14
+
+- **Object and proof scope:** The candidate [correction-ready response memory](theory/CORRECTION_READY_RESPONSE.md) passed independent mathematical proof review (`internal/analysis_2026_10_14/codex_proof_retry_audit.md`) subject to four scoped repairs: (1) $R_M(D)$ domain relaxed from $M\succ0$ to $M\succeq0$, accommodating zero/redundant ports without full column rank on $C$ since $I+D^{1/2}MD^{1/2}\succ0$; (2) count clarification bounded at most three proxy systems/stages with a separate finite numerical retry budget; (3) explicit $\eta \ge |\widehat p - (S + f_J^Tx)|$ proxy read error bound with outward envelope $|\widehat p - (S + f_J^T\widehat x)| + \|f_J\|_2\rho$ and residual enclosure on intended $D,Q,f_J$; (4) retention of the exact rational source contract ($g$ bits for derived susceptibility entries).
+- **Verification record:** Root executed 12 exact arithmetic test cases via `experiments/analysis/correction_capsule_exact.py` (all 12 PASS). Reviewer conducted proof reading and executed 22 in-memory exact-rational assertions (all 22 PASS) covering singular/noncommuting identities, the ordered resolvent identity, finite witness values, and tolerance separation. Initial CLI attempt was incomplete; the fresh retry audit was executed via the REAL Codex CLI with clean disk context. Finite arithmetic samples verify witnesses only and never constitute universal proofs or novelty claims.
+- **Failures and remaining questions:**
+  - *Certificate non-monotonicity:* Demonstrated by the 8-port witness, where acquiring true structural zeros worsens the certified enclosure radius from $7/64$ to $744/6727$ ($+527/430528$) even as actual proxy error drops from $1/496$ to zero.
+  - *Safety without progress:* Intersecting valid output enclosures for a fixed query identity prevents divergence and ensures containment, but guarantees neither strict acquisition progress nor economical acquisition.
+  - *Remaining bridge question:* Output ambiguity $w_*$ with optimal uniform radius $w_*/2$. Proving or refuting a cost-competitive acquisition rule against a certifying extension with identical access, and determining whether a learned constructor can preserve intervention consequences while eliminating recurring backbone computation.
+- **Direct ordinary comparator:** The control is an ordinary dynamic Schur/resolvent engine with identical access, cache, factors, precision, and history. It can implement the same formulas and tie this construction. No advantage over that control is established. No learned memory, new architecture, or economic efficiency result is claimed.
+- **Cloud DESIGN status:** The 12-case exact check completed locally on CPU; no cloud job needed. Following Droid round 4 design dialogue (`internal/analysis_2026_10_14/droid_r4_cloud.md`), two prioritized DESIGN entries are registered in `experiments/cloud/RESEARCH_QUEUE.md`:
+  - *E1 (Dependency-continuation sufficiency):* Replaces pooled Horn-bit memory with an addressed dependency object (versioned package-dependency ledger; 12 128-dim FP16 slots + 1 policy slot = 3,328 payload bytes) tested under late policy reveal and record retraction against exact incremental evaluator, full-text replay, and noncontextual controls (gate: lower clustered 95% CI $\ge0.90$, replay deficit $\le0.05$).
+  - *E2 (Cheap continuation):* Conditional on E1 pass; evaluates an updater operating directly on E1 states vs reconstruction/re-encoding and ordinary state under complete cost accounting.
+  - *Execution authority at design time (superseded by the 2026-10-15 entry above):* Root orchestrated research directions/review; Agy/Zcode provided implementation; an independent cloud agent was designated for runs. Neither entry inherits `FIRST_CONSTRUCTION_PROPOSAL.md` budgets or model exclusions. Neither E1 nor E2 was ready, running, or allocated at that design snapshot; the separate instrument runs are recorded above.
+
 ## Entry 127: The hierarchical family closes — disjointness gates the CGF regime (2026-09-21)
 
 The candidate-B arc completed its full empirical cycle in one session,

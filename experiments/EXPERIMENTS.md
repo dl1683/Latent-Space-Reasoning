@@ -8,6 +8,13 @@ The dated records below preserve their original scopes and controls; their histo
 "next" instructions do not queue a run. Consolidation itself launches no experiment
 and contributes no scientific outcome to this log's denominators.
 
+## Gemma 4 31B instrument controls v1/v2 — passed (run IDs dated 2026-10-15)
+
+- `gemma4-controls-2026-10-15`: identity difference 0; live-hook difference 2.8125; donor-follow 1.0 (64 cases), unpatched 0, shuffled 0.28125, majority 0.359375. [V1 results](results/cloud/gemma4_controls_summary.jsonl); [independent review](../docs/council_2026_10_15_gemma_controls_codex.md).
+- `gemma4-controls-v2-2026-10-15`: identity difference 0; live-hook difference 3.96875; donor-follow 1.0 (64 cases). Full token-difference checks: 0/64 failures. Batch-shape option-logit difference 0.375, argmax agreement 1.0 (16 cases), donor residual difference 2.0. Receiver-self-SET difference 0 (64 cases). [V2 results](results/cloud/gemma4_controls_v2_summary.jsonl).
+- Scope: Amendment G4 layer-15 W1 four-option instrument smoke only; no portable latent memory, general mediation, learned or economic result. V1 review requested the controls recorded in v2; no separate v2 fresh-review verdict is claimed. No run was executed during this documentation sync.
+- Run names retain 2026-10-15; spend custody records completion on 2026-10-14 UTC. Historical execution commit was not recorded in the summaries; ledger references identify source-history snapshots, not a verified execution receipt.
+
 ## Fixed-layer re-score: 300 names beat 20 by 0.06-0.10 at both layers; 10-point k=4 prediction not replicated (2026-10-12 20:39, Codex hunt passed)
 
 - These fitted per-slot linear readers show higher held-out-name accuracy after training on 300 names than 20 at both fixed layers and both tested k values; the k=4 ten-point prediction is not replicated.

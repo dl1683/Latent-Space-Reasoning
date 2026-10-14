@@ -13,13 +13,47 @@ Two construction tracks: (1) latent memory and long-context computation/simulati
 mathematics, matrix-native arithmetic, representation changes, capability reuse and
 new computational models remain shared foundational ambitions.
 
-**Execution:** repository consolidation and preparation are complete. Ready to
-select a scoped construction through the unified research process. No research experiment,
-model training, cloud job or retired automation has been launched by this migration.
-The prior research runs remain paused. Unification is not a new compute allocation,
-adopted architecture or empirical result.
+**Execution (owner-directed 2026-10-15):** consolidation is complete. The owner
+previously authorized analytical mathematics and design exploration on 2026-10-14
+and now authorizes Google Cloud experiments: all GPU work runs on the cloud,
+compute credit only, with per-program spend caps removed. The "Scale Y1 - AI"
+credit expires 2026-10-17. Positive-control smokes, pinned inputs and stop
+conditions remain mandatory. Historical runs and retired automation remain paused;
+consolidation itself supplies no scientific result.
 
-**Proposed first construction (2026-10-14, awaiting owner approval; nothing launched):** [theory/FIRST_CONSTRUCTION_PROPOSAL.md](theory/FIRST_CONSTRUCTION_PROPOSAL.md) — a correction-closed rule state over a frozen non-Chinese stem, with explicit-store and shuffled-action controls; $2,000 window, Phase 0 cap $100.
+**Cloud collaboration (owner-directed 2026-10-15):** the Claude coordinator
+supervises, decides what runs when, and directs documentation and commit updates.
+Codex and Droid think, spar and review; Z Code implements; Antigravity (agy)
+handles grunt work, custody and blackboard updates. The cloud operator executes
+only entries marked `ready` in [RESEARCH_QUEUE](experiments/cloud/RESEARCH_QUEUE.md),
+under the supervisor's direction. Model weights stay on Google Cloud only.
+
+**Current status — 2026-10-15:**
+
+- Amendment G4 admits the Gemma 4 family, with the pinned Gemma 4 31B base as
+  primary stem; no Chinese-origin models. See
+  [registration](theory/LATENT_BRANCH_CAPACITY.md#amendment-g4-2026-10-15-admit-the-gemma-4-family).
+- Gemma 4 31B instrument controls **passed, v1 and v2**. Identity was exact,
+  hooks were live, and donor-follow was 1.00 on 64 cases. V2 also passed full
+  single-token-difference, batch-shape argmax-agreement and receiver-self-SET
+  controls. This validates only the tested instrument; numerical batch-shape
+  differences remain. See [v1](experiments/results/cloud/gemma4_controls_summary.jsonl),
+  [v2](experiments/results/cloud/gemma4_controls_v2_summary.jsonl) and
+  [review](docs/council_2026_10_15_gemma_controls_codex.md).
+- [Correction-design proof review](docs/council_2026_10_15_correction_proof_codex.md)
+  **passed with fixes applied** in [the design](theory/CORRECTION_READY_RESPONSE.md):
+  finite rational contract, PSD domain, bounded stages/numerical attempts, outward
+  readout error, grid legality and explicit transfer boundary. No learned or
+  economic result exists; E1/E2 are independent graph constructions.
+- **E1: NOT-READY.** Z Code owns the
+  [must-fix list](docs/council_2026_10_15_e1_runner_codex.md). Launch requires fixes
+  and a second Codex review saying LAUNCHABLE, followed by queue readiness.
+- **E2: conditional on E1 passing; not ready or allocated.**
+
+**Earlier first-construction proposal:**
+[theory/FIRST_CONSTRUCTION_PROPOSAL.md](theory/FIRST_CONSTRUCTION_PROPOSAL.md)
+remains an unapproved historical design; its budgets and model exclusions do not
+govern E1/E2 or the current owner authorization.
 
 **Preparation evidence — 2026-10-14:** the enriched scientific starting packet passed
 the multi-round direction and readiness reviews. All three complete source archives,
@@ -56,7 +90,7 @@ Source results, transfer hypotheses and proposed constructions are distinct.
 
 | Source / obligation | Current boundary |
 |---|---|
-| LSR October cloud program | The October 12 councils remain proposals. Model policy, schedule and spend decisions are not supplied by consolidation. Existing cap, spend estimates and checkpoint provenance remain in their original records; no new allocation is inferred. |
+| LSR October cloud program | The October 12 councils remain proposals. Model policy, schedule and spend decisions are not supplied by consolidation. Historical cap, spend estimates and checkpoint provenance remain in their original records; current execution follows the 2026-10-15 authorization above. |
 | Neural dissection e347 | Committed history preserves P1/P2 and the lower SGD rung; current dirty metrics reflect an incomplete later restart. Preserve both, the frozen registration, non-smoke resume states and unrun obligations. Reconcile synchronization damage, loading state, draw/optimizer/budget custody and the corrected bracket baseline before adoption here. Do not restart it or unpause its old cron. |
 | Matrix-native paused frontier | Non-prime-power growth witnesses, novelty/source checks, local factorization and engine gates remain historical candidates. No old cron or run sequence is adopted. |
 | Computation-model exploration | Later classification corrections and negative translation outcomes supersede stale early status blocks. No old endurance repair or roundtable loop is automatically queued. |

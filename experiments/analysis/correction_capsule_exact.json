@@ -1,0 +1,394 @@
+{
+  "meta": {
+    "title": "Exact Arithmetic Fixtures for Correction Capsule Verification",
+    "description": "Explicit fixed configuration and rational arithmetic facts for finite correction capsule fixtures.",
+    "source_documents": [
+      "internal/analysis_2026_10_14/droid_r1.md",
+      "internal/analysis_2026_10_14/root_response_geometry.md"
+    ],
+    "numeric_representation": "All values are exact rational fractions (integers or 'numerator/denominator' strings).",
+    "tolerance_constants": {
+      "bound_7168": "1/7168",
+      "epsilon0_4096": "1/4096"
+    },
+    "case_count": 12,
+    "max_dimension": 8
+  },
+  "cases": [
+    {
+      "case_id": "case_01_fixture1_A1",
+      "fixture_num": 1,
+      "name": "Fixture 1 - World A1 (1 boundary, 1 interior)",
+      "inputs": {
+        "A": [["2", "1"], ["1", "1"]],
+        "C": [["1"]],
+        "boundary_indices": [0],
+        "interior_indices": [1],
+        "interior_perturbation_D": [["1"]]
+      },
+      "expected_outputs": {
+        "S": "1",
+        "F": [["1"]],
+        "G": [["1"]],
+        "S_direct_corrected": "3/2",
+        "S_capsule_corrected": "3/2"
+      },
+      "assertions": {
+        "S_is_1": true,
+        "F_is_1": true,
+        "G_is_1": true,
+        "S_direct_corrected_is_3_2": true,
+        "S_capsule_corrected_is_3_2": true,
+        "direct_equals_capsule": true
+      }
+    },
+    {
+      "case_id": "case_02_fixture1_A2",
+      "fixture_num": 1,
+      "name": "Fixture 1 - World A2 (1 boundary, 1 interior)",
+      "inputs": {
+        "A": [["3", "2"], ["2", "2"]],
+        "C": [["1"]],
+        "boundary_indices": [0],
+        "interior_indices": [1],
+        "interior_perturbation_D": [["1"]]
+      },
+      "expected_outputs": {
+        "S": "1",
+        "F": [["1"]],
+        "G": [["1/2"]],
+        "S_direct_corrected": "5/3",
+        "S_capsule_corrected": "5/3"
+      },
+      "assertions": {
+        "S_is_1": true,
+        "F_is_1": true,
+        "G_is_1_2": true,
+        "S_direct_corrected_is_5_3": true,
+        "S_capsule_corrected_is_5_3": true,
+        "direct_equals_capsule": true,
+        "shares_baseline_with_A1": true,
+        "G_discriminates_A1_A2": true
+      }
+    },
+    {
+      "case_id": "case_03_fixture2_D_zero",
+      "fixture_num": 2,
+      "name": "Fixture 2 - Diagonal D = 0 in 2x2 world",
+      "inputs": {
+        "G": [["1", "1/32"], ["1/32", "1"]],
+        "F": [["1", "0"]],
+        "S": "1",
+        "D": [["0", "0"], ["0", "0"]]
+      },
+      "expected_outputs": {
+        "S_actual": "1",
+        "S_proxy": "1",
+        "absolute_error": "0"
+      },
+      "assertions": {
+        "error_within_1_7168": true
+      }
+    },
+    {
+      "case_id": "case_04_fixture2_D_partial_dyadic",
+      "fixture_num": 2,
+      "name": "Fixture 2 - Partial dyadic diagonal D = diag(1/2, 3/4)",
+      "inputs": {
+        "G": [["1", "1/32"], ["1/32", "1"]],
+        "F": [["1", "0"]],
+        "S": "1",
+        "D": [["1/2", "0"], ["0", "3/4"]]
+      },
+      "expected_outputs": {
+        "S_actual": "28669/21501",
+        "S_proxy": "4/3",
+        "absolute_error": "1/21501"
+      },
+      "assertions": {
+        "error_within_1_7168": true
+      }
+    },
+    {
+      "case_id": "case_05_fixture2_D_identity",
+      "fixture_num": 2,
+      "name": "Fixture 2 - Identity diagonal D = I_2",
+      "inputs": {
+        "G": [["1", "1/32"], ["1/32", "1"]],
+        "F": [["1", "0"]],
+        "S": "1",
+        "D": [["1", "0"], ["0", "1"]]
+      },
+      "expected_outputs": {
+        "S_actual": "6143/4095",
+        "S_proxy": "3/2",
+        "absolute_error": "1/8190"
+      },
+      "assertions": {
+        "error_within_1_7168": true
+      }
+    },
+    {
+      "case_id": "case_06_fixture3_negative_offdiag_witness",
+      "fixture_num": 3,
+      "name": "Fixture 3 - G+ vs G- offdiagonal sign separation",
+      "inputs": {
+        "G_plus": [["1", "1/32"], ["1/32", "1"]],
+        "G_minus": [["1", "-1/32"], ["-1/32", "1"]],
+        "F": [["1", "0"]],
+        "S": "1",
+        "D": [["1/2", "1/2"], ["1/2", "1/2"]],
+        "v": ["1", "1"],
+        "alpha": "1/2"
+      },
+      "expected_outputs": {
+        "S_G_plus_baseline": "1",
+        "S_G_minus_baseline": "1",
+        "S_G_plus_D": "81/65",
+        "S_G_minus_D": "79/63",
+        "exact_gap": "32/4095"
+      },
+      "assertions": {
+        "share_baseline": true,
+        "responses_differ": true,
+        "gap_exceeds_2_epsilon0": true
+      },
+      "scientific_note": "Finite witness separating two packed worlds by exact gap 32/4095 > 2*epsilon0 (epsilon0=1/4096); this finite witness is NOT quadratic bit proof."
+    },
+    {
+      "case_id": "case_07_fixture4_hadamard_8x8_Da",
+      "fixture_num": 4,
+      "name": "Fixture 4 - 8x8 Hadamard-block G with diagonal Da",
+      "inputs": {
+        "H": [
+          ["1", "1", "1", "1"],
+          ["1", "-1", "1", "-1"],
+          ["1", "1", "-1", "-1"],
+          ["1", "-1", "-1", "1"]
+        ],
+        "offblock_scale": "1/64",
+        "F": [["1", "0", "0", "0", "0", "0", "0", "0"]],
+        "S": "1",
+        "Da_diagonal": ["1/2", "1/4", "3/4", "1/8", "1/2", "1", "0", "1/4"]
+      },
+      "expected_outputs": {
+        "HTH_is_4I": true,
+        "S_actual": "54103077291329/40576454808898",
+        "S_proxy": "4/3",
+        "absolute_error": "3412638395/121729364426694"
+      },
+      "assertions": {
+        "hadamard_orthogonal_HTH_is_4I": true,
+        "error_within_1_7168": true
+      }
+    },
+    {
+      "case_id": "case_08_fixture4_hadamard_8x8_Db_identity",
+      "fixture_num": 4,
+      "name": "Fixture 4 - 8x8 Hadamard-block G with diagonal Db = I_8",
+      "inputs": {
+        "H": [
+          ["1", "1", "1", "1"],
+          ["1", "-1", "1", "-1"],
+          ["1", "1", "-1", "-1"],
+          ["1", "-1", "-1", "1"]
+        ],
+        "offblock_scale": "1/64",
+        "F": [["1", "0", "0", "0", "0", "0", "0", "0"]],
+        "S": "1",
+        "Db_diagonal": ["1", "1", "1", "1", "1", "1", "1", "1"]
+      },
+      "expected_outputs": {
+        "HTH_is_4I": true,
+        "S_actual": "6143/4095",
+        "S_proxy": "3/2",
+        "absolute_error": "1/8190"
+      },
+      "assertions": {
+        "hadamard_orthogonal_HTH_is_4I": true,
+        "error_within_1_7168": true
+      }
+    },
+    {
+      "case_id": "case_09_fixture5_resolvent_singular_PSD",
+      "fixture_num": 5,
+      "name": "Fixture 5 - Ordered resolvent identity for singular rational PSD D (rank 1)",
+      "inputs": {
+        "G": [["1", "1/32"], ["1/32", "1"]],
+        "Delta": [["0", "1/32"], ["1/32", "0"]],
+        "rank_one_generator_u": ["1/2", "1/3"],
+        "D": [["1/4", "1/6"], ["1/6", "1/9"]]
+      },
+      "expected_outputs": {
+        "det_D": "0",
+        "is_singular": true,
+        "resolvent_identity_holds": true
+      },
+      "assertions": {
+        "det_D_is_zero": true,
+        "ordered_resolvent_identity_exact": true
+      },
+      "construction_note": "D is constructed by explicit rational rank-one outer product u u^T so PSD is not assumed from entry signs."
+    },
+    {
+      "case_id": "case_10_fixture5_resolvent_noncommuting_PSD",
+      "fixture_num": 5,
+      "name": "Fixture 5 - Ordered resolvent identity for noncommuting rational PSD D",
+      "inputs": {
+        "G": [["1", "1/32"], ["1/32", "1"]],
+        "Delta": [["0", "1/32"], ["1/32", "0"]],
+        "generators": [
+          ["1/2", "0"],
+          ["1/3", "1/2"]
+        ],
+        "D": [["13/36", "1/6"], ["1/6", "1/4"]]
+      },
+      "expected_outputs": {
+        "commutes_with_Delta": false,
+        "resolvent_identity_holds": true
+      },
+      "assertions": {
+        "noncommuting_with_Delta": true,
+        "ordered_resolvent_identity_exact": true
+      },
+      "construction_note": "D is constructed by sum of explicit rational rank-one outer products u1 u1^T + u2 u2^T so PSD is guaranteed without entry sign assumption."
+    },
+    {
+      "case_id": "case_11_fixture6_addition_and_retraction",
+      "fixture_num": 6,
+      "name": "Fixture 6 - Ordered additions and supplied-term retraction",
+      "inputs": {
+        "G": [["1", "1/32"], ["1/32", "1"]],
+        "F": [["1", "0"]],
+        "S": "1",
+        "step_1_add_T1": {
+          "alpha": "1/2",
+          "v": ["1", "0"],
+          "T1": [["1/2", "0"], ["0", "0"]]
+        },
+        "step_2_add_T2": {
+          "alpha": "1/4",
+          "v": ["1", "1"],
+          "T2": [["1/4", "1/4"], ["1/4", "1/4"]]
+        },
+        "step_3_retract_supplied_T1": {
+          "supplied_term": [["1/2", "0"], ["0", "0"]]
+        }
+      },
+      "expected_outputs": {
+        "current_D_after_retraction": [["1/4", "1/4"], ["1/4", "1/4"]],
+        "S_current": "113/97",
+        "S_direct_T2": "113/97"
+      },
+      "assertions": {
+        "current_D_equals_T2": true,
+        "S_current_equals_S_direct": true
+      },
+      "accounting_statement": "Historical terms are not supplied free: retraction requires the caller to supply the term (or charged event record); current state retains only cumulative D."
+    },
+    {
+      "case_id": "case_12_fixture7_eight_port_acquisition_witness",
+      "fixture_num": 7,
+      "name": "Fixture 7 - Eight-port acquisition witness with certificate non-monotonicity and completions",
+      "inputs": {
+        "dimension": 8,
+        "S": "1",
+        "F": [["1", "0", "0", "0", "0", "0", "0", "0"]],
+        "v": ["1", "1", "1", "1", "1", "1", "1", "1"],
+        "D": [
+          ["1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8"],
+          ["1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8"],
+          ["1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8"],
+          ["1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8"],
+          ["1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8"],
+          ["1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8"],
+          ["1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8"],
+          ["1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8", "1/8"]
+        ],
+        "G": [
+          ["1", "-1/4", "0", "0", "0", "0", "0", "0"],
+          ["-1/4", "1", "0", "0", "0", "0", "0", "0"],
+          ["0", "0", "1", "0", "0", "0", "0", "0"],
+          ["0", "0", "0", "1", "0", "0", "0", "0"],
+          ["0", "0", "0", "0", "1", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "1", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "1", "0"],
+          ["0", "0", "0", "0", "0", "0", "0", "1"]
+        ],
+        "generic_offdiag_envelope": "1/4",
+        "K_initial": [0],
+        "K_promoted": [0, 1],
+        "G_plus": [
+          ["1", "-1/4", "0", "0", "0", "0", "0", "0"],
+          ["-1/4", "1", "0", "0", "0", "0", "0", "0"],
+          ["0", "0", "1", "1/4", "0", "0", "0", "0"],
+          ["0", "0", "1/4", "1", "0", "0", "0", "0"],
+          ["0", "0", "0", "0", "1", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "1", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "1", "0"],
+          ["0", "0", "0", "0", "0", "0", "0", "1"]
+        ],
+        "G_minus": [
+          ["1", "-1/4", "0", "0", "0", "0", "0", "0"],
+          ["-1/4", "1", "0", "0", "0", "0", "0", "0"],
+          ["0", "0", "1", "-1/4", "0", "0", "0", "0"],
+          ["0", "0", "-1/4", "1", "0", "0", "0", "0"],
+          ["0", "0", "0", "0", "1", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "1", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "1", "0"],
+          ["0", "0", "0", "0", "0", "0", "0", "1"]
+        ],
+        "offdiag_completion_indices": [2, 3],
+        "offdiag_completion_val": "1/4"
+      },
+      "expected_outputs": {
+        "y_true": "33/31",
+        "K1_initial": {
+          "x": ["1/16", "1/16", "1/16", "1/16", "1/16", "1/16", "1/16", "1/16"],
+          "k": "7/128",
+          "b": "7/128",
+          "k_plus_b": "7/64",
+          "p": "17/16",
+          "interval": ["129/128", "75/64"],
+          "width": "21/128",
+          "true_error": "1/496"
+        },
+        "K2_promoted": {
+          "x": ["2/31", "2/31", "2/31", "2/31", "2/31", "2/31", "2/31", "2/31"],
+          "k": "54/961",
+          "b": "366/6727",
+          "k_plus_b": "24/217",
+          "k_plus_b_unreduced": "744/6727",
+          "interval": ["969/961", "255/217"],
+          "interval_unreduced": ["969/961", "7905/6727"],
+          "width": "1122/6727",
+          "true_error": "0"
+        },
+        "intersection_interval": ["969/961", "75/64"],
+        "intersection_width": "10059/61504",
+        "completions": {
+          "S_G_plus": "17/16",
+          "S_G_minus": "16/15",
+          "gap": "1/240"
+        }
+      },
+      "assertions": {
+        "k1_plus_b1_is_7_64": true,
+        "k2_plus_b2_is_744_6727": true,
+        "strict_increase_k_plus_b": true,
+        "true_initial_error_is_1_496": true,
+        "true_promoted_error_is_0": true,
+        "interval_1_contains_y": true,
+        "interval_2_contains_y": true,
+        "intersection_contains_y": true,
+        "intersection_contained_in_interval_1": true,
+        "intersection_nonincreasing_width": true,
+        "response_G_plus_is_17_16": true,
+        "response_G_minus_is_16_15": true,
+        "completions_gap_is_1_240": true,
+        "completions_gap_exceeds_2_epsilon0": true
+      },
+      "scientific_note": "Finite witness demonstrating certificate non-monotonicity under port acquisition and repair via interval intersection; completions separated by exact gap 1/240 > 2*epsilon0 (epsilon0=1/4096). This finite witness is NOT proof of universal propositions."
+    }
+  ]
+}

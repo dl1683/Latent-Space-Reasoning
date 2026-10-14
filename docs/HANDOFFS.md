@@ -1,4 +1,24 @@
+## Supervisor handoff — 2026-10-15
+
+Read [STATE](../STATE.md) and [RESEARCH_QUEUE](../experiments/cloud/RESEARCH_QUEUE.md)
+for current execution authority and roles. The Claude coordinator supervises; the
+cloud operator executes only ready entries. All GPU work is on Google Cloud,
+compute credit only; caps removed, credit expires 2026-10-17.
+
+Gemma 4 amendment G4 is admitted and the 31B instrument controls v1/v2 passed.
+[Correction proof review](council_2026_10_15_correction_proof_codex.md) passed with
+fixes applied. [E1 runner review](council_2026_10_15_e1_runner_codex.md) is
+NOT-READY: Z Code owns the must-fix list and a second review must say LAUNCHABLE
+before readiness. E2 remains conditional on E1. No learned or economic result
+exists. This sync launches no experiment and does not refresh live cloud state.
+
 ## Current handoff — unified program, 2026-10-13
+
+**2026-10-14 analytical/cloud handoff:** current mathematics and design are in
+[correction-ready response memory](../theory/CORRECTION_READY_RESPONSE.md).
+The owner designated a separate agent for cloud execution; this session maintains
+[RESEARCH_QUEUE](../experiments/cloud/RESEARCH_QUEUE.md). Entries distinguish
+designs from runnable jobs and preserve independent result admission.
 
 All future research from the former four programs happens in this repository.
 Read [STATE.md](../STATE.md), [RESEARCH_PROGRAM.md](../theory/RESEARCH_PROGRAM.md),
