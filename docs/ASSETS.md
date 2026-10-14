@@ -27,14 +27,14 @@ of Git or a dependency that a public clone downloads. Use `--archives` to point 
 a different local custody location. Full manifests contain private source filenames
 and are deliberately not committed.
 
-All three relocation and recovery exercises passed. Matrix-native and computation-
-model source roots are removed; Genome's files are removed and its empty root awaits
-removal after an editor lock and a subsequent policy rejection. Acceptance passed,
-but the final three-root retirement
-receipt is still pending. Duplicate staging archives and temporary restored Git
-verification databases have been removed after renewed custody verification;
-final archives, sidecars and useful recovered evidence remain available. Recovery
-commands below are available without reopening the original working trees.
+All three relocation and recovery exercises passed. All three exact source roots
+are now absent, and the final retirement receipt binds renewed SHA-256 checks of
+the surviving archives. Genome's original guarded attempt and later absence
+observation are preserved; its exact final removal time/actor is not inferred.
+Duplicate staging archives and temporary restored Git verification databases have
+been removed after renewed custody verification. Final archives, sidecars and
+useful recovered evidence remain available. Recovery commands below are available
+without reopening the original working trees.
 
 The [asset tool](../tools/heritage_assets.py) lists receipt records or restores
 explicitly selected ordinary file bytes with member SHA-256 verification:

@@ -19,11 +19,14 @@ The program supplies concrete memory, model and independent-mathematics choices.
 Multi-round direction/readiness reviews accepted this scientific preparation;
 their acceptance is neither an architectural victory nor a renewed proof result.
 
-All three source archives and recovery exercises passed. Actual source retirement
-is still incomplete: two roots are absent; Genome's files are removed but an editor
-holds its empty root open. Current state and exact custody boundaries remain in
-STATE.md and docs/CONSOLIDATION.md. The corresponding ledger entry is organizational
-and excluded from scientific denominators. No old research run is adopted.
+All three source archives and recovery exercises passed. Final source retirement
+now confirms all three exact roots absent and surviving archive hashes unchanged.
+Genome's original guarded attempt and later absence observation are preserved
+without assigning an unknown removal time/actor. Duplicate verification scaffolding
+is removed; useful recovered evidence remains. The verified public counterparts
+point here from their README/About and status/resume entrypoints. Current custody
+boundaries remain in STATE.md and docs/CONSOLIDATION.md. Migration ledger entries
+are organizational and excluded from scientific denominators. No old run is adopted.
 
 ## Entry 127: The hierarchical family closes — disjointness gates the CGF regime (2026-09-21)
 

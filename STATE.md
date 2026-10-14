@@ -13,7 +13,8 @@ Two construction tracks: (1) latent memory and long-context computation/simulati
 mathematics, matrix-native arithmetic, representation changes, capability reuse and
 new computational models remain shared foundational ambitions.
 
-**Execution:** repository consolidation in progress. No research experiment,
+**Execution:** repository consolidation and preparation are complete. Ready to
+select a scoped construction through the unified research process. No research experiment,
 model training, cloud job or retired automation has been launched by this migration.
 The prior research runs remain paused. Unification is not a new compute allocation,
 adopted architecture or empirical result.
@@ -21,13 +22,14 @@ adopted architecture or empirical result.
 **Preparation evidence — 2026-10-14:** the enriched scientific starting packet passed
 the multi-round direction and readiness reviews. All three complete source archives,
 member/container readback, Git/data/checkpoint recovery and fresh source-byte checks
-have passed. Matrix-native and computation-model source roots are removed. Genome's
-files are removed under the recorded guard, but its empty source directory remains
-awaiting release/removal. Verified disposable-copy cleanup is complete: duplicate
-staging archives and temporary restored Git databases were removed while final
-archives and useful recovery samples were preserved. Automatic approval review
-blocked removal of the remaining empty Genome root. The final three-root retirement
-receipt and migration closeout remain pending; the migration goal is not complete.
+have passed. All three exact source roots are absent. The final retirement receipt
+binds the original guarded attempts, observed absence and renewed surviving-archive
+SHA-256 checks. Genome's final removal time/actor is unknown; its original pending
+attempt and later absence observation are preserved separately. Verified cleanup
+removed duplicate staging archives and temporary restored Git databases while
+preserving final archives and useful recovery samples. The two verified historical
+GitHub counterparts now direct future work here from their README, About fields
+and status/resume entrypoints. See [CONSOLIDATION](docs/CONSOLIDATION.md).
 
 ## Scientific starting point
 
@@ -64,11 +66,12 @@ Read README → [RESEARCH_PROGRAM](theory/RESEARCH_PROGRAM.md) →
 and the relevant original code/proofs. Use [ASSETS](docs/ASSETS.md) for exact source
 recovery and [CONSOLIDATION](docs/CONSOLIDATION.md) for migration custody/review status.
 
-Complete this preparation when the front door is coherent, source insights and
-corrections are indexed, unique assets and histories are recoverable, imported
-material is reviewed, and source retirement has a verified receipt. Then select
+The front door, corrected source insights, recoverable assets/histories, reviewed
+imports and verified source retirement now supply the starting baseline. Select
 a concrete operation/interface and constructive substrate question through the
-unified research process. Initial questions in the program are not registrations.
+unified research process; declare its resource, action, precision, horizon and
+comparison contract before registration. Initial questions in the program are
+not registrations, and preparation does not authorize training or compute spend.
 
 ## Historical authority
 

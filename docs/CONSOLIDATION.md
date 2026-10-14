@@ -7,8 +7,8 @@ share foundational mathematics and one research-selection process.
 
 ## Status
 
-Scientific selection-readiness and archival custody have passed; administrative
-closeout remains **in progress** as of 2026-10-14. The enriched baseline includes
+Scientific selection-readiness, archival custody and exact source retirement have
+passed as of 2026-10-14. The enriched baseline includes
 worked cross-program deductions, concrete memory/model/mathematics choices and an
 operation-directed reuse guide. Independent source reviews, six genuine direction
 council rounds and readiness followups underpin that preparation, without renewing
@@ -23,17 +23,41 @@ local custody, not an off-device backup or portable research environment.
 | Source | Custody | Source retirement |
 |---|---|---|
 | Matrix-native mathematics | Verified archive and recovery | Exact source root removed and verified absent |
-| Neural dissection / Genome | Verified archive and recovery | Files removed; empty root remains after earlier editor lock and subsequent policy rejection |
+| Neural dissection / Genome | Verified archive and recovery | Exact source root observed absent; original guarded attempt reconciled and final receipt recorded |
 | Computational models | Verified archive and recovery | Exact source root removed and verified absent |
 
-Private acceptance, immediate guards and actual partial-removal observations are
-recorded in `internal/unification/`. A final three-root retirement receipt is not
-yet recorded. Disposable-copy cleanup passed: exactly 12 duplicate staging files
+Private acceptance, immediate guards, reconciliation and actual removal/absence
+observations are recorded in `internal/unification/`. The final three-root retirement
+receipt binds renewed surviving-archive hashes and confirmed absence of exactly the
+authorized roots. Disposable-copy cleanup passed: exactly 12 duplicate staging files
 and three temporary restored verification Git directories were removed, totaling
 100,157,560,097 logical file bytes. Final archives, sidecars and useful recovered
 evidence remain intact. This is not a measured physical free-space increase.
-Automatic approval review rejected removal of the remaining empty Genome directory
-with the stated reason "blocked by policy"; final retirement remains pending.
+Earlier automatic approval review rejected removal of the empty Genome directory
+with the stated reason "blocked by policy". That directory is now observed absent;
+its exact removal time and actor are not inferred. Its original guarded attempt
+is preserved with the later observed absence, rather than rewritten as a fresh
+check of deleted source bytes. Final surviving-archive verification passed.
+
+## Public project pointers
+
+The former public repositories now point to this program from their README opening,
+repository description and homepage. Their historical material and Git history remain.
+
+| Historical repository | Current research home |
+|---|---|
+| [Matrix Numbers](https://github.com/dl1683/matrix-numbers) | [Latent Space Reasoning](https://github.com/dl1683/Latent-Space-Reasoning) |
+| [LLM Genome / Neural Dissection Lab](https://github.com/dl1683/moonshot-llm-genome) | [Latent Space Reasoning](https://github.com/dl1683/Latent-Space-Reasoning) |
+
+Live file blobs match the prepared notices. Matrix's status/roadmap and Genome's
+pause, state, agent, supervisor, queue, review and scratch-index entrypoints also
+point here. Markdown notices preserve original body bytes; Genome state adds a
+migration member while preserving every prior parsed member. No verified public
+counterpart was found for the local computation-model source, so no new remote
+mapping was invented. The unrelated Neuro-AI Lab is a sibling, not Genome.
+
+These are migration notices, not scientific endorsement or permission to resume
+historical jobs. Historical scientific records remain in their original namespaces.
 
 ## Changes and preserved boundaries
 

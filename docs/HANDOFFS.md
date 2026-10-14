@@ -7,6 +7,11 @@ Read [STATE.md](../STATE.md), [RESEARCH_PROGRAM.md](../theory/RESEARCH_PROGRAM.m
 No historical run/cron/budget is automatically adopted. The paused optimizer-cross
 contract and unresolved cloud allocation decisions are preserved in current STATE.
 
+Preparation and source retirement are complete as of 2026-10-14. Start a scoped
+construction from the worked routes and operation-directed heritage guide. All
+three source roots are retired with verified local recovery; the historical public
+counterparts route here. Read current STATE before choosing any compute or launch.
+
 ---
 
 > HISTORICAL: all routing, restart instructions and handoffs below this divider are superseded. Current README and root STATE govern all work; earlier "front door" labels describe their dated snapshots.
