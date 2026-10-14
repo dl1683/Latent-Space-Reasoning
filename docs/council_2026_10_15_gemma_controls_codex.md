@@ -1,0 +1,11 @@
+**Yes, narrowly:** the recorded run passes Amendment G4’s hook-access/value-SET smoke, validating this layer-15, W1, four-option scoring instrument. It does not establish portable latent memory or general mediation ([Amendment G4:633–636](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/LATENT_BRANCH_CAPACITY.md:633); [results:1–4](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/cloud/gemma4_controls_summary.jsonl:1)).
+
+SET copies **one position’s residual**, leaving the receiver’s remaining computation intact. Donor-follow therefore tests causal intervention sufficiency; copying is the intervention, not a loophole. It does not test necessity ([gemma_controls.py:39–48](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/cloud/lsr_jobs/gemma_controls.py:39)).
+
+The generator changes exactly one colour at the text level. However, equal value positions and receiver-prefix alignment do **not** assert that the complete token sequences differ only at that position ([native.py:40–44](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/cloud/lsr_jobs/native.py:40); [gemma_controls.py:103–110](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/cloud/lsr_jobs/gemma_controls.py:103)).
+
+Right padding and last-real-token scoring are correct. The unresolved numerical confound is singleton donor extraction versus batched receiver execution ([native.py:73–85](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/cloud/lsr_jobs/native.py:73), [407–415](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/cloud/lsr_jobs/native.py:407)).
+
+The shuffled arm correctly scores against the original donor label. Its unrestricted permutation allows self-pairings and matching colours, making it a conservative mismatch null—not shuffled-donor accuracy ([gemma_controls.py:117–133](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/cloud/lsr_jobs/gemma_controls.py:117)).
+
+**Before citation:** scope the wording to the passed smoke; no fatal implementation defect was found. Before claiming isolated colour-token mediation, assert complete single-token differences and run receiver-self-SET plus fixed-input batch-shape controls. No files changed.

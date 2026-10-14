@@ -1,0 +1,4 @@
+{"key": "gemma|layers", "n_decoder_layers": 60, "layer": 15, "d_model": 5376}
+{"key": "gemma|control1_identity", "identity_max_abs_logit_diff": 0.0, "live_max_abs_logit_diff_10x": 2.8125, "layer": 15}
+{"key": "gemma|control2_value_token", "n": 64, "layer": 15, "donor_follow": 1.0, "unpatched_donor_follow": 0.0, "shuffled_donor_follow": 0.28125, "majority_baseline": 0.359375, "gate_pass": true}
+{"key": "gemma|controls_passed", "note": "instrument valid; no latent-state claim"}
