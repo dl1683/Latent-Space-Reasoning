@@ -41,6 +41,21 @@ construction and experiments develop together.
 **Construction, training, conversion, memory, retrieval, precision, repair and
 fallback all count.** Fewer generated tokens or model calls alone is not a win.
 
+## What bringing the programs together gives us
+
+Memory becomes a question about **which future operations a state preserves**:
+reading, acting, revising, reopening history and simulating have distinct contracts.
+Learning becomes a question about the complete transition—including optimizer state
+and supervision—and whether its objective preserves the later distinctions we need.
+Representation becomes an algorithmic choice: compact descriptors, retained factors
+and approximations can coexist, with different interaction and continued-error costs.
+
+Those connections now have [worked source-grounded implications](docs/UNIFIED_EVIDENCE.md#what-studying-the-programs-together-changes),
+[concrete starting choices](theory/RESEARCH_PROGRAM.md#starting-choices-not-a-launch-queue)
+and an [operation-directed reuse guide](heritage/README.md#borrow-by-operation-with-its-scope-attached).
+The next question can concern persistent memory, a new pretrained-layer computation,
+independent mathematics or cooperating components; each has an informed starting route.
+
 ## What the evidence currently supports
 
 - Conditional mathematics of future distinctions, selective writes and composition;

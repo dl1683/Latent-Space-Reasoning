@@ -7,10 +7,28 @@ share foundational mathematics and one research-selection process.
 
 ## Status
 
-Preparation and custody are **in progress**. Front-door routing and a selected
-historical evidence library are installed. Complete source archives are being
-written and verified. **No source tree has been deleted.** This document will record
-completed retirement only after final custody and recovery gates pass.
+Scientific selection-readiness and archival custody have passed; administrative
+closeout remains **in progress** as of 2026-10-14. The enriched baseline includes
+worked cross-program deductions, concrete memory/model/mathematics choices and an
+operation-directed reuse guide. Independent source reviews, six genuine direction
+council rounds and readiness followups underpin that preparation, without renewing
+scientific proof or experiment claims.
+
+All 78,157 ordinary source files (110,441,713,570 bytes), source histories, dirty and
+ignored material are captured in verified ZIPs totaling 93,159,149,612 bytes, with
+directory/stream metadata supplements. Complete member SHA-256 readback, relocation,
+Git/data/checkpoint recovery and renewed source-byte checks passed. This is verified
+local custody, not an off-device backup or portable research environment.
+
+| Source | Custody | Source retirement |
+|---|---|---|
+| Matrix-native mathematics | Verified archive and recovery | Exact source root removed and verified absent |
+| Neural dissection / Genome | Verified archive and recovery | Files removed; empty root is still locked by an editor workspace |
+| Computational models | Verified archive and recovery | Exact source root removed and verified absent |
+
+Private acceptance, immediate guards and actual partial-removal observations are
+recorded in `internal/unification/`. A final three-root retirement receipt is not
+yet recorded. Disposable-copy cleanup and final publication closeout remain pending.
 
 ## Changes and preserved boundaries
 

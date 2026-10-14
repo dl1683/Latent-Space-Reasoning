@@ -52,3 +52,21 @@ before extending their scope.
 Original experiment IDs and ledgers remain separate historical namespaces. New
 research now uses the common home and current process. Full source Git histories,
 notebooks and excluded evidence remain recoverable through [asset custody](ASSETS.md).
+
+## Where the programs leave us
+
+These are scoped endpoints and reopening premises, not inherited queues. Read the
+[current evidence map](UNIFIED_EVIDENCE.md) before a historical source's conclusions.
+
+| Body of work | Positive residue to start from | What failed or changed | A meaningful changed premise |
+|---|---|---|---|
+| Continuation and latent memory | Future-response distinctions, conditional selective-write laws, and tested closing-state readout | A competent slot reader did not establish entity addressing; improving geometric reconstruction did not establish selective continued use | Construct or change the action/address interface and test its subsequent consequences, rather than assume width fixes an incompetent interface |
+| High-dimensional mathematics | Exact ensemble-specific interference and a sparse-exact optimum of a declared reconstruction objective | Spectrum/participation ratio is not an answer-capacity meter; average loss can favor dropping low-weight distinctions | Specify the observation criterion and which rare or late distinctions the objective must retain before deriving a capacity prediction |
+| Neural dissection | Parameter/optimizer interventions separating formation, access, supervision and maintenance | Saved-baseline undo, post-maintenance endpoints and starting-state differences narrowed apparent recovery laws; optimizer crossings remain partial | Declare the complete learning state, realized update and recall phase; test a changed operation on its own substrate |
+| Matrix-native mathematics | Concrete composition/interaction objects, nonlinear closure counterexamples, and exact-growth versus approximation contrasts | Fixed-format growth did not exclude cheap factors or approximate carriers; specialist controls and certificate costs defeated several proposed advantages | Change the supported operation, representation, tolerance or output contract and price recognition/conversion/continued error |
+| Computational models | Promise-dependent erasure/restoration classes and equal-access translations | The tested candidates did not establish a new computational-model advantage; accepted functions and shortest execution work differ | Specify a genuinely changed primitive, access/restoration promise or resource tradeoff, alongside its equally exposed ordinary realization |
+| Capability reuse and component growth | Competent port contracts, teaching after donor withdrawal, and coupling/compatibility questions | Teacher-assisted readout is not transplanted computation; pairwise compatibility does not establish joint behavior | Identify what crosses the interface and the coupling evidence needed for a new joint operation while retaining earlier uses |
+
+The common lesson is constructive: decide which useful future operation is missing,
+then change its representation, interface, learning dynamics or resource contract.
+A failed carrier, reader or implementation does not settle the broader question.

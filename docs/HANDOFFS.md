@@ -9,7 +9,7 @@ contract and unresolved cloud allocation decisions are preserved in current STAT
 
 ---
 
-> HISTORICAL: the S65 routing below is superseded. Root STATE governs all current work.
+> HISTORICAL: all routing, restart instructions and handoffs below this divider are superseded. Current README and root STATE govern all work; earlier "front door" labels describe their dated snapshots.
 
 # Session handoff — 2026-09-14
 

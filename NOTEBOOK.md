@@ -8,6 +8,23 @@ inheritance: docs/UNIFIED_EVIDENCE.md. This is organizational preparation, not a
 research result. Historical entries below retain their dated scope and corrections.
 Custody/review progress is in docs/CONSOLIDATION.md.
 
+### Enriched baseline and custody — 2026-10-14
+
+The combined reading now yields worked implications: current/history views need
+legal-action boundaries; readable summaries need executable successors; learning,
+runtime and recovery states have different lifetimes; approximation needs a
+consequence/horizon bridge; taught information and transferred computation need
+separate attribution; and joint component use requires coupling information.
+The program supplies concrete memory, model and independent-mathematics choices.
+Multi-round direction/readiness reviews accepted this scientific preparation;
+their acceptance is neither an architectural victory nor a renewed proof result.
+
+All three source archives and recovery exercises passed. Actual source retirement
+is still incomplete: two roots are absent; Genome's files are removed but an editor
+holds its empty root open. Current state and exact custody boundaries remain in
+STATE.md and docs/CONSOLIDATION.md. The corresponding ledger entry is organizational
+and excluded from scientific denominators. No old research run is adopted.
+
 ## Entry 127: The hierarchical family closes — disjointness gates the CGF regime (2026-09-21)
 
 The candidate-B arc completed its full empirical cycle in one session,

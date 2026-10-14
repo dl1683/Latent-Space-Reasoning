@@ -1,5 +1,13 @@
 # Experiments Log
 
+## Unified-program authority — 2026-10-13
+
+All future experiments belong to this repository's [shared research program](../theory/RESEARCH_PROGRAM.md).
+Current execution and adoption decisions are in [STATE.md](../STATE.md).
+The dated records below preserve their original scopes and controls; their historical
+"next" instructions do not queue a run. Consolidation itself launches no experiment
+and contributes no scientific outcome to this log's denominators.
+
 ## Fixed-layer re-score: 300 names beat 20 by 0.06-0.10 at both layers; 10-point k=4 prediction not replicated (2026-10-12 20:39, Codex hunt passed)
 
 - These fitted per-slot linear readers show higher held-out-name accuracy after training on 300 names than 20 at both fixed layers and both tested k values; the k=4 ten-point prediction is not replicated.

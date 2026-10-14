@@ -18,6 +18,14 @@ model training, cloud job or retired automation has been launched by this migrat
 The prior research runs remain paused. Unification is not a new compute allocation,
 adopted architecture or empirical result.
 
+**Preparation evidence — 2026-10-14:** the enriched scientific starting packet passed
+the multi-round direction and readiness reviews. All three complete source archives,
+member/container readback, Git/data/checkpoint recovery and fresh source-byte checks
+have passed. Matrix-native and computation-model source roots are removed. Genome's
+files are removed under the recorded guard, but its empty source directory remains
+locked by an editor workspace. The final retirement receipt and cleanup/publication
+closeout remain pending; the migration goal is not complete.
+
 ## Scientific starting point
 
 - No admitted reusable latent reasoning/memory artifact or general capability

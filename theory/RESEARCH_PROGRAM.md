@@ -78,6 +78,17 @@ sequences, not only initial reconstruction. Exact trajectories, observable
 distributions and approximate task consequences are different targets. Price branch
 copying, merging, rejected rollouts and synchronization with external observations.
 
+Current-view consequences and historical observations need separate contracts.
+Absorbing a replaced write can be correct for the current view while an earlier-
+version query intentionally distinguishes the histories. The projected current-view
+actions must also factor through that view; history-sensitive rollback cannot be
+silently admitted under its absorption law. Such an action retains the required
+distinction or crosses a separately declared, priced recovery/refinement boundary.
+For approximate rollouts,
+relate representation error to the intended observables, decision margins and its
+propagation over the horizon. Unobserved external transition mechanisms remain
+uncertain; internal simulation does not supply missing observations.
+
 "Infinite context" is an ambition for expandable external memory and bounded active
 processing. It promises neither bounded total storage, constant worst-case query
 work, nor exact fixed-size compression of arbitrary histories. Report ingestion,
@@ -206,6 +217,18 @@ These are provisional operational definitions, not novelty claims.
 | Simulation | Specified world state, transition rules and observables, with fidelity/error over a declared horizon |
 | Computational model | Machine class, primitive steps, access/precision/resource contracts, capabilities and limits |
 
+The lifetimes of those resources also matter:
+
+| State lifetime | Complete object to account for | What matching it does not establish |
+|---|---|---|
+| Learning/adaptation | Parameters, optimizer moments/buffers, schedule, random/draw state, objective/masks and teaching/replay resources | Matching weights or a readout need not match the next learning transition |
+| Runtime | Active/recurrent state, KV, addresses, operator descriptors, branches, randomness and callable components | Matching today's answer need not preserve the next action or a newly selected query |
+| Evidence/recovery | Source identities, versioned observations, original values, histories, baselines and recovery material | Matching current beliefs need not preserve historical observations or pay recovery costs |
+
+These may be physically colocated. A training buffer becomes a runtime resource
+only if the proposed machine actually uses it there. The distinction prevents a
+weight-space maintenance result from silently becoming an activation-memory law.
+
 Each cross-foundation proposal identifies the source object, destination object,
 map, operation that should be preserved, missing control, and falsifying outcome.
 For example, a matrix descriptor-growth theorem does not become a memory-capacity
@@ -278,7 +301,7 @@ Their combination motivates new hypotheses, not a composite empirical result.
 
 ## How we choose the next work
 
-The central construction target is a **persistent, future-addressable computational
+For the memory track, the central construction target is a **persistent, future-addressable computational
 state with a competent action interface**. It declares ingestion, late query
 selection, selective revision, continued consequence computation, evidence access,
 outputs/termination and lifetime resources; branching and representation changes
@@ -291,6 +314,101 @@ distinct from an observation. The conventional comparator may use a versioned
 event/graph store, indexing and a rule evaluator—it need not replay the transcript.
 This illustrates the contract, not a registered toy-world experiment or a claim
 that graph algorithms are new. Select an important question before building it.
+
+For the model track, an equally substantive target is a **new learned computation
+over a declared pretrained resource**. It may replace existing execution or add a
+new operation. The object is its input/state/transition/output contract, which
+components learn, and the work actually removed or capability added—not merely an
+embedding attached to another unchanged model. Independent mathematical questions
+and component-growth questions remain selectable under the same process.
+
+### Starting choices, not a launch queue
+
+| If the owner wants to explore… | Useful starting object and conventional/control route | First decision-changing check |
+|---|---|---|
+| Long-context memory and correction | A future-operation family with current/history/branch views; a competent indexed versioned evaluator with the same evidence | A rule or selector revealed after ingestion, then an affected/unrelated/historical consequence after correction; separate missing information from incompetent addressing/updating |
+| Simulation and representation changes | Declared transitions and observables; exact factor execution alongside a candidate compact carrier | Continued-action error and decision margins over the declared horizon; identify when conversion, defect certification or reopening costs exceed direct execution |
+| A new model over pretrained embeddings or layers | A token table, contextual sequence, selected layer or callable resource; an equally exposed learner and competent direct continuation | Whether a useful operation survives source/interface changes and whether old layers/passes actually disappear; use free continuation and termination if generation is claimed |
+| Independent matrix/high-dimensional mathematics | A stated composition, interaction, approximation or recognition question; existing nonlinear closure, counting and factor-word counterexamples | Which premise the new proposition changes; distinguish information necessity from growth of one format and an exact obstruction from approximate cost |
+| Computational primitives and model theory | A legal alphabet, observable, borrowed/persistent state and resource meter; an ordinary realization with identical access/retention/restoration | A changed operation law, capability class or resource tradeoff that survives the translation; no requirement that every useful architecture separate computability classes |
+| Cooperating or evolving components | One useful contributed operation with declared old and joint uses; equally resourced routing/incremental adaptation | What coupling evidence, calibration or adaptation enables the new joint use, which prior uses survive, and who pays supervision and selection |
+
+Each selected route will need a finite operation/horizon, justified tolerances,
+access/resource assumptions, a competent positive control, the cheapest adequate
+null, and outcomes that change the method. Here they are informed choices, not
+registrations, automatic implementations or performance forecasts. Corrected source
+premises and worked transfers are in [UNIFIED_EVIDENCE](../docs/UNIFIED_EVIDENCE.md).
+
+### A worked model-construction option
+
+**Operation-adding candidate, not an adopted architecture:** export a frozen stem's
+contextual sequence `H ∈ R^(n×d)`, with its token identities, positions and masks;
+construct retained objects `Z=E_θ(H, evidence)` and learn a smaller action transition
+`Z'=U_θ(Z, action)` plus a query reader `R_θ(Z, query)`. A new rule/query can arrive
+after construction. Exact identifiers/provenance may be retained in a priced side
+channel; raw evidence can be reopened under an explicit access budget. This option
+studies a new model/interface and learning objective, not solely an application
+store around an unchanged backbone.
+
+Select a finite supported operation/rule family and distinguish a new selector,
+a new rule within that language, and an unsupported new operation. State where the
+rule enters and whether the updater, reader or a retained program executes it.
+Compare the same priced side channel and interpreter with learned state omitted:
+their success alone does not demonstrate latent computation.
+
+The stem is run and charged at ingestion/reopening. State dimensions, precision,
+sequence positions, masks, retained KV entries and all external resources are
+declared; a final token vector does not silently stand in for the sequence. The
+action/query tokenization and encoding are explicit, charged components; a semantic
+action is not supplied by an unpriced language-model call or hidden task menu. The
+candidate action/read cycle replaces subsequent full suffix calls only if it
+actually performs the operation without them. A decoder, teacher, fallback or
+callable donor that does essential computation remains in the cost ledger.
+The existing compressed-state branch runner still uses its backbone per action
+and read; it is a reference/control, not evidence for this replacement.
+[Actual branch interface (line 154)](../experiments/cloud/lsr_jobs/branch.py).
+
+Initially train only the declared constructor/updater/reader or explicitly adapt
+the stem; distinguish those arms. Compare randomized versus retained pretrained
+resources, a competent direct continuation, and equally exposed learners receiving
+the same facts/labels. Assess new rules, repeated actions, addressing, correction
+and unrelated retention. A shuffled or disabled action must change the claimed
+consequence appropriately; a decoder cannot earn the state engine's claim alone.
+The sparse-exact allocation result motivates checking whether the learning
+objective sacrifices late/rare distinctions, not prescribing one universal loss.
+
+This is different from **continuation-preserving replacement**, which selects a
+specific suffix/interface and attempts to reproduce its declared behavior more
+cheaply. That fork needs an obtainable intermediate state, removed layer/pass
+accounting and competent free-running generation when applicable. Co-designing new
+layer operations, representations and objectives is also allowed. None of these
+options requires completing a memory product first or adopts a pretrained model,
+tensor width, training allocation or next experiment by implication.
+
+### A worked independent-mathematics option
+
+Study the literal interaction in three-block upper-triangular operators with scalar
+diagonal blocks and rectangular blocks X, Y, Z. Composition includes
+`Z''=aZ'+XY'+Zc'`. The inherited construction shows that a one-dimensional middle
+block permits an outer-product implementation, while unrestricted square X and Y'
+contain ordinary square matrix multiplication. Both share radical depth three and
+a commutative semisimple quotient; those summaries alone do not specify interaction
+cost. This is existing mathematical scaffolding, not a newly proved speedup.
+[Exact source construction (line 168)](../heritage/matrix-native-math/research/REPRESENTATION_FRONTIER_V2.md).
+
+An available research question is: under a stated restriction on those interactions
+and requested outputs, which compact descriptors remain composable, how does their
+precision/recognition cost grow, and when is retaining the factor word cheaper?
+One may instead study recognition of a supplied noisy matrix in the source's
+nonlinear closed family: composition from its small native descriptor is distinct
+from recovering an action-equivalent descriptor from dense input. Declare tolerance,
+conditioning, supported actions and description/output costs before proposing a
+law. [Nonlinear family and recognition scope (line 147)](../heritage/matrix-native-math/research/NONLINEAR_COMPOSITION_SCOPE_V1.md).
+
+The first check is the actual interaction equation, a known constructive control
+and a hidden-unrestricted-product reduction. A new result must change a premise
+and pass proof/prior-art review. It can be valuable independently of a neural
+architecture; it is not an allocation or an assertion that the open question is novel.
 
 Start with a consequential question and the cheapest observation or construction
 that could change its answer. Define the operation and expected outcomes before a

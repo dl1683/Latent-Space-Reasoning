@@ -2,8 +2,8 @@
 
 The unified program is preserving source insights without keeping three giant
 active working trees. Its selective [research library](../heritage/README.md) is
-public reference material; raw data, checkpoints, notebooks and histories are being
-captured into local archives. No source is retired before verified custody.
+public reference material; raw data, checkpoints, notebooks and histories are
+captured in verified local archives. No source is retired before verified custody.
 Current per-source status is in [CONSOLIDATION.md](CONSOLIDATION.md).
 
 ## What is retained
@@ -21,15 +21,17 @@ preserve dirty/untracked/ignored material that a clone or Git bundle would omit.
 
 ## Local recovery
 
-Verified matrix-native and computation-model archives and their private receipts live under the owner's local
+All three verified source archives and their private receipts live under the owner's local
 `lsr-research-archives/2026-10-13` directory outside synchronization. It is not part
 of Git or a dependency that a public clone downloads. Use `--archives` to point at
 a different local custody location. Full manifests contain private source filenames
 and are deliberately not committed.
 
-The genome archive is still being written and verified in temporary staging.
-Its recovery commands below become available after relocation and recovery pass;
-the final source-retirement acceptance gate has not passed for any source.
+All three relocation and recovery exercises passed. Matrix-native and computation-
+model source roots are removed; Genome's files are removed and its empty root awaits
+release of an editor lock. Acceptance passed, but the final three-root retirement
+receipt and disposable-copy cleanup are still pending. Recovery commands below are
+available without reopening the original working trees.
 
 The [asset tool](../tools/heritage_assets.py) lists receipt records or restores
 explicitly selected ordinary file bytes with member SHA-256 verification:
