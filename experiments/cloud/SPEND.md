@@ -1,6 +1,6 @@
 # LSR GCP spend ledger
 
-Updated 2026-10-12T18:06:33+00:00. Estimated from VM lifetimes x all-in Spot rate (Cloud Billing catalog, 2026-10-11). Budget 5,000 USD.
+Updated 2026-10-14T11:58:30+00:00. Estimated from VM lifetimes x all-in Spot rate (Cloud Billing catalog, 2026-10-11). Budget 5,000 USD.
 
 | run | VMs launched | est. USD |
 |---|---:|---:|
@@ -11,6 +11,8 @@ Updated 2026-10-12T18:06:33+00:00. Estimated from VM lifetimes x all-in Spot rat
 | gate-pilot | 1 | 0.53 |
 | gate-q06 | 3 | 106.88 |
 | gate-q06-cur | 3 | 66.15 |
+| gemma4-controls-2026-10-15 | 2 | 1.96 |
+| gemma4-controls-v2-2026-10-15 | 1 | 0.58 |
 | p1-s11 | 10 | 77.59 |
 | p1b-pilot | 2 | 0.53 |
 | p1b-s11 | 10 | 47.76 |
@@ -40,6 +42,9 @@ Updated 2026-10-12T18:06:33+00:00. Estimated from VM lifetimes x all-in Spot rat
 | search-pilot | 4 | 0.30 |
 | search-temps | 6 | 3.62 |
 | smoke1 | 4 | 0.12 |
-| **total** | 358 | **915.85** |
+| **total** | 361 | **918.39** |
 
 Live VMs now: 0; burn rate now: $0.0/h
+
+Gemma 4 31B instrument controls (2026-10-14 UTC clock; run names carry 2026-10-15): 3 VM launches, a2-highgpu-2g Spot at 4.42 USD/h, europe-west4-a. Run 1 (gemma4-controls-2026-10-15): first VM crashed on a config-attribute bug, relaunched after the fix, done 10:55:54Z; estimated 0.44 VM-h = 1.96 USD (conservative: both launches charged to the done marker). Run 2 (v2, five controls): 11:09:58Z to 11:17:51Z, 0.13 VM-h = 0.58 USD. Both VMs reaped; live VMs 0. Rows added by hand: `lsr_cloud.py spend` could not be re-run cleanly (the dispatcher has uncommitted edits by another agent), so regenerate before relying on this figure.
+
