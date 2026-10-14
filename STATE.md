@@ -85,6 +85,8 @@ under the supervisor's direction. Model weights stay on Google Cloud only.
   is DESIGN / NOT READY and still needs implementation, CPU receipts, exact pins,
   a fresh LAUNCHABLE review and supervisor readiness. This sync runs no experiment.
 
+**[HYPOTHESIS/TARGET] Architecture direction — supervisor sync 2026-10-15:** the [architecture draft](docs/ARCHITECTURE_DIRECTION_2026_10_15_DRAFT.md) proposes one decode-aware reasoner with optional memory. S0, the actual-model memory-port and ten-step backward-fit smoke, is the first gated experiment and Z Code’s top task; E1 remains secondary, with reusable work folded into natural-document transfer (S1n). S0 runner and config are drafted; the first fresh review returned **NOT-READY** (2026-10-15 task label; inspection 2026-10-14). The live receiving operation, bypass evidence and runtime pins remain incomplete. Nothing launched by this sync.
+
 **Earlier first-construction proposal:**
 [theory/FIRST_CONSTRUCTION_PROPOSAL.md](theory/FIRST_CONSTRUCTION_PROPOSAL.md)
 remains an unapproved historical design; its budgets and model exclusions do not
