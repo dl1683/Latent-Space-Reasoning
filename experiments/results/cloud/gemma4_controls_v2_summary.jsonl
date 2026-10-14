@@ -1,0 +1,7 @@
+{"key": "gemma|layers", "n_decoder_layers": 60, "layer": 15, "d_model": 5376}
+{"key": "gemma|control1_identity", "identity_max_abs_logit_diff": 0.0, "live_max_abs_logit_diff_10x": 3.96875, "layer": 15}
+{"key": "gemma|control2_value_token", "n": 64, "layer": 15, "donor_follow": 1.0, "unpatched_donor_follow": 0.0, "shuffled_donor_follow": 0.28125, "majority_baseline": 0.359375, "gate_pass": true}
+{"key": "gemma|control3_token_diff", "n_checked": 64, "n_failed": 0, "gate_pass": true}
+{"key": "gemma|control4_batchshape_noise", "n": 16, "layer": 15, "max_abs_logit_diff": 0.375, "argmax_agreement": 1.0, "donor_residual_max_abs_diff": 2.0, "gate_pass": true}
+{"key": "gemma|control5_receiver_self_set", "n": 64, "layer": 15, "max_abs_logit_diff": 0.0, "tolerance": 0.75, "gate_pass": true}
+{"key": "gemma|controls_passed", "note": "instrument valid; no latent-state claim"}
