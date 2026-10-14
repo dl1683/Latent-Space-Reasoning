@@ -19,6 +19,8 @@ model training, cloud job or retired automation has been launched by this migrat
 The prior research runs remain paused. Unification is not a new compute allocation,
 adopted architecture or empirical result.
 
+**Proposed first construction (2026-10-14, awaiting owner approval; nothing launched):** [theory/FIRST_CONSTRUCTION_PROPOSAL.md](theory/FIRST_CONSTRUCTION_PROPOSAL.md) — a correction-closed rule state over a frozen non-Chinese stem, with explicit-store and shuffled-action controls; $2,000 window, Phase 0 cap $100.
+
 **Preparation evidence — 2026-10-14:** the enriched scientific starting packet passed
 the multi-round direction and readiness reviews. All three complete source archives,
 member/container readback, Git/data/checkpoint recovery and fresh source-byte checks
