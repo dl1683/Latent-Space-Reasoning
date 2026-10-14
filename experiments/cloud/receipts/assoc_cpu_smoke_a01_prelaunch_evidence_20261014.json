@@ -1,0 +1,72 @@
+{
+  "receipt": "assoc-cpu-smoke-a01 pre-launch operator evidence (read-only; five of seven dispatcher obligations)",
+  "collected_utc": "2026-10-14T23:58Z",
+  "operator": "LSR cloud operator, sc-bench config, account sc-bench-automation@iqidis-developer.iam.gserviceaccount.com",
+  "status": "PARTIAL: packet_sha256 and the final obligation set depend on the new reviewed byte set (landlock_control_upload and work_progress move to run-time checks). Nothing here is a launch authorization and no VM exists.",
+  "packet_sha256": null,
+  "packet_sha256_note": "compute with lsr_cloud.cpu_packet_sha256(cfg) on the FINAL config bytes; the receipt must be regenerated after the new bytes pass the acceptance check",
+  "checks": {
+    "shape_disk": {
+      "status": "PASS (existence, size, quota); Spot CAPACITY UNVERIFIED until a create is accepted",
+      "evidence": {
+        "machine_type": "n2-standard-64 in us-central1-a: 64 vCPU, 262144 MB",
+        "disk_type": "pd-standard valid 10GB-65536GB in us-central1-a; configured 100 GB, equal to the image size (100 GB)",
+        "nic": "GVNIC configured; supported on n2",
+        "quota_us_central1_at_collection": {"PREEMPTIBLE_CPUS": "0 / 5000", "DISKS_TOTAL_GB": "170 / 102400", "INSTANCES": "113 / 6000", "IN_USE_ADDRESSES": "0 / 575"},
+        "liability_vm_cpu_need": "64 vCPU of 5000 Spot vCPU"
+      },
+      "source": "gcloud compute machine-types/disk-types/regions describe, read-only"
+    },
+    "image_lock_interpreter": {
+      "status": "PASS",
+      "evidence": {
+        "image": "pytorch-2-9-cu129-ubuntu-2204-nvidia-580-v20261001, numeric id 1805511023404495091, project deeplearning-platform-release, 100 GB, READY, not deprecated",
+        "lock_object": "gs://sc-bench-iqidis-artifacts/lsr/pins/lsr_freeze_lock_20261014a.txt",
+        "lock_sha256": "1d7f449541ab71e0f87a2978537ad88795226e4d63d36fb27d654601c6903df9",
+        "config_requirements_lock_sha256": "1d7f449541ab71e0f87a2978537ad88795226e4d63d36fb27d654601c6903df9 (equal)",
+        "config_requirements_vs_lock": "129 config requirement strings equal the 129 non-comment lock lines as sets (no extras either way)",
+        "interpreter": "Python 3.10.12 at /usr/bin/python3 on Ubuntu 22.04.5 LTS, from the staging VM startup log on this image family (gs://sc-bench-iqidis-artifacts/lsr/pins/stage_log_20261014a.txt)",
+        "caveat": "the lock was produced by the dispatcher's install command on a CPU VM from the same image family when v20261001 was current; the later E2B/E4B stagings used the explicit image name"
+      }
+    },
+    "iam_scopes_prefix": {
+      "status": "PASS for prefix write under lsr/; bucket-level IAM UNVERIFIED (storage.buckets.get denied to the operator account)",
+      "evidence": {
+        "service_account": "sc-bench-worker@iqidis-developer.iam.gserviceaccount.com exists and is enabled",
+        "scope": "https://www.googleapis.com/auth/cloud-platform (config, dispatcher line 596; the dispatcher also compares the created VM's scopes after create)",
+        "measured_prefix_write": "staging VMs running as this account wrote 13+ objects dated 2026-10-14 under gs://sc-bench-iqidis-artifacts/lsr/pins/ and lsr/models/ (31B, E2B, E4B mirrors with _COMPLETE markers)",
+        "run_prefix": "gs://sc-bench-iqidis-artifacts/lsr/runs/assoc-cpu-smoke-a01/ does not exist (0 objects, 0 VMs) at collection"
+      }
+    },
+    "ancillary_retention": {
+      "status": "PASS (estimate, not a billing reconciliation)",
+      "evidence": {
+        "declared_allowance_usd": 2.0,
+        "estimated_components_usd": {
+          "vm_1h_at_1.864192": 1.8642,
+          "boot_disk_pd_standard_100GB_under_1h": "well under 0.01 (disk deleted with the VM; confirm autoDelete at deletion)",
+          "ephemeral_external_ip_1h": "about 0.005",
+          "gcs_bundle_and_outputs": "well under 0.01 (small objects, retained, not deleted)",
+          "network_egress": "none expected; package downloads are ingress"
+        },
+        "total_estimate_usd": "about 1.89 including the VM hour; ancillaries about 0.03 against the 2.00 allowance",
+        "retention": "run outputs and receipts stay in gs://sc-bench-iqidis-artifacts/lsr/runs/assoc-cpu-smoke-a01/ (nothing is deleted); the VM and its boot disk are deleted by the job or by the lifetime limit"
+      }
+    },
+    "credit_rate": {
+      "status": "SUPERVISOR-SUPPLIED PASS; operator-UNVERIFIED (no billing API or console access; Cloud Billing API not enabled, catalog request 403)",
+      "supervisor_supplied_receipt": {
+        "source": "official Google Cloud pricing pages read by the supervisor on 2026-10-14; console credit reading by the owner",
+        "n2_standard_64_us_central1_usd_per_hour": {"spot": 1.864192, "on_demand": 3.107776},
+        "a3_highgpu_1g_spot": 6.599,
+        "a3_highgpu_2g_spot": 13.1986,
+        "credit": "'Scale Y1 - AI' 9,169.48 USD remaining at about 16:50Z on 2026-10-14, expiring 2026-10-17 (timezone not stated); Compute Engine and Vertex usage both credit-offset; billing lags a day or more",
+        "credit_guard": "config credit_guard_epoch 1792193400 = 2026-10-16T23:30:00Z"
+      },
+      "operator_note": "config usd_per_hour is 1.86, which is 0.004192 USD/h BELOW the supervisor's official 1.864192. The cap 3.87 still covers 1.864192 x 1 h + 2.00 allowance = 3.864192 (margin 0.005808). Recommend setting usd_per_hour to 1.864192 in the new reviewed byte set."
+    }
+  },
+  "not_covered_here": ["landlock_control_upload", "work_progress"],
+  "not_covered_reason": "cannot be measured before a run; being moved to run-time checks by the build coordinator's Codex change",
+  "rate_verified_and_shape_verified": "the config booleans must stay false until the supervisor accepts this receipt; the supervisor's receipt covers rate, the accepted create covers shape capacity"
+}
