@@ -1,0 +1,131 @@
+{
+  "recipe": "additive-relu-constructor-trained-connector-bilinear-reader",
+  "seed": 20261015,
+  "train_seed": 271828,
+  "heldout_seed": 314159,
+  "reload_seed": 161803,
+  "n_records": 4,
+  "latent_width": 8,
+  "hidden_width": 32,
+  "dtype": "float64",
+  "value_grid_denominator": 8,
+  "value_numerator_min": -16,
+  "value_numerator_max": 16,
+  "edit_deltas": [
+    [
+      1,
+      2
+    ],
+    [
+      -3,
+      4
+    ]
+  ],
+  "query_grid_denominator": 8,
+  "query_numerators": [
+    -8,
+    -4,
+    -2,
+    2,
+    4,
+    8
+  ],
+  "train_worlds": 256,
+  "heldout_worlds": 32,
+  "optimizer": "LBFGS",
+  "optimizer_steps": 250,
+  "learning_rate": 1.0,
+  "max_line_search_evals": 12,
+  "lbfgs_history": 30,
+  "optimizer_tolerance_grad": 1e-12,
+  "optimizer_tolerance_change": 1e-14,
+  "fit_wall_seconds": 1200,
+  "payload_ceiling_bytes": 1024,
+  "tol": 0.0001,
+  "threads": 2,
+  "objective": "answer-only",
+  "optional_future_contrast": false,
+  "recipe_v2": {
+    "recipe": "recipe_v2",
+    "constructor_kind": "relu",
+    "arithmetic_structure": "no injected value-linearity",
+    "seed": 20261015,
+    "connector_seed": 20261016,
+    "receiver_seed": 20261017,
+    "train_seed": 271828,
+    "training_value_numerator_min": -22,
+    "training_value_numerator_max": 20,
+    "training_grid_denominator": 8,
+    "train_worlds": 256,
+    "training_views": [
+      "base",
+      "replace",
+      "retract"
+    ],
+    "optimizer": "LBFGS",
+    "optimizer_steps": 6000,
+    "learning_rate": 1.0,
+    "max_line_search_evals": 12,
+    "lbfgs_history": 30,
+    "optimizer_tolerance_grad": 1e-16,
+    "optimizer_tolerance_change": 1e-20,
+    "fit_wall_seconds": 600,
+    "training_max_error_gate": 0.0001,
+    "heldout_policy": "one evaluation per arm; training gate precedes interpretation",
+    "matching": "same data, step/wall ceilings, 552 trainable and 64 frozen float64 scalars; no dummy padding"
+  },
+  "recipe_v2_linear": {
+    "recipe": "recipe_v2_linear",
+    "constructor_kind": "linear-in-value",
+    "arithmetic_structure": "injected arithmetic structure: phi(k,v)=v*u_k; factored learned key basis",
+    "seed": 20261015,
+    "connector_seed": 20261016,
+    "receiver_seed": 20261017,
+    "train_seed": 271828,
+    "training_value_numerator_min": -22,
+    "training_value_numerator_max": 20,
+    "training_grid_denominator": 8,
+    "train_worlds": 256,
+    "training_views": [
+      "base",
+      "replace",
+      "retract"
+    ],
+    "optimizer": "LBFGS",
+    "optimizer_steps": 6000,
+    "learning_rate": 1.0,
+    "max_line_search_evals": 12,
+    "lbfgs_history": 30,
+    "optimizer_tolerance_grad": 1e-16,
+    "optimizer_tolerance_change": 1e-20,
+    "fit_wall_seconds": 600,
+    "training_max_error_gate": 0.0001,
+    "heldout_policy": "one evaluation per arm; training gate precedes interpretation",
+    "matching": "same data, step/wall ceilings, 552 trainable and 64 frozen float64 scalars; no dummy padding"
+  },
+  "confirmation": {
+    "world_seed": 16485655686493834733,
+    "worlds": 96,
+    "edits_per_fork": 3,
+    "actions_per_fork": 7,
+    "edit_values": [
+      [
+        3,
+        8
+      ],
+      [
+        -19,
+        8
+      ],
+      [
+        40,
+        8
+      ]
+    ],
+    "opposite_sign_on_fork_B": true,
+    "tolerance": 0.0001,
+    "wall_seconds": 1200,
+    "policy": "one fit and one fresh panel; no tuning, seed retries or second look",
+    "range_strata": "relative to initial [-2,2] and training legal [-2.75,2.5]; third edit extrapolates to +/-5"
+  }
+}
