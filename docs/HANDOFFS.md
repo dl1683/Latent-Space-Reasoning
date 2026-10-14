@@ -1,3 +1,39 @@
+## Council pickup correction — 2026-10-14 18:05–18:29 UTC
+
+Read [STATE](../STATE.md), [queue](../experiments/cloud/RESEARCH_QUEUE.md) and
+[S0 spec](../experiments/cloud/specs/s0_memory_port_smoke_v1.md). Council dialogue:
+`internal/supervision/council_20261014T1805Z/{r1_codex_out,r2_droid_out,r3_codex_out}.md`;
+assignments: `internal/orchestration/NEXT_STEPS.md`. This supersedes the earlier
+E1-first pickup order, preserving that dated review below.
+
+S0 inspected SHA-256 `bcbd04be4d3d07b00676c95382cf0d6848d43a08578415d1b1692200d6b6d8dd`
+computes but drops the prefix and stem output (`s0_memory_port.py:302–320`);
+five reported CPU scaffold checks do not exercise the receiving dependency.
+E1 inspected SHA-256 `cb11db73d441280bdb11fc92d2d6ee10015a4a48729f0d56ccaee74c20ca271f`
+has main/CLI/alignment/snapshot drafts and registration, but live main retains old
+Inputs, misattributed metrics and unconditional noise validity. Alignment entry
+is lost at `lsr_cloud.py:147`. Both are NOT-READY; source existence is not live adoption.
+
+**Next block:** production-bound recording receiver first, then connect prefix,
+masks/positions and exact returned output; current bytes must fail that check.
+`--check s0-callgraph` is proposed acceptance, not an existing passed command.
+Only if the boundary works, add one tiny trained CPU receiver and a source-free
+reload/late-query/revision/history/unrelated/fork trace with an exact maintained
+comparator. Timeboxes are reassessment points, not completion promises. Narrower
+S0 scope needs supervisor approval; full native/runtime/cache/gradient controls
+remain required. Q1 needs a separate assigned implementer; it is not running in parallel.
+
+**Operator:** finite read-only pin/resource/custody handoff, then exit unallocated.
+Owner freeze (1–2 hours while grading finishes) needs explicit release; no ready
+row, no matching LAUNCHABLE review, no separate S0/E1 smoke PASS. Council prompt's
+no-VM observation is dated 18:01 UTC; no refresh here. Spend remains the prior
+918.39 USD estimate. No launch, retry, upload or local weight download.
+
+**Sangam:** useful provisional inventory; R3 corrects R1's omitted successful scoped
+path-set/size checks, without whole-tree/recovery/privacy/rights certification.
+One bounded reference/error/privacy gap table is next; no adoption or retirement.
+This handoff records design/static/mock findings, not a new scientific result.
+
 ## Three-round council pickup — 2026-10-14 13:05 UTC
 
 Codex R1 -> Droid R2 -> Codex R3 converged on continue with changes: charged S/M

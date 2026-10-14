@@ -28,6 +28,45 @@ point here from their README/About and status/resume entrypoints. Current custod
 boundaries remain in STATE.md and docs/CONSOLIDATION.md. Migration ledger entries
 are organizational and excluded from scientific denominators. No old run is adopted.
 
+### Three-round council correction — 2026-10-14 18:05–18:29 UTC
+
+R1 design/static review and bounded CPU probes -> real headless Droid R2 static
+adversarial review -> fresh real CLI R3 response and recording-receiver probe.
+Transcripts: `internal/supervision/council_20261014T1805Z/`; synthesis and assignments:
+`internal/orchestration/NEXT_STEPS.md`. This sync verifies source/hash identity and
+records the reported checks; it does not rerun them or refresh cloud state.
+
+**Continue with changes:** construct production prefix -> receiver -> returned
+output before more apparatus. S0 hash `bcbd04be` still drops prefix and stem output
+at `s0_memory_port.py:302–320`; five scaffold checks passing does not prove the port.
+R3's changed serialized/reloaded payloads sent identical receiver kwargs and neither
+returned its sentinel. This is a wiring defect, not absent information or learned
+failure. Worker prepension/recurrence/completeness claims are unsupported. S1n's
+metadata rejection is not a valid donor intervention; omission is not executed and
+selection depends on raw source text (`s1n_bridge.py:132–187`).
+
+E1 now has main/CLI/alignment/snapshot drafts and registration, but live main retains
+old Inputs, original-metric attribution and unconditional `noise_valid=True`.
+Shard assembly drops a top-level-only entry (`lsr_cloud.py:147`). Both remain
+NOT-READY; neither separate S0/E1 positive-control smoke passed and no matching
+LAUNCHABLE review exists. Historical generic instrument controls retain their scope.
+Owner launch freeze remains until explicit release; no ready row, no launch here.
+The no-VM observation is dated 18:01 UTC in the council prompt; spend is the prior
+918.39 USD estimate, with no new fact or refresh.
+
+**Provenance correction:** R1's log did contain successful scoped text/artifact
+path-set and size comparisons with zero missing/extra/size mismatches, despite R1's
+report saying no successful full path-set comparison. Frozen rehash found zero drift.
+These checks do not certify whole-tree bytes, recovery, privacy or rights. Sangam
+Stage 0 stays provisional; one bounded reference/error/privacy gap table is next.
+
+**Pickup:** if the receiving boundary works, one tiny trained CPU receiver and
+late-query/revision/history/unrelated/fork trace against an exact maintained-state
+comparator; scope reduction stays proposed and does not replace full S0 gates.
+Q1 remains independent and needs its own assigned implementer. No global measured
+effort ratio is established. No new ledger/EXPERIMENTS row: this update records the
+council's static/mock diagnostics, not a new experiment or scientific PASS.
+
 ### Three-round council documentation sync — council 2026-10-14 12:26–13:05 UTC
 
 Codex R1 design/static review and two reported bounded CPU checks -> Droid R2

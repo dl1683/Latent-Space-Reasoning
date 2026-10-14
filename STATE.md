@@ -87,6 +87,38 @@ under the supervisor's direction. Model weights stay on Google Cloud only.
 
 **[HYPOTHESIS/TARGET] Architecture direction — supervisor sync 2026-10-15:** the [architecture draft](docs/ARCHITECTURE_DIRECTION_2026_10_15_DRAFT.md) proposes one decode-aware reasoner with optional memory. S0, the actual-model memory-port and ten-step backward-fit smoke, is the first gated experiment and Z Code’s top task; E1 remains secondary, with reusable work folded into natural-document transfer (S1n). S0 runner and config are drafted; the first fresh review returned **NOT-READY** (2026-10-15 task label; inspection 2026-10-14). The live receiving operation, bypass evidence and runtime pins remain incomplete. Nothing launched by this sync.
 
+**Council readiness correction — 2026-10-14 18:05–18:29 UTC:**
+
+- **S0: NOT-READY**, inspected runner SHA-256
+  `bcbd04be4d3d07b00676c95382cf0d6848d43a08578415d1b1692200d6b6d8dd`.
+  The previous exception was replaced by a stub: `forward()` computes a memory
+  prefix but never passes it to the stem, and drops the stem output
+  (`experiments/cloud/lsr_jobs/s0_memory_port.py:302–320`). Five reported CPU
+  scaffold checks pass without exercising this dependency. The council's
+  recording-receiver probes establish disconnected wiring, not a learned-memory
+  result or a positive-control smoke PASS.
+- **E1: NOT-READY.** Main, CLI, alignment entry, bounded exact snapshot helpers
+  and dispatcher registration now exist; earlier missing-entry observations are
+  historical. Live main still uses old `Inputs`, misattributes snapshot metrics
+  and sets `noise_valid=True` unconditionally (`e1_ledger.py:873–897,1064–1068`).
+  The alignment config's top-level `entry` is dropped by shard assembly
+  (`experiments/cloud/lsr_cloud.py:147`), so it would select main instead.
+- **Launch freeze:** the owner froze new cloud launches for 1–2 hours while
+  grading finishes; elapsed time does not release the freeze. No current S0/E1
+  entry is `ready`, neither operation's separate positive-control smoke has
+  passed, and no matching LAUNCHABLE review exists. The council prompt records
+  no `sc-bench-lsr-*` VM at 18:01 UTC; this sync does not refresh cloud state.
+  Spend remains the dated 918.39 USD estimate; no new spend fact is recorded.
+- **Pickup:** connect production prefix -> receiving operation -> returned output
+  first; continuation/comparator work follows only if that boundary works.
+  Narrower S0 scope remains proposed, with full launch gates unchanged. Sangam
+  Stage 0 inventory is useful but not certified complete; next is one bounded
+  reference/error/privacy gap table, without adoption or retirement.
+
+Dialogue and executed-probe provenance: `internal/supervision/council_20261014T1805Z/`;
+current assignments: `internal/orchestration/NEXT_STEPS.md`. This is a documentation
+correction, not a new scientific result.
+
 **Earlier first-construction proposal:**
 [theory/FIRST_CONSTRUCTION_PROPOSAL.md](theory/FIRST_CONSTRUCTION_PROPOSAL.md)
 remains an unapproved historical design; its budgets and model exclusions do not
