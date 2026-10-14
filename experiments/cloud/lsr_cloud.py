@@ -234,7 +234,7 @@ def spend():
         by_run[r["run"]] = by_run.get(r["run"], 0.0) + usd
         total += usd
     lines = ["# LSR GCP spend ledger", "", f"Updated {now()}. Estimated from VM lifetimes x all-in Spot rate "
-             "(Cloud Billing catalog, 2026-10-11). Budget 5,000 USD.", "",
+             "(Cloud Billing catalog, 2026-10-11). Owner authorization 2026-10-15: per-program spend caps removed; compute credit only; Scale Y1 - AI expires 2026-10-17.", "",
              "| run | VMs launched | est. USD |", "|---|---:|---:|"]
     for run in sorted(by_run):
         lines.append(f"| {run} | {sum(1 for r in rows if r['run'] == run)} | {by_run[run]:.2f} |")

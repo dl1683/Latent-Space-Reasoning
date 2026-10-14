@@ -46,9 +46,44 @@ under the supervisor's direction. Model weights stay on Google Cloud only.
   readout error, grid legality and explicit transfer boundary. No learned or
   economic result exists; E1/E2 are independent graph constructions.
 - **E1: NOT-READY.** Z Code owns the
-  [must-fix list](docs/council_2026_10_15_e1_runner_codex.md). Launch requires fixes
-  and a second Codex review saying LAUNCHABLE, followed by queue readiness.
+  [must-fix list](docs/council_2026_10_15_e1_runner_codex.md). The council additionally
+  found an out-degree shortcut answering the canonical query and identical
+  CURRENT/HISTORICAL reader inputs, plus snapshot-metric misattribution and
+  incomplete noise-path coverage. These are recorded review findings, not repaired
+  behavior. Launch requires fixes and a second Codex review saying LAUNCHABLE,
+  followed by queue readiness.
 - **E2: conditional on E1 passing; not ready or allocated.**
+
+- **Council decision — 2026-10-14 12:26–13:05 UTC:** continue with changes.
+  E1's primary construction is S/M: `construct -> update -> snapshot(version) ->
+  read(snapshot, query)`. The reader sees a persistent snapshot and query only,
+  without the source ledger, stem, action log or old answers. Policy/horizon
+  encoding and the exact membership/version index are charged; current and
+  historical snapshots are selected at the same post-action time. S/A is an
+  optional diagnostic. This connected hybrid does not claim learned revision,
+  causal erasure or pretrained-computation reuse. See the
+  [council contract](experiments/cloud/specs/dependency_continuation_v1.md).
+- **Proposed trace gates, not frozen registration:** 64 independent base-world
+  clusters for a diagnostic pilot, 128 fresh clusters for confirmation. One
+  canonical trajectory succeeds only if both worlds answer pre/post/history
+  correctly (six decisions); mean >= 0.90 and one-sided 95% exact-binomial
+  lower bound >= 0.85 require 116/128 (60/64 at pilot size). Post-pair
+  mean/lower-bound 0.85/0.75 is diagnostic only. Unrelated/non-current history
+  lower bounds >= 0.90 and frozen-reader donor swap mean/lower-bound 0.90/0.85
+  remain proposed; auxiliary gate calculations must finish before freeze.
+  Replay competence >= 0.95 per view supports replay-relative interpretation;
+  deficit <= 0.05 gates a replay-replacement claim, not every operation-adding
+  construction. Retract-only progression does not establish reinsert/policy
+  readiness. Six record slots plus one policy slot mean 1,792 payload bytes;
+  expand and reprice the schema if repaired families need more records.
+- **Q1: DESIGN, CPU only.** The
+  [learned quadratic continuation state](experiments/cloud/specs/quadratic_continuation_cpu_v1.md)
+  is an independent constructor/updater/reader proposal with exact controls and
+  an equally exposed resolvent comparator; it is not an E1 prerequisite or result.
+- **Nothing is ready to launch.** The separate
+  [E1 alignment/hook smoke](experiments/cloud/specs/e1_alignment_hook_smoke_v1.md)
+  is DESIGN / NOT READY and still needs implementation, CPU receipts, exact pins,
+  a fresh LAUNCHABLE review and supervisor readiness. This sync runs no experiment.
 
 **Earlier first-construction proposal:**
 [theory/FIRST_CONSTRUCTION_PROPOSAL.md](theory/FIRST_CONSTRUCTION_PROPOSAL.md)

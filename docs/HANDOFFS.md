@@ -1,3 +1,54 @@
+## Three-round council pickup — 2026-10-14 13:05 UTC
+
+Codex R1 -> Droid R2 -> Codex R3 converged on continue with changes: charged S/M
+`construct/update/snapshot(version)/read(snapshot, query)`, source-free reader,
+same-time current/history, optional S/A, 64-cluster diagnostic / 128-cluster
+confirmation, proposed canonical six-decision trace gates and frozen-reader
+state interventions. [NOTEBOOK](../NOTEBOOK.md) records R1 corrections and the
+analytical binomial calculation; [spec section 4A](../experiments/cloud/specs/dependency_continuation_v1.md)
+supersedes older slot/gate wording. Private transcripts and assignments are in
+`internal/supervision/council_20261014T1226Z/` and
+`internal/orchestration/NEXT_STEPS.md`. These are design/static-review records,
+with R1's reported CPU checks and R3's analytical calculation distinguished from
+experimental evidence. This sync executes no checks or experiments.
+
+**Pickup order (Z Code):** (1) CPU-only dispatch before any loader call; reject
+unknown checks/cloud-only modes locally; (2) persistent source-free snapshot
+reload/read, active-record attention exclusion and same-time version selection;
+repair degree-matched dead-end/type/horizon families and rotate retraction targets;
+(3) nonzero failure semantics, correct original/intervention attribution and frozen
+reader donor-swap/omission controls; (4) minimum source/config/helper custody before
+terminal skipping, durable predictions and distinct attempt identity; (5) both-name-
+token keys and independently selected replay; (6) tiny alignment/hook plumbing,
+placement and enforced deadline. `--check cpu-boundary`, `contract`, `cpu-snapshot`,
+`generator-null`, `gates`, `custody-resume`, `stub-alignment`, `dispatch-budget`
+are proposed interfaces to implement, not passed receipts. Exit 0 alone is no proof.
+
+**Q1:** separate implementation worker assigned by the supervisor; CPU only,
+<=4 threads and <=30 minutes including construction/fitting, one recipe/seed.
+Exact event/history controls precede fitting. Stop on exact-control/custody failure,
+nonfinite values, CUDA/download attempt or timeout. If no worker is assigned, finish
+E1's CPU boundary and persistent snapshot before Q1 reassignment. Droid's Q1-first
+and Codex's boundary-first preferences remain distinct; the supervisor compares
+both tracks' persistent artifacts and actual effort after one hour and redirects
+if E1 is still plumbing-only. Q1 is design, not an E1 prerequisite or result.
+
+**Cloud operator:** default finite read-only readiness/custody handoff, then remain
+unallocated. Nothing is ready. E1's degree shortcut, identical CURRENT/HISTORICAL
+inputs, attribution/noise defects and prior must-fixes still block the documented
+prototype. Separate smoke requires implemented dispatch, CPU receipts, exact
+model/tokenizer/dependency/image/corpus/config/working-tree pins, enforced deadline,
+fresh real-CLI LAUNCHABLE review and supervisor `ready`. Existing generic controls
+are insufficient. No full E1, E2, Q1 cloud launch, retry loop or idle allocation.
+Spend remains $918.39 at the 2026-10-14 11:58:30 UTC snapshot; no live refresh here.
+
+Codex corrected post-pair-only promotion and its universal replay-deficit veto,
+missed frozen-reader versus retrained-null distinction, metric attribution and
+whole-input noise coverage, and retracted the displaced-winner reference diagnosis.
+It also acknowledged missing power/birth-version coverage, unmeasured comparator
+costs/effort, schema mismatch and unrealistic one-hour completion. Full details and
+pending auxiliary gate calculations are in NOTEBOOK. No learned/economic claim.
+
 ## Supervisor handoff — 2026-10-15
 
 Read [STATE](../STATE.md) and [RESEARCH_QUEUE](../experiments/cloud/RESEARCH_QUEUE.md)

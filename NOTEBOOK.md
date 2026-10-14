@@ -28,6 +28,69 @@ point here from their README/About and status/resume entrypoints. Current custod
 boundaries remain in STATE.md and docs/CONSOLIDATION.md. Migration ledger entries
 are organizational and excluded from scientific denominators. No old run is adopted.
 
+### Three-round council documentation sync — council 2026-10-14 12:26–13:05 UTC
+
+Codex R1 design/static review and two reported bounded CPU checks -> Droid R2
+static adversarial review -> Codex R3 response/static review and an in-memory
+exact-binomial calculation. Private transcripts remain in
+`internal/supervision/council_20261014T1226Z/`; the operational synthesis is
+`internal/orchestration/NEXT_STEPS.md`. This sync records that evidence; it does
+not rerun those checks, refresh cloud state or supply a LAUNCHABLE audit.
+
+**Decision:** continue with changes; use the charged S/M persistent snapshot
+contract in [spec section 4A](experiments/cloud/specs/dependency_continuation_v1.md),
+with source ledger/stem/action log/old answers unavailable to the reader. Current
+and historical views are selected at the same post-action time; S/A is optional.
+The council adopts 64 diagnostic / 128 fresh confirmation clusters, proposed
+six-decision temporal-trace promotion, frozen-reader donor swaps and omission,
+contract-specific replay gates, and parallel CPU-only Q1 design. Nothing is ready
+or launched. Section 4A supersedes the older twelve-slot and gate wording in the
+dated analytical/cloud design entry below; six+one slots currently charge 1,792
+payload bytes, with expansion/repricing required if repaired families need more.
+
+**Codex corrections to R1:** temporal trace replaces post-pair-only promotion;
+replay deficit protects replay replacement rather than universally vetoing E2;
+retrained omitted/shuffled systems do not substitute for frozen-reader causal
+interventions; snapshot metrics must come from snapshot predictions; noise checks
+must include keys, replay and combined inputs. Codex retracts its old-winner
+reference diagnosis: `net` is rebound before winner replacement, while `selected`
+retains the current winner despite `del net`. R1 also omitted inert birth-version
+coverage and supplied no power calculation. Same-time history, source-free reload,
+shortcut-breaking families and intervention checks are necessary beyond moving
+flags outside the reader. No measured effort ratio supports a >5:1 assertion;
+full M1–M7 completion within one hour is unrealistic. Degree is a retained-structure
+shortcut, not demonstrated stateless leakage; renamed motifs do not establish
+generalization. Exact comparison costs are unmeasured, and 1,792 versus 36 payload
+bytes is about 49.8x expansion. Retract-only separating pairs necessarily have
+positive canonical pre-answers; balance requires another declared action family.
+The existing flag-conditioned arm is diagnostic classification, with no learned
+updater, erasure or pretrained-computation-reuse claim. E2's frozen-reader route
+needs its competent receiver; independently constructed routes need not await all
+E1 arms. Recorded Gemma instrument observations retain their scoped validity.
+
+**Analytical calculation (R3 section 2):** stdlib exact-binomial summation, reported
+~0.015 seconds in memory. For mean >=0.90 and one-sided 95% lower bound >=0.85,
+choose the smallest k with `P[Binomial(n,0.85) >= k] <= 0.05`: 60/64 or 116/128.
+At true whole-trace success 0.85/0.90/0.95/0.97, pass probabilities are
+2.80%/22.05%/78.44%/95.69% (64) and 4.26%/48.05%/98.79%/99.99% (128).
+Independent per-decision accuracy 0.97 gives trace success ~0.833 and pass
+probabilities 1.21%/1.32%; at 0.99 they are 68.00%/96.25%. The older post-pair
+gate requires 55/64 or 109/128. These are operating characteristics, not measured
+model quality or a universal power guarantee. Donor-swap, fractional preservation,
+per-operation, replay-deficit and family-specific calculations remain pending
+before confirmation freeze. One analytical ledger row records this calculation,
+excluded from model-performance denominators.
+
+**Remaining sequencing disagreement:** Droid favors Q1-first construction; Codex
+favors the safe E1 CPU boundary first for Z Code, with a separate Q1 worker in
+parallel. The supervisor compares both tracks' returned persistent artifacts and
+actual construction/measurement effort after one hour, then decides the next block;
+if E1 remains plumbing-only, redirect toward Q1. No direction is closed. Pickup:
+CPU boundary -> persistent snapshot and shortcut repair -> terminal/attribution ->
+minimum custody -> two-token keys and independent replay selection -> separate
+alignment/hook smoke prerequisites. Detailed owners and stops:
+[handoff](docs/HANDOFFS.md), [queue](experiments/cloud/RESEARCH_QUEUE.md).
+
 ### Supervisor documentation sync — 2026-10-15
 
 - Current authority is in STATE.md: Claude coordinator supervises; Codex/Droid think and review; Z Code implements; agy handles grunt work/custody; the cloud operator executes only ready entries. Owner authorized Google Cloud experiments, all GPU on cloud, compute credit only, caps removed; credit expires 2026-10-17.

@@ -1,5 +1,11 @@
 # First construction proposal (2026-10-14): correction-closed rule state over a frozen stem
 
+**Current-authority pointer:** This historical proposal's Gemma exclusion is superseded by
+[amendment G4](LATENT_BRANCH_CAPACITY.md#amendment-g4-2026-10-15-admit-the-gemma-4-family).
+Its model exclusions, budgets and local-cache wording do not govern current work;
+[STATE.md](../STATE.md) and the 2026-10-15 owner authorization govern execution,
+with model weights on Google Cloud only. The proposal below remains historical.
+
 Status: PROPOSAL ONLY. Nothing is registered, launched or spent. Thresholds below are proposed and freeze only on
 the owner's approval. Selection follows theory/RESEARCH_PROGRAM.md, "How we choose the next work".
 
