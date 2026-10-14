@@ -36,6 +36,11 @@ class Out:
         (self.dir / name).write_text(json.dumps(obj, indent=2, default=str))
 
 
+def _text_cfg(model):
+    """Multimodal configs (e.g. Gemma 4) keep the decoder dimensions in a text sub-config."""
+    return model.config.get_text_config() if hasattr(model.config, "get_text_config") else model.config
+
+
 def load(model_id, dtype=torch.bfloat16, device_map="cuda", revision=None):
     from transformers import AutoModelForCausalLM, AutoTokenizer
     tok = AutoTokenizer.from_pretrained(model_id, revision=revision)
@@ -45,7 +50,7 @@ def load(model_id, dtype=torch.bfloat16, device_map="cuda", revision=None):
     model = AutoModelForCausalLM.from_pretrained(model_id, dtype=dtype, device_map=device_map, revision=revision)
     model.eval()
     info = {"model": model_id, "revision": getattr(model.config, "_commit_hash", None),
-            "n_layers": model.config.num_hidden_layers, "d_model": model.config.hidden_size,
+            "n_layers": _text_cfg(model).num_hidden_layers, "d_model": _text_cfg(model).hidden_size,
             "n_params": sum(p.numel() for p in model.parameters()), "dtype": str(dtype),
             "torch": torch.__version__, "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu"}
     import hashlib
