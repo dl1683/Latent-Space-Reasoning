@@ -9,7 +9,7 @@ So what: *one hidden state might keep several possible solutions usable, update 
 others, and answer a question chosen afterward.*
 
 Window: 2026-10-11 to 2026-10-16. Budget: 5,000 USD (Spot, iqidis-developer). Allocated ceilings: 3,736 USD.
-Reserve: 1,264 USD. Models: open weights only, no Gemma, no Gemini, no OpenAI models or datasets.
+Reserve: 1,264 USD. Models: open weights only, no Gemini, no OpenAI models or datasets. Gemma 4 admitted by Amendment G4 (2026-10-15; see end of file).
 The operator uses generated tasks instead of GSM8K, because GSM8K is an OpenAI dataset.
 
 ## Portfolio
@@ -622,3 +622,19 @@ scored with the per-slot linear reference at layers 9 AND 18 for both arms. The 
 renamed/orig accuracy is reported with an independent collection-bootstrap 95% interval (the arms' collections are
 not paired). The prediction is unchanged (>= 0.10 at k=4). The instrument gates passed on these identical states in
 the ablation run.
+
+## Amendment G4 (2026-10-15): admit the Gemma 4 family
+
+Amends the model exclusion stated in the header ("no Gemma"), which was frozen before this owner instruction. The
+owner instructed the admission on 2026-10-15 via the coordinator. Scope: the Gemma 4 family, with
+google/gemma-4-31B as the primary stem. Base revision 5bbc2fb1c1b2c611d06e3d9f23c170ba21659d89 (Apache-2.0 per
+model metadata). Instruction-tuned variants are not admitted for stems.
+
+Hook access, verified statically on the pinned revision: decoder layers are model.model.language_model.layers
+(60 layers, d_model 5376; checked against the safetensors index names). Live hook verification happens only on the
+VM, with the controls in experiments/cloud/lsr_jobs/gemma_controls.py (identity-hook exactness, a live 10x add, and
+the value-token donor-SET control at >= 0.95). The control run is a precondition of any Gemma result.
+
+Mixture-of-experts scale checks (Inkling, Nemotron 3 Ultra) are planned only after the method passes on the dense
+stem. Those models are not admitted by this amendment. OLMo 2 remains a reproducibility control only.
+

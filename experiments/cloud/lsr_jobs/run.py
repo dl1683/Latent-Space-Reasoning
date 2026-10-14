@@ -5,7 +5,7 @@ import sys
 
 from .common import Out
 
-KINDS = {"smoke": "smoke", "recur": "recur", "search": "search", "branch": "branch", "p2": "p2", "fd": "fd", "native": "native", "q1pp": "q1pp", "readout": "readout", "bindq": "bindq", "formation": "formation"}
+KINDS = {"smoke": "smoke", "recur": "recur", "search": "search", "branch": "branch", "p2": "p2", "fd": "fd", "native": "native", "q1pp": "q1pp", "readout": "readout", "gemma_controls": "gemma_controls", "bindq": "bindq", "formation": "formation"}
 
 if __name__ == "__main__":
     cfg = json.load(open(sys.argv[1]))
