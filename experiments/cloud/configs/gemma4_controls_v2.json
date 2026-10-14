@@ -1,0 +1,41 @@
+{
+ "run": "gemma4-controls-v2-2026-10-15",
+ "kind": "gemma_controls",
+ "machine": "a2-highgpu-2g",
+ "accelerator": null,
+ "usd_per_hour": 4.42,
+ "cost_cap_usd": 25.0,
+ "disk_gb": 300,
+ "zones": [
+  "us-east4-c",
+  "us-west4-b",
+  "us-west1-b",
+  "europe-west4-a",
+  "us-east1-c",
+  "us-central1-a",
+  "us-central1-b",
+  "us-central1-c",
+  "us-central1-f"
+ ],
+ "requirements": [
+  "transformers>=5.12,<6",
+  "accelerate",
+  "jinja2>=3.1"
+ ],
+ "common": {
+  "model": "google/gemma-4-31B",
+  "revision": "5bbc2fb1c1b2c611d06e3d9f23c170ba21659d89",
+  "device_map": "auto",
+  "layer_frac": 0.25,
+  "seed": 0,
+  "k": 4,
+  "n_identity": 8,
+  "n_value": 64,
+  "batch": 8,
+  "note": "Amendment G4 controls v2: adds complete-token-difference, batch-shape noise and receiver-self-SET; non-claim",
+  "n_batchshape": 16
+ },
+ "shards": [
+  {}
+ ]
+}

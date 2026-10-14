@@ -6,6 +6,9 @@ Controls, in order, each is an assertion that stops the run:
   1. HOOK LIVE: a zero add at the chosen layer reproduces base logits exactly; a 10x-norm random add changes them.
   2. VALUE-TOKEN CONTROL: donor residual SET at the changed fact's value token makes the answer follow the donor
      (>= 0.95, unpatched donor-follow reported as 0), with shuffled-donor and majority baselines.
+  3. COMPLETE-TOKEN-DIFFERENCE: control 2 uses only equal-length blocks differing at exactly the value token.
+  4. BATCH-SHAPE NOISE: singleton/original/reversed batches agree on option argmax; report logit and residual noise.
+  5. RECEIVER-SELF-SET: receiver residual SET preserves option logits within max(1e-3, twice control 4's noise).
 Non-claim: passing these establishes an instrument, not any latent-state result.
 """
 import random
@@ -99,21 +102,26 @@ def main(cfg, out):
     res = {"tgt": [], "shuf": [], "unpatched": []}
     gold_maj = []
     n = cfg["n_value"]
-    while len(res["tgt"]) < n:
+    rows = []
+    n_checked = n_failed = 0
+    while len(rows) < n:
         c = collection(rng, cfg["k"], NAMES[:20])
         c2, i = changed(rng, c)
         db, rb = block(c, "W1"), block(c2, "W1")
         pd, pr = value_positions(tok, db, c, "W1")[i], value_positions(tok, rb, c2, "W1")[i]
-        if pd != pr:
+        donor_ids = tok(db, add_special_tokens=False)["input_ids"]
+        receiver_ids = tok(rb, add_special_tokens=False)["input_ids"]
+        diff_pos = [j for j, (d, r) in enumerate(zip(donor_ids, receiver_ids)) if d != r]
+        n_checked += 1
+        if pd != pr or len(donor_ids) != len(receiver_ids) or diff_pos != [pr]:
+            n_failed += 1
             continue
+        assert len(donor_ids) == len(receiver_ids) and diff_pos == [pd] == [pr]
         q = rb + FAM["W1"]["q"].format(n=c["names"][i])
-        assert tok(q, add_special_tokens=False)["input_ids"][:pr + 1] == tok(rb, add_special_tokens=False)["input_ids"][:pr + 1]
+        assert tok(q, add_special_tokens=False)["input_ids"][:pr + 1] == receiver_ids[:pr + 1]
         donor_state = states_at_pos(model, tok, [db], layer, [pd])
-        res.setdefault("_rows", []).append((q, pr, donor_state, c["colors"][i]))
+        rows.append((q, pr, donor_state, c["colors"][i], rb))
         gold_maj.append(c["colors"][i])
-        if len(res["_rows"]) == n:
-            break
-    rows = res.pop("_rows")
     shuffle_perm = list(range(len(rows)))
     random.Random(cfg["seed"] + 1).shuffle(shuffle_perm)
     for start in range(0, len(rows), cfg["batch"]):
@@ -139,4 +147,66 @@ def main(cfg, out):
                "shuffled_donor_follow": sum(res["shuf"]) / len(res["shuf"]), "majority_baseline": maj,
                "gate_pass": follow >= 0.95})
     assert follow >= 0.95, f"value-token control failed: donor-follow {follow:.3f}"
+
+    # ---- control 3: complete token differences, filtered before control 2 scoring
+    token_diff_pass = n_checked - n_failed == len(rows) == n
+    out.write({"key": "gemma|control3_token_diff", "n_checked": n_checked, "n_failed": n_failed,
+               "gate_pass": token_diff_pass})
+    assert token_diff_pass, "control 2 must use n_value single-token-difference cases"
+
+    # ---- control 4: fixed inputs, singleton versus original/reversed single batches
+    n_batchshape = cfg.get("n_batchshape", 16)
+    assert n_batchshape > 0, "n_batchshape must be positive"
+    donor_blocks, donor_pos, queries = [], [], []
+    for _ in range(n_batchshape):
+        c = collection(rng, cfg["k"], NAMES[:20])
+        i = rng.randrange(len(c["names"]))
+        db = block(c, "W1")
+        donor_blocks.append(db)
+        donor_pos.append(value_positions(tok, db, c, "W1")[i])
+        queries.append(db + FAM["W1"]["q"].format(n=c["names"][i]))
+    single_logits = torch.cat([logits_last(model, tok, [q])[:, opt_ids] for q in queries])
+    batch_logits = logits_last(model, tok, queries)[:, opt_ids]
+    reversed_logits = logits_last(model, tok, queries[::-1])[:, opt_ids].flip(0)
+    batchshape_noise = torch.stack([(single_logits - batch_logits).abs().max(),
+                                   (single_logits - reversed_logits).abs().max(),
+                                   (batch_logits - reversed_logits).abs().max()]).max().item()
+    single_argmax = single_logits.argmax(-1)
+    argmax_agreement = ((single_argmax == batch_logits.argmax(-1)) &
+                        (single_argmax == reversed_logits.argmax(-1))).float().mean().item()
+    single_states = torch.cat([states_at_pos(model, tok, [db], layer, [p])
+                               for db, p in zip(donor_blocks, donor_pos)])
+    batch_states = states_at_pos(model, tok, donor_blocks, layer, donor_pos, bs=n_batchshape)
+    residual_noise = (single_states - batch_states).abs().max().item()
+    out.write({"key": "gemma|control4_batchshape_noise", "n": n_batchshape, "layer": layer,
+               "max_abs_logit_diff": batchshape_noise, "argmax_agreement": argmax_agreement,
+               "donor_residual_max_abs_diff": residual_noise, "gate_pass": argmax_agreement == 1.0})
+    assert argmax_agreement == 1.0, f"batch shape changed option argmax: agreement {argmax_agreement}"
+
+    # ---- control 5: receiver's own residual, matching batch size and padded sequence length
+    hook = LayerHook(layers[layer])
+    self_diffs = []
+    for start in range(0, len(rows), cfg["batch"]):
+        chunk = rows[start:start + cfg["batch"]]
+        qs = [r[0] for r in chunk]
+        pos = torch.tensor([r[1] for r in chunk])
+        base_options = logits_last(model, tok, qs)[:, opt_ids]
+        query_length = max(len(ids) for ids in tok(qs, add_special_tokens=False)["input_ids"])
+        enc = tok([r[4] for r in chunk], return_tensors="pt", padding="max_length",
+                  max_length=query_length, add_special_tokens=False).to(model.device)
+        with torch.no_grad():
+            hs = model(**enc, output_hidden_states=True).hidden_states[layer + 1]
+            vals = hs[torch.arange(len(chunk), device=hs.device), pos.to(hs.device)].float()
+        del hs
+        hook.edits = [(pos, vals, "set")]
+        self_options = logits_last(model, tok, qs)[:, opt_ids]
+        hook.edits = None
+        self_diffs.append((self_options - base_options).abs().max())
+    hook.remove()
+    self_diff = torch.stack(self_diffs).max().item()
+    self_tolerance = max(1e-3, 2 * batchshape_noise)
+    out.write({"key": "gemma|control5_receiver_self_set", "n": len(rows), "layer": layer,
+               "max_abs_logit_diff": self_diff, "tolerance": self_tolerance,
+               "gate_pass": self_diff <= self_tolerance})
+    assert self_diff <= self_tolerance, f"receiver self-SET changed option logits by {self_diff} > {self_tolerance}"
     out.write({"key": "gemma|controls_passed", "note": "instrument valid; no latent-state claim"})
