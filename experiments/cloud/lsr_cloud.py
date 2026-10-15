@@ -23,6 +23,8 @@ import hashlib
 import math
 import re
 import tarfile
+import io
+import gzip
 import time
 
 try:
@@ -87,11 +89,11 @@ CONFIG_KEYS = {"run", "kind", "entry", "machine", "accelerator", "usd_per_hour",
                "has_gpu", "guest_accelerators", "weights_manifest_uri", "weights_manifest_sha256",
                "image_project", "image_id", "release", "requirements_lock_sha256", "weights_mirror_uri", "weights_local_path",
                "allow_hf_download", "rate_verified", "shape_verified", "lifetime_seconds",
-               "work_stop_seconds", "shutdown_reserve_seconds", "max_hours", "shutdown_margin_hours", "ancillary_allowance_usd", "credit_guard_epoch"}
+               "work_stop_seconds", "shutdown_reserve_seconds", "max_hours", "shutdown_margin_hours", "ancillary_allowance_usd", "credit_guard_epoch", "operator_evidence_sha256", "provisioning_model"}
 
 
 # Conservative administrative cutoff; operator must supply an earlier bound if needed.
-CREDIT_GUARD_EPOCH = 1792195200  # 2026-10-17 00:00:00 UTC
+CREDIT_GUARD_EPOCH = 1792193400  # 2026-10-16 23:30:00 UTC
 
 
 def lifetime(cfg):
@@ -138,6 +140,16 @@ RELEASE_PINS = {
 RELEASE_REVISION = "5bbc2fb1c1b2c611d06e3d9f23c170ba21659d89"
 RELEASE_MIRROR = "gs://sc-bench-iqidis-artifacts/lsr/models/gemma-4-31B/" + RELEASE_REVISION
 RELEASE_MANIFEST_SHA256 = "8ea23dc0845967880fa8ce2661f256d13e59129d5fd78c048fbe95481da32d46"
+
+# Operator sibling-stem receipt, RESEARCH_QUEUE.md (2026-10-14T21:50Z).
+# These pins authorize asset identity only, never placement or launch readiness.
+RELEASE_MODELS = {
+    "google/gemma-4-31B": (RELEASE_REVISION, RELEASE_MANIFEST_SHA256),
+    "google/gemma-4-E2B": ("d29ff6b45f081a49ee2733a859c9c9c2d95d1a6f",
+                           "6fb8018d230c91566874f82c0fc006ca8f55bda1dcbcd2afe38feef6d7b372fa"),
+    "google/gemma-4-E4B": ("411aa17b749aa952df1359d2dcea73917a544d9a",
+                           "ea93686963f2f4261b57f84519283fc30c4e1c3d51b5481c110688b37e60b357"),
+}
 
 # Operator-retained measured receipts, keyed by their exact byte SHA-256.
 # Deliberately empty: no measured placement has been supplied. Candidate config
@@ -224,13 +236,17 @@ def validate_release_pins(cfg):
     for part in cfg.get("shards", []):
         shard = {**cfg.get("common", {}), **part}
         if shard.get("model"):
-            expected = {"weights_mirror_uri": RELEASE_MIRROR,
-                        "weights_manifest_uri": RELEASE_MIRROR + "/_manifest_sha256.txt",
-                        "weights_manifest_sha256": RELEASE_MANIFEST_SHA256,
-                        "weights_local_path": "/opt/lsr/weights"}
-            if shard["model"] != "google/gemma-4-31B" or any(cfg.get(k) != v for k, v in expected.items()):
+            if shard["model"] not in RELEASE_MODELS:
                 raise ValueError("unreviewed release model assets")
-            if any(shard.get(k) != RELEASE_REVISION for k in ("revision", "tokenizer_revision")):
+            revision, manifest_hash = RELEASE_MODELS[shard["model"]]
+            mirror = BUCKET + "/models/" + shard["model"].split("/")[1] + "/" + revision
+            expected = {"weights_mirror_uri": mirror,
+                        "weights_manifest_uri": mirror + "/_manifest_sha256.txt",
+                        "weights_manifest_sha256": manifest_hash,
+                        "weights_local_path": "/opt/lsr/weights"}
+            if any(cfg.get(k) != v for k, v in expected.items()):
+                raise ValueError("unreviewed release model assets")
+            if any(shard.get(k) != revision for k in ("revision", "tokenizer_revision")):
                 raise ValueError("unreviewed release revision")
         elif ("model" not in shard or shard["model"] is not None
                 or any(k not in cfg or cfg[k] is not None for k in ("weights_mirror_uri", "weights_manifest_uri", "weights_manifest_sha256", "weights_local_path"))):
@@ -240,12 +256,13 @@ def validate_release_pins(cfg):
 
 def validate_config(cfg):
     total, work, reserve = lifetime(cfg)
+    rate_entry(cfg)
     if cfg.get("release") is True:
         validate_release_pins(cfg)
     for part in cfg.get("shards", []):
         shard = {**cfg.get("common", {}), **part}
         placement = shard.get("placement_contract")
-        if shard.get("model") == "google/gemma-4-31B" and (cfg.get("release") is True or placement is not None):
+        if shard.get("model") in RELEASE_MODELS and (cfg.get("release") is True or placement is not None):
             validate_placement(cfg, shard)
     unknown = set(cfg) - CONFIG_KEYS
     if unknown:
@@ -325,7 +342,8 @@ def validate_config(cfg):
         raise ValueError("explicit accelerator type/count contract required")
     if bool(expected) != cfg["has_gpu"]:
         raise ValueError("GPU expectation conflicts with accelerators")
-    integrated = {"a3-highgpu-2g": [{"type": "nvidia-h100-80gb", "count": 2}],
+    integrated = {"a3-highgpu-1g": [{"type": "nvidia-h100-80gb", "count": 1}],
+                  "a3-highgpu-2g": [{"type": "nvidia-h100-80gb", "count": 2}],
                   "a2-highgpu-2g": [{"type": "nvidia-tesla-a100", "count": 2}]}
     if cfg["machine"] in integrated:
         if expected != integrated[cfg["machine"]] or cfg.get("accelerator"):
@@ -396,22 +414,129 @@ def bundle_name(path):
     return path.relative_to(HERE).as_posix() if path.is_relative_to(HERE) else path.relative_to(REPO).as_posix()
 
 
+def build_bundle(cfg):
+    """Snapshot real deployment bytes once; deterministic archive plus member hashes.
+
+    Canonical cloud package supports the CPU runner's literal helper path/imports.
+    Flat aliases retain the existing VM entry points, with identical source bytes.
+    """
+    members = {}
+    for path in bundle_paths():
+        raw = path.read_bytes()
+        name = bundle_name(path)
+        members[name] = raw
+        if name.startswith("lsr_jobs/"):
+            members["experiments/cloud/" + name] = raw
+    for name in ("vm_startup.sh", "vm_shutdown.sh"):
+        members[name] = (HERE / name).read_bytes()
+    members["requirements.txt"] = ("\n".join(cfg["requirements"]) + "\n").encode()
+    members["config.json"] = (json.dumps(cfg, sort_keys=True, separators=(",", ":")) + "\n").encode()
+    manifest = {name: hashlib.sha256(raw).hexdigest() for name, raw in sorted(members.items())}
+    members["bundle_manifest.json"] = (json.dumps(manifest, sort_keys=True) + "\n").encode()
+    buffer = io.BytesIO()
+    with gzip.GzipFile(fileobj=buffer, mode="wb", mtime=0) as compressed:
+        with tarfile.open(fileobj=compressed, mode="w") as tar:
+            for name, raw in sorted(members.items()):
+                info = tarfile.TarInfo(name)
+                info.size = len(raw)
+                info.mode = 0o644
+                tar.addfile(info, io.BytesIO(raw))
+    return buffer.getvalue()
+
+
 def upload_bundle(run, cfg):
+    raw = build_bundle(cfg)
+    digest = hashlib.sha256(raw).hexdigest()
     with tempfile.TemporaryDirectory() as td:
-        reqs = Path(td) / "requirements.txt"
-        reqs.write_text("\n".join(cfg["requirements"]) + "\n", encoding="utf-8", newline="\n")
-        config = Path(td) / "config.json"
-        config.write_text(json.dumps(cfg, sort_keys=True, separators=(",", ":")) + "\n",
-                          encoding="utf-8", newline="\n")
         archive = Path(td) / "code.tar.gz"
-        with tarfile.open(archive, "w:gz") as tar:
-            for path in bundle_paths():
-                tar.add(path, arcname=bundle_name(path), recursive=False)
-            tar.add(reqs, arcname="requirements.txt")
-            tar.add(config, arcname="config.json")
-        digest = hashlib.sha256(archive.read_bytes()).hexdigest()
-        gcloud("storage", "cp", str(archive), f"{BUCKET}/runs/{run}/bundle/code.tar.gz", "--if-generation-match=0")
-        return digest
+        archive.write_bytes(raw)
+        uri = f"{BUCKET}/runs/{run}/bundle/code.tar.gz"
+        gcloud("storage", "cp", str(archive), uri, "--if-generation-match=0")
+        # Binary readback avoids newline/encoding changes in the text SDK helper.
+        readback = Path(td) / "readback.tar.gz"
+        gcloud("storage", "cp", uri, str(readback))
+        if hashlib.sha256(readback.read_bytes()).hexdigest() != digest:
+            raise ValueError("uploaded bundle readback mismatch")
+    return digest
+
+
+# No operator evidence has been supplied. Config booleans are not receipts.
+# Populate only from an operator's retained, measured receipt, never offline tests.
+RELEASE_CPU_OPERATOR_EVIDENCE = {"82a563a4de801437f0e8a859397044585a13cbc5682a0cb3394d8694ebb53e83": b'{\n  "artifacts": {\n    "ancillary_retention": [\n      {\n        "path": "experiments/cloud/receipts/raw_assoc_cpu_smoke_a02/ancillary_retention.txt",\n        "sha256": "92b01b37eae2b61e092382ecdd92a1e9ffd1fdffbb39ea1f066762bcddea06f8"\n      }\n    ],\n    "iam_scopes_prefix": [\n      {\n        "path": "experiments/cloud/receipts/raw_assoc_cpu_smoke_a02/iam_scopes_prefix.txt",\n        "sha256": "fdd489a0cc3f95adf7b82f560048cf338a316d0674246f2dfab168262e8b06f0"\n      }\n    ],\n    "image_lock_interpreter": [\n      {\n        "path": "experiments/cloud/receipts/raw_assoc_cpu_smoke_a02/image_lock_interpreter.txt",\n        "sha256": "33529ebf497a3fced3812171b91604981ca9674861f40af4cdceab7c64b5494f"\n      }\n    ],\n    "shape_disk": [\n      {\n        "path": "experiments/cloud/receipts/raw_assoc_cpu_smoke_a02/shape_disk.txt",\n        "sha256": "3a17727a2464434993667cf34f33875a9abff0fd21c8de188ac7a058752821fb"\n      }\n    ]\n  },\n  "checks": {\n    "ancillary_retention": "PASS",\n    "credit_rate": "PASS",\n    "iam_scopes_prefix": "PASS",\n    "image_lock_interpreter": "PASS",\n    "shape_disk": "PASS"\n  },\n  "credit_rate": {\n    "authority": "supervisor official-page reading 2026-10-14",\n    "credit_expiry": "2026-10-17",\n    "credit_observed_at": "2026-10-14T16:50:00Z",\n    "credit_usd": 9169.48,\n    "machine": "n2-standard-64",\n    "on_demand_usd_per_hour": 3.107776,\n    "region": "us-central1",\n    "spot_usd_per_hour": 1.864192\n  },\n  "packet_sha256": "6117128188da9d60557e4251ef918f763847b8235bc9e339e89d209546f07868",\n  "source_sha256": "14da9cfec90007bbcf07e2ec5427410455438a1a457d9b703430f93a0d845060"\n}\n'}
+CPU_PRELAUNCH_CHECKS = {"credit_rate", "shape_disk", "ancillary_retention",
+                        "image_lock_interpreter", "iam_scopes_prefix"}
+# Supervisor-supplied official-page reading; not a local billing query.
+CREDIT_RATE_CONTEXT = {"authority": "supervisor official-page reading 2026-10-14",
+    "region": "us-central1", "credit_usd": 9169.48,
+    "credit_observed_at": "2026-10-14T16:50:00Z", "credit_expiry": "2026-10-17"}
+RATE_TABLE = {
+    ("n2-standard-64", "SPOT"): {"usd_per_hour": 1.864192, "derived": False},
+    ("n2-standard-64", "STANDARD"): {"usd_per_hour": 3.107776, "derived": False},
+    ("n2-standard-16", "SPOT"): {"usd_per_hour": 0.466048, "derived": False},
+    ("n2-standard-16", "STANDARD"): {"usd_per_hour": 0.776944, "derived": True,
+                                      "derivation": "3.107776/4"},
+    ("a3-highgpu-1g", "SPOT"): {"usd_per_hour": 6.599, "derived": False},
+    ("a3-highgpu-1g", "STANDARD"): {"usd_per_hour": 11.06125, "derived": True,
+                                     "derivation": "88.49/8 from a3-highgpu-8g"},
+}
+
+
+def rate_entry(cfg):
+    model = cfg.get("provisioning_model")
+    if not isinstance(model, str) or model not in {"SPOT", "STANDARD"}:
+        raise ValueError("explicit provisioning_model SPOT or STANDARD required")
+    machine = cfg.get("machine")
+    if not isinstance(machine, str) or (machine, model) not in RATE_TABLE:
+        raise ValueError("unreviewed machine/provisioning_model rate")
+    entry = {**CREDIT_RATE_CONTEXT, "machine": machine, "provisioning_model": model,
+             **RATE_TABLE[(machine, model)]}
+    if type(cfg.get("usd_per_hour")) not in (int, float) or cfg["usd_per_hour"] != entry["usd_per_hour"]:
+        raise ValueError("machine/provisioning_model rate mismatch")
+    if not cfg.get("zones") or any(not z.startswith(entry["region"] + "-") for z in cfg["zones"]):
+        raise ValueError("rate region mismatch")
+    return entry
+
+
+
+def cpu_source_sha256():
+    # Config is separately bound, avoiding an evidence-hash/config/archive cycle.
+    paths = [*bundle_paths(), HERE / "vm_startup.sh", HERE / "vm_shutdown.sh"]
+    members = {p.relative_to(REPO).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+               for p in paths}
+    return hashlib.sha256(json.dumps(members, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+
+def cpu_packet_sha256(cfg):
+    packet = {k: v for k, v in cfg.items() if k != "operator_evidence_sha256"}
+    return hashlib.sha256(json.dumps(packet, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+def verify_cpu_operator_evidence(cfg):
+    if cfg["kind"] != "associative_continuation_cpu":
+        return
+    entry = rate_entry(cfg)
+    if (cfg.get("machine") not in {"n2-standard-64", "n2-standard-16"}
+            or cfg.get("has_gpu") is not False or cfg.get("guest_accelerators") != []):
+        raise ValueError("CPU evidence requires an admitted CPU shape")
+    raw = RELEASE_CPU_OPERATOR_EVIDENCE.get(cfg.get("operator_evidence_sha256"))
+    if raw is None or hashlib.sha256(raw).hexdigest() != cfg.get("operator_evidence_sha256"):
+        raise ValueError("MISSING-operator: CPU liability/image/IAM receipt")
+    receipt = json.loads(raw)
+    obligations = CPU_PRELAUNCH_CHECKS
+    if (receipt.get("packet_sha256") != cpu_packet_sha256(cfg)
+            or receipt.get("source_sha256") != cpu_source_sha256()
+            or receipt.get("credit_rate") != entry
+            or set(receipt.get("checks", {})) != obligations
+            or any(not isinstance(receipt.get("artifacts", {}).get(k), list)
+                   or not receipt["artifacts"][k]
+                   or any(not isinstance(a, dict) or not isinstance(a.get("path"), str) or not a["path"]
+                          or not re.fullmatch(r"[0-9a-f]{64}", a.get("sha256", ""))
+                          for a in receipt["artifacts"][k])
+                   for k in obligations - {"credit_rate"})
+            or any(receipt["checks"][key] != "PASS" for key in obligations)
+            or cfg.get("rate_verified") is not True or cfg.get("shape_verified") is not True):
+        raise ValueError("CPU operator evidence mismatch or incomplete")
 
 
 def refuse_collisions(cfg, idx):
@@ -457,11 +582,13 @@ def verify_instance(actual, cfg, name, zone, labels, metadata, deadline):
     if actual["name"] != name or tail(actual["machineType"]) != cfg["machine"] or tail(actual["zone"]) != zone:
         raise ValueError("instance identity/shape mismatch")
     sched = actual["scheduling"]
-    if sched.get("provisioningModel") != "SPOT" or sched.get("instanceTerminationAction") != "DELETE" or sched.get("onHostMaintenance") != "TERMINATE":
+    if sched.get("provisioningModel") != cfg["provisioning_model"] or sched.get("instanceTerminationAction") != "DELETE" or sched.get("onHostMaintenance") != "TERMINATE":
         raise ValueError("scheduling mismatch")
     if dt.datetime.fromisoformat(sched["terminationTime"].replace("Z", "+00:00")).timestamp() != deadline:
         raise ValueError("lifetime mismatch")
-    if [s["email"] for s in actual["serviceAccounts"]] != [SA] or actual.get("labels") != labels:
+    if ([s["email"] for s in actual["serviceAccounts"]] != [SA]
+            or any(s.get("scopes") != ["https://www.googleapis.com/auth/cloud-platform"] for s in actual["serviceAccounts"])
+            or actual.get("labels") != labels):
         raise ValueError("service account/labels mismatch")
     got = {x["key"]: x["value"] for x in actual["metadata"]["items"]}
     if got != metadata:
@@ -486,6 +613,7 @@ def verify_instance(actual, cfg, name, zone, labels, metadata, deadline):
 
 def create_vm(cfg, i, shard_path, contract):
     validate_config(cfg)
+    verify_cpu_operator_evidence(cfg)
     name, zone = vm_name(cfg["run"], i), cfg["zones"][0]
     expected_path = f"{BUCKET}/runs/{cfg['run']}/shards/{i:03d}"
     if shard_path != expected_path:
@@ -507,8 +635,17 @@ def create_vm(cfg, i, shard_path, contract):
     metadata["lsr-created-epoch"] = str(contract["created_at"])
     metadata["lsr-accelerator"] = cfg.get("accelerator") or ("integrated" if contract["has_gpu"] else "")
     metadata["lsr-model-mirror"] = cfg.get("weights_local_path") or "/opt/lsr/offline-hf"
-    metadata.update({"startup-script": (HERE / "vm_startup.sh").read_text(),
-                     "shutdown-script": (HERE / "vm_shutdown.sh").read_text()})
+    if cfg["kind"] == "associative_continuation_cpu":
+        frozen = build_bundle(cfg)
+        if hashlib.sha256(frozen).hexdigest() != contract["bundle_sha256"]:
+            raise ValueError("CPU reviewed bundle changed before create")
+        with tarfile.open(fileobj=io.BytesIO(frozen), mode="r:gz") as tar:
+            script_bytes = {key: tar.extractfile(name).read() for key, name in
+                            (("startup-script", "vm_startup.sh"), ("shutdown-script", "vm_shutdown.sh"))}
+    else:
+        script_bytes = {"startup-script": (HERE / "vm_startup.sh").read_bytes(),
+                        "shutdown-script": (HERE / "vm_shutdown.sh").read_bytes()}
+    metadata.update({key: raw.decode("utf-8") for key, raw in script_bytes.items()})
     deadline = dt.datetime.fromtimestamp(contract["shutdown_at"], dt.timezone.utc).isoformat()
     args = ["compute", "instances", "create", name, f"--zone={zone}", f"--machine-type={cfg['machine']}",
             f"--service-account={SA}", "--scopes=https://www.googleapis.com/auth/cloud-platform",
@@ -516,7 +653,7 @@ def create_vm(cfg, i, shard_path, contract):
             f"--boot-disk-size={cfg['disk_gb']}GB", f"--boot-disk-type={cfg['boot_disk_type']}",
             f"--network-interface=nic-type={cfg['nic_type']}",
             "--labels=" + ",".join(f"{k}={v}" for k,v in labels.items()),
-            "--provisioning-model=SPOT", "--instance-termination-action=DELETE",
+            f"--provisioning-model={cfg['provisioning_model']}", "--instance-termination-action=DELETE",
             f"--termination-time={deadline}", "--maintenance-policy=TERMINATE",
             "--metadata=" + ",".join(f"{k}={v}" for k,v in metadata.items() if k not in {"startup-script", "shutdown-script"}),
             f"--metadata-from-file=startup-script={HERE / 'vm_startup.sh'},shutdown-script={HERE / 'vm_shutdown.sh'}"]
@@ -524,18 +661,27 @@ def create_vm(cfg, i, shard_path, contract):
         t, c = cfg["accelerator"].split(":")
         args.append(f"--accelerator=type={t},count={c}")
     # GCE creation is atomic on name: a raced collision raises, never deletes an incumbent.
-    gcloud(*args)
-    try:
-        actual = json.loads(gcloud("compute", "instances", "describe", name, f"--zone={zone}", "--format=json"))
-        verify_instance(actual, cfg, name, zone, labels, metadata, contract["shutdown_at"])
-    except Exception:
-        gcloud("compute", "instances", "delete", name, f"--zone={zone}", "--quiet", check=False)
-        raise
+    with tempfile.TemporaryDirectory() as staging:
+        scripts = {}
+        for key, raw in script_bytes.items():
+            path = Path(staging) / (key + ".sh")
+            path.write_bytes(raw)
+            scripts[key] = path
+        args = [a for a in args if not a.startswith("--metadata-from-file=")]
+        args.append("--metadata-from-file=" + ",".join(f"{key}={path}" for key, path in scripts.items()))
+        gcloud(*args)
+        try:
+            actual = json.loads(gcloud("compute", "instances", "describe", name, f"--zone={zone}", "--format=json"))
+            verify_instance(actual, cfg, name, zone, labels, metadata, contract["shutdown_at"])
+        except Exception:
+            gcloud("compute", "instances", "delete", name, f"--zone={zone}", "--quiet", check=False)
+            raise
     with REGISTRY.open("a", encoding="utf-8") as f:
         f.write(json.dumps({"run": cfg["run"], "shard": i, "vm": name, "zone": zone,
                             "usd_per_hour": cfg["usd_per_hour"], "rate_status": "VERIFIED" if cfg["rate_verified"] else "UNVERIFIED",
                             "shape_status": "VERIFIED" if cfg["shape_verified"] else "UNVERIFIED",
-                            "machine": cfg["machine"], "accelerator": cfg.get("accelerator"),
+                            "machine": cfg["machine"], "provisioning_model": cfg["provisioning_model"],
+                            "credit_rate": rate_entry(cfg), "accelerator": cfg.get("accelerator"),
                             "created": dt.datetime.fromtimestamp(contract["created_at"], dt.timezone.utc).isoformat(),
                             "ancillary_allowance_usd": ancillary(cfg), "dispatch": contract}) + "\n")
     print(f"verified {name} in {zone}; finite creation-clock deadline {deadline}")
@@ -626,7 +772,23 @@ def shard_state(run, i):
                 for name in ("runtime_receipt.json", "shutdown_receipt.json") if name in names}
     if "done.json" in names and not receipts:
         return "incomplete(legacy-receipt)"
-    return receipt_state(receipts, bool(names), expected_attempt(run, i))
+    state = receipt_state(receipts, bool(names), expected_attempt(run, i))
+    if state == "done" or state.startswith("failed"):
+        return state
+    # No terminal custody is evidence of success. After expiry (or disappearance
+    # after a registered create), operator must reconcile the missing receipts.
+    try:
+        rows = [json.loads(line) for line in REGISTRY.read_text().splitlines()]
+        rows = [r for r in rows if r.get("run") == run and r.get("shard") == i]
+        deadlines = [r["dispatch"]["shutdown_at"] for r in rows if "dispatch" in r]
+        expired = bool(deadlines) and time.time() >= min(deadlines)
+        created = any("vm" in r for r in rows)
+        missing = created and not any(v["name"] == vm_name(run, i) for v in list_vms(run))
+        if expired or missing:
+            return "failed/unknown(missing-terminal-receipts; operator-reconcile)"
+    except (OSError, ValueError, KeyError, TypeError):
+        pass
+    return state
 
 
 def launch(cfg_path, only=None, dry=False):
@@ -637,6 +799,7 @@ def launch(cfg_path, only=None, dry=False):
           f"shape {'VERIFIED' if cfg['shape_verified'] else 'UNVERIFIED'}")
     if dry:
         return
+    verify_cpu_operator_evidence(cfg)
     refuse_collisions(cfg, idx)
     # Reserve the run prefix atomically. Losing racers cannot upload/delete anything.
     with tempfile.TemporaryDirectory() as td:
@@ -644,7 +807,9 @@ def launch(cfg_path, only=None, dry=False):
         claim.write_text(json.dumps({"run": cfg["run"], "created": now()}))
         gcloud("storage", "cp", str(claim), f"{BUCKET}/runs/{cfg['run']}/claim.json", "--if-generation-match=0")
         digest = upload_bundle(cfg["run"], cfg)
-        gcloud("storage", "cp", str(cfg_path), f"{BUCKET}/runs/{cfg['run']}/config.json", "--if-generation-match=0")
+        config_snapshot=Path(td)/"config.json"
+        config_snapshot.write_text(json.dumps(cfg,sort_keys=True,separators=(",", ":"))+"\n",encoding="utf-8",newline="\n")
+        gcloud("storage", "cp", str(config_snapshot), f"{BUCKET}/runs/{cfg['run']}/config.json", "--if-generation-match=0")
         for i in idx:
             contract = dispatch_contract(cfg, int(time.time()), digest, i)
             shard = assemble_shard(cfg, i)
@@ -658,9 +823,13 @@ def launch(cfg_path, only=None, dry=False):
             # Persist before upload/create: failed launches retain their intended attempt.
             with REGISTRY.open("a", encoding="utf-8") as journal:
                 journal.write(json.dumps({"record_type": "attempt_expected", "run": cfg["run"],
-                                          "shard": i, "expected": expected}) + "\n")
+                                          "shard": i, "expected": expected, "dispatch": contract}) + "\n")
             prefix = f"{BUCKET}/runs/{cfg['run']}/shards/{i:03d}"
             gcloud("storage", "cp", str(path), f"{prefix}/shard.json", "--if-generation-match=0")
+            readback=Path(td)/f"{i:03d}.readback.json"
+            gcloud("storage", "cp", f"{prefix}/shard.json", str(readback))
+            if hashlib.sha256(readback.read_bytes()).hexdigest() != expected["shard_sha256"]:
+                raise ValueError("uploaded shard readback mismatch")
             # Transport the journal hash outside the hashed shard (no self-hash).
             launch_contract = {**contract, "shard_sha256": expected["shard_sha256"]}
             create_vm(cfg, i, prefix, launch_contract)

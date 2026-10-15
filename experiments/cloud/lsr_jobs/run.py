@@ -5,6 +5,8 @@ import sys
 import os
 import hashlib
 import re
+import time
+from contextlib import contextmanager
 from pathlib import Path
 
 KINDS = {"smoke": "smoke", "recur": "recur", "search": "search", "branch": "branch", "p2": "p2", "fd": "fd", "native": "native", "q1pp": "q1pp", "readout": "readout", "gemma_controls": "gemma_controls", "bindq": "bindq", "formation": "formation", "e1_ledger": "e1_ledger", "s0_memory_port": "s0_memory_port"}
@@ -81,6 +83,27 @@ def prepare_runtime(cfg):
             cfg["model"] = str(root)  # legacy loader API; model_source retains identity
 
 
+@contextmanager
+def cpu_work_progress(out_dir):
+    """Emit progress only after a real optimizer step; remove hook on every exit."""
+    from torch.optim.optimizer import register_optimizer_step_post_hook
+    root=Path(out_dir)
+    steps=0
+    def completed_step(optimizer, args, kwargs):
+        nonlocal steps
+        steps += 1
+        raw=json.dumps({"stage":"work", "epoch":time.time(), "optimizer_steps":steps,
+                        "source":"optimizer-step-completed"})
+        temporary=root/"heartbeat_work.pending"
+        temporary.write_text(raw,encoding="utf-8")
+        os.replace(temporary,root/"heartbeat_work")
+    handle=register_optimizer_step_post_hook(completed_step)
+    try:
+        yield
+    finally:
+        handle.remove()
+
+
 def execute(cfg, out_dir):
     prepare_runtime(cfg)
     if cfg["kind"] == "latent_memory_prototype":
@@ -121,7 +144,7 @@ def execute(cfg, out_dir):
         root.mkdir(parents=True, exist_ok=True)
         (root / "shard.json").write_text(json.dumps(cfg), encoding="utf-8")
         mod = importlib.import_module(KINDS[cfg["kind"]])
-        with (root / "cpu_receipt.json").open("w", encoding="utf-8") as output, redirect_stdout(output):
+        with cpu_work_progress(root), (root / "cpu_receipt.json").open("w", encoding="utf-8") as output, redirect_stdout(output):
             return mod._cli(["--config", cfg.get("config", "experiments/memory/associative_continuation_cpu.json"), "--check", cfg.get("cpu_check", "receiver")])
     from .common import Out
     out = Out(out_dir)

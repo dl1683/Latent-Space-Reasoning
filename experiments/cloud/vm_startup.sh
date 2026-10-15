@@ -40,7 +40,7 @@ if [[ "${1:-}" == --owned-work ]]; then
     work_budget || exit 1
     timeout --foreground --kill-after=5 "$(( LEFT < 60 ? LEFT : 60 ))" gcloud storage cp "$LSR_JOB/shard.json" "$W/shard.json"
     cd "$W"
-    export PYTHONPATH="$W${PYTHONPATH:+:$PYTHONPATH}"
+    export PYTHONPATH="$W"
     ACCELERATOR=$(md attributes/lsr-has-gpu || true)
     if ! gpu_enabled "$ACCELERATOR"; then export CUDA_VISIBLE_DEVICES=''; fi
     MIRROR=$(md attributes/lsr-weights-mirror-uri || true)
@@ -54,9 +54,9 @@ if [[ "${1:-}" == --owned-work ]]; then
         [[ -f "$WEIGHTS/config.json" ]]
     fi
     # Worker Landlock custody permits writes only beneath the attempt output.
-    export HF_HOME=$OUT/offline-hf TMPDIR=$OUT/tmp
+    export HF_HOME=$OUT/offline-hf TMPDIR=$OUT/tmp CLOUDSDK_CONFIG=$OUT/gcloud
     mkdir -p "$TMPDIR"
-    mkdir -p "$HF_HOME"
+    mkdir -p "$HF_HOME" "$CLOUDSDK_CONFIG"
     gpu_checks "$ACCELERATOR"
     touch "$OUT/heartbeat"
     python3 -B -m lsr_jobs.s0_runtime --run --shard "$W/shard.json" --out "$OUT" \
@@ -130,7 +130,7 @@ for value in "$LSR_LIFETIME_SECONDS" "$LSR_WORK_STOP_SECONDS" "$LSR_SHUTDOWN_RES
 done
 [[ "$LSR_LIFETIME_SECONDS" == 3600 || "$LSR_LIFETIME_SECONDS" == 10800 || "$LSR_LIFETIME_SECONDS" == 14400 ]] || exit 1
 (( LSR_WORK_STOP_SECONDS + LSR_SHUTDOWN_RESERVE_SECONDS == LSR_LIFETIME_SECONDS && LSR_SHUTDOWN_RESERVE_SECONDS >= 900 )) || exit 1
-(( LSR_CREDIT_GUARD_EPOCH <= 1792195200 && LSR_CREATED_EPOCH + LSR_LIFETIME_SECONDS <= LSR_CREDIT_GUARD_EPOCH )) || exit 1
+(( LSR_CREDIT_GUARD_EPOCH <= 1792193400 && LSR_CREATED_EPOCH + LSR_LIFETIME_SECONDS <= LSR_CREDIT_GUARD_EPOCH )) || exit 1
 export LSR_LIFETIME_SECONDS LSR_WORK_STOP_SECONDS LSR_SHUTDOWN_RESERVE_SECONDS LSR_CREDIT_GUARD_EPOCH
 for field in LIFETIME_SECONDS WORK_STOP_SECONDS SHUTDOWN_RESERVE_SECONDS CREDIT_GUARD_EPOCH; do
     key=LSR_$field

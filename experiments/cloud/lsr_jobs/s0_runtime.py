@@ -77,7 +77,7 @@ def verify_deployment(cfg, raw, args, runtime):
             or d.get("bundle_sha256") != args.bundle_sha256
             or type(d.get("created_at")) is not int or d["created_at"] != args.created_epoch):
         raise Stop("launch_binding")
-    CREDIT_GUARD_EPOCH = 1792195200  # same administrative cutoff as dispatcher/bootstrap
+    CREDIT_GUARD_EPOCH = 1792193400  # same administrative cutoff as dispatcher/bootstrap
     values = tuple(d.get(k) for k in ("lifetime_seconds", "work_stop_seconds", "shutdown_reserve_seconds"))
     if (any(type(v) is not int or v <= 0 for v in values) or values[0] not in (3600,10800,14400)
             or values[2] < 900 or values[1] + values[2] != values[0]):
@@ -230,7 +230,7 @@ class Runtime:
     """Injected effects let tests exercise this same production state machine."""
 
     def __init__(self, out, created, hashes, *, clock=time.time, sleep=time.sleep,
-                 spawn=None, upload=None, heartbeat=None, stall_seconds=300, publish=None, deferred=False):
+                 spawn=None, upload=None, heartbeat=None, stall_seconds=300, publish=None, deferred=False, control_upload=None):
         self.out = Path(out)
         self.out.mkdir(parents=True, exist_ok=True)
         self.created = created
@@ -241,6 +241,7 @@ class Runtime:
         self.upload = upload
         self.publish = publish
         self.deferred = deferred
+        self.control_upload = control_upload
         self.active_stage = "bootstrap"
         self.heartbeat = heartbeat
         self.stall_seconds = stall_seconds
@@ -298,17 +299,29 @@ class Runtime:
     def execute(self, bootstrap, control, work):
         reason, rc = "completed", 0
         stage = "bootstrap"
+        self.verification.update(landlock_control_upload="NOT_RUN", work_progress="NOT_RUN")
         try:
             self.guard(stage)
             bootstrap()
             stage = "control"
             self.wait(control, stage)
+            stage = "landlock_control_upload"
+            if self.control_upload is not None:
+                self.control_upload()
+                self.verification[stage] = "PASS"
             stage = "work"
+            self.verification["work_progress"] = "MONITORING"
             self.wait(work, stage)
+            self.verification["work_progress"] = "PASS"
         except Stop as exc:
             reason, rc = str(exc), 1
         except Exception:
             reason, rc = stage, 1
+        if rc:
+            if stage == "landlock_control_upload":
+                self.verification[stage] = "FAIL"
+            if stage == "work":
+                self.verification["work_progress"] = "FAIL"
         receipt = self.receipt(reason, rc)
         def persist(value):
             try:
@@ -491,11 +504,24 @@ def run(args):
         work_argv.extend([sys.executable, "-B", "-m", __package__ + ".run", "--verified-json",
                           hashes["shard_sha256"], raw.decode("utf-8"), str(out)])
         runtime.verification["work_input"] = {"transport": "immutable-argv", "sha256": hashes["shard_sha256"]}
+    def control_upload():
+        # Run the real VM-account upload under the SAME inherited Landlock policy
+        # as control/work. SDK/cache/temp writes must remain within this attempt.
+        runtime.guard("control_upload")
+        probe = out / "control_upload_probe.json"
+        write_json(probe, {"identity": runtime.identity, "hashes": hashes})
+        budget = min(60, int(runtime.created + runtime.work_stop - runtime.clock()))
+        if budget <= 0:
+            raise Stop("deadline")
+        bounded_command([sys.executable, "-B", "-m", __package__ + ".s0_runtime",
+            "--custody-exec", str(out.resolve()), "--", "gcloud", "storage", "cp",
+            str(probe), args.job + "/out/control_upload_probe.json", "--if-generation-match=0"], budget)
+        runtime.guard("control_upload")
     control_argv = []
     work_argv = []
     runtime = Runtime(out, args.created_epoch, hashes, spawn=Child, upload=upload,
                       heartbeat=heartbeat, stall_seconds=300, publish=publish,
-                      deferred=os.environ.get("LSR_CUSTODY_DEFERRED") == "1")
+                      deferred=os.environ.get("LSR_CUSTODY_DEFERRED") == "1", control_upload=control_upload)
     def interrupted(_signum, _frame):
         raise Stop("signal")
     previous = {s: signal.signal(s, interrupted) for s in (signal.SIGTERM, signal.SIGINT)}
@@ -526,14 +552,14 @@ def fault_checks(runtime_type=Runtime, verbose=True):
             self.stopped = True
             self.rc = -9
 
-    for fault in ("bootstrap", "control", "custody", "stall", "deadline", "running_stall", "running_deadline", "happy"):
+    for fault in ("bootstrap", "control", "custody", "stall", "deadline", "running_stall", "running_deadline", "landlock_control_upload", "work_stall", "happy"):
         with tempfile.TemporaryDirectory() as td:
             now = [1000.0 + (WORK_STOP if fault == "deadline" else 0)]
             children, uploads = [], []
             def forbidden(*_args, **_kwargs):
                 raise AssertionError("real external effect forbidden")
             def spawn(argv):
-                rc = 1 if fault == "control" else None if fault.startswith("running_") else 0
+                rc = 1 if fault == "control" else None if (fault.startswith("running_") or fault == "work_stall" and argv == ["fake-work"]) else 0
                 child = FakeChild(rc)
                 children.append(child)
                 return child
@@ -545,25 +571,37 @@ def fault_checks(runtime_type=Runtime, verbose=True):
             def bootstrap():
                 if fault == "bootstrap":
                     raise OSError("injected bootstrap failure")
+            def control_upload():
+                if fault == "landlock_control_upload":
+                    raise OSError("injected Landlock/VM-account probe upload failure")
             def sleep(_seconds):
                 now[0] += WORK_STOP if fault == "running_deadline" else 301
             hashes = {"runtime_sha256": digest(__file__), "bundle_sha256": "a" * 64,
                       "shard_sha256": "b" * 64}
             runtime = runtime_type(td, 1000, hashes, clock=lambda: now[0], sleep=sleep,
                                    spawn=spawn, upload=upload,
-                                   heartbeat=lambda: None if fault == "stall" else 1000.0)
+                                   heartbeat=lambda: None if fault == "stall" else 1000.0,
+                                   control_upload=control_upload)
             # Any accidental real subprocess/gsutil path fails the check immediately.
             from unittest.mock import patch
             with patch.object(subprocess, "Popen", forbidden), patch.object(subprocess, "run", forbidden):
                 rc = runtime.execute(bootstrap, ["fake-control"], ["fake-work"])
             receipt = json.loads((Path(td) / "runtime_receipt.json").read_text())
-            expected = "stall" if fault == "running_stall" else "deadline" if fault == "running_deadline" else fault
+            expected = "stall" if fault in ("running_stall", "work_stall") else "deadline" if fault == "running_deadline" else fault
             assert (rc == 0) == (fault == "happy"), (fault, rc, receipt)
             assert receipt["status"] == ("completed" if fault == "happy" else "failed")
             assert receipt["reason"] == ("completed" if fault == "happy" else expected), receipt
             assert receipt["rc"] == rc and receipt["hashes"] == hashes
             assert receipt["clock"]["lifetime_end_epoch"] - receipt["clock"]["work_stop_epoch"] == RESERVE
             assert uploads, "custody never attempted"
+            if fault == "landlock_control_upload":
+                assert receipt["verification"][fault] == "FAIL" and len(children) == 1
+            if fault == "work_stall":
+                assert receipt["verification"]["work_progress"] == "FAIL"
+                assert receipt["verification"]["landlock_control_upload"] == "PASS"
+            if fault == "happy":
+                assert receipt["verification"]["landlock_control_upload"] == "PASS"
+                assert receipt["verification"]["work_progress"] == "PASS"
             if fault.startswith("running_"):
                 assert children and all(p.stopped for p in children)
             if verbose:
@@ -719,13 +757,13 @@ def shell_checks():
             p.chmod(0o755)
         script("gcloud", "echo forbidden >&2; exit 99")
         script("gsutil", "echo forbidden >&2; exit 99")
-        for name in ("bash", "timeout", "grep", "mkdir", "mv", "cat", "setsid", "sha256sum"):
+        for name in ("bash", "timeout", "grep", "mkdir", "mv", "cat", "setsid", "sha256sum", "flock", "python3"):
             target = shutil.which(name)
             assert target, name
             script(name, f'exec "{Path(target).as_posix()}" "$@"')
         script("automon.sh", 'echo automon >> "$LOG"; echo "IDLE_POWEROFF ready=0 reason=never_ready"')
         env = {**os.environ, "PATH": root.as_posix(), "W": root.as_posix(),
-               "OUT": root.as_posix(), "LOG": (root / "calls").as_posix()}
+               "OUT": root.as_posix(), "LSR_CUSTODY_STATE": str(root / "custody"), "LOG": (root / "calls").as_posix()}
         startup = (cloud / "vm_startup.sh").as_posix()
         for metadata, driver, expected in (("", False, False), ("gpu", False, False),
                                             ("", True, False), ("false", True, False), ("true", True, True)):
@@ -752,6 +790,8 @@ def shell_checks():
         for case in ("happy", "custody", "expired", "preemption", "rename", "write", "final_publish"):
             log = root / "calls"
             log.unlink(missing_ok=True)
+            (root / "custody/shutdown_published.sha256").unlink(missing_ok=True)
+            (root / "shutdown_receipt.json").unlink(missing_ok=True)
             for name, value in (("runtime_created", "1000"), ("runtime_job", "gs://fake/shards/0"),
                                 ("runtime_bundle_hash", "a" * 64)):
                 (root / name).write_text(value)
@@ -769,9 +809,9 @@ def shell_checks():
                 (root / "shutdown_receipt.tmp").mkdir()
             test_env = {**env, "FAKE_NOW": "15380" if case == "expired" else "14500",
                         "LSR_LIFETIME_SECONDS":"14400", "LSR_WORK_STOP_SECONDS":"13500",
-                        "LSR_SHUTDOWN_RESERVE_SECONDS":"900", "LSR_CREDIT_GUARD_EPOCH":"1792195200",
+                        "LSR_SHUTDOWN_RESERVE_SECONDS":"900", "LSR_CREDIT_GUARD_EPOCH":"1792193400",
                         "UPLOAD_RC": "1" if case == "custody" else "0", "LSR_OUT": root.as_posix(),
-                        "LSR_LIFETIME_SECONDS":"14400", "LSR_WORK_STOP_SECONDS":"13500", "LSR_SHUTDOWN_RESERVE_SECONDS":"900", "LSR_CREDIT_GUARD_EPOCH":"1792195200", "LSR_EXIT_CODE": "0", "LSR_END_REASON": "shutdown", "FINAL_FAIL": "1" if case == "final_publish" else "0"}
+                        "LSR_LIFETIME_SECONDS":"14400", "LSR_WORK_STOP_SECONDS":"13500", "LSR_SHUTDOWN_RESERVE_SECONDS":"900", "LSR_CREDIT_GUARD_EPOCH":"1792193400", "LSR_EXIT_CODE": "0", "LSR_END_REASON": "shutdown", "FINAL_FAIL": "1" if case == "final_publish" else "0"}
             for key in ("LSR_JOB", "LSR_CREATED_EPOCH", "LSR_BUNDLE_SHA256"):
                 test_env.pop(key, None)
             if case == "preemption":
@@ -795,6 +835,44 @@ def shell_checks():
                 assert receipt_state({"runtime_receipt.json": raw,
                     "shutdown_receipt.json": (root / "shutdown_receipt.json").read_text()}, expected=expected) == "done"
                 print("PASS exact shutdown script -> receipt consumer done; exact runtime bytes bound")
+            if case in ("happy", "preemption", "final_publish"):
+                for field in ("LIFETIME_SECONDS", "WORK_STOP_SECONDS", "SHUTDOWN_RESERVE_SECONDS", "CREDIT_GUARD_EPOCH"):
+                    (root / ("runtime_" + field)).write_text(test_env["LSR_" + field])
+                fresh = {k:v for k,v in test_env.items() if not k.startswith("LSR_")}
+                fresh.update(LSR_OUT=str(root), LSR_CUSTODY_STATE=str(root/"custody"), FINAL_FAIL="0")
+                before = (root / "shutdown_receipt.json").read_bytes()
+                repeat = subprocess.run([bash, str(cloud / "vm_shutdown.sh")],
+                                        env=fresh, timeout=10, capture_output=True)
+                after = (root / "shutdown_receipt.json").read_bytes()
+                if case in ("happy", "preemption"):
+                    assert repeat.returncode == result.returncode and before == after, repeat.stderr
+                    assert log.read_text().count("upload") == 2, "repeat republished terminal bytes"
+                else:
+                    assert repeat.returncode == 1 and json.loads(after)["status"] == "failed"
+                state = receipt_state({"runtime_receipt.json": (root/"runtime_receipt.json").read_text(),
+                    "shutdown_receipt.json": after.decode()}, expected={**inner["identity"], **inner["hashes"], "created_epoch":1000})
+                assert state == "done" if case == "happy" else state.startswith("failed"), state
+                print(f"PASS exact shutdown {case} -> fresh metadata hook stable consumer={state}")
+            if case == "happy":
+                # Force overlapping invocations; only the owner may publish.
+                (root / "custody/shutdown_published.sha256").unlink()
+                log.write_text("")
+                script("gcloud", 'echo upload >> "$LOG"; /bin/sleep 0.1; exit 0')
+                callers = [subprocess.Popen([bash, str(cloud / "vm_shutdown.sh")], env=test_env,
+                           stdout=subprocess.PIPE, stderr=subprocess.PIPE) for _ in range(2)]
+                for caller in callers:
+                    _, stderr = caller.communicate(timeout=10)
+                    assert caller.returncode == 0, stderr
+                assert log.read_text().count("upload") == 2, log.read_text()
+                assert receipt_state({"runtime_receipt.json": raw,
+                    "shutdown_receipt.json": (root/"shutdown_receipt.json").read_text()}, expected=expected) == "done"
+                print("PASS overlapping exact shutdown callers serialize; one publication; consumer done")
+                # Existing JSON and a marker cannot authenticate changed runtime bytes.
+                (root/"runtime_receipt.json").write_text(json.dumps(dict(inner, status="failed",rc=1)))
+                bad = subprocess.run([bash,str(cloud/"vm_shutdown.sh")],env=fresh,timeout=10,capture_output=True)
+                assert bad.returncode == 1
+                assert json.loads((root/"shutdown_receipt.json").read_text())["status"] == "failed"
+                print("PASS changed runtime invalidates reusable terminal custody")
             if case == "write":
                 (root / "shutdown_receipt.tmp").rmdir()
             print(f"PASS shell shutdown {case} exit={result.returncode} terminal={receipt['status']}")
@@ -821,7 +899,7 @@ def full_bootstrap_checks(bash, cloud):
                 path.write_text("#!/bin/bash\nset -eu\n" + body + "\n")
                 path.chmod(0o755)
 
-            for name in ("bash", "mkdir", "mv", "cat", "tee", "grep", "touch", "setsid"):
+            for name in ("bash", "mkdir", "mv", "cat", "tee", "grep", "touch", "setsid", "flock"):
                 real = shutil.which(name)
                 assert real, name
                 stub(name, f'exec "{real}" "$@"')
@@ -838,7 +916,7 @@ def full_bootstrap_checks(bash, cloud):
                 */lsr-lifetime-seconds) echo "$FAKE_LIFETIME";;
                 */lsr-work-stop-seconds) echo "$((FAKE_LIFETIME-900))";;
                 */lsr-shutdown-reserve-seconds) echo 900;;
-                */lsr-credit-guard-epoch) echo 1792195200;;
+                */lsr-credit-guard-epoch) echo 1792193400;;
                 */lsr-run) echo offline;;
                 */lsr-shard) echo 0;;
                 */lsr-attempt) echo offline-0;;
@@ -880,7 +958,7 @@ def full_bootstrap_checks(bash, cloud):
             fi''')
             stub("shutdown", 'echo poweroff >> "$LSR_ROOT/calls"')
             env = {**os.environ, "PATH": str(bin_dir), "LSR_ROOT": str(root),
-                   "CASE": case, "CREATED_TEXT": created, "FAKE_LIFETIME":str(lifetime_sec), "STOP_AT":str(1000+lifetime_sec-900)}
+                   "LSR_CUSTODY_STATE": str(root / "custody"), "CASE": case, "CREATED_TEXT": created, "FAKE_LIFETIME":str(lifetime_sec), "STOP_AT":str(1000+lifetime_sec-900)}
             for key in ("LSR_CREATED_EPOCH", "LSR_JOB", "LSR_BUNDLE_SHA256", "LSR_END_REASON",
                         "LSR_EXIT_CODE", "LSR_CUSTODY_DEFERRED", "LSR_WORK_GROUP"):
                 env.pop(key, None)
@@ -971,6 +1049,7 @@ def full_bootstrap_checks(bash, cloud):
     old_receipt = shutdown_source.replace('write_receipt "$STATUS" false || { fallback; exit 1; }',
                                           'write_receipt "$STATUS" false').replace(
         'write_receipt "$STATUS" true || { fallback; exit 1; }', 'write_receipt "$STATUS" true')
+    old_receipt = old_receipt.split("# Commit publication marker")[0] + 'exit "$RC"\n'
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
         script = root / "shutdown.sh"
@@ -978,14 +1057,15 @@ def full_bootstrap_checks(bash, cloud):
         for name, body in (("date", "echo 14500"), ("mv", "exit 9"), ("timeout", "exit 0"),
                            ("mkdir", f'exec "{shutil.which("mkdir")}" "$@"'),
                            ("setsid", f'exec "{shutil.which("setsid")}" "$@"'),
-                           ("sha256sum", f'exec "{shutil.which("sha256sum")}" "$@"')):
+                           ("sha256sum", f'exec "{shutil.which("sha256sum")}" "$@"'),
+                           ("flock", f'exec "{shutil.which("flock")}" "$@"')):
             p = root / name
             p.write_text("#!/bin/bash\n" + body + "\n")
             p.chmod(0o755)
         (root / "runtime_receipt.json").write_text('{}')
         result = subprocess.run([bash, str(script)], env={**os.environ, "PATH": str(root),
             "LSR_RUN": "offline", "LSR_SHARD": "0", "LSR_ATTEMPT": "offline-0", "LSR_SHARD_SHA256": "b" * 64,
-            "LSR_OUT": str(root), "LSR_CREATED_EPOCH": "1000", "LSR_LIFETIME_SECONDS":"14400", "LSR_WORK_STOP_SECONDS":"13500", "LSR_SHUTDOWN_RESERVE_SECONDS":"900", "LSR_CREDIT_GUARD_EPOCH":"1792195200", "LSR_EXIT_CODE": "0",
+            "LSR_OUT": str(root), "LSR_CUSTODY_STATE": str(root/"custody"), "LSR_CREATED_EPOCH": "1000", "LSR_LIFETIME_SECONDS":"14400", "LSR_WORK_STOP_SECONDS":"13500", "LSR_SHUTDOWN_RESERVE_SECONDS":"900", "LSR_CREDIT_GUARD_EPOCH":"1792193400", "LSR_EXIT_CODE": "0",
             "LSR_BUNDLE_SHA256": "a" * 64,
             "LSR_JOB": "gs://fake/shards/0"}, capture_output=True, timeout=10)
         assert result.returncode == 0 and not (root / "shutdown_receipt.json").exists()
@@ -1199,7 +1279,11 @@ def deployment_checks():
                             progress()
                         obj.progress = expire
                     return obj
-                with patch.object(metadata, "distributions", return_value=installed), \
+                def probe(argv, budget):
+                    assert "--custody-exec" in argv and argv[-1] == "--if-generation-match=0"
+                    assert 0 < budget <= 60
+                with patch(__name__ + ".bounded_command", probe), \
+                     patch.object(metadata, "distributions", return_value=installed), \
                      patch(__name__ + ".Runtime", factory), patch(__name__ + ".Child", FakeChild), \
                      patch.dict(os.environ, {"LSR_CUSTODY_DEFERRED": "1"}):
                     rc = run(args)

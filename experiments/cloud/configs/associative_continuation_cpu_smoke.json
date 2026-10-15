@@ -1,17 +1,17 @@
 {
-  "run": "cpu-associative-smoke-a01",
+  "run": "assoc-cpu-smoke-a02",
   "kind": "associative_continuation_cpu",
   "machine": "n2-standard-64",
   "has_gpu": false,
   "guest_accelerators": [],
-  "usd_per_hour": 1.86,
-  "cost_cap_usd": 7.44,
-  "aggregate_cost_ceiling_usd": 7.44,
+  "usd_per_hour": 1.864192,
+  "cost_cap_usd": 3.87,
+  "aggregate_cost_ceiling_usd": 3.87,
   "zones": [
-    "us-central1-a"
+    "us-central1-b"
   ],
   "disk_gb": 100,
-  "boot_disk_type": "pd-balanced",
+  "boot_disk_type": "pd-standard",
   "nic_type": "GVNIC",
   "requirements": [
     "accelerate==1.15.0",
@@ -154,16 +154,16 @@
   "weights_manifest_sha256": null,
   "weights_local_path": null,
   "allow_hf_download": false,
-  "rate_verified": false,
-  "shape_verified": false,
-  "lifetime_seconds": 14400,
-  "work_stop_seconds": 13500,
+  "rate_verified": true,
+  "shape_verified": true,
+  "lifetime_seconds": 3600,
+  "work_stop_seconds": 2700,
   "shutdown_reserve_seconds": 900,
   "common": {
-    "job_stop_seconds": 13500,
+    "job_stop_seconds": 2700,
     "cpu_check": "receiver",
     "runtime_control_command": [
-      "python",
+      "python3",
       "-B",
       "-m",
       "experiments.memory.associative_continuation_cpu",
@@ -175,5 +175,9 @@
   "shards": [
     {}
   ],
-  "note": "NOT READY. Operator-recorded immutable image and exact dependency lock/hash are pinned locally; Explicit model-free/null-manifest contract; no weights required. Allocation registration, final byte freeze and fresh LAUNCHABLE review still required; runtime verification-to-use defect is a launch stop. Shape/rate/quota UNVERIFIED. Lifetime 14400 s, work stop 13500 s, reserve 900 s; unique gated attempt required. Planning compute estimate excludes storage/network/disk charges."
+  "note": "NOT READY. P-T3 synthetic arithmetic receiver; no weights or automatic retry. One-hour pd-standard packet: 3600/2700/900; cutoff Oct 16 23:30Z. Supervisor official-page rate reading 2026-10-14: n2-standard-64 Spot 1.864192 USD/h (on-demand 3.107776), us-central1; credit 9169.48 USD about 16:50Z, expires 2026-10-17. Compute plus provisional 2 USD ancillary = 3.864192 USD planning estimate, not verified total billing bound; 3.87 USD admission ceilings. Five prelaunch checks: credit_rate, shape_disk, ancillary_retention, image_lock_interpreter, iam_scopes_prefix. Operator must retain artifacts, verify shape, bind packet_sha256 and source_sha256, hash exact evidence JSON bytes and register them in RELEASE_CPU_OPERATOR_EVIDENCE. Landlock/control upload and work progress are enforced at runtime and recorded in runtime_receipt.json, hash-bound by shutdown_receipt.json. Missing real shape/image/IAM/ancillary evidence still blocks launch. Use a new supervisor-authorized never-used run identity after repair.",
+  "ancillary_allowance_usd": 2.0,
+  "credit_guard_epoch": 1792193400,
+  "operator_evidence_sha256": "82a563a4de801437f0e8a859397044585a13cbc5682a0cb3394d8694ebb53e83",
+  "provisioning_model": "SPOT"
 }

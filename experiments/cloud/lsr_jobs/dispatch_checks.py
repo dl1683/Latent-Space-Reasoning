@@ -1,7 +1,7 @@
 """Offline production dispatch checks. CPU imports only; no pretrained model or network execution."""
 import argparse
 import copy
-from contextlib import ExitStack, redirect_stdout
+from contextlib import ExitStack, redirect_stdout, nullcontext
 import datetime as dt
 import hashlib
 import io
@@ -23,6 +23,8 @@ from unittest.mock import patch
 from .. import lsr_cloud as cloud
 from . import run
 
+PRODUCTION_RATE_TABLE = copy.deepcopy(cloud.RATE_TABLE)
+
 
 def forbidden(*args, **kwargs):
     raise AssertionError("real external effect/time forbidden in offline checks")
@@ -31,7 +33,7 @@ def forbidden(*args, **kwargs):
 def fixture():
     reqs = ["transformers==5.12.1", "accelerate==1.10.0", "jinja2==3.1.6"]
     # Synthetic pins exercise validation only; they are NOT operator receipts.
-    return dict(run="offline-a01", kind="s0_memory_port", machine="a3-highgpu-2g", has_gpu=True,
+    return dict(provisioning_model="SPOT", run="offline-a01", kind="s0_memory_port", machine="a3-highgpu-2g", has_gpu=True,
                 guest_accelerators=[{"type":"nvidia-h100-80gb","count":2}],
                 weights_manifest_uri="gs://offline-mirror/model/manifest.json", weights_manifest_sha256="c"*64,
                 usd_per_hour=13.1986, cost_cap_usd=52.7944, aggregate_cost_ceiling_usd=52.8,
@@ -80,9 +82,9 @@ class FakeCloud:
             "--image-project":c["image_project"], "--boot-disk-size":f"{c['disk_gb']}GB",
             "--boot-disk-type":c["boot_disk_type"], "--network-interface":f"nic-type={c['nic_type']}",
             "--labels":f"app=stateful-bench,role=lsr,run={c['run']}",
-            "--provisioning-model":"SPOT", "--instance-termination-action":"DELETE",
+            "--provisioning-model":c["provisioning_model"], "--instance-termination-action":"DELETE",
             "--maintenance-policy":"TERMINATE",
-            "--metadata-from-file":f"startup-script={cloud.HERE / 'vm_startup.sh'},shutdown-script={cloud.HERE / 'vm_shutdown.sh'}"}
+            "--metadata-from-file":flags.get("--metadata-from-file")}
         if c.get("accelerator"):
             typ,count=c["accelerator"].split(":")
             expected["--accelerator"]=f"type={typ},count={count}"
@@ -132,7 +134,7 @@ class FakeCloud:
             actual = dict(name=args[3], machineType=flag("--machine-type"), zone=flag("--zone"),
                           scheduling=dict(provisioningModel=flag("--provisioning-model"),instanceTerminationAction=flag("--instance-termination-action"),
                                           onHostMaintenance=flag("--maintenance-policy"),terminationTime=flag("--termination-time")),
-                          serviceAccounts=[{"email":flag("--service-account")}],
+                          serviceAccounts=[{"email":flag("--service-account"), "scopes":[flag("--scopes")]}],
                           labels=dict(x.split("=",1) for x in flag("--labels").split(",")),
                           metadata={"items":[{"key":k,"value":v} for k,v in metadata.items()]},
                           networkInterfaces=[{"nicType":flag("--network-interface").split("=",1)[1]}],
@@ -190,7 +192,8 @@ def create_verify():
                lambda a:a.update(zone="wrong"),lambda a:a["scheduling"].update(provisioningModel="STANDARD"),
                lambda a:a["scheduling"].update(instanceTerminationAction="STOP"),
                lambda a:a["scheduling"].update(terminationTime="2100-01-01T00:00:00Z"),
-               lambda a:a.update(serviceAccounts=[{"email":"wrong"}]),lambda a:a.update(labels={}),
+               lambda a:a.update(serviceAccounts=[{"email":"wrong"}]),
+               lambda a:a["serviceAccounts"][0].update(scopes=[]),lambda a:a.update(labels={}),
                lambda a:a.update(metadata={"items":[]}),
                lambda a:a["networkInterfaces"][0].update(nicType="wrong"),
                lambda a:a["disks"][0].update(source="wrong")]
@@ -244,10 +247,13 @@ def entry_handling():
         assert run.assemble_shard(cfg,0)["entry"] == ("alignment_hook_smoke" if name.startswith("e1") else "main")
     # Execute the whole production launch with finite, explicit mocked effects.
     c=fixture();c.update(kind="e1_ledger",entry="alignment_hook_smoke")
-    fake=FakeCloud(c,{});shards=[];expected_records=[]
+    fake=FakeCloud(c,{});shards=[];expected_records=[];objects={}
     def effect(*args,**kwargs):
         if args[:2]==("storage","cp"):
+            if args[2].startswith("gs://"):
+                Path(args[3]).write_bytes(objects[args[2]]);return ""
             assert "--if-generation-match=0" in args
+            objects[args[3]]=Path(args[2]).read_bytes()
             if args[3].endswith("shard.json"):
                 raw=Path(args[2]).read_bytes();shard=json.loads(raw);shards.append(shard)
                 rows=[json.loads(line) for line in cloud.REGISTRY.read_text().splitlines()]
@@ -333,13 +339,21 @@ def bundle():
         for folder in (".git","weights","checkpoints","__pycache__"):
             (mem/folder).mkdir();(mem/folder/"secret.py").write_text("exclude")
         (mem/"model.pt").write_text("exclude")
+        (root/"experiments/cloud/vm_startup.sh").write_text("true")
+        (root/"experiments/cloud/vm_shutdown.sh").write_text("true")
         with patch.object(cloud,"HERE",root/"experiments"/"cloud"),patch.object(cloud,"REPO",root):
             names=[cloud.bundle_name(p) for p in cloud.bundle_paths()]
             assert names==["automon.sh","lsr_jobs/run.py","experiments/memory/task.py"]
+            captured=[]
             def upload(*args,**kwargs):
-                assert args[:2]==("storage","cp") and "--if-generation-match=0" in args
+                assert args[:2]==("storage","cp")
+                if args[2].startswith("gs://"):
+                    Path(args[3]).write_bytes(captured[0]);return ""
+                assert "--if-generation-match=0" in args
+                captured.append(Path(args[2]).read_bytes())
                 with tarfile.open(args[2]) as tar:
-                    assert sorted(tar.getnames())==sorted(names+["requirements.txt","config.json"])
+                    assert sorted(tar.getnames())==sorted(names+["experiments/cloud/lsr_jobs/run.py",
+                          "requirements.txt","config.json","vm_startup.sh","vm_shutdown.sh","bundle_manifest.json"])
                     assert json.load(tar.extractfile("config.json"))==fixture()
                 return ""
             with patch.object(cloud,"gcloud",upload),patch.object(time,"time",return_value=100000):
@@ -377,7 +391,8 @@ def s0_config():
     shard=run.assemble_shard(c,0)
     assert shard["runtime_control_command"] == ["python","-B","-m","lsr_jobs.s0_memory_port",
                                                "--config","/opt/lsr/config.json","--check","s0-production-contract"]
-    assert shard["phase"] == "fit" and shard["dtype"] == "bfloat16"
+    assert shard["phase"] == "smoke" and shard["dtype"] == "bfloat16"
+    assert (shard["model"], shard["width"], shard["n_layers"]) == ("google/gemma-4-E2B", 1536, 35)
     assert shard["allowed_horizons"] == [0] and shard["recurrence"] is False
     assert shard["model_local"] == c["weights_local_path"] and shard["allow_hf_download"] is False
     assert shard["missing_operator_inputs"] and shard["smoke_cases"] is None and shard["fit_cases"] is None
@@ -407,7 +422,7 @@ def s0_identity():
         for field in ("model","model_source","revision","tokenizer_revision","model_local",
                       "placement","placement_contract","dtype","attn_implementation"):
             assert cfg[field] == original[field], field
-        assert cfg["model"] == "google/gemma-4-31B"
+        assert cfg["model"] == "google/gemma-4-E2B"
         seen.append(copy.deepcopy(cfg))
         raise RuntimeError("recording loader stopped before pretrained assets")
     class Output:
@@ -434,20 +449,50 @@ def s0_identity():
           "identity rewrite and alias/revision/root conflicts rejected before recording loader; no weights")
 
 
+def verify_shipped_cpu_evidence(cfg):
+    """Retain historical byte/hash custody; obsolete packets cannot authorize launch."""
+    raw=cloud.RELEASE_CPU_OPERATOR_EVIDENCE[cfg["operator_evidence_sha256"]]
+    assert hashlib.sha256(raw).hexdigest()==cfg["operator_evidence_sha256"]
+    receipt=json.loads(raw)
+    path=cloud.HERE/"receipts"/(cfg["run"].replace("-","_")+"_operator_evidence.json")
+    assert path.read_bytes()==raw
+    historical=copy.deepcopy(cfg);historical.pop("provisioning_model")
+    assert cloud.cpu_packet_sha256(historical)==receipt["packet_sha256"]
+    assert receipt["credit_rate"]["machine"]==cfg["machine"]
+    assert receipt["credit_rate"]["spot_usd_per_hour"]==cfg["usd_per_hour"]
+    rejects(cloud.verify_cpu_operator_evidence,cfg)
+    # Even restoring the historical source binding cannot revive the old schema/packet.
+    with patch.object(cloud,"cpu_source_sha256",return_value=receipt["source_sha256"]):
+        rejects(cloud.verify_cpu_operator_evidence,cfg)
+    print("PASS historical CPU receipt bytes/hash/packet/rate custody; new packet/schema requires operator refresh")
+
+
 def cpu_dry_assembly():
     path=cloud.HERE/"configs/associative_continuation_cpu_smoke.json"
     c=json.loads(path.read_text())
     with patch.object(cloud,"upload_bundle",side_effect=forbidden), \
          patch.object(cloud,"create_vm",side_effect=forbidden):
         cloud.launch(path,dry=True)
-        for hours in (4,1):
-            variant=copy.deepcopy(c)
-            if hours==1:
-                variant.update(lifetime_seconds=3600,work_stop_seconds=2700,shutdown_reserve_seconds=900,
-                               cost_cap_usd=1.86,aggregate_cost_ceiling_usd=1.86)
-                variant["common"]["job_stop_seconds"]=2700
+        for hours, name in ((1,"associative_continuation_cpu_smoke.json"),
+                            (3,"associative_continuation_cpu_smoke_3h.json")):
+            variant=json.loads((cloud.HERE/"configs"/name).read_text())
             idx,cost=cloud.launch_plan(variant)
-            assert idx==[0] and cost==1.86*hours
+            assert idx==[0] and abs(cost-(cloud.rate_entry(variant)["usd_per_hour"]*hours+cloud.ancillary(variant)))<1e-9
+            assert variant["boot_disk_type"]=="pd-standard"
+            assert variant["common"]["job_stop_seconds"]==hours*3600-900
+            assert variant["credit_guard_epoch"]==1792193400
+            if hours == 1:
+                verify_shipped_cpu_evidence(variant)
+                with patch.object(cloud,"RELEASE_CPU_OPERATOR_EVIDENCE",{}):
+                    rejects(cloud.verify_cpu_operator_evidence,variant)
+                print("PASS 1h CPU evidence removed in memory: rejected")
+            else:
+                rejects(cloud.verify_cpu_operator_evidence,variant)
+                receipt=json.loads(cloud.RELEASE_CPU_OPERATOR_EVIDENCE[c["operator_evidence_sha256"]])
+                # Isolate lifetime/packet rejection from the edited source hash.
+                with patch.object(cloud,"cpu_source_sha256",return_value=receipt["source_sha256"]):
+                    rejects(cloud.verify_cpu_operator_evidence,variant)
+                print("PASS 3h CPU packet not covered by shipped evidence: rejected")
             shard=run.assemble_shard(variant,0)
             contract=cloud.dispatch_contract(variant,100000,"a"*64)
             shard.update(dispatch=contract,requirements=variant["requirements"])
@@ -466,15 +511,260 @@ def cpu_dry_assembly():
             assert contract["shutdown_at"]==100000+hours*3600
             print(f"PASS CPU dry assembly {hours}h: plan-shaped only, {len(idx)} shard, ${cost:.4f}, "
                   f"lifetime/work/reserve={hours*3600}/{hours*3600-900}/900; "
-                  "release image/lock and null assets preserved; mock bundle/clock; no upload; rate/shape UNVERIFIED")
+                  "release image/lock and null assets preserved; mock bundle/clock; no upload; shape/rate flags from packet")
+
+
+def cpu_bundle():
+    """Execute frozen control from the REAL archive, no checkout on child path.
+
+    Windows stages its installed interpreter as python3.exe; Linux requires a CPU-capable torch
+    interpreter. A WSL without torch delegates this same archive check to Windows.
+    This checks packaging, not pinned-image lock or Landlock compatibility.
+    """
+    import importlib.util
+    if importlib.util.find_spec("torch") is None:
+        executable = os.environ.get("LSR_CPU_CHECK_PYTHON")
+        if not executable:
+            raise RuntimeError("CPU bundle control requires installed torch; no install/network fallback")
+        with patch.object(subprocess, "Popen", _REAL_POPEN), patch.object(time, "sleep", _REAL_SLEEP):
+            result = _REAL_RUN([executable, "-B", "-m", __package__ + ".dispatch_checks",
+                               "--check", "cpu-bundle", "--offline"], cwd=str(cloud.REPO), timeout=180)
+        assert result.returncode == 0
+        return
+    cfg = json.loads((cloud.HERE/"configs/associative_continuation_cpu_smoke.json").read_text())
+    raw = cloud.build_bundle(cfg)
+    assert raw == cloud.build_bundle(cfg), "unchanged packet must produce identical archive bytes"
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)/"opt"/"lsr"
+        root.mkdir(parents=True)
+        with tarfile.open(fileobj=io.BytesIO(raw), mode="r:gz") as tar:
+            tar.extractall(root, filter="data")
+        manifest = json.loads((root/"bundle_manifest.json").read_text())
+        for name, digest in manifest.items():
+            assert hashlib.sha256((root/name).read_bytes()).hexdigest() == digest
+        assert (root/"lsr_jobs/s0_memory_port.py").read_bytes() == (root/"experiments/cloud/lsr_jobs/s0_memory_port.py").read_bytes()
+        out = root/"out";out.mkdir()
+        for folder in ("tmp", "offline-hf"):
+            (out/folder).mkdir()
+        # No inherited PYTHONPATH, user site, HOME, credentials or checkout cwd.
+        env = {k: v for k, v in os.environ.items() if k.lower() in
+               {"path", "systemroot", "windir", "localappdata"}}
+        env.update(PYTHONPATH=str(root), PYTHONNOUSERSITE="1", PYTHONDONTWRITEBYTECODE="1",
+                   PYTHONUNBUFFERED="1", OMP_NUM_THREADS="2", MKL_NUM_THREADS="2",
+                   CUDA_VISIBLE_DEVICES="", HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1",
+                   HF_DATASETS_OFFLINE="1", PIP_NO_INDEX="1", LSR_OUT=str(out),
+                   HF_HOME=str(out/"offline-hf"), TMPDIR=str(out/"tmp"), TEMP=str(out/"tmp"), TMP=str(out/"tmp"))
+        if os.name == "nt":
+            # Windows Store python3 alias is not an interpreter. Preserve the
+            # configured argv with a local copy of the actual installed executable.
+            # PYTHONHOME names only its stdlib/site-packages, never a repo checkout.
+            bin_dir=Path(td)/"bin";bin_dir.mkdir()
+            shutil.copyfile(sys.executable,bin_dir/"python3.exe")
+            env["PYTHONHOME"]=sys.prefix
+            env["PATH"]=str(bin_dir)+os.pathsep+str(Path(sys.executable).parent)+os.pathsep+env["PATH"]
+        # Exact configured argv. Interpreter PATH is the local installed runtime;
+        # operator must repeat this on the pinned image before releasing it.
+        command = cfg["common"]["runtime_control_command"]
+        def execute(argv):
+            with patch.object(subprocess, "Popen", _REAL_POPEN), patch.object(time, "sleep", _REAL_SLEEP):
+                executable=shutil.which(argv[0],path=env["PATH"])
+                if executable is None:
+                    raise RuntimeError("configured interpreter not found in clean PATH")
+                return _REAL_RUN([executable,*argv[1:]], cwd=root, env=env, capture_output=True, text=True, timeout=150)
+        control = execute(command)
+        assert control.returncode == 0, (control.returncode, control.stdout[-3000:], control.stderr[-1000:])
+        assert '"status": "PASS"' in control.stdout
+        probe = execute([command[0], "-B", "-c",
+            "from pathlib import Path; import sys; "
+            "from experiments.cloud.lsr_jobs import s0_memory_port as p; "
+            "from experiments.cloud.lsr_jobs import s0_envelope,gemma4_receiver; "
+            "from experiments.memory import associative_continuation_cpu as c; "
+            "assert Path(p.__file__).resolve().is_relative_to(Path.cwd()); "
+            "assert callable(c.boundary_read); "
+            "assert all('Latent-Space-Reasoning' not in x for x in sys.path); "
+            "print('PASS isolated work imports; no fit/model')"])
+        assert probe.returncode == 0, probe.stderr
+        print(probe.stdout.strip())
+        (root/"experiments/cloud/lsr_jobs/s0_memory_port.py").unlink()
+        negative = execute(command)
+        assert negative.returncode != 0 and "FileNotFoundError" in negative.stdout
+        print("PASS extracted actual bundle exact-controls exit=0; removed required helper exit="
+              + str(negative.returncode) + "; archive_sha256=" + hashlib.sha256(raw).hexdigest())
+
+
+def cpu_progress():
+    import importlib.util
+    if importlib.util.find_spec("torch") is None:
+        executable=os.environ.get("LSR_CPU_CHECK_PYTHON")
+        if not executable:
+            raise RuntimeError("CPU progress check requires torch")
+        with patch.object(subprocess,"Popen",_REAL_POPEN),patch.object(time,"sleep",_REAL_SLEEP):
+            result=_REAL_RUN([executable,"-B","-m",__package__+".dispatch_checks",
+                              "--check","cpu-progress","--offline"],cwd=cloud.REPO,timeout=60)
+        assert result.returncode==0
+        return
+    import torch
+    with tempfile.TemporaryDirectory() as td,patch.object(run.time,"time",return_value=100060):
+        root=Path(td);value=torch.nn.Parameter(torch.tensor(1.0));optimizer=torch.optim.SGD([value],lr=0.1)
+        with run.cpu_work_progress(root):
+            assert not (root/"heartbeat_work").exists(), "no progress before real step"
+            value.grad=torch.tensor(1.0);optimizer.step()
+            first=json.loads((root/"heartbeat_work").read_text());assert first["optimizer_steps"]==1
+            value.grad=torch.tensor(1.0);optimizer.step()
+            second=json.loads((root/"heartbeat_work").read_text())
+            assert second==dict(stage="work",epoch=100060,optimizer_steps=2,source="optimizer-step-completed")
+        value.grad=torch.tensor(1.0);optimizer.step()
+        assert json.loads((root/"heartbeat_work").read_text())==second, "hook leaked after exit"
+    print("PASS actual CPU optimizer post-step progress; silent before steps; counters advance; hook removed")
+
+
+def cpu_operator_gate():
+    cfg=json.loads((cloud.HERE/"configs/associative_continuation_cpu_smoke.json").read_text())
+    # Shipped operator evidence is now present: acceptance is the positive case.
+    digest=cfg["operator_evidence_sha256"]
+    raw=(cloud.HERE/"receipts"/(cfg["run"].replace("-","_")+"_operator_evidence.json")).read_bytes()
+    assert hashlib.sha256(raw).hexdigest()==digest
+    assert cloud.RELEASE_CPU_OPERATOR_EVIDENCE[digest]==raw
+    shipped_receipt=json.loads(raw)
+    with patch.object(cloud,"RELEASE_CPU_OPERATOR_EVIDENCE",{}), tempfile.TemporaryDirectory() as td:
+        rejects(cloud.verify_cpu_operator_evidence,cfg)
+        path=Path(td)/"config.json";path.write_text(json.dumps(cfg))
+        rejects(cloud.launch,path)  # Global raising cloud mocks must never be reached.
+    with patch.object(cloud,"RELEASE_CPU_OPERATOR_EVIDENCE",{digest:raw+b" "}):
+        rejects(cloud.verify_cpu_operator_evidence,cfg)
+    # Synthetic current-source copies isolate semantic negatives even when editing
+    # this bundled check invalidates the shipped receipt's source binding.
+    current_receipt=copy.deepcopy(shipped_receipt)
+    current_receipt["source_sha256"]=cloud.cpu_source_sha256()
+    # Rehash mutations so each semantic rejection passes the outer hash check.
+    for field in ("packet_sha256","source_sha256",*sorted(cloud.CPU_PRELAUNCH_CHECKS)):
+        bad=copy.deepcopy(current_receipt)
+        if field in cloud.CPU_PRELAUNCH_CHECKS:
+            bad["checks"][field]="FAIL"
+        else:
+            bad[field]="0"*64 if bad[field]!="0"*64 else "1"*64
+        altered_raw=json.dumps(bad,sort_keys=True).encode()
+        altered_digest=hashlib.sha256(altered_raw).hexdigest()
+        altered=copy.deepcopy(cfg);altered["operator_evidence_sha256"]=altered_digest
+        with patch.object(cloud,"RELEASE_CPU_OPERATOR_EVIDENCE",{altered_digest:altered_raw}):
+            rejects(cloud.verify_cpu_operator_evidence,altered)
+    for field in ("rate_verified","shape_verified"):
+        altered=copy.deepcopy(cfg);altered[field]=False
+        bad=copy.deepcopy(current_receipt);bad["packet_sha256"]=cloud.cpu_packet_sha256(altered)
+        altered_raw=json.dumps(bad,sort_keys=True).encode()
+        altered_digest=hashlib.sha256(altered_raw).hexdigest()
+        altered["operator_evidence_sha256"]=altered_digest
+        with patch.object(cloud,"RELEASE_CPU_OPERATOR_EVIDENCE",{altered_digest:altered_raw}):
+            rejects(cloud.verify_cpu_operator_evidence,altered)
+    print("PASS empty evidence/hash mismatch/flipped checks/"
+          "false rate/false shape/changed packet/changed source rejected in memory")
+    for tag in ("a01","a02","a03","a04","a05"):
+        historical_raw=(cloud.HERE/"receipts"/f"assoc_cpu_smoke_{tag}_operator_evidence.json").read_bytes()
+        historical_receipt=json.loads(historical_raw)
+        assert set(historical_receipt["checks"])==cloud.CPU_PRELAUNCH_CHECKS
+        assert set(historical_receipt["checks"].values())=={"PASS"}
+        rate=historical_receipt["credit_rate"]
+        assert rate["machine"]=="n2-standard-64"
+        assert rate["spot_usd_per_hour"]==PRODUCTION_RATE_TABLE[("n2-standard-64","SPOT")]["usd_per_hour"]
+        assert rate["on_demand_usd_per_hour"]==PRODUCTION_RATE_TABLE[("n2-standard-64","STANDARD")]["usd_per_hour"]
+        assert all(rate[k]==v for k,v in cloud.CREDIT_RATE_CONTEXT.items())
+        for artifacts in historical_receipt["artifacts"].values():
+            for artifact in artifacts:
+                assert hashlib.sha256((cloud.REPO/artifact["path"]).read_bytes()).hexdigest()==artifact["sha256"]
+        packet=copy.deepcopy(cfg);packet["run"]=f"assoc-cpu-smoke-{tag}"
+        h=hashlib.sha256(historical_raw).hexdigest();packet["operator_evidence_sha256"]=h
+        with patch.object(cloud,"RELEASE_CPU_OPERATOR_EVIDENCE",{h:historical_raw}):
+            rejects(cloud.verify_cpu_operator_evidence,packet)
+        print(f"PASS historical {tag} credit/rate/check/artifact custody; new schema/packet refused")
+    verify_shipped_cpu_evidence(cfg)
+    cfg.update(rate_verified=True,shape_verified=True)
+    obligations=cloud.CPU_PRELAUNCH_CHECKS
+    receipt={"packet_sha256":cloud.cpu_packet_sha256(cfg), "source_sha256":cloud.cpu_source_sha256(),
+             "credit_rate":cloud.rate_entry(cfg), "checks":{k:"PASS" for k in obligations},
+             "artifacts":{k:[{"path":"synthetic-offline-only", "sha256":"a"*64}]
+                          for k in obligations - {"credit_rate"}}}
+    raw=json.dumps(receipt,sort_keys=True).encode();digest=hashlib.sha256(raw).hexdigest()
+    cfg["operator_evidence_sha256"]=digest
+    with patch.object(cloud,"RELEASE_CPU_OPERATOR_EVIDENCE",{digest:raw}):
+        cloud.verify_cpu_operator_evidence(cfg)
+        for key,value in (("usd_per_hour",2.0),("boot_disk_type","pd-balanced"),
+                          ("ancillary_allowance_usd",0),("operator_evidence_sha256","f"*64)):
+            bad=copy.deepcopy(cfg);bad[key]=value;rejects(cloud.verify_cpu_operator_evidence,bad)
+        archive=cloud.build_bundle(cfg)
+        contract=cloud.dispatch_contract(cfg,100000,hashlib.sha256(archive).hexdigest())
+        contract["shard_sha256"]="b"*64
+        fake=FakeCloud(cfg,contract)
+        with tempfile.TemporaryDirectory() as td,patch.object(cloud,"gcloud",fake), \
+             patch.object(time,"time",return_value=100060),patch.object(cloud,"REGISTRY",Path(td)/"journal"):
+            prefix=f"{cloud.BUCKET}/runs/{cfg['run']}/shards/000"
+            assert cloud.create_vm(cfg,0,prefix,contract)==cfg["zones"][0]
+            assert "--boot-disk-type=pd-standard" in fake.creation
+            count=len(fake.calls)
+            with patch.object(cloud,"build_bundle",return_value=b"altered staged archive"):
+                rejects(cloud.create_vm,cfg,0,prefix,contract)
+            assert len(fake.calls)==count, "altered packet reached cloud boundary"
+    # Each of the five still needs evidence; neither runtime item is required.
+    assert set(receipt["checks"]) == {"credit_rate", "shape_disk", "ancillary_retention",
+                                      "image_lock_interpreter", "iam_scopes_prefix"}
+    for key in obligations:
+        bad=copy.deepcopy(receipt);bad["checks"].pop(key)
+        raw_bad=json.dumps(bad,sort_keys=True).encode();h=hashlib.sha256(raw_bad).hexdigest()
+        altered=copy.deepcopy(cfg);altered["operator_evidence_sha256"]=h
+        with patch.object(cloud,"RELEASE_CPU_OPERATOR_EVIDENCE",{h:raw_bad}):
+            rejects(cloud.verify_cpu_operator_evidence,altered)
+    for key,value in (("source_sha256","f"*64),("credit_rate",{}),("artifacts",{})):
+        bad=copy.deepcopy(receipt);bad[key]=value
+        raw_bad=json.dumps(bad,sort_keys=True).encode();h=hashlib.sha256(raw_bad).hexdigest()
+        altered=copy.deepcopy(cfg);altered["operator_evidence_sha256"]=h
+        with patch.object(cloud,"RELEASE_CPU_OPERATOR_EVIDENCE",{h:raw_bad}):
+            rejects(cloud.verify_cpu_operator_evidence,altered)
+    print("PASS five prelaunch checks only; omitted checks/source/rate/artifact negatives; runtime items absent")
+    # Late-window exposure rejected at the actual registered guard.
+    rejects(cloud.dispatch_contract,cfg,1792190700,"a"*64)
+    assert cloud.dispatch_contract(cfg,1792189800,"a"*64)["shutdown_at"]==1792193400
+    print("PASS independent CPU operator gate: missing/self-declared/tampered evidence and late cutoff rejected")
+
+
+def bundle_readback_negative():
+    cfg=json.loads((cloud.HERE/"configs/associative_continuation_cpu_smoke.json").read_text())
+    calls=[]
+    def effect(*argv,**kw):
+        assert argv[:2]==("storage","cp")
+        calls.append(argv)
+        if argv[2].startswith("gs://"):
+            Path(argv[3]).write_bytes(b"wrong remote object bytes")
+        else:
+            assert "--if-generation-match=0" in argv
+        return ""
+    with patch.object(cloud,"gcloud",effect):
+        rejects(cloud.upload_bundle,cfg["run"],cfg)
+    assert len(calls)==2
+    print("PASS corrupt bundle readback refuses release digest; mocked storage only")
+
+
+def terminal_reconciliation():
+    with tempfile.TemporaryDirectory() as td:
+        registry=Path(td)/"journal"
+        row={"run":"offline-a01","shard":0,"dispatch":{"shutdown_at":100100}}
+        registry.write_text(json.dumps(row)+"\n")
+        def effect(*argv,**kw):
+            assert argv[:2]==("storage","ls");return ""
+        with patch.object(cloud,"REGISTRY",registry),patch.object(cloud,"gcloud",effect), \
+             patch.object(time,"time",return_value=100101):
+            assert cloud.shard_state("offline-a01",0).startswith("failed/unknown")
+        row["vm"]=cloud.vm_name("offline-a01",0);registry.write_text(json.dumps(row)+"\n")
+        with patch.object(cloud,"REGISTRY",registry),patch.object(cloud,"gcloud",effect), \
+             patch.object(time,"time",return_value=100050),patch.object(cloud,"list_vms",return_value=[]):
+            assert cloud.shard_state("offline-a01",0).startswith("failed/unknown")
+    print("PASS expired/disappeared missing custody requires operator reconciliation; never success")
 
 
 def cpu_support():
-    c=fixture();c.update(machine="n2-standard-64",usd_per_hour=1.86,cost_cap_usd=7.44,
-                         aggregate_cost_ceiling_usd=7.44,has_gpu=False,guest_accelerators=[],
+    c=fixture();c.update(machine="n2-standard-64",usd_per_hour=1.864192,cost_cap_usd=7.456768,
+                         aggregate_cost_ceiling_usd=7.456768,has_gpu=False,guest_accelerators=[],
                          common={"runtime_control_command":["offline-control"]},weights_mirror_uri=None)
     assert "accelerator" not in c
-    assert cloud.launch_plan(c)[1]==7.44
+    assert cloud.launch_plan(c)[1]==7.456768
     assert run.assemble_shard(c,0)["entry"]=="main"
     fake=creation(c)
     assert not any(x.startswith("--accelerator") for x in fake.creation)
@@ -576,7 +866,7 @@ def exact_shutdown(out, expected, rc, fault, total=14400, work=13500):
     """Actual production shell, private PATH stubs, bounded local bash only."""
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
-        for name in ("mkdir", "mv", "cat", "sha256sum", "setsid", "timeout"):
+        for name in ("mkdir", "mv", "cat", "sha256sum", "setsid", "timeout", "flock", "python3"):
             target = shutil.which(name)
             assert target, name
             path = root/name
@@ -590,7 +880,7 @@ def exact_shutdown(out, expected, rc, fault, total=14400, work=13500):
         def allowed(argv_actual, **kw):
             assert argv_actual == argv and kw.get("env", {}).get("PATH") == str(root)
             return _REAL_POPEN(argv_actual, **kw)
-        env = {**os.environ, "PATH":str(root), "LSR_OUT":str(out), "LSR_JOB":"gs://offline/job/shards/000",
+        env = {**os.environ, "PATH":str(root), "LSR_OUT":str(out), "LSR_CUSTODY_STATE":str(root/"custody"), "LSR_JOB":"gs://offline/job/shards/000",
                "LSR_CREATED_EPOCH":str(expected["created_epoch"]), "LSR_BUNDLE_SHA256":expected["bundle_sha256"],
                "LSR_RUN":expected["run"], "LSR_SHARD":str(expected["shard"]), "LSR_ATTEMPT":expected["attempt"],
                "LSR_SHARD_SHA256":expected["shard_sha256"], "LSR_EXIT_CODE":str(rc), "LSR_END_REASON":"shutdown",
@@ -610,7 +900,7 @@ def receipt_integration():
     c=json.loads((cloud.HERE/"configs/associative_continuation_cpu_smoke.json").read_text())
     cloud.validate_config(c)
     contract=dict(cloud.dispatch_contract(c,100000,"a"*64), shard_sha256="b"*64)
-    for fault in ("success","control","custody","swapped-identity","missing-authority"):
+    for fault in ("success","control","custody","probe","work_stall","swapped-identity","missing-authority"):
         with tempfile.TemporaryDirectory() as td:
             root=Path(td);out=root/"out";out.mkdir();shard=run.assemble_shard(c,0)
             shard.update(dispatch=contract,requirements=c["requirements"])
@@ -622,9 +912,17 @@ def receipt_integration():
             class Child:
                 def __init__(self,argv):
                     children.append(list(argv));self.index=len(children)
-                def poll(self): return 1 if fault=="control" and self.index==1 else 0
+                def poll(self):
+                    return 1 if fault=="control" and self.index==1 else None if fault=="work_stall" and self.index==2 else 0
                 def stop(self): pass
             def bounded(argv,budget):
+                if "--custody-exec" in argv:
+                    assert argv[argv.index("--")+1:argv.index("--")+4] == ["gcloud","storage","cp"]
+                    assert argv[-2:] == ["gs://offline/job/shards/000/out/control_upload_probe.json", "--if-generation-match=0"]
+                    assert 0 < budget <= 60
+                    if fault == "probe":
+                        raise OSError("injected restricted VM-account upload failure")
+                    return
                 assert argv[:3] in (["gcloud","storage","rsync"],["gcloud","storage","cp"])
                 assert 0<budget<=870
                 if argv[2]=="rsync":
@@ -644,7 +942,11 @@ def receipt_integration():
                  patch.dict(os.environ,{"LSR_CUSTODY_DEFERRED":"0"}):
                 # Runtime defaults captured wall time at import; inject the production class clock.
                 base=runtime.Runtime
-                def factory(*a,**kw): return base(*a,clock=lambda:100060,sleep=forbidden,**kw)
+                tick=[100060]
+                def sleep(_):
+                    assert fault == "work_stall"
+                    tick[0] += 301
+                def factory(*a,**kw): return base(*a,clock=lambda:tick[0],sleep=sleep,**kw)
                 with patch.object(runtime,"Runtime",factory): rc=runtime.run(args)
             terminal=json.loads((out/"runtime_receipt.json").read_bytes())
             if fault in ("swapped-identity","missing-authority"):
@@ -658,8 +960,18 @@ def receipt_integration():
             assert control_receipt["hashes"]["shard_sha256"]==expected["shard_sha256"]
             assert control_receipt["hashes"]["bundle_sha256"]==expected["bundle_sha256"]
             assert control_receipt["verification"]["runtime_control_sha256"]==shard["runtime_control_sha256"]
-            assert len(children)==(1 if fault=="control" else 2)
-            assert rc==(1 if fault=="control" else 0)
+            assert len(children)==(1 if fault in ("control", "probe") else 2)
+            assert rc==(1 if fault in ("control", "probe", "work_stall") else 0)
+            if fault == "probe":
+                assert terminal["reason"] == "landlock_control_upload"
+                assert terminal["verification"]["landlock_control_upload"] == "FAIL"
+                assert terminal["verification"]["work_progress"] == "NOT_RUN"
+            if fault == "work_stall":
+                assert terminal["reason"] == "stall"
+                assert terminal["verification"]["work_progress"] == "FAIL"
+            if fault == "success":
+                assert terminal["verification"]["landlock_control_upload"] == "PASS"
+                assert terminal["verification"]["work_progress"] == "PASS"
             terminal=json.loads((out/"runtime_receipt.json").read_text())
             assert terminal["hashes"]["shard_sha256"]==hashlib.sha256(path.read_bytes()).hexdigest()
             # Bind a shell-protocol fixture to the exact production runtime bytes.
@@ -805,8 +1117,18 @@ def cpu_template():
     cloud.validate_config(valid)
     contract=cloud.dispatch_contract(valid,100000,"a"*64)
     assert contract["weights_mirror_uri"] is None and contract["weights_manifest_uri"] is None
-    fake=creation(valid)
-    assert "lsr-weights-mirror-uri=" not in next(x for x in fake.creation if x.startswith("--metadata="))
+    # Remove the shipped receipt in memory and refuse before any effect.
+    # The independently authorized synthetic CPU create is in cpu_operator_gate.
+    contract["shard_sha256"]="b"*64
+    with ExitStack() as stack:
+        stack.enter_context(patch.object(cloud,"RELEASE_CPU_OPERATOR_EVIDENCE",{}))
+        guards=[]
+        for obj,name in ((cloud,"gcloud"),(cloud,"now"),(subprocess,"run"),(subprocess,"Popen"),
+                         (socket,"create_connection"),(socket,"socket"),(time,"time"),(time,"sleep")):
+            guards.append(stack.enter_context(patch.object(obj,name,side_effect=forbidden)))
+        rejects(cloud.create_vm,valid,0,f"{cloud.BUCKET}/runs/{valid['run']}/shards/000",contract)
+        assert all(guard.call_count==0 for guard in guards), "missing receipt reached an external effect"
+    print("PASS CPU template missing evidence refused before all raising external-effect mocks")
     shard=run.assemble_shard(c,0)
     assert shard["kind"]=="associative_continuation_cpu" and shard["cpu_check"]=="receiver"
     assert shard["runtime_control_command"][-2:]==["--check","exact-controls"]
@@ -815,7 +1137,7 @@ def cpu_template():
     called=[]
     mod=type("CPU",(),{"_cli":staticmethod(lambda argv:called.append(argv) or 0)})
     shard["dispatch"]={"weights_local_path":None}
-    with tempfile.TemporaryDirectory() as td,patch.object(run.importlib,"import_module",return_value=mod):
+    with tempfile.TemporaryDirectory() as td,patch.object(run.importlib,"import_module",return_value=mod), patch.object(run,"cpu_work_progress",return_value=nullcontext()):
         assert run.execute(shard,td)==0
     assert called==[["--config","experiments/memory/associative_continuation_cpu.json","--check","receiver"]]
 
@@ -844,6 +1166,24 @@ def real_release_pins():
     manifest=(cloud.HERE/"lsr_gemma4_31b_manifest_sha256.txt").read_bytes()
     assert hashlib.sha256(lock).hexdigest()==cloud.RELEASE_PINS["requirements_lock_sha256"]
     assert hashlib.sha256(manifest).hexdigest()==cloud.RELEASE_MANIFEST_SHA256
+    # Exercise each real sibling entry's asset pins independently of its still
+    # missing operation/allocation fields. The exact existing lock/image bytes
+    # come from S0; they are not written into the prototype templates here.
+    base=json.loads((cloud.HERE/"configs/s0_gemma4_memory_port_v1.json").read_text())
+    for tag in ("e2b", "e4b"):
+        sibling=json.loads((cloud.HERE/f"configs/allin_{tag}_a01.json").read_text())
+        candidate=copy.deepcopy(base)
+        candidate["common"].update({k:sibling["common"][k] for k in
+                                   ("model", "revision", "tokenizer_revision")})
+        for key in ("weights_mirror_uri", "weights_manifest_uri", "weights_manifest_sha256"):
+            candidate[key]=sibling[key]
+        cloud.validate_release_pins(candidate)
+        bad=copy.deepcopy(candidate);bad["weights_manifest_sha256"]="f"*64
+        rejects(cloud.validate_release_pins,bad)
+        bad=copy.deepcopy(candidate);bad["common"]["tokenizer_revision"]="f"*40
+        rejects(cloud.validate_release_pins,bad)
+        rejects(cloud.validate_config,sibling)
+    print("PASS E2B/E4B operator asset pins; wrong manifests/tokenizer revisions rejected; incomplete prototype templates rejected")
     negatives=0
     for name in ("s0_gemma4_memory_port_v1.json","e1_gemma4_smoke.json",
                  "e1_gemma4_alignment_hook_v1.json","associative_continuation_cpu_smoke.json"):
@@ -875,7 +1215,7 @@ def real_release_pins():
         try:
             idx,estimate=cloud.launch_plan(cfg)
         except ValueError as exc:
-            assert str(exc) in ("nonempty runtime_control_command argv required", "31B autograd placement/headroom UNVERIFIED"), str(exc)
+            assert str(exc) in ("nonempty runtime_control_command argv required", "31B autograd placement/headroom UNVERIFIED", "explicit provisioning_model SPOT or STANDARD required", "unreviewed machine/provisioning_model rate"), str(exc)
             print(f"BLOCKED dry assembly {name}: {exc}; release pins PASS")
         else:
             for i in idx:
@@ -1110,7 +1450,81 @@ def prototype_cpu_config():
     print("PASS prototype CPU exact config bytes/prepare API, tampered config and legacy API rejected, model-free assets, offline environment; no common.load/CUDA/network")
 
 
-CHECKS={"placement-evidence":placement_evidence,"lifetime-variants":lifetime_variants,"prototype-cpu-config":prototype_cpu_config,"real-release-pins":real_release_pins,"options":options,"create-verify":create_verify,"aggregate-cost":aggregate_cost,
+
+def provisioning_models():
+    """Real six-entry rate policy, isolated from legacy synthetic regression rates."""
+    base=json.loads((cloud.HERE/"configs/associative_continuation_cpu_smoke_a06.json").read_text())
+    with patch.object(cloud,"RATE_TABLE",PRODUCTION_RATE_TABLE):
+        assert cloud.launch_plan(base)[0]==[0] and abs(cloud.launch_plan(base)[1]-1.026944)<1e-12
+        assert base["operator_evidence_sha256"] is None
+        rejects(cloud.verify_cpu_operator_evidence,base)
+        for (machine,model),table in PRODUCTION_RATE_TABLE.items():
+            c=copy.deepcopy(base)
+            c.update(machine=machine,provisioning_model=model,usd_per_hour=table["usd_per_hour"],
+                     cost_cap_usd=50,aggregate_cost_ceiling_usd=50)
+            gpu=machine.startswith("a3-")
+            if gpu:
+                c.update(kind="s0_memory_port",release=False,has_gpu=True,
+                         guest_accelerators=[{"type":"nvidia-h100-80gb","count":1}],
+                         common=copy.deepcopy(fixture()["common"]))
+                c["common"]["job_stop_seconds"]=2700
+                for k in ("weights_manifest_uri","weights_manifest_sha256","weights_mirror_uri","weights_local_path"):
+                    c[k]=fixture()[k]
+            cloud.validate_config(c)
+            bad=copy.deepcopy(c);bad["usd_per_hour"]+=0.01;rejects(cloud.validate_config,bad)
+            expected=cloud.rate_entry(c)
+            assert expected["derived"] is table["derived"]
+            if gpu:
+                bad=copy.deepcopy(c);bad["kind"]="associative_continuation_cpu"
+                rejects(cloud.verify_cpu_operator_evidence,bad)
+                c["rate_verified"]=False
+                fake=creation(c)
+            else:
+                c.update(rate_verified=True,shape_verified=True)
+                obligations=cloud.CPU_PRELAUNCH_CHECKS
+                receipt=dict(packet_sha256=cloud.cpu_packet_sha256(c),source_sha256=cloud.cpu_source_sha256(),
+                    credit_rate=expected,checks={k:"PASS" for k in obligations},
+                    artifacts={k:[dict(path="synthetic-offline-only",sha256="a"*64)] for k in obligations-{"credit_rate"}})
+                def registered(r,packet):
+                    raw=json.dumps(r,sort_keys=True).encode();h=hashlib.sha256(raw).hexdigest()
+                    packet["operator_evidence_sha256"]=h
+                    return patch.object(cloud,"RELEASE_CPU_OPERATOR_EVIDENCE",{h:raw})
+                for key,value in (("usd_per_hour",0),("provisioning_model","WRONG"),("derived",not expected["derived"])):
+                    wrong=copy.deepcopy(receipt);wrong["credit_rate"][key]=value
+                    with registered(wrong,c): rejects(cloud.verify_cpu_operator_evidence,c)
+                with registered(receipt,c):
+                    cloud.verify_cpu_operator_evidence(c)
+                    contract=cloud.dispatch_contract(c,100000,hashlib.sha256(cloud.build_bundle(c)).hexdigest())
+                    contract["shard_sha256"]="b"*64
+                    fake=FakeCloud(c,contract)
+                    with tempfile.TemporaryDirectory() as td,patch.object(cloud,"gcloud",fake),patch.object(time,"time",return_value=100060),patch.object(cloud,"REGISTRY",Path(td)/"journal"):
+                        prefix=f"{cloud.BUCKET}/runs/{c['run']}/shards/000"
+                        cloud.create_vm(c,0,prefix,contract)
+                        fake.mutate=lambda a:a["scheduling"].update(provisioningModel="STANDARD" if model=="SPOT" else "SPOT")
+                        rejects(cloud.create_vm,c,0,prefix,contract)
+                        assert fake.calls[-1][:3]==("compute","instances","delete")
+            assert f"--provisioning-model={model}" in fake.creation
+            assert "--preemptible" not in fake.creation
+            assert sum(x[:3]==("compute","instances","create") for x in fake.calls) <= 2
+            if gpu:
+                creation(c,lambda a:a["scheduling"].update(provisioningModel="STANDARD" if model=="SPOT" else "SPOT"))
+            if model=="STANDARD":
+                wrong=tuple("--provisioning-model=SPOT" if a.startswith("--provisioning-model=") else a for a in fake.creation)
+                try: FakeCloud(c,{}).assert_create(wrong)
+                except AssertionError: pass
+                else: raise AssertionError("STANDARD request with SPOT flag accepted")
+                try: FakeCloud(c,{}).assert_create((*fake.creation,"--preemptible=true"))
+                except AssertionError: pass
+                else: raise AssertionError("STANDARD request with Spot-only preemptible accepted")
+            print(f"PASS {machine}/{model}: exact rate {table['usd_per_hour']}, derived={table['derived']}; mocked argv/readback/delete")
+        for value in (None,"spot","UNKNOWN",True,[]):
+            c=copy.deepcopy(base);c["provisioning_model"]=value;rejects(cloud.validate_config,c)
+        c=copy.deepcopy(base);c.pop("provisioning_model");rejects(cloud.validate_config,c)
+        c=copy.deepcopy(base);c["machine"]="n2-standard-32";rejects(cloud.validate_config,c)
+        c=copy.deepcopy(base);c["zones"]=["europe-west1-b"];rejects(cloud.validate_config,c)
+        print("PASS required provisioning model, unknown pair/region rejected; a06 full-hour estimate $1.026944, provisional ancillary $0.25")
+
+CHECKS={"provisioning-models":provisioning_models,"bundle-readback-negative":bundle_readback_negative,"cpu-progress":cpu_progress,"cpu-bundle":cpu_bundle,"cpu-operator-gate":cpu_operator_gate,"terminal-reconciliation":terminal_reconciliation,"placement-evidence":placement_evidence,"lifetime-variants":lifetime_variants,"prototype-cpu-config":prototype_cpu_config,"real-release-pins":real_release_pins,"options":options,"create-verify":create_verify,"aggregate-cost":aggregate_cost,
         "entry-handling":entry_handling,"deadlines":deadlines,"collisions":collisions,
         "bundle":bundle,"pins-mirror":pins_mirror,"s0-config":s0_config,"s0-identity":s0_identity,
         "cpu-dry-assembly":cpu_dry_assembly,"cpu-support":cpu_support, "request-mutations":request_mutations,
@@ -1124,7 +1538,7 @@ def main(argv=None):
     ap.add_argument("--check",required=True,choices=["all",*CHECKS])
     ap.add_argument("--offline",required=True,action="store_true")
     args=ap.parse_args(argv)
-    if os.name == "nt" and args.check != "s0-placement":
+    if os.name == "nt" and args.check not in {"s0-placement", "cpu-bundle", "cpu-progress"}:
         repo = cloud.REPO.as_posix()
         posix = "/mnt/" + repo[0].lower() + repo[2:]
         python_posix = "/mnt/" + sys.executable[0].lower() + sys.executable[2:].replace("\\", "/")
@@ -1133,6 +1547,11 @@ def main(argv=None):
                           "PYTHONDONTWRITEBYTECODE=1", "python3", "-B", "-m", __package__ + ".dispatch_checks",
                           "--check", args.check, "--offline"]).returncode
     with ExitStack() as stack:
+        stack.enter_context(patch.dict(cloud.RATE_TABLE, {
+            ("a3-highgpu-2g", "SPOT"): {"usd_per_hour": 13.1986, "derived": False},
+            ("n1-standard-8", "SPOT"): {"usd_per_hour": 13.1986, "derived": False},
+            ("e2-standard-8", "SPOT"): {"usd_per_hour": 13.1986, "derived": False},
+        }))  # Offline-only synthetic entries, never installed in production.
         for obj,name in ((cloud,"gcloud"),(cloud,"now"),(subprocess,"run"),(subprocess,"Popen"),
                          (socket,"create_connection"),(socket,"socket"),(time,"time"),(time,"sleep")):
             stack.enter_context(patch.object(obj,name,forbidden))
@@ -1140,6 +1559,8 @@ def main(argv=None):
             try:
                 CHECKS[name]()
             except Exception as exc:
+                import traceback
+                traceback.print_exc()
                 print(f"FAIL {name}: {type(exc).__name__}: {exc}")
                 return 1
             print(f"PASS {name}: positive path and rejecting negative cases")

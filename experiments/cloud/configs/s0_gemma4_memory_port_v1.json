@@ -1,5 +1,5 @@
 {
-  "run": "s0-memory-port-v1",
+  "run": "s0-e2b-smoke-a01",
   "kind": "s0_memory_port",
   "machine": "a3-highgpu-2g",
   "accelerator": null,
@@ -146,10 +146,10 @@
     {}
   ],
   "common": {
-    "model": "google/gemma-4-31B",
-    "revision": "5bbc2fb1c1b2c611d06e3d9f23c170ba21659d89",
-    "width": 5376,
-    "n_layers": 60,
+    "model": "google/gemma-4-E2B",
+    "revision": "d29ff6b45f081a49ee2733a859c9c9c2d95d1a6f",
+    "width": 1536,
+    "n_layers": 35,
     "recurrence_block": null,
     "workspace_positions": 8,
     "memory_positions": 16,
@@ -171,19 +171,19 @@
       },
       "empty_none_parity": "behavioral equivalence under declared comparison"
     },
-    "tokenizer_revision": "5bbc2fb1c1b2c611d06e3d9f23c170ba21659d89",
+    "tokenizer_revision": "d29ff6b45f081a49ee2733a859c9c9c2d95d1a6f",
     "placement_contract": {
       "autograd_tested": false,
-      "status": "UNVERIFIED",
+      "status": "MISSING",
       "device_map": null,
       "max_memory": null,
       "min_device_headroom_fraction": 0.1,
       "evidence_sha256": null
     },
-    "model_source": "google/gemma-4-31B",
+    "model_source": "google/gemma-4-E2B",
     "model_local": "/opt/lsr/weights",
     "allow_hf_download": false,
-    "phase": "fit",
+    "phase": "smoke",
     "recurrence": false,
     "dtype": "bfloat16",
     "attn_implementation": null,
@@ -217,7 +217,7 @@
       "attn_implementation"
     ]
   },
-  "note": "NOT READY. Existing primary revision/tokenizer, mirror manifest, image name/ID and dependency lock retained. Runtime control invokes the CPU random-tiny production-contract check on the bundle-bound /opt/lsr/config.json; it is not an actual-checkpoint smoke PASS. Actual resident smoke precedes ten-step fit in main. BF16 and horizon=0 are specified; recurrence is disabled. Null fields listed in common.missing_operator_inputs are MISSING-operator, rejected by validation; no random-fixture cases or measured placement/backend are invented. Rate/shape/quota and actual-checkpoint parity remain UNVERIFIED. Lifetime 14400/13500/900; no readiness or launch authorization.",
+  "note": "NOT READY. E2B operator model/tokenizer revision and mirror manifest pins replace 31B for the small-stem S0 smoke. Existing image/lock retained. Placement measurement, smoke_cases, fit_cases, backend and shape remain MISSING/UNVERIFIED and rejected; no invented cases or placement. Reserved s0-e2b-smoke-a01; s0-e2b-smoke-a02 is a distinct future attempt only. This change supplies no unused-name receipt, actual-model smoke PASS or launch authorization. Lifetime 14400/13500/900 and planning rates retained pending operator allocation.",
   "boot_disk_type": "pd-balanced",
   "nic_type": "GVNIC",
   "image_name": "pytorch-2-9-cu129-ubuntu-2204-nvidia-580-v20261001",
@@ -225,7 +225,7 @@
   "release": true,
   "image_project": "deeplearning-platform-release",
   "requirements_lock_sha256": "1d7f449541ab71e0f87a2978537ad88795226e4d63d36fb27d654601c6903df9",
-  "weights_mirror_uri": "gs://sc-bench-iqidis-artifacts/lsr/models/gemma-4-31B/5bbc2fb1c1b2c611d06e3d9f23c170ba21659d89",
+  "weights_mirror_uri": "gs://sc-bench-iqidis-artifacts/lsr/models/gemma-4-E2B/d29ff6b45f081a49ee2733a859c9c9c2d95d1a6f",
   "weights_local_path": "/opt/lsr/weights",
   "allow_hf_download": false,
   "rate_verified": false,
@@ -241,6 +241,7 @@
       "count": 2
     }
   ],
-  "weights_manifest_uri": "gs://sc-bench-iqidis-artifacts/lsr/models/gemma-4-31B/5bbc2fb1c1b2c611d06e3d9f23c170ba21659d89/_manifest_sha256.txt",
-  "weights_manifest_sha256": "8ea23dc0845967880fa8ce2661f256d13e59129d5fd78c048fbe95481da32d46"
+  "weights_manifest_uri": "gs://sc-bench-iqidis-artifacts/lsr/models/gemma-4-E2B/d29ff6b45f081a49ee2733a859c9c9c2d95d1a6f/_manifest_sha256.txt",
+  "weights_manifest_sha256": "6fb8018d230c91566874f82c0fc006ca8f55bda1dcbcd2afe38feef6d7b372fa",
+  "provisioning_model": "SPOT"
 }

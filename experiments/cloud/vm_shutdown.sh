@@ -3,6 +3,15 @@
 set -uo pipefail
 OUT=${LSR_OUT:-/opt/lsr/out}
 mkdir -p "$OUT" || exit 1
+# Custody state is OUTSIDE the worker's Landlock write root in production.
+STATE=${LSR_CUSTODY_STATE:-${OUT}.custody}
+[[ ! -L "$STATE" ]] || exit 1
+mkdir -p "$STATE" || exit 1
+# Keep this descriptor through publication: startup and guest-agent hooks may overlap.
+# Bound lock waiting; a dead owner releases the kernel lock automatically.
+[[ ! -L "$STATE/shutdown.lock" ]] || exit 1
+exec 9>"$STATE/shutdown.lock" || exit 1
+flock -w 20 9 || exit 1
 for field in job created bundle_hash run shard attempt shard_hash; do
     case "$field" in job) key=LSR_JOB;; created) key=LSR_CREATED_EPOCH;; bundle_hash) key=LSR_BUNDLE_SHA256;;
         run) key=LSR_RUN;; shard) key=LSR_SHARD;; attempt) key=LSR_ATTEMPT;; shard_hash) key=LSR_SHARD_SHA256;; esac
@@ -22,7 +31,7 @@ for field in LIFETIME_SECONDS WORK_STOP_SECONDS SHUTDOWN_RESERVE_SECONDS CREDIT_
     [[ "$value" =~ ^[1-9][0-9]{0,9}$ ]] || exit 1
 done
 [[ "$LSR_LIFETIME_SECONDS" == 3600 || "$LSR_LIFETIME_SECONDS" == 10800 || "$LSR_LIFETIME_SECONDS" == 14400 ]] || exit 1
-(( LSR_WORK_STOP_SECONDS + LSR_SHUTDOWN_RESERVE_SECONDS == LSR_LIFETIME_SECONDS && LSR_SHUTDOWN_RESERVE_SECONDS >= 900 && LSR_CREDIT_GUARD_EPOCH <= 1792195200 )) || exit 1
+(( LSR_WORK_STOP_SECONDS + LSR_SHUTDOWN_RESERVE_SECONDS == LSR_LIFETIME_SECONDS && LSR_SHUTDOWN_RESERVE_SECONDS >= 900 && LSR_CREDIT_GUARD_EPOCH <= 1792193400 )) || exit 1
 # Fresh preemption hook stops the recorded work session before any storage call.
 if [[ -f "$OUT/runtime_work_pgid" ]]; then
     PGID=$(cat "$OUT/runtime_work_pgid") || exit 1
@@ -54,6 +63,38 @@ if [[ -f "$OUT/runtime_receipt.json" && ! -L "$OUT/runtime_receipt.json" ]]; the
     RUNTIME_HASH=${RUNTIME_HASH%% *}
 fi
 [[ "$RUNTIME_HASH" =~ ^[0-9a-f]{64}$ ]] || { RUNTIME_HASH=''; RC=1; }
+# Only a locally recorded SUCCESSFUL final cp authenticates reusable custody.
+# A finalized JSON alone may be from a killed/failed publisher. Validate all launch
+# bindings and unchanged runtime bytes, never merely the existence of a receipt.
+if [[ -f "$STATE/shutdown_published.sha256" && ! -L "$STATE/shutdown_published.sha256" && ! -L "$OUT/shutdown_receipt.json" ]]; then
+    SAVED_RC=$(python3 -B - "$OUT" "$RUN" "$SHARD" "$ATTEMPT" "$BUNDLE" "$SHARD_HASH" "$RUNTIME_HASH" "$CREATED" "$LSR_WORK_STOP_SECONDS" "$LSR_LIFETIME_SECONDS" "$LSR_SHUTDOWN_RESERVE_SECONDS" "$STATE" <<'PY'
+import hashlib, json, pathlib, sys
+try:
+    out = pathlib.Path(sys.argv[1])
+    raw = (out / "shutdown_receipt.json").read_bytes()
+    assert (pathlib.Path(sys.argv[12]) / "shutdown_published.sha256").read_text().strip() == hashlib.sha256(raw).hexdigest()
+    r = json.loads(raw)
+    run, shard, attempt, bundle, shard_hash, runtime_hash = sys.argv[2:8]
+    created, work, total, reserve = map(int, sys.argv[8:12])
+    assert r["identity"] == {"run": run, "shard": int(shard), "attempt": attempt}
+    assert r["hashes"] == {"bundle_sha256": bundle, "shard_sha256": shard_hash, "runtime_receipt_sha256": runtime_hash}
+    assert len(runtime_hash) == 64 and len(bundle) == 64 and len(shard_hash) == 64
+    c = r["clock"]
+    assert c["created_epoch"] == created and c["work_stop_epoch"] == created + work
+    assert c["lifetime_end_epoch"] == created + total and c["reserve_seconds"] == reserve
+    assert created <= c["now_epoch"] < created + total
+    assert r["finalized"] is True and type(r["rc"]) is int and 0 <= r["rc"] <= 255
+    assert r["status"] == ("completed" if r["rc"] == 0 else "failed")
+    inner = json.loads((out / "runtime_receipt.json").read_bytes())
+    assert inner["identity"] == r["identity"] and inner["clock"]["created_epoch"] == created
+    assert all(inner["hashes"][k] == r["hashes"][k] for k in ("bundle_sha256", "shard_sha256"))
+    assert r["rc"] != 0 or (inner["status"] == "completed" and inner["rc"] == 0)
+    print(r["rc"])
+except (OSError, ValueError, KeyError, TypeError, AssertionError):
+    sys.exit(1)
+PY
+    ) && exit "$SAVED_RC"
+fi
 LEFT=$((CREATED + LSR_LIFETIME_SECONDS - NOW - 35))
 (( LEFT <= LSR_SHUTDOWN_RESERVE_SECONDS - 40 )) || LEFT=$((LSR_SHUTDOWN_RESERVE_SECONDS - 40))
 if (( CREATED == 0 || LEFT <= 0 )); then RC=1; REASON=deadline; LEFT=0; fi
@@ -104,4 +145,8 @@ if (( LEFT <= 0 )) || ! custody gcloud storage cp "$OUT/shutdown_receipt.json" "
     write_receipt failed false || fallback
     exit 1
 fi
+# Commit publication marker only AFTER remote final receipt cp succeeded.
+PUBLISHED_HASH=$(sha256sum "$OUT/shutdown_receipt.json") || exit 1
+printf '%s\n' "${PUBLISHED_HASH%% *}" > "$STATE/shutdown_published.tmp" || exit 1
+mv "$STATE/shutdown_published.tmp" "$STATE/shutdown_published.sha256" || exit 1
 exit "$RC"
