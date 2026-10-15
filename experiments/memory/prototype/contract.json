@@ -1,0 +1,101 @@
+{
+  "format": "zcode-b-prototype-contract/1",
+  "offline": true,
+  "device": "cpu",
+  "seed": 20261015,
+  "data": {
+    "n_values": 32,
+    "records_per_doc": 4,
+    "reads_per_doc": 6,
+    "pairs": {
+      "train": 1024,
+      "dev": 64,
+      "test": 64
+    },
+    "test_novel_pairs": 32,
+    "value_check": "offline-lexical; single-token check deferred to the pinned tokenizer on the cloud path"
+  },
+  "writer": {
+    "rows_per_record": 4,
+    "max_rows": 16,
+    "prefix_slots": 8,
+    "offline_width": 64,
+    "encoder": "frozen-contextual/v1 (semantic path); offline-frozen-hashed-mechanics only for legacy store fixtures",
+    "cloud_encoder": "pinned frozen stem last-four-record-token hidden rows; resampler to 8 receiver prefix slots via canonical envelope APIs"
+  },
+  "store": {
+    "format": "zcode-b-store/1",
+    "immutable_snapshots": true,
+    "value_free_ids": true,
+    "reader_allowlist": [
+      "dictionary",
+      "storage",
+      "candidate"
+    ]
+  },
+  "trainer": {
+    "smoke_docs": 16,
+    "steps": 40,
+    "lr": 0.05,
+    "mask_token": -100,
+    "note": "answer loss masks query/pad/prefix; resampler-only training first; no frozen stem gradients"
+  },
+  "eval": {
+    "match": "exact after whitespace normalization only",
+    "bootstrap": {
+      "n": 10000,
+      "seed": 20261014,
+      "unit": "world_pair"
+    },
+    "budget_initial": 8,
+    "gates": "frozen in experiments/memory/prototype/evaluate.py GATES"
+  },
+  "stem": {
+    "pinned": null,
+    "note": "config-driven tiny random Gemma construction; E2B pin staged in semantic.cloud_stems, disabled here"
+  },
+  "phases": {
+    "prepare": {
+      "enabled": true
+    },
+    "smoke": {
+      "enabled": true
+    },
+    "overfit": {
+      "enabled": true,
+      "reason": "one bounded tiny-random construction attempt; failure is recorded without retuning"
+    },
+    "train": {
+      "enabled": false,
+      "reason": "overfit failed; no full training implementation or actual-model competence receipt"
+    },
+    "evaluate": {
+      "enabled": false,
+      "reason": "held-out evaluation unavailable; never refit in evaluate"
+    }
+  },
+  "semantic": {
+    "stem": {
+      "kind": "tiny-random",
+      "seed": 1701
+    },
+    "steps": 300,
+    "lr": 0.003,
+    "batch_size": 8,
+    "max_fit_seconds": 900,
+    "train_documents": 16,
+    "dev_documents": 128,
+    "budget": 8,
+    "claim_scope": "random Gemma production-path construction only; no pretrained quality claim",
+    "cloud_stems": {
+      "E2B": {
+        "model": "google/gemma-4-E2B",
+        "revision": "d29ff6b45f081a49ee2733a859c9c9c2d95d1a6f",
+        "mirror": "gs://sc-bench-iqidis-artifacts/lsr/models/gemma-4-E2B/d29ff6b45f081a49ee2733a859c9c9c2d95d1a6f",
+        "manifest_sha256": "6fb8018d230c91566874f82c0fc006ca8f55bda1dcbcd2afe38feef6d7b372fa",
+        "enabled": false,
+        "requires": "staged production receiver_config, actual competence and smoke; operator only"
+      }
+    }
+  }
+}
