@@ -1,0 +1,34 @@
+# Secrets and private local process material must never be committed.
+.env
+.env.*
+AGENTS.md
+
+# Generated environments, caches, indexes, model weights and outputs.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+node_modules/
+.coverage
+htmlcov/
+*.log
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.gguf
+*.npy
+*.npz
+*.sqlite*
+*.db
+models/
+checkpoints/
+experiments/results/
+.DS_Store
+Thumbs.db
+.*
+!.gitignore
+workspace/

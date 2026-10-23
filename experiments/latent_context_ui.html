@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Latent memory | Context workbench</title>
+<style>
+:root{color-scheme:light;--ink:#17312f;--muted:#496361;--edge:#c8d9d3;--green:#146753}
+*{box-sizing:border-box}body{margin:0;background:#f3f6f2;color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+header{padding:22px 4vw;background:#153d35;color:#fff}header h1{margin:0;font-size:25px}
+header p{margin:4px 0 0;color:#d4e8df}main{max-width:1500px;margin:auto;padding:24px 4vw}
+form,.panel{background:white;border:1px solid var(--edge);border-radius:12px;padding:20px;margin-bottom:16px}
+label{font-weight:600}input,select,textarea,button{font:inherit;border:1px solid #9eb7ae;border-radius:6px}
+textarea{display:block;width:100%;min-height:86px;padding:12px;margin:8px 0}
+button{padding:8px 12px;background:#edf5ef;color:var(--ink);cursor:pointer}button:hover{background:#d9eadd}
+button:disabled{opacity:.55;cursor:wait}#ask{background:var(--green);color:white}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.row input[type=number]{width:70px;padding:6px}
+.layout{display:grid;grid-template-columns:minmax(0,2.3fr) minmax(260px,1fr);gap:20px}
+h2{font-size:19px;margin:0 0 10px}h3{font-size:17px;margin:12px 0 5px}
+.muted,small{color:var(--muted)}.tag{font-size:12px;background:#e2f0e6;padding:3px 6px;border-radius:4px}
+article{border-top:1px solid var(--edge);padding:14px 0}article:first-child{border-top:0}
+blockquote{white-space:pre-wrap;overflow-wrap:anywhere;margin:10px 0;padding:12px 14px;background:#f4f7f3;border-left:3px solid #68a08a;max-height:260px;overflow:auto}
+.source{font-size:13px;overflow-wrap:anywhere}.tools{display:flex;gap:6px;flex-wrap:wrap}
+details{font-size:13px;margin:8px 0;overflow-wrap:anywhere}#status{min-height:25px;margin:10px 0;font-weight:600}
+.error{color:#9c2929}.trace{font-size:13px;border-left:2px solid #b7cec4;padding:8px 12px;margin:8px 0}
+.empty{padding:32px 0;color:var(--muted)}#working{font-size:13px;margin-top:10px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}main{padding:16px}header{padding:20px}}
+</style>
+<header><h1>Latent memory</h1><p>Explore the corpus. Bring out the context. Keep the sources.</p></header>
+<main>
+<form id="question-form">
+ <div class="row">
+  <label for="corpus">Memory</label><select id="corpus"></select>
+  <label for="k">Spans</label><input id="k" type="number" min="1" max="16" value="8">
+  <span class="tag">Local CPU · no reader · no generated answer</span>
+ </div>
+ <label for="question">What would you like to explore?</label>
+ <textarea id="question" placeholder="What business and technical risks recur across the filings?" required maxlength="4096"></textarea>
+ <div class="row">
+  <button id="ask" type="submit">Explore memory</button>
+  <button id="broader" type="button">Broader context</button>
+  <button id="narrower" type="button">Narrow to pinned context</button>
+  <label><input id="followup" type="checkbox" checked> Keep working context for follow-ups</label>
+  <button id="clear" type="button">Clear working context</button>
+ </div>
+ <div id="working">No pinned spans. Context stays in this browser tab only.</div>
+</form>
+<div id="status" role="status" aria-live="polite">Ready. Ask a question to open a context pack.</div>
+<div class="layout">
+ <section class="panel"><h2>Relevant context</h2><div id="description" class="muted"></div>
+  <div id="context"><p class="empty">Exact excerpts will appear here, grouped by facet. Open neighbors to recover local context, or follow source references.</p></div>
+ </section>
+ <aside>
+  <section class="panel"><h2>Coverage, not certainty</h2><div id="coverage">No query yet. A search cannot certify “not in memory.”</div></section>
+  <section class="panel"><h2>How memory got here</h2><div id="trace">The exploration trace appears live as steps finish.</div></section>
+  <section class="panel"><h2>Open next</h2><div id="related">Related terms will come from the source quotes.</div></section>
+ </aside>
+</div>
+</main>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+let pack=null, previous="", busy=false;
+const pinned=new Map();
+function text(tag,value,cls){const node=document.createElement(tag);node.textContent=value;if(cls)node.className=cls;return node;}
+function state(message,error=false){$("status").textContent=message;$("status").className=error?"error":"";}
+function button(label,action){const b=text("button",label);b.type="button";b.onclick=action;return b;}
+async function api(method,arguments_={}){
+ const response=await fetch("/api",{method:"POST",headers:{"Content-Type":"application/json","X-Latent-Client":"context-pack"},
+ body:JSON.stringify({method,corpus:$("corpus").value,...arguments_})});
+ const result=await response.json();if(!response.ok)throw Error(result.error);return result;
+}
+function updateWorking(){
+ $("working").textContent=pinned.size?`${pinned.size} pinned span(s): ${[...pinned.keys()].join(", ")}. Reverified on every follow-up.`:
+ "No pinned spans. Context stays in this browser tab only.";
+}
+function traceStep(step){const item=text("div",`${step.step}. ${step.operation} — ${step.why}`,"trace");
+ item.append(text("div",step.regions.join(" · "),"muted"));$("trace").append(item);}
+function makeSpan(span){
+ const article=document.createElement("article");
+ article.append(text("div",`${span.file}${span.page===null?"":` · page/leaf ${span.page}`} · bytes ${span.start_byte}:${span.end_byte}`,"source"));
+ article.append(text("span","VERIFIED · byte identity only","tag"));
+ article.append(text("blockquote",span.text));
+ const details=document.createElement("details");details.append(text("summary","Span ID, hashes and coordinate system"));
+ details.append(text("div",`${span.id}\nSpan SHA-256: ${span.sha256}\nSource SHA-256: ${span.source_sha256}\n${span.offsets}. PDF page markers may be embedded in the exact quote.`));article.append(details);
+ const tools=document.createElement("div");tools.className="tools";
+ const pin=button(pinned.has(span.id)?"Unpin":"Pin",()=>{if(pinned.has(span.id))pinned.delete(span.id);else if(pinned.size<16)pinned.set(span.id,span);else{state("At most 16 pins; unpin an item first.",true);return;}
+ pin.textContent=pinned.has(span.id)?"Unpin":"Pin";updateWorking();});
+ tools.append(pin,button("Expand / reverify",()=>navigate("open_span",{id:span.id})),
+ button("Follow reference",()=>navigate("follow_reference",{span_id:span.id})),
+ button("Show neighbors",()=>navigate("neighbors",{span_id:span.id,k:4,kind:"both"})));
+ article.append(tools);return article;
+}
+function display(value){
+ pack=value;$("context").replaceChildren();$("description").textContent=value.corpus_description;
+ for(const group of value.facets){const section=document.createElement("section");section.append(text("h3",group.topic));
+ for(const span of group.spans)section.append(makeSpan(span));$("context").append(section);}
+ const c=value.coverage;$("coverage").replaceChildren(
+ text("p",`${c.returned_spans} verified spans · ${c.returned_files} source files. Index: ${c.indexed_files} files / ${c.indexed_spans} spans.`),
+ text("p","Completeness UNKNOWN. Not in memory UNKNOWN."),
+ text("p","Thin/unseen query terms: "+(c.thin_or_unseen_query_terms.join(", ")||"none observed")),
+ text("small","Uncalibrated lexical signal, not semantic coverage. "+value.ambiguity.note));
+ $("related").replaceChildren();
+ for(const topic of value.related_topics)$("related").append(button(topic,()=>{$("question").value=previous+" — focus on "+topic;explore();})," ");
+ state(`Context ready · ${value.seconds.toFixed(3)}s memory work · 0 model calls · 0 generated tokens${value.truncated?" · output bounded":""}`);
+}
+async function navigate(method,args){
+ if(busy)return;busy=true;state("Opening and verifying source context…");
+ try{const result=await api(method,{arguments:args});const section=document.createElement("section");
+ section.append(text("h3",method.replaceAll("_"," ")));
+ for(const span of result.passages)section.append(makeSpan(span));
+ if(!result.passages.length)section.append(text("p","No supported literal reference targets returned. This does not establish absence."));
+ $("context").prepend(section);state(`${result.passages.length} span(s) opened and verified · ${(result.seconds||0).toFixed(3)}s`);}
+ catch(error){state(error.message,true);}finally{busy=false;}
+}
+async function explore(mode="normal"){
+ if(busy)return;const question=$("question").value.trim();if(!question){$("question").focus();return;}
+ busy=true;$("ask").disabled=true;$("trace").replaceChildren();state("Exploring and verifying memory…");
+ const oldIds=pack?pack.facets.flatMap(g=>g.spans.map(p=>p.id)).slice(0,4):[];
+ const working=$("followup").checked?[...new Set([...pinned.keys(),...oldIds])].slice(0,16):[];
+ const options={k:Math.max(1,Math.min(16,Number($("k").value)||8)),hops:2,
+ working_ids:mode==="broader"?[]:mode==="narrower"?[...pinned.keys()]:working,
+ previous_question:mode==="broader"?"":previous};
+ try{
+ const response=await fetch("/events",{method:"POST",headers:{"Content-Type":"application/json","X-Latent-Client":"context-pack"},
+ body:JSON.stringify({method:"ask",corpus:$("corpus").value,question,options})});
+ if(!response.ok)throw Error((await response.json()).error);
+ const reader=response.body.getReader(),decoder=new TextDecoder();let buffer="",received=false;
+ while(true){const {value,done}=await reader.read();buffer+=decoder.decode(value||new Uint8Array(),{stream:!done});
+ let newline;while((newline=buffer.indexOf("\n"))>=0){const event=JSON.parse(buffer.slice(0,newline));buffer=buffer.slice(newline+1);
+ if(event.type==="trace")traceStep(event.value);else if(event.type==="error")throw Error(event.value);else if(event.type==="pack"){display(event.value);received=true;}}
+ if(done)break;}
+ if(!received)throw Error("The memory connection ended before returning a pack.");
+ previous=question;
+ }catch(error){state(error.message,true);}finally{busy=false;$("ask").disabled=false;}
+}
+$("question-form").onsubmit=event=>{event.preventDefault();explore();};
+$("broader").onclick=()=>{const q=$("question").value.trim();const terms=q.split(/\s+/);if(terms.length>7)$("question").value=terms.slice(0,7).join(" ");$("k").value=16;explore("broader");};
+$("narrower").onclick=()=>{if(!pinned.size){state("Pin a span first, then refine the question and narrow.",true);return;}explore("narrower");};
+$("clear").onclick=()=>{pinned.clear();pack=null;previous="";updateWorking();state("Working context cleared. Next query starts fresh.");};
+$("corpus").onchange=()=>{pinned.clear();pack=null;previous="";updateWorking();$("context").replaceChildren(text("p","Memory changed. Ask a fresh question."));};
+(async()=>{try{const result=await api("status");const selected=new URLSearchParams(location.search).get("corpus")||"datadog";
+ for(const [key,description]of Object.entries(result.corpora)){const option=text("option",key);option.value=key;option.title=description;$("corpus").append(option);}
+ if([...$("corpus").options].some(o=>o.value===selected))$("corpus").value=selected;
+ }catch(error){state(error.message,true);}})();
+</script>
+</html>

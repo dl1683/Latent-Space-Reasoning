@@ -1,0 +1,4 @@
+# Keep ordinary source text portable. Historical hashes describe original bytes.
+* text=auto
+# Preserve the owner-authored README vision block byte for byte.
+/README.md -text whitespace=cr-at-eol
