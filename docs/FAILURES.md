@@ -133,6 +133,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **Geometry can narrow the wrong candidates, 25 November 2026.** The encoded binding envelope relies on the supplied encoder and candidate coverage. A deliberate misrouting control sent an inspection and permit with different entity labels to one anchor. The banks agreed on 0.8 and a direct label join found no support. A missing mention can make both banks report modeled absence. An outlier that reaches no anchor expands to possible rows throughout the declared scope and can exhaust the expansion budget. Check these failure modes against labeled assignments and distinguish exact modeled scores from calibrated evidence. [Encoded binding controls](../experiments/memory/test_corpus_bindings.py)
 
+**Restored bytes can hide a stale source edit, 25 November 2026.** A delete and restore brought the digest back to its old value. The source generation still changed, and publication refused a delayed replacement, a stale no-op and a dependent edit. Insert-then-delete likewise invalidated a draft deletion of an absent source. Check source revisions and keep deletion generations while old proposals may still be submitted. [Workspace controls](../experiments/memory/test_corpus_bindings.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

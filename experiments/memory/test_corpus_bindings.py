@@ -1,11 +1,15 @@
+from concurrent.futures import ThreadPoolExecutor
 from hashlib import sha256
 from itertools import product
+from threading import Barrier, Event
 
 import numpy as np
 import pytest
 
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingMemory, BindingProof
-from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemory, CorpusBindingRead
+from experiments.memory.corpus_bindings import (
+    BindingMention, CorpusBindingMemory, CorpusBindingRead, CorpusBindingWorkspace, StaleCorpusRevision,
+)
 
 
 _GATES = {"release": BindingGate("disjoint_and", ("inspection", "permit"))}
@@ -168,3 +172,131 @@ def test_candidate_expansion_limit_is_batch_scoped_and_metadata_changes_survive_
     assert new.source_digests["p"] != bank.source_digests["p"]
     assert new._certain is bank._certain and new._possible is bank._possible
     assert bank.revise({"extra": b"inspection,1,1,0.8"}).resolve("release", 0).possible_strength == .8
+
+
+def _workspace(sources, *, encode=_axis_fixture, term_limit=64):
+    bank = CorpusBindingMemory.prepare(
+        _PREDICATES, np.eye(2), _GATES, sources, encode=encode, encoder_version="axis-fixture",
+        min_similarity=.6, gap=.05, term_limit=term_limit,
+    )
+    return CorpusBindingWorkspace(bank)
+
+
+def test_disjoint_workers_publish_prepared_rows_without_reencoding_or_lost_edits():
+    calls = []
+    started, release = Event(), Event()
+    inspection = b"inspection,1,0,0.7"
+
+    def encode(raw):
+        calls.append(raw)
+        if raw == inspection:
+            started.set()
+            if not release.wait(5):
+                raise TimeoutError("fixture did not release encoder")
+        return _axis_fixture(raw)
+
+    owner = _workspace({}, encode=encode)
+    base = owner.snapshot()
+    with ThreadPoolExecutor(max_workers=1) as workers:
+        pending = workers.submit(owner.prepare_changes, base, {"q": inspection})
+        try:
+            assert started.wait(5)
+            permit = owner.prepare_changes(base, {"p": b"permit,1,0,0.9"})
+            first = owner.publish(permit)
+            assert first.memory.resolve("release", 0) == CorpusBindingRead(None, None)
+        finally:
+            release.set()
+        second = owner.publish(pending.result(timeout=5))
+    assert second.revision == 2
+    assert second.memory.resolve("release", 0) == CorpusBindingRead(BindingProof(.7, frozenset({"p", "q"})), .7)
+    assert not base.memory.source_digests
+    assert set(first.memory.source_digests) == {"p"}
+    assert calls == [inspection, b"permit,1,0,0.9"]
+
+
+def test_source_generations_fence_stale_reads_noops_and_same_bytes_after_restore():
+    raw = b"permit,1,0,0.9"
+    owner = _workspace({"p": raw})
+    base = owner.snapshot()
+    noop = owner.prepare_changes(base, {"p": raw})
+    deleted_absent = owner.prepare_changes(base, {"ghost": None})
+    delayed = owner.prepare_changes(base, {"p": b"permit,0,1,0.9"})
+    dependent = owner.prepare_changes(base, {"q": b"inspection,1,0,0.7"}, depends_on=("p",))
+    whole = owner.prepare_changes(base, {"x": b"inspection,0,1,0.8"}, require_tip=True)
+    assert owner.publish(noop) is base
+    removed = owner.publish(owner.prepare_changes(base, {"p": None, "ghost": raw}))
+    restored = owner.publish(owner.prepare_changes(removed, {"p": raw, "ghost": None}))
+    assert restored.memory.source_digests == base.memory.source_digests
+    for stale in (noop, deleted_absent, delayed, dependent, whole):
+        with pytest.raises(StaleCorpusRevision):
+            owner.publish(stale)
+    assert owner.snapshot() is restored
+    with pytest.raises(ValueError, match="another workspace"):
+        _workspace({}).publish(delayed)
+
+
+def test_rebased_capacity_refusal_keeps_tip_and_can_retry_an_unchanged_draft():
+    owner = _workspace({"p": b"permit,1,0,0.9"}, term_limit=1)
+    base = owner.snapshot()
+    first = owner.prepare_changes(base, {"a": b"inspection,1,0,0.7"})
+    second = owner.prepare_changes(base, {"b": b"inspection,1,0,0.8"})
+    committed = owner.publish(first)
+    with pytest.raises(BindingCapacityError):
+        owner.publish(second)
+    assert owner.snapshot() is committed
+    assert committed.memory.resolve("release", 0).certain == BindingProof(.7, frozenset({"p", "a"}))
+    removed = owner.publish(owner.prepare_changes(committed, {"a": None}))
+    recovered = owner.publish(second)
+    assert recovered.revision == removed.revision + 1
+    assert recovered.memory.resolve("release", 0).certain == BindingProof(.8, frozenset({"p", "b"}))
+
+
+def test_proof_promotion_is_tip_fenced_and_preserves_source_local_drafts(monkeypatch):
+    owner = _workspace({"p": b"permit,1,0,0.9", "q": b"inspection,1,0,0.7"})
+    base = owner.snapshot()
+    started, release = Event(), Event()
+    remember = CorpusBindingMemory.remember
+
+    def slow(memory, *args, **kwargs):
+        result = remember(memory, *args, **kwargs)
+        started.set()
+        if not release.wait(5):
+            raise TimeoutError("fixture did not release proof promotion")
+        return result
+
+    monkeypatch.setattr(CorpusBindingMemory, "remember", slow)
+    with ThreadPoolExecutor(max_workers=1) as workers:
+        pending = workers.submit(owner.remember, base, "release", 0)
+        try:
+            assert started.wait(5)
+            corrected = owner.publish(owner.prepare_changes(base, {"q": None}))
+        finally:
+            release.set()
+        with pytest.raises(StaleCorpusRevision, match="tip changed"):
+            pending.result(timeout=5)
+    assert owner.snapshot() is corrected
+    assert corrected.memory.resolve("release", 0) == CorpusBindingRead(None, None)
+    local = owner.prepare_changes(corrected, {"r": b"inspection,1,0,0.6"})
+    promoted = owner.remember(corrected, "release", 0)
+    assert promoted.memory.resolve("release", 0, work_limit=1) == CorpusBindingRead(None, None)
+    assert owner.publish(local).memory.resolve("release", 0).possible_strength == .6
+
+
+def test_same_origin_publish_race_has_one_winner():
+    owner = _workspace({"p": b"permit,1,0,0.9"})
+    initial = owner.snapshot()
+    proposals = [owner.prepare_changes(initial, {"p": raw})
+                 for raw in (b"permit,1,0,0.8", b"permit,0,1,0.8")]
+    ready = Barrier(2, timeout=5)
+
+    def publish(proposal):
+        ready.wait()
+        try:
+            return owner.publish(proposal)
+        except StaleCorpusRevision:
+            return None
+
+    with ThreadPoolExecutor(max_workers=2) as workers:
+        published = [result for result in workers.map(publish, proposals) if result is not None]
+    assert published == [owner.snapshot()]
+    assert published[0].revision == 1
