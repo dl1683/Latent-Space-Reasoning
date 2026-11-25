@@ -245,6 +245,9 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
                 add_array(value._right)
             else:
                 add_array(value)
+        if kernel._observation_query is not None:
+            digest.update(b"\nobservation query fork v1\n")
+            add_array(kernel._observation_query)
         if self._tree_bound:
             layout = (kernel._depth, kernel._max_frontier, kernel._logit_tolerance,
                       self._draft_tree_policy, np.__version__, sorted(self._tree_error_policy.items()))

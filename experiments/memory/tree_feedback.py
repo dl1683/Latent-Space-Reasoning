@@ -267,19 +267,46 @@ class TreeFeedbackKernel(FeedbackKernel):
         if len(state._history) >= self._max_steps:
             raise RuntimeError("feedback step budget exhausted")
 
+    def _route_program_keys(self, memory, slots):
+        if type(self) is not TreeFeedbackKernel:
+            raise ValueError("route programming requires a supported softmax kernel")
+        if self._logit_tolerance != 0.0 or self._max_frontier < memory.count:
+            raise ValueError("route programming requires a full-resolution tree")
+        keys = []
+        for slot in slots:
+            if not 0 <= slot < 1 << self._depth:
+                raise ValueError("route programming requires occupied observation slots")
+            node = memory._root
+            for bit in range(self._depth - 1, -1, -1):
+                if node is None:
+                    break
+                node = node.right if slot & (1 << bit) else node.left
+            if node is None:
+                raise ValueError("route programming requires occupied observation slots")
+            keys.append(node.lower_key)
+        return tuple(keys)
+
+    def _route_program_step(self, state, slots, keys):
+        stepped = self.step(state)
+        with np.errstate(over="raise", invalid="raise"):
+            query = state.latest @ self._observation_query
+            gap = float(keys[0] @ query) - float(keys[1] @ query)
+        return stepped, gap
+
     def _route(self, state, diagnostics=None, *, previous=None, retain_scores=0):
         history_count = len(state._history)
         memory = state._memory
         with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
             hidden = state.latest
             query = hidden @ self._query
-            query_bytes = query.tobytes() if retain_scores else None
+            observation_query = self._query_observations(hidden, query) if memory.count else query
+            query_bytes = observation_query.tobytes() if retain_scores else None
             prior_scores = None
             if retain_scores and previous is not None and previous.query_bytes == query_bytes:
                 prior_scores = previous.node_scores
             recorded = {} if retain_scores else None
             frontier, scored, reused = _frontier(
-                memory._root, query, self._max_frontier, self._logit_tolerance,
+                memory._root, observation_query, self._max_frontier, self._logit_tolerance,
                 prior_scores, recorded, retain_scores,
             )
             history_keys = np.asarray(state._keys).reshape(-1, self._query.shape[1])
@@ -341,6 +368,7 @@ class TreeFeedbackKernel(FeedbackKernel):
             type(self) is type(other) is TreeFeedbackKernel
             and type(self._feedback_value) in (np.ndarray, FactoredValue)
             and self._query is other._query and self._observation_key is other._observation_key
+            and self._observation_query is other._observation_query
             and self._feedback_key is other._feedback_key and self._feedback_value is other._feedback_value
             and (self._depth, self._max_frontier, self._logit_tolerance)
             == (other._depth, other._max_frontier, other._logit_tolerance)

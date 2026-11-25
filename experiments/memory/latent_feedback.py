@@ -164,6 +164,7 @@ class FeedbackKernel:
     _width: int
     _max_steps: int
     _query: np.ndarray
+    _observation_query: np.ndarray | None
     _carry: np.ndarray | None
     _observation_key: np.ndarray
     _observation_value: np.ndarray | FactoredValue
@@ -182,6 +183,7 @@ class FeedbackKernel:
         if self._max_steps <= 0:
             raise ValueError("max_steps must be positive")
         object.__setattr__(self, "_query", _frozen(query))
+        object.__setattr__(self, "_observation_query", None)
         object.__setattr__(self, "_carry", None if carry is None else self._weight(carry))
         object.__setattr__(self, "_observation_key", self._weight(observation_key, query.shape))
         object.__setattr__(self, "_observation_value", self._value(observation_value))
@@ -242,6 +244,9 @@ class FeedbackKernel:
         """Append one generated vector and tally the attention scores evaluated."""
         return self._advance(state)[0]
 
+    def _query_observations(self, hidden, query):
+        return query if self._observation_query is None else hidden @ self._observation_query
+
     def _preactivation(self, hidden, mixture, history_value, has_observations, *, observation_extra=None):
         fixed = np.zeros(self._width) if self._carry is None else hidden @ self._carry
         if history_value is not None:
@@ -273,7 +278,8 @@ class FeedbackKernel:
             if observation_count or history_count:
                 history_keys = np.asarray(state._keys).reshape(-1, self._query.shape[1])
                 history_values = np.asarray(state._values).reshape(-1, self._width)
-                logits = np.concatenate((memory._keys @ query, history_keys @ query))
+                observation_query = self._query_observations(hidden, query) if observation_count else query
+                logits = np.concatenate((memory._keys @ observation_query, history_keys @ query))
                 # Extreme negative differences may safely round down to zero mass.
                 with np.errstate(over="ignore", under="ignore"):
                     weights = np.exp(logits - logits.max())
@@ -306,6 +312,11 @@ class FeedbackKernel:
         object.__setattr__(candidate, "_observation_value", self._weight(weight))
         return candidate
 
+    def _with_observation_query(self, weight):
+        candidate = copy(self)
+        object.__setattr__(candidate, "_observation_query", self._weight(weight, self._query.shape))
+        return candidate
+
     @property
     def conditional_terms(self):
         return len(self._conditional)
@@ -335,6 +346,65 @@ class FeedbackKernel:
             if not np.allclose(replay.latest, expected, atol=atol, rtol=0):
                 raise ValueError("edited trajectory fails replay tolerance")
         return replay
+
+    def _route_program_keys(self, memory, slots):
+        if type(self) is not FeedbackKernel:
+            raise ValueError("route programming requires a supported softmax kernel")
+        if any(not 0 <= slot < len(memory._keys) for slot in slots):
+            raise ValueError("route programming requires occupied observation slots")
+        return tuple(memory._keys[slot] for slot in slots)
+
+    def _route_program_step(self, state, slots, keys):
+        diagnostics = {}
+        stepped = self._advance(state, diagnostics=diagnostics)[0]
+        first, second = slots
+        logits = diagnostics["logits"]
+        return stepped, float(logits[first]) - float(logits[second])
+
+    def program_observation_route(self, state, step, preferred_slot, other_slot, log_odds, *,
+                                  max_update_norm, atol=1e-8, protect=()):
+        """Fit the selected source log odds and replay protected trajectories.
+
+        The edit affects only observation logits. The bank, values and query
+        map for generated rows remain available unchanged. Slots identify two
+        rows within this bank, and protect contains (seed, step count) pairs.
+        Return the candidate kernel, target replay and weight edit.
+        """
+        self._require_state(state)
+        slots = index(preferred_slot), index(other_slot)
+        if slots[0] == slots[1] or not isfinite(log_odds):
+            raise ValueError("route programming needs distinct slots and finite log odds")
+        bank = state._memory
+        keys = self._route_program_keys(bank, slots)
+        baseline, _, _ = self._trace(state._seed, bank, step)
+        prefix = baseline._history[:-1]
+        references = [self._trace(seed, bank, steps)[0] for seed, steps in protect]
+        protected_inputs = [baseline._seed, *prefix[:-1]] if prefix else []
+        for reference in references:
+            protected_inputs.extend((reference._seed, *reference._history[:-1]))
+        anchors = np.asarray(protected_inputs).reshape(-1, self._width)
+        prior = prefix[-1] if prefix else baseline._seed
+        weight = self._query if self._observation_query is None else self._observation_query
+        with np.errstate(over="raise", invalid="raise", divide="raise"):
+            contrast = keys[0] - keys[1]
+            scale = float(np.max(np.abs(contrast)))
+            if scale == 0.0:
+                raise ValueError("observation slots have identical projected keys")
+            scaled_contrast = contrast / scale
+            old_query = prior @ weight
+            gap = float(keys[0] @ old_query) - float(keys[1] @ old_query)
+            shift = ((log_odds - gap) / scale) / (scaled_contrast @ scaled_contrast)
+            target_query = old_query + shift * scaled_contrast
+        edit = program_weight(weight, [prior], [target_query], preserve_inputs=anchors,
+                              max_update_norm=max_update_norm, atol=atol)
+        candidate = self._with_observation_query(edit.weight)
+        replay = candidate._checked_replay(baseline._seed, bank, prefix, atol)
+        replay, replay_gap = candidate._route_program_step(replay, slots, keys)
+        if not isfinite(replay_gap) or abs(replay_gap - log_odds) > atol:
+            raise ValueError("programmed observation log odds fail replay tolerance")
+        for reference in references:
+            candidate._checked_replay(reference._seed, bank, reference._history, atol)
+        return candidate, replay, edit
 
     def _edit_traces(self, state, step, target, protect):
         self._require_state(state)

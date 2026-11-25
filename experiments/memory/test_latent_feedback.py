@@ -1,7 +1,11 @@
 import numpy as np
 import pytest
 
-from experiments.memory.latent_feedback import FeedbackKernel
+from experiments.memory.feedback_journal import JournaledFeedbackWorkspace
+from experiments.memory.feedback_workspace import FeedbackProbe
+from experiments.memory.latent_feedback import FactoredValue, FeedbackKernel
+from experiments.memory.linear_feedback import LinearFeedbackKernel
+from experiments.memory.tree_feedback import TreeFeedbackKernel
 
 
 def test_late_composition_follows_midpoint_and_observation_interventions():
@@ -147,6 +151,163 @@ def test_retarget_refuses_conflicting_or_saturated_targets():
     with pytest.raises(ValueError, match="tanh saturation"):
         kernel.retarget(state, 1, [1], max_update_norm=5)
     assert kernel.step(state).latest[0] == pytest.approx(np.tanh(1))
+
+
+def _route_weights():
+    carry = np.zeros((4, 4))
+    carry[0, 1], carry[1, 2], carry[2, 3], carry[3, 3] = 1, 0.4, 0.2, 0.25
+    feedback_value = np.zeros((4, 4))
+    feedback_value[1, 0], feedback_value[2, 1] = 0.3, 0.4
+    return dict(
+        query=[[0], [0], [0.7], [0]], carry=carry,
+        observation_key=[[1], [0], [0], [0]],
+        observation_value=FactoredValue([[0], [0], [0], [1]], [[0, 0, 1, 0]]),
+        feedback_key=[[0], [0.6], [0], [0]], feedback_value=feedback_value, max_steps=4,
+    )
+
+
+@pytest.mark.parametrize("tree", [False, True], ids=["dense", "tree"])
+def test_route_program_preserves_prefix_and_uses_live_source_values(tree):
+    weights = _route_weights()
+    kernel = TreeFeedbackKernel(depth=2, max_frontier=2, **weights) if tree else FeedbackKernel(**weights)
+    rows = np.array([[-1, 0, 0, -1], [1, 0, 0, 1]])
+    memory = kernel.prepare(rows)
+    if tree:
+        memory = kernel.revise(memory, {1: None, 3: rows[1]})
+    preferred = 3 if tree else 1
+    start = kernel.start([1, 0, 0, 0], memory)
+    first = kernel.step(start)
+    old = kernel.step(first)
+    guard_seed = [0, 0, 0, 1]
+    candidate, replay, edit = kernel.program_observation_route(
+        start, 2, preferred, 0, np.log(9), max_update_norm=2, protect=[(guard_seed, 2)],
+    )
+    assert replay._memory is memory
+    assert candidate._query is kernel._query
+    assert candidate._observation_key is kernel._observation_key
+    assert candidate._feedback_key is kernel._feedback_key
+    assert candidate._observation_value is kernel._observation_value
+    assert candidate._feedback_value is kernel._feedback_value
+    np.testing.assert_array_equal(replay.history[0], first.latest)
+    expected = np.tanh([0.3 * first.latest[1] * 3 / 13, 0,
+                        0.4 * first.latest[1] + 8 / 13, 0])
+    np.testing.assert_allclose(replay.latest, expected, atol=1e-14, rtol=0)
+    assert edit.update_norm == pytest.approx(np.log(3) / first.latest[1])
+    assert old.latest[2] < replay.latest[2]
+    old_guard = kernel.step(kernel.step(kernel.start(guard_seed, memory)))
+    new_guard = candidate.step(candidate.step(candidate.start(guard_seed, memory)))
+    np.testing.assert_array_equal(new_guard.history, old_guard.history)
+    with pytest.raises(ValueError, match="incompatible with target"):
+        kernel.retarget(start, 2, replay.latest, max_update_norm=2)
+
+    # The same keys and target input now select a corrected payload.
+    corrected = rows[1].copy()
+    corrected[-1] = -1
+    revised = (candidate.revise(memory, {preferred: corrected}) if tree
+               else candidate.prepare([rows[0], corrected]))
+    altered_first = candidate.step(candidate.start(start.seed, revised))
+    altered = candidate.intervene(altered_first, 0, replay.history[0])
+    changed = candidate.step(altered)
+    assert changed.latest[2] < 0 < replay.latest[2]
+    assert changed.latest[0] == pytest.approx(replay.latest[0], abs=1e-14)
+    restored_bank = (candidate.revise(revised, {preferred: rows[1]}) if tree
+                     else candidate.prepare(rows))
+    restored_start = candidate.start(start.seed, restored_bank)
+    np.testing.assert_array_equal(candidate.step(candidate.step(restored_start)).latest, replay.latest)
+    np.testing.assert_array_equal(kernel.step(first).latest, old.latest)
+
+    # Generated-history updates remain active without any observation bank.
+    plain, edited = kernel.start([1, 0, 0, 1]), candidate.start([1, 0, 0, 1])
+    empty = candidate.start(plain.seed, kernel.prepare(np.empty((0, 4))))
+    for _ in range(4):
+        plain, edited, empty = kernel.step(plain), candidate.step(edited), candidate.step(empty)
+        np.testing.assert_array_equal(plain.latest, edited.latest)
+        np.testing.assert_array_equal(plain.latest, empty.latest)
+    assert plain.feedback_scores == 6 and plain.latest[0] != 0
+
+    _, restored, _ = candidate.program_observation_route(
+        candidate.start(start.seed, memory), 2, preferred, 0, 0, max_update_norm=2,
+    )
+    np.testing.assert_allclose(restored.latest, old.latest, atol=1e-14, rtol=0)
+
+
+def test_route_program_refuses_missing_contrast_anchors_and_approximate_bank():
+    weights = _route_weights()
+    rows = [[-1, 0, 0, -1], [1, 0, 0, 1]]
+    seed = [1, 0, 0, 0]
+    dense = FeedbackKernel(**weights)
+    start = dense.start(seed, dense.prepare(rows))
+    with pytest.raises(ValueError, match="update norm budget"):
+        dense.program_observation_route(start, 2, 1, 0, 1, max_update_norm=0)
+    with pytest.raises(ValueError, match="incompatible with target"):
+        dense.program_observation_route(start, 2, 1, 0, 1, max_update_norm=2, protect=[(seed, 2)])
+    equal = dense.start(seed, dense.prepare([rows[0], [-1, 0, 0, 1]]))
+    with pytest.raises(ValueError, match="identical projected keys"):
+        dense.program_observation_route(equal, 2, 1, 0, 1, max_update_norm=2)
+    tree = TreeFeedbackKernel(depth=2, max_frontier=2, **weights)
+    memory = tree.prepare(rows)
+    with pytest.raises(ValueError, match="occupied observation slots"):
+        tree.program_observation_route(tree.start(seed, memory), 2, 2, 0, 1, max_update_norm=2)
+    coarse = tree.with_frontier(1)
+    with pytest.raises(ValueError, match="full-resolution tree"):
+        coarse.program_observation_route(coarse.start(seed, memory), 2, 1, 0, 1, max_update_norm=2)
+    linear = LinearFeedbackKernel(**{**weights, "feedback_key": [[0], [1], [0], [0]]})
+    with pytest.raises(ValueError, match="supported softmax kernel"):
+        linear.program_observation_route(linear.start(seed, linear.prepare(rows)), 2, 1, 0, 1,
+                                         max_update_norm=2)
+
+
+def test_route_program_is_part_of_tree_reuse_and_durable_root_identity(tmp_path):
+    tree = TreeFeedbackKernel(depth=2, max_frontier=2, **_route_weights())
+    rows = [[-1, 0, 0, -1], [1, 0, 0, 1]]
+    seed = [1, 0, 0, 0]
+    memory = tree.prepare(rows)
+    candidate, replay, _ = tree.program_observation_route(
+        tree.start(seed, memory), 2, 1, 0, 1, max_update_norm=2,
+    )
+    _, previous = tree._replay_routes(seed, memory, 2, retain_scores=4)
+    revised, _ = candidate._replay_routes(seed, memory, 2, previous, retain_scores=4)
+    assert not revised.attention.reused_route and revised.attention.reused_node_scores == 0
+    np.testing.assert_array_equal(revised.latest, replay.latest)
+
+    probes = [FeedbackProbe(seed, 2, replay.latest)]
+    path = tmp_path / "route.sqlite"
+    JournaledFeedbackWorkspace(path, candidate, rows, probes, max_update_norm=2, create=True)
+    reopened = JournaledFeedbackWorkspace(path, candidate, rows, probes, max_update_norm=2)
+    assert reopened.snapshot().errors == (0.0,)
+    with pytest.raises(ValueError, match="disagree with the feedback journal"):
+        JournaledFeedbackWorkspace(path, tree, rows, probes, max_update_norm=2)
+
+
+def test_route_program_rechecks_actual_log_odds_when_map_tolerance_is_too_loose():
+    weights = _route_weights()
+    kernel = FeedbackKernel(**{**weights, "observation_key": [[1e10], [0], [0], [0]]})
+    seed = [1, 0, 0, 0]
+    memory = kernel.prepare([[-1, 0, 0, -1], [1, 0, 0, 1]])
+    # The full protected run removes the target input's editable direction.
+    # Its zero edit is within query-space tolerance but misses the actual log odds.
+    with pytest.raises(ValueError, match="log odds fail replay tolerance"):
+        kernel.program_observation_route(kernel.start(seed, memory), 2, 1, 0, 1,
+                                         max_update_norm=2, protect=[(seed, 2)])
+
+
+def test_pairwise_route_program_can_leave_both_sources_inconsequential():
+    weights = _route_weights()
+    kernel = FeedbackKernel(**{
+        **weights, "query": [[0, 0], [0, 80], [0.7, 0], [0, 0]],
+        "observation_key": [[1, 0], [0, 0], [0, 1], [0, 0]],
+        "feedback_key": [[0, 0], [0.6, 0], [0, 0], [0, 0]],
+    })
+    memory = kernel.prepare([[-1, 0, 0, -1], [1, 0, 0, 1], [0, 0, 1, 0]])
+    start = kernel.start([1, 0, 0, 0], memory)
+    candidate, replay, _ = kernel.program_observation_route(start, 2, 1, 0, np.log(9), max_update_norm=2)
+    prior = candidate.step(candidate.start(start.seed, memory))
+    diagnostics = {}
+    candidate._advance(prior, diagnostics=diagnostics)
+    first, second = diagnostics["probabilities"][:2]
+    assert second / first == pytest.approx(9)
+    assert first + second < 1e-24
+    np.testing.assert_array_equal(replay.latest, kernel.step(kernel.step(start)).latest)
 
 
 def test_public_array_metadata_and_edit_result_cannot_rewrite_old_states():
