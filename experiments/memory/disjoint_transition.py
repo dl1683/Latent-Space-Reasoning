@@ -156,14 +156,13 @@ class DisjointTransitionMemory:
 
     def revise(self, changes, *, width=None):
         """Replace source assertions and optionally append coordinates to the frame."""
-        return self._revise(changes, width=width)
-
-    def _revise(self, changes, *, width=None, affected_entries=None):
         width = self.width if width is None else index(width)
         if width < self.width:
             raise ValueError("transition revisions cannot shrink the coordinate frame")
+        return self._apply_replacements(width, self._replacements(width, changes))
+
+    def _replacements(self, width, changes):
         replacements = {}
-        by_middle = defaultdict(dict)
         for origin, rows in changes.items():
             if type(origin) is not str or not origin:
                 raise ValueError("transition sources need nonempty string IDs")
@@ -171,12 +170,25 @@ class DisjointTransitionMemory:
             new = _EMPTY if rows is None else _source_edges(width, rows)
             if new == old:
                 continue
+            if old and new:
+                # Keep the exact compiled rows for numerically unchanged middles,
+                # including the sign of a retained zero.
+                new = MappingProxyType({
+                    middle: old[middle] if old.get(middle) == edges else edges for middle, edges in new.items()
+                })
             replacements[origin] = new
+        return replacements
+
+    def _apply_replacements(self, width, replacements, *, affected_entries=None, canonical_order=False):
+        if not replacements:
+            return self if width == self.width else replace(self, width=width)
+
+        by_middle = defaultdict(dict)
+        for origin, new in replacements.items():
+            old = self._sources.get(origin, _EMPTY)
             for middle in old.keys() | new.keys():
                 if old.get(middle) != new.get(middle):
                     by_middle[middle][origin] = new.get(middle)
-        if not replacements:
-            return self if width == self.width else replace(self, width=width)
 
         sources, middles = dict(self._sources), dict(self._middles)
         entry_changes, destination_changes = defaultdict(dict), defaultdict(dict)
@@ -186,7 +198,10 @@ class DisjointTransitionMemory:
                 sources[origin] = rows
             else:
                 sources.pop(origin)
-        for middle, updates in by_middle.items():
+        # Worker drafts and joint revisions share one order for newly added
+        # middles. Standalone revisions preserve the caller's scan order.
+        middle_updates = sorted(by_middle.items()) if canonical_order else by_middle.items()
+        for middle, updates in middle_updates:
             old = middles.get(middle)
             assertions = {} if old is None else dict(old.assertions)
             for origin, rows in updates.items():

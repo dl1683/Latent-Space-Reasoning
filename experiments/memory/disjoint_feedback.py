@@ -1,15 +1,24 @@
 """Feed a pinned source-disjoint transition back into the normal hidden-state update."""
 
 from dataclasses import InitVar, dataclass, replace
-from math import isfinite
+from math import copysign, isfinite
+from threading import Lock
 
 import numpy as np
 
-from experiments.memory.disjoint_transition import DisjointTransitionMemory, propagate_disjoint
+from experiments.memory.disjoint_transition import DisjointTransitionMemory, _EMPTY, propagate_disjoint
 from experiments.memory.latent_feedback import FactoredValue, FeedbackKernel, FeedbackState, _apply_value, _frozen, _real_array
 
 
 _CREATION_KEY = object()
+
+
+def _same_replacement(left, right):
+    # Canonical rows compare numerically. A signed zero can still affect the
+    # exact readout, so two concurrent writes must agree on its representation.
+    return left is right or (left == right and all(
+        copysign(1., old[2]) == copysign(1., new[2])
+        for middle in left for old, new in zip(left[middle], right[middle], strict=True)))
 
 
 @dataclass(frozen=True, eq=False)
@@ -29,11 +38,12 @@ class _RelationRevision:
     _base: _RelationObservation
     memory: _RelationObservation
     _entries: frozenset[int]
+    _changed_sources: frozenset[str]
     _creation_key: InitVar[object | None] = None
 
     def __post_init__(self, _creation_key):
         if _creation_key is not _CREATION_KEY:
-            raise TypeError("construct relation revisions through revise_memory")
+            raise TypeError("construct relation revisions through revise_memory or merge_revisions")
 
 
 @dataclass(frozen=True, eq=False)
@@ -102,14 +112,18 @@ class DisjointFeedback:
 
     def start(self, seed, memory=None, *, observations=None):
         """Pin the relation snapshot and the ordinary observation memory for this trajectory."""
-        if memory is not None and (type(memory) is not _RelationObservation or memory._receiver is not self):
-            raise ValueError("relation memory belongs to a different receiver")
+        if memory is not None:
+            self._require_memory(memory)
         return DisjointFeedbackState(self, self._kernel.start(seed, observations), memory,
                                      _creation_key=_CREATION_KEY)
 
     def _require_state(self, state):
         if type(state) is not DisjointFeedbackState or state._receiver is not self:
             raise ValueError("state belongs to a different disjoint feedback receiver")
+
+    def _require_memory(self, memory):
+        if type(memory) is not _RelationObservation or memory._receiver is not self:
+            raise ValueError("relation memory belongs to a different receiver")
 
     def step(self, state, *, use_operator=True, relation_query=None):
         """Advance normally, with an optional intervention on just the relation read."""
@@ -142,13 +156,36 @@ class DisjointFeedback:
 
     def revise_memory(self, memory, changes):
         """Prepare one fixed-width operator revision for all trajectories on this pin."""
-        if type(memory) is not _RelationObservation or memory._receiver is not self:
-            raise ValueError("revision needs relation memory from this receiver")
+        self._require_memory(memory)
+        bank = memory._transitions
+        return self._compile_revision(memory, bank._replacements(bank.width, changes))
+
+    def _compile_revision(self, memory, replacements):
         entries = set()
-        transitions = memory._transitions._revise(changes, affected_entries=entries)
-        revised = memory if transitions is memory._transitions else _RelationObservation(
+        bank = memory._transitions
+        transitions = bank._apply_replacements(bank.width, dict(sorted(replacements.items())), affected_entries=entries,
+                                               canonical_order=True)
+        revised = memory if transitions is bank else _RelationObservation(
             self, transitions, memory._anchors, _creation_key=_CREATION_KEY)
-        return _RelationRevision(memory, revised, frozenset(entries), _creation_key=_CREATION_KEY)
+        return _RelationRevision(memory, revised, frozenset(entries), frozenset(replacements),
+                                 _creation_key=_CREATION_KEY)
+
+    def merge_revisions(self, memory, *drafts):
+        """Compile compatible whole-source replacements from sibling drafts as one revision."""
+        self._require_memory(memory)
+        if not drafts:
+            raise ValueError("at least one relation draft is required")
+        updates = {}
+        for draft in drafts:
+            if type(draft) is not _RelationRevision or draft._base is not memory:
+                raise ValueError("relation drafts must start at the merge pin")
+            for origin in draft._changed_sources:
+                replacement = draft.memory._transitions._sources.get(origin, _EMPTY)
+                if not _same_replacement(updates.setdefault(origin, replacement), replacement):
+                    raise ValueError(f"conflicting relation drafts for source {origin!r}")
+        if len(drafts) == 1:
+            return drafts[0]
+        return self._compile_revision(memory, updates)
 
     def rebase(self, state, revision):
         """Move a trajectory to a direct revision and return its reused step count."""
@@ -175,3 +212,60 @@ class DisjointFeedback:
             revised = self.step(revised, use_operator=read is not None,
                                 relation_query=None if read is None else read.query)
         return revised, prefix
+
+
+class StaleRelationRevision(RuntimeError):
+    """The workspace advanced before the relation revision could publish."""
+
+
+class RelationGuardFailed(ValueError):
+    """A joint revision changed a protected numerical trajectory."""
+
+
+@dataclass(frozen=True, eq=False)
+class _RelationWorkspacePin:
+    memory: _RelationObservation
+    protected: tuple[DisjointFeedbackState, ...]
+
+
+class DisjointFeedbackWorkspace:
+    """One in-process publication point for guarded relation revisions."""
+
+    def __init__(self, receiver, memory, *, protected=()):
+        receiver._require_memory(memory)
+        protected = tuple(protected)
+        for state in protected:
+            receiver._require_state(state)
+            if state._memory is not memory:
+                raise ValueError("protected trajectories must start at the workspace's relation pin")
+        self._receiver = receiver
+        self._tip = _RelationWorkspacePin(memory, protected)
+        self._lock = Lock()
+
+    def pin(self):
+        with self._lock:
+            return self._tip
+
+    def publish(self, parent, *drafts):
+        """Check a joint revision outside the lock, then install it if the tip is current."""
+        if self.pin() is not parent:
+            raise StaleRelationRevision("relation workspace tip changed before evaluation")
+        receiver = self._receiver
+        revision = receiver.merge_revisions(parent.memory, *drafts)
+        checked = []
+        for i, state in enumerate(parent.protected):
+            candidate, _ = receiver.rebase(state, revision)
+            before = state._feedback._history + (state._grades,)
+            after = candidate._feedback._history + (candidate._grades,)
+            for old, new in zip(before, after, strict=True):
+                if old is new:
+                    continue
+                if old is None or new is None or not np.array_equal(old.view(np.uint64), new.view(np.uint64)):
+                    raise RelationGuardFailed(f"joint relation revision changed protected trajectory {i}")
+            checked.append(candidate)
+        with self._lock:
+            if self._tip is not parent:
+                raise StaleRelationRevision("relation workspace tip changed during evaluation")
+            if revision.memory is not parent.memory:
+                self._tip = _RelationWorkspacePin(revision.memory, tuple(checked))
+            return self._tip

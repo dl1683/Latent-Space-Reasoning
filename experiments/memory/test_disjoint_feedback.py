@@ -1,10 +1,17 @@
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
+from threading import Event
 
 import numpy as np
 import pytest
 
-from experiments.memory import disjoint_feedback
-from experiments.memory.disjoint_feedback import DisjointFeedback
+from experiments.memory import disjoint_feedback, disjoint_transition
+from experiments.memory.disjoint_feedback import (
+    DisjointFeedback,
+    DisjointFeedbackWorkspace,
+    RelationGuardFailed,
+    StaleRelationRevision,
+)
 from experiments.memory.disjoint_transition import DisjointTransitionMemory
 from experiments.memory.latent_feedback import FeedbackKernel
 
@@ -196,3 +203,133 @@ def test_relation_footprint_can_replay_a_dominated_change():
     assert reused == 0 and before.grades[2] == .8
     np.testing.assert_array_equal(after.grades, before.grades)
     np.testing.assert_array_equal(after.latest, before.latest)
+
+
+@pytest.mark.parametrize("entry", [.1, 1.])
+def test_joint_guard_catches_a_path_missing_from_each_individual_draft(entry):
+    receiver = DisjointFeedback(_kernel(), query=np.eye(5), presence_value=np.zeros((5, 5)),
+                                grade_value=np.eye(5), floor=.1)
+    memory = receiver.prepare(DisjointTransitionMemory.prepare(5, {}), np.eye(5))
+    protected = receiver.step(receiver.start([entry, 0., 0., 0., 0.], memory))
+    workspace = DisjointFeedbackWorkspace(receiver, memory, protected=[protected])
+    parent = workspace.pin()
+    left = receiver.revise_memory(memory, {"left": [(0, 0, 1, .9)]})
+    right = receiver.revise_memory(memory, {"right": [(1, 1, 2, .7)]})
+    for draft in (left, right):
+        alone, reused = receiver.rebase(protected, draft)
+        assert alone.feedback is protected.feedback and reused == 1
+        assert alone.grades[2] == -np.inf
+
+    joint = receiver.merge_revisions(memory, left, right)
+    candidate, reused = receiver.rebase(protected, joint)
+    assert reused == 0 and candidate.grades[2] == (0. if entry == .1 else .7)
+    if entry == .1:
+        np.testing.assert_array_equal(candidate.latest, protected.latest)
+    with pytest.raises(RelationGuardFailed, match="protected trajectory 0"):
+        workspace.publish(parent, left, right)
+    assert workspace.pin() is parent and protected.grades[2] == -np.inf
+
+
+def test_sibling_drafts_merge_order_independently_and_refuse_conflicting_writes(monkeypatch):
+    receiver = DisjointFeedback(_kernel(), query=np.eye(5), presence_value=np.zeros((5, 5)),
+                                grade_value=np.eye(5), floor=.1)
+    bank = DisjointTransitionMemory.prepare(5, {"retired": [(0, 4, 3, .6)]})
+    memory = receiver.prepare(bank, np.eye(5))
+    protected = receiver.step(receiver.start([1., 0., 0., 0., 0.], memory))
+    workspace = DisjointFeedbackWorkspace(receiver, memory, protected=[protected])
+    parent = workspace.pin()
+    left = receiver.revise_memory(memory, {"left": [(0, 4, 1, .9)], "retired": None})
+    equivalent = receiver.revise_memory(memory, {"left": [(0, 4, 1, .5), (0, 4, 1, .9)]})
+    right = receiver.revise_memory(memory, {"right": [(1, 1, 2, .7)]})
+    no_op = receiver.revise_memory(memory, {"left": None})
+    reversed_joint = receiver.merge_revisions(memory, right, equivalent, left)
+
+    compile_middle = disjoint_transition._compile_middle
+    compiled = []
+
+    def count(assertions, order):
+        compiled.append(frozenset(assertions))
+        return compile_middle(assertions, order)
+
+    monkeypatch.setattr(disjoint_transition, "_compile_middle", count)
+    tip = workspace.publish(parent, left, equivalent, right, no_op)
+    assert compiled == [frozenset({"left", "right"})]
+    assert tip.protected[0].feedback is protected.feedback
+    seed = [-np.inf] * 4 + [1.]
+    witness = tip.memory._transitions.prove(seed, 2)
+    assert witness == reversed_joint.memory._transitions.prove(seed, 2)
+    assert witness.strength == .7 and witness.origins == ("left", "right")
+    assert bank.prove(seed, 2) is None and "retired" not in tip.memory._transitions._sources
+
+    deletion = receiver.revise_memory(tip.memory, {"left": None})
+    replacement = receiver.revise_memory(tip.memory, {"left": [(0, 4, 1, .8)]})
+    with pytest.raises(ValueError, match="conflicting relation drafts for source"):
+        workspace.publish(tip, deletion, replacement)
+    plus = receiver.revise_memory(tip.memory, {"zero": [(1, 3, 2, 0.)]})
+    minus = receiver.revise_memory(tip.memory, {"zero": [(1, 3, 2, -0.)]})
+    with pytest.raises(ValueError, match="conflicting relation drafts for source"):
+        workspace.publish(tip, plus, minus)
+    assert workspace.pin() is tip
+
+
+def test_sibling_revisions_share_unchanged_canonical_rows():
+    receiver = DisjointFeedback(_kernel(), query=np.eye(5), presence_value=np.zeros((5, 5)),
+                                grade_value=np.eye(5), floor=.1)
+    bank = DisjointTransitionMemory.prepare(5, {"worker": [(0, 4, 1, 0.), (1, 3, 2, .3)]})
+    pin = receiver.prepare(bank, np.eye(5))
+    left = receiver.revise_memory(pin, {"worker": [(0, 4, 1, -0.), (1, 3, 2, .4)]})
+    right = receiver.revise_memory(pin, {"worker": [(0, 4, 1, 0.), (1, 3, 2, .4)]})
+    joint = receiver.merge_revisions(pin, left, right).memory._transitions
+    retained = joint._sources["worker"][1]
+    assert retained is joint._middles[1].assertions["worker"] is bank._sources["worker"][1]
+    assert not np.signbit(retained[0][2])
+
+
+def test_noop_and_duplicate_drafts_preserve_tied_witness_order():
+    receiver = DisjointFeedback(_kernel(), query=np.eye(5), presence_value=np.zeros((5, 5)),
+                                grade_value=np.eye(5), floor=.1)
+    memory = receiver.prepare(DisjointTransitionMemory.prepare(5, {}), np.eye(5))
+    draft = receiver.revise_memory(memory, {
+        "z-in": [(0, 0, 1, .9)], "z-out": [(1, 1, 3, 0.)],
+        "a-in": [(0, 0, 2, .9)], "a-out": [(1, 2, 3, -0.)],
+    })
+    noop = receiver.revise_memory(memory, {"absent": None})
+    seed = [1.] + [-np.inf] * 4
+    for siblings in ((draft,), (draft, noop), (noop, draft), (draft, draft)):
+        merged = receiver.merge_revisions(memory, *siblings).memory._transitions
+        witness = merged.prove(seed, 3, middle_key=lambda _: 0)
+        assert witness.middle == 1 and not np.signbit(witness.strength)
+
+
+def test_workspace_fences_a_publication_that_loses_the_tip_during_replay(monkeypatch):
+    receiver = DisjointFeedback(_kernel(), query=np.eye(5), presence_value=np.zeros((5, 5)),
+                                grade_value=np.eye(5), floor=.1)
+    memory = receiver.prepare(DisjointTransitionMemory.prepare(5, {}), np.eye(5))
+    protected = receiver.step(receiver.start([1., 0., 0., 0., 0.], memory))
+    workspace = DisjointFeedbackWorkspace(receiver, memory, protected=[protected])
+    parent = workspace.pin()
+    blocked = receiver.revise_memory(memory, {"losing": [(0, 0, 1, .9)]})
+    winner = receiver.revise_memory(memory, {"winning": [(0, 0, 1, .8)]})
+    entered, resume = Event(), Event()
+    rebase = DisjointFeedback.rebase
+
+    def wait_for_competitor(self, state, revision):
+        if revision is blocked:
+            entered.set()
+            assert resume.wait(5)
+        return rebase(self, state, revision)
+
+    monkeypatch.setattr(DisjointFeedback, "rebase", wait_for_competitor)
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        attempt = pool.submit(workspace.publish, parent, blocked)
+        try:
+            assert entered.wait(5)
+            tip = workspace.publish(parent, winner)
+        finally:
+            resume.set()
+        with pytest.raises(StaleRelationRevision, match="during evaluation"):
+            attempt.result(timeout=5)
+    assert workspace.pin() is tip and tip.memory is winner.memory
+    assert tip.protected[0].feedback is protected.feedback
+    with pytest.raises(StaleRelationRevision, match="before evaluation"):
+        workspace.publish(parent, blocked)
