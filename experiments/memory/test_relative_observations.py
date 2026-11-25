@@ -3,6 +3,7 @@ import pytest
 
 from experiments.memory.relative_observations import (
     RelativeObservation,
+    RelativeObservationCG,
     RelativeObservationField,
     solve_relative_direct,
 )
@@ -121,10 +122,11 @@ def test_supported_zero_and_evidence_removal_have_distinct_results_without_numer
     assert field.revise(original, observations) is original
 
 
-def test_weight_endpoint_and_parallel_source_edits_match_a_fresh_assembly():
+@pytest.mark.parametrize("solver", [RelativeObservationField, RelativeObservationCG])
+def test_weight_endpoint_and_parallel_source_edits_match_a_fresh_assembly(solver):
     observations = _measurements()
     observations["other_bridge"] = RelativeObservation(3, 0.8, source=2, weight=0.25)
-    field = RelativeObservationField(7, ridge=0.5, tolerance=1e-10)
+    field = solver(7, ridge=0.5, tolerance=1e-10)
     base = field.initialize(observations)
     changes = {
         "bridge": RelativeObservation(5, 0.4, source=4, weight=4),
@@ -139,3 +141,79 @@ def test_weight_endpoint_and_parallel_source_edits_match_a_fresh_assembly():
              if name != "other_bridge"}
     _assert_oracle_agreement(without_parallel, final, 7, 0.5)
     assert base.read(5) == pytest.approx(solve_relative_direct(7, observations, ridge=0.5)[5])
+
+
+def test_sparse_cg_warm_starts_affected_component_and_keeps_old_bounds():
+    observations = _measurements()
+    cg = RelativeObservationCG(7, ridge=0.5, tolerance=1e-10)
+    base = cg.initialize(observations)
+    _assert_oracle_agreement(base, observations, 7, 0.5)
+    untouched = base.read(5), base.read(6)
+    correction = RelativeObservation(2, -0.6, source=0, weight=2)
+    revised = cg.revise(base, {"noisy_shortcut": correction})
+    corrected = {**observations, "noisy_shortcut": correction}
+    _assert_oracle_agreement(revised, corrected, 7, 0.5)
+    assert revised.recompiled == (0, 2) and revised.affected == (0, 1, 2, 3, 4)
+    assert revised.iterations > 0 and revised.matvecs >= revised.iterations + 2
+    assert revised.messages == 2 * 5 * revised.matvecs
+    assert revised.error_bound >= base.error_bound
+    assert (revised.read(5), revised.read(6)) == untouched
+    assert abs(revised.read(4) - base.read(4)) > 0.1
+
+    heavier_bridge = RelativeObservation(3, 0.4, source=2, weight=3)
+    reweighted = cg.revise(revised, {"bridge": heavier_bridge})
+    _assert_oracle_agreement(reweighted, {**corrected, "bridge": heavier_bridge}, 7, 0.5)
+    assert reweighted.recompiled == (2, 3) and reweighted.affected == (0, 1, 2, 3, 4)
+
+    detached = cg.revise(reweighted, {"bridge": None})
+    without_bridge = {name: obs for name, obs in corrected.items() if name != "bridge"}
+    _assert_oracle_agreement(detached, without_bridge, 7, 0.5)
+    assert detached.affected == (0, 1, 2, 3, 4)
+    assert detached.read(4) is None and revised.read(4) is not None
+    late = RelativeObservation(4, -0.6, source=3)
+    revised_detached = cg.revise(detached, {"late": late})
+    assert revised_detached.affected == (3, 4)
+    assert revised_detached.iterations > 0
+    _assert_oracle_agreement(revised_detached, {**without_bridge, "late": late}, 7, 0.5)
+    restored = cg.revise(revised_detached, {"bridge": observations["bridge"]})
+    _assert_oracle_agreement(restored, {**corrected, "late": late}, 7, 0.5)
+    assert (restored.read(5), restored.read(6)) == untouched
+    fork = cg.revise(base, {"bridge": heavier_bridge})
+    _assert_oracle_agreement(fork, {**observations, "bridge": heavier_bridge}, 7, 0.5)
+    _assert_oracle_agreement(base, observations, 7, 0.5)
+
+
+def test_sparse_cg_accepts_a_certified_warm_start_with_no_iterations():
+    cg = RelativeObservationCG(2, ridge=1, tolerance=0.01)
+    old = cg.initialize({"anchor": RelativeObservation(0, 1)})
+    observations = {"anchor": RelativeObservation(0, 1.001)}
+    revised = cg.revise(old, observations)
+    assert revised.affected == (0,)
+    assert revised.iterations == 0 and revised.matvecs == 1
+    assert revised.read(0) == old.read(0) == 0.5
+    assert revised.error_bound == pytest.approx(0.001)
+    _assert_oracle_agreement(revised, observations, 2, 1)
+
+
+def test_sparse_cg_budget_exhaustion_preserves_prior_snapshot():
+    cg = RelativeObservationCG(2, ridge=0.5, tolerance=1e-10, max_iterations=1)
+    observations = {
+        "anchor": RelativeObservation(0, 0),
+        "relative": RelativeObservation(1, 0, source=0),
+    }
+    original = cg.initialize(observations)
+    with pytest.raises(RuntimeError, match="exhausted its iteration budget"):
+        cg.revise(original, {"anchor": RelativeObservation(0, 2)})
+    assert original.read(0) == original.read(1) == 0
+    assert cg.revise(original, observations) is original
+
+
+def test_sparse_cg_rejects_scaling_that_erases_a_nonzero_rhs():
+    cg = RelativeObservationCG(2, ridge=1)
+    smallest = float.fromhex("0x0.0000000000001p-1022")
+    observations = {
+        "low": RelativeObservation(0, 2 * smallest),
+        "high": RelativeObservation(1, 0, weight=15),
+    }
+    with pytest.raises(FloatingPointError, match="unresolved right-hand side"):
+        cg.initialize(observations)
