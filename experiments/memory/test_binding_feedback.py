@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from experiments.memory import binding_memory
-from experiments.memory.binding_feedback import BindingFeedback
+from experiments.memory.binding_feedback import BindingFeedback, BindingRouteExpansion
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _ProofWork
 from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
 from experiments.memory.corpus_bindings import (
@@ -72,9 +72,9 @@ def _mixed_frame():
     })
 
 
-def _matching_frame():
+def _matching_frame(*, anchors=None):
     return CorpusBindingMemory.prepare(
-        ("p", "q", "a", "b", "c"), np.eye(2), {}, {}, encode=_encode,
+        ("p", "q", "a", "b", "c"), np.eye(2) if anchors is None else anchors, {}, {}, encode=_encode,
         encoder_version="matching-feedback-fixture", min_similarity=.6, gap=.05,
     )
 
@@ -94,6 +94,150 @@ def _matching_receiver(frame, *, work_limit=65536, reuse_matching_failures=True,
                            work_limit=work_limit, reuse_matching_failures=reuse_matching_failures,
                            reuse_prefix_matching=reuse_prefix_matching,
                            reuse_weighted_matching=reuse_weighted_matching)
+
+
+def _coverage_receiver(frame, *, expansion_limit=None, proof_limit=65536, trials=3, nodes=("b",),
+                       fixed_late=(1,)):
+    carry = np.zeros((4, 4))
+    carry[0, 1] = 2
+    keys, zeros = np.zeros((4, 1)), np.zeros((4, 4))
+    kernel = FeedbackKernel(query=keys, carry=carry, observation_key=keys, observation_value=zeros,
+                            feedback_key=keys, feedback_value=zeros, max_steps=3)
+    observation = np.zeros((6, 4))
+    observation[5, 3] = 1
+    addresses = (("p", 0), ("b", 0), ("c", 0))[:len(fixed_late) + 1]
+    query = np.zeros((4, len(addresses)))
+    query[0, 0], query[1, 1:] = 2, fixed_late
+    expansion = None
+    if expansion_limit is not None:
+        anchor_query = np.zeros((4, 2))
+        anchor_query[1, 1] = 1
+        expansion = BindingRouteExpansion(nodes, anchor_query, np.zeros((4, len(nodes))), expansion_limit)
+    return BindingFeedback(kernel, frame, addresses, query=query, observation=observation,
+                           disjoint_reads=True, route_trials=trials, work_limit=proof_limit,
+                           reuse_weighted_matching=True, expansion=expansion)
+
+
+def _second_read(receiver, memory):
+    initial = receiver.start([1, 0, 0, 0], memory=memory)
+    return receiver.step(receiver.step(initial))
+
+
+def test_expansion_recovers_a_continuation_moved_outside_the_fixed_catalog(tmp_path):
+    anchors = np.vstack((np.eye(2), np.tile([-1, 0], (254, 1))))
+    frame = _matching_frame(anchors=anchors)
+    path = tmp_path / "expanded-corpus.sqlite"
+    journal = JournaledCorpusWorkspace(path, frame, create=True)
+    original = _write(journal, {"early": b"p,1,0,1", "late": b"b,1,0,0.8"})
+    moved = _write(journal, {"late": b"b,0,1,0.7"})
+    removed = _write(journal, {"late": None})
+    fixed = _coverage_receiver(frame)
+    expanded = _coverage_receiver(frame, expansion_limit=20)
+
+    old = _second_read(expanded, original.memory).reads[-1]
+    assert old.address == ("b", 0) and old.expansion_work == 0
+    assert _second_read(fixed, moved.memory).reads[-1].status == "catalog_absent"
+    state = _second_read(expanded, moved.memory)
+    recovered = state.reads[-1]
+    assert recovered.address == ("b", 1)
+    assert recovered.bounds == CorpusBindingRead(BindingProof(.7, frozenset({"early", "late"})), .7)
+    assert [attempt.address for attempt in recovered.tried] == [("b", 0), ("b", 1)]
+    assert recovered.tried[0].bounds == CorpusBindingRead(None, None)
+    assert state.latest[3] == np.tanh(.7)
+    assert recovered.expansion_work == 20
+    only_expanded = _coverage_receiver(frame, expansion_limit=20, fixed_late=(0,))
+    assert _second_read(only_expanded, moved.memory).reads[-1].address == ("b", 1)
+    unauthorized = moved.memory.revise({"other": b"c,0,1,1"})
+    scoped = _second_read(_coverage_receiver(frame, expansion_limit=64), unauthorized).reads[-1]
+    assert scoped.address == ("b", 1) and scoped.bounds == recovered.bounds
+
+    vanished = _second_read(expanded, removed.memory).reads[-1]
+    assert vanished.status == "catalog_absent" and vanished.bounds == CorpusBindingRead(None, None)
+    assert _second_read(expanded, original.memory).reads[-1] == old
+
+    def no_encoder(_raw):
+        pytest.fail("reopening the expansion fixture attempted encoding")
+
+    replay = JournaledCorpusWorkspace(path, replace(frame, _encode=no_encoder)).snapshot()
+    assert _second_read(expanded, replay.memory).reads[-1] == vanished
+
+
+@pytest.mark.parametrize("limit,spent", [(1, 0), (2, 2), (19, 2)])
+def test_expansion_caps_row_scans_and_scoring_without_certifying_absence(limit, spent):
+    frame = _matching_frame()
+    memory = frame.revise({"early": b"p,1,0,1", "late": b"b,0,1,0.7"})
+    decision = _second_read(_coverage_receiver(frame, expansion_limit=limit), memory).reads[-1]
+    assert decision.status == "expansion_capacity" and decision.bounds is None
+    assert decision.expansion_work == spent
+    assert [attempt.address for attempt in decision.tried] == [("b", 0)]
+
+
+def test_expansion_shares_trial_and_proof_limits_and_honors_rank_uncertainty():
+    frame = _matching_frame()
+    memory = frame.revise({"early": b"p,1,0,1", "late": b"b,0,1,0.7"})
+    complete = _second_read(_coverage_receiver(frame, expansion_limit=64), memory).reads[-1]
+    limit, = complete.proof_work
+    tight = _coverage_receiver(frame, expansion_limit=64, proof_limit=limit - 1)
+    capped = _second_read(tight, memory).reads[-1]
+    assert capped.status == "capacity" and capped.bounds is None
+    assert [attempt.status for attempt in capped.tried] == ["resolved", "capacity"]
+    assert capped.proof_work == (limit - 1,)
+
+    few_trials = _coverage_receiver(frame, expansion_limit=64, trials=2, fixed_late=(2, 1))
+    untried = _second_read(few_trials, memory).reads[-1]
+    assert untried.status == "candidate_limit" and untried.bounds is None
+    assert [attempt.address for attempt in untried.tried] == [("b", 0), ("c", 0)]
+    assert untried.expansion_work > 0
+
+    tied = _coverage_receiver(frame, expansion_limit=64, nodes=("b", "c"))
+    ambiguous = _second_read(tied, memory).reads[-1]
+    assert ambiguous.status == "ambiguous" and ambiguous.expansion_work > 0
+    assert [attempt.address for attempt in ambiguous.tried] == [("b", 0)]
+    tied_fixed = _coverage_receiver(frame, expansion_limit=64, fixed_late=(1, 1))
+    fixed_decline = _second_read(tied_fixed, memory).reads[-1]
+    assert fixed_decline.status == "ambiguous" and fixed_decline.expansion_work == 0
+
+    possible_only = memory.revise({"late": b"b,1,1,0"})
+    first = _second_read(_coverage_receiver(frame, expansion_limit=64), possible_only).reads[-1]
+    assert first.address == ("b", 0) and first.bounds == CorpusBindingRead(None, 0)
+    assert first.expansion_work == 0 and len(first.proof_work) == 2
+
+
+def test_expansion_uses_possible_rows_and_reports_a_removed_gate():
+    frame = _matching_frame(anchors=[[1, 0], [0, 1], [-1, 1]]).reprogram({"late_gate": BindingGate("or", ("b",))})
+    memory = frame.revise({"early": b"p,1,0,1", "late": b"b,-1,2.414213562373095,0"})
+    receiver = _coverage_receiver(frame, expansion_limit=64, nodes=("late_gate",))
+    choice = _second_read(receiver, memory).reads[-1]
+    assert choice.address == ("late_gate", 1)
+    assert choice.bounds == CorpusBindingRead(None, 0)
+    assert len(choice.proof_work) == 2
+    assert [attempt.address for attempt in choice.tried] == [("b", 0), ("late_gate", 1)]
+
+    unwired = _second_read(receiver, memory.reprogram({})).reads[-1]
+    assert unwired.status == "unavailable" and unwired.bounds is None
+    assert unwired.address == choice.address and unwired.expansion_work > 0
+    assert _second_read(receiver, memory).reads[-1] == choice
+
+
+def test_expanded_address_becomes_an_obligation_for_later_reads():
+    frame = _matching_frame()
+    memory = frame.revise({"early": b"p,1,0,1", "late": b"b,0,1,0.7\nc,0,1,0.8"})
+    carry = np.zeros((4, 4))
+    carry[0, 1] = carry[1, 2] = 2
+    keys, zeros = np.zeros((4, 1)), np.zeros((4, 4))
+    kernel = FeedbackKernel(query=keys, carry=carry, observation_key=keys, observation_value=zeros,
+                            feedback_key=keys, feedback_value=zeros, max_steps=3)
+    query = [[2, 0, 0], [0, 2, 0], [0, 0, 2], [0, 0, 0]]
+    expansion = BindingRouteExpansion(("b",), [[0, 0], [0, 1], [0, 0], [0, 0]], np.zeros((4, 1)), 64)
+    receiver = BindingFeedback(kernel, frame, (("p", 0), ("b", 0), ("c", 1)), query=query,
+                               observation=np.zeros((6, 4)), disjoint_reads=True, route_trials=3,
+                               expansion=expansion)
+    second = _second_read(receiver, memory)
+    assert second.reads[-1].address == ("b", 1)
+    assert memory.resolve_disjoint((("p", 0), ("c", 1))).possible_strength == .8
+    third = receiver.step(second).reads[-1]
+    assert [attempt.address for attempt in third.tried] == [("c", 1)]
+    assert third.status == "catalog_absent" and third.bounds == CorpusBindingRead(None, None)
 
 
 def test_matching_rejection_skips_a_subset_sibling_and_stays_on_its_pin(tmp_path, monkeypatch):

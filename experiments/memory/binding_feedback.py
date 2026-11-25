@@ -22,6 +22,29 @@ class BindingStepRead:
     tried: tuple["BindingStepRead", ...] = ()
     proof_work: tuple[int, ...] = ()
     score: float | None = None
+    expansion_work: int = 0
+
+
+@dataclass(frozen=True, eq=False)
+class BindingRouteExpansion:
+    """Caller-authorized nodes and factorized scores for additional addresses."""
+
+    nodes: tuple[str, ...]
+    anchor_query: np.ndarray
+    node_query: np.ndarray
+    work_limit: int
+
+    def __post_init__(self):
+        nodes = tuple(self.nodes) if not isinstance(self.nodes, str) else ()
+        if not nodes or any(type(node) is not str or not node for node in nodes) or len(set(nodes)) != len(nodes):
+            raise ValueError("expansion requires distinct named binding nodes")
+        limit = index(self.work_limit)
+        if limit < 1:
+            raise ValueError("expansion work limit must be positive")
+        object.__setattr__(self, "nodes", nodes)
+        object.__setattr__(self, "work_limit", limit)
+        object.__setattr__(self, "anchor_query", _frozen(_real_array(self.anchor_query)))
+        object.__setattr__(self, "node_query", _frozen(_real_array(self.node_query)))
 
 
 @dataclass(frozen=True, eq=False)
@@ -62,7 +85,8 @@ class BindingFeedback:
 
     def __init__(self, kernel, frame, addresses, *, query, observation,
                  route_floor=0.0, route_gap=0.0, work_limit=65536, disjoint_reads=False, route_trials=1,
-                 reuse_matching_failures=False, reuse_prefix_matching=False, reuse_weighted_matching=False):
+                 reuse_matching_failures=False, reuse_prefix_matching=False, reuse_weighted_matching=False,
+                 expansion=None):
         if type(kernel) is not FeedbackKernel or type(frame) is not CorpusBindingMemory:
             raise ValueError("binding feedback requires a dense feedback kernel and a corpus frame")
         addresses = tuple((node, index(binding)) for node, binding in addresses)
@@ -88,6 +112,12 @@ class BindingFeedback:
             raise ValueError("weighted matching reuse requires multiple route trials")
         if sum((reuse_matching_failures, reuse_prefix_matching, reuse_weighted_matching)) > 1:
             raise ValueError("select one matching reuse method")
+        if expansion is not None and (
+            type(expansion) is not BindingRouteExpansion or route_trials == 1
+            or expansion.anchor_query.shape != (kernel._width, frame._anchors.shape[1])
+            or expansion.node_query.shape != (kernel._width, len(expansion.nodes))
+        ):
+            raise ValueError("route expansion requires multiple trials and matching score shapes")
         self._kernel = kernel
         self._contract, self._anchors = _frame_contract(frame), frame._anchors
         self._addresses = addresses
@@ -98,6 +128,8 @@ class BindingFeedback:
         self._reuse_matching_failures = reuse_matching_failures
         self._reuse_prefix_matching = reuse_prefix_matching
         self._reuse_weighted_matching = reuse_weighted_matching
+        self._expansion = expansion
+        self._fixed_addresses = frozenset(addresses) if expansion is not None else None
 
     def start(self, seed, memory=None):
         """Pin an optional compiled corpus snapshot for this trajectory."""
@@ -150,10 +182,11 @@ class BindingFeedback:
             scores = hidden @ self._query
         best = int(np.argmax(scores))
         winning = float(scores[best])
+        if prefix and not prefix_absent and self._route_trials > 1:
+            if winning > self._route_floor or self._expansion is not None:
+                return self._read_branches(memory, scores, prefix, hidden)
         if winning <= self._route_floor:
             return BindingStepRead("below_floor")
-        if prefix and not prefix_absent and self._route_trials > 1:
-            return self._read_branches(memory, scores, prefix)
         if len(scores) > 1 and winning - float(np.partition(scores, -2)[-2]) <= self._route_gap:
             return BindingStepRead("ambiguous")
         address = self._addresses[best]
@@ -171,36 +204,70 @@ class BindingFeedback:
             return BindingStepRead("capacity", address)
         return BindingStepRead("resolved", address, bounds)
 
-    def _read_branches(self, memory, scores, prefix):
+    def _read_branches(self, memory, scores, prefix, hidden):
         session = _DisjointBranchReads(memory, prefix, self._work_limit,
                                        reuse_matching_failures=self._reuse_matching_failures,
                                        reuse_prefix_matching=self._reuse_prefix_matching,
                                        reuse_weighted_matching=self._reuse_weighted_matching)
-        ranked = np.argsort(-scores, kind="stable")
         tried = []
-        result = None
+        result = self._try_ranked(memory, session, self._addresses, scores, tried)
+        expansion_work = 0
+        if result is None and self._expansion is not None:
+            candidates, expanded_scores, expansion_work = self._expanded_scores(memory, hidden)
+            if candidates is None:
+                result = BindingStepRead("expansion_capacity")
+            else:
+                result = self._try_ranked(memory, session, candidates, expanded_scores, tried)
+        if result is None:
+            result = (BindingStepRead("catalog_absent", bounds=tried[0].bounds) if tried
+                      else BindingStepRead("below_floor"))
+        return replace(result, tried=tuple(tried), proof_work=session.proof_work, expansion_work=expansion_work)
+
+    def _try_ranked(self, memory, session, addresses, scores, tried):
+        ranked = np.argsort(-scores, kind="stable")
         for position, candidate in enumerate(ranked):
             score = float(scores[candidate])
             if score <= self._route_floor:
                 break
             if position + 1 < len(ranked) and score - float(scores[ranked[position + 1]]) <= self._route_gap:
-                result = BindingStepRead("ambiguous")
-                break
+                return BindingStepRead("ambiguous")
             if len(tried) == self._route_trials:
-                result = BindingStepRead("candidate_limit")
-                break
-            address = self._addresses[candidate]
+                return BindingStepRead("candidate_limit")
+            address = addresses[candidate]
             before = session.proof_work
             attempt = self._read_branch(memory, session, address)
             work = tuple(used - prior for used, prior in zip(session.proof_work, before, strict=True))
             attempt = replace(attempt, score=score, proof_work=work)
             tried.append(attempt)
             if attempt.bounds is None or attempt.bounds.possible_strength is not None:
-                result = attempt
-                break
-        if result is None:
-            result = BindingStepRead("catalog_absent", bounds=tried[0].bounds)
-        return replace(result, tried=tuple(tried), proof_work=session.proof_work)
+                return attempt
+        return None
+
+    def _expanded_scores(self, memory, hidden):
+        expansion = self._expansion
+        rows = memory._possible._rows
+        scanned = len(rows)
+        if scanned > expansion.work_limit:
+            return None, None, 0
+        active = sorted({coordinate for _, coordinate in rows})
+        if not active:
+            return (), np.empty(0), scanned
+        # Count row visits, scalar dot terms and node/anchor score combinations.
+        total = scanned + (hidden.size + len(active)) * (memory._anchors.shape[1] + len(expansion.nodes))
+        if total > expansion.work_limit:
+            return None, None, scanned
+        with np.errstate(over="raise", invalid="raise"):
+            anchor_scores = memory._anchors[active] @ (hidden @ expansion.anchor_query)
+            node_scores = hidden @ expansion.node_query
+            combined = node_scores[:, None] + anchor_scores
+        candidates, scores = [], []
+        for node, row in zip(expansion.nodes, combined, strict=True):
+            for coordinate, score in zip(active, row, strict=True):
+                address = node, coordinate
+                if address not in self._fixed_addresses:
+                    candidates.append(address)
+                    scores.append(score)
+        return candidates, np.asarray(scores), total
 
     def _read_branch(self, memory, session, address):
         if address[0] not in memory._certain._dependents:

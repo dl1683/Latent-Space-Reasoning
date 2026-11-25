@@ -155,6 +155,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **The strongest prefix can need weaker edges later, 25 November 2026.** A grade-one prefix could free the sibling's origin only by taking grade-zero alternatives. Filtering the release graph to the strongest prefix grade would discard a valid answer. Keep weaker edges, preserve absence separately from zero, and charge for building the index. Weighted reuse saved work on the distinct-grade late fork and cost more on the first-winner control. [Receiver controls](../experiments/memory/test_binding_feedback.py)
 
+**A fixed catalog can lose a route after a source edit, 25 November 2026.** Moving the only compatible late source to a new anchor left the fixed catalog with a completed negative. The expanded tier recovered the still-encoded proof. An incomplete score scan cannot certify that broader tier's absence. Keep exhaustion visible and report the authorized scope and possible-only outputs. [Receiver controls](../experiments/memory/test_binding_feedback.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.
