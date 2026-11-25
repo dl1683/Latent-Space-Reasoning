@@ -264,29 +264,31 @@ def test_appended_module_keeps_old_addresses_and_supports_a_new_published_read(h
     start, destination = "pkg.start", "pkg.before"
     receiver, workspace = _published_import_workspace(memory, start, destination, ["pkg.relay"], bypass=True)
     parent = workspace.pin()
-    grown = memory.revise(_commit(repo, {"new.py": "from .relay import worker\n"}))
+    grown = memory.revise(_commit(repo, {"new.py": "from .bridge import worker\n",
+                                         "bridge.py": "import pkg.before\n"}))
     width = len(memory.relation_coordinates)
-    assert grown.relation_coordinates == {**memory.relation_coordinates, "pkg.new": width}
+    assert grown.relation_coordinates == {**memory.relation_coordinates, "pkg.bridge": width, "pkg.new": width + 1}
+    idle = {"pkg.bridge": np.zeros(width)}
 
     with pytest.raises(ValueError, match="names must match"):
         grown.feedback_revision(memory, receiver, parent.memory, added_anchors={"pkg.decoy": np.zeros(width)})
     with pytest.raises(ValueError, match="one added anchor row"):
-        grown.feedback_revision(memory, receiver, parent.memory, added_anchors={"pkg.new": np.zeros(width + 1)})
+        grown.feedback_revision(memory, receiver, parent.memory, added_anchors={name: np.zeros(width + 1) for name in ("pkg.bridge", "pkg.new")})
     with pytest.raises(ValueError, match="must be finite"):
-        grown.feedback_revision(memory, receiver, parent.memory, added_anchors={"pkg.new": np.full(width, np.nan)})
+        grown.feedback_revision(memory, receiver, parent.memory, added_anchors={**idle, "pkg.new": np.full(width, np.nan)})
     anchor = np.zeros(width)
     entry = memory.relation_coordinates["pkg.decoy"]
     anchor[entry] = 1.
-    revision = grown.feedback_revision(memory, receiver, parent.memory, added_anchors={"pkg.new": anchor})
+    revision = grown.feedback_revision(memory, receiver, parent.memory, added_anchors={**idle, "pkg.new": anchor})
     anchor[:] = 0.
     before = parent.protected[0]
     replayed, reused = receiver.rebase(before, revision)
-    assert reused == 1 and replayed._feedback._history[0] is before._feedback._history[0]
+    assert reused == 2 and replayed.feedback is before.feedback
     np.testing.assert_array_equal(replayed.grades[:width], before.grades)
-    assert replayed.grades[width] == -np.inf
+    assert np.isneginf(replayed.grades[width:]).all()
 
     strict = DisjointFeedbackWorkspace(receiver, parent.memory, protected=[before])
-    assert strict.publish(strict.pin(), revision).protected[0].grades.shape == (width + 1,)
+    assert strict.publish(strict.pin(), revision).protected[0].grades.shape == (width + 2,)
     tip = workspace.publish(parent, revision)
     layout = dict(context_tokens=4096, max_new_tokens=32)
     old_evidence = prepare_published_import_readout(memory, parent, 0, destination, _FixtureTokenizer(), **layout)
@@ -298,12 +300,12 @@ def test_appended_module_keeps_old_addresses_and_supports_a_new_published_read(h
     query[entry] = .75
     state = receiver.step(receiver.start(query, tip.memory))
     guard = RelationOutcomeGuard(evidence=[TerminalRelationEvidence(grown.relation_coordinates[destination],
-                                                                    [grown.relation_path("pkg.new", "pkg.relay")])])
+                                                                    [grown.relation_path("pkg.new", "pkg.bridge")])])
     new_workspace = DisjointFeedbackWorkspace(receiver, tip.memory, outcome_guards=[(state, guard)])
     new_evidence = prepare_published_import_readout(grown, new_workspace.pin(), 0, destination, _FixtureTokenizer(), **layout)
-    assert new_evidence.witness.start == width and new_evidence.witness.strength == .5
+    assert new_evidence.witness.start == width + 1 and new_evidence.witness.strength == .5
     assert new_evidence.quotes[0].declaring_module == "pkg.new"
-    assert new_evidence.check('{"middle":"pkg.relay","citations":["P0","P1"]}', terminated=True) == "pass"
+    assert new_evidence.check('{"middle":"pkg.bridge","citations":["P0","P1"]}', terminated=True) == "pass"
 
 
 @pytest.mark.parametrize(("strength", "grade"), [(.75, .5), (.25, 0.)])
@@ -358,7 +360,7 @@ def test_first_named_coordinate_replaces_empty_placeholder_anchor(history):
     revision = first_named.feedback_revision(empty, receiver, pin, added_anchors={"pkg.first": [.125]})
     adopted, reused = receiver.rebase(state, revision)
     assert reused == 0 and np.isneginf(adopted.grades[0])
-    np.testing.assert_array_equal(revision.memory._anchors, [[.125]])
+    np.testing.assert_array_equal(revision.memory._anchor_blocks[0], [[.125]])
 
 
 def test_fitted_anchors_route_two_queries_and_respect_a_protected_override(history):
@@ -380,8 +382,8 @@ def test_fitted_anchors_route_two_queries_and_respect_a_protected_override(histo
         queries.append(query)
     targets = dict(zip(names, [(query, .5) for query in queries], strict=True))
     revision = grown.fit_feedback_revision(memory, receiver, parent, targets=targets, max_update_norm=3.)
-    np.testing.assert_array_equal(revision.memory._anchors[:width], parent.memory._anchors)
-    assert not revision.memory._anchors[grown.relation_coordinates["pkg.idle"]].any()
+    assert revision.memory._anchor_blocks[0] is parent.memory._anchor_blocks[0]
+    assert not revision.memory._anchor_blocks[-1][grown.relation_coordinates["pkg.idle"] - width].any()
     _, protected_active = receiver._relation_seed(revision.memory, original)
     assert not protected_active[width:].any()
 
@@ -566,7 +568,7 @@ def test_handoff_replaces_a_discovered_witness_without_appending_a_guard(history
     draft = corrected.draft_feedback_handoff(grown, receiver, opening, 1, destination="pkg.target",
                                              max_update_norm=0.)
     assert draft.memory._transitions is neutral.memory._transitions
-    np.testing.assert_array_equal(draft.memory._anchors, neutral.memory._anchors)
+    np.testing.assert_array_equal(draft.memory._anchor_blocks[-1], neutral.memory._anchor_blocks[-1])
     other = DisjointFeedbackWorkspace(receiver, opening.memory)
     with pytest.raises(StaleRelationRevision, match="different opening workspace pin"):
         other.publish(other.pin(), draft)
@@ -686,7 +688,7 @@ def test_handoff_keeps_a_collinear_earlier_read_inactive_without_forcing_zero(hi
     draft = corrected.draft_feedback_handoff(source, receiver, opening, 0, destination="pkg.before",
                                              max_update_norm=1.1)
     target = corrected.relation_coordinates["pkg.entry"]
-    row = draft.memory._anchors[target]
+    row = draft.memory._anchor_blocks[-1][target - width]
     assert row @ (seed @ receiver._query) == pytest.approx(.2)
     _, eligible = receiver._relation_seed(draft.memory, seed)
     assert not eligible[target]
@@ -754,8 +756,10 @@ def test_discovered_anchor_changes_a_later_read_and_the_hidden_message_rescues_i
     tip = workspace.publish(parent, draft)
     removed, _ = receiver.rebase(probe, zero)
     repaired = tip.protected[1]
-    assert np.flatnonzero(np.any(removed._memory._anchors != repaired._memory._anchors, axis=1)).tolist() == [
-        grown.relation_coordinates["pkg.arrival"]
+    assert removed._memory._anchor_blocks[0] is repaired._memory._anchor_blocks[0]
+    offset = np.flatnonzero(np.any(removed._memory._anchor_blocks[-1] != repaired._memory._anchor_blocks[-1], axis=1))
+    assert offset.tolist() == [
+        grown.relation_coordinates["pkg.arrival"] - width
     ]
     assert removed._memory._transitions is repaired._memory._transitions
     assert removed.latest[coords["pkg.before"]] == 0.

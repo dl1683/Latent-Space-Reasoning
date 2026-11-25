@@ -99,7 +99,7 @@ def test_supported_zero_and_a_withdrawn_path_have_different_hidden_effects(monke
     with pytest.raises(ValueError, match="different receiver"):
         other.start(start.feedback.seed, pin)
     with pytest.raises(TypeError, match="through prepare"):
-        replace(pin, _receiver=other, _anchors=np.eye(5))
+        replace(pin, _receiver=other)
 
     final = receiver.step(first)
 
@@ -193,6 +193,112 @@ def test_rebase_replays_a_frozen_override_and_detects_born_supported_zero():
     np.testing.assert_array_equal(restored.feedback.history, old.feedback.history)
     with pytest.raises(ValueError, match="trajectory's relation pin"):
         receiver.rebase(receiver.start(seed), revision)
+
+
+def test_inactive_anchor_appends_retain_all_steps_on_successive_frames(monkeypatch):
+    kernel = _kernel()
+    receiver = DisjointFeedback(kernel, query=np.eye(5), presence_value=np.zeros((5, 5)),
+                                grade_value=np.eye(5), floor=.1)
+    bank = _transitions().revise({"later-second": [(1, 3, 4, -0.)]})
+    memory = receiver.prepare(bank, np.eye(5))
+    seed = [1., 0., 0., 0., 0.]
+
+    def run(pin):
+        return receiver.step(receiver.step(receiver.start(seed, pin)))
+
+    old = run(memory)
+    assert old.grades[4] == 0. and np.signbit(old.grades[4])
+    bypassed = receiver.step(receiver.step(receiver.start(seed, memory)), use_operator=False)
+    first_bank = bank.revise({}, width=6)
+    first = receiver._adopt_memory(memory, first_bank, source=None,
+                                  anchor_rows=[[0., 0., -1., 0., 0.]])
+    second = receiver._adopt_memory(first.memory, first_bank.revise({}, width=7), source=None,
+                                   anchor_rows=[[0., 0., 0., -1., 0.]])
+    fresh = run(second.memory)
+    assert all(retained is original for retained, original in
+               zip(second.memory._anchor_blocks, first.memory._anchor_blocks))
+    with pytest.raises(ValueError, match="read-only"):
+        old._trace[0].projected[0] = 0.
+
+    def no_advance(*args, **kwargs):
+        pytest.fail("reused relation prefix executed a feedback step")
+
+    monkeypatch.setattr(FeedbackKernel, "_advance", no_advance)
+    after_first, reused_first = receiver.rebase(old, first)
+    after_second, reused_second = receiver.rebase(after_first, second)
+    bypass_tip, reused_bypass = receiver.rebase(bypassed, first)
+    assert (reused_first, reused_second, reused_bypass) == (2, 2, 2)
+    assert bypass_tip.grades is None and bypass_tip.feedback is bypassed.feedback
+    assert after_second.feedback is old.feedback and after_second._trace is old._trace
+    assert after_second.grades.size == 7 and not after_second.grades.flags.writeable
+    assert np.isneginf(after_second.grades[5:]).all() and old.grades.size == 5
+    np.testing.assert_array_equal(after_second.grades.view(np.uint64), fresh.grades.view(np.uint64))
+    for actual, expected in zip(after_second.feedback.history, fresh.feedback.history, strict=True):
+        np.testing.assert_array_equal(actual.view(np.uint64), expected.view(np.uint64))
+
+
+def test_append_replays_new_active_entries_and_changed_middles(monkeypatch):
+    kernel = _kernel()
+    receiver = DisjointFeedback(kernel, query=np.eye(5), presence_value=np.eye(5), grade_value=np.eye(5), floor=.1)
+    bank = _transitions()
+    memory = receiver.prepare(bank, np.eye(5))
+    seed = [1., 0., 0., 0., 0.]
+    override = np.array([0., 0., .1, 0., 0.])
+
+    def run(pin):
+        return receiver.step(receiver.step(receiver.start(seed, pin)), relation_query=override)
+
+    old = run(memory)
+    active = bank.revise({"new-left": [(0, 5, 3, 1.)], "new-right": [(1, 3, 6, 1.)]}, width=7)
+    suffix = [[0., 0., 1., 0., 0.], [0., 0., 0., 1., 0.]]
+    append = receiver._adopt_memory(memory, active, source=None, anchor_rows=suffix)
+    changed = receiver._adopt_memory(
+        memory, active.revise({"second": [(1, 1, 2, .2)]}), source=None, anchor_rows=suffix)
+    quiet = receiver._adopt_memory(append.memory, active.revise({}, width=8), source=None,
+                                   anchor_rows=[[0.] * 5])
+    withdrawal = receiver.revise_memory(quiet.memory, {"new-right": None})
+    fresh_append = run(append.memory)
+    fresh_changed = run(changed.memory)
+    fresh_quiet = run(quiet.memory)
+    fresh_withdrawn = run(withdrawal.memory)
+    advance = FeedbackKernel._advance
+    steps = []
+
+    def count(self, state, **kwargs):
+        steps.append(len(state._history))
+        return advance(self, state, **kwargs)
+
+    monkeypatch.setattr(FeedbackKernel, "_advance", count)
+    replayed, used = receiver.rebase(old, append)
+    assert used == 1 and steps == [1] and 5 in replayed._trace[1].entries
+    assert replayed.grades[6] == 0. and replayed.latest[3] == pytest.approx(np.tanh(1.))
+    assert replayed._feedback._keys[0] is old._feedback._keys[0]
+    fully, used = receiver.rebase(old, changed)
+    assert used == 0 and steps == [1, 0, 1]
+    quiet_tip, used = receiver.rebase(replayed, quiet)
+    assert used == 2 and quiet_tip.feedback is replayed.feedback and steps == [1, 0, 1]
+    withdrawn, used = receiver.rebase(quiet_tip, withdrawal)
+    assert used == 1 and steps == [1, 0, 1, 1] and np.isneginf(withdrawn.grades[6])
+    for rebased, fresh in ((replayed, fresh_append), (fully, fresh_changed),
+                           (quiet_tip, fresh_quiet), (withdrawn, fresh_withdrawn)):
+        np.testing.assert_array_equal(rebased.grades.view(np.uint64), fresh.grades.view(np.uint64))
+        for actual, expected in zip(rebased.feedback.history, fresh.feedback.history, strict=True):
+            np.testing.assert_array_equal(actual.view(np.uint64), expected.view(np.uint64))
+
+
+def test_appended_projection_overflow_matches_fresh_read_failure():
+    receiver = DisjointFeedback(_kernel(), query=np.eye(5), presence_value=np.eye(5),
+                                grade_value=np.zeros((5, 5)), floor=.1)
+    bank = DisjointTransitionMemory.prepare(5, {})
+    memory = receiver.prepare(bank, np.zeros((5, 5)))
+    seed = [-1e200, 0., 0., 0., 0.]
+    old = receiver.step(receiver.start(seed, memory))
+    append = receiver._adopt_memory(memory, bank.revise({}, width=6), source=None,
+                                   anchor_rows=[[1e200, 0., 0., 0., 0.]])
+    with pytest.raises(FloatingPointError):
+        receiver.rebase(old, append)
+    with pytest.raises(FloatingPointError):
+        receiver.step(receiver.start(seed, append.memory))
 
 
 def test_relation_footprint_can_replay_a_dominated_change():

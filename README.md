@@ -38,7 +38,7 @@ The [import reader check](docs/ARCHITECTURE.md#checking-an-import-reader) prepar
 
 A [published import readout](docs/ARCHITECTURE.md#returning-published-import-evidence) carries the workspace's approved terminal witness into the reader and quotes its two declarations from the exact committed source snapshot.
 
-Repository publication can append coordinates with supplied anchors. Earlier coordinates and citations keep their addresses, and active relation steps replay against the enlarged frame.
+Repository publication can append coordinates with supplied anchors. Earlier coordinates and citations keep their addresses. Retained anchor blocks let the receiver reuse a prefix when the appended rows stay inactive and source edits leave that prefix's reads untouched.
 
 A worker can [fit appended anchors](docs/ARCHITECTURE.md#fitting-appended-anchors) from projected query examples while keeping new entries inactive on the protected opening reads. Given an ordinary miss and a requested destination, it can also [discover one newly available route](docs/ARCHITECTURE.md#repairing-an-ordinary-import-miss), fit from the receiver's own hidden input and make the recovered read a protection on later revisions. A later source correction can [replace a lost witness](docs/ARCHITECTURE.md#replacing-an-invalidated-witness) in the same protected slot.
 

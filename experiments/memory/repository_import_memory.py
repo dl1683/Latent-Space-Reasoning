@@ -314,11 +314,10 @@ class RepositoryImportMemory:
         if not names:
             return receiver._adopt_memory(memory, self._operator, source=self)
         suffix = np.asarray([added_anchors[name] for name in names])
-        if suffix.shape != (len(names), memory._anchors.shape[1]):
+        if suffix.shape != (len(names), receiver._kernel._width):
             raise ValueError("expected one added anchor row per new coordinate")
-        # An empty source has an unnamed placeholder row. Keep named rows only.
-        anchors = np.concatenate((memory._anchors[:prior_count], suffix))
-        return receiver._adopt_memory(memory, self._operator, source=self, anchor_rows=anchors)
+        return receiver._adopt_memory(memory, self._operator, source=self, anchor_rows=suffix,
+                                      replace_placeholder=not prior_count)
 
     def fit_feedback_revision(self, previous, receiver, pin, *, targets, max_update_norm):
         """Draft appended anchors from named (hidden query, seed grade) targets."""
@@ -346,7 +345,7 @@ class RepositoryImportMemory:
             replayed = handoff[1]
             opening_inputs.extend(receiver._relation_read_input(replayed, step)
                                   for step, read in enumerate(replayed._trace[:-1]) if read is not None)
-        hidden_width = pin.memory._anchors.shape[1]
+        hidden_width = receiver._kernel._width
         atol = _RELATION_GRADE_ATOL
         with np.errstate(over="raise", invalid="raise"):
             inputs = np.stack([hidden @ receiver._query for _, hidden, _ in requests])
@@ -424,7 +423,7 @@ class RepositoryImportMemory:
         return entry, paths
 
     def _zero_anchor_revision(self, previous, receiver, memory, names):
-        zeros = np.zeros(memory._anchors.shape[1])
+        zeros = np.zeros(receiver._kernel._width)
         return self.feedback_revision(previous, receiver, memory, added_anchors=dict.fromkeys(names, zeros))
 
     def draft_feedback_handoff(self, previous, receiver, pin, protected_index, *, destination, max_update_norm):

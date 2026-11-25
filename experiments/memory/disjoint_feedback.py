@@ -42,7 +42,7 @@ def _same_replacement(left, right):
 class _RelationObservation(_IdentityRecord):
     _receiver: "DisjointFeedback"
     _transitions: DisjointTransitionMemory
-    _anchors: np.ndarray
+    _anchor_blocks: tuple[np.ndarray, ...]
     _source: object | None = None
     _creation_key: InitVar[object | None] = None
 
@@ -57,6 +57,7 @@ class _RelationRevision(_IdentityRecord):
     memory: _RelationObservation
     _entries: frozenset[int]
     _changed_sources: frozenset[str] | None
+    _appended: np.ndarray | None = None
     _admission: tuple["_RelationWorkspacePin", "DisjointFeedbackState", "RelationOutcomeGuard"] | None = None
     _handoff: tuple["_RelationWorkspacePin", int, "TerminalRelationEvidence"] | None = None
     _creation_key: InitVar[object | None] = None
@@ -83,6 +84,7 @@ class _RelationRevision(_IdentityRecord):
 class _RelationStep:
     entries: frozenset[int]
     query: np.ndarray | None
+    projected: np.ndarray
 
 
 @dataclass(frozen=True, eq=False, slots=True)
@@ -144,7 +146,7 @@ class DisjointFeedback:
         anchors = _real_array(anchors)
         if anchors.shape != (transitions.width, self._kernel._width):
             raise ValueError("relation anchors need one hidden row per transition coordinate")
-        return _RelationObservation(self, transitions, _frozen(anchors), source, _creation_key=_CREATION_KEY)
+        return _RelationObservation(self, transitions, (_frozen(anchors),), source, _creation_key=_CREATION_KEY)
 
     def start(self, seed, memory=None, *, observations=None):
         """Pin the relation snapshot and the ordinary observation memory for this trajectory."""
@@ -163,11 +165,37 @@ class DisjointFeedback:
 
     def _relation_seed(self, memory, hidden):
         with np.errstate(over="raise", invalid="raise"):
-            scores = memory._anchors @ (hidden @ self._query)
-            seed = np.full(memory._transitions.width, -np.inf)
-            eligible = scores >= self._floor
-            seed[eligible] = np.minimum(scores[eligible] - self._floor, 1.)
+            return self._seed_from_projection(memory, _frozen(hidden @ self._query))
+
+    def _seed_from_projection(self, memory, projected):
+        seed = np.full(memory._transitions.width, -np.inf)
+        eligible = np.empty(seed.shape, dtype=bool)
+        end = 0
+        for anchors in memory._anchor_blocks:
+            start, end = end, end + len(anchors)
+            scores = anchors @ projected
+            active = scores >= self._floor
+            eligible[start:end] = active
+            block_seed = seed[start:end]
+            block_seed[active] = np.minimum(scores[active] - self._floor, 1.)
         return seed, eligible
+
+    def _relation_extra(self, memory, grades):
+        present = strengths = None
+        end = 0
+        for anchors in memory._anchor_blocks:
+            start, end = end, end + len(anchors)
+            block = grades[start:end]
+            supported = np.isfinite(block)
+            if supported.any():
+                presence = supported @ anchors
+                strength = np.where(supported, block, 0.) @ anchors
+                # An unsupported append must leave the previous reduction untouched.
+                present = presence if present is None else present + presence
+                strengths = strength if strengths is None else strengths + strength
+        if present is None:
+            return None
+        return _apply_value(self._presence_value, present) + _apply_value(self._grade_value, strengths)
 
     def step(self, state, *, use_operator=True, relation_query=None):
         """Advance normally, with an optional intervention on just the relation read."""
@@ -177,18 +205,14 @@ class DisjointFeedback:
         grades = extra = footprint = None
         if use_operator and state._memory is not None:
             memory = state._memory
-            anchors = memory._anchors
             override = None if relation_query is None else self._kernel._vector(relation_query)
             hidden = state.latest if override is None else override
-            seed, eligible = self._relation_seed(memory, hidden)
             with np.errstate(over="raise", invalid="raise"):
+                projected = _frozen(hidden @ self._query)
+                seed, eligible = self._seed_from_projection(memory, projected)
                 grades = propagate_disjoint(seed, memory=memory._transitions)
-                footprint = _RelationStep(frozenset(np.flatnonzero(eligible).tolist()), override)
-                supported = np.isfinite(grades)
-                if supported.any():
-                    present = supported @ anchors
-                    strengths = np.where(supported, grades, 0.) @ anchors
-                    extra = _apply_value(self._presence_value, present) + _apply_value(self._grade_value, strengths)
+                footprint = _RelationStep(frozenset(np.flatnonzero(eligible).tolist()), override, projected)
+                extra = self._relation_extra(memory, grades)
         elif relation_query is not None:
             raise ValueError("a relation query intervention needs the attached operator")
         feedback, _, _ = self._kernel._advance(state._feedback, observation_extra=extra)
@@ -198,8 +222,8 @@ class DisjointFeedback:
     def _terminal_seed(self, state):
         if state._grades is None:
             raise ValueError("terminal evidence requires an executed relation read")
-        hidden = self._relation_read_input(state, len(state._trace) - 1)
-        return self._relation_seed(state._memory, hidden)[0]
+        with np.errstate(over="raise", invalid="raise"):
+            return self._seed_from_projection(state._memory, state._trace[-1].projected)[0]
 
     @staticmethod
     def _relation_read_input(state, step):
@@ -219,16 +243,25 @@ class DisjointFeedback:
         bank = memory._transitions
         return self._compile_revision(memory, bank._replacements(bank.width, changes))
 
-    def _adopt_memory(self, memory, transitions, *, source, anchor_rows=None):
-        """Prepare a single authoritative replacement and an optional anchor extension."""
+    def _adopt_memory(self, memory, transitions, *, source, anchor_rows=None, replace_placeholder=False):
+        """Prepare an authoritative snapshot with retained, appended or replaced anchor blocks."""
         self._require_memory(memory)
         bank = memory._transitions
         if type(transitions) is not DisjointTransitionMemory or transitions.width < bank.width:
             raise ValueError("replacement needs a transition snapshot at least as wide as the existing frame")
-        if anchor_rows is not None:
+        if replace_placeholder:
             revised = self._prepare(transitions, anchor_rows, source=source)
             return _RelationRevision(memory, revised, frozenset(), None, _creation_key=_CREATION_KEY)
-        if bank.width != transitions.width:
+        appended = None
+        blocks = memory._anchor_blocks
+        if anchor_rows is not None:
+            appended = _real_array(anchor_rows)
+            if (transitions.width == bank.width
+                    or appended.shape != (transitions.width - bank.width, self._kernel._width)):
+                raise ValueError("expected one added anchor row per new coordinate")
+            appended = _frozen(appended)
+            blocks = blocks + (appended,)
+        elif bank.width != transitions.width:
             raise ValueError("growing the transition frame needs anchor rows")
         if transitions is bank and source is memory._source:
             return _RelationRevision(memory, memory, frozenset(), None, _creation_key=_CREATION_KEY)
@@ -239,8 +272,9 @@ class DisjointFeedback:
                 before, after = old.get(coordinate), new.get(coordinate)
                 if before is not after:
                     entries.update(_indexed_coordinates(before)[0], _indexed_coordinates(after)[0])
-        revised = _RelationObservation(self, transitions, memory._anchors, source, _creation_key=_CREATION_KEY)
-        return _RelationRevision(memory, revised, frozenset(entries), None, _creation_key=_CREATION_KEY)
+        revised = _RelationObservation(self, transitions, blocks, source, _creation_key=_CREATION_KEY)
+        return _RelationRevision(memory, revised, frozenset(entries), None, _appended=appended,
+                                 _creation_key=_CREATION_KEY)
 
     def _compile_revision(self, memory, replacements):
         entries = set()
@@ -248,7 +282,7 @@ class DisjointFeedback:
         transitions = bank._apply_replacements(bank.width, dict(sorted(replacements.items())), affected_entries=entries,
                                                canonical_order=True)
         revised = memory if transitions is bank else _RelationObservation(
-            self, transitions, memory._anchors, _creation_key=_CREATION_KEY)
+            self, transitions, memory._anchor_blocks, _creation_key=_CREATION_KEY)
         return _RelationRevision(memory, revised, frozenset(entries), frozenset(replacements),
                                  _creation_key=_CREATION_KEY)
 
@@ -280,13 +314,21 @@ class DisjointFeedback:
         memory = revision.memory
         if memory is state._memory:
             return state, steps
-        projection_changed = memory._anchors is not state._memory._anchors
-        # A resized projection can change the reduction even at retained coordinates.
-        prefix = next((step for step, read in enumerate(state._trace)
-                       if read is not None and (projection_changed or not revision._entries.isdisjoint(read.entries))),
-                      steps)
+        rewritten = revision._appended is None and memory._anchor_blocks is not state._memory._anchor_blocks
+        prefix = steps
+        with np.errstate(over="raise", invalid="raise"):
+            for step, read in enumerate(state._trace):
+                if read is None:
+                    continue
+                if (rewritten or not revision._entries.isdisjoint(read.entries) or
+                        (revision._appended is not None and (revision._appended @ read.projected >= self._floor).any())):
+                    prefix = step
+                    break
         if prefix == steps:
-            return replace(state, _memory=memory, _creation_key=_CREATION_KEY), prefix
+            grades = state._grades
+            if grades is not None and revision._appended is not None:
+                grades = _frozen(np.concatenate((grades, np.full(len(revision._appended), -np.inf))))
+            return replace(state, _memory=memory, _grades=grades, _creation_key=_CREATION_KEY), prefix
 
         old_feedback = state._feedback
         feedback = replace(old_feedback, _history=old_feedback._history[:prefix],
