@@ -74,13 +74,13 @@ def _replay(snapshot, workload):
     return RelativeReplayWork(rebuilt, recovered, peak), tuple(answers)
 
 
-def _check_structure_forecast(base, proposal, workload, *, max_operator_entries, tolerance):
+def _check_structure_forecast(base, candidate, workload, *, conversion, max_operator_entries, tolerance):
     baseline, expected = _structure_replay(base, workload)
     if all(value is None for value in expected):
         return "check_unsupported", baseline, None
     try:
         candidate, actual = _structure_replay(
-            proposal.snapshot, workload, conversion=proposal.conversion_units, entry_cap=max_operator_entries,
+            candidate, workload, conversion=conversion, entry_cap=max_operator_entries,
         )
     except (FloatingPointError, ValueError, LinAlgError):
         return "check_refused", baseline, None
@@ -89,6 +89,17 @@ def _check_structure_forecast(base, proposal, workload, *, max_operator_entries,
     if candidate.units >= baseline.units:
         return "check_no_gain", baseline, candidate
     return "published", baseline, candidate
+
+
+def _prepare_structure_change(base, change):
+    kind, labels = change
+    if kind == "merge_lazy":
+        return base._owner.merge_regions(base, *labels, retain_children=True, lazy_readout=True)
+    if kind == "split_region":
+        return base._owner.split_region(base, *labels)
+    if kind == "layout":
+        return base._owner.reorder(base, labels)
+    raise ValueError("unknown structure maintenance operation")
 
 
 def _operator_inventory(snapshot):
@@ -164,6 +175,25 @@ def _structure_replay(snapshot, workload, *, conversion=0, entry_cap=None):
         answers.extend(values)
         snapshot = revised
     return RelativeStructureWork(factor_work, read_work[0], peak), tuple(answers)
+
+
+def _verify_structure_change(base, change, workload, *, protected, max_operator_entries, tolerance):
+    try:
+        candidate = _prepare_structure_change(base, change)
+        operators, entries = _operator_inventory(candidate)
+        if candidate is base or entries > max_operator_entries:
+            return "check_refused", None, None
+        if not _agrees(base.read_many(protected), candidate.read_many(protected), tolerance):
+            return "check_drift", None, None
+        prior, _ = _operator_inventory(base)
+        result, before, after = _check_structure_forecast(
+            base, candidate, workload, conversion=_factor_units(prior, operators, candidate),
+            max_operator_entries=max_operator_entries, tolerance=tolerance,
+        )
+    except (FloatingPointError, ValueError, LinAlgError):
+        return "check_refused", None, None
+    scores = (before.units, after.units) if after is not None else None
+    return result, candidate if result == "published" else None, scores
 
 
 def _bounded_structure_inputs(workload, protected, max_batches, max_items):
@@ -279,14 +309,8 @@ class RelativeHierarchyWorkspace:
         proposals = _structure_proposals(base, workload, max_symbolic_ports)
         for change in islice(proposals, max_candidates):
             considered += 1
-            kind, labels = change
             try:
-                if kind == "merge_lazy":
-                    candidate = base._owner.merge_regions(base, *labels, retain_children=True, lazy_readout=True)
-                elif kind == "split_region":
-                    candidate = base._owner.split_region(base, *labels)
-                else:
-                    candidate = base._owner.reorder(base, labels)
+                candidate = _prepare_structure_change(base, change)
                 if candidate is base:
                     continue
                 operators, entries = _operator_inventory(candidate)

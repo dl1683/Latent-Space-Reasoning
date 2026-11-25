@@ -21,6 +21,8 @@ from experiments.memory.relative_workspace import (
     RelativeStructureWork,
     _agrees,
     _check_structure_forecast,
+    _prepare_structure_change,
+    _verify_structure_change,
 )
 
 
@@ -55,6 +57,40 @@ def _rebase_source_batches(snapshot, batches, queries):
             presence[name] = replacement is not None
         replay.append((changes, queries))
     return tuple(replay)
+
+
+def _history_read_inputs(snapshot, queries, protected, batches, max_items):
+    protected = tuple(map(index, islice(protected, max_items + 1)))
+    remaining = max_items - len(protected)
+    if remaining < 0:
+        raise ValueError("relative maintenance history exceeds the input item cap")
+    query_cap = remaining // batches
+    queries = tuple(map(index, islice(queries, query_cap + 1)))
+    if len(queries) > query_cap:
+        raise ValueError("relative maintenance history exceeds the input item cap")
+    if not queries or any(not 0 <= cell < snapshot._owner._cells for cell in (*queries, *protected)):
+        raise ValueError("history maintenance needs valid read cell indices")
+    return queries, protected, remaining - batches * len(queries)
+
+
+def _history_source_batches(events, remaining):
+    batches = []
+    for _, payload in events:
+        rows = json.loads(payload)
+        remaining -= len(rows)
+        if remaining < 0:
+            raise ValueError("relative maintenance history exceeds the input item cap")
+        batches.append(_decode_sources(rows))
+    return batches, remaining
+
+
+@dataclass(frozen=True)
+class RelativeTrialDecision:
+    decision: str
+    trial_revision: int | None = None
+    observed_units: tuple[int, int] | None = None
+    latest_units: tuple[int, int] | None = None
+    recovered: bool = False
 
 
 @dataclass(frozen=True, eq=False)
@@ -97,6 +133,7 @@ class JournaledRelativeHierarchyWorkspace:
         policy = (np.__version__, sorted(self._error_policy.items()), hierarchy._membership,
                   hierarchy._ridge.hex(), initial.elimination_order, _source_rows(sources))
         self._root = sha256(b"relative hierarchy journal v1\n" + _json(policy)).digest()
+        self._initial = initial
         self._head = RelativeJournalRevision(0, self._root, initial)
         with closing(self._connect(create=create)) as db:
             pragma = "PRAGMA journal_mode=WAL" if create else "PRAGMA journal_mode"
@@ -145,7 +182,15 @@ class JournaledRelativeHierarchyWorkspace:
     def _replay(self, snapshot, kind, payload):
         data = json.loads(payload)
         owner = snapshot._owner
-        if kind == "sources":
+        if kind in ("structure_trial", "structure_resolution") and data["version"] != 1:
+            raise ValueError("unsupported structure trial event version")
+        if kind == "structure_trial":
+            return snapshot
+        if kind == "structure_resolution":
+            if data["decision"] != "published":
+                return snapshot
+            revised = _prepare_structure_change(snapshot, data["change"])
+        elif kind == "sources":
             revised = owner.revise(snapshot, _decode_sources(data))
         elif kind == "layout":
             revised = owner.reorder(snapshot, data["order"])
@@ -197,7 +242,7 @@ class JournaledRelativeHierarchyWorkspace:
             tip = db.execute("SELECT number, digest FROM relative_events ORDER BY number DESC LIMIT 1").fetchone()
             if self._head is not base or (tip or (0, self._root)) != (base.number, base.digest):
                 raise StaleRelativeRevision("relative journal changed before publication")
-            if revised is base.snapshot:
+            if revised is base.snapshot and kind not in ("structure_trial", "structure_resolution"):
                 return base
             number = base.number + 1
             digest = _event_digest(base.digest, number, kind, None, payload)
@@ -252,6 +297,10 @@ class JournaledRelativeHierarchyWorkspace:
 
     def _recent_source_events(self, base, max_events, max_bytes):
         first = max(0, base.number - max_events)
+        return tuple((number, payload) for number, kind, payload in self._verified_events(base, first, max_bytes)
+                     if kind == "sources")
+
+    def _verified_events(self, base, first, max_bytes):
         with closing(self._connect()) as db:
             db.execute("BEGIN")
             self._check_root(db)
@@ -271,7 +320,7 @@ class JournaledRelativeHierarchyWorkspace:
             if byte_count > max_bytes:
                 raise ValueError("relative maintenance history exceeds the payload byte cap")
             number = first
-            sources = []
+            events = []
             for revision, kind, payload, expected in db.execute("""
                 SELECT number, kind, payload, digest FROM relative_events
                 WHERE number > ? AND number <= ? ORDER BY number
@@ -279,11 +328,10 @@ class JournaledRelativeHierarchyWorkspace:
                 if revision != number + 1 or expected != _event_digest(digest, revision, kind, None, payload):
                     raise ValueError("invalid relative maintenance history")
                 number, digest = revision, expected
-                if kind == "sources":
-                    sources.append((number, payload))
+                events.append((number, kind, payload))
             if (number, digest) != (base.number, base.digest):
                 raise ValueError("relative maintenance history does not reach the pinned tip")
-            return tuple(sources)
+            return tuple(events)
 
     def maintain_structure_from_history(
         self, base, queries, *, window_batches, max_history_events, max_history_bytes, max_candidates,
@@ -301,17 +349,9 @@ class JournaledRelativeHierarchyWorkspace:
                 or not isfinite(tolerance) or tolerance < 0):
             raise ValueError("history maintenance needs positive caps and room for two source windows")
         self._require_current(base)
-        protected = tuple(map(index, islice(protected, max_input_items + 1)))
-        remaining = max_input_items - len(protected)
-        if remaining < 0:
-            raise ValueError("relative maintenance history exceeds the input item cap")
-        query_cap = remaining // (2 * window_batches)
-        queries = tuple(map(index, islice(queries, query_cap + 1)))
-        if len(queries) > query_cap:
-            raise ValueError("relative maintenance history exceeds the input item cap")
-        if not queries or any(not 0 <= cell < base.snapshot._owner._cells for cell in (*queries, *protected)):
-            raise ValueError("history maintenance needs valid read cell indices")
-        remaining -= 2 * window_batches * len(queries)
+        queries, protected, remaining = _history_read_inputs(
+            base.snapshot, queries, protected, 2 * window_batches, max_input_items,
+        )
 
         source_events = self._recent_source_events(base, max_history_events, max_history_bytes)
         if len(source_events) < 2 * window_batches:
@@ -319,13 +359,7 @@ class JournaledRelativeHierarchyWorkspace:
             return self._publish_structure_result(base, None), receipt
         selected = source_events[-2 * window_batches:]
         revisions = tuple(number for number, _ in selected)
-        batches = []
-        for _, payload in selected:
-            rows = json.loads(payload)
-            remaining -= len(rows)
-            if remaining < 0:
-                raise ValueError("relative maintenance history exceeds the input item cap")
-            batches.append(_decode_sources(rows))
+        batches, _ = _history_source_batches(selected, remaining)
 
         older, newer = batches[:window_batches], batches[window_batches:]
         forecast_workload = _rebase_source_batches(base.snapshot, older, queries)
@@ -340,7 +374,7 @@ class JournaledRelativeHierarchyWorkspace:
             decision, baseline, candidate = "forecast_kept", None, None
             if forecast.change is not None:
                 decision, baseline, candidate = _check_structure_forecast(
-                    base.snapshot, forecast, check_workload,
+                    base.snapshot, forecast.snapshot, check_workload, conversion=forecast.conversion_units,
                     max_operator_entries=max_operator_entries, tolerance=tolerance,
                 )
         omitted = (
@@ -355,6 +389,122 @@ class JournaledRelativeHierarchyWorkspace:
             omitted_deletions=omitted,
         )
         return self._publish_structure_result(base, forecast if decision == "published" else None), receipt
+
+    def begin_structure_trial(
+        self, base, queries, *, window_batches, max_history_events, max_history_bytes, max_candidates,
+        max_operator_entries, max_symbolic_ports, max_input_items, protected=(), tolerance=1e-10,
+    ):
+        """Freeze a candidate before its exact future source-event window begins."""
+        (window_batches, max_history_events, max_history_bytes, max_candidates, max_operator_entries,
+         max_symbolic_ports, max_input_items) = map(index, (
+            window_batches, max_history_events, max_history_bytes, max_candidates, max_operator_entries,
+            max_symbolic_ports, max_input_items,
+        ))
+        tolerance = float(tolerance)
+        if (min(window_batches, max_history_bytes, max_candidates, max_operator_entries, max_symbolic_ports,
+                max_input_items) < 1 or max_history_events < window_batches
+                or not isfinite(tolerance) or tolerance < 0):
+            raise ValueError("structure trial needs positive caps and room for its forecast window")
+        self._require_current(base)
+        queries, protected, remaining = _history_read_inputs(
+            base.snapshot, queries, protected, 2 * window_batches, max_input_items,
+        )
+        recent = self._recent_source_events(base, max_history_events, max_history_bytes)
+        if len(recent) < window_batches:
+            return self._publish_structure_result(base, None), RelativeTrialDecision("insufficient_history")
+        selected = recent[-window_batches:]
+        older, remaining = _history_source_batches(selected, remaining)
+        forecast = _rebase_source_batches(base.snapshot, older, queries)
+        workspace = RelativeHierarchyWorkspace(base.snapshot)
+        with np.errstate(**self._error_policy):
+            proposal = workspace.maintain_structure(
+                base.snapshot, forecast, max_candidates=max_candidates, max_replay_batches=window_batches,
+                max_operator_entries=max_operator_entries, max_symbolic_ports=max_symbolic_ports,
+                max_input_items=max_input_items, protected=protected, tolerance=tolerance,
+            )
+        if proposal.change is None:
+            return self._publish_structure_result(base, None), RelativeTrialDecision("forecast_kept")
+        payload = _json(dict(
+            version=1, base_revision=base.number, base_digest=base.digest.hex(),
+            change=proposal.change, window_batches=window_batches, queries=queries, protected=protected,
+            tolerance=tolerance, max_operator_entries=max_operator_entries, future_items=remaining,
+            max_history_bytes=max_history_bytes, max_history_events=max_history_events, max_candidates=max_candidates,
+            max_symbolic_ports=max_symbolic_ports, max_input_items=max_input_items,
+            forecast_revisions=tuple(number for number, _ in selected), forecast_units=(proposal.baseline_work.units, proposal.selected_work.units),
+        ))
+        opened = self._commit(base, base.snapshot, "structure_trial", payload)
+        return opened, RelativeTrialDecision("opened", opened.number)
+
+    def finish_structure_trial(self, base, trial_revision, *, max_replay_events, max_replay_bytes):
+        """Score the frozen proposal on subsequent source events and recheck it at the current tip."""
+        trial_revision, max_replay_events, max_replay_bytes = map(
+            index, (trial_revision, max_replay_events, max_replay_bytes),
+        )
+        self._require_current(base)
+        if not 0 < trial_revision <= base.number:
+            raise ValueError("structure trial revision is outside the pinned history")
+        if base.number > max_replay_events or max_replay_bytes < 1:
+            raise ValueError("structure trial recovery exceeds its replay cap")
+        events = self._verified_events(base, 0, max_replay_bytes)
+        _, kind, payload = events[trial_revision - 1]
+        if kind != "structure_trial":
+            raise ValueError("requested revision is not an opened structure trial")
+        spec = json.loads(payload)
+        future = events[trial_revision:]
+        sources = []
+
+        def resolve(decision, revised=None, observed=None, latest=None):
+            record = _json(dict(version=1, trial_revision=trial_revision, decision=decision,
+                                evaluated_revision=base.number, evaluated_digest=base.digest.hex(),
+                                source_revisions=tuple(number for number, _ in sources),
+                                change=spec["change"], observed_units=observed, latest_units=latest))
+            head = self._commit(base, base.snapshot if revised is None else revised, "structure_resolution", record)
+            return head, RelativeTrialDecision(decision, trial_revision, observed, latest)
+
+        intervening_structure = False
+        for number, kind, payload in future:
+            if kind == "sources":
+                sources.append((number, payload))
+            elif kind == "structure_resolution":
+                record = json.loads(payload)
+                if record["trial_revision"] == trial_revision:
+                    return self._publish_structure_result(base, None), RelativeTrialDecision(
+                        record["decision"], trial_revision,
+                        None if record["observed_units"] is None else tuple(record["observed_units"]),
+                        None if record["latest_units"] is None else tuple(record["latest_units"]),
+                        recovered=True,
+                    )
+                intervening_structure |= record["decision"] == "published"
+            elif kind != "structure_trial":
+                intervening_structure = True
+        if intervening_structure:
+            return resolve("intervening_structure")
+        if len(sources) > spec["window_batches"]:
+            return resolve("horizon_passed")
+        if len(sources) < spec["window_batches"]:
+            return self._publish_structure_result(base, None), RelativeTrialDecision("pending", trial_revision)
+        if sum(len(payload) for _, payload in sources) > spec["max_history_bytes"]:
+            return resolve("budget_exceeded")
+        rows = [json.loads(payload) for _, payload in sources]
+        if sum(map(len, rows)) > spec["future_items"]:
+            return resolve("budget_exceeded")
+        changes = [_decode_sources(batch) for batch in rows]
+        queries = tuple(spec["queries"])
+        options = dict(protected=spec["protected"], max_operator_entries=spec["max_operator_entries"],
+                       tolerance=spec["tolerance"])
+        with np.errstate(**self._error_policy):
+            opening = self._initial
+            for _, kind, payload in events[:trial_revision - 1]:
+                opening = self._replay(opening, kind, payload)
+            observed_workload = tuple((batch, queries) for batch in changes)
+            result, _, observed = _verify_structure_change(opening, spec["change"], observed_workload, **options)
+            if result != "published":
+                return resolve("observed_" + result.removeprefix("check_"), observed=observed)
+            current_workload = _rebase_source_batches(base.snapshot, changes, queries)
+            result, revised, latest = _verify_structure_change(base.snapshot, spec["change"], current_workload, **options)
+        if result != "published":
+            return resolve("latest_" + result.removeprefix("check_"), observed=observed, latest=latest)
+        return resolve("published", revised, observed, latest)
 
     def compact(self, base, *, max_regions=1, protected_cells=(), tolerance=1e-10,
                 value_first=False, retry_failed=False):

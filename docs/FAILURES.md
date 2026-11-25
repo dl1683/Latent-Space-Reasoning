@@ -115,6 +115,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **Separate event windows still share the current state, 25 November 2026.** The history policy can reject an older-window winner when its proxy loses on recent edits. Both replays inherit a current tip shaped by the recent window, and neither replays the actual read stream. Reapplying an old assignment can also resurrect a source deleted later. Report the recent gate as a retrospective check. Prospective validation needs a policy frozen before new events arrive and must charge renewed verification at publication. [History worker fixtures](../experiments/memory/test_relative_journal.py)
 
+**An observed winner can lose at the publication tip, 25 November 2026.** An order proposal frozen before the six source events saved work at its opening state, 372 to 350 proxy units. Repreparing the same operation at the current tip and charging conversion again changed the comparison to 313 against 330. The worker refused it. A prospective win establishes what would have happened on its declared interval. Publication still requires the current guard and its own conversion comparison. [Prospective trial fixtures](../experiments/memory/test_relative_journal.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

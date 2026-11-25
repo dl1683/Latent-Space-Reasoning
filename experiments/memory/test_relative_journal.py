@@ -476,3 +476,149 @@ def test_history_worker_verifies_suffix_and_rebases_historical_deletions(tmp_pat
     assert journal.snapshot() is point
     with pytest.raises(ValueError, match="invalid relative maintenance history"):
         journal.maintain_structure_from_history(point, cells, **recent_caps)
+
+
+_TRIAL_RECOVERY_CAPS = dict(max_replay_events=40, max_replay_bytes=10000)
+
+
+def _prior_structure_trial(worker, **caps):
+    from experiments.memory.test_relative_workspace import _structure_workload
+
+    for edits, _ in _structure_workload(6, 6):
+        worker.revise(worker.snapshot(), edits)
+    base = worker.snapshot()
+    opened, receipt = worker.begin_structure_trial(base, (16, 17), **(_HISTORY_CAPS | caps))
+    assert receipt.decision == "opened" and receipt.trial_revision == opened.number == base.number + 1
+    assert opened.snapshot is base.snapshot and opened.digest != base.digest
+    return opened
+
+
+@pytest.mark.parametrize("future_cell", [6, 1])
+def test_prospective_trial_reopens_and_resolves_only_exact_future(tmp_path, future_cell):
+    import json
+    from experiments.memory.test_relative_workspace import _structure_workload
+
+    path = tmp_path / "prospective.sqlite"
+    writer = _open(path, create=True)
+    opened = _prior_structure_trial(writer, protected=(0, 17))
+    sources = dict(opened.snapshot._sources)
+    future = _structure_workload(future_cell, 6)
+    for edits, _ in future[:3]:
+        writer.revise(writer.snapshot(), edits)
+        sources.update(edits)
+    follower = _open(path)
+    before = follower.snapshot()
+    pending, receipt = follower.finish_structure_trial(before, opened.number, **_TRIAL_RECOVERY_CAPS)
+    assert pending is before and receipt.decision == "pending"
+    for edits, _ in future[3:]:
+        writer.revise(writer.snapshot(), edits)
+        sources.update(edits)
+
+    follower = _open(path)
+    tip = follower.snapshot()
+    latest, result = follower.finish_structure_trial(tip, opened.number, **_TRIAL_RECOVERY_CAPS)
+    assert latest.number == tip.number + 1 and latest.snapshot._sources is tip.snapshot._sources
+    if future_cell == 6:
+        assert result.decision == "published" and latest.snapshot._regions[0].lazy_readout
+        assert result.observed_units == result.latest_units == (492, 451)
+    else:
+        assert result.decision == "observed_no_gain" and latest.snapshot is tip.snapshot
+        assert result.observed_units == (858, 1531) and result.latest_units is None
+    _assert_values(latest, sources)
+    fresh = _open(path)
+    recovered = fresh.snapshot()
+    assert recovered.digest == latest.digest
+    same, duplicate = fresh.finish_structure_trial(recovered, opened.number, **_TRIAL_RECOVERY_CAPS)
+    assert same is recovered and duplicate.decision == result.decision and duplicate.recovered
+    assert duplicate.observed_units == result.observed_units and duplicate.latest_units == result.latest_units
+    with closing(sqlite3.connect(path)) as db:
+        trial_json, = db.execute("SELECT payload FROM relative_events WHERE kind = 'structure_trial'").fetchone()
+        terminal_json, = db.execute("SELECT payload FROM relative_events WHERE kind = 'structure_resolution'").fetchone()
+    trial, terminal = json.loads(trial_json), json.loads(terminal_json)
+    assert trial["forecast_revisions"] == list(range(1, 7)) and trial["change"] == ["merge_lazy", [0, 1]]
+    assert terminal["source_revisions"] == list(range(8, 14)) and terminal["evaluated_digest"] == tip.digest.hex()
+    assert terminal["decision"] == result.decision
+
+
+def test_prospective_trials_allow_metadata_overlap_and_fence_a_competing_publication(tmp_path, monkeypatch):
+    from experiments.memory.test_relative_workspace import _structure_workload
+
+    path = tmp_path / "overlap.sqlite"
+    writer, rival = _open(path, create=True), _open(path)
+    first = _prior_structure_trial(writer)
+    second, receipt = rival.begin_structure_trial(rival.snapshot(), (16, 17), **_HISTORY_CAPS)
+    assert receipt.decision == "opened" and second.number == first.number + 1
+    for edits, _ in _structure_workload(6, 6):
+        writer.revise(writer.snapshot(), edits)
+    initial_finish = writer.snapshot()
+    commit = writer._commit
+
+    def settle_with_rival(base, revised, kind, payload):
+        assert kind == "structure_resolution" and revised is not base.snapshot
+        _, result = rival.finish_structure_trial(rival.snapshot(), second.number, **_TRIAL_RECOVERY_CAPS)
+        assert result.decision == "published"
+        return commit(base, revised, kind, payload)
+
+    with monkeypatch.context() as patcher:
+        patcher.setattr(writer, "_commit", settle_with_rival)
+        with pytest.raises(StaleRelativeRevision, match="before publication"):
+            writer.finish_structure_trial(initial_finish, first.number, **_TRIAL_RECOVERY_CAPS)
+    resolved = writer.snapshot()
+    kept, result = writer.finish_structure_trial(resolved, first.number, **_TRIAL_RECOVERY_CAPS)
+    assert result.decision == "intervening_structure" and kept.snapshot is resolved.snapshot
+    assert kept.number == resolved.number + 1 and _open(path).snapshot().digest == kept.digest
+
+
+@pytest.mark.parametrize(("future_batches", "input_cap", "expected"), [
+    (7, 64, "horizon_passed"), (6, 30, "budget_exceeded"),
+])
+def test_prospective_trial_rejects_window_overrun_or_frozen_input_cap(tmp_path, future_batches, input_cap, expected):
+    from experiments.memory.test_relative_workspace import _structure_workload
+
+    journal = _open(tmp_path / "trial-cap.sqlite", create=True)
+    opened = _prior_structure_trial(journal, max_input_items=input_cap)
+    for edits, _ in _structure_workload(6, future_batches):
+        journal.revise(journal.snapshot(), edits)
+    tip = journal.snapshot()
+    with pytest.raises(ValueError, match="recovery exceeds"):
+        journal.finish_structure_trial(tip, opened.number, max_replay_events=1, max_replay_bytes=10000)
+    with pytest.raises(ValueError, match="payload byte cap"):
+        journal.finish_structure_trial(tip, opened.number, max_replay_events=40, max_replay_bytes=1)
+    assert journal.snapshot() is tip
+    after, outcome = journal.finish_structure_trial(tip, opened.number, **_TRIAL_RECOVERY_CAPS)
+    assert outcome.decision == expected and after.number == tip.number + 1 and after.snapshot is tip.snapshot
+
+
+def test_prospective_trial_checks_latest_state_and_recovers_lost_acknowledgment(tmp_path, monkeypatch):
+    from experiments.memory.test_relative_workspace import _structure_workload
+
+    path = tmp_path / "rebased-trial.sqlite"
+    journal = _open(path, create=True)
+    for edits, _ in _structure_workload(6, 6):
+        journal.revise(journal.snapshot(), edits)
+    opened, receipt = journal.begin_structure_trial(journal.snapshot(), (0,), **_HISTORY_CAPS)
+    assert receipt.decision == "opened"
+    for value in (0.7, -0.3, 0.8, -0.2, 0.9, 0.7):
+        journal.revise(journal.snapshot(), {"row-6": RelativeObservation(6, value, source=5)})
+    base = journal.snapshot()
+    original = journal._commit
+
+    def lose_acknowledgment(parent, revised, kind, payload):
+        assert kind == "structure_resolution" and revised is parent.snapshot
+        original(parent, revised, kind, payload)
+        raise RuntimeError("lost acknowledgment")
+
+    with monkeypatch.context() as lost:
+        lost.setattr(journal, "_commit", lose_acknowledgment)
+        with pytest.raises(RuntimeError, match="lost acknowledgment"):
+            journal.finish_structure_trial(base, opened.number, **_TRIAL_RECOVERY_CAPS)
+    reopened = _open(path)
+    head = reopened.snapshot()
+    assert head.number == base.number + 1 and head.snapshot.elimination_order == base.snapshot.elimination_order
+    same, result = reopened.finish_structure_trial(head, opened.number, **_TRIAL_RECOVERY_CAPS)
+    assert same is head and result.decision == "latest_no_gain" and result.recovered
+    assert result.observed_units == (372, 350) and result.latest_units == (313, 330)
+    with closing(sqlite3.connect(path)) as db:
+        import json
+        payload, = db.execute("SELECT payload FROM relative_events WHERE kind = 'structure_resolution'").fetchone()
+    assert json.loads(payload)["decision"] == "latest_no_gain"
