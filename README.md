@@ -40,6 +40,8 @@ A [published import readout](docs/ARCHITECTURE.md#returning-published-import-evi
 
 Repository publication can append coordinates with supplied anchors. Earlier coordinates and citations keep their addresses, and active relation steps replay against the enlarged frame.
 
+A worker can [fit appended anchors](docs/ARCHITECTURE.md#fitting-appended-anchors) from projected query examples while keeping new entries inactive on the protected opening reads.
+
 A [retained import read](docs/ARCHITECTURE.md#retaining-an-import-answer-across-commits) can carry exact quotes to a new commit when the witness dependencies survive. An indexed baseline with a blob-keyed quote cache read fewer source bytes in a local replay that repeatedly restored the same evidence.
 
 Current evidence is CPU software verification on supplied arrays, predicate rows and deterministic source encodings. Learned corpus encoding, trained operators and ongoing swarm maintenance remain research objectives. A grouped-query head adapter can initialize the feedback operator from supplied projection matrices with compact keys and factored values. Its [pinned checkpoint smoke](docs/ARCHITECTURE.md#reuse-of-one-pretrained-attention-head) awaits authorization for the first pretrained-weight run. The [architecture review brief](docs/ARCHITECTURE.md#architectural-exploration-and-review) invites competing designs and decisive tests.

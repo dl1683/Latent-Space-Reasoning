@@ -182,10 +182,15 @@ class DisjointFeedback:
     def _terminal_seed(self, state):
         if state._grades is None:
             raise ValueError("terminal evidence requires an executed relation read")
-        history = state._feedback._history
-        previous = history[-2] if len(history) > 1 else state._feedback._seed
-        override = state._trace[-1].query
-        return self._relation_seed(state._memory, previous if override is None else override)[0]
+        hidden = self._relation_read_input(state, len(state._trace) - 1)
+        return self._relation_seed(state._memory, hidden)[0]
+
+    @staticmethod
+    def _relation_read_input(state, step):
+        override = state._trace[step].query
+        if override is not None:
+            return override
+        return state._feedback._history[step - 1] if step else state._feedback._seed
 
     def prove_terminal(self, state, destination, *, paths=None):
         """Return a witness that accounts for the full emitted terminal grade."""

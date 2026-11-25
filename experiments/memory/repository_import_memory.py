@@ -8,6 +8,7 @@ from dataclasses import InitVar, asdict, dataclass, field
 from importlib.util import resolve_name
 from io import BytesIO
 import json
+from numbers import Real
 import os
 from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
@@ -17,7 +18,9 @@ from types import MappingProxyType
 
 import numpy as np
 
+from experiments.memory.disjoint_feedback import _RelationWorkspacePin
 from experiments.memory.disjoint_transition import DisjointTransitionMemory, DisjointTransitionPath, propagate_disjoint
+from experiments.memory.weight_program import program_weight
 
 
 _SOURCE_LINE = re.compile(rb"[^\r\n]*(?:\r\n?|\n|$)")
@@ -283,8 +286,7 @@ class RepositoryImportMemory:
         """Attach this exact source snapshot to a relation feedback receiver."""
         return receiver._prepare(self._operator, anchors, source=self)
 
-    def feedback_revision(self, previous, receiver, memory, *, added_anchors=None):
-        """Adopt a direct revision, with anchor rows keyed by appended module names."""
+    def _feedback_names(self, previous, receiver, memory):
         receiver._require_memory(memory)
         if (type(previous) is not RepositoryImportMemory or memory._source is not previous
                 or memory._transitions is not previous._operator):
@@ -293,8 +295,12 @@ class RepositoryImportMemory:
             raise ValueError("feedback revision needs a direct repository successor")
         if any(self._coordinates.get(name) != coordinate for name, coordinate in previous._coordinates.items()):
             raise ValueError("feedback revision must retain all earlier named coordinates")
+        return sorted(self._coordinates.keys() - previous._coordinates.keys(), key=self._coordinates.__getitem__)
+
+    def feedback_revision(self, previous, receiver, memory, *, added_anchors=None):
+        """Adopt a direct revision, with anchor rows keyed by appended module names."""
+        names = self._feedback_names(previous, receiver, memory)
         prior_count = len(previous._coordinates)
-        names = sorted(self._coordinates.keys() - previous._coordinates.keys(), key=self._coordinates.__getitem__)
         if added_anchors is None:
             if names:
                 raise ValueError("a changed repository coordinate frame needs added feedback anchors")
@@ -309,6 +315,46 @@ class RepositoryImportMemory:
         # An empty source has an unnamed placeholder row. Keep named rows only.
         anchors = np.concatenate((memory._anchors[:prior_count], suffix))
         return receiver._adopt_memory(memory, self._operator, source=self, anchor_rows=anchors)
+
+    def fit_feedback_revision(self, previous, receiver, pin, *, targets, max_update_norm):
+        """Draft appended anchors from named (hidden query, seed grade) targets."""
+        if type(pin) is not _RelationWorkspacePin:
+            raise ValueError("anchor fitting needs an issued workspace pin")
+        names = self._feedback_names(previous, receiver, pin.memory)
+        if not isinstance(targets, Mapping) or not targets or not targets.keys() <= set(names):
+            raise ValueError("anchor targets must name at least one appended repository coordinate")
+        requests = []
+        for name in names:
+            if name in targets:
+                hidden, grade = targets[name]
+                if not isinstance(grade, Real) or not 0. <= grade <= 1.:
+                    raise ValueError("target seed grades must be in [0, 1]")
+                requests.append((name, receiver._kernel._vector(hidden), float(grade)))
+        opening_inputs = [receiver._relation_read_input(state, step)
+                          for state in pin.protected for step, read in enumerate(state._trace) if read is not None]
+        hidden_width = pin.memory._anchors.shape[1]
+        atol = 1e-8
+        with np.errstate(over="raise", invalid="raise"):
+            inputs = np.stack([hidden @ receiver._query for _, hidden, _ in requests])
+            preserve = np.asarray([hidden @ receiver._query for hidden in opening_inputs]).reshape(-1, hidden_width)
+            scores = np.diag([receiver._floor + grade for _, _, grade in requests])
+        fit = program_weight(np.zeros((hidden_width, len(requests))), inputs, scores,
+                             preserve_inputs=preserve, max_update_norm=max_update_norm, atol=atol)
+        anchors = {name: np.zeros(hidden_width) for name in names}
+        anchors.update({name: row for (name, _, _), row in zip(requests, fit.weight.T, strict=True)})
+        revision = self.feedback_revision(previous, receiver, pin.memory, added_anchors=anchors)
+        prior_count = len(previous._coordinates)
+        for hidden in opening_inputs:
+            _, active = receiver._relation_seed(revision.memory, hidden)
+            if active[prior_count:].any():
+                raise ValueError("installed anchors activate new entries on a protected opening query")
+        for name, hidden, grade in requests:
+            seed, active = receiver._relation_seed(revision.memory, hidden)
+            coordinate = self._coordinates[name]
+            match = seed[coordinate] == 0. if grade == 0. else abs(seed[coordinate] - grade) <= atol
+            if not active[coordinate] or np.count_nonzero(active[prior_count:]) != 1 or not match:
+                raise ValueError("installed anchors miss the requested exclusive seed grade")
+        return revision
 
     def _seed(self, start):
         self._require_module(start)

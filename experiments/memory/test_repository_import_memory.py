@@ -118,14 +118,14 @@ class _FixtureTokenizer:
         return list(json.dumps(messages, ensure_ascii=True).encode())
 
 
-def _published_import_workspace(memory, start, destination, middles, *, bypass=False, strength=.75):
+def _published_import_workspace(memory, start, destination, middles, *, bypass=False, strength=.75, query_scale=1.):
     width = len(memory.relation_coordinates)
     keys = np.zeros((width, 1))
     zeros = np.zeros((width, width))
     identity = np.eye(width)
     kernel = FeedbackKernel(query=keys, carry=zeros, observation_key=keys, observation_value=zeros,
                             feedback_key=keys, feedback_value=zeros, max_steps=2 if bypass else 1)
-    receiver = DisjointFeedback(kernel, query=identity, presence_value=zeros, grade_value=identity, floor=.25)
+    receiver = DisjointFeedback(kernel, query=query_scale * identity, presence_value=zeros, grade_value=identity, floor=.25)
     pin = memory.attach_feedback(receiver, identity)
     seed = np.zeros(width)
     seed[memory.relation_coordinates[start]] = strength
@@ -357,6 +357,98 @@ def test_first_named_coordinate_replaces_empty_placeholder_anchor(history):
     adopted, reused = receiver.rebase(state, revision)
     assert reused == 0 and np.isneginf(adopted.grades[0])
     np.testing.assert_array_equal(revision.memory._anchors, [[.125]])
+
+
+def test_fitted_anchors_route_two_queries_and_respect_a_protected_override(history):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    memory = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    receiver, workspace = _published_import_workspace(memory, "pkg.start", "pkg.before", ["pkg.relay"],
+                                                        bypass=True, strength=.375, query_scale=2.)
+    parent = workspace.pin()
+    grown = memory.revise(_commit(repo, {"new_a.py": "from .relay import worker\n",
+                                         "new_b.py": "from .relay import worker\n", "idle.py": ""}))
+    width = len(memory.relation_coordinates)
+    names = ("pkg.new_a", "pkg.new_b")
+    original = parent.protected[0].feedback.seed
+    queries = []
+    for contrast in ("pkg.decoy", "pkg.always"):
+        query = original * .5
+        query[memory.relation_coordinates[contrast]] = .1875
+        queries.append(query)
+    targets = dict(zip(names, [(query, .5) for query in queries], strict=True))
+    revision = grown.fit_feedback_revision(memory, receiver, parent, targets=targets, max_update_norm=3.)
+    np.testing.assert_array_equal(revision.memory._anchors[:width], parent.memory._anchors)
+    assert not revision.memory._anchors[grown.relation_coordinates["pkg.idle"]].any()
+    _, protected_active = receiver._relation_seed(revision.memory, original)
+    assert not protected_active[width:].any()
+
+    # The same least-squares targets without preservation can activate both new entries on the old read.
+    projected = np.asarray(queries) @ receiver._query
+    unconstrained, *_ = np.linalg.lstsq(projected, .75 * np.eye(2), rcond=None)
+    assert np.all((original @ receiver._query) @ unconstrained > .25)
+
+    strict = DisjointFeedbackWorkspace(receiver, parent.memory, protected=parent.protected)
+    assert strict.publish(strict.pin(), revision).protected[0].grades.shape == (width + 3,)
+    adopted = workspace.publish(parent, revision)
+    assert adopted.witnesses == parent.witnesses
+    for name, query in zip(names, queries, strict=True):
+        coordinate = grown.relation_coordinates[name]
+        seed, active = receiver._relation_seed(adopted.memory, query)
+        assert np.flatnonzero(active[width:]).tolist() == [coordinate - width]
+        assert seed[coordinate] == pytest.approx(.5)
+        state = receiver.step(receiver.start(query, adopted.memory))
+        destination = grown.relation_coordinates["pkg.before"]
+        evidence = TerminalRelationEvidence(destination, [grown.relation_path(name, "pkg.relay")])
+        read = DisjointFeedbackWorkspace(receiver, adopted.memory,
+                                         outcome_guards=[(state, RelationOutcomeGuard(evidence=[evidence]))])
+        result = prepare_published_import_readout(grown, read.pin(), 0, "pkg.before", _FixtureTokenizer(),
+                                                  context_tokens=4096, max_new_tokens=32)
+        assert result.witness.start == coordinate and result.quotes[0].declaring_module == name
+
+    with pytest.raises(ValueError, match="norm budget"):
+        grown.fit_feedback_revision(memory, receiver, parent, targets=targets, max_update_norm=2.)
+    with pytest.raises(ValueError, match="incompatible"):
+        grown.fit_feedback_revision(memory, receiver, parent, targets={names[0]: (original, .5)}, max_update_norm=3.)
+    with pytest.raises(ValueError, match="incompatible"):
+        grown.fit_feedback_revision(memory, receiver, parent,
+                                     targets={name: (queries[0], .5) for name in names}, max_update_norm=3.)
+
+    # Threshold preservation is weaker than required zero score on the opening query.
+    scaled = original * 4.
+    with pytest.raises(ValueError, match="incompatible"):
+        grown.fit_feedback_revision(memory, receiver, parent, targets={names[0]: (scaled, .5)}, max_update_norm=3.)
+    manual = {name: np.zeros(width) for name in ("pkg.idle", *names)}
+    manual[names[0]][memory.relation_coordinates["pkg.start"]] = .25
+    threshold_only = grown.feedback_revision(memory, receiver, parent.memory, added_anchors=manual)
+    _, active = receiver._relation_seed(threshold_only.memory, original)
+    assert not active[width:].any()
+    seed, _ = receiver._relation_seed(threshold_only.memory, scaled)
+    assert seed[grown.relation_coordinates[names[0]]] == .5
+
+    zero_query = np.zeros(width)
+    zero_query[memory.relation_coordinates["pkg.decoy"]] = .25
+    zero = grown.fit_feedback_revision(memory, receiver, parent, targets={names[0]: (zero_query, 0.)}, max_update_norm=1.)
+    seed, active = receiver._relation_seed(zero.memory, zero_query)
+    coordinate = grown.relation_coordinates[names[0]]
+    assert active[coordinate] and seed[coordinate] == 0.
+
+
+def test_feasible_appended_anchor_draft_still_requires_source_witness_admission(history):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    memory = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    receiver, workspace = _published_import_workspace(memory, "pkg.start", "pkg.before", ["pkg.relay"])
+    parent = workspace.pin()
+    grown = memory.revise(_commit(repo, {"new.py": "from .relay import worker\n", "relay.py": "# old path withdrawn\n"}))
+    query = np.zeros(len(memory.relation_coordinates))
+    query[memory.relation_coordinates["pkg.decoy"]] = .75
+    revision = grown.fit_feedback_revision(memory, receiver, parent, targets={"pkg.new": (query, .5)}, max_update_norm=2.)
+    seed, active = receiver._relation_seed(revision.memory, query)
+    assert active[grown.relation_coordinates["pkg.new"]] and seed[grown.relation_coordinates["pkg.new"]] == .5
+    with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
+        workspace.publish(parent, revision)
+    assert workspace.pin() is parent
 
 
 def test_readout_quotes_pinned_multiline_imports_and_hides_reference_labels(history):
