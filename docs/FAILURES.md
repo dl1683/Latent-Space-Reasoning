@@ -59,6 +59,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **Structural witness versus numerical estimation, 25 November 2026.** The signed sum along a valid named observation path yielded a different value from the retained weighted estimate in the conflicting-path fixture. The named path establishes anchor reachability. Claims about which observations changed an estimate require separate interventions. [Named-witness fixture](../experiments/memory/test_relative_hierarchy.py)
 
+**Finite gain with an unrepresentable response, 25 November 2026.** A one-cell software check used an anchor value of one and both ridge and weight near $10^{-310}$. Its estimate and analytic gain were one half. The unscaled inverse-precision column exceeded Float64 range, and the gain call refused it. This separates the range of the intermediate response from the range of the final gain. Scaled responses remain open.
+
 **Equal observation mixtures, 24 November 2026.** A fixed shared value map could not give two different contributions for the same observation mixture while preserving a solved probe. The fixture isolates a representational limit of that edit surface. A bounded conditional term used the different hidden states to resolve this case. Repeated fitting of the same conflicting linear constraints cannot add the missing distinction. Admission audits also found that unnormalized factors could underflow the weight budget and that endpoint-only acceptance could hide prefix drift. The constructor now checks unit axes, and publication compares against fixed prefix anchors across edits on the same observation bank.
 
 ## Recovery and interpretation

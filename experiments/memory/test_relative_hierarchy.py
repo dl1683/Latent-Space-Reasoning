@@ -475,9 +475,9 @@ def test_demand_recovery_handles_a_deep_dependency_chain():
     size = 2048
     readout = _frozen(np.array([1.0, 1.0]))
     constant = _frozen(np.array([1.0]))
-    steps = {cell: relative_elimination.EliminationStep((), (cell + 1,), readout, None)
+    steps = {cell: relative_elimination.EliminationStep((), (cell + 1,), readout, None, 1.0)
              for cell in range(size - 1)}
-    steps[size - 1] = relative_elimination.EliminationStep((), (), constant, None)
+    steps[size - 1] = relative_elimination.EliminationStep((), (), constant, None, 1.0)
     values = relative_elimination.resolve_elimination(steps, (0, size - 1, 0))
     assert len(values) == size
     assert values[0] == size and values[size - 1] == 1
@@ -688,3 +688,81 @@ def test_support_witness_can_return_to_a_different_component_in_the_same_region(
     assert revised._support_graph is base._support_graph
     assert _assert_witness(revised, 0).anchor_source[0] == "backup"
     assert _assert_witness(base, 0) == witness
+
+
+@pytest.mark.parametrize("sparse", (False, True))
+def test_named_source_gains_match_dense_counterfactuals_and_a_real_batch(sparse):
+    order = range(len(_MEMBERSHIP)) if sparse else None
+    hierarchy = RelativeObservationHierarchy(_MEMBERSHIP, ridge=_RIDGE, elimination_order=order)
+    observations = _sources()
+    base = hierarchy.initialize(observations)
+    requested = ("anchor", "first", "conflict", "bridge", "late", "end", "other_anchor", "bridge")
+    reference = solve_relative_direct(len(_MEMBERSHIP), observations, ridge=_RIDGE)[8]
+    gains = base.source_gains(8, iter(requested))
+    assert tuple(name for name, _ in gains) == requested
+    assert dict(gains)["other_anchor"] == 0
+    assert "first" not in dict(base.support_witness(8).relative_sources)
+    assert abs(dict(gains)["first"]) > 0.001
+    assert base.source_gains(8, ()) == () and base.source_gains(11, requested) is None
+    with pytest.raises(KeyError):
+        base.source_gains(8, ("missing",))
+
+    for name, gain in gains:
+        changed = replace(observations[name], value=observations[name].value + 2.0)
+        new_reference = solve_relative_direct(
+            len(_MEMBERSHIP), {**observations, name: changed}, ridge=_RIDGE,
+        )[8]
+        assert 2 * gain == pytest.approx(new_reference - reference, abs=1e-12, rel=0)
+    reconstructed = sum(observations[name].value * gain
+                        for name, gain in base.source_gains(8, observations))
+    assert reconstructed == pytest.approx(reference, abs=1e-12, rel=0)
+
+    deltas = {"first": 1.4, "late": -0.7, "bridge": 0.5}
+    changes = {name: replace(observations[name], value=observations[name].value + delta)
+               for name, delta in deltas.items()}
+    actual = hierarchy.revise(base, changes)
+    predicted = reference + sum(dict(gains)[name] * delta for name, delta in deltas.items())
+    assert actual.read(8) == pytest.approx(predicted, abs=1e-12, rel=0)
+    assert base.read(8) == pytest.approx(reference, abs=1e-12, rel=0)
+    for (_, old_gain), (_, new_gain) in zip(gains, actual.source_gains(8, requested), strict=True):
+        assert new_gain == pytest.approx(old_gain, abs=1e-12, rel=0)
+
+
+@pytest.mark.parametrize("sparse", (False, True))
+def test_source_gains_survive_compaction_for_a_retired_port_and_a_remaining_port(sparse):
+    order = reversed(range(len(_MEMBERSHIP))) if sparse else None
+    hierarchy = RelativeObservationHierarchy(_MEMBERSHIP, ridge=_RIDGE, elimination_order=order)
+    observations = {**_sources(), "remote_anchor": RelativeObservation(8, 1.3)}
+    original = hierarchy.initialize(observations)
+    detached = hierarchy.revise(original, {"bridge": None})
+    compacted = hierarchy.compact(detached, max_regions=2)
+    assert 3 not in compacted._port_positions and 5 in compacted._port_positions
+    requested = ("center", "downstream", "late", "remote_anchor", "anchor")
+    for cell in (3, 5):
+        response = compacted.source_gains(cell, requested)
+        assert response == tuple((name, pytest.approx(gain, abs=1e-12, rel=0))
+                                 for name, gain in detached.source_gains(cell, requested))
+        assert dict(response)["anchor"] == 0
+        changed = hierarchy.revise(compacted, {"center": replace(observations["center"], value=1.5)})
+        assert changed.read(cell) - compacted.read(cell) == pytest.approx(
+            0.6 * dict(response)["center"], abs=1e-12, rel=0,
+        )
+
+
+@pytest.mark.parametrize("sparse", (False, True))
+def test_source_gains_are_zero_across_disconnected_components_sharing_a_region(sparse):
+    hierarchy = RelativeObservationHierarchy((0, 0, 0, 0, 1, 2), ridge=_RIDGE,
+                                             elimination_order=range(6) if sparse else None)
+    observations = {
+        "anchor": RelativeObservation(0, 1),
+        "first": RelativeObservation(1, 0.5, source=0),
+        "bridge": RelativeObservation(4, 0.5, source=1),
+        "other_link": RelativeObservation(3, -0.5, source=2),
+        "other_bridge": RelativeObservation(5, 0.5, source=3),
+        "other_anchor": RelativeObservation(5, 0.7),
+    }
+    snapshot = hierarchy.initialize(observations)
+    gains = dict(snapshot.source_gains(0, observations))
+    assert gains["other_link"] == gains["other_bridge"] == gains["other_anchor"] == 0
+    assert gains["anchor"] > 0
+    assert snapshot.read(5) is not None

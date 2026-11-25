@@ -22,6 +22,7 @@ class EliminationStep:
     dependencies: tuple[int, ...]
     readout: np.ndarray
     remainder: EliminationFactor | None
+    pivot: float
 
 
 def _reduce_bucket(cell, inputs, rank, previous):
@@ -63,7 +64,7 @@ def _reduce_bucket(cell, inputs, rank, previous):
             remainder = old
         else:
             remainder = EliminationFactor(live_cells, _frozen(rows))
-    return EliminationStep(inputs, dependencies, _frozen(readout), remainder)
+    return EliminationStep(inputs, dependencies, _frozen(readout), remainder, float(triangular[0, 0]))
 
 
 def compile_elimination(cells, rank, factors, previous: Mapping[int, EliminationStep]):
@@ -132,7 +133,7 @@ def update_elimination(rank, prior_steps, prior_intakes, changes, promoted):
     return MappingProxyType(steps), MappingProxyType(intakes), tuple(rebuilt), tuple(visited)
 
 
-def resolve_elimination(steps: Mapping[int, EliminationStep], cells):
+def resolve_elimination(steps: Mapping[int, EliminationStep], cells, *, offsets=None):
     """Recover only the requested dependency closure with a per-call memo."""
     solved = {}
     with np.errstate(over="raise", invalid="raise"):
@@ -150,8 +151,41 @@ def resolve_elimination(steps: Mapping[int, EliminationStep], cells):
                 pending.pop()
                 step = steps[cell]
                 later = [solved[dependency] for dependency in step.dependencies]
-                value = float(step.readout[-1] + step.readout[:-1] @ later)
+                offset = step.readout[-1] if offsets is None else offsets.get(cell, 0.0)
+                value = float(offset + step.readout[:-1] @ later)
                 if not np.isfinite(value):
                     raise FloatingPointError("nonfinite coarse elimination readout")
                 solved[cell] = value
     return solved
+
+
+def resolve_adjoint(steps, rank, forcing, cells):
+    """Apply the inverse coarse precision without constructing normal equations."""
+    pending, queue, offsets = {}, [], {}
+
+    def add(cell, value):
+        if cell not in pending:
+            heappush(queue, (rank[cell], cell))
+        value += pending.get(cell, 0.0)
+        if not np.isfinite(value):
+            raise FloatingPointError("nonfinite coarse adjoint forcing")
+        pending[cell] = value
+
+    for cell, value in forcing.items():
+        if value:
+            add(cell, value)
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        while queue:
+            _, cell = heappop(queue)
+            value = pending.pop(cell)
+            if not value:
+                continue
+            step = steps[cell]
+            # R = D L. Solve L.T z = forcing, then L u = D^-2 z.
+            offset = (value / step.pivot) / step.pivot
+            if not np.isfinite(offset):
+                raise FloatingPointError("nonfinite coarse adjoint offset")
+            offsets[cell] = offset
+            for dependency, coefficient in zip(step.dependencies, step.readout[:-1]):
+                add(dependency, coefficient * value)
+    return resolve_elimination(steps, cells, offsets=offsets)

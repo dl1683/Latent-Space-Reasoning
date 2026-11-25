@@ -15,6 +15,7 @@ from experiments.memory.latent_field import LatentField, _frozen
 from experiments.memory.relative_elimination import (
     EliminationFactor,
     EliminationStep,
+    resolve_adjoint,
     resolve_elimination,
     update_elimination,
 )
@@ -320,6 +321,69 @@ def _sparse_coarse(ports, regions, bridges, rank, previous, rebuilt_regions, bri
     return cache, rebuilt, visited
 
 
+def _local_adjoint(region, ridge, cell):
+    component = region.components[cell]
+    interior = tuple(node for node, position in region.positions.items()
+                     if position < len(region.readout) and region.components[node] == component)
+    positions = {node: column for column, node in enumerate(interior)}
+    observations = [row for _, row in sorted(region._sources.items())
+                    if any(node in positions for node in row._endpoints())]
+    size = len(interior)
+    matrix = np.zeros((len(observations) + size, size))
+    for i, row in enumerate(observations):
+        scale = sqrt(row.weight)
+        if row.target in positions:
+            matrix[i, positions[row.target]] = scale
+        if row.source in positions:
+            matrix[i, positions[row.source]] = -scale
+    indices = np.arange(size)
+    matrix[len(observations) + indices, indices] = sqrt(ridge)
+    root = np.linalg.qr(matrix, mode="r")
+    forcing = np.zeros(size)
+    forcing[positions[cell]] = 1.0
+    values = np.linalg.solve(root, np.linalg.solve(root.T, forcing))
+    if not np.isfinite(values).all():
+        raise FloatingPointError("nonfinite local adjoint")
+    return dict(zip(interior, values))
+
+
+def _port_weights(snapshot, cell):
+    if cell in snapshot._port_positions:
+        return {cell: 1.0}
+    region = snapshot._regions[snapshot._owner._membership[cell]]
+    component = region.components[cell]
+    weights = region.readout[region.positions[cell], :-1]
+    return {port: weight for port, weight in zip(region.ports, weights)
+            if weight and region.components[port] == component}
+
+
+def _coarse_adjoint(snapshot, forcing, needed):
+    if not forcing or not needed:
+        return {}
+    if snapshot._elimination_rank is not None:
+        cache = snapshot._elimination
+        if cache is None:
+            cache, _, _ = _sparse_coarse(
+                snapshot._port_positions, snapshot._regions, snapshot._bridges,
+                snapshot._elimination_rank, None, (), (),
+            )
+        return resolve_adjoint(cache.steps, snapshot._elimination_rank, forcing, sorted(needed))
+    values = {}
+    for cells, block in snapshot._coarse_blocks.items():
+        if not forcing.keys().isdisjoint(cells) and not needed.isdisjoint(cells):
+            operator = block.operator
+            if operator is None:
+                operator = _factor_coarse(cells, block.bridges, block.regions)
+            rhs = np.asarray([forcing.get(cell, 0.0) for cell in cells])
+            with np.errstate(over="raise", invalid="raise", divide="raise"):
+                coordinates = (operator.right @ rhs) / operator.singular
+                response = operator.right.T @ (coordinates / operator.singular)
+            if not np.isfinite(response).all():
+                raise FloatingPointError("nonfinite coarse adjoint")
+            values.update(zip(cells, response))
+    return values
+
+
 @dataclass(frozen=True, eq=False)
 class RelativeHierarchySnapshot:
     _owner: RelativeObservationHierarchy
@@ -358,6 +422,45 @@ class RelativeHierarchySnapshot:
         """Return a named source path to an anchor, or None for an unsupported cell."""
         cell = LatentField._checked_cell(cell, len(self._owner._membership))
         return support_witness(self, cell)
+
+    def source_gains(self, cell, source_ids):
+        """Return fixed-weight value sensitivities in request order, or None if unsupported."""
+        cell = LatentField._checked_cell(cell, len(self._owner._membership))
+        observations = tuple((name, self._sources[name]) for name in source_ids)
+        if self._readout(cell) is None:
+            return None
+        if not observations:
+            return ()
+
+        membership = self._owner._membership
+        region = self._regions[membership[cell]]
+        component = region.components[cell]
+        group = self._support_graph.groups.get(component, (component,))
+        relevant = (row for _, row in observations
+                    if self._regions[membership[row.target]].components[row.target] in group)
+        endpoints = {node for row in relevant for node in row._endpoints()}
+        if not endpoints:
+            return tuple((name, 0.0) for name, _ in observations)
+        weights = {node: _port_weights(self, node) for node in endpoints}
+        needed = {port for transfer in weights.values() for port in transfer}
+        need_local = cell not in self._port_positions and any(
+            node not in self._port_positions and region.components.get(node) == component
+            for node in endpoints
+        )
+        with np.errstate(over="raise", invalid="raise", divide="raise"):
+            response = _coarse_adjoint(self, _port_weights(self, cell), needed)
+            local = _local_adjoint(region, self._owner._ridge, cell) if need_local else {}
+            values = {
+                node: local.get(node, 0.0) + sum(weight * response.get(port, 0.0)
+                                               for port, weight in transfer.items())
+                for node, transfer in weights.items()
+            }
+            gains = tuple((name, float(row.weight * (values.get(row.target, 0.0)
+                                                     - values.get(row.source, 0.0))))
+                          for name, row in observations)
+        if any(not isfinite(gain) for _, gain in gains):
+            raise FloatingPointError("nonfinite source gain")
+        return gains
 
     def _readout(self, cell):
         cell = LatentField._checked_cell(cell, len(self._owner._membership))
