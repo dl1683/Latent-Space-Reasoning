@@ -61,6 +61,9 @@ class _RelationRevision(_IdentityRecord):
     _admission: tuple["_RelationWorkspacePin", "DisjointFeedbackState", "RelationOutcomeGuard"] | None = None
     _handoff: tuple["_RelationWorkspacePin", int, "TerminalRelationEvidence"] | None = None
     _retraction: tuple["_RelationWorkspacePin", int, int] | None = None
+    _restoration: tuple[
+        "_RelationWorkspacePin", "RelationEvidenceRetraction", "TerminalRelationEvidence"
+    ] | None = None
     _creation_key: InitVar[object | None] = None
 
     def __post_init__(self, _creation_key):
@@ -79,9 +82,13 @@ class _RelationRevision(_IdentityRecord):
         self._require_unbound_adoption(opening)
         return replace(self, _retraction=(opening, protected_index, destination), _creation_key=_CREATION_KEY)
 
+    def _with_evidence_restoration(self, opening, receipt, evidence):
+        self._require_unbound_adoption(opening)
+        return replace(self, _restoration=(opening, receipt, evidence), _creation_key=_CREATION_KEY)
+
     def _require_unbound_adoption(self, opening):
         if (self._changed_sources is not None or self._admission is not None or self._handoff is not None
-                or self._retraction is not None or opening.memory is not self._base):
+                or self._retraction is not None or self._restoration is not None or opening.memory is not self._base):
             raise ValueError("outcome editing needs an unbound authoritative revision at its opening pin")
 
 
@@ -504,11 +511,14 @@ class RelationOutcomeGuard:
             return None
         if self.decision is not None and not self.decision._holds(state.latest):
             return None
-        if not self.evidence:
+        absences = tuple(grade.destination for grade in self.grades if grade.bounds is None)
+        if not self.evidence and not absences:
             return ()
         if state._grades is None:
             return None
         seed = state._receiver._terminal_seed(state)
+        if any(state._memory._transitions.prove(seed, destination) is not None for destination in absences):
+            return None
         approved = []
         for clause in self.evidence:
             witness = _approved_evidence(state, seed, clause)
@@ -533,6 +543,16 @@ class RelationOutcomeGuard:
         grades = tuple(grade for grade in self.grades if grade.destination != destination)
         return replace(self, grades=grades + (TerminalRelationGrade(destination),),
                        evidence=tuple(clause for clause in self.evidence if clause is not original))
+
+
+    def _with_restored_evidence(self, receipt, evidence):
+        absence = TerminalRelationGrade(receipt.destination)
+        if absence not in self.grades or evidence.destination != receipt.destination:
+            raise RelationGuardFailed("restoration requires the recorded absence guard")
+        grades = tuple(grade for grade in self.grades if grade != absence)
+        if receipt.previous_grade is not None:
+            grades += (receipt.previous_grade,)
+        return replace(self, grades=grades, evidence=self.evidence + (evidence,))
 
 
 def _same_trajectory(left, right):
@@ -564,6 +584,18 @@ def _check_retraction_absence(before, after, destination):
         raise RelationGuardFailed("the opening terminal query still has support after the correction")
 
 
+def _check_source_only_adoption(before, after, operation):
+    source = before._source
+    successor = after._source
+    if source is None or successor is None or successor._previous is not source._identity:
+        raise ValueError(f"evidence {operation} needs a direct committed source correction")
+    old_blocks, blocks = before._anchor_blocks, after._anchor_blocks
+    if blocks is not old_blocks and (len(blocks) != len(old_blocks) + 1
+            or any(old is not new for old, new in zip(old_blocks, blocks))
+            or blocks[-1].view(np.uint64).any()):
+        raise RelationGuardFailed(f"evidence {operation} requires source-only anchors")
+
+
 @dataclass(frozen=True, slots=True)
 class RelationEvidenceRetraction:
     """Previously certified import evidence withdrawn by a checked source correction."""
@@ -573,6 +605,17 @@ class RelationEvidenceRetraction:
     opening_commit: str
     correction_commit: str
     previous_witness: DisjointTransitionWitness
+    previous_grade: TerminalRelationGrade | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class RelationEvidenceRestoration:
+    """A checked return of support for an exact retraction episode."""
+
+    retraction: RelationEvidenceRetraction
+    opening_commit: str
+    restoration_commit: str
+    witness: DisjointTransitionWitness
 
 
 @dataclass(frozen=True, eq=False, slots=True)
@@ -582,11 +625,28 @@ class _RelationWorkspacePin(_IdentityRecord):
     _outcomes: tuple[RelationOutcomeGuard | None, ...]
     witnesses: tuple[tuple[tuple[int, DisjointTransitionWitness], ...], ...]
     retractions: tuple[RelationEvidenceRetraction, ...] = ()
+    restorations: tuple[RelationEvidenceRestoration, ...] = ()
     _creation_key: InitVar[object | None] = None
 
     def __post_init__(self, _creation_key):
         if _creation_key is not _CREATION_KEY:
             raise TypeError("construct workspace pins through guarded publication")
+
+    def _protected_outcome(self, protected_index):
+        try:
+            protected_index = index(protected_index)
+        except TypeError as error:
+            raise RelationGuardFailed("evidence editing needs an existing protected outcome") from error
+        if not 0 <= protected_index < len(self._outcomes) or self._outcomes[protected_index] is None:
+            raise RelationGuardFailed("evidence editing needs an existing protected outcome")
+        return self._outcomes[protected_index]
+
+    def _active_retraction(self, protected_index, destination):
+        latest = next((receipt for receipt in reversed(self.retractions)
+                       if receipt.protected_index == protected_index and receipt.destination == destination), None)
+        if latest is not None and not any(result.retraction is latest for result in self.restorations):
+            return latest
+        return None
 
 
 class DisjointFeedbackWorkspace:
@@ -636,7 +696,7 @@ class DisjointFeedbackWorkspace:
             opening, protected_index, replacement = handoff
             if opening is not parent:
                 raise StaleRelationRevision("relation draft belongs to a different opening workspace pin")
-            old_outcome = outcomes[protected_index]
+            old_outcome = parent._protected_outcome(protected_index)
             old_evidence = old_outcome._evidence_at(replacement.destination)
             old_strength = dict(parent.witnesses[protected_index])[replacement.destination].strength
             outcomes[protected_index] = old_outcome._with_replaced_evidence(replacement)
@@ -646,21 +706,31 @@ class DisjointFeedbackWorkspace:
             opening, retraction_index, destination = retraction
             if opening is not parent:
                 raise StaleRelationRevision("relation draft belongs to a different opening workspace pin")
-            if old_source is None or source._previous is not old_source._identity:
-                raise ValueError("evidence retraction needs a direct committed source correction")
-            old_blocks, blocks = parent.memory._anchor_blocks, revision.memory._anchor_blocks
-            if blocks is not old_blocks and (len(blocks) != len(old_blocks) + 1
-                    or any(before is not after for before, after in zip(old_blocks, blocks))
-                    or blocks[-1].view(np.uint64).any()):
-                raise RelationGuardFailed("evidence retraction requires source-only anchors")
-            original = outcomes[retraction_index]
+            _check_source_only_adoption(parent.memory, revision.memory, "retraction")
+            original = parent._protected_outcome(retraction_index)
             evidence = original._evidence_at(destination)
             if any(source._declares_path(destination, path) for path in evidence.paths):
                 raise RelationGuardFailed("a declared source path still supports the retraction destination")
             previous = dict(parent.witnesses[retraction_index])[destination]
+            previous_grade = next((grade for grade in original.grades if grade.destination == destination), None)
             outcomes[retraction_index] = original._with_retracted_evidence(destination)
-            retractions += (RelationEvidenceRetraction(retraction_index, destination, old_source.commit,
-                                                       source.commit, previous),)
+            retractions += (RelationEvidenceRetraction(retraction_index, destination, old_source.commit, source.commit,
+                                                       previous, previous_grade),)
+        restorations = parent.restorations
+        restoration = revision._restoration
+        if restoration is not None:
+            opening, receipt, restored_evidence = restoration
+            if opening is not parent:
+                raise StaleRelationRevision("relation draft belongs to a different opening workspace pin")
+            _check_source_only_adoption(parent.memory, revision.memory, "restoration")
+            if type(receipt) is not RelationEvidenceRetraction:
+                raise RelationGuardFailed("restoration needs the exact active retraction")
+            restoration_index = receipt.protected_index
+            restored_destination = restored_evidence.destination
+            if parent._active_retraction(restoration_index, restored_destination) is not receipt:
+                raise RelationGuardFailed("restoration needs the exact active retraction")
+            original = parent._protected_outcome(restoration_index)
+            outcomes[restoration_index] = original._with_restored_evidence(receipt, restored_evidence)
         checked = []
         witnesses = []
         for i, (state, outcome) in enumerate(zip(parent.protected, outcomes, strict=True)):
@@ -683,6 +753,11 @@ class DisjointFeedbackWorkspace:
                     approved = outcome._evaluate(candidate)
                     if approved is None:
                         raise RelationGuardFailed(f"joint relation revision violated protected outcome {i}")
+            if restoration is not None and i == restoration_index:
+                witness = dict(approved)[restored_destination]
+                if not _same_supported_grade(receipt.previous_witness.strength, witness.strength):
+                    raise RelationGuardFailed("evidence restoration changed the certified terminal grade")
+                restorations += (RelationEvidenceRestoration(receipt, old_source.commit, source.commit, witness),)
             checked.append(candidate)
             witnesses.append(approved)
         for state, outcome in (*required, *admit_outcomes):
@@ -696,7 +771,9 @@ class DisjointFeedbackWorkspace:
         with self._lock:
             if self._tip is not parent:
                 raise StaleRelationRevision("relation workspace tip changed during evaluation")
-            if revision.memory is not parent.memory or len(checked) != len(parent.protected):
+            edited_outcome = handoff is not None or retraction is not None or restoration is not None
+            if revision.memory is not parent.memory or len(checked) != len(parent.protected) or edited_outcome:
                 self._tip = _RelationWorkspacePin(revision.memory, tuple(checked), tuple(outcomes), tuple(witnesses),
-                                                  retractions=retractions, _creation_key=_CREATION_KEY)
+                                                  retractions=retractions, restorations=restorations,
+                                                  _creation_key=_CREATION_KEY)
             return self._tip

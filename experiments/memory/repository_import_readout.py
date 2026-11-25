@@ -214,9 +214,9 @@ def prepare_published_import_readout(memory, pin, protected_index, destination, 
     destination_index = memory.relation_coordinates.get(destination)
     witness = next((proof for coordinate, proof in pin.witnesses[protected_index] if coordinate == destination_index), None)
     if witness is None:
-        for receipt in pin.retractions:
-            if receipt.protected_index == protected_index and receipt.destination == destination_index:
-                raise ImportEvidenceRetracted(destination, receipt)
+        receipt = pin._active_retraction(protected_index, destination_index)
+        if receipt is not None:
+            raise ImportEvidenceRetracted(destination, receipt)
         memory._require_module(destination)
         raise ValueError("publication has no approved witness for this destination")
     edges = memory._witness_edges(destination_index, witness)

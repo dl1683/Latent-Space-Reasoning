@@ -484,6 +484,33 @@ class RepositoryImportMemory:
         revision = self._zero_anchor_revision(previous, receiver, pin.memory, names)
         return revision._with_evidence_retraction(pin, protected_index, coordinate)
 
+    def draft_feedback_restoration(self, previous, receiver, pin, protected_index, *, destination):
+        """Propose a new committed witness for one currently retracted destination."""
+        if type(pin) is not _RelationWorkspacePin:
+            raise ValueError("evidence restoration needs an issued workspace pin")
+        names = self._feedback_names(previous, receiver, pin.memory)
+        if self is previous:
+            raise ValueError("evidence restoration needs a committed source correction")
+        protected_index = index(protected_index)
+        if not 0 <= protected_index < len(pin.protected):
+            raise ValueError("evidence restoration needs an existing protected outcome")
+        self._require_module(destination)
+        coordinate = self._coordinates[destination]
+        receipt = pin._active_retraction(protected_index, coordinate)
+        if receipt is None:
+            raise ValueError("evidence restoration needs an active retraction")
+        revision = self._zero_anchor_revision(previous, receiver, pin.memory, names)
+        candidate, _ = receiver.rebase(pin.protected[protected_index], revision)
+        old_path = receipt.previous_witness.path
+        witness = receiver.prove_terminal(candidate, coordinate, paths=(old_path,))
+        if witness is None:
+            witness = receiver.prove_terminal(candidate, coordinate)
+        if witness is None or not _same_supported_grade(receipt.previous_witness.strength, witness.strength):
+            raise ValueError("the corrected source does not restore the certified terminal grade")
+        self._witness_edges(coordinate, witness)
+        evidence = TerminalRelationEvidence(coordinate, (witness.path,))
+        return revision._with_evidence_restoration(pin, receipt, evidence)
+
     def _seed(self, start):
         self._require_module(start)
         seed = np.full(self._operator.width, -np.inf)

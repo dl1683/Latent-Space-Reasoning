@@ -7,7 +7,7 @@ import subprocess
 import numpy as np
 import pytest
 
-from experiments.memory import repository_import_memory as imports
+from experiments.memory import disjoint_feedback, repository_import_memory as imports
 from experiments.memory.disjoint_feedback import (
     DisjointFeedback, DisjointFeedbackWorkspace, RelationGuardFailed, RelationOutcomeGuard, StaleRelationRevision,
     TerminalHiddenDecision, TerminalRelationEvidence, TerminalRelationGrade,
@@ -765,10 +765,61 @@ def test_retraction_records_exact_source_loss_and_keeps_other_protections(histor
     later = gone.revise(_commit(repo, {"other.py": "# retain another proof\nimport pkg.always\n"}))
     revised = workspace.publish(tip, later.feedback_revision(gone, receiver, tip.memory))
     assert revised.retractions is tip.retractions
-    restored = later.revise(_commit(repo, {"relay.py": "import pkg.before\n", "before.py": ""}))
+    restored = later.revise(_commit(repo, {"start.py": "import pkg.resumed\nimport pkg.other\n",
+                                             "resumed.py": "import pkg.before\n", "before.py": ""}))
+    neutral = restored.feedback_revision(later, receiver, revised.memory,
+                                         added_anchors={"pkg.resumed": np.zeros(width)})
     with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
-        workspace.publish(revised, restored.feedback_revision(later, receiver, revised.memory))
+        workspace.publish(revised, neutral)
+    candidate, _ = receiver.rebase(revised.protected[0], neutral)
+    stale_grades = candidate.grades.copy()
+    stale_grades[before] = -np.inf
+    stale = replace(candidate, _grades=stale_grades, _creation_key=disjoint_feedback._CREATION_KEY)
+    assert revised._outcomes[0]._evaluate(stale) is None
+
+    unrecorded = DisjointFeedbackWorkspace(receiver, revised.memory,
+                                           outcome_guards=[(revised.protected[0], revised._outcomes[0])])
+    with pytest.raises(ValueError, match="active retraction"):
+        restored.draft_feedback_restoration(later, receiver, unrecorded.pin(), 0, destination="pkg.before")
+    restoration = restored.draft_feedback_restoration(later, receiver, revised, 0, destination="pkg.before")
+    wrong_anchors = restored.feedback_revision(later, receiver, revised.memory,
+                                               added_anchors={"pkg.resumed": np.ones(width)})
+    with pytest.raises(RelationGuardFailed, match="source-only anchors"):
+        workspace.publish(revised, wrong_anchors._with_evidence_restoration(revised, receipt, restoration._restoration[2]))
+    equivalent = replace(receipt)
+    with pytest.raises(RelationGuardFailed, match="exact active retraction"):
+        workspace.publish(revised, neutral._with_evidence_restoration(revised, equivalent, restoration._restoration[2]))
     assert workspace.pin() is revised
+
+    reported = workspace.publish(revised, restoration)
+    restored_read = prepare_published_import_readout(restored, reported, 0, "pkg.before", _FixtureTokenizer(), **options)
+    assert restored_read.witness.path == restored.relation_path("pkg.start", "pkg.resumed")
+    assert (reported._outcomes[0].grades[-1] is outcome.grades[0] and
+            reported._outcomes[0].decision is outcome.decision and reported._outcomes[0].evidence[0] is outcome.evidence[1])
+    assert reported.retractions is tip.retractions and revised.restorations == ()
+    receipt_back, = reported.restorations
+    assert receipt_back.retraction is receipt and receipt_back.witness is restored_read.witness
+    assert (receipt_back.opening_commit, receipt_back.restoration_commit) == (later.commit, restored.commit)
+    with pytest.raises(ImportEvidenceRetracted) as old_exc:
+        prepare_published_import_readout(later, revised, 0, "pkg.before", _FixtureTokenizer(), **options)
+    assert old_exc.value.receipt is receipt
+
+    gone_again = restored.revise(_commit(repo, {"resumed.py": ""}))
+    next_draft = gone_again.draft_feedback_retraction(restored, receiver, reported, 0, destination="pkg.before")
+    second = workspace.publish(reported, next_draft)
+    assert second.retractions[0] is receipt and second.restorations[0] is receipt_back
+    with pytest.raises(ImportEvidenceRetracted) as new_exc:
+        prepare_published_import_readout(gone_again, second, 0, "pkg.before", _FixtureTokenizer(), **options)
+    assert new_exc.value.receipt is second.retractions[1]
+    returned = gone_again.revise(_commit(repo, {"resumed.py": "import pkg.before\n"}))
+    draft = returned.draft_feedback_restoration(gone_again, receiver, second, 0, destination="pkg.before")
+    neutral = returned.feedback_revision(gone_again, receiver, second.memory)
+    closed = neutral._with_evidence_restoration(second, receipt, draft._restoration[2])
+    with pytest.raises(RelationGuardFailed, match="exact active retraction"):
+        workspace.publish(second, closed)
+    final = workspace.publish(second, draft)
+    assert final.restorations[1].retraction is second.retractions[1]
+    assert final._active_retraction(0, before) is None
 
 
 def test_retraction_refuses_a_surviving_path_or_supported_zero(history):
@@ -806,6 +857,56 @@ def test_retraction_refuses_a_surviving_path_or_supported_zero(history):
     with pytest.raises(RelationGuardFailed, match="declared source path still supports"):
         alternatives.publish(parent, draft)
     assert alternatives.pin() is parent
+
+
+def test_restoration_accepts_supported_zero_after_an_evidence_only_retraction(history):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    source = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    receiver, workspace = _published_import_workspace(source, "pkg.start", "pkg.before", ["pkg.relay"], strength=.25)
+    opening = workspace.pin()
+    gone = source.revise(_commit(repo, {"relay.py": ""}))
+    destination = "pkg.before"
+    retracted = workspace.publish(opening, gone.draft_feedback_retraction(source, receiver, opening, 0,
+                                                                          destination=destination))
+    still_gone = gone.revise(_commit(repo, {"relay.py": "# absent\n"}))
+    with pytest.raises(ValueError, match="does not restore the certified terminal grade"):
+        still_gone.draft_feedback_restoration(gone, receiver, retracted, 0, destination=destination)
+    returned = gone.revise(_commit(repo, {"relay.py": "import pkg.before\n"}))
+    draft = returned.draft_feedback_restoration(gone, receiver, retracted, 0, destination=destination)
+    tip = workspace.publish(retracted, draft)
+    assert tip._outcomes[0].grades == ()
+    assert tip.restorations[0].witness.strength == tip.retractions[0].previous_witness.strength == 0.
+
+
+def test_restoration_recovers_a_later_hidden_read_without_editing_the_later_route(history):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    start_commit = _commit(repo, {"before.py": "import pkg.next_mid\n", "next_mid.py": "import pkg.always\n",
+                                  "start.py": "import pkg.relay\n"})
+    source = imports.RepositoryImportMemory.prepare(repo, start_commit, package="pkg")
+    width = len(source.relation_coordinates)
+    receiver, workspace = _published_import_workspace(source, "pkg.start", "pkg.before", ["pkg.relay"],
+                                                       carry=np.zeros((width, width)))
+    opening = workspace.pin()
+    initial = opening.protected[0]
+    downstream = source.relation_coordinates["pkg.always"]
+    assert receiver.step(initial).grades[downstream] > 0.
+
+    gone = source.revise(_commit(repo, {"relay.py": ""}))
+    draft = gone.draft_feedback_retraction(source, receiver, opening, 0, destination="pkg.before")
+    retracted = workspace.publish(opening, draft)
+    assert gone.prove("pkg.before", "pkg.always") == source.prove("pkg.before", "pkg.always")
+    assert np.isneginf(receiver.step(retracted.protected[0]).grades[downstream])
+
+    returned = gone.revise(_commit(repo, {"relay.py": "import pkg.before\n"}))
+    draft = returned.draft_feedback_restoration(gone, receiver, retracted, 0, destination="pkg.before")
+    tip = workspace.publish(retracted, draft)
+    replay = receiver.step(tip.protected[0])
+    assert receiver.prove_terminal(replay, downstream) == receiver.prove_terminal(receiver.step(initial), downstream)
+    bypassed = receiver.step(receiver.start(initial.feedback.seed, tip.memory), use_operator=False)
+    assert np.isneginf(receiver.step(bypassed).grades[downstream])
+    assert tip.memory._anchor_blocks is opening.memory._anchor_blocks
 
 
 def test_retraction_rechecks_the_opening_query_when_replay_loses_its_route(history):
