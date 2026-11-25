@@ -67,7 +67,7 @@ def _joint_journal(path, *, create=False, limit=2, allow_joint=True):
 
 
 def _tradeoff_journal(path, *, create=False, trials=3, separate=False, guarded=False, floor=0.6,
-                      limit=2, refinements=0):
+                      limit=2, refinements=0, reuse_anchors=False):
     kernel = TreeFeedbackKernel(
         depth=2, max_frontier=4, query=[[0.15], [0]], carry=None,
         observation_key=[[1], [0]], observation_value=np.zeros((2, 2)),
@@ -78,7 +78,7 @@ def _tradeoff_journal(path, *, create=False, trials=3, separate=False, guarded=F
     return JournaledFeedbackWorkspace(path, kernel, [[-1, 0], [1, 0]], [probe],
                                       max_update_norm=limit, guards=[guard], create=create,
                                       allow_joint=True, joint_trials=trials, separate_joint_trials=separate,
-                                      joint_refinements=refinements)
+                                      joint_refinements=refinements, reuse_joint_anchors=reuse_anchors)
 
 
 def test_leased_multitrial_joint_repair_replays_with_the_same_root_policy(tmp_path):
@@ -234,6 +234,91 @@ assert worker.snapshot().number == 0
     assert receipt.published_digest == recovered._tip.hex()
     with pytest.raises(ValueError, match="disagree with the feedback journal"):
         _tradeoff_journal(path, separate=True, limit=1.46, refinements=1)
+
+
+def test_refinement_reuses_finished_anchors_without_repeating_fits(tmp_path, monkeypatch):
+    path = tmp_path / "reused-anchors.sqlite"
+    creator = _tradeoff_journal(path, create=True, separate=True, limit=1.46, refinements=2, reuse_anchors=True)
+    queue = FeedbackRepairQueue(creator)
+    plan = creator.plan_repairs(max_candidates=6)
+    assert plan.version == 7 and plan.candidates[-1] == (0, "joint:3")
+    queue.enqueue(plan)
+    anchors = [queue.claim(lease_seconds=60) for _ in range(5)]
+    assert [lease.position for lease in anchors] == list(range(5))
+    assert queue.claim(lease_seconds=60) is None
+    for lease in anchors[:-1]:
+        queue.complete(lease, queue.synthesize(lease))
+    assert queue.claim(lease_seconds=60) is None
+    last = queue.synthesize(anchors[-1])
+    assert last.results[0].payload is not None  # The 0.9 fit has finite price above the cap.
+    queue.complete(anchors[-1], last)
+    lease = queue.claim(lease_seconds=60)
+    assert lease.position == 5
+
+    worker = _tradeoff_journal(path, separate=True, limit=1.46, refinements=2, reuse_anchors=True)
+    reopened = FeedbackRepairQueue(worker)
+    queries, values = [], []
+    query_fit, value_fit = TreeFeedbackKernel.program_observation_mass, TreeFeedbackKernel.retarget
+
+    def count_query(kernel, state, step, slot, mass, **kwargs):
+        queries.append(mass)
+        return query_fit(kernel, state, step, slot, mass, **kwargs)
+
+    def count_value(kernel, state, step, target, **kwargs):
+        values.append(step)
+        return value_fit(kernel, state, step, target, **kwargs)
+
+    monkeypatch.setattr(TreeFeedbackKernel, "program_observation_mass", count_query)
+    monkeypatch.setattr(TreeFeedbackKernel, "retarget", count_value)
+    cold = worker.synthesize_repairs(plan, start=5, stop=6)
+    assert queries == pytest.approx([0.6, 0.8, 0.9, 0.85, 0.875])
+    assert len(values) == 5
+    queries.clear()
+    values.clear()
+    with pytest.raises(StaleFeedbackLease):
+        reopened.synthesize(replace(lease, token="wrong"))
+    warm = reopened.synthesize(lease)
+    assert queries == pytest.approx([0.85, 0.875])
+    assert len(values) == 2
+    assert warm == cold
+    reopened.complete(lease, warm)
+    result = queue.publish(plan)
+    assert result.status == "committed" and result.selected_attempt == 5
+    assert "exceeds the workspace update budget" in result.attempts[4].rejection
+    latest = _tradeoff_journal(path, separate=True, limit=1.46, refinements=2, reuse_anchors=True)
+    assert latest.snapshot().source_masses[0] == pytest.approx(0.875)
+    assert FeedbackRepairQueue(latest).latest_receipt().selected_attempt == 5
+    with pytest.raises(ValueError, match="disagree with the feedback journal"):
+        _tradeoff_journal(path, separate=True, limit=1.46, refinements=2)
+
+
+def test_refinement_reuses_anchors_across_windows_and_keeps_a_cold_fallback(tmp_path, monkeypatch):
+    workspace = _tradeoff_journal(tmp_path / "partial.sqlite", create=True, separate=True,
+                                  limit=1.46, refinements=2, reuse_anchors=True)
+    queue = FeedbackRepairQueue(workspace)
+    base, root, tip = workspace._search_base()
+    # Queue one anchor and the refinement, leaving the other two anchors unscheduled.
+    queue.enqueue(workspace._search_plan(base, root, tip, 4, 1))
+    plan = workspace._search_plan(base, root, tip, 5, 1)
+    queue.enqueue(plan)
+    anchor_lease = queue.claim(lease_seconds=60)
+    assert anchor_lease.plan.candidates == ((0, "joint:2"),)
+    assert queue.claim(lease_seconds=60) is None
+    queue.complete(anchor_lease, queue.synthesize(anchor_lease))
+    lease = queue.claim(lease_seconds=60)
+    assert lease.plan == plan
+    attempts = []
+    fit = workspace._fit_checked_joint_trial
+
+    def count(base, probe, mass, protected, anchor, **kwargs):
+        attempts.append(mass)
+        return fit(base, probe, mass, protected, anchor, **kwargs)
+
+    monkeypatch.setattr(workspace, "_fit_checked_joint_trial", count)
+    candidate = queue.synthesize(lease)
+    assert attempts == pytest.approx([0.6, 0.8, 0.85, 0.875])
+    queue.complete(lease, candidate)
+    assert queue.publish(plan).status == "committed"
 
 
 def test_worker_fits_query_and_value_and_publishes_only_the_combination(tmp_path):

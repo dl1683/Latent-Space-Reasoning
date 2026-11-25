@@ -111,9 +111,12 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
     def __init__(self, path, kernel, observations, probes, *, max_update_norm, atol=1e-8,
                  max_terms=0, source_ids=None, guards=(), allow_hinge=False, max_reference_frontier=None,
                  reuse_tree_routes=False, max_retained_tree_scores=0, create=False, allow_joint=False,
-                 joint_trials=1, separate_joint_trials=False, joint_refinements=0):
+                 joint_trials=1, separate_joint_trials=False, joint_refinements=0, reuse_joint_anchors=False):
         if type(create) is not bool:
             raise ValueError("journal creation flag must be a boolean")
+        if type(reuse_joint_anchors) is not bool or (reuse_joint_anchors and not joint_refinements):
+            raise ValueError("joint anchor reuse requires a boolean policy and enabled refinement")
+        self._reuse_joint_anchors = reuse_joint_anchors
         self._tree_bound = isinstance(kernel, TreeFeedbackKernel)
         if self._tree_bound and type(kernel) is not TreeFeedbackKernel:
             raise ValueError("the feedback journal requires the standard tree kernel")
@@ -239,6 +242,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             digest.update(b"\nfeedback separate joint trials v1\n")
         if self._joint_refinements:
             digest.update(f"\nfeedback joint midpoint refinements v1\n{self._joint_refinements}\n".encode("ascii"))
+        if self._reuse_joint_anchors:
+            digest.update(b"\nfeedback reuse joint anchors v1\n")
         if self._guards:
             digest.update(b"\nfeedback guard probes v1\n")
             guards = [(probe.seed, probe.steps, probe.target) for probe in self._guards]
@@ -363,6 +368,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             raise ValueError("process repair plans need a data-only NumPy error policy")
         version = 1 + self._has_routing + self._allow_joint + (self._joint_trials > 1) + self._separate_joint_trials
         version += self._joint_refinements > 0
+        version += self._reuse_joint_anchors
         return FeedbackSearchPlan(root, tip, base.number, offset, total,
                                   tuple(candidates[offset:offset + limit]), policy, version=version)
 
@@ -393,21 +399,53 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             raise ValueError("repair plan does not match the candidate order, numeric policy or protocol")
         return base
 
-    def synthesize_repairs(self, plan, *, start, stop):
+    def _reusable_joint_levels(self, probe, position_kind):
+        kind, trial = _split_candidate_kind(position_kind)
+        if not self._reuse_joint_anchors or kind != "joint" or trial is None:
+            return (), trial
+        levels = tuple(self._joint_trial_levels(self._probes[probe].routing.min_mass))
+        return (levels if self._can_refine_joint_levels(levels) else ()), trial
+
+    def _joint_anchor_range(self, plan, position):
+        levels, trial = self._reusable_joint_levels(*plan.candidates[position])
+        if levels and trial == len(levels):
+            end = plan.offset + position
+            return end - trial, end
+        return None
+
+    def synthesize_repairs(self, plan, *, start, stop, _anchor_results=None):
         """Synthesize a contiguous range on the pinned base without publishing it."""
         start, stop = index(start), index(stop)
         base = self._check_search_plan(plan)
         if not 0 <= start < stop <= len(plan.candidates):
             raise ValueError("repair shard is outside the plan")
+        if _anchor_results is not None and (stop != start + 1 or self._joint_anchor_range(plan, start) is None):
+            raise ValueError("anchor results require one refinement position")
         results = []
         synthesize = self.propose if self._draft_tree_policy is not None else self._propose
         for probe, position_kind in plan.candidates[start:stop]:
             kind, trial = _split_candidate_kind(position_kind)
             try:
-                proposal = (self.propose_routing(base, probe, joint=kind == "joint", trial=trial)
-                            if kind in ("route", "joint")
-                            else synthesize(base, probe, conditional=kind in ("conditional", "hinge"),
-                                            hinge=kind == "hinge"))
+                levels, _ = self._reusable_joint_levels(probe, position_kind)
+                if levels:
+                    protected = tuple(self._protected_runs(base, probe))
+                    if trial < len(levels):
+                        proposal, _ = self._fit_checked_joint_trial(
+                            base, probe, levels[trial], protected, self._joint_trial_anchor(base, probe),
+                            price_pair=True,
+                        )
+                    else:
+                        anchors = {
+                            ordinal: None if result.payload is None else
+                            self._decode_operator(base, "joint", probe, result.payload)
+                            for ordinal, result in (_anchor_results or {}).items()
+                        }
+                        proposal = self._refine_joint_trials(base, probe, protected, levels, anchors=anchors)
+                elif kind in ("route", "joint"):
+                    proposal = self.propose_routing(base, probe, joint=kind == "joint", trial=trial)
+                else:
+                    proposal = synthesize(base, probe, conditional=kind in ("conditional", "hinge"),
+                                          hinge=kind == "hinge")
             except StaleFeedbackRevision:
                 raise
             except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:

@@ -99,6 +99,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **Equal observation mixtures, 24 November 2026.** A fixed shared value map could not give two different contributions for the same observation mixture while preserving a solved probe. The fixture isolates a representational limit of that edit surface. A bounded conditional term used the different hidden states to resolve this case. Repeated fitting of the same conflicting linear constraints cannot add the missing distinction. Admission audits also found that unnormalized factors could underflow the weight budget and that endpoint-only acceptance could hide prefix drift. The constructor now checks unit axes, and publication compares against fixed prefix anchors across edits on the same observation bank.
 
+**Refinement can duplicate fixed anchor fits, 25 November 2026.** In the version-6 workflow, the adaptive worker retried the same three source-share levels after the fixed workers finished. Version 7 can reuse completed synthesis on the same pinned revision. This adds storage for some over-budget pairs and a dependency on already-enqueued work. Retain the cold fallback for unscheduled anchors and charge waiting, retained maps, and replay when comparing architectures. Coordinator admission still checks the proposed installation independently. [Anchor reuse fixtures](../experiments/memory/test_feedback_repair_queue.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

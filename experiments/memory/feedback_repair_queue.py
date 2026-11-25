@@ -21,6 +21,12 @@ _RECEIPT_SELECT = """
     FROM feedback_repair_receipts
 """
 
+_ANCHOR_RANGE = """
+    FROM feedback_repair_batches AS b JOIN feedback_repair_positions AS p ON p.batch = b.id
+    WHERE b.revision = ? AND b.tip = ? AND b.first < ? AND b.stop > ?
+      AND b.first + p.position >= ? AND b.first + p.position < ?
+"""
+
 
 @dataclass(frozen=True)
 class FeedbackRepairLease:
@@ -171,26 +177,74 @@ class FeedbackRepairQueue:
         with self._transaction(write=True) as db:
             now, expires_ns = _lease_deadline(lease_seconds)
             revision, tip = self._tip(db)
-            row = db.execute("""
+            limit = "" if self._workspace._reuse_joint_anchors else " LIMIT 1"
+            rows = db.execute("""
                 SELECT b.id, b.plan, p.position
                 FROM feedback_repair_batches AS b JOIN feedback_repair_positions AS p ON p.batch = b.id
                 WHERE b.revision = ? AND b.tip = ?
                   AND p.payload IS NULL AND p.rejection IS NULL
                   AND (p.expires_ns IS NULL OR p.expires_ns <= ?)
-                ORDER BY p.expires_ns IS NOT NULL, p.expires_ns, b.first, p.position LIMIT 1
-            """, (revision, tip, now)).fetchone()
-            if row is None:
-                return None
-            batch, data, position = row
-            plan = self._stored_plan(batch, data, revision, tip)
-            if not 0 <= position < len(plan.candidates):
-                raise ValueError("invalid queued repair position")
-            token = uuid4().hex
-            db.execute("""
-                UPDATE feedback_repair_positions SET token = ?, expires_ns = ?
-                WHERE batch = ? AND position = ?
-            """, (token, expires_ns, batch, position))
-            return FeedbackRepairLease(plan, position, token, expires_ns)
+                ORDER BY p.expires_ns IS NOT NULL, p.expires_ns, b.first, p.position
+            """ + limit, (revision, tip, now))
+            for batch, data, position in rows:
+                plan = self._stored_plan(batch, data, revision, tip)
+                if not 0 <= position < len(plan.candidates):
+                    raise ValueError("invalid queued repair position")
+                bounds = self._workspace._joint_anchor_range(plan, position)
+                if bounds is not None:
+                    first, stop = bounds
+                    pending = db.execute("SELECT 1 " + _ANCHOR_RANGE + " AND p.finished_token IS NULL LIMIT 1",
+                                         (revision, tip, stop, first, first, stop)).fetchone()
+                    if pending is not None:
+                        continue
+                token = uuid4().hex
+                db.execute("""
+                    UPDATE feedback_repair_positions SET token = ?, expires_ns = ?
+                    WHERE batch = ? AND position = ?
+                """, (token, expires_ns, batch, position))
+                return FeedbackRepairLease(plan, position, token, expires_ns)
+        return None
+
+    def synthesize(self, lease):
+        """Fit a live lease, reusing completed same-revision anchors when available."""
+        if type(lease) is not FeedbackRepairLease or not 0 <= lease.position < len(lease.plan.candidates):
+            raise ValueError("expected a repair lease with a valid position")
+        plan = lease.plan
+        batch, _ = _encode_plan(plan)
+        anchors = None
+        with self._transaction() as db:
+            self._require_current(db, plan)
+            live = db.execute("""
+                SELECT 1 FROM feedback_repair_positions
+                WHERE batch = ? AND position = ? AND token = ? AND expires_ns > ?
+            """, (batch, lease.position, lease.token, time_ns())).fetchone()
+            if live is None:
+                raise StaleFeedbackLease("repair position no longer belongs to this lease")
+            bounds = self._workspace._joint_anchor_range(plan, lease.position)
+            if bounds is not None:
+                anchors = self._completed_anchors(db, plan, lease.position, bounds)
+        return self._workspace.synthesize_repairs(
+            plan, start=lease.position, stop=lease.position + 1, _anchor_results=anchors,
+        )
+
+    def _completed_anchors(self, db, plan, position, bounds):
+        first, stop = bounds
+        probe, _ = plan.candidates[position]
+        anchors = {}
+        rows = db.execute("SELECT b.id, b.plan, b.first, p.position, p.payload, p.rejection " + _ANCHOR_RANGE
+                          + " AND p.finished_token IS NOT NULL",
+                          (plan.revision, plan.tip, stop, first, first, stop))
+        for batch, data, offset, anchor_position, payload, rejection in rows:
+            anchor_plan = self._stored_plan(batch, data, plan.revision, plan.tip)
+            ordinal = offset + anchor_position - first
+            if (offset != anchor_plan.offset or anchor_plan.version != plan.version
+                    or anchor_plan.error_policy != plan.error_policy
+                    or not 0 <= anchor_position < len(anchor_plan.candidates)
+                    or anchor_plan.candidates[anchor_position] != (probe, f"joint:{ordinal}")
+                    or ordinal in anchors):
+                raise ValueError("invalid queued joint anchor")
+            anchors[ordinal] = FeedbackCandidateData(payload, rejection)
+        return anchors
 
     def renew(self, lease, *, lease_seconds):
         """Extend the deadline of a live assignment without changing its token."""

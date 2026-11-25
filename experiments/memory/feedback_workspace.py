@@ -425,19 +425,36 @@ class FeedbackWorkspace:
         return anchor
 
     def _fit_checked_joint_trial(self, base, probe, mass, protected, anchor, *, price_pair=False):
-        goal = self._probes[probe]
         if price_pair:
             proposal, candidate, cost = self._fit_joint_trial(base, probe, mass, protected, price_pair=True)
         else:
             proposal, candidate, cost = self._fit_joint_trial(base, probe, mass, protected)
         if not price_pair and cost > self._max_update_norm:
             raise ValueError("joint candidate exceeds the combined update budget")
+        self._check_joint_replay(base, probe, candidate, anchor)
+        return proposal, cost
+
+    def _check_joint_replay(self, base, probe, candidate, anchor):
+        goal = self._probes[probe]
         result, actual_mass = self._run_routed(candidate, base.memory, goal)
         if not goal.routing.min_mass <= actual_mass <= 1.0 or self._probe_error(result, goal) > self._atol:
             raise ValueError("joint candidate fails the original target on replay")
         if not np.allclose(result.history[:-1], anchor, atol=self._atol, rtol=0):
             raise ValueError("joint candidate changes the original target prefix")
-        return proposal, cost
+
+    def _price_joint_anchor(self, base, probe, proposal, anchor):
+        if proposal._query is None or proposal._weight is None or proposal.base is not base or proposal.probe != probe:
+            raise ValueError("reused anchor must contain both maps on the pinned probe")
+        kernel = base.kernel
+        old_query = kernel._query if kernel._observation_query is None else kernel._observation_query
+        with np.errstate(over="raise", invalid="raise"):
+            query_norm = _frobenius(proposal._query - old_query)
+            value_norm = _frobenius(proposal._weight - kernel._dense_observation_value())
+        if max(query_norm, value_norm) > self._max_update_norm:
+            raise ValueError("reused anchor exceeds an individual map budget")
+        candidate = kernel._with_observation_query(proposal._query)._with_observation_value(proposal._weight)
+        self._check_joint_replay(base, probe, candidate, anchor)
+        return hypot(query_norm, value_norm)
 
     def _search_joint_trials(self, base, probe, protected):
         anchor = self._joint_trial_anchor(base, probe)
@@ -458,17 +475,29 @@ class FeedbackWorkspace:
             raise ValueError(f"joint trials found no usable pair: {reason}") from reason
         return best[1]
 
-    def _refine_joint_trials(self, base, probe, protected, levels):
+    def _refine_joint_trials(self, base, probe, protected, levels, *, anchors=None):
         anchor = self._joint_trial_anchor(base, probe)
         best = None
+        anchors = anchors or {}
 
-        def price(mass):
+        def price(mass, ordinal=None):
             nonlocal best
             self._require_current(base)
+            proposal = anchors.get(ordinal)
+            if ordinal in anchors and proposal is None:
+                return float("inf")
             try:
-                proposal, cost = self._fit_checked_joint_trial(
-                    base, probe, mass, protected, anchor, price_pair=True,
-                )
+                if proposal is not None:
+                    try:
+                        cost = self._price_joint_anchor(base, probe, proposal, anchor)
+                    except StaleFeedbackRevision:
+                        raise
+                    except (ValueError, FloatingPointError, np.linalg.LinAlgError):
+                        proposal = None
+                if proposal is None:
+                    proposal, cost = self._fit_checked_joint_trial(
+                        base, probe, mass, protected, anchor, price_pair=True,
+                    )
             except StaleFeedbackRevision:
                 raise
             except (ValueError, FloatingPointError, np.linalg.LinAlgError):
@@ -477,7 +506,7 @@ class FeedbackWorkspace:
                 best = cost, proposal
             return cost
 
-        samples = [(mass, price(mass)) for mass in levels]
+        samples = [(mass, price(mass, ordinal)) for ordinal, mass in enumerate(levels)]
         for _ in range(self._joint_refinements):
             intervals = []
             for position, ((left, left_cost), (right, right_cost)) in enumerate(zip(samples, samples[1:])):
