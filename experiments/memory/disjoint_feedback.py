@@ -9,7 +9,9 @@ from threading import Lock
 
 import numpy as np
 
-from experiments.memory.disjoint_transition import DisjointTransitionMemory, _EMPTY, propagate_disjoint
+from experiments.memory.disjoint_transition import (
+    DisjointTransitionMemory, DisjointTransitionPath, DisjointTransitionWitness, _EMPTY, propagate_disjoint,
+)
 from experiments.memory.latent_feedback import FactoredValue, FeedbackKernel, FeedbackState, _apply_value, _frozen, _real_array
 
 
@@ -128,6 +130,14 @@ class DisjointFeedback:
         if type(memory) is not _RelationObservation or memory._receiver is not self:
             raise ValueError("relation memory belongs to a different receiver")
 
+    def _relation_seed(self, memory, hidden):
+        with np.errstate(over="raise", invalid="raise"):
+            scores = memory._anchors @ (hidden @ self._query)
+            seed = np.full(memory._transitions.width, -np.inf)
+            eligible = scores >= self._floor
+            seed[eligible] = np.minimum(scores[eligible] - self._floor, 1.)
+        return seed, eligible
+
     def step(self, state, *, use_operator=True, relation_query=None):
         """Advance normally, with an optional intervention on just the relation read."""
         self._require_state(state)
@@ -139,11 +149,8 @@ class DisjointFeedback:
             anchors = memory._anchors
             override = None if relation_query is None else self._kernel._vector(relation_query)
             hidden = state.latest if override is None else override
+            seed, eligible = self._relation_seed(memory, hidden)
             with np.errstate(over="raise", invalid="raise"):
-                scores = anchors @ (hidden @ self._query)
-                seed = np.full(memory._transitions.width, -np.inf)
-                eligible = scores >= self._floor
-                seed[eligible] = np.minimum(scores[eligible] - self._floor, 1.)
                 grades = propagate_disjoint(seed, memory=memory._transitions)
                 footprint = _RelationStep(frozenset(np.flatnonzero(eligible).tolist()), override)
                 supported = np.isfinite(grades)
@@ -156,6 +163,19 @@ class DisjointFeedback:
         feedback, _, _ = self._kernel._advance(state._feedback, observation_extra=extra)
         return DisjointFeedbackState(self, feedback, state._memory, grades, state._trace + (footprint,),
                                      _creation_key=_CREATION_KEY)
+
+    def _terminal_seed(self, state):
+        if state._grades is None:
+            raise ValueError("terminal evidence requires an executed relation read")
+        history = state._feedback._history
+        previous = history[-2] if len(history) > 1 else state._feedback._seed
+        override = state._trace[-1].query
+        return self._relation_seed(state._memory, previous if override is None else override)[0]
+
+    def prove_terminal(self, state, destination, *, paths=None):
+        """Return a witness that accounts for the full emitted terminal grade."""
+        self._require_state(state)
+        return _matching_witness(state, self._terminal_seed(state), index(destination), paths)
 
     def revise_memory(self, memory, changes):
         """Prepare one fixed-width operator revision for all trajectories on this pin."""
@@ -251,6 +271,29 @@ class TerminalRelationGrade:
         return lower <= grade <= upper
 
 
+def _matching_witness(state, seed, destination, paths):
+    witness = state._memory._transitions.prove(seed, destination, paths=paths)
+    return witness if witness is not None and witness.strength == state._grades[destination] else None
+
+
+@dataclass(frozen=True)
+class TerminalRelationEvidence:
+    """Require a declared path that explains the full terminal destination grade."""
+
+    destination: int
+    paths: tuple[DisjointTransitionPath, ...]
+
+    def __post_init__(self):
+        destination = index(self.destination)
+        paths = tuple(self.paths)
+        if destination < 0 or not paths or any(type(path) is not DisjointTransitionPath for path in paths):
+            raise ValueError("terminal evidence needs a nonnegative destination and named paths")
+        if len(set(paths)) != len(paths):
+            raise ValueError("terminal evidence paths must be distinct")
+        object.__setattr__(self, "destination", destination)
+        object.__setattr__(self, "paths", paths)
+
+
 @dataclass(frozen=True)
 class TerminalHiddenDecision:
     """Keep the selected coordinate or abstention within a declared candidate set."""
@@ -281,10 +324,11 @@ class TerminalHiddenDecision:
 
 @dataclass(frozen=True)
 class RelationOutcomeGuard:
-    """Freeze a conjunction of terminal grade and hidden decision requirements."""
+    """Freeze a conjunction of terminal grade, decision and evidence requirements."""
 
     grades: tuple[TerminalRelationGrade, ...] = ()
     decision: TerminalHiddenDecision | None = None
+    evidence: tuple[TerminalRelationEvidence, ...] = ()
 
     def __post_init__(self):
         grades = tuple(self.grades)
@@ -294,9 +338,15 @@ class RelationOutcomeGuard:
             raise ValueError("outcome grade destinations must be distinct")
         if self.decision is not None and type(self.decision) is not TerminalHiddenDecision:
             raise ValueError("outcome decision must be a TerminalHiddenDecision record")
-        if not grades and self.decision is None:
+        evidence = tuple(self.evidence)
+        if any(type(clause) is not TerminalRelationEvidence for clause in evidence):
+            raise ValueError("outcome evidence checks must be TerminalRelationEvidence records")
+        if len({clause.destination for clause in evidence}) != len(evidence):
+            raise ValueError("outcome evidence destinations must be distinct")
+        if not grades and self.decision is None and not evidence:
             raise ValueError("an outcome guard needs at least one terminal requirement")
         object.__setattr__(self, "grades", grades)
+        object.__setattr__(self, "evidence", evidence)
 
     def _validate(self, state):
         if not state._trace:
@@ -306,15 +356,37 @@ class RelationOutcomeGuard:
                 raise ValueError("terminal grade checks require an executed relation read")
             if any(grade.destination >= state._grades.size for grade in self.grades):
                 raise ValueError("terminal grade destination is outside the relation frame")
+        if self.evidence:
+            if state._grades is None:
+                raise ValueError("terminal evidence requires an executed relation read")
+            if any(clause.destination >= state._grades.size for clause in self.evidence):
+                raise ValueError("terminal evidence destination is outside the relation frame")
+            if any(max(path.start, path.middle) >= state._grades.size for clause in self.evidence for path in clause.paths):
+                raise ValueError("terminal evidence path is outside the relation frame")
         if self.decision is not None and max(self.decision.candidates) >= state.latest.size:
             raise ValueError("terminal decision candidate is outside the hidden row")
-        if not self._holds(state):
+        witnesses = self._evaluate(state)
+        if witnesses is None:
             raise RelationGuardFailed("initial trajectory violates its protected outcome")
+        return witnesses
 
-    def _holds(self, state):
+    def _evaluate(self, state):
         if self.grades and (state._grades is None or not all(grade._holds(state._grades) for grade in self.grades)):
-            return False
-        return self.decision is None or self.decision._holds(state.latest)
+            return None
+        if self.decision is not None and not self.decision._holds(state.latest):
+            return None
+        if not self.evidence:
+            return ()
+        if state._grades is None:
+            return None
+        seed = state._receiver._terminal_seed(state)
+        approved = []
+        for clause in self.evidence:
+            witness = _matching_witness(state, seed, clause.destination, clause.paths)
+            if witness is None:
+                return None
+            approved.append((clause.destination, witness))
+        return tuple(approved)
 
 
 def _same_trajectory(left, right):
@@ -330,6 +402,7 @@ class _RelationWorkspacePin:
     memory: _RelationObservation
     protected: tuple[DisjointFeedbackState, ...]
     _outcomes: tuple[RelationOutcomeGuard | None, ...]
+    witnesses: tuple[tuple[tuple[int, DisjointTransitionWitness], ...], ...]
 
 
 class DisjointFeedbackWorkspace:
@@ -342,15 +415,15 @@ class DisjointFeedbackWorkspace:
             if type(outcome) is not RelationOutcomeGuard:
                 raise ValueError("outcome_guards requires a state and a RelationOutcomeGuard")
             checks.append((state, outcome))
+        witnesses = []
         for state, outcome in checks:
             receiver._require_state(state)
             if state._memory is not memory:
                 raise ValueError("protected trajectories must start at the workspace's relation pin")
-            if outcome is not None:
-                outcome._validate(state)
+            witnesses.append(() if outcome is None else outcome._validate(state))
         self._receiver = receiver
         self._tip = _RelationWorkspacePin(memory, tuple(state for state, _ in checks),
-                                          tuple(outcome for _, outcome in checks))
+                                          tuple(outcome for _, outcome in checks), tuple(witnesses))
         self._lock = Lock()
 
     def pin(self):
@@ -364,17 +437,22 @@ class DisjointFeedbackWorkspace:
         receiver = self._receiver
         revision = receiver.merge_revisions(parent.memory, *drafts)
         checked = []
+        witnesses = []
         for i, (state, outcome) in enumerate(zip(parent.protected, parent._outcomes, strict=True)):
             candidate, _ = receiver.rebase(state, revision)
             if outcome is None:
                 if not _same_trajectory(state, candidate):
                     raise RelationGuardFailed(f"joint relation revision changed protected trajectory {i}")
-            elif not outcome._holds(candidate):
-                raise RelationGuardFailed(f"joint relation revision violated protected outcome {i}")
+                approved = ()
+            else:
+                approved = outcome._evaluate(candidate)
+                if approved is None:
+                    raise RelationGuardFailed(f"joint relation revision violated protected outcome {i}")
             checked.append(candidate)
+            witnesses.append(approved)
         with self._lock:
             if self._tip is not parent:
                 raise StaleRelationRevision("relation workspace tip changed during evaluation")
             if revision.memory is not parent.memory:
-                self._tip = _RelationWorkspacePin(revision.memory, tuple(checked), parent._outcomes)
+                self._tip = _RelationWorkspacePin(revision.memory, tuple(checked), parent._outcomes, tuple(witnesses))
             return self._tip

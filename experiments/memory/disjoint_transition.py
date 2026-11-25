@@ -1,5 +1,6 @@
 """Factorized two-hop latent propagation with distinct source origins."""
 
+from bisect import bisect_left
 from collections import defaultdict
 from collections.abc import Mapping
 from dataclasses import dataclass, replace
@@ -21,6 +22,28 @@ _Edge = tuple[int, int, float]
 
 
 @dataclass(frozen=True)
+class DisjointTransitionPath:
+    """Address a two-hop path by coordinates and ordered source origins."""
+
+    start: int
+    middle: int
+    origins: tuple[str, str]
+
+    def __post_init__(self):
+        start, middle = index(self.start), index(self.middle)
+        if start < 0 or middle < 0:
+            raise ValueError("path coordinates must be nonnegative")
+        if isinstance(self.origins, str):
+            raise ValueError("path needs two distinct source IDs")
+        origins = tuple(self.origins)
+        if len(origins) != 2 or any(type(origin) is not str or not origin for origin in origins) or origins[0] == origins[1]:
+            raise ValueError("path needs two distinct source IDs")
+        object.__setattr__(self, "start", start)
+        object.__setattr__(self, "middle", middle)
+        object.__setattr__(self, "origins", origins)
+
+
+@dataclass(frozen=True)
 class DisjointTransitionWitness:
     """One strongest compatible pair for a selected destination and seed."""
 
@@ -28,6 +51,10 @@ class DisjointTransitionWitness:
     start: int
     middle: int
     origins: tuple[str, str]
+
+    @property
+    def path(self):
+        return DisjointTransitionPath(self.start, self.middle, self.origins)
 
 
 @dataclass(frozen=True, eq=False)
@@ -246,12 +273,16 @@ class DisjointTransitionMemory:
         # Preserve the scan's accumulation and witness order on every path.
         return candidates if candidates is self._middles else sorted(candidates, key=lambda m: self._middles[m]._order)
 
-    def prove(self, seed, destination, *, middle_key=None):
-        """Read one maximizing witness, with ties ordered by coordinate or middle_key."""
+    def prove(self, seed, destination, *, middle_key=None, paths=None):
+        """Read one maximizing witness, optionally within ordered, named paths."""
         destination = index(destination)
         if not 0 <= destination < self.width:
             raise ValueError("transition destination is outside the coordinate frame")
         grades = _seed(seed, self.width)
+        if paths is not None:
+            if middle_key is not None:
+                raise ValueError("named path order already breaks witness ties")
+            return self._prove_paths(grades, destination, paths)
         best = best_key = None
         for coordinate in self._candidate_middles(grades, destination):
             middle = self._middles[coordinate]
@@ -273,6 +304,26 @@ class DisjointTransitionMemory:
             best = DisjointTransitionWitness(strength, int(incoming.coordinates[entry]), coordinate,
                                              (middle.origins[left], middle.origins[right]))
             best_key = key
+        return best
+
+    def _asserted_grade(self, origin, middle, hop, coordinate):
+        rows = self._sources.get(origin, _EMPTY).get(middle, ())
+        key = hop, coordinate
+        position = bisect_left(rows, key)
+        return rows[position][2] if position < len(rows) and rows[position][:2] == key else _ABSENT
+
+    def _prove_paths(self, grades, destination, paths):
+        best = None
+        for path in paths:
+            if type(path) is not DisjointTransitionPath or max(path.start, path.middle) >= self.width:
+                raise ValueError("expected a valid named path in this transition frame")
+            if grades[path.start] == _ABSENT:
+                continue
+            left = self._asserted_grade(path.origins[0], path.middle, 0, path.start)
+            right = self._asserted_grade(path.origins[1], path.middle, 1, destination)
+            strength = float(min(grades[path.start], left, right))
+            if strength != _ABSENT and (best is None or strength > best.strength):
+                best = DisjointTransitionWitness(strength, path.start, path.middle, path.origins)
         return best
 
 

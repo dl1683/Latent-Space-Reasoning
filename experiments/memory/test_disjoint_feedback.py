@@ -13,9 +13,10 @@ from experiments.memory.disjoint_feedback import (
     RelationOutcomeGuard,
     StaleRelationRevision,
     TerminalHiddenDecision,
+    TerminalRelationEvidence,
     TerminalRelationGrade,
 )
-from experiments.memory.disjoint_transition import DisjointTransitionMemory
+from experiments.memory.disjoint_transition import DisjointTransitionMemory, DisjointTransitionPath
 from experiments.memory.latent_feedback import FeedbackKernel
 
 
@@ -459,3 +460,96 @@ def test_outcome_can_preserve_abstention_even_as_hidden_scores_change():
     with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
         workspace.publish(tip, strong)
     assert workspace.pin() is tip
+
+
+def test_publication_can_handoff_a_witness_and_refuses_equal_or_stronger_unlisted_evidence():
+    receiver = DisjointFeedback(_kernel(), query=np.eye(5), presence_value=np.zeros((5, 5)),
+                                grade_value=np.eye(5), floor=.1)
+    bank = DisjointTransitionMemory.prepare(5, {
+        "a-original": [(0, 0, 1, .7)], "b-unlisted": [(0, 0, 1, .95)],
+        "c-unlisted": [(0, 0, 1, .85)], "m-backup": [(0, 0, 1, .7)], "right": [(1, 1, 2, .7)],
+    })
+    memory = receiver.prepare(bank, np.eye(5))
+    state = receiver.step(receiver.start([1., 0., 0., 0., 0.], memory))
+    original = DisjointTransitionPath(0, 1, ("a-original", "right"))
+    backup = DisjointTransitionPath(0, 1, ("m-backup", "right"))
+    alternatives = [original, backup]
+    evidence = RelationOutcomeGuard(evidence=[TerminalRelationEvidence(2, alternatives)])
+    workspace = DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[(state, evidence)])
+    parent = workspace.pin()
+    alternatives.clear()
+    assert parent.witnesses[0][0][1].path == original
+    assert state.grades[2] == .7 and receiver.prove_terminal(state, 2).path not in (original, backup)
+
+    withdrawal = receiver.revise_memory(memory, {"a-original": None})
+    tip = workspace.publish(parent, withdrawal)
+    assert tip.witnesses[0][0][0] == 2 and tip.witnesses[0][0][1].path == backup
+    assert parent.witnesses[0][0][1].path == original
+    assert receiver.prove_terminal(tip.protected[0], 2).path != backup
+    grade_only = RelationOutcomeGuard([TerminalRelationGrade(2, (0., 1.))])
+    for change, expected_grade in (({"m-backup": None}, .7), ({"right": [(1, 1, 2, .85)]}, .85)):
+        draft = receiver.revise_memory(tip.memory, change)
+        candidate, _ = receiver.rebase(tip.protected[0], draft)
+        assert candidate.grades[2] == expected_grade and receiver.prove_terminal(candidate, 2, paths=[backup]) is None
+        numeric = DisjointFeedbackWorkspace(receiver, tip.memory, outcome_guards=[(tip.protected[0], grade_only)])
+        assert numeric.publish(numeric.pin(), draft).protected[0].grades[2] == expected_grade
+        with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
+            workspace.publish(tip, draft)
+        assert workspace.pin() is tip
+
+    raise_cap = receiver.revise_memory(tip.memory, {"right": [(1, 1, 2, .85)]})
+    strengthen_backup = receiver.revise_memory(tip.memory, {"m-backup": [(0, 0, 1, .85)]})
+    advanced = workspace.publish(tip, raise_cap, strengthen_backup)
+    assert advanced.witnesses[0][0][1].path == backup
+    assert advanced.witnesses[0][0][1].strength == advanced.protected[0].grades[2] == .85
+
+
+def test_terminal_witness_uses_the_pre_update_hidden_row_and_frozen_override():
+    receiver = DisjointFeedback(_kernel(), query=np.eye(5), presence_value=np.zeros((5, 5)),
+                                grade_value=np.eye(5), floor=.1)
+    memory = receiver.prepare(_transitions(), np.eye(5))
+    first = receiver.step(receiver.start([1., 0., 0., 0., 0.], memory))
+    second = receiver.step(first)
+    observed = receiver.prove_terminal(second, 4)
+    assert observed.start == 2 and observed.strength == second.grades[4]
+    override = np.array([.1, 0., 0., 0., 0.])
+    overridden = receiver.step(first, relation_query=override)
+    override[:] = 0.
+    address = receiver.prove_terminal(first, 2).path
+    witness = receiver.prove_terminal(overridden, 2, paths=[address])
+    assert witness.strength == overridden.grades[2] == 0. and witness.path == address
+    guard = RelationOutcomeGuard(evidence=[TerminalRelationEvidence(2, [address])])
+    assert DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[(overridden, guard)]).pin().witnesses == (
+        ((2, witness),),
+    )
+    bypassed = receiver.step(first, use_operator=False)
+    with pytest.raises(ValueError, match="requires an executed relation read"):
+        receiver.prove_terminal(bypassed, 2)
+    with pytest.raises(ValueError, match="requires an executed relation read"):
+        DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[(bypassed, guard)])
+
+
+def test_equal_terminal_grades_can_move_the_activated_witness_start():
+    receiver = DisjointFeedback(_kernel(), query=np.eye(5), presence_value=np.zeros((5, 5)),
+                                grade_value=np.eye(5), floor=.1)
+    bank = DisjointTransitionMemory.prepare(5, {
+        "first-left": [(0, 0, 1, .9)], "first-right": [(1, 1, 2, .8)],
+        "second-left": [(0, 2, 0, .9), (0, 3, 0, .9)], "second-right": [(1, 0, 4, .5)],
+    })
+    memory = receiver.prepare(bank, np.eye(5))
+    state = receiver.step(receiver.step(receiver.start([1., 0., 0., 0., 0.], memory)))
+    original = receiver.prove_terminal(state, 4).path
+    alternate = DisjointTransitionPath(3, original.middle, original.origins)
+    draft = receiver.revise_memory(memory, {"first-right": [(1, 1, 3, .8)]})
+    rebased, _ = receiver.rebase(state, draft)
+    np.testing.assert_array_equal(state.grades, rebased.grades)
+    assert receiver.prove_terminal(rebased, 4, paths=[original]) is None
+    assert receiver.prove_terminal(rebased, 4).path == alternate
+
+    fixed = RelationOutcomeGuard(evidence=[TerminalRelationEvidence(4, [original])])
+    workspace = DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[(state, fixed)])
+    with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
+        workspace.publish(workspace.pin(), draft)
+    flexible = RelationOutcomeGuard(evidence=[TerminalRelationEvidence(4, [original, alternate])])
+    workspace = DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[(state, flexible)])
+    assert workspace.publish(workspace.pin(), draft).witnesses[0][0][1].path == alternate

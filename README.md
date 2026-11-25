@@ -30,6 +30,8 @@ The [shared relation workspace](docs/ARCHITECTURE.md#publishing-joint-relation-e
 
 [Terminal outcome guards](docs/ARCHITECTURE.md#protecting-terminal-outcomes) can preserve declared relation support, grade ranges, winners or abstention while allowing hidden rows to evolve.
 
+[Terminal evidence guards](docs/ARCHITECTURE.md#preserving-terminal-witnesses) can publish a declared source path that explains the current terminal grade and allow a checked handoff to another declared path.
+
 A [local repository demo](docs/ARCHITECTURE.md#committed-python-imports) reads a Git commit into those factors and accepts later commits as revisions. It answers structured two-hop import queries with both source lines and the exact commit.
 
 The [import reader check](docs/ARCHITECTURE.md#checking-an-import-reader) prepares exact committed declarations and checks a structured reply or abstention. A tokenizer-only check with Gemma 4 E2B fit all four requests from a local repository within 512 tokens, including a 64-token reply reserve. Reader competence and inference cost remain unmeasured.
