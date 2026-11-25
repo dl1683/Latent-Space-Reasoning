@@ -7,7 +7,9 @@ import pytest
 from experiments.memory.feedback_journal import JournaledFeedbackWorkspace
 from experiments.memory.feedback_workspace import FeedbackProbe, FeedbackWorkspace, StaleFeedbackRevision
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, FeedbackKernel
-from experiments.memory.tree_feedback import TreeFeedbackKernel
+from experiments.memory.tree_feedback import (
+    TreeFeedbackKernel, _revision_attention_change, _revision_groups, _revision_mass_gap,
+)
 
 
 def _weights():
@@ -306,6 +308,96 @@ def test_paired_value_change_has_its_own_scale_when_an_extreme_logit_is_removed(
     actual = np.max(np.abs(preview.state.latest - reference.latest))
     assert .3 < actual <= preview.error_bounds[0] < 1.
     assert preview.revision_group_scores == 2
+
+
+def test_small_key_and_value_change_on_a_dominant_slot_keeps_a_late_decision():
+    key = np.array([[1.], [0.]])
+    weights = dict(query=6 * key, carry=np.diag([1., 0.]), observation_key=key,
+                   observation_value=np.diag([0., 1.]), feedback_key=.2 * key,
+                   feedback_value=np.diag([0., .1]), max_steps=2)
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, **weights)
+    dense = FeedbackKernel(**weights)
+    seed = [1., 0.]
+    rows = [[.75, .6], [-.75, .15]]
+    replacement = [.755, .602]
+    opening = tree.prepare(rows)
+    edited = tree.revise(opening, {0: replacement})
+    preview = tree.run_with_error_bounds(seed, opening, steps=2, reference_memory=edited)
+    reference = dense.step(dense.step(dense.start(seed, dense.prepare([replacement, rows[1]]))))
+    actual = np.max(np.abs(np.array(preview.state.history) - np.array(reference.history)), axis=1)
+    assert (0. < actual).all() and (actual <= preview.error_bounds).all()
+    assert preview.error_bounds[0] < .018
+    assert preview.state.latest[1] - preview.error_bounds[1] > .4
+    assert reference.latest[1] > .4
+    # Charging the entire dominant slot as unique support loses even the first decision.
+    new_mass = np.exp(6 * replacement[0])
+    legacy_gap = 2 * new_mass / (new_mass + np.exp(6 * rows[1][0]))
+    assert preview.state.history[0][1] - 2 * np.tanh(legacy_gap / 2) < .4
+
+
+def test_uniform_key_shift_stops_being_invariant_when_generated_rows_compete():
+    key = np.array([[1.], [0.]])
+    weights = dict(query=key, carry=np.diag([.8, 0.]), observation_key=key,
+                   observation_value=np.diag([0., .7]), feedback_key=key,
+                   feedback_value=np.diag([0., .2]), max_steps=2)
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, **weights)
+    dense = FeedbackKernel(**weights)
+    seed = [1., 0.]
+    rows = [[-.25, .25], [.25, .75]]
+    revised = [[.25, .25], [.75, .75]]
+    before = tree.prepare(rows)
+    preview = tree.run_with_error_bounds(
+        seed, before, steps=2, reference_memory=tree.revise(before, dict(enumerate(revised))),
+    )
+    reference = dense.step(dense.step(dense.start(seed, dense.prepare(revised))))
+    np.testing.assert_allclose(preview.state.history[0], reference.history[0], atol=1e-15, rtol=0)
+    assert preview.error_bounds[0] == 0.
+    late_error = np.max(np.abs(preview.state.latest - reference.latest))
+    assert .01 < late_error <= preview.error_bounds[1]
+
+
+def test_matched_key_change_and_unmatched_slots_transport_coarse_error_through_a_hinge():
+    key = np.array([[1.], [0.]])
+    weights = dict(query=[[1.], [.2]], carry=np.diag([.4, 0.]), observation_key=key,
+                   observation_value=np.diag([0., .6]), feedback_key=key,
+                   feedback_value=np.diag([0., .2]), max_steps=2)
+    term = ConditionalTerm((0., 1.), (0., 1.), (0., .25), threshold=.095)
+    tree = TreeFeedbackKernel(depth=2, max_frontier=1, **weights)._with_conditional(term)
+    dense = FeedbackKernel(**weights)._with_conditional(term)
+    seed = [1., 0.]
+    rows = [[-.02, .10], [.03, .15], [.01, .20]]
+    revised = [[.025, .19], rows[1], [-.015, .16]]
+    before = tree.prepare(rows)
+    edited = tree.revise(before, {0: revised[0], 2: None, 3: revised[2]})
+    preview = tree.run_with_error_bounds(seed, before, steps=2, reference_memory=edited)
+    reference = dense.step(dense.step(dense.start(seed, dense.prepare(revised))))
+    assert tree.step(tree.start(seed, before)).attention.joint_l1_bound > 0.
+    assert preview.state.history[0][1] < term.threshold < reference.history[0][1]
+    actual = np.max(np.abs(np.array(preview.state.history) - np.array(reference.history)), axis=1)
+    assert (actual > 0.).all() and (actual <= preview.error_bounds).all()
+    assert preview.revision_group_scores == 10
+
+
+def test_changed_key_pairs_weight_opposing_payloads_by_the_edited_logits():
+    key = np.array([[1.], [0.]])
+    weights = dict(query=key, carry=None, observation_key=key, observation_value=np.diag([0., 1.]),
+                   feedback_key=np.zeros_like(key), feedback_value=np.zeros((2, 2)), max_steps=1)
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, **weights)
+    before = tree.prepare([[0., 0.], [0., 0.]])
+    edited = tree.revise(before, {0: [1., .5], 1: [0., -.5]})
+    groups = _revision_groups(before._root, edited._root)
+    paired_deltas = np.asarray([delta for _, _, delta in groups[-1]])
+    _, delta = _revision_attention_change(groups, np.array([1.]), (), paired_deltas)
+    assert delta[1] == pytest.approx(.5 * np.tanh(.5))
+
+
+def test_overlap_handles_unrepresentable_logit_shifts_without_nan():
+    assert _revision_mass_gap((), (), (), [(-1e308, 1e308), (-1e308, 1e308)]) == 2.
+
+
+def test_overlap_retains_a_sub_ulp_logit_difference_with_changed_support():
+    gap = _revision_mass_gap((), [(-1000., 1)], (), [(0., 1e-18)])
+    assert gap == pytest.approx(2e-18, rel=1e-12, abs=0.)
 
 
 def test_revision_bound_handles_empty_banks_and_insertion_beside_generated_history():

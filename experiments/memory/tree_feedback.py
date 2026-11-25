@@ -176,11 +176,8 @@ def _revision_groups(opening, reference):
         elif new is None:
             removed.append(old)
         elif old.left is None and old.right is None:
-            if np.array_equal(old.lower_key, new.lower_key):
-                paired.append((old, new.mean_row - old.mean_row))
-            else:
-                removed.append(old)
-                added.append(new)
+            reference_leaf = None if np.array_equal(old.lower_key, new.lower_key) else new
+            paired.append((old, reference_leaf, new.mean_row - old.mean_row))
         else:
             pending.extend(((old.left, new.left), (old.right, new.right)))
     return shared, removed, added, paired
@@ -190,29 +187,55 @@ def _shifted_mass(scores, offset):
     return sum(exp((score - offset) + log(multiplicity)) for score, multiplicity in scores)
 
 
+def _revision_mass_gap(common, before, after, paired_scores):
+    offset = max(
+        max((score for scores in (common, before, after) for score, _ in scores), default=-np.inf),
+        max((max(old, new) for old, new in paired_scores), default=-np.inf),
+    )
+    kept = _shifted_mass(common, offset)
+    lost = _shifted_mass(before, offset)
+    gained = _shifted_mass(after, offset)
+    for old, new in paired_scores:
+        low, high = min(old, new), max(old, new)
+        kept += exp(low - offset)
+        # Subtracting the two exponentials can erase a small difference.
+        excess = exp(high - offset) * -expm1(low - high)
+        if old > new:
+            lost += excess
+        else:
+            gained += excess
+    changed = max(lost, gained)
+    overlap_gap = 2. * (changed / (kept + changed))
+    if not before and not after:
+        shifts = [new - old for old, new in paired_scores]
+        if common:
+            shifts.append(0.)
+        if all(isfinite(shift) for shift in shifts):
+            overlap_gap = min(overlap_gap, 2. * tanh((max(shifts) - min(shifts)) / 4.))
+    return overlap_gap
+
+
 def _revision_attention_change(groups, observation_query, history_logits, paired_deltas):
     positive = observation_query >= 0
     shared, removed, added, paired = groups
     common = [(float(score), 1) for score in history_logits]
     common.extend((_key_interval(node, observation_query, positive)[0], node.count) for node in shared)
-    paired_scores = [_key_interval(node, observation_query, positive)[0] for node, _ in paired]
-    common.extend((score, 1) for score in paired_scores)
+    paired_scores = []
+    for opening, reference, _ in paired:
+        score = _key_interval(opening, observation_query, positive)[0]
+        updated = score if reference is None else _key_interval(reference, observation_query, positive)[0]
+        paired_scores.append((score, updated))
     before = [(_key_interval(node, observation_query, positive)[1], node.count) for node in removed]
     after = [(*_key_interval(node, observation_query, positive), node.count) for node in added]
-
-    probability_gap = 0.
-    if before or after:
-        upper_after = [(upper, multiplicity) for _, upper, multiplicity in after]
-        offset = max(score for scores in (common, before, upper_after) for score, _ in scores)
-        kept = _shifted_mass(common, offset)
-        changed = max(_shifted_mass(before, offset), _shifted_mass(upper_after, offset))
-        probability_gap = 2. * (changed / (kept + changed))
+    upper_after = [(upper, multiplicity) for _, upper, multiplicity in after]
+    probability_gap = _revision_mass_gap(common, before, upper_after, paired_scores)
 
     delta = None
     if paired_scores:
         reference = common + [(lower, multiplicity) for lower, _, multiplicity in after]
+        reference.extend((score, 1) for _, score in paired_scores)
         offset = max(score for score, _ in reference)
-        weights = np.asarray([exp(score - offset) for score in paired_scores])
+        weights = np.asarray([exp(score - offset) for _, score in paired_scores])
         # Every paired term uses the same lower reference normalizer.
         delta = (weights / _shifted_mass(reference, offset)) @ paired_deltas
     return probability_gap, delta
@@ -374,9 +397,11 @@ class TreeFeedbackKernel(FeedbackKernel):
             return TreeFeedbackBoundedRun(state, (0.,) * steps, reference)
 
         groups = _revision_groups(opening_root, root) if opening_root is not root else None
-        group_scores = 0 if groups is None else steps * sum(map(len, groups))
         paired = () if groups is None else groups[-1]
-        paired_deltas = np.asarray([delta for _, delta in paired]) if paired else None
+        intervals = 0 if groups is None else sum(map(len, groups))
+        intervals += sum(reference is not None for _, reference, _ in paired)
+        group_scores = steps * intervals
+        paired_deltas = np.asarray([delta for _, _, delta in paired]) if paired else None
         observation_query = self._query if self._observation_query is None else self._observation_query
         with np.errstate(over="raise", invalid="raise", under="ignore"):
             bounds = []
