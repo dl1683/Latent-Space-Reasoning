@@ -17,6 +17,7 @@ from experiments.memory.feedback_workspace import (
 )
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, _frozen, _real_array
 from experiments.memory.linear_feedback import LinearFeedbackKernel
+from experiments.memory.tree_feedback import TreeFeedbackKernel
 
 
 def _encode(array):
@@ -72,6 +73,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
 
     def __init__(self, path, kernel, observations, probes, *, max_update_norm, atol=1e-8,
                  max_terms=0, source_ids=None, guards=(), allow_hinge=False):
+        if isinstance(kernel, TreeFeedbackKernel):
+            raise ValueError("the feedback journal does not support tree layouts")
         self._source_bound = isinstance(kernel, LinearFeedbackKernel)
         initial_sources = None
         self._ready = True

@@ -13,6 +13,7 @@ from experiments.memory.latent_feedback import (
     ConditionalTerm, FeedbackKernel, ObservationMemory, _real_array,
 )
 from experiments.memory.linear_feedback import MomentMemory
+from experiments.memory.tree_feedback import TreeFeedbackKernel, TreeMemory
 from experiments.memory.weight_program import _frobenius
 
 
@@ -39,7 +40,7 @@ class FeedbackProbe:
 class FeedbackRevision:
     number: int
     kernel: FeedbackKernel
-    memory: ObservationMemory | MomentMemory
+    memory: ObservationMemory | MomentMemory | TreeMemory
     errors: tuple[float, ...]
     _anchors: tuple[tuple[np.ndarray, ...] | None, ...]
     guard_errors: tuple[float, ...] = ()
@@ -355,6 +356,16 @@ class FeedbackWorkspace:
         """Install a new observation bank and measure its outcomes with the current operator."""
         self._require_current(base)
         return self._commit(base, self._prepare_observation_revision(base, observations))
+
+    def revise_observation_slots(self, base, changes):
+        """Revise slots in a tree bank and admit them against the current workspace tip."""
+        self._require_current(base)
+        if not isinstance(base.kernel, TreeFeedbackKernel):
+            raise ValueError("slot revisions require a tree feedback kernel")
+        memory = base.kernel.revise(base.memory, changes)
+        if memory is base.memory:
+            return base
+        return self._commit(base, self._prepare_memory_revision(base, memory))
 
     def _prepare_observation_revision(self, base, observations):
         return self._prepare_memory_revision(base, base.kernel.prepare(observations))
