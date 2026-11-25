@@ -11,7 +11,9 @@ from operator import index
 
 import numpy as np
 
-from experiments.memory.latent_feedback import FeedbackKernel, FeedbackState, _frozen, _real_array
+from experiments.memory.latent_feedback import (
+    FactoredValue, FeedbackKernel, FeedbackState, _frozen, _real_array,
+)
 
 
 @dataclass(frozen=True, eq=False)
@@ -68,12 +70,35 @@ class TreeAttention:
     groups: int
     scored_nodes: int
     joint_l1_bound: float
+    reused_route: bool = False
 
 
 @dataclass(frozen=True, eq=False)
 class TreeFeedbackState(FeedbackState):
     _memory: TreeMemory
     attention: TreeAttention | None = None
+
+
+@dataclass(frozen=True, eq=False)
+class _TreeRoute:
+    mixture: np.ndarray
+    history_value: np.ndarray | None
+    attention: TreeAttention
+
+    def retain(self):
+        history = None if self.history_value is None else _frozen(self.history_value)
+        return replace(self, mixture=_frozen(self.mixture), history_value=history)
+
+
+@dataclass(frozen=True, eq=False)
+class _TreeReplay:
+    kernel: TreeFeedbackKernel
+    memory: TreeMemory
+    seed: bytes
+    steps: tuple[tuple[_TreeRoute, np.ndarray], ...]
+
+    def prefix(self):
+        return tuple(hidden.view() for _, hidden in self.steps[:-1])
 
 
 @dataclass(frozen=True, eq=False)
@@ -210,10 +235,17 @@ class TreeFeedbackKernel(FeedbackKernel):
         return TreeFeedbackState(self, memory, self._vector(seed))
 
     def _advance(self, state, *, diagnostics=None):
+        self._require_can_step(state)
+        route = self._route(state, diagnostics)
+        return self._apply_route(state, route, diagnostics=diagnostics)
+
+    def _require_can_step(self, state):
         self._require_state(state)
-        history_count = len(state._history)
-        if history_count >= self._max_steps:
+        if len(state._history) >= self._max_steps:
             raise RuntimeError("feedback step budget exhausted")
+
+    def _route(self, state, diagnostics=None):
+        history_count = len(state._history)
         memory = state._memory
         with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
             hidden = state.latest
@@ -248,13 +280,53 @@ class TreeFeedbackKernel(FeedbackKernel):
                     bound = float(2 * lost / upper_weights.sum())
                 if history_count:
                     history_value = probabilities[groups:] @ np.asarray(state._values)
-            preactivation, fixed = self._preactivation(hidden, mixture, history_value, memory.count)
+            if diagnostics is not None:
+                diagnostics.update(logits=logits, joint_l1_bound=bound)
+        return _TreeRoute(mixture, history_value, TreeAttention(groups, scored, bound))
+
+    def _apply_route(self, state, route, *, reused=False, diagnostics=None):
+        mixture = route.mixture
+        with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
+            preactivation, fixed = self._preactivation(
+                state.latest, mixture, route.history_value, state._memory.count,
+            )
             next_hidden = _frozen(np.tanh(preactivation))
             if diagnostics is not None:
-                diagnostics.update(logits=logits, preactivation=preactivation, joint_l1_bound=bound)
+                diagnostics.update(preactivation=preactivation)
         key, value = self._project_generated(next_hidden)
+        attention = replace(route.attention, scored_nodes=0, reused_route=True) if reused else route.attention
         return replace(
             state, _history=state._history + (next_hidden,), _keys=state._keys + (key,),
-            _values=state._values + (value,), observation_scores=state.observation_scores + scored,
-            feedback_scores=state.feedback_scores + history_count, attention=TreeAttention(groups, scored, bound),
+            _values=state._values + (value,), observation_scores=state.observation_scores + attention.scored_nodes,
+            feedback_scores=state.feedback_scores + (0 if reused else len(state._history)),
+            attention=attention,
         ), mixture, fixed
+
+    def _shares_routing(self, other):
+        return (
+            type(self) is type(other) is TreeFeedbackKernel
+            and type(self._feedback_value) in (np.ndarray, FactoredValue)
+            and self._query is other._query and self._observation_key is other._observation_key
+            and self._feedback_key is other._feedback_key and self._feedback_value is other._feedback_value
+            and (self._depth, self._max_frontier, self._logit_tolerance)
+            == (other._depth, other._max_frontier, other._logit_tolerance)
+        )
+
+    def _replay_routes(self, seed, memory, steps, previous=None):
+        state = self.start(seed, memory)
+        seed_bytes = state._seed.tobytes()
+        reusable = ()
+        if (previous is not None and previous.memory is state._memory
+                and previous.seed == seed_bytes and self._shares_routing(previous.kernel)):
+            reusable = previous.steps
+        trace = []
+        for step in range(steps):
+            self._require_can_step(state)
+            hit = step < len(reusable)
+            route = reusable[step][0] if hit else self._route(state).retain()
+            state, _, _ = self._apply_route(state, route, reused=hit)
+            hidden = state._history[-1]
+            if hit and hidden.tobytes() != reusable[step][1].tobytes():
+                reusable = ()
+            trace.append((route, hidden))
+        return state, _TreeReplay(self, state._memory, seed_bytes, tuple(trace))

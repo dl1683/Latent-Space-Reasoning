@@ -13,7 +13,7 @@ from experiments.memory.latent_feedback import (
     ConditionalTerm, FeedbackKernel, ObservationMemory, _real_array,
 )
 from experiments.memory.linear_feedback import MomentMemory
-from experiments.memory.tree_feedback import TreeFeedbackKernel, TreeMemory
+from experiments.memory.tree_feedback import TreeFeedbackKernel, TreeMemory, _TreeReplay
 from experiments.memory.weight_program import _frobenius
 
 
@@ -44,6 +44,8 @@ class FeedbackRevision:
     errors: tuple[float, ...]
     _anchors: tuple[tuple[np.ndarray, ...] | None, ...]
     guard_errors: tuple[float, ...] = ()
+    _probe_routes: tuple[_TreeReplay, ...] = ()
+    _guard_routes: tuple[_TreeReplay, ...] = ()
 
     def start(self, seed):
         return self.kernel.start(seed, self.memory)
@@ -102,7 +104,13 @@ class FeedbackWorkspace:
     """A bounded in-process commit point. Numeric replays run outside its lock."""
 
     def __init__(self, kernel, observations, probes, *, max_update_norm, atol=1e-8,
-                 max_terms=0, guards=(), allow_hinge=False, max_reference_frontier=None):
+                 max_terms=0, guards=(), allow_hinge=False, max_reference_frontier=None,
+                 reuse_tree_routes=False):
+        if type(reuse_tree_routes) is not bool:
+            raise ValueError("tree route reuse must be a boolean")
+        if reuse_tree_routes and type(kernel) is not TreeFeedbackKernel:
+            raise ValueError("route reuse requires a tree feedback kernel")
+        self._reuse_tree_routes = reuse_tree_routes
         self._draft_tree_policy = None
         if max_reference_frontier is not None:
             if not isinstance(kernel, TreeFeedbackKernel):
@@ -132,11 +140,7 @@ class FeedbackWorkspace:
         self._allow_hinge = allow_hinge
         self._lock = Lock()
         memory = kernel.prepare(observations)
-        self._check_reference_capacity(kernel, memory)
-        errors, prefixes = self._measure(kernel, memory)
-        guard_errors = self._measure_guards(kernel, memory)
-        self._head = FeedbackRevision(0, kernel, memory, errors,
-                                      self._anchors(errors, prefixes), guard_errors)
+        self._head = self._measure_bank(0, kernel, memory)
 
     def snapshot(self):
         with self._lock:
@@ -182,6 +186,26 @@ class FeedbackWorkspace:
     def _measure_guards(self, kernel, memory):
         return tuple(self._probe_error(self._run(kernel, memory, guard), guard)
                      for guard in self._guards)
+
+    def _replay_tree_checks(self, kernel, memory, probes, previous):
+        previous = previous or (None,) * len(probes)
+        for probe, trace in zip(probes, previous, strict=True):
+            state, replay = kernel._replay_routes(probe.seed, memory, probe.steps, trace)
+            yield self._probe_error(state, probe), replay
+
+    def _working_results(self, kernel, memory, previous=()):
+        if not self._reuse_tree_routes:
+            errors, prefixes = self._measure(kernel, memory)
+            return errors, prefixes, ()
+        errors, traces = zip(*self._replay_tree_checks(kernel, memory, self._probes, previous))
+        return errors, tuple(trace.prefix() for trace in traces), traces
+
+    def _guard_results(self, kernel, memory, previous=()):
+        if not self._reuse_tree_routes:
+            return self._measure_guards(kernel, memory), ()
+        runs = tuple(self._replay_tree_checks(kernel, memory, self._guards, previous))
+        errors = tuple(error for error, _ in runs)
+        return errors, tuple(trace for _, trace in runs)
 
     def _anchors(self, errors, prefixes, previous=None):
         if previous is None:
@@ -399,24 +423,28 @@ class FeedbackWorkspace:
             candidate = base.kernel._with_conditional(proposal.term)
         if not isfinite(norm) or norm > self._max_update_norm:
             raise ValueError("proposed operator exceeds the workspace update budget")
-        errors, prefixes = self._measure(candidate, base.memory)
+        errors, prefixes, probe_routes = self._working_results(candidate, base.memory, base._probe_routes)
         if errors[probe] > self._atol:
             raise ValueError("proposed operator does not satisfy its target probe")
         if any(new > max(old, self._atol)
                for old, new in zip(base.errors, errors, strict=True)):
             raise ValueError("proposed operator regresses a workspace probe")
-        guard_errors = self._measure_guards(candidate, base.memory)
+        guard_errors, guard_routes = self._guard_results(candidate, base.memory, base._guard_routes)
         if any(new > max(old, self._atol)
                for old, new in zip(base.guard_errors, guard_errors, strict=True)):
             raise ValueError("proposed operator regresses a workspace guard")
         anchors = list(base._anchors)
         goal = self._probes[probe]
-        anchors[probe] = self._run(base.kernel, base.memory, goal).history[:-1]
+        if base._probe_routes:
+            anchors[probe] = base._probe_routes[probe].prefix()
+        else:
+            anchors[probe] = self._run(base.kernel, base.memory, goal).history[:-1]
         for expected, actual in zip(anchors, prefixes, strict=True):
             if expected is not None and not np.allclose(actual, expected, atol=self._atol, rtol=0):
                 raise ValueError("proposed operator changes a protected trajectory prefix")
         anchors = self._anchors(errors, prefixes, tuple(anchors))
-        return FeedbackRevision(base.number + 1, candidate, base.memory, errors, anchors, guard_errors)
+        return FeedbackRevision(base.number + 1, candidate, base.memory, errors, anchors,
+                                guard_errors, probe_routes, guard_routes)
 
     def replace_observations(self, base, observations):
         """Install a new observation bank and measure its outcomes with the current operator."""
@@ -437,8 +465,11 @@ class FeedbackWorkspace:
         return self._prepare_memory_revision(base, base.kernel.prepare(observations))
 
     def _prepare_memory_revision(self, base, memory):
-        self._check_reference_capacity(base.kernel, memory)
-        errors, prefixes = self._measure(base.kernel, memory)
-        guard_errors = self._measure_guards(base.kernel, memory)
-        return FeedbackRevision(base.number + 1, base.kernel, memory, errors,
-                                self._anchors(errors, prefixes), guard_errors)
+        return self._measure_bank(base.number + 1, base.kernel, memory)
+
+    def _measure_bank(self, number, kernel, memory):
+        self._check_reference_capacity(kernel, memory)
+        errors, prefixes, probe_routes = self._working_results(kernel, memory)
+        guard_errors, guard_routes = self._guard_results(kernel, memory)
+        return FeedbackRevision(number, kernel, memory, errors, self._anchors(errors, prefixes),
+                                guard_errors, probe_routes, guard_routes)

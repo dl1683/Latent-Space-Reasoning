@@ -242,3 +242,83 @@ def test_tree_refinement_cannot_publish_over_a_source_revision(monkeypatch, unex
     assert workspace.snapshot() is revised and revised.number == base.number + 1
     repaired = workspace.maintain(max_candidates=2, max_workers=2)
     assert repaired.status == "committed" and repaired.base is revised
+
+
+def test_route_reuse_recomputes_the_suffix_on_a_subtolerance_prefix_change():
+    weights = _weights()
+    weights["feedback_key"] = np.eye(4)[:, :2]
+    weights["feedback_value"] = 0.3 * np.eye(4)
+    tree = TreeFeedbackKernel(depth=4, max_frontier=16, **weights)
+    memory = tree.prepare(_structured_rows())
+    seed = np.array([1, 0, 0, 0], dtype=float)
+    base, trace = tree._replay_routes(seed, memory, 2)
+    assert np.any(trace.steps[1][0].history_value)
+    unchanged, shared = tree._with_observation_value(tree._observation_value)._replay_routes(
+        seed, memory, 2, trace,
+    )
+    assert unchanged.observation_scores == unchanged.feedback_scores == 0
+    assert unchanged.attention.reused_route
+    assert shared.steps[0][0] is trace.steps[0][0] and shared.steps[1][0] is trace.steps[1][0]
+    assert np.asarray(unchanged.history).tobytes() == np.asarray(base.history).tobytes()
+
+    weight = tree._observation_value.copy()
+    weight[2, 1] += 2e-13
+    candidate = tree._with_observation_value(weight)
+    ordinary = candidate.step(candidate.step(candidate.start(seed, memory)))
+    replayed, branch = candidate._replay_routes(seed, memory, 2, trace)
+    assert np.asarray(replayed.history).tobytes() == np.asarray(ordinary.history).tobytes()
+    assert 0 < abs(replayed.history[0][1] - base.history[0][1]) < 1e-8
+    assert branch.steps[0][0] is trace.steps[0][0] and branch.steps[1][0] is not trace.steps[1][0]
+    assert replayed.observation_scores == ordinary.observation_scores - trace.steps[0][0].attention.scored_nodes
+    assert not replayed.attention.reused_route
+
+
+def test_route_reuse_requires_the_same_bank_policy_and_binary_seed():
+    tree = TreeFeedbackKernel(depth=4, max_frontier=16, **_weights())
+    rows = _structured_rows()
+    memory = tree.prepare(rows)
+    seed = [1, 0.0, 0, 0]
+    _, trace = tree._replay_routes(seed, memory, 1)
+    cases = ((tree, tree.revise(memory, {0: rows[0]}), seed),
+             (tree.with_frontier(2), memory, seed),
+             (tree, memory, [1, -0.0, 0, 0]))
+    for kernel, snapshot, query in cases:
+        fresh, _ = kernel._replay_routes(query, snapshot, 1, trace)
+        assert not fresh.attention.reused_route and fresh.observation_scores > 0
+
+
+def test_workspace_route_reuse_preserves_admission_and_rebuilds_after_slot_edit(monkeypatch):
+    tree = _repair_tree()
+    rows = [[0], [1]]
+    probes = [FeedbackProbe((1,), 1, (0.4,))]
+    guards = [FeedbackProbe((-1,), 1, (0,))]
+    options = dict(max_reference_frontier=2, max_update_norm=1, guards=guards)
+    ordinary = FeedbackWorkspace(tree, rows, probes, **options)
+    shared = FeedbackWorkspace(tree, rows, probes, reuse_tree_routes=True, **options)
+    original_route = TreeFeedbackKernel._route
+    scores = 0
+
+    def count_scores(kernel, state, diagnostics=None):
+        nonlocal scores
+        route = original_route(kernel, state, diagnostics)
+        scores += route.attention.scored_nodes
+        return route
+
+    monkeypatch.setattr(TreeFeedbackKernel, "_route", count_scores)
+    original = ordinary.maintain(max_candidates=1)
+    original_scores, scores = scores, 0
+    reused = shared.maintain(max_candidates=1)
+    assert reused.status == original.status == "committed"
+    assert reused.attempts == original.attempts
+    assert reused.revision.errors == original.revision.errors
+    assert reused.revision.guard_errors == original.revision.guard_errors
+    assert reused.revision.kernel._observation_value.tobytes() == original.revision.kernel._observation_value.tobytes()
+    assert scores < original_scores
+    assert reused.revision._guard_routes[0].steps[0][0] is reused.base._guard_routes[0].steps[0][0]
+
+    scores = 0
+    before = reused.revision
+    after = shared.revise_observation_slots(before, {0: [0.25]})
+    assert scores > 0 and after.memory is not before.memory
+    assert after._probe_routes[0].memory is after.memory
+    assert after._probe_routes[0].steps[0][0] is not before._probe_routes[0].steps[0][0]
