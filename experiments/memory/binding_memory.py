@@ -34,6 +34,31 @@ class BindingProof:
 
 
 @dataclass(frozen=True)
+class _Derivation:
+    strength: float
+    leaves: frozenset[tuple[str, str]]
+
+    def proof(self):
+        return BindingProof(self.strength, frozenset(origin for _, origin in self.leaves))
+
+
+@dataclass(frozen=True)
+class _Retained:
+    proof: BindingProof | None
+    leaves: frozenset[tuple[str, str]]
+    inputs: frozenset[str]
+
+    def survives(self, changes, excluded):
+        cutoff = -np.inf if self.proof is None else self.proof.strength
+        for node, origin, before, after in changes:
+            if node not in self.inputs or origin in excluded:
+                continue
+            if before <= cutoff < after or (after < cutoff and (node, origin) in self.leaves):
+                return False
+        return True
+
+
+@dataclass(frozen=True)
 class _Support:
     terms: Mapping[frozenset[str], float]
     strongest: float
@@ -104,14 +129,18 @@ class BindingMemory:
     _gate_index: Mapping[str, int]
     _sources: Mapping[str, Mapping[tuple[str, int], float]]
     _rows: Mapping[tuple[str, int], _Support]
+    _retained: Mapping[tuple[str, int, frozenset[str]], _Retained]
     materialize: bool = True
+    retained_limit: int = 64
 
     @classmethod
-    def prepare(cls, predicates, width, gates, sources, *, term_limit=64, pair_limit=65536, materialize=True):
+    def prepare(cls, predicates, width, gates, sources, *, term_limit=64, pair_limit=65536,
+                materialize=True, retained_limit=64):
         """Compile gates in topological order and apply the initial source batch."""
         predicates = tuple(predicates)
         width, term_limit, pair_limit = index(width), index(term_limit), index(pair_limit)
-        if min(width, term_limit, pair_limit) < 1:
+        retained_limit = index(retained_limit)
+        if min(width, term_limit, pair_limit, retained_limit) < 1:
             raise ValueError("binding width and limits must be positive")
         if type(materialize) is not bool:
             raise ValueError("materialize must be a boolean")
@@ -135,13 +164,14 @@ class BindingMemory:
         dependents = MappingProxyType({node: tuple(users) for node, users in known.items()})
         positions = MappingProxyType({node: position for position, (node, _) in enumerate(ordered)})
         empty = cls(width, term_limit, pair_limit, frozenset(predicates), tuple(ordered), dependents,
-                    positions, _EMPTY, _EMPTY, materialize)
+                    positions, _EMPTY, _EMPTY, _EMPTY, materialize, retained_limit)
         return empty.revise(sources)
 
     def revise(self, changes):
         """Replace all facts for each supplied source ID, or remove it with None."""
         sources = None
         inputs = {}
+        deltas = {}
         for source, facts in changes.items():
             if type(source) is not str or not source:
                 raise ValueError("source IDs must be nonempty strings")
@@ -157,8 +187,12 @@ class BindingMemory:
                 del sources[source]
             term = frozenset({source})
             for key in previous.keys() | current.keys():
-                if previous.get(key) == current.get(key):
+                before, after = previous.get(key, -np.inf), current.get(key, -np.inf)
+                if before == after:
                     continue
+                if self._retained:
+                    node, binding = key
+                    deltas.setdefault(binding, []).append((node, source, before, after))
                 if key not in inputs:
                     inputs[key] = dict(self._rows.get(key, _UNSUPPORTED).terms)
                 if key in current:
@@ -196,7 +230,13 @@ class BindingMemory:
             children = [rows.get((parent, binding), _UNSUPPORTED).terms for parent in gate.parents]
             terms, pairs_left = _gate_terms(gate, children, self.term_limit, pairs_left)
             install(node, binding, terms)
-        return replace(self, _sources=MappingProxyType(sources), _rows=MappingProxyType(rows))
+        retained = self._retained
+        if deltas:
+            surviving = {key: result for key, result in retained.items()
+                         if result.survives(deltas.get(key[1], ()), key[2])}
+            if len(surviving) != len(retained):
+                retained = MappingProxyType(surviving)
+        return replace(self, _sources=MappingProxyType(sources), _rows=MappingProxyType(rows), _retained=retained)
 
     def supports(self, node, binding):
         """Return the retained source sets and strengths for a specific binding."""
@@ -208,10 +248,7 @@ class BindingMemory:
 
     def resolve(self, node, binding, *, without_sources=(), work_limit=65536):
         """Select a strongest proof, or return None after establishing no support."""
-        binding = _checked_binding(binding, self.width)
-        if node not in self._dependents:
-            raise ValueError("unknown binding node")
-        excluded = _exclusions(without_sources)
+        node, binding, excluded = self._proof_key(node, binding, without_sources)
         if self.materialize:
             candidates = self.supports(node, binding)
             strength, origins = max(
@@ -219,8 +256,46 @@ class BindingMemory:
                 key=lambda item: (item[0], tuple(sorted(item[1]))), default=(-np.inf, None),
             )
             return None if origins is None else BindingProof(strength, origins)
+        work_limit = _proof_work_limit(work_limit)
+        retained = self._retained.get((node, binding, excluded))
+        if retained is not None:
+            return retained.proof
         search = _ProofSearch(self, node, excluded, work_limit)
         return search.resolve(binding)
+
+    def remember(self, node, binding, *, without_sources=(), work_limit=65536):
+        """Return a factored snapshot with one completed proof read retained."""
+        if self.materialize:
+            raise ValueError("remember requires a factored binding bank")
+        key = self._proof_key(node, binding, without_sources)
+        work_limit = _proof_work_limit(work_limit)
+        if key in self._retained:
+            return self
+        node, binding, excluded = key
+        search = _ProofSearch(self, node, excluded, work_limit)
+        derivation = search.derive(binding)
+        if derivation is None:
+            stored = _Retained(None, frozenset(), frozenset(search.inputs))
+        else:
+            stored = _Retained(derivation.proof(), derivation.leaves, frozenset(search.inputs))
+        retained = dict(self._retained)
+        if len(retained) == self.retained_limit:
+            del retained[next(iter(retained))]
+        retained[key] = stored
+        return replace(self, _retained=MappingProxyType(retained))
+
+    def _proof_key(self, node, binding, without_sources):
+        binding = _checked_binding(binding, self.width)
+        if node not in self._dependents:
+            raise ValueError("unknown binding node")
+        return node, binding, _exclusions(without_sources)
+
+
+def _proof_work_limit(work_limit):
+    work_limit = index(work_limit)
+    if work_limit < 1:
+        raise ValueError("proof work limit must be positive")
+    return work_limit
 
 
 def _exclusions(without_sources):
@@ -241,9 +316,7 @@ class _Task:
 
 class _ProofSearch:
     def __init__(self, memory, output, excluded, work_limit):
-        self.remaining = index(work_limit)
-        if self.remaining < 1:
-            raise ValueError("proof work limit must be positive")
+        self.remaining = _proof_work_limit(work_limit)
         self.rows, self.output, self.excluded = memory._rows, output, excluded
         pending, seen = [output], set()
         inputs, positions = [], []
@@ -281,6 +354,10 @@ class _ProofSearch:
             raise BindingCapacityError("proof search work limit exceeded")
 
     def resolve(self, binding):
+        derivation = self.derive(binding)
+        return None if derivation is None else derivation.proof()
+
+    def derive(self, binding):
         leaves, upper, strengths = {}, {}, set()
         for node in self.inputs:
             candidates = self.rows.get((node, binding), _UNSUPPORTED).terms
@@ -299,7 +376,7 @@ class _ProofSearch:
         if ceiling == -np.inf:
             return None
         if self.unguarded:
-            return BindingProof(ceiling, self.unguarded_sources(upper, leaves))
+            return _Derivation(ceiling, self.unguarded_leaves(upper, leaves))
         domains = self.matching_domains(leaves) if self.single_source_matching else None
 
         def witness(threshold):
@@ -309,7 +386,7 @@ class _ProofSearch:
 
         proof = witness(ceiling)
         if proof is not None:
-            return BindingProof(ceiling, proof)
+            return _Derivation(ceiling, proof)
         levels = sorted(value for value in strengths if value < ceiling)
         lo, hi = 0, len(levels)
         best = None
@@ -320,12 +397,12 @@ class _ProofSearch:
             if proof is None:
                 hi = middle
             else:
-                best = BindingProof(threshold, proof)
+                best = _Derivation(threshold, proof)
                 lo = middle + 1
         return best
 
-    def unguarded_sources(self, upper, leaves):
-        pending, seen, origins = [self.output], set(), set()
+    def unguarded_leaves(self, upper, leaves):
+        pending, seen, selected = [self.output], set(), set()
         while pending:
             node = pending.pop()
             if node in seen:
@@ -334,25 +411,26 @@ class _ProofSearch:
             self.charge()
             gate = self.rules.get(node)
             if gate is None:
-                origins.add(leaves[node][0][1])
+                selected.add((node, leaves[node][0][1]))
                 continue
             self.charge(len(gate.parents))
             if gate.operation == "or":
                 pending.append(max(gate.parents, key=upper.__getitem__))
             else:
                 pending.extend(gate.parents)
-        return frozenset(origins)
+        return frozenset(selected)
 
     def matching_domains(self, leaves):
-        domains = {node: {origin: value for value, origin in choices} for node, choices in leaves.items()}
+        domains = {node: {origin: (value, node) for value, origin in choices} for node, choices in leaves.items()}
         for node, gate in self.rules.items():
             if node == self.output:
                 break
             merged = {}
             for parent in gate.parents:
                 self.charge(1 + len(domains[parent]))
-                for origin, value in domains[parent].items():
-                    merged[origin] = max(merged.get(origin, 0.0), value)
+                for origin, choice in domains[parent].items():
+                    if origin not in merged or choice > merged[origin]:
+                        merged[origin] = choice
             domains[node] = merged
         return tuple(domains[parent] for parent in self.rules[self.output].parents)
 
@@ -360,7 +438,7 @@ class _ProofSearch:
         choices = []
         for domain in domains:
             self.charge(1 + len(domain))
-            choices.append(tuple(sorted(origin for origin, value in domain.items() if value >= threshold)))
+            choices.append(tuple(sorted(origin for origin, (value, _) in domain.items() if value >= threshold)))
         owners, selected = {}, {}
         for start in sorted(range(len(choices)), key=lambda branch: len(choices[branch])):
             pending, visited = deque([start]), {start}
@@ -390,7 +468,7 @@ class _ProofSearch:
                 previous = selected.get(branch)
                 selected[branch] = free
                 free = previous
-        return frozenset(owners)
+        return frozenset((domains[branch][origin][1], origin) for branch, origin in selected.items())
 
     def witness(self, threshold, upper, leaves):
         scopes = count()
@@ -411,7 +489,7 @@ class _ProofSearch:
                         if any(claims.get((scope, source), branch) != branch for scope, branch in guards):
                             continue
                         next_claims = claims | {(scope, source): branch for scope, branch in guards}
-                        stack.append((following, next_claims, used | {source}))
+                        stack.append((following, next_claims, used | {(node, source)}))
                     break
                 self.charge(len(gate.parents))
                 if gate.operation == "or":
@@ -445,10 +523,17 @@ def continue_bindings(seed, *, memory=None, output=None, without_sources=(), wor
     if output not in memory._dependents:
         raise ValueError("unknown binding node")
     if not memory.materialize:
-        search = _ProofSearch(memory, output, excluded, work_limit)
+        work_limit = _proof_work_limit(work_limit)
+        search = None
         strengths = np.full(memory.width, -np.inf)
         for binding in range(memory.width):
-            proof = search.resolve(binding)
+            retained = memory._retained.get((output, binding, excluded))
+            if retained is None:
+                if search is None:
+                    search = _ProofSearch(memory, output, excluded, work_limit)
+                proof = search.resolve(binding)
+            else:
+                proof = retained.proof
             if proof is not None:
                 strengths[binding] = proof.strength
         return _frozen(np.minimum(seed, strengths))

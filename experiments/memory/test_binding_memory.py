@@ -331,3 +331,91 @@ def test_general_nested_overlap_can_still_exhaust_search_budget():
     assert eager.resolve("out", 0) is None
     with pytest.raises(BindingCapacityError, match="proof search work limit"):
         factored.resolve("out", 0, work_limit=5000)
+
+
+def test_retained_optimum_survives_edits_below_or_already_above_the_cutoff():
+    gates = {
+        "left": BindingGate("or", ("x", "y")),
+        "out": BindingGate("disjoint_and", ("left", "b")),
+    }
+    bank = BindingMemory.prepare(("x", "y", "b"), 1, gates, {
+        "p": [("x", 0, .9), ("y", 0, .2)],
+        "q": [("b", 0, .8)],
+    }, materialize=False)
+    pinned = bank.remember("out", 0)
+    expected = BindingProof(.8, frozenset({"p", "q"}))
+    assert pinned.resolve("out", 0, work_limit=1) == expected
+    assert pinned.remember("out", 0, work_limit=1) is pinned
+    with pytest.raises(BindingCapacityError):
+        bank.resolve("out", 0, work_limit=1)
+
+    revised = pinned.revise({
+        "p": [("x", 0, 1), ("y", 0, .3)],
+        "r": [("b", 0, .7)],
+    })
+    assert revised.resolve("out", 0, work_limit=1) is pinned.resolve("out", 0, work_limit=1)
+    promoted = revised.revise({"r": [("b", 0, .85)]})
+    with pytest.raises(BindingCapacityError):
+        promoted.resolve("out", 0, work_limit=1)
+    assert promoted.resolve("out", 0) == BindingProof(.85, frozenset({"p", "r"}))
+
+    updated = promoted.remember("out", 0)
+    moved = updated.revise({"p": [("y", 0, .3)]})
+    with pytest.raises(BindingCapacityError):
+        moved.resolve("out", 0, work_limit=1)
+    assert moved.resolve("out", 0).strength == .3
+    assert updated.resolve("out", 0, work_limit=1).strength == .85
+
+
+def test_retained_absence_and_zero_use_binding_and_exclusion_keys():
+    gates = {"out": BindingGate("disjoint_and", ("a", "b"))}
+    bank = BindingMemory.prepare(("a", "b"), 2, gates, {
+        "p": [("a", 0, 1), ("b", 0, 1)],
+        "q": [("b", 1, 1)],
+        "r": [("a", 1, 0)],
+    }, materialize=False)
+    pinned = bank.remember("out", 0).remember("out", 1).remember("out", 0, without_sources=("q",))
+    assert pinned.resolve("out", 0, work_limit=1) is None
+    np.testing.assert_array_equal(continue_bindings([1, 1], memory=pinned, output="out", work_limit=1),
+                                  [-np.inf, 0])
+
+    revised = pinned.revise({"q": [("b", 0, 0)]})
+    assert revised.resolve("out", 0, work_limit=1, without_sources=("q",)) is None
+    for binding in (0, 1):
+        with pytest.raises(BindingCapacityError):
+            revised.resolve("out", binding, work_limit=1)
+    assert revised.resolve("out", 0) == BindingProof(0, frozenset({"p", "q"}))
+    assert revised.resolve("out", 1) is None
+    assert pinned.resolve("out", 1, work_limit=1) == BindingProof(0, frozenset({"q", "r"}))
+
+
+def test_retention_checks_selected_predicates_in_a_scoped_proof():
+    gates = {"both": BindingGate("and", ("a", "a")),
+             "out": BindingGate("disjoint_and", ("both", "b"))}
+    bank = BindingMemory.prepare(("a", "b"), 1, gates, {
+        "p": [("a", 0, .9), ("b", 0, .9)],
+        "q": [("a", 0, .6)],
+    }, materialize=False).remember("out", 0)
+    expected = BindingProof(.6, frozenset({"p", "q"}))
+    assert bank.resolve("out", 0, work_limit=1) == expected
+    moved = bank.revise({"q": [("b", 0, .6)]})
+    with pytest.raises(BindingCapacityError):
+        moved.resolve("out", 0, work_limit=1)
+    assert moved.resolve("out", 0) == expected
+
+
+def test_retention_capacity_and_search_refusal_leave_prior_snapshots_available():
+    bank = BindingMemory.prepare(("a",), 2, {}, {
+        "p": [("a", 0, .7), ("a", 1, .4)],
+    }, materialize=False, retained_limit=1)
+    first = bank.remember("a", 0)
+    with pytest.raises(BindingCapacityError):
+        first.remember("a", 1, work_limit=1)
+    assert first.resolve("a", 0, work_limit=1).strength == .7
+    second = first.remember("a", 1)
+    assert second.resolve("a", 1, work_limit=1).strength == .4
+    with pytest.raises(BindingCapacityError):
+        second.resolve("a", 0, work_limit=1)
+    assert first.resolve("a", 0, work_limit=1).strength == .7
+    with pytest.raises(ValueError):
+        second.resolve("a", 1, work_limit=0)
