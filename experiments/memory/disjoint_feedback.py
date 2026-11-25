@@ -1,7 +1,10 @@
 """Feed a pinned source-disjoint transition back into the normal hidden-state update."""
 
 from dataclasses import InitVar, dataclass, replace
+from heapq import nlargest
 from math import copysign, isfinite
+from numbers import Real
+from operator import index
 from threading import Lock
 
 import numpy as np
@@ -219,27 +222,135 @@ class StaleRelationRevision(RuntimeError):
 
 
 class RelationGuardFailed(ValueError):
-    """A joint revision changed a protected numerical trajectory."""
+    """A joint revision violated a protected trajectory or outcome."""
+
+
+@dataclass(frozen=True)
+class TerminalRelationGrade:
+    """Require one terminal destination grade within bounds, or require absence."""
+
+    destination: int
+    bounds: tuple[float, float] | None = None
+
+    def __post_init__(self):
+        destination = index(self.destination)
+        if destination < 0:
+            raise ValueError("terminal destination must be nonnegative")
+        object.__setattr__(self, "destination", destination)
+        if self.bounds is not None:
+            lower, upper = self.bounds
+            if not isinstance(lower, Real) or not isinstance(upper, Real) or not 0. <= lower <= upper <= 1.:
+                raise ValueError("terminal grade bounds must be an ordered interval in [0, 1]")
+            object.__setattr__(self, "bounds", (float(lower), float(upper)))
+
+    def _holds(self, grades):
+        grade = grades[self.destination]
+        if self.bounds is None:
+            return grade == -np.inf
+        lower, upper = self.bounds
+        return lower <= grade <= upper
+
+
+@dataclass(frozen=True)
+class TerminalHiddenDecision:
+    """Keep the selected coordinate or abstention within a declared candidate set."""
+
+    candidates: tuple[int, ...]
+    winner: int | None
+    margin: float = 0.
+
+    def __post_init__(self):
+        candidates = tuple(map(index, self.candidates))
+        if len(candidates) < 2 or min(candidates) < 0 or len(set(candidates)) != len(candidates):
+            raise ValueError("terminal decision needs at least two distinct nonnegative candidates")
+        winner = None if self.winner is None else index(self.winner)
+        if winner is not None and winner not in candidates:
+            raise ValueError("terminal winner must be a declared candidate")
+        if not isinstance(self.margin, Real) or not isfinite(self.margin) or self.margin < 0.:
+            raise ValueError("terminal decision margin must be finite and nonnegative")
+        object.__setattr__(self, "candidates", candidates)
+        object.__setattr__(self, "winner", winner)
+        object.__setattr__(self, "margin", float(self.margin))
+
+    def _holds(self, latest):
+        first, second = nlargest(2, self.candidates, key=latest.__getitem__)
+        gap = float(latest[first]) - float(latest[second])
+        selected = first if gap > 0. and gap >= self.margin else None
+        return selected == self.winner
+
+
+@dataclass(frozen=True)
+class RelationOutcomeGuard:
+    """Freeze a conjunction of terminal grade and hidden decision requirements."""
+
+    grades: tuple[TerminalRelationGrade, ...] = ()
+    decision: TerminalHiddenDecision | None = None
+
+    def __post_init__(self):
+        grades = tuple(self.grades)
+        if any(type(grade) is not TerminalRelationGrade for grade in grades):
+            raise ValueError("outcome grade checks must be TerminalRelationGrade records")
+        if len({grade.destination for grade in grades}) != len(grades):
+            raise ValueError("outcome grade destinations must be distinct")
+        if self.decision is not None and type(self.decision) is not TerminalHiddenDecision:
+            raise ValueError("outcome decision must be a TerminalHiddenDecision record")
+        if not grades and self.decision is None:
+            raise ValueError("an outcome guard needs at least one terminal requirement")
+        object.__setattr__(self, "grades", grades)
+
+    def _validate(self, state):
+        if not state._trace:
+            raise ValueError("an outcome guard needs a completed trajectory step")
+        if self.grades:
+            if state._grades is None:
+                raise ValueError("terminal grade checks require an executed relation read")
+            if any(grade.destination >= state._grades.size for grade in self.grades):
+                raise ValueError("terminal grade destination is outside the relation frame")
+        if self.decision is not None and max(self.decision.candidates) >= state.latest.size:
+            raise ValueError("terminal decision candidate is outside the hidden row")
+        if not self._holds(state):
+            raise RelationGuardFailed("initial trajectory violates its protected outcome")
+
+    def _holds(self, state):
+        if self.grades and (state._grades is None or not all(grade._holds(state._grades) for grade in self.grades)):
+            return False
+        return self.decision is None or self.decision._holds(state.latest)
+
+
+def _same_trajectory(left, right):
+    before = left._feedback._history + (left._grades,)
+    after = right._feedback._history + (right._grades,)
+    return all(old is new or (old is not None and new is not None
+                              and np.array_equal(old.view(np.uint64), new.view(np.uint64)))
+               for old, new in zip(before, after, strict=True))
 
 
 @dataclass(frozen=True, eq=False)
 class _RelationWorkspacePin:
     memory: _RelationObservation
     protected: tuple[DisjointFeedbackState, ...]
+    _outcomes: tuple[RelationOutcomeGuard | None, ...]
 
 
 class DisjointFeedbackWorkspace:
     """One in-process publication point for guarded relation revisions."""
 
-    def __init__(self, receiver, memory, *, protected=()):
+    def __init__(self, receiver, memory, *, protected=(), outcome_guards=()):
         receiver._require_memory(memory)
-        protected = tuple(protected)
-        for state in protected:
+        checks = [(state, None) for state in protected]
+        for state, outcome in outcome_guards:
+            if type(outcome) is not RelationOutcomeGuard:
+                raise ValueError("outcome_guards requires a state and a RelationOutcomeGuard")
+            checks.append((state, outcome))
+        for state, outcome in checks:
             receiver._require_state(state)
             if state._memory is not memory:
                 raise ValueError("protected trajectories must start at the workspace's relation pin")
+            if outcome is not None:
+                outcome._validate(state)
         self._receiver = receiver
-        self._tip = _RelationWorkspacePin(memory, protected)
+        self._tip = _RelationWorkspacePin(memory, tuple(state for state, _ in checks),
+                                          tuple(outcome for _, outcome in checks))
         self._lock = Lock()
 
     def pin(self):
@@ -253,19 +364,17 @@ class DisjointFeedbackWorkspace:
         receiver = self._receiver
         revision = receiver.merge_revisions(parent.memory, *drafts)
         checked = []
-        for i, state in enumerate(parent.protected):
+        for i, (state, outcome) in enumerate(zip(parent.protected, parent._outcomes, strict=True)):
             candidate, _ = receiver.rebase(state, revision)
-            before = state._feedback._history + (state._grades,)
-            after = candidate._feedback._history + (candidate._grades,)
-            for old, new in zip(before, after, strict=True):
-                if old is new:
-                    continue
-                if old is None or new is None or not np.array_equal(old.view(np.uint64), new.view(np.uint64)):
+            if outcome is None:
+                if not _same_trajectory(state, candidate):
                     raise RelationGuardFailed(f"joint relation revision changed protected trajectory {i}")
+            elif not outcome._holds(candidate):
+                raise RelationGuardFailed(f"joint relation revision violated protected outcome {i}")
             checked.append(candidate)
         with self._lock:
             if self._tip is not parent:
                 raise StaleRelationRevision("relation workspace tip changed during evaluation")
             if revision.memory is not parent.memory:
-                self._tip = _RelationWorkspacePin(revision.memory, tuple(checked))
+                self._tip = _RelationWorkspacePin(revision.memory, tuple(checked), parent._outcomes)
             return self._tip

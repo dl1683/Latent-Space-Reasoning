@@ -10,16 +10,20 @@ from experiments.memory.disjoint_feedback import (
     DisjointFeedback,
     DisjointFeedbackWorkspace,
     RelationGuardFailed,
+    RelationOutcomeGuard,
     StaleRelationRevision,
+    TerminalHiddenDecision,
+    TerminalRelationGrade,
 )
 from experiments.memory.disjoint_transition import DisjointTransitionMemory
 from experiments.memory.latent_feedback import FeedbackKernel
 
 
-def _kernel():
+def _kernel(*, carry_from_two=0.):
     keys = np.zeros((5, 1))
     carry = np.zeros((5, 5))
     carry[0, 1] = .2
+    carry[2, 1] = carry_from_two
     return FeedbackKernel(query=keys, carry=carry, observation_key=keys,
                           observation_value=.1 * np.eye(5), feedback_key=keys,
                           feedback_value=np.zeros((5, 5)), max_steps=2)
@@ -301,12 +305,15 @@ def test_noop_and_duplicate_drafts_preserve_tied_witness_order():
         assert witness.middle == 1 and not np.signbit(witness.strength)
 
 
-def test_workspace_fences_a_publication_that_loses_the_tip_during_replay(monkeypatch):
+@pytest.mark.parametrize("terminal_outcome", [False, True])
+def test_workspace_fences_a_publication_that_loses_the_tip_during_replay(monkeypatch, terminal_outcome):
     receiver = DisjointFeedback(_kernel(), query=np.eye(5), presence_value=np.zeros((5, 5)),
                                 grade_value=np.eye(5), floor=.1)
     memory = receiver.prepare(DisjointTransitionMemory.prepare(5, {}), np.eye(5))
     protected = receiver.step(receiver.start([1., 0., 0., 0., 0.], memory))
-    workspace = DisjointFeedbackWorkspace(receiver, memory, protected=[protected])
+    protection = (dict(outcome_guards=[(protected, RelationOutcomeGuard((TerminalRelationGrade(2),)))])
+                  if terminal_outcome else dict(protected=[protected]))
+    workspace = DisjointFeedbackWorkspace(receiver, memory, **protection)
     parent = workspace.pin()
     blocked = receiver.revise_memory(memory, {"losing": [(0, 0, 1, .9)]})
     winner = receiver.revise_memory(memory, {"winning": [(0, 0, 1, .8)]})
@@ -333,3 +340,122 @@ def test_workspace_fences_a_publication_that_loses_the_tip_during_replay(monkeyp
     assert tip.protected[0].feedback is protected.feedback
     with pytest.raises(StaleRelationRevision, match="before evaluation"):
         workspace.publish(parent, blocked)
+
+
+def test_outcome_guard_allows_hidden_change_and_keeps_absolute_limits_across_pins():
+    receiver = DisjointFeedback(_kernel(carry_from_two=.42), query=np.eye(5), presence_value=np.zeros((5, 5)),
+                                grade_value=np.eye(5), floor=.1)
+    bank = _transitions().revise({"second": [(1, 1, 2, .6)], "later-second": [(1, 3, 4, .3)]})
+    memory = receiver.prepare(bank, np.eye(5))
+
+    def run(pin, seed):
+        return receiver.step(receiver.step(receiver.start(seed, pin)))
+
+    seed = [1., 0., 0., 0., 0.]
+    active = run(memory, seed)
+    quiet = run(memory, [0.] * 5)
+    bounds = [.25, .35]
+    grades = [TerminalRelationGrade(4, bounds), TerminalRelationGrade(2)]
+    candidates = [0, 1, 2, 3, 4]
+    outcome = RelationOutcomeGuard(grades, TerminalHiddenDecision(candidates, winner=4, margin=.005))
+    workspace = DisjointFeedbackWorkspace(receiver, memory, protected=(quiet,), outcome_guards=[(active, outcome)])
+    strict = DisjointFeedbackWorkspace(receiver, memory, protected=(active,))
+    bounds[:] = [0., 1.]
+    grades.clear()
+    candidates.clear()
+
+    draft = receiver.revise_memory(memory, {"second": [(1, 1, 2, .55)]})
+    with pytest.raises(RelationGuardFailed, match="changed protected trajectory"):
+        strict.publish(strict.pin(), draft)
+    tip = workspace.publish(workspace.pin(), draft)
+    assert tip.protected[0].feedback is quiet.feedback
+    candidate = tip.protected[1]
+    assert candidate.feedback.history[0][2] < active.feedback.history[0][2]
+    assert candidate.grades[4] == active.grades[4] == .3
+    np.testing.assert_array_equal(candidate.feedback.history, run(tip.memory, seed).feedback.history)
+
+    within = receiver.revise_memory(tip.memory, {"later-second": [(1, 3, 4, .26)]})
+    tip = workspace.publish(tip, within)
+    assert tip.protected[1].grades[4] == .26
+    below = receiver.revise_memory(tip.memory, {"later-second": [(1, 3, 4, .23)]})
+    below_bound, _ = receiver.rebase(tip.protected[1], below)
+    assert np.argmax(below_bound.latest) == 4 and below_bound.grades[4] == .23
+    competitor = receiver.revise_memory(tip.memory, {"second": [(1, 1, 2, .9)]})
+    competing, _ = receiver.rebase(tip.protected[1], competitor)
+    np.testing.assert_array_equal(competing.grades, tip.protected[1].grades)
+    assert competing.latest[1] > competing.latest[4]
+    for rejected in (below, competitor):
+        with pytest.raises(RelationGuardFailed, match="violated protected outcome 1"):
+            workspace.publish(tip, rejected)
+        assert workspace.pin() is tip
+
+
+def test_outcome_guard_distinguishes_absence_supported_zero_and_bypass():
+    receiver = DisjointFeedback(_kernel(), query=np.eye(5), presence_value=np.zeros((5, 5)),
+                                grade_value=np.eye(5), floor=.1)
+    memory = receiver.prepare(DisjointTransitionMemory.prepare(5, {}), np.eye(5))
+    base = receiver.start([.1, 0., 0., 0., 0.], memory)
+    no_path = receiver.step(base)
+    absent = RelationOutcomeGuard([TerminalRelationGrade(2)])
+    zero = RelationOutcomeGuard([TerminalRelationGrade(2, (0., 0.))])
+
+    with pytest.raises(ValueError, match="require an executed relation read"):
+        DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[(receiver.step(base, use_operator=False), absent)])
+    with pytest.raises(RelationGuardFailed, match="initial trajectory"):
+        DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[(no_path, zero)])
+
+    workspace = DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[(no_path, absent)])
+    parent = workspace.pin()
+    left = receiver.revise_memory(memory, {"left": [(0, 0, 1, .9)]})
+    right = receiver.revise_memory(memory, {"right": [(1, 1, 2, .7)]})
+    joint = receiver.merge_revisions(memory, left, right)
+    supported_zero, _ = receiver.rebase(no_path, joint)
+    assert supported_zero.grades[2] == 0.
+    np.testing.assert_array_equal(supported_zero.latest, no_path.latest)
+    with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
+        workspace.publish(parent, left, right)
+    assert workspace.pin() is parent
+
+    workspace = DisjointFeedbackWorkspace(receiver, joint.memory, outcome_guards=[(supported_zero, zero)])
+    parent = workspace.pin()
+    removal = receiver.revise_memory(joint.memory, {"left": None})
+    with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
+        workspace.publish(parent, removal)
+    assert workspace.pin() is parent
+
+
+def test_outcome_indices_are_checked_against_their_own_coordinate_frames():
+    receiver = DisjointFeedback(_kernel(), query=np.eye(5), presence_value=np.zeros((5, 5)),
+                                grade_value=np.eye(5), floor=.1)
+    memory = receiver.prepare(DisjointTransitionMemory.prepare(6, {}), np.zeros((6, 5)))
+    base = receiver.start([0.] * 5, memory)
+    state = receiver.step(base)
+    grade = RelationOutcomeGuard([TerminalRelationGrade(5)])
+    assert DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[(state, grade)]).pin().protected == (state,)
+    with pytest.raises(ValueError, match="completed trajectory step"):
+        DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[(base, grade)])
+    with pytest.raises(ValueError, match="outside the hidden row"):
+        winner = RelationOutcomeGuard(decision=TerminalHiddenDecision([0, 5], winner=5))
+        DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[(state, winner)])
+    with pytest.raises(RelationGuardFailed, match="initial trajectory"):
+        tie = RelationOutcomeGuard(decision=TerminalHiddenDecision([0, 1], winner=0))
+        DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[(state, tie)])
+
+
+def test_outcome_can_preserve_abstention_even_as_hidden_scores_change():
+    receiver = DisjointFeedback(_kernel(), query=np.eye(5), presence_value=np.zeros((5, 5)),
+                                grade_value=np.eye(5), floor=.1)
+    bank = DisjointTransitionMemory.prepare(5, {"left": [(0, 0, 1, .9)]})
+    memory = receiver.prepare(bank, np.eye(5))
+    initial = receiver.step(receiver.start([1., 0., 0., 0., 0.], memory))
+    outcome = RelationOutcomeGuard(decision=TerminalHiddenDecision([1, 2], winner=None, margin=.25))
+    workspace = DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[(initial, outcome)])
+    weak = receiver.revise_memory(memory, {"right": [(1, 1, 2, .25)]})
+    tip = workspace.publish(workspace.pin(), weak)
+    assert initial.latest[1] > initial.latest[2]
+    assert tip.protected[0].latest[2] > tip.protected[0].latest[1]
+
+    strong = receiver.revise_memory(tip.memory, {"right": [(1, 1, 2, .85)]})
+    with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
+        workspace.publish(tip, strong)
+    assert workspace.pin() is tip

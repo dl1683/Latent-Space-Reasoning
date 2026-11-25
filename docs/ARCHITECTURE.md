@@ -127,6 +127,14 @@ A dominated alternate can conservatively force replay without changing the resul
 
 The comparator is a serial coordinator given the same proposed changes, combined compile and protected replays. Joint checking guards an interaction that individual checks can miss. An early affected step or publication contention can still make the work expensive. Count worker draft compilation, joint compilation, protected replay and work discarded when a pin advances. Durable recovery, automatic proposal generation and learned usefulness remain open.
 
+#### Protecting terminal outcomes
+
+[SLICE] `DisjointFeedbackWorkspace(..., outcome_guards=((state, spec), ...))` accepts an opt-in `RelationOutcomeGuard` for a recorded trajectory through at least one generated step. The workspace verifies the guard at the opening pin and supports outcome checks alongside the bitwise checks supplied through `protected`. Relation and hidden indices are validated against their respective coordinate frames.
+
+Each `TerminalRelationGrade(destination, bounds)` requires either a supported grade in an inclusive interval within `[0, 1]` or, with `bounds=None`, an observed grade of negative infinity. `[0, 0]` accepts supported zero with either sign. Grade checks require an executed terminal relation read. A `TerminalHiddenDecision(candidates, winner, margin)` selects the top declared coordinate when it has a positive lead over the runner-up and meets the specified margin. `winner=None` requires a tie or a lead below that margin. This is a numerical readout on declared coordinates. An executed grade check describes that trajectory's terminal query, and witness identity and conclusions from other queries fall outside the check.
+
+Publication uses the combined revision and each protected state's recorded schedule. It installs the replayed states and the same absolute specifications together under the current-pin check. Intervals keep their opening bounds across subsequent admissions. An earlier hidden row can change while the terminal decision and grade requirements hold. Compare against exact hidden preservation and matched fresh replay under the same specifications. Weight the declared outcomes by real downstream value before interpreting admissions as useful maintenance.
+
 #### Committed Python imports
 
 [SLICE] `RepositoryImportMemory.prepare(repo, revision, package=..., source_root="src")` resolves a local Git commit and reads regular tracked Python blobs whose paths form module names in the chosen package. It parses explicit import module names, including `from .module import name`, without importing the package or reading its working tree. `revise(revision)` reads changed blobs in one batch and keeps unchanged module parses and their coordinates. Newly seen names append coordinates. Deleted files withdraw their assertions. Existing snapshots remain available as long as the caller retains them.
