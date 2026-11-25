@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
+from dataclasses import replace
 import json
 import os
 import subprocess
@@ -65,17 +66,17 @@ def _joint_journal(path, *, create=False, limit=2, allow_joint=True):
                                       max_reference_frontier=3, create=create, allow_joint=allow_joint)
 
 
-def _tradeoff_journal(path, *, create=False, trials=3):
+def _tradeoff_journal(path, *, create=False, trials=3, separate=False, guarded=False, floor=0.6):
     kernel = TreeFeedbackKernel(
         depth=2, max_frontier=4, query=[[0.15], [0]], carry=None,
         observation_key=[[1], [0]], observation_value=np.zeros((2, 2)),
         feedback_key=[[0], [0]], feedback_value=np.zeros((2, 2)), max_steps=1,
     )
-    probe = FeedbackProbe([1, 0], 1, [np.tanh(0.9), 0], FeedbackRoutingGoal(1, 0.6))
-    guard = FeedbackProbe([0, 1], 1, [0, 0])
+    probe = FeedbackProbe([1, 0], 1, [np.tanh(0.9), 0], FeedbackRoutingGoal(1, floor))
+    guard = FeedbackProbe([0.5, 0], 1, [0.24, 0]) if guarded else FeedbackProbe([0, 1], 1, [0, 0])
     return JournaledFeedbackWorkspace(path, kernel, [[-1, 0], [1, 0]], [probe],
                                       max_update_norm=2, guards=[guard], create=create,
-                                      allow_joint=True, joint_trials=trials)
+                                      allow_joint=True, joint_trials=trials, separate_joint_trials=separate)
 
 
 def test_leased_multitrial_joint_repair_replays_with_the_same_root_policy(tmp_path):
@@ -107,6 +108,89 @@ assert worker.snapshot().number == 0
     for wrong in (1, 2):
         with pytest.raises(ValueError, match="disagree with the feedback journal"):
             _tradeoff_journal(path, trials=wrong)
+
+
+def test_separate_workers_keep_both_joint_drafts_for_independent_admission(tmp_path):
+    path = tmp_path / "separate-trials.sqlite"
+    initial = _tradeoff_journal(path, create=True, separate=True, guarded=True)
+    queue = FeedbackRepairQueue(initial)
+    first = _complete_window(initial, queue, max_candidates=3)
+    assert first.version == 5 and first.candidates == ((0, "weight"), (0, "route"), (0, "joint:0"))
+    exhausted = queue.publish(first)
+    assert exhausted.status == "budget_exhausted" and exhausted.next_candidate == 3
+    assert exhausted.attempts[2].joint_trial == 0
+
+    coordinator = _tradeoff_journal(path, separate=True, guarded=True)
+    queue = FeedbackRepairQueue(coordinator)
+    previous = queue.publish(first)
+    assert previous.attempts == exhausted.attempts
+    plan = coordinator.plan_repairs(max_candidates=2, resume=previous)
+    assert plan.offset == 3 and plan.candidates == ((0, "joint:1"), (0, "joint:2"))
+    with pytest.raises(ValueError, match="does not match the candidate order"):
+        queue.enqueue(replace(plan, candidates=((0, "joint:01"), (0, "joint:2"))))
+    queue.enqueue(plan)
+    script = """
+from pathlib import Path
+import sys
+from time import monotonic, sleep
+from experiments.memory.feedback_repair_queue import FeedbackRepairQueue
+from experiments.memory.test_feedback_repair_queue import _synthesize, _tradeoff_journal
+worker = _tradeoff_journal(sys.argv[1], separate=True, guarded=True)
+queue = FeedbackRepairQueue(worker)
+lease = queue.claim(lease_seconds=60)
+marker = Path(sys.argv[1]).parent
+(marker / f"claimed-{lease.position}").touch()
+def wait_for(path):
+    deadline = monotonic() + 15
+    while not path.exists():
+        if monotonic() > deadline:
+            raise AssertionError(f"timed out waiting for {path.name}")
+        sleep(0.01)
+wait_for(marker / f"claimed-{1 - lease.position}")
+if lease.position == 0:
+    wait_for(marker / "completed-1")
+queue.complete(lease, _synthesize(worker, lease))
+(marker / f"completed-{lease.position}").touch()
+print(lease.plan.candidates[lease.position][1])
+"""
+
+    def fit():
+        return subprocess.run([sys.executable, "-B", "-c", script, str(path)], check=True,
+                              timeout=30, capture_output=True, text=True).stdout.strip()
+
+    with ThreadPoolExecutor(max_workers=2) as processes:
+        futures = tuple(processes.submit(fit) for _ in range(2))
+        assert {future.result() for future in futures} == {"joint:1", "joint:2"}
+    publisher = _tradeoff_journal(path, separate=True, guarded=True)
+    queue = FeedbackRepairQueue(publisher)
+    assert queue.ready_plans() == (first, plan)
+    result = queue.publish(plan)
+    assert result.status == "committed" and result.selected_attempt == 0
+    assert [entry.joint_trial for entry in result.attempts] == [1, 2]
+    assert "regresses a workspace guard" in result.attempts[1].rejection
+    assert result.revision.source_masses[0] == pytest.approx(0.8)
+    assert result.revision.guard_errors[0] < previous.base.guard_errors[0]
+    with closing(publisher._connect()) as db:
+        assert db.execute("SELECT kind, length(payload) FROM feedback_events").fetchall() == [("joint", 48)]
+    reopened = _tradeoff_journal(path, separate=True, guarded=True)
+    receipt = FeedbackRepairQueue(reopened).latest_receipt()
+    assert receipt.plan == plan and receipt.attempts == result.attempts
+    assert receipt.published_digest == reopened._tip.hex() and receipt.published_revision == 1
+    with pytest.raises(ValueError, match="disagree with the feedback journal"):
+        _tradeoff_journal(path, guarded=True)
+    with closing(reopened._connect()) as db:
+        db.execute("UPDATE feedback_repair_receipts SET selected = 1 WHERE published_revision = 1")
+    with pytest.raises(ValueError, match="selection disagrees with the recorded ranking"):
+        FeedbackRepairQueue(reopened).receipt(plan)
+
+
+def test_separate_plan_stops_before_a_level_rounds_to_one(tmp_path):
+    workspace = _tradeoff_journal(tmp_path / "one-ulp.sqlite", create=True, separate=True,
+                                  floor=np.nextafter(1.0, 0.0))
+    plan = workspace.plan_repairs(max_candidates=8)
+    assert plan.total == 3 and plan.candidates[-1] == (0, "joint:0")
+    with pytest.raises(ValueError, match="outside the available source levels"):
+        workspace.propose_routing(workspace.snapshot(), 0, joint=True, trial=1)
 
 
 def test_worker_fits_query_and_value_and_publishes_only_the_combination(tmp_path):

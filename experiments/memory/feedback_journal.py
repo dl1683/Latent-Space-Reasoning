@@ -14,7 +14,7 @@ import numpy as np
 
 from experiments.memory.feedback_workspace import (
     FeedbackMaintenanceRound, FeedbackProposal, FeedbackRepairAttempt, FeedbackWorkspace,
-    StaleFeedbackRevision,
+    StaleFeedbackRevision, _split_candidate_kind,
 )
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, _frozen, _real_array
 from experiments.memory.linear_feedback import LinearFeedbackKernel
@@ -110,7 +110,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
 
     def __init__(self, path, kernel, observations, probes, *, max_update_norm, atol=1e-8,
                  max_terms=0, source_ids=None, guards=(), allow_hinge=False, max_reference_frontier=None,
-                 reuse_tree_routes=False, max_retained_tree_scores=0, create=False, allow_joint=False, joint_trials=1):
+                 reuse_tree_routes=False, max_retained_tree_scores=0, create=False, allow_joint=False,
+                 joint_trials=1, separate_joint_trials=False):
         if type(create) is not bool:
             raise ValueError("journal creation flag must be a boolean")
         self._tree_bound = isinstance(kernel, TreeFeedbackKernel)
@@ -140,7 +141,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
                          atol=atol, max_terms=max_terms, guards=guards, allow_hinge=allow_hinge,
                          max_reference_frontier=max_reference_frontier, reuse_tree_routes=reuse_tree_routes,
                          max_retained_tree_scores=max_retained_tree_scores, allow_joint=allow_joint,
-                         joint_trials=joint_trials)
+                         joint_trials=joint_trials, separate_joint_trials=separate_joint_trials)
         self._path = Path(path).resolve()
         self._root = self._root_digest(initial_sources, observations if self._tree_bound else None)
         self._tip = self._root
@@ -233,6 +234,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             digest.update(b"\nfeedback joint query and value v1\n")
         if self._joint_trials > 1:
             digest.update(f"\nfeedback joint mass trials v1\n{self._joint_trials}\n".encode("ascii"))
+        if self._separate_joint_trials:
+            digest.update(b"\nfeedback separate joint trials v1\n")
         if self._guards:
             digest.update(b"\nfeedback guard probes v1\n")
             guards = [(probe.seed, probe.steps, probe.target) for probe in self._guards]
@@ -355,7 +358,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         policy = tuple(sorted(np.geterr().items()))
         if any(mode in ("call", "log") for _, mode in policy):
             raise ValueError("process repair plans need a data-only NumPy error policy")
-        version = 1 + self._has_routing + self._allow_joint + (self._joint_trials > 1)
+        version = 1 + self._has_routing + self._allow_joint + (self._joint_trials > 1) + self._separate_joint_trials
         return FeedbackSearchPlan(root, tip, base.number, offset, total,
                                   tuple(candidates[offset:offset + limit]), policy, version=version)
 
@@ -394,9 +397,10 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             raise ValueError("repair shard is outside the plan")
         results = []
         synthesize = self.propose if self._draft_tree_policy is not None else self._propose
-        for probe, kind in plan.candidates[start:stop]:
+        for probe, position_kind in plan.candidates[start:stop]:
+            kind, trial = _split_candidate_kind(position_kind)
             try:
-                proposal = (self.propose_routing(base, probe, joint=kind == "joint")
+                proposal = (self.propose_routing(base, probe, joint=kind == "joint", trial=trial)
                             if kind in ("route", "joint")
                             else synthesize(base, probe, conditional=kind in ("conditional", "hinge"),
                                             hinge=kind == "hinge"))
@@ -435,13 +439,14 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
 
         attempts = []
         best = None
-        for (probe, kind), candidate in zip(plan.candidates, results, strict=True):
+        for (probe, position_kind), candidate in zip(plan.candidates, results, strict=True):
             self._require_current(base)
+            kind, trial = _split_candidate_kind(position_kind)
             conditional, hinge = kind in ("conditional", "hinge"), kind == "hinge"
             routing, joint = kind in ("route", "joint"), kind == "joint"
             if candidate.payload is None:
                 attempts.append(FeedbackRepairAttempt(probe, conditional, candidate.rejection,
-                                                      hinge=hinge, routing=routing, joint=joint))
+                                                      hinge=hinge, routing=routing, joint=joint, joint_trial=trial))
                 continue
             proposal = self._decode_operator(base, kind, probe, candidate.payload)
             try:
@@ -450,13 +455,13 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
                 raise
             except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
                 attempts.append(FeedbackRepairAttempt(probe, conditional, str(error),
-                                                      hinge=hinge, routing=routing, joint=joint))
+                                                      hinge=hinge, routing=routing, joint=joint, joint_trial=trial))
                 continue
             rank = self._repair_rank(revised)
             if best is None or rank < best[0]:
                 best = rank, proposal, revised, len(attempts)
             attempts.append(FeedbackRepairAttempt(probe, conditional, rank=rank,
-                                                  hinge=hinge, routing=routing, joint=joint))
+                                                  hinge=hinge, routing=routing, joint=joint, joint_trial=trial))
         self._require_current(base)
         if best is not None:
             _, proposal, revised, selected = best

@@ -17,6 +17,12 @@ from experiments.memory.tree_feedback import TreeFeedbackKernel, TreeMemory, _Tr
 from experiments.memory.weight_program import _frobenius
 
 
+def _split_candidate_kind(kind):
+    if kind.startswith("joint:"):
+        return "joint", int(kind.removeprefix("joint:"))
+    return kind, None
+
+
 @dataclass(frozen=True)
 class FeedbackRoutingGoal:
     slot: int
@@ -112,6 +118,7 @@ class FeedbackRepairAttempt:
     fidelity_attempts: tuple[FeedbackFidelityAttempt, ...] = ()
     routing: bool = False
     joint: bool = False
+    joint_trial: int | None = None
 
 
 @dataclass(frozen=True)
@@ -129,7 +136,8 @@ class FeedbackWorkspace:
 
     def __init__(self, kernel, observations, probes, *, max_update_norm, atol=1e-8,
                  max_terms=0, guards=(), allow_hinge=False, max_reference_frontier=None,
-                 reuse_tree_routes=False, max_retained_tree_scores=0, allow_joint=False, joint_trials=1):
+                 reuse_tree_routes=False, max_retained_tree_scores=0, allow_joint=False,
+                 joint_trials=1, separate_joint_trials=False):
         if type(reuse_tree_routes) is not bool:
             raise ValueError("tree route reuse must be a boolean")
         self._max_retained_tree_scores = index(max_retained_tree_scores)
@@ -157,7 +165,10 @@ class FeedbackWorkspace:
         self._joint_trials = index(joint_trials)
         if type(joint_trials) is bool or self._joint_trials < 1 or (self._joint_trials > 1 and not allow_joint):
             raise ValueError("joint trials must be positive and multiple trials require joint edits")
+        if type(separate_joint_trials) is not bool or (separate_joint_trials and self._joint_trials == 1):
+            raise ValueError("separate joint trials require a boolean policy and more than one trial")
         self._allow_joint = allow_joint
+        self._separate_joint_trials = separate_joint_trials
         if self._has_routing:
             if type(kernel) not in (FeedbackKernel, TreeFeedbackKernel):
                 raise ValueError("routing goals require a supported softmax kernel")
@@ -328,11 +339,13 @@ class FeedbackWorkspace:
         return ((check.seed, check.steps) for probe, check in enumerate(self._probes)
                 if probe != selected and base.errors[probe] <= self._atol)
 
-    def propose_routing(self, base, probe, *, joint=False):
+    def propose_routing(self, base, probe, *, joint=False, trial=None):
         """Fit a query for an unmet source floor and optionally fit its value map."""
         self._require_current(base)
         if type(joint) is not bool or (joint and not self._allow_joint):
             raise ValueError("workspace joint query and value edits are disabled")
+        if trial is not None and (not joint or not self._separate_joint_trials):
+            raise ValueError("workspace separate joint trials are disabled")
         probe = self._open_probe(base, probe)
         goal = self._probes[probe]
         if goal.routing is None or base.source_masses[probe] >= goal.routing.min_mass:
@@ -341,6 +354,15 @@ class FeedbackWorkspace:
         if not joint:
             _, query_edit = self._fit_routing_query(base, goal, goal.routing.min_mass, protected)
             return FeedbackProposal(base, probe, _query=query_edit.weight)
+        if trial is not None:
+            levels = tuple(self._joint_trial_levels(goal.routing.min_mass))
+            trial = index(trial)
+            if not 0 <= trial < len(levels):
+                raise ValueError("joint trial is outside the available source levels")
+            anchor = self._joint_trial_anchor(base, probe)
+            proposal, _ = self._fit_checked_joint_trial(base, probe, levels[trial], protected, anchor)
+            self._require_current(base)
+            return proposal
         if self._joint_trials == 1:
             proposal, _, _ = self._fit_joint_trial(base, probe, goal.routing.min_mass, protected)
             return proposal
@@ -369,34 +391,47 @@ class FeedbackWorkspace:
         proposal = FeedbackProposal(base, probe, _weight=value_edit.weight, _query=query_edit.weight)
         return proposal, candidate, hypot(used, value_edit.update_norm)
 
-    def _search_joint_trials(self, base, probe, protected):
-        goal = self._probes[probe]
-        floor = mass = goal.routing.min_mass
+    def _joint_trial_levels(self, floor):
+        mass = floor
+        for _ in range(self._joint_trials):
+            yield mass
+            next_mass = mass + (1 - mass) * 0.5
+            if not mass < next_mass < 1.0:
+                break
+            mass = next_mass
+
+    def _joint_trial_anchor(self, base, probe):
         anchor = base._anchors[probe]
         if anchor is None:
-            anchor = self._run(base.kernel, base.memory, goal).history[:-1]
+            anchor = self._run(base.kernel, base.memory, self._probes[probe]).history[:-1]
+        return anchor
+
+    def _fit_checked_joint_trial(self, base, probe, mass, protected, anchor):
+        goal = self._probes[probe]
+        proposal, candidate, cost = self._fit_joint_trial(base, probe, mass, protected)
+        if cost > self._max_update_norm:
+            raise ValueError("joint candidate exceeds the combined update budget")
+        result, actual_mass = self._run_routed(candidate, base.memory, goal)
+        if not goal.routing.min_mass <= actual_mass <= 1.0 or self._probe_error(result, goal) > self._atol:
+            raise ValueError("joint candidate fails the original target on replay")
+        if not np.allclose(result.history[:-1], anchor, atol=self._atol, rtol=0):
+            raise ValueError("joint candidate changes the original target prefix")
+        return proposal, cost
+
+    def _search_joint_trials(self, base, probe, protected):
+        anchor = self._joint_trial_anchor(base, probe)
         best = None
         reason = None
-        for _ in range(self._joint_trials):
+        for mass in self._joint_trial_levels(self._probes[probe].routing.min_mass):
             self._require_current(base)
             try:
-                proposal, candidate, cost = self._fit_joint_trial(base, probe, mass, protected)
-                if cost > self._max_update_norm:
-                    raise ValueError("joint candidate exceeds the combined update budget")
-                result, actual_mass = self._run_routed(candidate, base.memory, goal)
-                if not floor <= actual_mass <= 1.0 or self._probe_error(result, goal) > self._atol:
-                    raise ValueError("joint candidate fails the original target on replay")
-                if not np.allclose(result.history[:-1], anchor, atol=self._atol, rtol=0):
-                    raise ValueError("joint candidate changes the original target prefix")
+                proposal, cost = self._fit_checked_joint_trial(base, probe, mass, protected, anchor)
                 if best is None or cost < best[0]:
                     best = cost, proposal
             except StaleFeedbackRevision:
                 raise
             except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
                 reason = error
-            mass += (1 - mass) * 0.5
-            if mass >= 1.0:
-                break
         self._require_current(base)
         if best is None:
             raise ValueError(f"joint trials found no usable pair: {reason}") from reason
@@ -425,7 +460,10 @@ class FeedbackWorkspace:
             goal = self._probes[probe].routing
             if goal is not None and base.source_masses[probe] < goal.min_mass:
                 candidates.append((probe, "route"))
-                if self._allow_joint:
+                if self._separate_joint_trials:
+                    levels = self._joint_trial_levels(goal.min_mass)
+                    candidates.extend((probe, f"joint:{trial}") for trial, _ in enumerate(levels))
+                elif self._allow_joint:
                     candidates.append((probe, "joint"))
         return candidates
 
@@ -459,7 +497,8 @@ class FeedbackWorkspace:
         return None, None, tuple(trials)
 
     def _evaluate_candidate(self, base, ordinal, candidates):
-        probe, kind = candidates[ordinal]
+        probe, position_kind = candidates[ordinal]
+        kind, trial = _split_candidate_kind(position_kind)
         conditional, hinge = kind in ("conditional", "hinge"), kind == "hinge"
         routing, joint = kind in ("route", "joint"), kind == "joint"
         if self._draft_tree_policy is not None and not routing:
@@ -471,16 +510,19 @@ class FeedbackWorkspace:
             )
             return attempt, proposal, revised
         try:
-            proposal = (self.propose_routing(base, probe, joint=joint) if routing
+            proposal = (self.propose_routing(base, probe, joint=joint, trial=trial) if routing
                         else self._propose(base, probe, conditional=conditional, hinge=hinge))
             revised = self._prepare_operator_revision(proposal)
         except StaleFeedbackRevision:
             raise
         except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
-            attempt = FeedbackRepairAttempt(probe, conditional, str(error), hinge=hinge, routing=routing, joint=joint)
+            attempt = FeedbackRepairAttempt(probe, conditional, str(error), hinge=hinge, routing=routing,
+                                            joint=joint, joint_trial=trial)
             return attempt, None, None
         rank = self._repair_rank(revised)
-        return FeedbackRepairAttempt(probe, conditional, rank=rank, hinge=hinge, routing=routing, joint=joint), proposal, revised
+        attempt = FeedbackRepairAttempt(probe, conditional, rank=rank, hinge=hinge, routing=routing,
+                                        joint=joint, joint_trial=trial)
+        return attempt, proposal, revised
 
     def _maintenance_candidates(self, base, candidates, offset, stop, workers):
         error_settings = np.geterr()

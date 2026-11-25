@@ -339,6 +339,14 @@ With joint edits enabled, `joint_trials=N` can try more than one source floor in
 
 More than one trial binds the count in the journal root and uses plan version 4. The order of work items, joint map bytes and receipt encoding stay the same. The worker checks for a stale revision between fits and before returning, including when an earlier fit succeeded. Charge up to $N$ query programs, value fits and target replays for one work item. Finite mass levels can miss a feasible interval or a better direction at the same mass. Compare against adaptive placement of levels and direct query search with the value fit inside the objective.
 
+#### Admitting joint trials separately
+
+With `joint_trials>1`, set `separate_joint_trials=True` to give each sampled mass its own work position. It follows the other constructors for that probe. The positions `joint:0`, `joint:1` and so on use the same level sequence as the combined trial search. `propose_routing(base, probe, joint=True, trial=i)` fits one such position. A worker checks the selected output, declared floor, original prefix and combined cap without consulting guards. The coordinator applies full admission to every returned pair in the completed window, then uses the usual behavioral rank with plan order for exact ties.
+
+Separate positions use plan version 5 and a distinct root binding. They publish the existing `joint` map payload and keep the trial index in the receipt's plan position. Receipt recovery checks the canonical event and the selected position's recorded rank. Versions 1 through 4 keep their plans, events and receipt layouts under their original configurations. In version 5 each sampled level consumes a candidate slot. Put the alternatives in the same window when they should compete. An earlier commit can make another window stale.
+
+Separate positions retain one full map payload for each successful fit until queue cleanup and repeat coordinator replay for each pair. The winning journal event still holds one pair. Compare with a bounded shortlist from one worker or the original local selection on matched mass levels and window boundaries, including lease traffic, process setup and stale work. [SQLite transactions](https://sqlite.org/lang_transaction.html)
+
 ### Architectural exploration and review
 
 The project should try new representations and forms of computation early. Treat coordinate geometry, transition rules, multiscale structure, decoder coupling and the network wiring as variables. Weight-space programming can reuse pieces of a pretrained network or install computations the original network lacked. Seek constructions that remove expensive work from the maintenance and query path while preserving useful consequences. Keep the current field replaceable. Its contractivity gives us a checkable starting point, and its limited reach makes genuinely different designs worth trying early.

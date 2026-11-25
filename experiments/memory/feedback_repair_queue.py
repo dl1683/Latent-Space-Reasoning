@@ -12,7 +12,7 @@ from experiments.memory.feedback_journal import (
     FeedbackCandidateData, FeedbackSearchPlan, FeedbackSearchShard, JournaledFeedbackWorkspace,
 )
 from experiments.memory.feedback_workspace import (
-    FeedbackMaintenanceRound, FeedbackRepairAttempt, StaleFeedbackRevision,
+    FeedbackMaintenanceRound, FeedbackRepairAttempt, StaleFeedbackRevision, _split_candidate_kind,
 )
 
 
@@ -222,7 +222,8 @@ class FeedbackRepairQueue:
             raise ValueError("repair lease position outside its plan")
         candidate = shard.results[0]
         if candidate.payload is not None:
-            probe, kind = lease.plan.candidates[lease.position]
+            probe, position_kind = lease.plan.candidates[lease.position]
+            kind, _ = _split_candidate_kind(position_kind)
             self._workspace._decode_operator(base, kind, probe, candidate.payload)
         batch, _ = _encode_plan(lease.plan)
         with self._transaction(write=True) as db:
@@ -267,17 +268,26 @@ class FeedbackRepairQueue:
         if revision is not None:
             if selected is None or not 0 <= selected < len(plan.candidates):
                 raise ValueError("invalid repair receipt selection")
-            probe, kind = plan.candidates[selected]
+            probe, position_kind = plan.candidates[selected]
+            kind, _ = _split_candidate_kind(position_kind)
             if revision != plan.revision + 1 or db.execute(
                 "SELECT kind, probe, digest FROM feedback_events WHERE number = ?", (revision,),
             ).fetchone() != (kind, probe, digest):
                 raise ValueError("repair receipt disagrees with the journal")
-        attempts = tuple(FeedbackRepairAttempt(probe, conditional, rejection,
-                                                None if rank is None else tuple(rank), hinge,
-                                                routing=kind in ("route", "joint"), joint=kind == "joint")
-                         for (_, kind), (probe, conditional, rejection, rank, hinge)
-                         in zip(plan.candidates, json.loads(attempts_data), strict=True))
-        return FeedbackRepairReceipt(plan, status, attempts, selected, next_candidate, revision,
+        attempts = []
+        for (_, position_kind), (probe, conditional, rejection, rank, hinge) in zip(
+                plan.candidates, json.loads(attempts_data), strict=True):
+            kind, trial = _split_candidate_kind(position_kind)
+            attempts.append(FeedbackRepairAttempt(probe, conditional, rejection,
+                                                  None if rank is None else tuple(rank), hinge,
+                                                  routing=kind in ("route", "joint"), joint=kind == "joint",
+                                                  joint_trial=trial))
+        if revision is not None and plan.version == 5:
+            admitted = [(attempt.rank, position) for position, attempt in enumerate(attempts)
+                        if attempt.rank is not None and attempt.rejection is None]
+            if not admitted or min(admitted)[1] != selected:
+                raise ValueError("repair receipt selection disagrees with the recorded ranking")
+        return FeedbackRepairReceipt(plan, status, tuple(attempts), selected, next_candidate, revision,
                                      None if digest is None else digest.hex())
 
     def receipt(self, plan):

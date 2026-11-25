@@ -76,7 +76,7 @@ def test_floor_only_repair_preserves_other_attained_floors():
     assert workspace.maintain(max_candidates=2).status == "satisfied"
 
 
-def _joint_tradeoff_workspace(*, limit=2, trials=1):
+def _joint_tradeoff_workspace(*, limit=2, trials=1, guards=(), separate=False):
     kernel = FeedbackKernel(
         query=[[0.15], [0]], carry=None, observation_key=[[1], [0]],
         observation_value=np.zeros((2, 2)), feedback_key=[[0], [0]],
@@ -84,7 +84,8 @@ def _joint_tradeoff_workspace(*, limit=2, trials=1):
     )
     probe = FeedbackProbe([1, 0], 1, [np.tanh(0.9), 0], FeedbackRoutingGoal(1, 0.6))
     return FeedbackWorkspace(kernel, [[-1, 0], [1, 0]], [probe], max_update_norm=limit,
-                             allow_joint=True, joint_trials=trials)
+                             guards=guards, allow_joint=True, joint_trials=trials,
+                             separate_joint_trials=separate)
 
 
 def test_floor_first_joint_constructor_misses_a_feasible_larger_query_shift():
@@ -149,6 +150,34 @@ def test_source_change_during_a_joint_trial_discards_an_earlier_usable_pair(monk
         workspace.propose_routing(base, 0, joint=True)
     assert attempted == [0.6, 0.8] and workspace.snapshot().number == 1
     assert workspace.snapshot().kernel is base.kernel
+
+
+def test_independent_admission_can_recover_a_draft_hidden_by_minimum_cost():
+    guards = [FeedbackProbe([0.5, 0], 1, [0.24, 0])]
+    folded = _joint_tradeoff_workspace(trials=3, guards=guards)
+    failed = folded.maintain(max_candidates=3)
+    assert failed.status == "no_candidate"
+    assert "regresses a workspace guard" in failed.attempts[-1].rejection
+
+    split = _joint_tradeoff_workspace(trials=3, guards=guards, separate=True)
+    base = split.snapshot()
+    lower = split.propose_routing(base, 0, joint=True, trial=1)
+    higher = split.propose_routing(base, 0, joint=True, trial=2)
+
+    def cost(proposal):
+        return np.hypot(np.linalg.norm(proposal._query - base.kernel._query),
+                        np.linalg.norm(proposal._weight - base.kernel._dense_observation_value()))
+
+    assert cost(higher) < cost(lower) < 2
+    assert higher._query[0, 0] > lower._query[0, 0]
+    with pytest.raises(ValueError, match="outside the available source levels"):
+        split.propose_routing(base, 0, joint=True, trial=3)
+    result = split.maintain(max_candidates=5, max_workers=2)
+    assert result.status == "committed" and result.selected_attempt == 3
+    assert [entry.joint_trial for entry in result.attempts] == [None, None, 0, 1, 2]
+    assert "regresses a workspace guard" in result.attempts[4].rejection
+    assert result.revision.source_masses[0] == pytest.approx(0.8)
+    assert result.revision.guard_errors[0] < base.guard_errors[0]
 
 
 def _workspace(second_target=(0, 0.5), *, journal=None):
