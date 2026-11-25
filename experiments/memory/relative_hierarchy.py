@@ -23,6 +23,7 @@ from experiments.memory.relative_observations import (
     _problem,
     _validate_observation,
 )
+from experiments.memory.relative_support import BridgeSupport, update_bridge_support
 
 
 class _Components:
@@ -318,12 +319,14 @@ class RelativeHierarchySnapshot:
     _values: np.ndarray | None
     _coarse_blocks: Mapping[tuple[int, ...], _CoarseBlock]
     _supported_ports: frozenset[int]
+    _support_graph: BridgeSupport
     rebuilt_regions: tuple[int, ...]
     compacted_regions: tuple[int, ...] = ()
     coarse_factorizations: int = 0
     coarse_rhs_solves: int = 0
     rebuilt_buckets: tuple[int, ...] = ()
     visited_buckets: tuple[int, ...] = ()
+    visited_support_components: tuple[int, ...] = ()
     _elimination: _EliminationCache | None = None
     _elimination_rank: Mapping[int, int] | None = None
 
@@ -425,12 +428,9 @@ class RelativeObservationHierarchy:
         ports = {cell: position for position, cell in enumerate(
             cell for region in regions for cell in region.ports
         )}
-        components = {cell: region.components[cell] for region in regions for cell in region.ports}
-        coarse_support = _Components(components.values())
-        anchors = {region.components[cell] for region in regions for cell in region.ports
-                   if region.components[cell] in region.anchored}
-        for bridge in bridges.values():
-            coarse_support.join(components[bridge.source], components[bridge.target])
+        support, support_visited = update_bridge_support(
+            self._membership, regions, bridges, base, rebuilt, bridge_edits,
+        )
         cache, buckets, visited = None, (), ()
         factorizations = solves = 0
         blocks = MappingProxyType({})
@@ -449,14 +449,12 @@ class RelativeObservationHierarchy:
             cache, buckets, visited = _sparse_coarse(ports, regions, bridges, rank, prior,
                                                       rebuilt, bridge_edits)
             values = None
-        anchor_roots = {coarse_support.root(component) for component in anchors}
-        supported = frozenset(component for component in components.values()
-                              if coarse_support.root(component) in anchor_roots)
         return RelativeHierarchySnapshot(
             self, sources, bridges, tuple(regions), MappingProxyType(ports), values, blocks,
-            supported, rebuilt_regions=tuple(rebuilt), compacted_regions=tuple(compacted),
+            support.supported, support, rebuilt_regions=tuple(rebuilt), compacted_regions=tuple(compacted),
             coarse_factorizations=factorizations, coarse_rhs_solves=solves, rebuilt_buckets=buckets,
-            visited_buckets=visited, _elimination=cache, _elimination_rank=rank,
+            visited_buckets=visited, visited_support_components=support_visited, _elimination=cache,
+            _elimination_rank=rank,
         )
 
     def initialize(self, observations):

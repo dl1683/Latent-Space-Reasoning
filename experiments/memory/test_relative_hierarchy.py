@@ -549,3 +549,68 @@ def test_indexed_revisions_match_full_sweep_on_promotions_splits_and_forks():
     assert portless._elimination is original._elimination and portless.visited_buckets == ()
     assert portless.read(10) != original.read(10)
     _assert_direct(original, observations)
+
+
+def test_indexed_support_tracks_parallel_bridges_and_leaves_unrelated_groups_untouched():
+    membership = (*_MEMBERSHIP, 4)
+    hierarchy = RelativeObservationHierarchy(membership, ridge=_RIDGE,
+                                             elimination_order=range(len(membership)))
+    sources = _sources()
+    sources["parallel"] = sources["bridge"]
+    sources["other_bridge"] = RelativeObservation(12, 0.4, source=10)
+    parent = hierarchy.initialize(sources)
+    graph = parent._support_graph
+    other_node = parent._regions[3].components[10]
+    other = graph.groups[other_node]
+    incident_node, downstream_node = graph.edges["bridge"]
+    assert graph.neighbors[incident_node][downstream_node] == 2
+
+    weight = RelativeObservation(3, 0.4, source=2, weight=2)
+    reweighted = hierarchy.revise(parent, {"bridge": weight})
+    assert reweighted._support_graph is graph and reweighted.visited_support_components == ()
+    single = hierarchy.revise(reweighted, {"parallel": None})
+    assert single.visited_support_components == ()
+    assert single._support_graph.groups is graph.groups
+    assert single._support_graph.neighbors[incident_node][downstream_node] == 1
+
+    detached = hierarchy.revise(single, {"bridge": None})
+    right = detached._support_graph.groups[downstream_node]
+    assert set(detached.visited_support_components) == right
+    assert right.isdisjoint(other) and detached._support_graph.groups[other_node] is other
+    assert parent.read(8) is not None and detached.read(8) is None
+    assert detached.read(12) == parent.read(12)
+    remaining = {name: row for name, row in sources.items() if name not in {"bridge", "parallel"}}
+    _assert_direct(detached, remaining, len(membership))
+    compacted = hierarchy.compact(detached, max_regions=2)
+    assert compacted._support_graph is detached._support_graph
+    reordered = hierarchy.reorder(compacted, reversed(range(len(membership))))
+    assert reordered._support_graph is detached._support_graph
+    _assert_direct(reordered, remaining, len(membership))
+    _assert_direct(parent, sources, len(membership))
+
+
+def test_indexed_support_reprojects_unchanged_bridges_on_local_splits_and_anchor_changes():
+    membership = (*_MEMBERSHIP, 4)
+    hierarchy = RelativeObservationHierarchy(membership, ridge=_RIDGE)
+    sources = {**_sources(), "other_bridge": RelativeObservation(12, 0.4, source=10)}
+    parent = hierarchy.initialize(sources)
+    other_node = parent._regions[3].components[10]
+    other = parent._support_graph.groups[other_node]
+
+    split = hierarchy.revise(parent, {"continue": None})
+    assert split.rebuilt_regions == (1,)
+    assert split._bridges == parent._bridges
+    assert split._support_graph.edges != parent._support_graph.edges
+    assert split.read(4) is not None and split.read(8) is None
+    assert split._support_graph.groups[other_node] is other
+    _assert_direct(split, {name: row for name, row in sources.items() if name != "continue"},
+                   len(membership))
+
+    no_anchor = hierarchy.revise(parent, {"anchor": None})
+    assert no_anchor._support_graph.edges is parent._support_graph.edges
+    assert no_anchor._support_graph.groups[other_node] is other
+    assert no_anchor.visited_support_components
+    assert no_anchor.read(8) is None and no_anchor.read(12) == parent.read(12)
+    restored = hierarchy.revise(no_anchor, {"anchor": sources["anchor"]})
+    _assert_direct(restored, sources, len(membership))
+    _assert_direct(parent, sources, len(membership))
