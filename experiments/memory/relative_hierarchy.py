@@ -24,6 +24,7 @@ from experiments.memory.relative_observations import (
     _problem,
     _validate_observation,
 )
+from experiments.memory.relative_patch import preview_source_patch
 from experiments.memory.relative_support import (
     BridgeSupport,
     LocalSourcePaths,
@@ -478,6 +479,7 @@ class RelativeHierarchySnapshot:
     _coarse_blocks: Mapping[tuple[int, ...], _CoarseBlock]
     _supported_ports: frozenset[int]
     _support_graph: BridgeSupport
+    _source_magnitude: float
     rebuilt_regions: tuple[int, ...]
     compacted_regions: tuple[int, ...] = ()
     coarse_factorizations: int = 0
@@ -556,6 +558,15 @@ class RelativeHierarchySnapshot:
         if removed and not supported_after_removal(self, cell, removed):
             return None
         return _apply_source_prediction(self, cell, edits) if edits else self.read(cell)
+
+    def preview_source_patch(self, cell, changes, *, max_cells):
+        """Preview an edited read with a bounded local Dirichlet solve."""
+        cell = LatentField._checked_cell(cell, self._owner._cells)
+        max_cells = index(max_cells)
+        if max_cells < 1:
+            raise ValueError("source patch needs a positive cell cap")
+        staged = self._owner._stage_source_edits(self, changes)
+        return preview_source_patch(self, cell, staged, max_cells)
 
     def _readout(self, cell):
         cell = LatentField._checked_cell(cell, len(self._owner._membership))
@@ -638,7 +649,9 @@ class RelativeObservationHierarchy:
         return None
 
     def _snapshot(self, sources, bridges, regions, rebuilt, *, base=None, compacted=(), new_rank=None,
-                  bridge_edits=()):
+                  bridge_edits=(), source_magnitude=0.0):
+        if base is not None:
+            source_magnitude = max(source_magnitude, base._source_magnitude)
         ports = {cell: position for position, cell in enumerate(
             cell for region in regions for cell in region.ports
         )}
@@ -665,7 +678,8 @@ class RelativeObservationHierarchy:
             values = None
         return RelativeHierarchySnapshot(
             self, sources, bridges, tuple(regions), MappingProxyType(ports), values, blocks,
-            support.supported, support, rebuilt_regions=tuple(rebuilt), compacted_regions=tuple(compacted),
+            support.supported, support, source_magnitude, rebuilt_regions=tuple(rebuilt),
+            compacted_regions=tuple(compacted),
             coarse_factorizations=factorizations, coarse_rhs_solves=solves, rebuilt_buckets=buckets,
             visited_buckets=visited, visited_support_components=support_visited, _elimination=cache,
             _elimination_rank=rank,
@@ -687,13 +701,11 @@ class RelativeObservationHierarchy:
                 regions[region][name] = observation
         factors = [_build_region(cells, ports[region], regions[region], self._ridge)
                    for region, cells in enumerate(self._regions)]
+        magnitude = max((abs(row.value) for row in sources.values()), default=0.0)
         return self._snapshot(MappingProxyType(sources), MappingProxyType(bridges), factors,
-                              range(len(factors)))
+                              range(len(factors)), source_magnitude=magnitude)
 
-    def revise(self, base, changes):
-        """Apply a named source batch. Exposed ports persist until compacted."""
-        if base._owner is not self:
-            raise ValueError("relative snapshot belongs to a different hierarchy")
+    def _stage_source_edits(self, base, changes):
         staged = []
         for name, replacement in changes.items():
             if type(name) is not str or not name:
@@ -706,6 +718,13 @@ class RelativeObservationHierarchy:
                 _validate_observation(self._cells, name, replacement)
             if previous != replacement:
                 staged.append((name, previous, replacement))
+        return staged
+
+    def revise(self, base, changes):
+        """Apply a named source batch. Exposed ports persist until compacted."""
+        if base._owner is not self:
+            raise ValueError("relative snapshot belongs to a different hierarchy")
+        staged = self._stage_source_edits(base, changes)
         if not staged:
             return base
 
@@ -745,8 +764,9 @@ class RelativeObservationHierarchy:
                     local[name] = replacement
             ports = set(previous.ports).union(promotions.get(region, ()))
             factors[region] = _build_region(self._regions[region], ports, local, self._ridge)
+        magnitude = max((abs(row.value) for _, _, row in staged if row is not None), default=0.0)
         return self._snapshot(MappingProxyType(sources), MappingProxyType(bridges), factors, rebuilt,
-                              base=base, bridge_edits=bridge_edits)
+                              base=base, bridge_edits=bridge_edits, source_magnitude=magnitude)
 
     def reorder(self, base, elimination_order):
         """Branch from the same sources with a different sparse elimination order."""

@@ -838,3 +838,107 @@ def test_prediction_refuses_unresolved_weight_correction_with_parent_preserved(r
         base.predict_source_edits(0, {"anchor": None})
     assert field.revise(base, {"anchor": None}).read(0) == pytest.approx(1)
     assert base.read(0) == old
+    patch = base.preview_source_patch(0, {"anchor": None}, max_cells=1)
+    assert patch.anchored is True and patch.boundary_error == 0
+    assert patch.value == pytest.approx(1)
+
+
+@pytest.mark.parametrize("sparse", (False, True))
+def test_source_patch_shrinks_its_boundary_error_and_uses_no_retained_solve(sparse, monkeypatch):
+    cells = 40
+    ridge = 2.0
+    field = RelativeObservationHierarchy(tuple(i // 4 for i in range(cells)), ridge=ridge,
+                                         elimination_order=range(cells) if sparse else None)
+    sources = {
+        "anchor": RelativeObservation(0, 1),
+        "remote": RelativeObservation(cells - 1, -1),
+        "strong": RelativeObservation(1, 0.8, source=0, weight=80),
+        **{f"r{i}": RelativeObservation(i, 0.2, source=i - 1) for i in range(1, cells)},
+    }
+    base = field.initialize(sources)
+    edits = {"strong": None, "r1": RelativeObservation(1, -0.4, source=0)}
+    reference = solve_relative_direct(
+        cells, {**{name: row for name, row in sources.items() if name != "strong"}, "r1": edits["r1"]},
+        ridge=ridge,
+    )[0]
+    assert base.predict_source_edits(0, edits) == pytest.approx(reference, abs=1e-12, rel=0)
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("patch used the retained numerical operator")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(field, "revise", unexpected)
+        patch.setattr(relative_hierarchy.RelativeHierarchySnapshot, "read_many", unexpected)
+        small, medium, full = (base.preview_source_patch(0, edits, max_cells=cap)
+                               for cap in (1, 12, cells))
+    assert small.cells == (0,) and medium.cells == tuple(range(12))
+    assert small.anchored is medium.anchored is full.anchored is True
+    assert small.boundary_error > medium.boundary_error > full.boundary_error == 0
+    assert medium.boundary_error < 1e-5
+    assert abs(medium.value - reference) < medium.boundary_error
+    assert full.value == pytest.approx(reference, abs=1e-12, rel=0)
+    assert base._sources["strong"] is sources["strong"]
+
+
+def test_source_patch_overlays_moves_and_additions_with_three_support_outcomes():
+    field = RelativeObservationHierarchy((0, 0, 1, 2), ridge=0.25)
+    base = field.initialize({
+        "anchor": RelativeObservation(0, 2),
+        "move": RelativeObservation(1, 0.75, source=0),
+        "remote": RelativeObservation(3, -4),
+    })
+    edits = {
+        "move": RelativeObservation(2, -2, source=1),
+        "add": RelativeObservation(1, 1, source=3),
+        "remote": None,
+        "backup": RelativeObservation(2, -1),
+    }
+    uncertain = base.preview_source_patch(3, edits, max_cells=2)
+    anchored = base.preview_source_patch(3, edits, max_cells=3)
+    reversed_batch = base.preview_source_patch(3, dict(reversed(tuple(edits.items()))), max_cells=3)
+    assert uncertain.cells == (3, 1) and uncertain.anchored is None
+    assert uncertain.value is None and uncertain.boundary_error is None
+    assert anchored.cells == (3, 1, 2) and anchored.anchored is True
+    assert anchored.boundary_error == 0
+    assert anchored.value == pytest.approx(field.revise(base, edits).read(3), abs=1e-12, rel=0)
+    assert reversed_batch == anchored
+    unanchored = base.preview_source_patch(3, {"remote": None, "add": edits["add"], "move": None},
+                                           max_cells=3)
+    assert unanchored.cells == (3, 1) and unanchored.anchored is False
+    assert unanchored.value is None and unanchored.boundary_error is None
+    assert base.read(3) == pytest.approx(-3.2) and base.read(2) is None
+    with pytest.raises(ValueError, match="unknown"):
+        base.preview_source_patch(3, {"missing": None}, max_cells=1)
+    with pytest.raises(ValueError, match="cell cap"):
+        base.preview_source_patch(3, {}, max_cells=0)
+
+
+def test_source_patch_envelope_survives_revision_compaction_and_reorder():
+    field = RelativeObservationHierarchy((0, 1, 2), ridge=1, elimination_order=range(3))
+    base = field.initialize({
+        "anchor": RelativeObservation(0, 1),
+        "edge": RelativeObservation(1, 0.25, source=0),
+        "temporary": RelativeObservation(2, 0, source=1),
+        "remote": RelativeObservation(1, 8),
+    })
+    revised = field.revise(base, {"temporary": None, "anchor": RelativeObservation(0, 0.5)})
+    compacted = field.compact(revised, max_regions=2)
+    reordered = field.reorder(compacted, reversed(range(3)))
+    assert compacted is not revised and reordered is not compacted
+    for snapshot in (base, revised, compacted, reordered):
+        patch = snapshot.preview_source_patch(0, {}, max_cells=1)
+        assert patch.anchored is True
+        assert patch.boundary_error == pytest.approx(8)  # (3 * 8) * (1 / 3)
+        assert abs(patch.value - snapshot.read(0)) <= patch.boundary_error
+
+
+def test_source_patch_refuses_underflowed_open_boundary_influence():
+    field = RelativeObservationHierarchy((0, 0), ridge=1e100)
+    base = field.initialize({
+        "anchor": RelativeObservation(0, 0),
+        "edge": RelativeObservation(1, 0, source=0, weight=1e-300),
+        "remote": RelativeObservation(1, 1e200, weight=1e200),
+    })
+    with pytest.raises(FloatingPointError, match="boundary error"):
+        base.preview_source_patch(0, {}, max_cells=1)
+    assert base.support_witness(0) is not None
