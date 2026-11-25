@@ -15,12 +15,13 @@ import numpy as np
 
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _exclusions, _proof_work_limit
 from experiments.memory.binding_replay import (
-    apply_receiver_program, check_binding_replay, check_coordinate_replay, freeze_binding_replay,
+    apply_receiver_program, check_binding_replay, check_coordinate_protection, check_coordinate_replay, freeze_binding_replay,
     freeze_coordinate_program, require_replay_receiver, route_norm_cap, validate_route_program,
 )
 from experiments.memory.corpus_bindings import (
     CorpusBindingRead, CorpusBindingWorkspace, StaleCorpusRevision, _EncodedChange,
 )
+from experiments.memory.latent_feedback import ConditionalTerm
 
 
 _SURROGATE_PAIR = re.compile(r"[\ud800-\udbff][\udc00-\udfff]")
@@ -105,17 +106,29 @@ def _decode_route_event(payload):
 
 def _decode_coordinate_event(payload, anchor_width):
     event = json.loads(payload)
-    if type(event) is not list or len(event) != 2 or event[0] != "coordinate_program":
+    if type(event) is not list or len(event) != 2 or event[0] not in ("coordinate_program", "context_program"):
         raise ValueError("invalid coordinate program event")
     patch = event[1]
     if type(patch) is not list or len(patch) != 4:
         raise ValueError("invalid coordinate program patch")
     before, after, column, weights = patch
     if (any(type(digest) is not str or re.fullmatch("[0-9a-f]{64}", digest) is None for digest in (before, after))
-            or before == after or column is not None or type(weights) is not list or len(weights) != anchor_width
+            or before == after or _json(event) != payload):
+        raise ValueError("invalid coordinate program patch")
+    if event[0] == "context_program":
+        if column != "context" or type(weights) is not list or len(weights) != 4:
+            raise ValueError("invalid context program factors")
+        state, anchor, output, threshold = weights
+        if (any(type(vector) is not list or not vector
+                or any(type(value) is not float or not np.isfinite(value) for value in vector)
+                for vector in (state, anchor, output)) or len(anchor) != anchor_width or len(state) != len(output)
+                or type(threshold) is not float or not any(output)):
+            raise ValueError("invalid context program factors")
+        ConditionalTerm(state, anchor, output, threshold)
+        return before, after, column, (tuple(state), tuple(anchor), tuple(output), threshold)
+    if (column is not None or type(weights) is not list or len(weights) != anchor_width
             or any(type(row) is not list or not row or len(row) != len(weights[0])
-                   or any(type(value) is not float or not np.isfinite(value) for value in row) for row in weights)
-            or _json(event) != payload):
+                   or any(type(value) is not float or not np.isfinite(value) for value in row) for row in weights)):
         raise ValueError("invalid coordinate program patch")
     return before, after, None, tuple(tuple(row) for row in weights)
 
@@ -361,7 +374,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             if payload.startswith(b'["route_program",'):
                 gates, patch = _decode_route_event(payload)
                 tip = self._install_program_revision(tip, tip.memory.reprogram(gates), patch)
-            elif payload.startswith(b'["coordinate_program",'):
+            elif payload.startswith((b'["coordinate_program",', b'["context_program",')):
                 patch = _decode_coordinate_event(payload, tip.memory._anchors.shape[1])
                 tip = self._install_program_revision(tip, tip.memory, patch)
             elif payload.startswith(b'["program",'):
@@ -375,7 +388,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         return tip, digest
 
     def _install_program_revision(self, tip, memory, patch):
-        if patch[2] is not None and memory is tip.memory:
+        if type(patch[2]) is int and memory is tip.memory:
             raise ValueError("unchanged graph in route program event")
         programs = tip._receiver_programs
         if programs and programs[-1][1] != patch[0]:
@@ -465,7 +478,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 spec.update(version=4, route_update_limit=cap)
         return self._record_program_trial(base, program, spec)
 
-    def begin_coordinate_trial(self, base, receiver, candidate, *, seed, target, future_batches, max_update_norm):
+    def begin_coordinate_trial(self, base, receiver, candidate, *, seed, target, future_batches, max_update_norm,
+                               protect=()):
         """Freeze a projection edit and an ordinary continuation to judge on later sources."""
         self._check_owner(base)
         future_batches = index(future_batches)
@@ -475,18 +489,28 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         patch = freeze_coordinate_program(receiver, candidate, cap)
         if base._receiver_programs and base._receiver_programs[-1][1] != patch[0]:
             raise ValueError("coordinate trial does not use the installed receiver")
-        state = receiver.start(seed, base.memory)
-        probe, witness, upper = _trial_expectation(base.memory, target, receiver._work_limit)
+        seed, expected = self._coordinate_trial_case(base.memory, receiver, seed, target)
+        protected = tuple(self._coordinate_trial_case(base.memory, receiver, start, expectation)
+                          for start, expectation in protect)
+        context = patch[2] == "context"
+        program = _json(["context_program" if context else "coordinate_program", patch])
+        spec = dict(version=6 if context or protected else 5, seed=seed, target=expected, future_batches=future_batches,
+                    coordinate_update_limit=cap)
+        if protected:
+            spec["coordinate_protected"] = protected
+        return self._record_program_trial(base, program, spec)
+
+    @staticmethod
+    def _coordinate_trial_case(memory, receiver, seed, target):
+        state = receiver.start(seed, memory)
+        probe, witness, upper = _trial_expectation(memory, target, receiver._work_limit)
         addresses, excluded = probe
         if (excluded or witness is None or witness[0] != upper or not receiver._disjoint_reads
                 or not 2 <= len(addresses) <= receiver._kernel._max_steps
                 or receiver._expansion is not None
                 or any(address not in receiver._addresses for address in addresses)):
             raise ValueError("a coordinate trial needs an exact supported disjoint continuation in the fixed catalog")
-        program = _json(["coordinate_program", patch])
-        spec = dict(version=5, seed=state.feedback.seed.tolist(), target=(probe, witness, upper),
-                    future_batches=future_batches, coordinate_update_limit=cap)
-        return self._record_program_trial(base, program, spec)
+        return state.feedback.seed.tolist(), (probe, witness, upper)
 
     def _record_program_trial(self, base, program, spec):
         frozen = _json(spec)
@@ -574,7 +598,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         checked_digest = digest
         spec = json.loads(frozen)
         version = spec["version"]
-        if version not in (1, 2, 3, 4, 5):
+        if version not in (1, 2, 3, 4, 5, 6):
             raise ValueError("unknown corpus program trial version")
         steps = base.revision - opened
         proposal = None
@@ -585,15 +609,25 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             return CorpusProgramTrialResult(trial_id, "pending", base.revision)
         elif steps > spec["future_batches"]:
             status = "horizon_passed"
-        elif version == 5:
+        elif version in (5, 6):
             if receiver is None:
                 return CorpusProgramTrialResult(trial_id, "receiver_required", base.revision)
             patch = _decode_coordinate_event(program, base.memory._anchors.shape[1])
+            if version == 5 and (patch[2] == "context" or "coordinate_protected" in spec):
+                raise ValueError("coordinate trial version does not match its program")
             candidate_receiver = apply_receiver_program(receiver, patch)
             (raw_addresses, _), witness, upper = spec["target"]
             addresses = tuple(tuple(address) for address in raw_addresses)
-            status = check_coordinate_replay(receiver, candidate_receiver, _cold_trial_memory(base.memory),
-                                             spec["seed"], addresses, _expected_read(witness, upper))
+            memory = _cold_trial_memory(base.memory)
+            status = check_coordinate_replay(receiver, candidate_receiver, memory, spec["seed"], addresses,
+                                             _expected_read(witness, upper))
+            if status == "published":
+                for seed, ((raw_addresses, _), witness, upper) in spec.get("coordinate_protected", ()):
+                    addresses = tuple(tuple(address) for address in raw_addresses)
+                    if not check_coordinate_protection(receiver, candidate_receiver, memory, seed, addresses,
+                                                       _expected_read(witness, upper)):
+                        status = "coordinate_protected_changed"
+                        break
         else:
             if version >= 2:
                 if receiver is None:
@@ -635,8 +669,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                     raise StaleCorpusRevision("corpus workspace tip changed while checking trial")
                 if status == "published":
                     # A handle-local proof promotion can replace the pin without touching the durable revision.
-                    preview = tip.memory if version == 5 else proposal.preview
-                    if version != 5 and tip is not base:
+                    preview = tip.memory if version >= 5 else proposal.preview
+                    if version < 5 and tip is not base:
                         preview = tip.memory.reprogram(dict(preview._certain._gates))
                     tip = (self._replace_program(tip, preview) if patch is None
                            else self._install_program_revision(tip, preview, patch))

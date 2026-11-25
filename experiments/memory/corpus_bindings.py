@@ -241,6 +241,9 @@ class StaleCorpusRevision(ValueError):
     """A proposal no longer has the dependencies it was prepared against."""
 
 
+_ReceiverProgram = tuple[str, str, int | str | None, tuple]
+
+
 @dataclass(frozen=True, eq=False)
 class CorpusRevision:
     revision: int
@@ -248,7 +251,7 @@ class CorpusRevision:
     _source_revisions: Mapping[str, int]
     _owner: object
     _program_revision: int = 0
-    _receiver_programs: tuple[tuple[str, str, int | None, tuple[float, ...] | tuple[tuple[float, ...], ...]], ...] = ()
+    _receiver_programs: tuple[_ReceiverProgram, ...] = ()
 
 
 @dataclass(frozen=True, eq=False)

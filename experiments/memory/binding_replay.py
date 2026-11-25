@@ -3,12 +3,12 @@
 from fractions import Fraction
 from hashlib import sha256
 import json
-from math import nextafter
+from math import nextafter, prod
 
 import numpy as np
 
 from experiments.memory.binding_feedback import BindingFeedback, BindingFeedbackState
-from experiments.memory.latent_feedback import FactoredValue
+from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, _separating_hinge
 from experiments.memory.weight_program import program_weight
 
 
@@ -114,6 +114,9 @@ def _receiver_digest(receiver):
     )
     if receiver._coordinate_value is not None:
         scope["coordinate_value"] = _array_signature(receiver._coordinate_value)
+    if receiver._coordinate_terms:
+        scope["coordinate_terms"] = tuple((*map(_array_signature, term[:3]), term[3])
+                                          for term in receiver._coordinate_terms)
     # ASCII JSON aliases an astral code point with two explicit surrogate code units.
     payload = json.dumps(scope, sort_keys=True, separators=(",", ":"), allow_nan=False, ensure_ascii=False)
     payload = payload.encode("utf-8", errors="surrogatepass")
@@ -149,7 +152,9 @@ def apply_receiver_program(receiver, patch):
     before, after, column, weights = patch
     if _receiver_digest(receiver) != before:
         raise ValueError("receiver program needs the matching incumbent receiver")
-    if column is None:
+    if column == "context":
+        candidate = receiver._with_coordinate_term(ConditionalTerm(*weights))
+    elif column is None:
         candidate = receiver._with_coordinate_value(weights)
     elif 0 <= column < len(receiver._addresses):
         candidate = receiver._with_route_column(column, weights)
@@ -195,6 +200,15 @@ def _coordinate_weights(receiver):
 
 def freeze_coordinate_program(receiver, candidate, cap):
     before, after = _receiver_digest(receiver), _receiver_digest(candidate)
+    if len(candidate._coordinate_terms) == len(receiver._coordinate_terms) + 1:
+        state_axis, anchor_axis, output, threshold = candidate._coordinate_terms[-1]
+        term = ConditionalTerm(state_axis, anchor_axis, output, threshold)
+        if not any(term.output) or not _within_context_norm(term, cap):
+            raise ValueError("coordinate context has no change or exceeds its exact update norm cap")
+        factors = tuple(tuple(vector.tolist()) for vector in (state_axis, anchor_axis, output))
+        patch = before, after, "context", (*factors, threshold)
+        apply_receiver_program(receiver, patch)
+        return patch
     weights = _coordinate_weights(candidate)
     if np.array_equal(_coordinate_weights(receiver), weights):
         raise ValueError("coordinate program needs a changed projection")
@@ -216,6 +230,64 @@ def _replay_coordinate_prefix(candidate, state, atol):
         if not _same_binding_read(replay.reads[-1], read) or np.max(np.abs(replay.latest - hidden)) > atol:
             raise ValueError("coordinate program changes a protected trajectory")
     return replay
+
+
+def _coordinate_fit_step(receiver, state, desired):
+    desired = receiver._kernel._vector(desired)
+    if np.any(np.abs(desired) >= 1.):
+        raise ValueError("target coordinates must be strictly inside tanh saturation")
+    if len(state.reads) >= receiver._kernel._max_steps:
+        raise ValueError("coordinate programming example has no step remaining")
+    read = receiver._next_read(state)
+    if read.status != "resolved" or read.bounds.certain is None or not read.bounds.is_exact:
+        raise ValueError("coordinate programming needs an exact supported next read")
+    return read, desired
+
+
+def _check_coordinate_fit(candidate, state, read, desired, atol):
+    replay = candidate.step(_replay_coordinate_prefix(candidate, state, atol))
+    if not _same_binding_read(replay.reads[-1], read) or np.max(np.abs(replay.latest - desired)) > atol:
+        raise ValueError("coordinate program misses its next read or hidden target in replay")
+    return replay
+
+
+def _within_context_norm(term, cap):
+    factors = (term.state_axis, term.observation_axis, term.output)
+    squared_norm = prod(sum(Fraction(float(value)) ** 2 for value in factor) for factor in factors)
+    return squared_norm <= Fraction(cap) ** 2
+
+
+def program_binding_context(receiver, state, desired, *, max_update_norm, protect=(), atol=1e-8):
+    """Fit a hinged coordinate interaction and replay the target and protected runs."""
+    protect = tuple(protect)
+    if type(receiver) is not BindingFeedback or any(type(run) is not BindingFeedbackState
+            or run._receiver is not receiver for run in (state, *protect)):
+        raise ValueError("coordinate programming states must come from the incumbent receiver")
+    if not np.isfinite(atol) or atol <= 0:
+        raise ValueError("coordinate programming needs a finite positive tolerance")
+    cap = route_norm_cap(max_update_norm)
+    protected = []
+    for run in (state, *protect):
+        predecessors = (run.feedback.seed, *run.feedback.history)[:-1]
+        for hidden, read in zip(predecessors, run.reads, strict=True):
+            if read.status == "resolved" and read.bounds.possible_strength is not None:
+                protected.append(hidden)
+    with np.errstate(**_REPLAY_ERRORS):
+        read, desired = _coordinate_fit_step(receiver, state, desired)
+        diagnostics = {}
+        receiver._advance_read(state, read, diagnostics=diagnostics)
+        anchor = receiver._anchors[read.address[1]]
+        axis, threshold = _separating_hinge(state.latest, protected, 1e-12)
+        activation = (float(state.latest @ axis) - threshold) * float(anchor @ anchor)
+        residual = np.arctanh(desired) - diagnostics["preactivation"]
+        term = ConditionalTerm(axis, anchor, residual / activation, threshold)
+        if not any(term.output) or not _within_context_norm(term, cap):
+            raise ValueError("coordinate context has no change or exceeds its exact update norm cap")
+        candidate = receiver._with_coordinate_term(term)
+        replay = _check_coordinate_fit(candidate, state, read, desired, atol)
+        for run in protect:
+            _replay_coordinate_prefix(candidate, run, atol)
+    return candidate, replay, term
 
 
 def program_binding_coordinates(receiver, examples, *, max_update_norm, protect=(), atol=1e-8):
@@ -243,14 +315,7 @@ def program_binding_coordinates(receiver, examples, *, max_update_norm, protect=
     inputs, values, steps = [], [], []
     with np.errstate(**_REPLAY_ERRORS):
         for state, desired in examples:
-            desired = receiver._kernel._vector(desired)
-            if np.any(np.abs(desired) >= 1.):
-                raise ValueError("target coordinates must be strictly inside tanh saturation")
-            if len(state.reads) >= receiver._kernel._max_steps:
-                raise ValueError("coordinate programming example has no step remaining")
-            read = receiver._next_read(state)
-            if read.status != "resolved" or read.bounds.certain is None or not read.bounds.is_exact:
-                raise ValueError("coordinate programming needs an exact supported next read")
+            read, desired = _coordinate_fit_step(receiver, state, desired)
             diagnostics = {}
             unprojected._advance_read(state, read, diagnostics=diagnostics)
             inputs.append(receiver._anchors[read.address[1]])
@@ -264,11 +329,7 @@ def program_binding_coordinates(receiver, examples, *, max_update_norm, protect=
         candidate = receiver._with_coordinate_value(edit.weight)
         replays = []
         for state, read, desired in steps:
-            replay = candidate.step(_replay_coordinate_prefix(candidate, state, atol))
-            if (not _same_binding_read(replay.reads[-1], read)
-                    or np.max(np.abs(replay.latest - desired)) > atol):
-                raise ValueError("coordinate program misses its next read or hidden target in replay")
-            replays.append(replay)
+            replays.append(_check_coordinate_fit(candidate, state, read, desired, atol))
         for state in protect:
             _replay_coordinate_prefix(candidate, state, atol)
     return candidate, tuple(replays), edit
@@ -323,6 +384,26 @@ def check_coordinate_replay(receiver, candidate, memory, seed, addresses, expect
     if _same_binding_read(terminal, control):
         return "coordinate_state_unused"
     return "published"
+
+
+def check_coordinate_protection(receiver, candidate, memory, seed, addresses, expected):
+    """Require the already useful ordinary path on both receivers at adjudication."""
+    try:
+        with np.errstate(**_REPLAY_ERRORS):
+            for model in (receiver, candidate):
+                state = model.start(seed, memory)
+                for address in addresses[:-1]:
+                    state = model.step(state)
+                    read = state.reads[-1]
+                    if (read.status != "resolved" or read.address != address or read.bounds.certain is None
+                            or not read.bounds.is_exact):
+                        return False
+                terminal = model._next_read(state)
+                if terminal.status != "resolved" or terminal.address != addresses[-1] or terminal.bounds != expected:
+                    return False
+    except FloatingPointError:
+        return False
+    return True
 
 
 def freeze_binding_replay(trajectory, memory, targets, downstream=None):

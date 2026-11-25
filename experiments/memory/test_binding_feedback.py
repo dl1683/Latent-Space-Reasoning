@@ -9,14 +9,14 @@ from experiments.memory import binding_memory, corpus_binding_journal
 from experiments.memory.binding_feedback import BindingFeedback, BindingRouteExpansion
 from experiments.memory.binding_maintenance import propose_binding_program
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _ProofWork
-from experiments.memory.binding_replay import _receiver_digest, program_binding_coordinates, route_norm_cap
+from experiments.memory.binding_replay import _receiver_digest, program_binding_context, program_binding_coordinates, route_norm_cap
 from experiments.memory.corpus_binding_journal import (
     CorpusProgramExpectation, CorpusProgramProbe, JournaledCorpusWorkspace,
 )
 from experiments.memory.corpus_bindings import (
     BindingMention, CorpusBindingMemory, CorpusBindingRead, StaleCorpusRevision, _DisjointBranchReads,
 )
-from experiments.memory.latent_feedback import FeedbackKernel
+from experiments.memory.latent_feedback import ConditionalTerm, FeedbackKernel
 
 
 def _encode(raw):
@@ -532,6 +532,123 @@ def test_coordinate_trial_is_fenced_if_a_source_changes_after_the_judge_passes(t
     latest = workspace.snapshot()
     assert workspace.receiver_at(latest, receiver) is receiver
     assert workspace.finish_program_trial(trial.trial_id, receiver=receiver).status == "horizon_passed"
+
+
+def _coordinate_context_fixture():
+    frame = CorpusBindingMemory.prepare(
+        ("p", "q", "shared", "end", "guard"), np.eye(2), {}, {}, encode=_encode,
+        encoder_version="coordinate-context", min_similarity=.7, gap=.02,
+    )
+    keys, zeros = np.zeros((5, 1)), np.zeros((5, 5))
+    carry = zeros.copy()
+    carry[0, 3] = carry[4, 3] = 2.
+    kernel = FeedbackKernel(query=keys, carry=carry, observation_key=keys, observation_value=zeros,
+                            feedback_key=keys, feedback_value=zeros, max_steps=3)
+    addresses = (("p", 0), ("q", 0), ("shared", 1), ("shared", 0), ("end", 1), ("guard", 1))
+    query = [[2., 0., 0., 0., 0., 0.], [0., 0., 0., 0., 0., -1.],
+             [0., 0., 0., 0., 1., 0.], [0., 0., 2., 1., 0., 0.], [0., 2., 0., 0., 0., 0.]]
+    observation = np.zeros((6, 5))
+    observation[1, 1] = -3
+    observation[5, 1] = 4
+    receiver = BindingFeedback(kernel, frame, addresses, query=query, observation=observation,
+                               route_floor=.05, disjoint_reads=True, route_trials=2)
+    sources = {"p": b"p,1,0,0.9", "q": b"q,1,0,0.7", "shared": b"shared,0,1,0.65",
+               "end": b"end,0,1,0.9", "guard": b"guard,0,1,0.9"}
+    positive, negative = [1., 0., 0., 0., 0.], [0., 0., 0., 0., 1.]
+    target = CorpusProgramExpectation(CorpusProgramProbe((("p", 0), ("shared", 1), ("end", 1))),
+                                      CorpusBindingRead(BindingProof(.65, frozenset({"p", "shared", "end"})), .65))
+    protected = CorpusProgramExpectation(CorpusProgramProbe((("q", 0), ("shared", 1), ("guard", 1))),
+                                         CorpusBindingRead(BindingProof(.65, frozenset({"q", "shared", "guard"})), .65))
+    return frame, receiver, sources, positive, negative, target, protected
+
+
+def test_coordinate_context_follows_revised_evidence_at_the_same_anchor(tmp_path):
+    frame, receiver, sources, positive, negative, target, protected = _coordinate_context_fixture()
+    path = tmp_path / "context.sqlite"
+    workspace = JournaledCorpusWorkspace(path, frame, create=True)
+    base = _write(workspace, sources)
+    current = receiver.step(receiver.start(positive, base.memory))
+    other = receiver.step(receiver.start(negative, base.memory))
+    old = receiver.step(current)
+    guard = receiver.step(other)
+    assert old.reads[-1].address == guard.reads[-1].address == ("shared", 1)
+    assert old.reads[-1].bounds.possible_strength == guard.reads[-1].bounds.possible_strength == .65
+    np.testing.assert_array_equal(old.latest, guard.latest)
+    desired = old.latest.copy()
+    desired[2] = .8
+    with pytest.raises(ValueError, match="incompatible with target"):
+        program_binding_coordinates(receiver, [(current, desired), (other, guard.latest)], max_update_norm=4.)
+    with pytest.raises(ValueError, match="no resolved hinge margin"):
+        program_binding_context(receiver, current, desired, max_update_norm=4., protect=(old,))
+    candidate, replay, term = program_binding_context(receiver, current, desired, max_update_norm=4., protect=(guard,))
+    assert candidate._next_read(replay).address == ("end", 1)
+    assert 0 < term.norm <= 4. and candidate._coordinate_value is receiver._coordinate_value
+
+    def path_end(model, seed, memory):
+        state = model.step(model.step(model.start(seed, memory)))
+        return model._next_read(state)
+
+    assert path_end(candidate, negative, base.memory).bounds == protected.expected
+
+    trial = workspace.begin_coordinate_trial(base, receiver, candidate, seed=positive, target=target,
+                                             protect=((negative, protected),), future_batches=1, max_update_norm=4.)
+    later = _write(workspace, {"p": b"p,1,0,0.86", "q": b"q,1,0,0.72"})
+    assert later.memory.resolve_disjoint(target.probe.addresses) == target.expected
+    assert later.memory.resolve_disjoint(protected.probe.addresses) == protected.expected
+
+    def no_encoding(_raw):
+        pytest.fail("recovering a context program attempted encoding")
+
+    worker = JournaledCorpusWorkspace(path, replace(frame, _encode=no_encoding))
+    receipt = worker.finish_program_trial(trial.trial_id, receiver=receiver)
+    assert receipt.status == "published" and receipt.published_revision == later.revision + 1
+    reopened = JournaledCorpusWorkspace(path, replace(frame, _encode=no_encoding))
+    pin = reopened.snapshot()
+    installed = reopened.receiver_at(pin, receiver)
+    assert _receiver_digest(installed) == _receiver_digest(candidate)
+    assert reopened.finish_program_trial(trial.trial_id) == receipt
+    assert workspace.receiver_at(base, receiver) is receiver
+
+    assert path_end(installed, positive, pin.memory).address == ("end", 1)
+    assert path_end(installed, negative, pin.memory).address == ("guard", 1)
+    swapped = _write(workspace, {"p": b"p,1,0,0.72", "q": b"q,1,0,0.86"})
+    assert path_end(installed, positive, swapped.memory).address == ("guard", 1)
+    assert path_end(installed, negative, swapped.memory).address == ("end", 1)
+    moved = _write(workspace, {"shared": b"shared,1,0,0.65"})
+    assert path_end(installed, negative, moved.memory).address == ("guard", 1)
+
+    # An indexed dispatcher uses the same prior grades and compatible anchors.
+    grade_split = (current.reads[-1].bounds.possible_strength + other.reads[-1].bounds.possible_strength) / 2
+    for revision, shared in ((pin, ("shared", 1)), (swapped, ("shared", 1)), (moved, ("shared", 0))):
+        for seed, first in ((positive, ("p", 0)), (negative, ("q", 0))):
+            memory = revision.memory
+            first_grade = memory.resolve(*first).possible_strength
+            alternatives = {name: memory.resolve_disjoint((first, shared, (name, 1))) for name in ("end", "guard")}
+            assert all(bounds.is_exact and bounds.possible_strength == .65 for bounds in alternatives.values())
+            selected = "end" if first_grade > grade_split and shared[1] == 1 else "guard"
+            observed = path_end(installed, seed, memory)
+            assert (observed.address, observed.bounds) == ((selected, 1), alternatives[selected])
+
+
+def test_coordinate_context_cannot_publish_if_a_protected_continuation_changes(tmp_path):
+    frame, receiver, sources, positive, negative, target, protected = _coordinate_context_fixture()
+    workspace = JournaledCorpusWorkspace(tmp_path / "context-protected.sqlite", frame, create=True)
+    base = _write(workspace, sources)
+    term = ConditionalTerm([0., 0., 0., 1., 0.], [0., 1.], [0., 0., 1., 0., 0.], 0.)
+    candidate = receiver._with_coordinate_term(term)
+    with pytest.raises(ValueError, match="exact update norm cap"):
+        workspace.begin_coordinate_trial(base, receiver, candidate, seed=positive, target=target,
+                                         protect=((negative, protected),), future_batches=1, max_update_norm=.5)
+    rounded = replace(term, state_axis=[2. ** -27, 0., 0., 1., 0.])
+    assert rounded.norm == 1.
+    with pytest.raises(ValueError, match="exact update norm cap"):
+        workspace.begin_coordinate_trial(base, receiver, receiver._with_coordinate_term(rounded), seed=positive,
+                                         target=target, future_batches=1, max_update_norm=1.)
+    trial = workspace.begin_coordinate_trial(base, receiver, candidate, seed=positive, target=target,
+                                             protect=((negative, protected),), future_batches=1, max_update_norm=1.)
+    later = _write(workspace, {"p": b"p,1,0,0.86", "q": b"q,1,0,0.72"})
+    assert workspace.finish_program_trial(trial.trial_id, receiver=receiver).status == "coordinate_protected_changed"
+    assert workspace.snapshot() is later and workspace.receiver_at(later, receiver) is receiver
 
 
 def _repair_receiver(frame, *, trials=1, earlier="p", observe=True, proof_limit=65536, reuse_weighted_matching=False):

@@ -10,7 +10,7 @@ import numpy as np
 
 from experiments.memory.binding_memory import BindingCapacityError, _ProofWork
 from experiments.memory.corpus_bindings import CorpusBindingMemory, CorpusBindingRead, _DisjointBranchReads
-from experiments.memory.latent_feedback import FeedbackKernel, FeedbackState, _frozen, _real_array
+from experiments.memory.latent_feedback import ConditionalTerm, FeedbackKernel, FeedbackState, _frozen, _real_array
 
 
 _STATE_CREATION_KEY = object()
@@ -146,6 +146,7 @@ class BindingFeedback:
         self._query, self._observation = _frozen(query), _frozen(observation)
         self._coordinate_value = (None if coordinate_value is None else
                                   kernel._weight(coordinate_value, (frame._anchors.shape[1], kernel._width)))
+        self._coordinate_terms = ()
         self._route_floor, self._route_gap, self._work_limit = route_floor, route_gap, work_limit
         self._disjoint_reads = disjoint_reads
         self._route_trials = route_trials
@@ -189,6 +190,18 @@ class BindingFeedback:
         candidate._coordinate_value = None if weight is None else self._kernel._weight(weight, shape)
         return candidate
 
+    def _with_coordinate_term(self, term):
+        if type(term) is not ConditionalTerm or term.threshold is None:
+            raise ValueError("coordinate context needs a hinged conditional term")
+        anchor = _frozen(_real_array(term.observation_axis))
+        if anchor.shape != (self._anchors.shape[1],):
+            raise ValueError("coordinate context anchor axis has the wrong width")
+        state = self._kernel._vector(term.state_axis)
+        output = self._kernel._vector(term.output)
+        candidate = copy(self)
+        candidate._coordinate_terms = (*self._coordinate_terms, (state, anchor, output, term.threshold))
+        return candidate
+
     def _read_with_route_map(self, state):
         """Evaluate an earlier route map on a ready state from the same kernel."""
         self._kernel._require_state(state.feedback)
@@ -230,8 +243,14 @@ class BindingFeedback:
                     features[4:6] = 1.0, upper
             with np.errstate(over="raise", invalid="raise"):
                 extra = features @ self._observation
-                if self._coordinate_value is not None and read.status == "resolved" and upper is not None:
-                    extra += self._anchors[read.address[1]] @ self._coordinate_value
+                if read.status == "resolved" and upper is not None:
+                    anchor = self._anchors[read.address[1]]
+                    if self._coordinate_value is not None:
+                        extra += anchor @ self._coordinate_value
+                    for state_axis, anchor_axis, output, threshold in self._coordinate_terms:
+                        amount = max(0., float(state.latest @ state_axis) - threshold)
+                        if amount:
+                            extra += (amount * (anchor @ anchor_axis)) * output
         feedback, _, _ = self._kernel._advance(state.feedback, observation_extra=extra, diagnostics=diagnostics)
         return BindingFeedbackState(self, feedback, state.memory, _STATE_CREATION_KEY, state.reads + (read,))
 
