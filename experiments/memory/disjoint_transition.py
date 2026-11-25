@@ -156,6 +156,9 @@ class DisjointTransitionMemory:
 
     def revise(self, changes, *, width=None):
         """Replace source assertions and optionally append coordinates to the frame."""
+        return self._revise(changes, width=width)
+
+    def _revise(self, changes, *, width=None, affected_entries=None):
         width = self.width if width is None else index(width)
         if width < self.width:
             raise ValueError("transition revisions cannot shrink the coordinate frame")
@@ -200,6 +203,8 @@ class DisjointTransitionMemory:
                 del middles[middle]
             old_entries, old_destinations = _indexed_coordinates(old)
             new_entries, new_destinations = _indexed_coordinates(middles.get(middle))
+            if affected_entries is not None:
+                affected_entries.update(old_entries, new_entries)
             _record_index_changes(entry_changes, middle, old_entries, new_entries)
             _record_index_changes(destination_changes, middle, old_destinations, new_destinations)
         return replace(self, width=width, _sources=MappingProxyType(sources), _middles=MappingProxyType(middles),

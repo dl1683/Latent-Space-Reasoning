@@ -24,6 +24,8 @@ The [two-hop propagation slice](docs/ARCHITECTURE.md#two-hop-propagation-with-di
 
 The [two-hop feedback receiver](docs/ARCHITECTURE.md#two-hop-feedback-into-the-hidden-state) takes its next relation query from its generated hidden row. A same-pin intervention can replace just that query or bypass the relational contribution while keeping ordinary observations attached.
 
+A [relation revision](docs/ARCHITECTURE.md#rebasing-hidden-trajectories-after-a-relation-edit) can serve multiple hidden trajectories on the same pin. The receiver preserves earlier hidden rows and their projected keys and values until a changed relation could affect a step.
+
 A [local repository demo](docs/ARCHITECTURE.md#committed-python-imports) reads a Git commit into those factors and accepts later commits as revisions. It answers structured two-hop import queries with both source lines and the exact commit.
 
 The [import reader check](docs/ARCHITECTURE.md#checking-an-import-reader) prepares exact committed declarations and checks a structured reply or abstention. A tokenizer-only check with Gemma 4 E2B fit all four requests from a local repository within 512 tokens, including a 64-token reply reserve. Reader competence and inference cost remain unmeasured.
