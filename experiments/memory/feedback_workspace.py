@@ -3,7 +3,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing, nullcontext
 from dataclasses import dataclass
-from math import isfinite
+from math import hypot, isfinite, sqrt
 from operator import index
 from threading import Lock
 
@@ -78,8 +78,9 @@ class FeedbackProposal:
 
     def __post_init__(self):
         object.__setattr__(self, "probe", index(self.probe))
-        if sum(value is not None for value in (self._weight, self.term, self._query)) != 1:
-            raise ValueError("proposal must contain exactly one operator edit")
+        maps = self._weight is not None or self._query is not None
+        if maps == (self.term is not None):
+            raise ValueError("proposal needs map edits or one conditional term")
         if self.term is not None and type(self.term) is not ConditionalTerm:
             raise ValueError("invalid conditional proposal data")
         if self._weight is not None:
@@ -110,6 +111,7 @@ class FeedbackRepairAttempt:
     hinge: bool = False
     fidelity_attempts: tuple[FeedbackFidelityAttempt, ...] = ()
     routing: bool = False
+    joint: bool = False
 
 
 @dataclass(frozen=True)
@@ -127,7 +129,7 @@ class FeedbackWorkspace:
 
     def __init__(self, kernel, observations, probes, *, max_update_norm, atol=1e-8,
                  max_terms=0, guards=(), allow_hinge=False, max_reference_frontier=None,
-                 reuse_tree_routes=False, max_retained_tree_scores=0):
+                 reuse_tree_routes=False, max_retained_tree_scores=0, allow_joint=False):
         if type(reuse_tree_routes) is not bool:
             raise ValueError("tree route reuse must be a boolean")
         self._max_retained_tree_scores = index(max_retained_tree_scores)
@@ -150,6 +152,9 @@ class FeedbackWorkspace:
         if any(p.routing is not None for p in self._guards):
             raise ValueError("routing goals are supported only on working probes")
         self._has_routing = any(p.routing is not None for p in self._probes)
+        if type(allow_joint) is not bool or (allow_joint and not self._has_routing):
+            raise ValueError("joint edits require a boolean policy and a working routing goal")
+        self._allow_joint = allow_joint
         if self._has_routing:
             if type(kernel) not in (FeedbackKernel, TreeFeedbackKernel):
                 raise ValueError("routing goals require a supported softmax kernel")
@@ -320,19 +325,34 @@ class FeedbackWorkspace:
         return ((check.seed, check.steps) for probe, check in enumerate(self._probes)
                 if probe != selected and base.errors[probe] <= self._atol)
 
-    def propose_routing(self, base, probe):
-        """Fit an observation query for a declared, unresolved source floor."""
+    def propose_routing(self, base, probe, *, joint=False):
+        """Fit a query for an unmet source floor and optionally fit its value map."""
         self._require_current(base)
+        if type(joint) is not bool or (joint and not self._allow_joint):
+            raise ValueError("workspace joint query and value edits are disabled")
         probe = self._open_probe(base, probe)
         goal = self._probes[probe]
         if goal.routing is None or base.source_masses[probe] >= goal.routing.min_mass:
             raise ValueError("probe has no unmet source mass floor")
-        _, _, edit = base.kernel.program_observation_mass(
+        protected = tuple(self._protected_runs(base, probe))
+        draft, _, query_edit = base.kernel.program_observation_mass(
             base.start(goal.seed), goal.steps, goal.routing.slot, goal.routing.min_mass,
-            max_update_norm=self._max_update_norm, atol=self._atol, protect=self._protected_runs(base, probe),
+            max_update_norm=self._max_update_norm, atol=self._atol, protect=protected,
             search="multivariate",
         )
-        return FeedbackProposal(base, probe, _query=edit.weight)
+        if not joint:
+            return FeedbackProposal(base, probe, _query=query_edit.weight)
+
+        self._require_current(base)
+        limit, used = self._max_update_norm, query_edit.update_norm
+        # Avoid squaring the cap or either update in Float64.
+        fraction = ((limit - used) / limit) * (1 + used / limit) if limit else 0.0
+        remaining = limit * sqrt(min(1.0, fraction))
+        _, _, value_edit = draft.retarget(
+            draft.start(goal.seed, base.memory), goal.steps, goal.target,
+            max_update_norm=remaining, atol=self._atol, protect=protected,
+        )
+        return FeedbackProposal(base, probe, _weight=value_edit.weight, _query=query_edit.weight)
 
     def publish(self, proposal):
         """Admit one newly satisfied probe with every other probe non-worsening."""
@@ -357,6 +377,8 @@ class FeedbackWorkspace:
             goal = self._probes[probe].routing
             if goal is not None and base.source_masses[probe] < goal.min_mass:
                 candidates.append((probe, "route"))
+                if self._allow_joint:
+                    candidates.append((probe, "joint"))
         return candidates
 
     def _repair_rank(self, revision):
@@ -391,7 +413,7 @@ class FeedbackWorkspace:
     def _evaluate_candidate(self, base, ordinal, candidates):
         probe, kind = candidates[ordinal]
         conditional, hinge = kind in ("conditional", "hinge"), kind == "hinge"
-        routing = kind == "route"
+        routing, joint = kind in ("route", "joint"), kind == "joint"
         if self._draft_tree_policy is not None and not routing:
             proposal, revised, trials = self._assess_tree_repair(base, probe, conditional, hinge)
             attempt = FeedbackRepairAttempt(
@@ -401,16 +423,16 @@ class FeedbackWorkspace:
             )
             return attempt, proposal, revised
         try:
-            proposal = (self.propose_routing(base, probe) if routing
+            proposal = (self.propose_routing(base, probe, joint=joint) if routing
                         else self._propose(base, probe, conditional=conditional, hinge=hinge))
             revised = self._prepare_operator_revision(proposal)
         except StaleFeedbackRevision:
             raise
         except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
-            attempt = FeedbackRepairAttempt(probe, conditional, str(error), hinge=hinge, routing=routing)
+            attempt = FeedbackRepairAttempt(probe, conditional, str(error), hinge=hinge, routing=routing, joint=joint)
             return attempt, None, None
         rank = self._repair_rank(revised)
-        return FeedbackRepairAttempt(probe, conditional, rank=rank, hinge=hinge, routing=routing), proposal, revised
+        return FeedbackRepairAttempt(probe, conditional, rank=rank, hinge=hinge, routing=routing, joint=joint), proposal, revised
 
     def _maintenance_candidates(self, base, candidates, offset, stop, workers):
         error_settings = np.geterr()
@@ -493,23 +515,28 @@ class FeedbackWorkspace:
         base = proposal.base
         probe = self._open_probe(base, proposal.probe)
         goal = self._probes[probe]
-        if proposal._query is not None:
-            if goal.routing is None:
-                raise ValueError("routing edit requires a declared source mass goal")
-            old_query = base.kernel._observation_query
-            if old_query is None:
-                old_query = base.kernel._query
-            with np.errstate(over="raise", invalid="raise"):
-                norm = _frobenius(proposal._query - old_query)
-            candidate = base.kernel._with_observation_query(proposal._query)
-        elif proposal.term is None:
-            with np.errstate(over="raise", invalid="raise"):
-                norm = _frobenius(proposal._weight - base.kernel._dense_observation_value())
-            candidate = base.kernel._with_observation_value(proposal._weight)
-        else:
+        if proposal.term is not None:
             self._require_term_capacity(base, hinge=proposal.term.threshold is not None)
             norm = proposal.term.norm
             candidate = base.kernel._with_conditional(proposal.term)
+        else:
+            candidate = base.kernel
+            query_norm = value_norm = 0.0
+            with np.errstate(over="raise", invalid="raise"):
+                if proposal._query is not None:
+                    if goal.routing is None:
+                        raise ValueError("routing edit requires a declared source mass goal")
+                    if proposal._weight is not None and not self._allow_joint:
+                        raise ValueError("workspace joint query and value edits are disabled")
+                    old_query = base.kernel._observation_query
+                    if old_query is None:
+                        old_query = base.kernel._query
+                    query_norm = _frobenius(proposal._query - old_query)
+                    candidate = candidate._with_observation_query(proposal._query)
+                if proposal._weight is not None:
+                    value_norm = _frobenius(proposal._weight - base.kernel._dense_observation_value())
+                    candidate = candidate._with_observation_value(proposal._weight)
+            norm = hypot(query_norm, value_norm)
         if not isfinite(norm) or norm > self._max_update_norm:
             raise ValueError("proposed operator exceeds the workspace update budget")
         errors, prefixes, probe_routes, masses = self._working_results(candidate, base.memory, base._probe_routes)

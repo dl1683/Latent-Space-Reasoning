@@ -274,7 +274,7 @@ class FeedbackRepairQueue:
                 raise ValueError("repair receipt disagrees with the journal")
         attempts = tuple(FeedbackRepairAttempt(probe, conditional, rejection,
                                                 None if rank is None else tuple(rank), hinge,
-                                                routing=kind == "route")
+                                                routing=kind in ("route", "joint"), joint=kind == "joint")
                          for (_, kind), (probe, conditional, rejection, rank, hinge)
                          in zip(plan.candidates, json.loads(attempts_data), strict=True))
         return FeedbackRepairReceipt(plan, status, attempts, selected, next_candidate, revision,

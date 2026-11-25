@@ -76,6 +76,28 @@ def test_floor_only_repair_preserves_other_attained_floors():
     assert workspace.maintain(max_candidates=2).status == "satisfied"
 
 
+def test_floor_first_joint_constructor_misses_a_feasible_larger_query_shift():
+    kernel = FeedbackKernel(
+        query=[[0.15], [0]], carry=None, observation_key=[[1], [0]],
+        observation_value=np.zeros((2, 2)), feedback_key=[[0], [0]],
+        feedback_value=np.zeros((2, 2)), max_steps=1,
+    )
+    probe = FeedbackProbe([1, 0], 1, [np.tanh(0.9), 0], FeedbackRoutingGoal(1, 0.6))
+    workspace = FeedbackWorkspace(kernel, [[-1, 0], [1, 0]], [probe], max_update_norm=2, allow_joint=True)
+    base = workspace.snapshot()
+    result = workspace.maintain(max_candidates=3)
+    assert result.status == "no_candidate" and workspace.snapshot() is base
+    assert result.attempts[2].joint and "weight update norm budget" in result.attempts[2].rejection
+
+    # A larger query shift makes the value correction small enough to fit the joint cap.
+    query = 1.2
+    value = 0.9 / np.tanh(query)
+    assert np.hypot(query - 0.15, value) < 2
+    witness = FeedbackProposal(base, 0, _query=[[query], [0]], _weight=[[value, 0], [0, 0]])
+    admitted = workspace.publish(witness)
+    assert admitted.errors[0] <= 1e-8 and admitted.source_masses[0] > 0.9
+
+
 def _workspace(second_target=(0, 0.5), *, journal=None):
     probes = (FeedbackProbe((1, 0), 1, (0.4, 0)),
               FeedbackProbe((0, 1), 1, second_target))

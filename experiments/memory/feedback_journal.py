@@ -110,7 +110,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
 
     def __init__(self, path, kernel, observations, probes, *, max_update_norm, atol=1e-8,
                  max_terms=0, source_ids=None, guards=(), allow_hinge=False, max_reference_frontier=None,
-                 reuse_tree_routes=False, max_retained_tree_scores=0, create=False):
+                 reuse_tree_routes=False, max_retained_tree_scores=0, create=False, allow_joint=False):
         if type(create) is not bool:
             raise ValueError("journal creation flag must be a boolean")
         self._tree_bound = isinstance(kernel, TreeFeedbackKernel)
@@ -139,7 +139,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         super().__init__(kernel, observations, probes, max_update_norm=max_update_norm,
                          atol=atol, max_terms=max_terms, guards=guards, allow_hinge=allow_hinge,
                          max_reference_frontier=max_reference_frontier, reuse_tree_routes=reuse_tree_routes,
-                         max_retained_tree_scores=max_retained_tree_scores)
+                         max_retained_tree_scores=max_retained_tree_scores, allow_joint=allow_joint)
         self._path = Path(path).resolve()
         self._root = self._root_digest(initial_sources, observations if self._tree_bound else None)
         self._tip = self._root
@@ -228,6 +228,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             routing = [(i, probe.routing.slot, probe.routing.min_mass)
                        for i, probe in enumerate(self._probes) if probe.routing is not None]
             digest.update(json.dumps(routing, allow_nan=False, separators=(",", ":")).encode())
+        if self._allow_joint:
+            digest.update(b"\nfeedback joint query and value v1\n")
         if self._guards:
             digest.update(b"\nfeedback guard probes v1\n")
             guards = [(probe.seed, probe.steps, probe.target) for probe in self._guards]
@@ -289,12 +291,13 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
 
     def _decode_operator(self, base, kind, probe, payload):
         width = base.kernel._width
+        query_size = base.kernel._query.size
         lengths = {"weight": width * width, "conditional": 3 * width, "hinge": 3 * width + 1}
-        if kind == "route" and self._has_routing:
+        if (kind == "route" and self._has_routing) or (kind == "joint" and self._allow_joint):
             probe = index(probe)
             if not 0 <= probe < len(self._probes) or self._probes[probe].routing is None:
                 raise ValueError("routing event requires a declared source mass goal")
-            lengths["route"] = base.kernel._query.size
+            lengths[kind] = query_size if kind == "route" else query_size + width * width
         if kind not in lengths:
             raise ValueError("unexpected feedback journal event")
         if len(payload) != 8 * lengths[kind]:
@@ -302,8 +305,10 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         values = np.frombuffer(payload, dtype="<f8")
         if kind == "weight":
             return FeedbackProposal(base, probe, values.reshape(width, width))
-        if kind == "route":
-            return FeedbackProposal(base, probe, _query=values.reshape(base.kernel._query.shape))
+        if kind in ("route", "joint"):
+            query = values[:query_size].reshape(base.kernel._query.shape)
+            value = None if kind == "route" else values[query_size:].reshape(width, width)
+            return FeedbackProposal(base, probe, _weight=value, _query=query)
         if kind == "conditional":
             return FeedbackProposal(base, probe, term=ConditionalTerm(*values.reshape(3, width)))
         term = ConditionalTerm(*values[:-1].reshape(3, width), threshold=values[-1])
@@ -312,6 +317,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
     @staticmethod
     def _encode_operator(proposal):
         if proposal._query is not None:
+            if proposal._weight is not None:
+                return "joint", _encode(proposal._query) + _encode(proposal._weight)
             return "route", _encode(proposal._query)
         if proposal.term is None:
             return "weight", _encode(proposal._weight)
@@ -347,7 +354,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             raise ValueError("process repair plans need a data-only NumPy error policy")
         return FeedbackSearchPlan(root, tip, base.number, offset, total,
                                   tuple(candidates[offset:offset + limit]), policy,
-                                  version=2 if self._has_routing else 1)
+                                  version=3 if self._allow_joint else 2 if self._has_routing else 1)
 
     def plan_repairs(self, *, max_candidates, resume=None):
         """Describe the ordered candidates that separate processes may synthesize."""
@@ -386,7 +393,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         synthesize = self.propose if self._draft_tree_policy is not None else self._propose
         for probe, kind in plan.candidates[start:stop]:
             try:
-                proposal = (self.propose_routing(base, probe) if kind == "route"
+                proposal = (self.propose_routing(base, probe, joint=kind == "joint")
+                            if kind in ("route", "joint")
                             else synthesize(base, probe, conditional=kind in ("conditional", "hinge"),
                                             hinge=kind == "hinge"))
             except StaleFeedbackRevision:
@@ -427,10 +435,10 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         for (probe, kind), candidate in zip(plan.candidates, results, strict=True):
             self._require_current(base)
             conditional, hinge = kind in ("conditional", "hinge"), kind == "hinge"
-            routing = kind == "route"
+            routing, joint = kind in ("route", "joint"), kind == "joint"
             if candidate.payload is None:
                 attempts.append(FeedbackRepairAttempt(probe, conditional, candidate.rejection,
-                                                      hinge=hinge, routing=routing))
+                                                      hinge=hinge, routing=routing, joint=joint))
                 continue
             proposal = self._decode_operator(base, kind, probe, candidate.payload)
             try:
@@ -438,12 +446,14 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             except StaleFeedbackRevision:
                 raise
             except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
-                attempts.append(FeedbackRepairAttempt(probe, conditional, str(error), hinge=hinge, routing=routing))
+                attempts.append(FeedbackRepairAttempt(probe, conditional, str(error),
+                                                      hinge=hinge, routing=routing, joint=joint))
                 continue
             rank = self._repair_rank(revised)
             if best is None or rank < best[0]:
                 best = rank, proposal, revised, len(attempts)
-            attempts.append(FeedbackRepairAttempt(probe, conditional, rank=rank, hinge=hinge, routing=routing))
+            attempts.append(FeedbackRepairAttempt(probe, conditional, rank=rank,
+                                                  hinge=hinge, routing=routing, joint=joint))
         self._require_current(base)
         if best is not None:
             _, proposal, revised, selected = best

@@ -12,7 +12,8 @@ import pytest
 from experiments.memory import feedback_repair_queue
 from experiments.memory.feedback_journal import FeedbackCandidateData, FeedbackSearchShard, JournaledFeedbackWorkspace
 from experiments.memory.feedback_repair_queue import FeedbackRepairQueue, StaleFeedbackLease
-from experiments.memory.feedback_workspace import FeedbackProbe, FeedbackRoutingGoal, StaleFeedbackRevision
+from experiments.memory.feedback_workspace import FeedbackProbe, FeedbackProposal, FeedbackRoutingGoal, StaleFeedbackRevision
+from experiments.memory.latent_feedback import FactoredValue
 from experiments.memory.test_feedback_workspace import _tree_journal
 from experiments.memory.tree_feedback import TreeFeedbackKernel
 
@@ -21,8 +22,8 @@ def _synthesize(workspace, lease):
     return workspace.synthesize_repairs(lease.plan, start=lease.position, stop=lease.position + 1)
 
 
-def _complete_window(workspace, queue):
-    plan = workspace.plan_repairs(max_candidates=2)
+def _complete_window(workspace, queue, *, max_candidates=2):
+    plan = workspace.plan_repairs(max_candidates=max_candidates)
     queue.enqueue(plan)
     for _ in plan.candidates:
         lease = queue.claim(lease_seconds=60)
@@ -46,6 +47,130 @@ def _routing_journal(path, *, create=False, floor=0.8, conflicting_guard=False):
     return JournaledFeedbackWorkspace(path, kernel, [[-1, 0, 0], [1, 0, 0]], probes,
                                       max_update_norm=4, guards=guards, max_reference_frontier=4,
                                       max_retained_tree_scores=3, create=create)
+
+
+def _joint_journal(path, *, create=False, limit=2, allow_joint=True):
+    carry = np.zeros((4, 4))
+    carry[0, 1], carry[3, 3] = 1.0, 0.4
+    kernel = TreeFeedbackKernel(
+        depth=2, max_frontier=1, query=[[0], [0.4 / np.tanh(1)], [0], [0]], carry=carry,
+        observation_key=[[1], [0], [0], [0]],
+        observation_value=FactoredValue([[0], [0], [0], [1]], [[0, 0, 1, 0]]),
+        feedback_key=np.zeros((4, 1)), feedback_value=np.zeros((4, 4)), max_steps=2,
+    )
+    rows = [[-1, 0, 0, -1], [1, 0, 0, 1]]
+    probes = [FeedbackProbe([1, 0, 0, 0], 2, [0, 0, np.tanh(0.5), 0], FeedbackRoutingGoal(1, 0.8))]
+    guards = [FeedbackProbe([0, 0, 0, 1], 2, [0, 0, 0, np.tanh(0.4 * np.tanh(0.4))])]
+    return JournaledFeedbackWorkspace(path, kernel, rows, probes, max_update_norm=limit, guards=guards,
+                                      max_reference_frontier=3, create=create, allow_joint=allow_joint)
+
+
+def test_worker_fits_query_and_value_and_publishes_only_the_combination(tmp_path):
+    path = tmp_path / "joint.sqlite"
+    workspace = _joint_journal(path, create=True)
+    base = workspace.snapshot()
+    plan = workspace.plan_repairs(max_candidates=3)
+    assert plan.version == 3 and plan.candidates == ((0, "weight"), (0, "route"), (0, "joint"))
+    queue = FeedbackRepairQueue(workspace)
+    queue.enqueue(plan)
+    script = """
+import sys
+from experiments.memory.feedback_repair_queue import FeedbackRepairQueue
+from experiments.memory.test_feedback_repair_queue import _joint_journal, _synthesize
+worker = _joint_journal(sys.argv[1])
+queue = FeedbackRepairQueue(worker)
+while (lease := queue.claim(lease_seconds=60)) is not None:
+    queue.complete(lease, _synthesize(worker, lease))
+assert worker.snapshot().number == 0
+"""
+    subprocess.run([sys.executable, "-B", "-c", script, str(path)], check=True, timeout=30)
+    publisher = _joint_journal(path)
+    published = FeedbackRepairQueue(publisher).publish(plan)
+    assert published.status == "committed" and published.selected_attempt == 2
+    weight, route, joint = published.attempts
+    assert "target source mass floor" in weight.rejection
+    assert "target probe" in route.rejection
+    assert joint.routing and joint.joint and joint.rejection is None
+    head = published.revision
+    assert head.errors[0] < 1e-8 and head.source_masses[0] >= 0.8
+    assert head.guard_errors == base.guard_errors == (0,)
+    assert isinstance(base.kernel._observation_value, FactoredValue)
+    assert isinstance(head.kernel._observation_value, np.ndarray)
+    seed = [1, 0, 0, 0]
+    prior = head.kernel.step(head.start(seed))
+    np.testing.assert_array_equal(prior.latest, base.kernel.step(base.start(seed)).latest)
+    for omitted in (True, False):
+        old_empty = None if omitted else base.kernel.prepare(np.empty((0, 4)))
+        new_empty = None if omitted else head.kernel.prepare(np.empty((0, 4)))
+        old_state = base.kernel.start([0, 0, 0, 1], old_empty)
+        new_state = head.kernel.start([0, 0, 0, 1], new_empty)
+        for _ in range(2):
+            old_state, new_state = base.kernel.step(old_state), head.kernel.step(new_state)
+            np.testing.assert_array_equal(old_state.latest, new_state.latest)
+
+    with closing(publisher._connect()) as db:
+        kind, payload = db.execute("SELECT kind, payload FROM feedback_events").fetchone()
+    assert kind == "joint" and len(payload) == 8 * (4 + 16)
+    np.testing.assert_array_equal(np.frombuffer(payload[:32], dtype="<f8"), head.kernel._observation_query[:, 0])
+    np.testing.assert_array_equal(np.frombuffer(payload[32:], dtype="<f8").reshape(4, 4),
+                                  head.kernel._observation_value)
+    reopened = _joint_journal(path)
+    recovered = reopened.snapshot()
+    receipt = FeedbackRepairQueue(reopened).receipt(plan)
+    assert receipt.attempts == published.attempts and receipt.published_revision == recovered.number == 1
+    np.testing.assert_array_equal(recovered.kernel._observation_query, head.kernel._observation_query)
+    np.testing.assert_array_equal(recovered.kernel._observation_value, head.kernel._observation_value)
+
+    kernel = recovered.kernel
+    corrected_bank = kernel.revise(recovered.memory, {1: [1, 0, 0, -1]})
+    revised_prefix = kernel.step(kernel.start(seed, corrected_bank))
+    held = kernel.intervene(revised_prefix, 0, prior.latest)
+    final, mass = kernel._source_mass_step(held, 1)
+    assert mass == head.source_masses[0] and final.latest[2] < 0
+    assert head.kernel.step(prior).latest[2] > 0
+    with pytest.raises(ValueError, match="disagree with the feedback journal"):
+        _joint_journal(path, allow_joint=False)
+
+    expanded = reopened.revise_observation_slots(recovered, {3: [0, 0, 0, 0]})
+    assert expanded.source_masses[0] < 0.8 and expanded.errors[0] > 1e-8
+    worker = _joint_journal(path)
+    second = _complete_window(worker, FeedbackRepairQueue(worker), max_candidates=3)
+    queue = FeedbackRepairQueue(publisher)
+    revised = queue.publish(second)
+    assert revised.status == "committed" and revised.selected_attempt == 2
+    final = _joint_journal(path).snapshot()
+    assert final.number == 3 and final.errors[0] < 1e-8 and final.source_masses[0] >= 0.8
+    assert final.guard_errors == base.guard_errors
+    # The second edit is bounded against the admitted maps at the source revision.
+    assert np.linalg.norm(final.kernel._observation_query - base.kernel._query) > 2
+    assert 0 < np.linalg.norm(final.kernel._observation_query - expanded.kernel._observation_query) < 2
+    assert queue.receipt(plan) == receipt and queue.latest_receipt().published_revision == 3
+
+
+def test_joint_norm_is_checked_against_the_original_maps_and_policy(tmp_path):
+    wide = _joint_journal(tmp_path / "wide.sqlite", create=True)
+    draft = wide.propose_routing(wide.snapshot(), 0, joint=True)
+    tight = _joint_journal(tmp_path / "tight.sqlite", create=True, limit=1.55)
+    base = tight.snapshot()
+    query_norm = np.linalg.norm(draft._query - base.kernel._query)
+    value_norm = np.linalg.norm(draft._weight - base.kernel._dense_observation_value())
+    assert max(query_norm, value_norm) < 1.55 < np.hypot(query_norm, value_norm) < 2
+    with pytest.raises(ValueError, match="workspace update budget"):
+        tight.publish(FeedbackProposal(base, 0, _query=draft._query, _weight=draft._weight))
+    kind, payload = wide._encode_operator(draft)
+    with pytest.raises(ValueError, match="incorrect byte length"):
+        tight._decode_operator(base, kind, 0, payload + b"x")
+    with pytest.raises(ValueError, match="weight update norm budget"):
+        tight.propose_routing(base, 0, joint=True)
+    assert tight.snapshot() is base
+
+    disabled = _joint_journal(tmp_path / "disabled.sqlite", create=True, allow_joint=False)
+    legacy_plan = disabled.plan_repairs(max_candidates=3)
+    assert legacy_plan.version == 2 and legacy_plan.candidates == ((0, "weight"), (0, "route"))
+    with pytest.raises(ValueError, match="joint query and value edits are disabled"):
+        disabled.publish(FeedbackProposal(disabled.snapshot(), 0, _query=draft._query, _weight=draft._weight))
+    with pytest.raises(ValueError, match="unexpected feedback journal event"):
+        disabled._decode_operator(disabled.snapshot(), kind, 0, payload)
 
 
 def test_worker_process_routes_a_source_and_coordinator_recovers_its_durable_receipt(tmp_path):
