@@ -172,6 +172,15 @@ class CorpusBindingMemory:
         )
         return CorpusBindingRead(lower, None if upper is None else upper.strength)
 
+    def reprogram(self, gates):
+        """Evaluate different wiring against the same encoded source rows."""
+        gates = dict(gates)
+        lower = self._certain.reprogram(gates)
+        if lower is self._certain:
+            return self
+        upper = lower if self._certain is self._possible else self._possible.reprogram(dict(lower._gates))
+        return replace(self, _certain=lower, _possible=upper)
+
     def remember(self, node, binding, *, without_sources=(), work_limit=65536):
         """Retain the completed bounds on a new snapshot."""
         excluded = _exclusions(without_sources)
@@ -194,6 +203,7 @@ class CorpusRevision:
     memory: CorpusBindingMemory
     _source_revisions: Mapping[str, int]
     _owner: object
+    _program_revision: int = 0
 
 
 @dataclass(frozen=True, eq=False)
@@ -202,10 +212,22 @@ class CorpusSourceProposal:
     _dependencies: frozenset[str]
     _staged: tuple[_EncodedChange, ...]
     _require_tip: bool
+    _allow_program_rebase: bool
+
+
+@dataclass(frozen=True, eq=False)
+class CorpusProgramProposal:
+    base: CorpusRevision
+    _preview: CorpusBindingMemory
+
+    @property
+    def preview(self):
+        """Tentative memory for testing consequences before installation."""
+        return self._preview
 
 
 class CorpusBindingWorkspace:
-    """Publish source-local edits and tip-dependent proof promotions in one process."""
+    """Publish source-local edits and tip-dependent programs and proofs."""
 
     def __init__(self, memory):
         if type(memory) is not CorpusBindingMemory:
@@ -223,11 +245,13 @@ class CorpusBindingWorkspace:
         if type(base) is not CorpusRevision or base._owner is not self._owner:
             raise ValueError("corpus revision belongs to another workspace")
 
-    def prepare_changes(self, base, changes, *, depends_on=(), require_tip=False):
-        """Encode from a pinned base. Include every source that informed the edit."""
+    def prepare_changes(self, base, changes, *, depends_on=(), require_tip=False, allow_program_rebase=False):
+        """Encode from a pin. Enable program rebase only for ingress independent of the graph."""
         self._check_owner(base)
         if type(require_tip) is not bool:
             raise ValueError("require_tip must be a boolean")
+        if type(allow_program_rebase) is not bool or (require_tip and allow_program_rebase):
+            raise ValueError("program rebase must be boolean and cannot require the whole tip")
         if require_tip and self.snapshot() is not base:
             raise StaleCorpusRevision("corpus workspace tip changed")
         if isinstance(depends_on, str):
@@ -237,7 +261,7 @@ class CorpusBindingWorkspace:
         if any(type(source) is not str or not source for source in dependencies):
             raise ValueError("dependencies must be nonempty source IDs")
         staged = base.memory._prepare_changes(changes)
-        return CorpusSourceProposal(base, dependencies, staged, require_tip)
+        return CorpusSourceProposal(base, dependencies, staged, require_tip, allow_program_rebase)
 
     def publish(self, proposal):
         """Check the dependencies and apply the prepared sources to the current tip."""
@@ -255,6 +279,8 @@ class CorpusBindingWorkspace:
     def _check_dependencies(self, tip, proposal):
         if proposal._require_tip and tip is not proposal.base:
             raise StaleCorpusRevision("corpus workspace tip changed")
+        if not proposal._allow_program_rebase and tip._program_revision != proposal.base._program_revision:
+            raise StaleCorpusRevision("corpus binding program changed")
         if any(tip._source_revisions.get(source, 0) != proposal.base._source_revisions.get(source, 0)
                for source in proposal._dependencies):
             raise StaleCorpusRevision("corpus source dependency changed")
@@ -266,7 +292,35 @@ class CorpusBindingWorkspace:
         revision = tip.revision + 1
         source_revisions = dict(tip._source_revisions)
         source_revisions.update((edit.source, revision) for edit in staged)
-        return CorpusRevision(revision, memory, MappingProxyType(source_revisions), self._owner)
+        return replace(tip, revision=revision, memory=memory, _source_revisions=MappingProxyType(source_revisions))
+
+    def prepare_program(self, base, gates):
+        """Compile alternate wiring for independent checks on a pinned memory."""
+        self._check_owner(base)
+        return CorpusProgramProposal(base, base.memory.reprogram(gates))
+
+    def publish_program(self, proposal):
+        """Install a checked preview only if it still represents the whole tip."""
+        self._check_program(proposal)
+        with self._lock:
+            self._tip = self._apply_program(self._tip, proposal)
+            return self._tip
+
+    def _check_program(self, proposal):
+        if type(proposal) is not CorpusProgramProposal:
+            raise ValueError("expected a corpus program proposal")
+        self._check_owner(proposal.base)
+
+    def _apply_program(self, tip, proposal):
+        if tip is not proposal.base:
+            raise StaleCorpusRevision("corpus workspace tip changed")
+        return self._replace_program(tip, proposal.preview)
+
+    def _replace_program(self, tip, memory):
+        if memory is tip.memory:
+            return tip
+        revision = tip.revision + 1
+        return replace(tip, revision=revision, memory=memory, _program_revision=revision)
 
     def remember(self, base, node, binding, *, without_sources=(), work_limit=65536):
         """Retain a completed read only if its pinned revision is still current."""
@@ -279,5 +333,5 @@ class CorpusBindingWorkspace:
                 raise StaleCorpusRevision("corpus workspace tip changed")
             if memory is base.memory:
                 return base
-            self._tip = CorpusRevision(base.revision + 1, memory, base._source_revisions, self._owner)
+            self._tip = replace(base, revision=base.revision + 1, memory=memory)
             return self._tip

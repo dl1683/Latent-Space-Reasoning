@@ -170,10 +170,11 @@ class BindingMemory:
         for name, gate in gates.items():
             if type(name) is not str or not name or name in known:
                 raise ValueError("gate names must be nonempty and distinct from other nodes")
-            if type(gate) is not BindingGate or gate.operation not in ("or", "and", "disjoint_and"):
+            if (type(gate) is not BindingGate or type(gate.operation) is not str
+                    or gate.operation not in ("or", "and", "disjoint_and")):
                 raise ValueError("unknown binding gate")
             parents = tuple(gate.parents)
-            if not parents or any(parent not in known for parent in parents):
+            if not parents or any(type(parent) is not str or parent not in known for parent in parents):
                 raise ValueError("gate parents must precede the gate")
             for parent in set(parents):
                 known[parent].append(len(ordered))
@@ -184,6 +185,23 @@ class BindingMemory:
         empty = cls(width, term_limit, pair_limit, frozenset(predicates), tuple(ordered), dependents,
                     positions, _EMPTY, _EMPTY, _EMPTY, materialize, retained_limit)
         return empty.revise(sources)
+
+    def reprogram(self, gates):
+        """Replace a factored gate graph while sharing its input rows and valid bounds."""
+        if self.materialize:
+            raise ValueError("reprogram requires a factored binding bank")
+        layout = self.prepare(self._predicates, self.width, gates, {}, term_limit=self.term_limit,
+                              pair_limit=self.pair_limit, materialize=False, retained_limit=self.retained_limit)
+        if layout._gates == self._gates:
+            return self
+
+        old_gates = dict(self._gates)
+        unchanged = set(self._predicates)
+        for name, gate in layout._gates:
+            if old_gates.get(name) == gate and unchanged.issuperset(gate.parents):
+                unchanged.add(name)
+        retained = {key: bound for key, bound in self._retained.items() if key[0] in unchanged}
+        return replace(layout, _sources=self._sources, _rows=self._rows, _retained=MappingProxyType(retained))
 
     def revise(self, changes):
         """Replace all facts for each supplied source ID, or remove it with None."""

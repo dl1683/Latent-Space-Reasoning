@@ -137,6 +137,10 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **A prepared change can fail after row admission, 25 November 2026.** An injected SQLite append refusal occurred after the staged banks had been built. The handle retained its old pin and a fresh opener saw the same durable revision. Retrying the original draft after removing the fixture trigger published it once. Publish in-memory state only after the journal commit, and check the durable head before retrying a write whose acknowledgment was lost. [Journal controls](../experiments/memory/test_corpus_binding_journal.py)
 
+**The same query name can hide different reasoning, 25 November 2026.** Replacing a conjunction with one that requires distinct origins changed a downstream cached result while its name, gate and every source stayed fixed. Invalidate bounds across changed transitive dependencies. A source draft may also embody a decision about the graph even when its compiled rows survive the change. Fence program generations by default, including a restoration of earlier wiring. Reserve rebasing for graph-independent ingress. [Program controls](../experiments/memory/test_corpus_binding_journal.py)
+
+**A valid preview needs immutable definitions and replayable identifiers, 25 November 2026.** Static review identified a mutable operation that could pass an equality check and change the preview later. Review also found that ASCII JSON represents an explicit surrogate pair and its corresponding Unicode character identically. The compiler now requires string operations and parent names, and the journal refuses ambiguous identifiers before commit. The controls verify rejection and ordinary Unicode recovery. [Program controls](../experiments/memory/test_corpus_binding_journal.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

@@ -1,18 +1,29 @@
-"""Durable source publication for workers sharing a trusted local SQLite file."""
+"""Durable source and program publication in a trusted local SQLite file."""
 
 from contextlib import closing
 from dataclasses import replace
 from hashlib import sha256
 import json
 from pathlib import Path
+import re
 import sqlite3
 from uuid import uuid4
 
 import numpy as np
 
+from experiments.memory.binding_memory import BindingGate
 from experiments.memory.corpus_bindings import (
     CorpusBindingWorkspace, StaleCorpusRevision, _EncodedChange,
 )
+
+
+_SURROGATE_PAIR = re.compile(r"[\ud800-\udbff][\udc00-\udfff]")
+
+
+def _check_identifiers(names):
+    # ASCII JSON uses the same pair of escapes for an astral character and two surrogate code units.
+    if any(_SURROGATE_PAIR.search(name) for name in names):
+        raise ValueError("corpus journal identifiers must survive JSON round trip")
 
 
 def _json(value):
@@ -22,6 +33,8 @@ def _json(value):
 def _frame_digest(memory):
     anchors = np.asarray(memory._anchors, dtype="<f8", order="C")
     bank = memory._certain
+    _check_identifiers((memory.encoder_version, *bank._predicates))
+    _check_identifiers(name for name, _ in bank._gates)
     return sha256(_json({
         "schema": 1,
         "encoder": memory.encoder_version,
@@ -34,7 +47,31 @@ def _frame_digest(memory):
 
 
 def _encode(staged):
+    _check_identifiers(edit.source for edit in staged)
     return _json([(edit.source, edit.digest, edit.outlier, edit.certain, edit.possible) for edit in staged])
+
+
+def _encode_program(gates):
+    _check_identifiers(name for name, _ in gates)
+    return _json(["program", [(name, gate.operation, gate.parents) for name, gate in gates]])
+
+
+def _decode_program(payload):
+    event = json.loads(payload)
+    if len(event) != 2 or type(event[1]) is not list:
+        raise ValueError("invalid corpus program event")
+    gates = {}
+    for entry in event[1]:
+        if type(entry) is not list or len(entry) != 3:
+            raise ValueError("invalid corpus program gate")
+        name, operation, parents = entry
+        if (type(name) is not str or name in gates or type(operation) is not str
+                or type(parents) is not list or any(type(parent) is not str for parent in parents)):
+            raise ValueError("invalid corpus program gate")
+        gates[name] = BindingGate(operation, tuple(parents))
+    if _encode_program(gates.items()) != payload:
+        raise ValueError("noncanonical corpus program payload")
+    return gates
 
 
 def _decode_rows(rows, width, predicates):
@@ -92,7 +129,7 @@ def _event_digest(parent, revision, payload):
 
 
 class JournaledCorpusWorkspace(CorpusBindingWorkspace):
-    """Replay and publish immutable encoded source revisions with no encoder on replay."""
+    """Replay encoded source changes and wiring changes without calling the encoder."""
 
     def __init__(self, path, empty, *, create=False):
         super().__init__(empty)
@@ -163,7 +200,13 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             if (number != tip.revision + 1 or parent != digest or type(payload) is not bytes
                     or _event_digest(digest, number, payload) != recorded):
                 raise ValueError("corpus journal event chain mismatch")
-            tip = self._apply_proposal(tip, _decode(payload, tip.memory))
+            if payload.startswith(b'["program",'):
+                memory = tip.memory.reprogram(_decode_program(payload))
+                if memory is tip.memory:
+                    raise ValueError("unchanged graph in corpus program event")
+                tip = self._replace_program(tip, memory)
+            else:
+                tip = self._apply_proposal(tip, _decode(payload, tip.memory))
             digest = recorded
         return tip, digest
 
@@ -185,18 +228,31 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             self._check_dependencies(tip, proposal)
             staged = tuple(sorted(proposal._staged, key=lambda edit: edit.source))
             if staged:
-                revised = self._apply_proposal(tip, staged)
-                payload = _encode(staged)
-                next_digest = _event_digest(digest, revised.revision, payload)
-                db.execute("INSERT INTO corpus_events VALUES (?, ?, ?, ?)",
-                           (revised.revision, digest, next_digest, payload))
-                tip, digest = revised, next_digest
+                tip = self._apply_proposal(tip, staged)
+                digest = self._append(db, digest, tip.revision, _encode(staged))
             db.commit()
             self._tip, self._digest = tip, digest
             return tip
 
+    def publish_program(self, proposal):
+        self._check_program(proposal)
+        with self._lock, closing(self._connect()) as db:
+            db.execute("BEGIN IMMEDIATE")
+            tip, digest = self._replay(self._read_suffix(db))
+            revised = self._apply_program(tip, proposal)
+            if revised is not tip:
+                digest = self._append(db, digest, revised.revision, _encode_program(revised.memory._certain._gates))
+            db.commit()
+            self._tip, self._digest = revised, digest
+            return revised
+
+    def _append(self, db, parent, revision, payload):
+        digest = _event_digest(parent, revision, payload)
+        db.execute("INSERT INTO corpus_events VALUES (?, ?, ?, ?)", (revision, parent, digest, payload))
+        return digest
+
     def remember(self, base, node, binding, *, without_sources=(), work_limit=65536):
-        """Keep an exact read on this handle, fenced by the durable source tip."""
+        """Keep an exact read on this handle, fenced by the durable tip."""
         self._check_owner(base)
         if self.snapshot() is not base:
             raise StaleCorpusRevision("corpus workspace tip changed")
