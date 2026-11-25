@@ -155,17 +155,21 @@ def _compact_region(region, active_ports):
     return replace(region, ports=ports, positions=positions, factor=_frozen(factor), readout=_frozen(readout))
 
 
-def _region_readout_row(region, cell):
-    path = []
+def _stored_readout(region, cell, path=None):
     while region.lazy_readout:
         # Retired boundary rows form a suffix of the interior order.
         if region.positions[cell] >= region.interior_size - len(region.readout):
             break
-        path.append(region)
+        if path is not None:
+            path.append(region)
         left, right = region.fusion.children
         region = left if cell in left.positions else right
+    return region, region.readout[region.positions[cell] - region.interior_size]
 
-    row = region.readout[region.positions[cell] - region.interior_size]
+
+def _region_readout_row(region, cell):
+    path = []
+    region, row = _stored_readout(region, cell, path)
     if not path:
         return row
     with np.errstate(over="raise", invalid="raise"):
@@ -672,9 +676,9 @@ class RelativeHierarchySnapshot:
         """Return this branch's sparse ordering, or None for the default SVD."""
         return None if self._elimination_rank is None else tuple(self._elimination_rank)
 
-    def read(self, cell):
+    def read(self, cell, *, value_first=False):
         """Read an anchored estimate and recover the boundary values it needs."""
-        return self.read_many((cell,))[0]
+        return self.read_many((cell,), value_first=value_first)[0]
 
     def support_witness(self, cell):
         """Return a named source path to an anchor, or None for an unsupported cell."""
@@ -741,12 +745,17 @@ class RelativeHierarchySnapshot:
         staged = self._owner._stage_source_edits(self, changes)
         return preview_source_patch(self, cell, staged, max_cells)
 
-    def _readout(self, cell):
-        cell = LatentField._checked_cell(cell, len(self._owner._membership))
+    def _is_supported(self, cell):
         region = self._regions[self._owner._membership[cell]]
         component = region.components[cell]
-        if component not in region.anchored and component not in self._supported_ports:
+        return component in region.anchored or component in self._supported_ports
+
+    def _readout(self, cell):
+        cell = LatentField._checked_cell(cell, len(self._owner._membership))
+        if not self._is_supported(cell):
             return None
+        region = self._regions[self._owner._membership[cell]]
+        component = region.components[cell]
         if cell in self._port_positions:
             return (cell,), None
         coeffs = _region_readout_row(region, cell)
@@ -763,9 +772,54 @@ class RelativeHierarchySnapshot:
             return resolve_elimination(self._elimination.steps, ports)
         return {port: float(self._values[self._port_positions[port]]) for port in ports}
 
-    def read_many(self, cells):
-        """Read in request order, sharing boundary recovery within this batch."""
+    def read_many(self, cells, *, value_first=False):
+        """Read in request order, optionally evaluating stored boundary values first."""
+        if type(value_first) is not bool:
+            raise ValueError("value_first must be a boolean")
+        if value_first:
+            return self._read_value_batch(cells)
         return self._read_batch(cells)[0]
+
+    def _read_value_batch(self, cells):
+        requested = [LatentField._checked_cell(cell, self._owner._cells) for cell in cells]
+        targets = [cell if self._is_supported(cell) else None for cell in requested]
+        coarse, plans, ordered, pending = {}, {}, [], []
+
+        def schedule(cell):
+            if cell in self._port_positions:
+                coarse[cell] = None
+                return
+            root = self._regions[self._owner._membership[cell]]
+            region, row = _stored_readout(root, cell)
+            component = region.components[cell]
+            columns = [column for column, port in enumerate(region.ports)
+                       if region.components[port] == component and row[column] != 0]
+            dependencies = tuple(region.ports[column] for column in columns)
+            plans[cell] = dependencies, row[[*columns, len(region.ports)]]
+            pending.append((cell, iter(dependencies)))
+
+        for target in targets:
+            if target is None or target in plans or target in coarse:
+                continue
+            schedule(target)
+            # An internal port's definition belongs to an ancestor of its consumer.
+            while pending:
+                cell, dependencies = pending[-1]
+                dependency = next(dependencies, None)
+                if dependency is None:
+                    pending.pop()
+                    ordered.append(cell)
+                elif dependency not in plans and dependency not in coarse:
+                    schedule(dependency)
+
+        values = self._read_ports(coarse)
+        with np.errstate(over="raise", invalid="raise"):
+            for cell in ordered:
+                dependencies, row = plans[cell]
+                values[cell] = float(row[-1] + row[:-1] @ [values[port] for port in dependencies])
+                if not isfinite(values[cell]):
+                    raise FloatingPointError("nonfinite reconstructed interior coordinate")
+        return tuple(None if cell is None else values[cell] for cell in targets)
 
     def _read_batch(self, cells):
         plans, by_cell = [], {}
@@ -1011,13 +1065,15 @@ class RelativeObservationHierarchy:
             return base
         return self._snapshot(base._sources, base._bridges, base._regions, (), base=base, new_rank=rank)
 
-    def compact(self, base, *, max_regions=1, protected_cells=(), tolerance=1e-10):
+    def compact(self, base, *, max_regions=1, protected_cells=(), tolerance=1e-10, value_first=False):
         """Retire inactive ports in a bounded number of regions of the selected branch."""
         if base._owner is not self:
             raise ValueError("relative snapshot belongs to a different hierarchy")
         max_regions, tolerance = index(max_regions), float(tolerance)
         if max_regions < 1 or not isfinite(tolerance) or tolerance < 0:
             raise ValueError("compaction needs a positive region cap and finite nonnegative tolerance")
+        if type(value_first) is not bool:
+            raise ValueError("value_first must be a boolean")
         protected = tuple(LatentField._checked_cell(cell, self._cells) for cell in protected_cells)
         active = {cell for bridge in base._bridges.values() for cell in bridge._endpoints()}
         candidates = [(sum(cell not in active for cell in region.ports), number)
@@ -1031,7 +1087,9 @@ class RelativeObservationHierarchy:
             regions[number] = _compact_region(regions[number], active)
         compacted = self._snapshot(base._sources, base._bridges, regions, (), base=base,
                                    compacted=chosen)
-        for cell, before, after in zip(protected, base.read_many(protected), compacted.read_many(protected)):
+        before_values = base.read_many(protected, value_first=value_first)
+        after_values = compacted.read_many(protected, value_first=value_first)
+        for cell, before, after in zip(protected, before_values, after_values):
             if before is None or after is None:
                 agrees = before is after
             else:

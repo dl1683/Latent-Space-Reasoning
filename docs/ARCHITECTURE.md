@@ -161,6 +161,18 @@ A revision keeps the recorded mode when recomputing an ancestor. Compaction tran
 
 Row-wise substitution changes Float64 evaluation order. A finite boundary factor and finite stored rows can still produce an overflowing requested row when lifted. A failure can surface at read time and leave the snapshot available. Protected reads cover the selected cells. Revisions still rebuild affected boundary factors and metadata. Wide batches repeat work across distinct cells whose child paths overlap, so compare complete edit-and-read cost, retained history and cold replay against eager readouts. Batched downward substitution is a rival for wide batches because it can share computed internal boundary values across several queries.
 
+#### Value-first batched readout
+
+[SLICE] Pass `value_first=True` to `read` or `read_many` to evaluate stored conditionals in dependency order. Start each coordinate at its visible regional root. A visible port belongs to the coarse solve. For an interior coordinate, stop at the first eager region or at the retained node that owns its locally retired row. Each dependency of that row is a port at its owner, so the dependency resolves at a strict ancestor or at the coarse boundary. This makes the conditional graph acyclic.
+
+The batch plans the union of the requested closures and recovers its visible boundary values once. It uses a per-call memo keyed by cell for internal scalar values, preserving request order and duplicate outputs. Support is checked for the requested cells. Planning prunes exact-zero coefficients and ports in disconnected local components using each row's owner. Dense-coarse and projected snapshots gather the requested values by port identity. The same planner calls the ordinary sparse resolver for a live elimination index.
+
+This order computes $q=h+Tu$ first and then $x=a+Bq$, using stored child rows and shared numeric values. An affine lift instead forms the intercept $a+Bh$ before applying the boundary contribution. The two orders have different cancellation behavior. A lifted intercept can overflow even for a finite estimate. An intermediate $q$ can also be unrepresentable when the lifted final row can be evaluated. Float64 evaluation raises on nonfinite work, leaving the snapshot intact.
+
+The hierarchy's compaction guard and the journal's partition and compaction guards accept the same explicit option. A guard uses one evaluator on both parent and draft. The choice concerns admission and does not change event payloads or any stored operator. Earlier callers keep their existing default readout. Sensitivity and source edit prediction still use their affine pathway.
+
+Compare with eager readout and deferred affine lifting at matched accuracy and source states. Charge root descents, all scheduled rows and edges, coarse closure, transient allocations, revisions and recovery. Sharing improves when multiple queries use the same internal boundaries. A short batch may schedule more rows than affine lifting, and the per-call memo offers no reuse across calls. The cost and availability tradeoff should guide a future readout policy, including a bounded retry through the other path.
+
 #### Elimination order maintenance
 
 An elimination order belongs to its snapshot. Reordering keeps the selected sources, ports and regional factors and recompiles the sparse coarse conditionals. Source revisions and compaction inherit that branch's order, including after compaction drops the coarse cache.

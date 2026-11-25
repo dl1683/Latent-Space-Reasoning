@@ -184,8 +184,8 @@ def test_guarded_merge_refuses_changed_reads_and_fences_a_competing_source(tmp_p
     parent = journal.snapshot()
     read_many = type(parent.snapshot).read_many
 
-    def drift(snapshot, cells):
-        values = read_many(snapshot, cells)
+    def drift(snapshot, cells, **options):
+        values = read_many(snapshot, cells, **options)
         if snapshot.membership != parent.snapshot.membership:
             return tuple(value + 1 for value in values)
         return values
@@ -272,4 +272,31 @@ def test_lazy_fusion_journal_recovers_after_source_revision_and_split(tmp_path):
     with closing(sqlite3.connect(path)) as db:
         assert db.execute("SELECT kind FROM relative_events ORDER BY number").fetchall() == [
             ("merge_lazy",), ("sources",), ("split_region",),
+        ]
+
+
+def test_value_first_protects_finite_answer_and_reopens_existing_event_format(tmp_path):
+    from experiments.memory.test_relative_hierarchy import _finite_cancellation_sources
+
+    path = tmp_path / "value-guard.sqlite"
+    sources = _finite_cancellation_sources()
+    hierarchy = RelativeObservationHierarchy((0, 1, 1, 2), ridge=0.002, elimination_order=range(4))
+    expected = solve_relative_direct(4, sources, ridge=0.002)
+    journal = JournaledRelativeHierarchyWorkspace(path, hierarchy, sources, create=True)
+    base = journal.snapshot()
+    with pytest.raises(FloatingPointError):
+        journal.merge_regions(base, 0, 1, retain_children=True, lazy_readout=True, protected_cells=(2,))
+    assert journal.snapshot() is base
+
+    options = {"protected_cells": range(4), "tolerance": 1e296, "value_first": True}
+    merged = journal.merge_regions(base, 0, 1, retain_children=True, lazy_readout=True, **options)
+    follower = JournaledRelativeHierarchyWorkspace(path, hierarchy, sources)
+    recovered = follower.snapshot()
+    assert recovered.digest == merged.digest
+    assert recovered.snapshot.read_many(range(4), value_first=True) == pytest.approx(expected, rel=1e-12, abs=0)
+    split = follower.split_region(recovered, 0, **options)
+    assert split.number == 2 and journal.snapshot().digest == split.digest
+    with closing(sqlite3.connect(path)) as db:
+        assert db.execute("SELECT kind FROM relative_events ORDER BY number").fetchall() == [
+            ("merge_lazy",), ("split_region",),
         ]

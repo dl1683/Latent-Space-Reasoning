@@ -196,30 +196,36 @@ class JournaledRelativeHierarchyWorkspace:
         head = self._commit(base, result.snapshot, "layout", payload)
         return head, result
 
-    def compact(self, base, *, max_regions=1, protected_cells=(), tolerance=1e-10):
+    def compact(self, base, *, max_regions=1, protected_cells=(), tolerance=1e-10, value_first=False):
         """Retire unused ports while preserving the shared revision history."""
         self._require_current(base)
         max_regions = index(max_regions)
         with np.errstate(**self._error_policy):
             revised = base.snapshot._owner.compact(
                 base.snapshot, max_regions=max_regions, protected_cells=protected_cells, tolerance=tolerance,
+                value_first=value_first,
             )
         return self._commit(base, revised, "compact", _json(max_regions))
 
-    def _publish_partition(self, base, kind, data, prepare, protected_cells, tolerance, **options):
+    def _publish_partition(self, base, kind, data, prepare, protected_cells, tolerance, *,
+                           value_first=False, **options):
         self._require_current(base)
         tolerance = float(tolerance)
         if not isfinite(tolerance) or tolerance < 0:
             raise ValueError("partition changes need a finite nonnegative tolerance")
+        if type(value_first) is not bool:
+            raise ValueError("value_first must be a boolean")
         protected = tuple(protected_cells)
         with np.errstate(**self._error_policy):
             revised = prepare(base.snapshot, *data, **options)
-            if not _agrees(base.snapshot.read_many(protected), revised.read_many(protected), tolerance):
+            before = base.snapshot.read_many(protected, value_first=value_first)
+            after = revised.read_many(protected, value_first=value_first)
+            if not _agrees(before, after, tolerance):
                 raise ValueError("partition change altered a protected read")
         return self._commit(base, revised, kind, _json(data))
 
     def merge_regions(self, base, first, second, *, retain_children=False, lazy_readout=False,
-                      protected_cells=(), tolerance=1e-10):
+                      protected_cells=(), tolerance=1e-10, value_first=False):
         """Publish a fusion of retained operators on the selected tip."""
         if type(retain_children) is not bool or type(lazy_readout) is not bool:
             raise ValueError("retain_children and lazy_readout must be booleans")
@@ -229,18 +235,20 @@ class JournaledRelativeHierarchyWorkspace:
             kind = "merge_lazy" if lazy_readout else "merge_retained"
         return self._publish_partition(
             base, kind, regions, base.snapshot._owner.merge_regions, protected_cells, tolerance,
-            retain_children=retain_children, lazy_readout=lazy_readout,
+            retain_children=retain_children, lazy_readout=lazy_readout, value_first=value_first,
         )
 
-    def split_region(self, base, region, *, protected_cells=(), tolerance=1e-10):
+    def split_region(self, base, region, *, protected_cells=(), tolerance=1e-10, value_first=False):
         """Publish a split of a retained composite on the selected tip."""
         return self._publish_partition(
             base, "split_region", (index(region),), base.snapshot._owner.split_region, protected_cells, tolerance,
+            value_first=value_first,
         )
 
-    def repartition(self, base, membership, *, protected_cells=(), tolerance=1e-10):
+    def repartition(self, base, membership, *, protected_cells=(), tolerance=1e-10, value_first=False):
         """Publish a rebuild of this tip's sources under the requested partition."""
         membership = tuple(map(index, membership))
         return self._publish_partition(
             base, "repartition", (membership,), base.snapshot._owner.repartition, protected_cells, tolerance,
+            value_first=value_first,
         )

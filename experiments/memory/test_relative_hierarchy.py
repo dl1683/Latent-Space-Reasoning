@@ -1133,3 +1133,80 @@ def test_lazy_fusion_uses_requested_rows_for_reads_and_adjoint_after_edits(order
     for child in (revised, compacted, split):
         _assert_direct(child, sources | changed)
     _assert_direct(lazy, sources)
+
+
+def _finite_cancellation_sources():
+    return {
+        "negative-anchor": RelativeObservation(3, -1.05e308, weight=0.25),
+        "surviving-boundary": RelativeObservation(0, 0, source=3, weight=0.25),
+        "first-rise": RelativeObservation(1, 1.02e308, source=0, weight=0.25),
+        "second-rise": RelativeObservation(2, 1.02e308, source=1, weight=0.25),
+    }
+
+
+@pytest.mark.parametrize("order", [None, (0, 1, 2, 3)])
+def test_value_first_reads_finite_answer_after_lifted_constant_overflows(order):
+    sources = _finite_cancellation_sources()
+    hierarchy = RelativeObservationHierarchy((0, 1, 1, 2), ridge=0.002, elimination_order=order)
+    base = hierarchy.initialize(sources)
+    revised = hierarchy.merge_regions(base, 0, 1, retain_children=True, lazy_readout=True)
+    with pytest.raises(FloatingPointError):
+        revised.read(2)
+    expected = solve_relative_direct(4, sources, ridge=0.002)
+    assert revised.read_many((2, 1, 0, 2, 3), value_first=True) == pytest.approx(
+        tuple(expected[cell] for cell in (2, 1, 0, 2, 3)), rel=1e-12, abs=0,
+    )
+    assert revised.read(2, value_first=True) == pytest.approx(expected[2], rel=1e-12, abs=0)
+
+
+@pytest.mark.parametrize("order", [None, tuple(reversed(range(len(_MEMBERSHIP))))])
+def test_value_first_shares_stored_conditionals_after_compaction_and_split(order, monkeypatch):
+    sources = _sources() | {"external": RelativeObservation(9, 0.35, source=0)}
+    hierarchy = RelativeObservationHierarchy(_MEMBERSHIP, ridge=_RIDGE, elimination_order=order)
+    original = hierarchy.initialize(sources)
+    first = hierarchy.merge_regions(original, 0, 1, retain_children=True, lazy_readout=True)
+    nested = first._owner.merge_regions(first, 0, 1, retain_children=True, lazy_readout=True)
+    requested = (7, 8, 8, 4, 11, 0, 9)
+    expected = solve_relative_direct(len(_MEMBERSHIP), sources, ridge=_RIDGE)
+    expected_batch = tuple(expected[cell] for cell in requested)
+    planned, coarse = [], []
+    stored = relative_hierarchy._stored_readout
+    read_ports = type(nested)._read_ports
+
+    def watch_row(region, cell, path=None):
+        planned.append(cell)
+        return stored(region, cell, path)
+
+    def watch_ports(snapshot, ports):
+        coarse.append(tuple(ports))
+        return read_ports(snapshot, ports)
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("value-first path assembled a lifted affine row")
+
+    with monkeypatch.context() as watch:
+        watch.setattr(relative_hierarchy, "_stored_readout", watch_row)
+        watch.setattr(relative_hierarchy, "_region_readout_row", unexpected)
+        watch.setattr(type(nested), "_read_ports", watch_ports)
+        assert nested.read_many(iter(requested), value_first=True) == pytest.approx(
+            expected_batch, abs=1e-12, rel=0,
+        )
+        assert len(planned) == len(set(planned)) and {6, 7, 8} <= set(planned)
+        assert len(coarse) == 1 and set(coarse[0]) == {0, 9}
+        batched = len(planned)
+        planned.clear()
+        for cell in dict.fromkeys(requested):
+            nested.read(cell, value_first=True)
+        assert len(planned) > batched
+    assert nested.read_many(iter(()), value_first=True) == ()
+    with pytest.raises(ValueError, match="out of range"):
+        nested.read_many((0, -1), value_first=True)
+
+    temporary = nested._owner.revise(nested, {"temporary": RelativeObservation(10, 0.6, source=8)})
+    removed = temporary._owner.revise(temporary, {"temporary": None})
+    compacted = removed._owner.compact(removed, max_regions=2, protected_cells=requested, value_first=True)
+    split = compacted._owner.split_region(compacted, 0)
+    for state in (compacted, split):
+        assert state.read_many(range(len(_MEMBERSHIP)), value_first=True) == pytest.approx(
+            expected, abs=1e-12, rel=0,
+        )
