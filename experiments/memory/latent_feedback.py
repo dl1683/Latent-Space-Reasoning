@@ -83,43 +83,89 @@ class ConditionalTerm:
 
 
 @dataclass(frozen=True, eq=False, repr=False, init=False)
+class FactoredValue:
+    """A square value map represented by two rectangular factors."""
+
+    _left: np.ndarray
+    _right: np.ndarray
+
+    def __init__(self, left, right):
+        left = _real_array(left)
+        right = _real_array(right)
+        if (left.ndim != 2 or right.ndim != 2 or not all(left.shape)
+                or right.shape != left.shape[::-1]):
+            raise ValueError("invalid factored value dimensions")
+        object.__setattr__(self, "_left", _frozen(left))
+        object.__setattr__(self, "_right", _frozen(right))
+
+    @property
+    def width(self):
+        return self._left.shape[0]
+
+    def apply(self, vector):
+        return (vector @ self._left) @ self._right
+
+    def dense(self):
+        with np.errstate(over="raise", invalid="raise"):
+            return self._left @ self._right
+
+
+def _apply_value(value, vector):
+    if isinstance(value, FactoredValue):
+        return value.apply(vector)
+    return vector @ value
+
+
+@dataclass(frozen=True, eq=False, repr=False, init=False)
 class FeedbackKernel:
     """A bounded shared transition with separate observation and feedback maps."""
 
     _width: int
     _max_steps: int
     _query: np.ndarray
-    _carry: np.ndarray
+    _carry: np.ndarray | None
     _observation_key: np.ndarray
-    _observation_value: np.ndarray
+    _observation_value: np.ndarray | FactoredValue
     _feedback_key: np.ndarray
-    _feedback_value: np.ndarray
+    _feedback_value: np.ndarray | FactoredValue
     _empty: ObservationMemory
     _conditional: tuple[tuple[np.ndarray, ...], ...]
 
     def __init__(self, *, query, carry, observation_key, observation_value,
                  feedback_key, feedback_value, max_steps):
         query = _real_array(query)
-        if query.ndim != 2 or not len(query) or query.shape[0] != query.shape[1]:
-            raise ValueError("query map must be a nonempty square matrix")
+        if query.ndim != 2 or not all(query.shape):
+            raise ValueError("query map must be a nonempty matrix")
         object.__setattr__(self, "_width", len(query))
         object.__setattr__(self, "_max_steps", index(max_steps))
         if self._max_steps <= 0:
             raise ValueError("max_steps must be positive")
         object.__setattr__(self, "_query", _frozen(query))
-        object.__setattr__(self, "_carry", self._weight(carry))
-        object.__setattr__(self, "_observation_key", self._weight(observation_key))
-        object.__setattr__(self, "_observation_value", self._weight(observation_value))
-        object.__setattr__(self, "_feedback_key", self._weight(feedback_key))
-        object.__setattr__(self, "_feedback_value", self._weight(feedback_value))
+        object.__setattr__(self, "_carry", None if carry is None else self._weight(carry))
+        object.__setattr__(self, "_observation_key", self._weight(observation_key, query.shape))
+        object.__setattr__(self, "_observation_value", self._value(observation_value))
+        object.__setattr__(self, "_feedback_key", self._weight(feedback_key, query.shape))
+        object.__setattr__(self, "_feedback_value", self._value(feedback_value))
         object.__setattr__(self, "_empty", self.prepare(np.empty((0, self._width))))
         object.__setattr__(self, "_conditional", ())
 
-    def _weight(self, value):
+    def _weight(self, value, shape=None):
         matrix = _real_array(value)
-        if matrix.shape != (self._width, self._width):
+        expected = (self._width, self._width) if shape is None else shape
+        if matrix.shape != expected:
             raise ValueError("weight map has incorrect shape")
         return _frozen(matrix)
+
+    def _value(self, value):
+        if isinstance(value, FactoredValue):
+            if value.width != self._width:
+                raise ValueError("factored value map has incorrect width")
+            return value
+        return self._weight(value)
+
+    def _dense_observation_value(self):
+        value = self._observation_value
+        return value.dense() if isinstance(value, FactoredValue) else value
 
     def _vector(self, value):
         vector = _real_array(value)
@@ -149,7 +195,7 @@ class FeedbackKernel:
 
     def _project_generated(self, vector):
         with np.errstate(over="raise", invalid="raise"):
-            return _frozen(vector @ self._feedback_key), _frozen(vector @ self._feedback_value)
+            return _frozen(vector @ self._feedback_key), _frozen(_apply_value(self._feedback_value, vector))
 
     def step(self, state):
         """Append one generated vector and tally the attention scores evaluated."""
@@ -165,10 +211,10 @@ class FeedbackKernel:
         with np.errstate(over="raise", invalid="raise"):
             hidden = state.latest
             query = hidden @ self._query
-            fixed = hidden @ self._carry
+            fixed = np.zeros(self._width) if self._carry is None else hidden @ self._carry
             mixture = np.zeros(self._width)
             if observation_count or history_count:
-                history_keys = np.asarray(state._keys).reshape(-1, self._width)
+                history_keys = np.asarray(state._keys).reshape(-1, self._query.shape[1])
                 history_values = np.asarray(state._values).reshape(-1, self._width)
                 logits = np.concatenate((memory._keys @ query, history_keys @ query))
                 # Extreme negative differences may safely round down to zero mass.
@@ -182,7 +228,7 @@ class FeedbackKernel:
                     observed = mixture @ observation_axis
                     if observed:
                         fixed += ((hidden @ state_axis) * observed) * output
-            next_hidden = _frozen(np.tanh(fixed + mixture @ self._observation_value))
+            next_hidden = _frozen(np.tanh(fixed + _apply_value(self._observation_value, mixture)))
         next_key, next_value = self._project_generated(next_hidden)
         next_state = replace(
             state,
@@ -264,7 +310,7 @@ class FeedbackKernel:
         with np.errstate(over="raise", invalid="raise"):
             target_values = np.arctanh(target) - fixed
         edit = program_weight(
-            self._observation_value, mixtures[-1:], [target_values],
+            self._dense_observation_value(), mixtures[-1:], [target_values],
             preserve_inputs=anchors, max_update_norm=max_update_norm, atol=atol,
         )
         candidate = self._with_observation_value(edit.weight)
@@ -299,7 +345,7 @@ class FeedbackKernel:
             gate = float(hidden @ state_axis) * float(mixture @ observation_axis)
             if not isfinite(gate) or gate <= 0:
                 raise ValueError("conditional gate is numerically unresolved")
-            residual = np.arctanh(target) - (fixed + mixture @ self._observation_value)
+            residual = np.arctanh(target) - (fixed + _apply_value(self._observation_value, mixture))
             term = ConditionalTerm(state_axis, observation_axis, residual / gate)
         norm = term.norm
         if not isfinite(norm) or norm > max_update_norm:

@@ -170,7 +170,7 @@ class FeedbackWorkspace:
         probe = self._open_probe(base, proposal.probe)
         if proposal.term is None:
             with np.errstate(over="raise", invalid="raise"):
-                norm = _frobenius(proposal._weight - base.kernel._observation_value)
+                norm = _frobenius(proposal._weight - base.kernel._dense_observation_value())
             candidate = base.kernel._with_observation_value(proposal._weight)
         else:
             self._require_term_capacity(base)
