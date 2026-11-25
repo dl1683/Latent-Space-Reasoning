@@ -129,7 +129,7 @@ class FeedbackWorkspace:
 
     def __init__(self, kernel, observations, probes, *, max_update_norm, atol=1e-8,
                  max_terms=0, guards=(), allow_hinge=False, max_reference_frontier=None,
-                 reuse_tree_routes=False, max_retained_tree_scores=0, allow_joint=False):
+                 reuse_tree_routes=False, max_retained_tree_scores=0, allow_joint=False, joint_trials=1):
         if type(reuse_tree_routes) is not bool:
             raise ValueError("tree route reuse must be a boolean")
         self._max_retained_tree_scores = index(max_retained_tree_scores)
@@ -154,6 +154,9 @@ class FeedbackWorkspace:
         self._has_routing = any(p.routing is not None for p in self._probes)
         if type(allow_joint) is not bool or (allow_joint and not self._has_routing):
             raise ValueError("joint edits require a boolean policy and a working routing goal")
+        self._joint_trials = index(joint_trials)
+        if type(joint_trials) is bool or self._joint_trials < 1 or (self._joint_trials > 1 and not allow_joint):
+            raise ValueError("joint trials must be positive and multiple trials require joint edits")
         self._allow_joint = allow_joint
         if self._has_routing:
             if type(kernel) not in (FeedbackKernel, TreeFeedbackKernel):
@@ -335,24 +338,69 @@ class FeedbackWorkspace:
         if goal.routing is None or base.source_masses[probe] >= goal.routing.min_mass:
             raise ValueError("probe has no unmet source mass floor")
         protected = tuple(self._protected_runs(base, probe))
+        if not joint:
+            _, query_edit = self._fit_routing_query(base, goal, goal.routing.min_mass, protected)
+            return FeedbackProposal(base, probe, _query=query_edit.weight)
+        if self._joint_trials == 1:
+            proposal, _, _ = self._fit_joint_trial(base, probe, goal.routing.min_mass, protected)
+            return proposal
+        return self._search_joint_trials(base, probe, protected)
+
+    def _fit_routing_query(self, base, goal, mass, protected):
         draft, _, query_edit = base.kernel.program_observation_mass(
-            base.start(goal.seed), goal.steps, goal.routing.slot, goal.routing.min_mass,
+            base.start(goal.seed), goal.steps, goal.routing.slot, mass,
             max_update_norm=self._max_update_norm, atol=self._atol, protect=protected,
             search="multivariate",
         )
-        if not joint:
-            return FeedbackProposal(base, probe, _query=query_edit.weight)
+        return draft, query_edit
 
+    def _fit_joint_trial(self, base, probe, mass, protected):
+        goal = self._probes[probe]
+        draft, query_edit = self._fit_routing_query(base, goal, mass, protected)
         self._require_current(base)
         limit, used = self._max_update_norm, query_edit.update_norm
         # Avoid squaring the cap or either update in Float64.
         fraction = ((limit - used) / limit) * (1 + used / limit) if limit else 0.0
         remaining = limit * sqrt(min(1.0, fraction))
-        _, _, value_edit = draft.retarget(
+        candidate, _, value_edit = draft.retarget(
             draft.start(goal.seed, base.memory), goal.steps, goal.target,
             max_update_norm=remaining, atol=self._atol, protect=protected,
         )
-        return FeedbackProposal(base, probe, _weight=value_edit.weight, _query=query_edit.weight)
+        proposal = FeedbackProposal(base, probe, _weight=value_edit.weight, _query=query_edit.weight)
+        return proposal, candidate, hypot(used, value_edit.update_norm)
+
+    def _search_joint_trials(self, base, probe, protected):
+        goal = self._probes[probe]
+        floor = mass = goal.routing.min_mass
+        anchor = base._anchors[probe]
+        if anchor is None:
+            anchor = self._run(base.kernel, base.memory, goal).history[:-1]
+        best = None
+        reason = None
+        for _ in range(self._joint_trials):
+            self._require_current(base)
+            try:
+                proposal, candidate, cost = self._fit_joint_trial(base, probe, mass, protected)
+                if cost > self._max_update_norm:
+                    raise ValueError("joint candidate exceeds the combined update budget")
+                result, actual_mass = self._run_routed(candidate, base.memory, goal)
+                if not floor <= actual_mass <= 1.0 or self._probe_error(result, goal) > self._atol:
+                    raise ValueError("joint candidate fails the original target on replay")
+                if not np.allclose(result.history[:-1], anchor, atol=self._atol, rtol=0):
+                    raise ValueError("joint candidate changes the original target prefix")
+                if best is None or cost < best[0]:
+                    best = cost, proposal
+            except StaleFeedbackRevision:
+                raise
+            except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
+                reason = error
+            mass += (1 - mass) * 0.5
+            if mass >= 1.0:
+                break
+        self._require_current(base)
+        if best is None:
+            raise ValueError(f"joint trials found no usable pair: {reason}") from reason
+        return best[1]
 
     def publish(self, proposal):
         """Admit one newly satisfied probe with every other probe non-worsening."""

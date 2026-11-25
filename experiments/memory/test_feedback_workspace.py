@@ -76,14 +76,19 @@ def test_floor_only_repair_preserves_other_attained_floors():
     assert workspace.maintain(max_candidates=2).status == "satisfied"
 
 
-def test_floor_first_joint_constructor_misses_a_feasible_larger_query_shift():
+def _joint_tradeoff_workspace(*, limit=2, trials=1):
     kernel = FeedbackKernel(
         query=[[0.15], [0]], carry=None, observation_key=[[1], [0]],
         observation_value=np.zeros((2, 2)), feedback_key=[[0], [0]],
         feedback_value=np.zeros((2, 2)), max_steps=1,
     )
     probe = FeedbackProbe([1, 0], 1, [np.tanh(0.9), 0], FeedbackRoutingGoal(1, 0.6))
-    workspace = FeedbackWorkspace(kernel, [[-1, 0], [1, 0]], [probe], max_update_norm=2, allow_joint=True)
+    return FeedbackWorkspace(kernel, [[-1, 0], [1, 0]], [probe], max_update_norm=limit,
+                             allow_joint=True, joint_trials=trials)
+
+
+def test_floor_first_joint_constructor_misses_a_feasible_larger_query_shift():
+    workspace = _joint_tradeoff_workspace()
     base = workspace.snapshot()
     result = workspace.maintain(max_candidates=3)
     assert result.status == "no_candidate" and workspace.snapshot() is base
@@ -96,6 +101,54 @@ def test_floor_first_joint_constructor_misses_a_feasible_larger_query_shift():
     witness = FeedbackProposal(base, 0, _query=[[query], [0]], _weight=[[value, 0], [0, 0]])
     admitted = workspace.publish(witness)
     assert admitted.errors[0] <= 1e-8 and admitted.source_masses[0] > 0.9
+
+
+def test_joint_trials_measure_value_cost_and_return_the_best_tested_pair():
+    workspace = _joint_tradeoff_workspace(trials=3)
+    base = workspace.snapshot()
+    shorter = _joint_tradeoff_workspace(trials=2)
+    first = shorter.propose_routing(shorter.snapshot(), 0, joint=True)
+    choice = workspace.propose_routing(base, 0, joint=True)
+
+    def cost(proposal):
+        return np.hypot(np.linalg.norm(proposal._query - base.kernel._query),
+                        np.linalg.norm(proposal._weight - base.kernel._dense_observation_value()))
+
+    assert cost(choice) < cost(first)
+    assert cost(choice) == pytest.approx(np.hypot(np.arctanh(0.8) - 0.15, 0.9 / 0.8), abs=1e-8)
+    assert workspace.snapshot() is base
+    admitted = workspace.maintain(max_candidates=3)
+    assert admitted.status == "committed" and admitted.attempts[admitted.selected_attempt].joint
+    assert admitted.revision.source_masses[0] == pytest.approx(0.9)
+
+    # These sampled masses straddle the best region under a slightly tighter budget.
+    tight = _joint_tradeoff_workspace(trials=3, limit=1.46)
+    refused = tight.maintain(max_candidates=3)
+    assert refused.status == "no_candidate" and "no usable pair" in refused.attempts[2].rejection
+    query = 0.978
+    value = 0.9 / np.tanh(query)
+    assert np.hypot(query - 0.15, value) < 1.46
+    witness = FeedbackProposal(tight.snapshot(), 0, _query=[[query], [0]], _weight=[[value, 0], [0, 0]])
+    assert tight.publish(witness).errors[0] <= 1e-8
+
+
+def test_source_change_during_a_joint_trial_discards_an_earlier_usable_pair(monkeypatch):
+    workspace = _joint_tradeoff_workspace(trials=3)
+    base = workspace.snapshot()
+    trial = workspace._fit_joint_trial
+    attempted = []
+
+    def interleave(pinned, probe, mass, protected):
+        attempted.append(mass)
+        result = trial(pinned, probe, mass, protected)
+        workspace.replace_observations(base, [[-1, 0], [0.9, 0]])
+        return result
+
+    monkeypatch.setattr(workspace, "_fit_joint_trial", interleave)
+    with pytest.raises(StaleFeedbackRevision):
+        workspace.propose_routing(base, 0, joint=True)
+    assert attempted == [0.6, 0.8] and workspace.snapshot().number == 1
+    assert workspace.snapshot().kernel is base.kernel
 
 
 def _workspace(second_target=(0, 0.5), *, journal=None):

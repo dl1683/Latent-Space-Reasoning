@@ -65,6 +65,50 @@ def _joint_journal(path, *, create=False, limit=2, allow_joint=True):
                                       max_reference_frontier=3, create=create, allow_joint=allow_joint)
 
 
+def _tradeoff_journal(path, *, create=False, trials=3):
+    kernel = TreeFeedbackKernel(
+        depth=2, max_frontier=4, query=[[0.15], [0]], carry=None,
+        observation_key=[[1], [0]], observation_value=np.zeros((2, 2)),
+        feedback_key=[[0], [0]], feedback_value=np.zeros((2, 2)), max_steps=1,
+    )
+    probe = FeedbackProbe([1, 0], 1, [np.tanh(0.9), 0], FeedbackRoutingGoal(1, 0.6))
+    guard = FeedbackProbe([0, 1], 1, [0, 0])
+    return JournaledFeedbackWorkspace(path, kernel, [[-1, 0], [1, 0]], [probe],
+                                      max_update_norm=2, guards=[guard], create=create,
+                                      allow_joint=True, joint_trials=trials)
+
+
+def test_leased_multitrial_joint_repair_replays_with_the_same_root_policy(tmp_path):
+    path = tmp_path / "joint-trials.sqlite"
+    coordinator = _tradeoff_journal(path, create=True)
+    queue = FeedbackRepairQueue(coordinator)
+    plan = coordinator.plan_repairs(max_candidates=3)
+    assert plan.version == 4 and plan.candidates[-1] == (0, "joint")
+    queue.enqueue(plan)
+    script = """
+import sys
+from experiments.memory.feedback_repair_queue import FeedbackRepairQueue
+from experiments.memory.test_feedback_repair_queue import _synthesize, _tradeoff_journal
+worker = _tradeoff_journal(sys.argv[1])
+queue = FeedbackRepairQueue(worker)
+while (lease := queue.claim(lease_seconds=60)) is not None:
+    queue.complete(lease, _synthesize(worker, lease))
+assert worker.snapshot().number == 0
+"""
+    subprocess.run([sys.executable, "-B", "-c", script, str(path)], check=True, timeout=30)
+    publisher = _tradeoff_journal(path)
+    result = FeedbackRepairQueue(publisher).publish(plan)
+    assert result.status == "committed" and result.selected_attempt == 2
+    assert result.revision.source_masses[0] == pytest.approx(0.9)
+    assert result.revision.errors[0] < 1e-8 and result.revision.guard_errors == (0.0,)
+    reopened = _tradeoff_journal(path)
+    assert reopened.snapshot().number == 1 and reopened.snapshot().source_masses == result.revision.source_masses
+    assert FeedbackRepairQueue(reopened).latest_receipt().attempts == result.attempts
+    for wrong in (1, 2):
+        with pytest.raises(ValueError, match="disagree with the feedback journal"):
+            _tradeoff_journal(path, trials=wrong)
+
+
 def test_worker_fits_query_and_value_and_publishes_only_the_combination(tmp_path):
     path = tmp_path / "joint.sqlite"
     workspace = _joint_journal(path, create=True)

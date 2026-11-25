@@ -110,7 +110,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
 
     def __init__(self, path, kernel, observations, probes, *, max_update_norm, atol=1e-8,
                  max_terms=0, source_ids=None, guards=(), allow_hinge=False, max_reference_frontier=None,
-                 reuse_tree_routes=False, max_retained_tree_scores=0, create=False, allow_joint=False):
+                 reuse_tree_routes=False, max_retained_tree_scores=0, create=False, allow_joint=False, joint_trials=1):
         if type(create) is not bool:
             raise ValueError("journal creation flag must be a boolean")
         self._tree_bound = isinstance(kernel, TreeFeedbackKernel)
@@ -139,7 +139,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         super().__init__(kernel, observations, probes, max_update_norm=max_update_norm,
                          atol=atol, max_terms=max_terms, guards=guards, allow_hinge=allow_hinge,
                          max_reference_frontier=max_reference_frontier, reuse_tree_routes=reuse_tree_routes,
-                         max_retained_tree_scores=max_retained_tree_scores, allow_joint=allow_joint)
+                         max_retained_tree_scores=max_retained_tree_scores, allow_joint=allow_joint,
+                         joint_trials=joint_trials)
         self._path = Path(path).resolve()
         self._root = self._root_digest(initial_sources, observations if self._tree_bound else None)
         self._tip = self._root
@@ -230,6 +231,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             digest.update(json.dumps(routing, allow_nan=False, separators=(",", ":")).encode())
         if self._allow_joint:
             digest.update(b"\nfeedback joint query and value v1\n")
+        if self._joint_trials > 1:
+            digest.update(f"\nfeedback joint mass trials v1\n{self._joint_trials}\n".encode("ascii"))
         if self._guards:
             digest.update(b"\nfeedback guard probes v1\n")
             guards = [(probe.seed, probe.steps, probe.target) for probe in self._guards]
@@ -352,9 +355,9 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         policy = tuple(sorted(np.geterr().items()))
         if any(mode in ("call", "log") for _, mode in policy):
             raise ValueError("process repair plans need a data-only NumPy error policy")
+        version = 1 + self._has_routing + self._allow_joint + (self._joint_trials > 1)
         return FeedbackSearchPlan(root, tip, base.number, offset, total,
-                                  tuple(candidates[offset:offset + limit]), policy,
-                                  version=3 if self._allow_joint else 2 if self._has_routing else 1)
+                                  tuple(candidates[offset:offset + limit]), policy, version=version)
 
     def plan_repairs(self, *, max_candidates, resume=None):
         """Describe the ordered candidates that separate processes may synthesize."""
