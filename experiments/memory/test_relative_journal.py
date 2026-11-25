@@ -208,3 +208,40 @@ def test_guarded_merge_refuses_changed_reads_and_fences_a_competing_source(tmp_p
     current = journal.snapshot()
     assert current.number == 1 and current.snapshot.membership == parent.snapshot.membership
     assert current.snapshot._sources["row-15"] == _LATE["row-15"]
+
+
+def test_retained_fusion_replays_child_edits_and_splits_current_partition(tmp_path):
+    path = tmp_path / "retained-fusion.sqlite"
+    journal, observer = _open(path, create=True), _open(path)
+    _, sources = _root()
+    parent = journal.snapshot()
+    fused = journal.merge_regions(parent, 4, 5, retain_children=True, protected_cells=_ORDER)
+    assert fused.snapshot._regions[4].fusion is not None
+
+    child = """
+import sys
+from experiments.memory.test_relative_journal import _LATE, _open
+journal = _open(sys.argv[1])
+head = journal.snapshot()
+assert head.snapshot._regions[4].fusion is not None
+journal.revise(head, _LATE)
+"""
+    subprocess.run([sys.executable, "-B", "-c", child, str(path)], check=True, timeout=30)
+
+    with pytest.raises(StaleRelativeRevision, match="before preparation"):
+        journal.split_region(fused, 4, protected_cells=_ORDER)
+    changed = journal.snapshot()
+    assert changed.number == 2 and changed.snapshot._regions[4].fusion.bridges["row-15"] == _LATE["row-15"]
+    separated = journal.split_region(changed, 4, protected_cells=_ORDER)
+    assert separated.number == 3 and separated.snapshot.membership == parent.snapshot.membership
+    assert separated.snapshot._bridges["row-15"] == _LATE["row-15"]
+    assert observer.snapshot().digest == separated.digest == _open(path).snapshot().digest
+    _assert_values(observer.snapshot(), sources | _LATE)
+    _assert_values(fused, sources)
+
+    with closing(sqlite3.connect(path)) as db:
+        history = db.execute("SELECT kind FROM relative_events ORDER BY number").fetchall()
+    assert history == [("merge_retained",), ("sources",), ("split_region",)]
+    with pytest.raises(ValueError, match="with retained children"):
+        journal.split_region(separated, 4)
+    assert journal.snapshot() is separated

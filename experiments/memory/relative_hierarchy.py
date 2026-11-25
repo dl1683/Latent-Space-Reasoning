@@ -63,6 +63,12 @@ def _write_coefficients(row, positions, observation):
 
 
 @dataclass(frozen=True, eq=False)
+class _RegionFusion:
+    children: tuple[_Region, _Region]
+    bridges: Mapping[str, RelativeObservation]
+
+
+@dataclass(frozen=True, eq=False)
 class _Region:
     _sources: Mapping[str, RelativeObservation]
     ports: tuple[int, ...]
@@ -72,6 +78,7 @@ class _Region:
     source_paths: LocalSourcePaths
     factor: np.ndarray
     readout: np.ndarray
+    fusion: _RegionFusion | None = None
 
 
 def _eliminate(matrix, split):
@@ -139,7 +146,7 @@ def _compact_region(region, active_ports):
     return replace(region, ports=ports, positions=positions, factor=_frozen(factor), readout=_frozen(readout))
 
 
-def _merged_region(regions, internalized, active_ports):
+def _merged_region(regions, internalized, active_ports, *, retain_children=False):
     old_ports = tuple(cell for region in regions for cell in region.ports)
     retired_ports = tuple(cell for cell in old_ports if cell not in active_ports)
     ports = tuple(sorted(active_ports))
@@ -191,7 +198,63 @@ def _merged_region(regions, internalized, active_ports):
         frozenset(components.root(cell) for cell in anchors),
         LocalSourcePaths(MappingProxyType(neighbors), MappingProxyType(anchors)),
         _frozen(factor), _frozen(readout),
+        _RegionFusion(regions, MappingProxyType(internalized)) if retain_children else None,
     )
+
+
+def _apply_region_edits(sources, edits):
+    revised = dict(sources)
+    for name, replacement in edits.items():
+        if replacement is None:
+            del revised[name]
+        else:
+            revised[name] = replacement
+    return revised
+
+
+def _stage_fusion_edits(region, edits, ports):
+    left, right = region.fusion.children
+    left_edits, right_edits, crossing_edits = {}, {}, {}
+
+    def placement(row):
+        target_on_left = row.target in left.positions
+        if row.source is None or (row.source in left.positions) == target_on_left:
+            return left_edits if target_on_left else right_edits
+        return crossing_edits
+
+    for name, replacement in edits.items():
+        previous = region._sources.get(name)
+        if previous is not None:
+            placement(previous)[name] = None
+        if replacement is not None:
+            placement(replacement)[name] = replacement
+
+    bridges = _apply_region_edits(region.fusion.bridges, crossing_edits)
+    required = ports | {cell for row in bridges.values() for cell in row._endpoints()}
+    requests = [(child, child_edits, set(child.ports) | (required & child.positions.keys()))
+                for child, child_edits in ((left, left_edits), (right, right_edits))]
+    return bridges, requests
+
+
+def _revise_region(region, edits, ports, ridge):
+    pending = [(region, edits, ports)]
+    completed, composites = {}, []
+    while pending:
+        node, changes, exposed = pending.pop()
+        if not changes and exposed == set(node.ports):
+            completed[node] = node
+        elif node.fusion is None:
+            sources = _apply_region_edits(node._sources, changes)
+            completed[node] = _build_region(sorted(node.positions), exposed, sources, ridge)
+        else:
+            bridges, children = _stage_fusion_edits(node, changes, exposed)
+            composites.append((node, bridges, exposed))
+            pending.extend(children)
+
+    for node, bridges, exposed in reversed(composites):
+        children = tuple(completed[child] for child in node.fusion.children)
+        completed[node] = _merged_region(children, bridges, exposed, retain_children=True)
+    return completed[region]
 
 
 @dataclass(frozen=True, eq=False)
@@ -816,20 +879,16 @@ class RelativeObservationHierarchy:
         rebuilt = sorted(local_edits.keys() | promotions.keys())
         for region in rebuilt:
             previous = factors[region]
-            local = dict(previous._sources)
-            for name, replacement in local_edits.get(region, {}).items():
-                if replacement is None:
-                    del local[name]
-                else:
-                    local[name] = replacement
             ports = set(previous.ports).union(promotions.get(region, ()))
-            factors[region] = _build_region(self._regions[region], ports, local, self._ridge)
+            factors[region] = _revise_region(previous, local_edits.get(region, {}), ports, self._ridge)
         magnitude = max((abs(row.value) for _, _, row in staged if row is not None), default=0.0)
         return self._snapshot(MappingProxyType(sources), MappingProxyType(bridges), factors, rebuilt,
                               base=base, bridge_edits=bridge_edits, source_magnitude=magnitude)
 
-    def merge_regions(self, base, first, second):
-        """Fuse two regional operators while keeping the represented measurements."""
+    def merge_regions(self, base, first, second, *, retain_children=False):
+        """Fuse two regions, optionally keeping child operators for edits and splits."""
+        if type(retain_children) is not bool:
+            raise ValueError("retain_children must be a boolean")
         if base._owner is not self:
             raise ValueError("relative snapshot belongs to a different hierarchy")
         first, second = sorted((index(first), index(second)))
@@ -842,7 +901,8 @@ class RelativeObservationHierarchy:
         internalized = {name: base._bridges[name] for name in left & right}
         active_ports = {cell for name in left ^ right for cell in base._bridges[name]._endpoints()
                         if self._membership[cell] in (first, second)}
-        merged = _merged_region((base._regions[first], base._regions[second]), internalized, active_ports)
+        merged = _merged_region((base._regions[first], base._regions[second]), internalized, active_ports,
+                                retain_children=retain_children)
         regions = list(base._regions)
         regions[first] = merged
         del regions[second]
@@ -853,6 +913,25 @@ class RelativeObservationHierarchy:
         # Region IDs and incidence changed. Index the new topology from scratch.
         return owner._snapshot(base._sources, MappingProxyType(bridges), regions, (first,),
                                source_magnitude=base._source_magnitude)
+
+    def split_region(self, base, region):
+        """Expose a fusion's current children and their crossing measurements."""
+        if base._owner is not self:
+            raise ValueError("relative snapshot belongs to a different hierarchy")
+        region = index(region)
+        if not 0 <= region < len(base._regions) or base._regions[region].fusion is None:
+            raise ValueError("split needs a region with retained children")
+        fusion = base._regions[region].fusion
+        left, right = fusion.children
+        regions = list(base._regions)
+        regions[region] = left
+        new_label = len(regions)
+        regions.append(right)
+        membership = tuple(new_label if cell in right.positions else label
+                           for cell, label in enumerate(self._membership))
+        bridges = MappingProxyType(dict(base._bridges) | fusion.bridges)
+        owner = RelativeObservationHierarchy(membership, ridge=self._ridge, elimination_order=base.elimination_order)
+        return owner._snapshot(base._sources, bridges, regions, (), source_magnitude=base._source_magnitude)
 
     def repartition(self, base, membership):
         """Rebuild a partition from the current measurements, including after a merge."""

@@ -1000,3 +1000,74 @@ def test_merge_composes_an_idle_port_and_can_merge_portless_regions():
     _assert_direct(all_cells, {"anchor": sources["anchor"]}, cells=3)
     with pytest.raises(ValueError, match="distinct existing"):
         all_cells._owner.merge_regions(all_cells, 0, 0)
+
+
+@pytest.mark.parametrize("order", [None, tuple(reversed(range(len(_MEMBERSHIP))))])
+def test_retained_fusion_reuses_children_and_routes_edits_across_nested_boundaries(order, monkeypatch):
+    hierarchy = RelativeObservationHierarchy(_MEMBERSHIP, ridge=_RIDGE, elimination_order=order)
+    sources = _sources()
+    parent = hierarchy.initialize(sources)
+    first = hierarchy.merge_regions(parent, 0, 1, retain_children=True)
+    nested = first._owner.merge_regions(first, 0, 1, retain_children=True)
+    outer = nested._regions[0].fusion
+    built = []
+    build = relative_hierarchy._build_region
+
+    def track(cells, ports, rows, ridge):
+        built.append(tuple(cells))
+        return build(cells, ports, rows, ridge)
+
+    monkeypatch.setattr(relative_hierarchy, "_build_region", track)
+    leaf_edit = RelativeObservation(1, -0.3, source=0)
+    child_edit = nested._owner.revise(nested, {"start": leaf_edit})
+    assert built == [(0, 1, 2)]
+    child_outer = child_edit._regions[0].fusion
+    assert child_outer.children[1] is outer.children[1]
+    assert child_outer.children[0].fusion.children[1] is outer.children[0].fusion.children[1]
+    _assert_direct(child_edit, sources | {"start": leaf_edit})
+
+    built.clear()
+    bridge_edit = RelativeObservation(3, 1.5, source=2, weight=2)
+    revised = nested._owner.revise(nested, {"bridge": bridge_edit})
+    refreshed = revised._regions[0].fusion
+    assert not built and refreshed.children[1] is outer.children[1]
+    assert refreshed.children[0].fusion.children == outer.children[0].fusion.children
+    assert refreshed.children[0].fusion.bridges["bridge"] is bridge_edit
+    _assert_direct(revised, sources | {"bridge": bridge_edit})
+
+    moved = RelativeObservation(8, -0.3, source=1)
+    relocated = revised._owner.revise(revised, {"bridge": moved})
+    relocated_fusion = relocated._regions[0].fusion
+    assert set(built) == {(0, 1, 2), (6, 7, 8)} and len(built) == 2
+    assert relocated_fusion.bridges["bridge"] is moved
+    assert "bridge" not in relocated_fusion.children[0].fusion.bridges
+    assert 1 in relocated_fusion.children[0].ports and 8 in relocated_fusion.children[1].ports
+    expected = sources | {"bridge": moved}
+    _assert_direct(relocated, expected)
+
+    built.clear()
+    outside = RelativeObservation(10, 0.23, source=0)
+    promoted = relocated._owner.revise(relocated, {"new_crossing": outside})
+    assert set(built) == {(0, 1, 2), (9, 10)} and len(built) == 2
+    assert 0 in promoted._regions[0].ports
+    _assert_direct(promoted, expected | {"new_crossing": outside})
+    removed = promoted._owner.revise(promoted, {"new_crossing": None})
+    compacted = removed._owner.compact(removed, max_regions=2, protected_cells=(0, 8, 11))
+    assert 0 not in compacted._regions[0].ports and compacted._regions[0].fusion is removed._regions[0].fusion
+    after_compaction = RelativeObservation(8, 0.9, source=1)
+    changed = compacted._owner.revise(compacted, {"bridge": after_compaction})
+    expected["bridge"] = after_compaction
+    assert 0 not in changed._regions[0].ports
+    _assert_direct(changed, expected)
+
+    built.clear()
+    left, right = changed._regions[0].fusion.children
+    split = changed._owner.split_region(changed, 0)
+    assert split._regions[0] is left and split._regions[-1] is right
+    assert split._bridges["bridge"] is after_compaction
+    restored = split._owner.split_region(split, 0)
+    assert restored._sources is changed._sources and "bridge" in restored._bridges
+    assert not built and not restored.rebuilt_regions
+    _assert_direct(restored, expected)
+    _assert_direct(nested, sources)
+    _assert_direct(parent, sources)

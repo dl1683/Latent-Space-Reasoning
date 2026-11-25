@@ -117,8 +117,10 @@ class JournaledRelativeHierarchyWorkspace:
             revised = owner.reorder(snapshot, data["order"])
         elif kind == "compact":
             revised = owner.compact(snapshot, max_regions=data)
-        elif kind == "merge_regions":
-            revised = owner.merge_regions(snapshot, *data)
+        elif kind in ("merge_regions", "merge_retained"):
+            revised = owner.merge_regions(snapshot, *data, retain_children=kind == "merge_retained")
+        elif kind == "split_region":
+            revised = owner.split_region(snapshot, *data)
         elif kind == "repartition":
             revised = owner.repartition(snapshot, *data)
         else:
@@ -202,23 +204,33 @@ class JournaledRelativeHierarchyWorkspace:
             )
         return self._commit(base, revised, "compact", _json(max_regions))
 
-    def _publish_partition(self, base, kind, data, prepare, protected_cells, tolerance):
+    def _publish_partition(self, base, kind, data, prepare, protected_cells, tolerance, **options):
         self._require_current(base)
         tolerance = float(tolerance)
         if not isfinite(tolerance) or tolerance < 0:
             raise ValueError("partition changes need a finite nonnegative tolerance")
         protected = tuple(protected_cells)
         with np.errstate(**self._error_policy):
-            revised = prepare(base.snapshot, *data)
+            revised = prepare(base.snapshot, *data, **options)
             if not _agrees(base.snapshot.read_many(protected), revised.read_many(protected), tolerance):
                 raise ValueError("partition change altered a protected read")
         return self._commit(base, revised, kind, _json(data))
 
-    def merge_regions(self, base, first, second, *, protected_cells=(), tolerance=1e-10):
+    def merge_regions(self, base, first, second, *, retain_children=False, protected_cells=(), tolerance=1e-10):
         """Publish a fusion of retained operators on the selected tip."""
+        if type(retain_children) is not bool:
+            raise ValueError("retain_children must be a boolean")
         regions = tuple(sorted((index(first), index(second))))
+        kind = "merge_retained" if retain_children else "merge_regions"
         return self._publish_partition(
-            base, "merge_regions", regions, base.snapshot._owner.merge_regions, protected_cells, tolerance,
+            base, kind, regions, base.snapshot._owner.merge_regions, protected_cells, tolerance,
+            retain_children=retain_children,
+        )
+
+    def split_region(self, base, region, *, protected_cells=(), tolerance=1e-10):
+        """Publish a split of a retained composite on the selected tip."""
+        return self._publish_partition(
+            base, "split_region", (index(region),), base.snapshot._owner.split_region, protected_cells, tolerance,
         )
 
     def repartition(self, base, membership, *, protected_cells=(), tolerance=1e-10):
