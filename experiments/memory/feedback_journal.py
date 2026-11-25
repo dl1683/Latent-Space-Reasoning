@@ -111,7 +111,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
     def __init__(self, path, kernel, observations, probes, *, max_update_norm, atol=1e-8,
                  max_terms=0, source_ids=None, guards=(), allow_hinge=False, max_reference_frontier=None,
                  reuse_tree_routes=False, max_retained_tree_scores=0, create=False, allow_joint=False,
-                 joint_trials=1, separate_joint_trials=False):
+                 joint_trials=1, separate_joint_trials=False, joint_refinements=0):
         if type(create) is not bool:
             raise ValueError("journal creation flag must be a boolean")
         self._tree_bound = isinstance(kernel, TreeFeedbackKernel)
@@ -141,7 +141,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
                          atol=atol, max_terms=max_terms, guards=guards, allow_hinge=allow_hinge,
                          max_reference_frontier=max_reference_frontier, reuse_tree_routes=reuse_tree_routes,
                          max_retained_tree_scores=max_retained_tree_scores, allow_joint=allow_joint,
-                         joint_trials=joint_trials, separate_joint_trials=separate_joint_trials)
+                         joint_trials=joint_trials, separate_joint_trials=separate_joint_trials,
+                         joint_refinements=joint_refinements)
         self._path = Path(path).resolve()
         self._root = self._root_digest(initial_sources, observations if self._tree_bound else None)
         self._tip = self._root
@@ -236,6 +237,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             digest.update(f"\nfeedback joint mass trials v1\n{self._joint_trials}\n".encode("ascii"))
         if self._separate_joint_trials:
             digest.update(b"\nfeedback separate joint trials v1\n")
+        if self._joint_refinements:
+            digest.update(f"\nfeedback joint midpoint refinements v1\n{self._joint_refinements}\n".encode("ascii"))
         if self._guards:
             digest.update(b"\nfeedback guard probes v1\n")
             guards = [(probe.seed, probe.steps, probe.target) for probe in self._guards]
@@ -359,6 +362,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         if any(mode in ("call", "log") for _, mode in policy):
             raise ValueError("process repair plans need a data-only NumPy error policy")
         version = 1 + self._has_routing + self._allow_joint + (self._joint_trials > 1) + self._separate_joint_trials
+        version += self._joint_refinements > 0
         return FeedbackSearchPlan(root, tip, base.number, offset, total,
                                   tuple(candidates[offset:offset + limit]), policy, version=version)
 

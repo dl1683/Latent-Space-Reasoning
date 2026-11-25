@@ -282,7 +282,7 @@ class FeedbackRepairQueue:
                                                   None if rank is None else tuple(rank), hinge,
                                                   routing=kind in ("route", "joint"), joint=kind == "joint",
                                                   joint_trial=trial))
-        if revision is not None and plan.version == 5:
+        if revision is not None and plan.version >= 5:
             admitted = [(attempt.rank, position) for position, attempt in enumerate(attempts)
                         if attempt.rank is not None and attempt.rejection is None]
             if not admitted or min(admitted)[1] != selected:

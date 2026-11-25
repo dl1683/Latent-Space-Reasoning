@@ -347,6 +347,14 @@ Separate positions use plan version 5 and a distinct root binding. They publish 
 
 Separate positions retain one full map payload for each successful fit until queue cleanup and repeat coordinator replay for each pair. The winning journal event still holds one pair. Compare with a bounded shortlist from one worker or the original local selection on matched mass levels and window boundaries, including lease traffic, process setup and stale work. [SQLite transactions](https://sqlite.org/lang_transaction.html)
 
+#### Refining source-share trials
+
+With separate joint trials enabled, set `joint_refinements=R` to offer one additional leased candidate after the $L$ fixed levels when there is a representable midpoint between any two levels. This position prices the fixed levels on the same pinned bank. While pricing, the query and value updates each have the original cap. A pair may exceed the combined cap and still give a finite price if it replays the original selected endpoint, floor and prefix. Failed fits have infinite price. Only a pair within the combined cap can be returned for coordinator admission.
+
+Each of at most $R$ additional fits bisects a sampled interval. Intervals with a representable midpoint are ordered by the smaller endpoint cost, then the larger endpoint cost, then descending width and earlier position. The worker retains the smallest eligible norm it observes, with earlier fits winning exact ties. The coordinator independently checks the selected pair and the other drafts in its window. The refinement prices no guard outcomes. Its single submission can still hide an adaptive alternative that would pass.
+
+A positive refinement count is root-bound and uses plan version 6. The extra position uses `joint:L` and the same event and receipt formats as fixed positions. The earlier defaults keep their original plan versions. The extra worker runs up to $L+R$ fit attempts. When the fixed and refinement positions all run, total joint fitting can reach $2L+R$ attempts per probe before retries. Charge repeated anchors, rejected replays, lease expiry and window delay. Compare with predeclared interior levels and search over query coordinates at matched total cost. The bounded midpoint search can still miss feasible intervals.
+
 ### Architectural exploration and review
 
 The project should try new representations and forms of computation early. Treat coordinate geometry, transition rules, multiscale structure, decoder coupling and the network wiring as variables. Weight-space programming can reuse pieces of a pretrained network or install computations the original network lacked. Seek constructions that remove expensive work from the maintenance and query path while preserving useful consequences. Keep the current field replaceable. Its contractivity gives us a checkable starting point, and its limited reach makes genuinely different designs worth trying early.

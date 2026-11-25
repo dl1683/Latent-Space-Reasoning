@@ -76,16 +76,16 @@ def test_floor_only_repair_preserves_other_attained_floors():
     assert workspace.maintain(max_candidates=2).status == "satisfied"
 
 
-def _joint_tradeoff_workspace(*, limit=2, trials=1, guards=(), separate=False):
+def _joint_tradeoff_workspace(*, limit=2, trials=1, guards=(), separate=False, refinements=0, target=0.9):
     kernel = FeedbackKernel(
         query=[[0.15], [0]], carry=None, observation_key=[[1], [0]],
         observation_value=np.zeros((2, 2)), feedback_key=[[0], [0]],
         feedback_value=np.zeros((2, 2)), max_steps=1,
     )
-    probe = FeedbackProbe([1, 0], 1, [np.tanh(0.9), 0], FeedbackRoutingGoal(1, 0.6))
+    probe = FeedbackProbe([1, 0], 1, [np.tanh(target), 0], FeedbackRoutingGoal(1, 0.6))
     return FeedbackWorkspace(kernel, [[-1, 0], [1, 0]], [probe], max_update_norm=limit,
                              guards=guards, allow_joint=True, joint_trials=trials,
-                             separate_joint_trials=separate)
+                             separate_joint_trials=separate, joint_refinements=refinements)
 
 
 def test_floor_first_joint_constructor_misses_a_feasible_larger_query_shift():
@@ -178,6 +178,44 @@ def test_independent_admission_can_recover_a_draft_hidden_by_minimum_cost():
     assert "regresses a workspace guard" in result.attempts[4].rejection
     assert result.revision.source_masses[0] == pytest.approx(0.8)
     assert result.revision.guard_errors[0] < base.guard_errors[0]
+
+
+def test_joint_refinement_uses_over_cap_prices_to_find_an_in_budget_pair(monkeypatch):
+    one = _joint_tradeoff_workspace(limit=1.46, trials=3, separate=True, refinements=1)
+    with pytest.raises(ValueError, match="refinement found no usable pair"):
+        one.propose_routing(one.snapshot(), 0, joint=True, trial=3)
+
+    workspace = _joint_tradeoff_workspace(limit=1.46, trials=3, separate=True, refinements=2)
+    base = workspace.snapshot()
+    prices = {}
+    fit = workspace._fit_checked_joint_trial
+
+    def record(pinned, probe, mass, protected, anchor, *, price_pair=False):
+        if price_pair:
+            prices[mass] = None
+        result = fit(pinned, probe, mass, protected, anchor, price_pair=price_pair)
+        if price_pair:
+            prices[mass] = result[1]
+        return result
+
+    monkeypatch.setattr(workspace, "_fit_checked_joint_trial", record)
+    proposal = workspace.propose_routing(base, 0, joint=True, trial=3)
+    assert list(prices) == pytest.approx([0.6, 0.8, 0.9, 0.85, 0.875])
+    floor_cost, next_cost, high_cost, middle_cost, final_cost = prices.values()
+    assert floor_cost is None and next_cost is None
+    assert high_cost > 1.46 and middle_cost > 1.46 > final_cost
+    assert workspace.snapshot() is base
+    assert proposal._query[0, 0] == pytest.approx(np.arctanh(0.75))
+    admitted = workspace.publish(proposal)
+    assert admitted.source_masses[0] == pytest.approx(0.875) and admitted.errors[0] < 1e-8
+
+    # Changing the target shifts the useful interval below the original refinements.
+    shifted = _joint_tradeoff_workspace(limit=0.6, trials=3, separate=True, refinements=2, target=0.2)
+    for mass in (0.6, 0.8, 0.9, 0.85, 0.875):
+        mixture = 2 * mass - 1
+        assert np.hypot(np.arctanh(mixture) - 0.15, 0.2 / mixture) > 0.6
+    proposal = shifted.propose_routing(shifted.snapshot(), 0, joint=True, trial=3)
+    assert shifted.publish(proposal).source_masses[0] == pytest.approx(0.75)
 
 
 def _workspace(second_target=(0, 0.5), *, journal=None):

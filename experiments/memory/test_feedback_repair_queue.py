@@ -66,7 +66,8 @@ def _joint_journal(path, *, create=False, limit=2, allow_joint=True):
                                       max_reference_frontier=3, create=create, allow_joint=allow_joint)
 
 
-def _tradeoff_journal(path, *, create=False, trials=3, separate=False, guarded=False, floor=0.6):
+def _tradeoff_journal(path, *, create=False, trials=3, separate=False, guarded=False, floor=0.6,
+                      limit=2, refinements=0):
     kernel = TreeFeedbackKernel(
         depth=2, max_frontier=4, query=[[0.15], [0]], carry=None,
         observation_key=[[1], [0]], observation_value=np.zeros((2, 2)),
@@ -75,8 +76,9 @@ def _tradeoff_journal(path, *, create=False, trials=3, separate=False, guarded=F
     probe = FeedbackProbe([1, 0], 1, [np.tanh(0.9), 0], FeedbackRoutingGoal(1, floor))
     guard = FeedbackProbe([0.5, 0], 1, [0.24, 0]) if guarded else FeedbackProbe([0, 1], 1, [0, 0])
     return JournaledFeedbackWorkspace(path, kernel, [[-1, 0], [1, 0]], [probe],
-                                      max_update_norm=2, guards=[guard], create=create,
-                                      allow_joint=True, joint_trials=trials, separate_joint_trials=separate)
+                                      max_update_norm=limit, guards=[guard], create=create,
+                                      allow_joint=True, joint_trials=trials, separate_joint_trials=separate,
+                                      joint_refinements=refinements)
 
 
 def test_leased_multitrial_joint_repair_replays_with_the_same_root_policy(tmp_path):
@@ -184,13 +186,54 @@ print(lease.plan.candidates[lease.position][1])
         FeedbackRepairQueue(reopened).receipt(plan)
 
 
-def test_separate_plan_stops_before_a_level_rounds_to_one(tmp_path):
+@pytest.mark.parametrize(("refinements", "levels"), [(0, 1), (2, 1), (2, 2)])
+def test_separate_plan_stops_before_a_level_rounds_to_one(tmp_path, refinements, levels):
+    floor = 1.0
+    for _ in range(levels):
+        floor = np.nextafter(floor, 0.0)
     workspace = _tradeoff_journal(tmp_path / "one-ulp.sqlite", create=True, separate=True,
-                                  floor=np.nextafter(1.0, 0.0))
+                                  floor=floor, refinements=refinements)
     plan = workspace.plan_repairs(max_candidates=8)
-    assert plan.total == 3 and plan.candidates[-1] == (0, "joint:0")
+    assert plan.total == 2 + levels and plan.candidates[-1] == (0, f"joint:{levels - 1}")
     with pytest.raises(ValueError, match="outside the available source levels"):
-        workspace.propose_routing(workspace.snapshot(), 0, joint=True, trial=1)
+        workspace.propose_routing(workspace.snapshot(), 0, joint=True, trial=levels)
+
+
+def test_leased_refinement_can_repair_after_a_window_of_fixed_trials_refuses(tmp_path):
+    path = tmp_path / "refinement.sqlite"
+    coordinator = _tradeoff_journal(path, create=True, separate=True, limit=1.46, refinements=2)
+    queue = FeedbackRepairQueue(coordinator)
+    fixed = _complete_window(coordinator, queue, max_candidates=5)
+    assert fixed.version == 6 and fixed.total == 6 and fixed.candidates[-1] == (0, "joint:2")
+    refused = queue.publish(fixed)
+    assert refused.status == "budget_exhausted" and refused.next_candidate == 5
+    assert coordinator.snapshot().number == 0
+    plan = coordinator.plan_repairs(max_candidates=1, resume=refused)
+    assert plan.candidates == ((0, "joint:3"),)
+    queue.enqueue(plan)
+    script = """
+import sys
+from experiments.memory.feedback_repair_queue import FeedbackRepairQueue
+from experiments.memory.test_feedback_repair_queue import _synthesize, _tradeoff_journal
+worker = _tradeoff_journal(sys.argv[1], separate=True, limit=1.46, refinements=2)
+queue = FeedbackRepairQueue(worker)
+lease = queue.claim(lease_seconds=60)
+queue.complete(lease, _synthesize(worker, lease))
+assert worker.snapshot().number == 0
+"""
+    subprocess.run([sys.executable, "-B", "-c", script, str(path)], check=True, timeout=30)
+    publisher = _tradeoff_journal(path, separate=True, limit=1.46, refinements=2)
+    result = FeedbackRepairQueue(publisher).publish(plan)
+    assert result.status == "committed" and result.attempts[0].joint_trial == 3
+    assert result.revision.source_masses[0] == pytest.approx(0.875) and result.revision.errors[0] < 1e-8
+    with closing(publisher._connect()) as db:
+        assert db.execute("SELECT kind, length(payload) FROM feedback_events").fetchall() == [("joint", 48)]
+    recovered = _tradeoff_journal(path, separate=True, limit=1.46, refinements=2)
+    receipt = FeedbackRepairQueue(recovered).latest_receipt()
+    assert receipt.plan == plan and receipt.attempts == result.attempts
+    assert receipt.published_digest == recovered._tip.hex()
+    with pytest.raises(ValueError, match="disagree with the feedback journal"):
+        _tradeoff_journal(path, separate=True, limit=1.46, refinements=1)
 
 
 def test_worker_fits_query_and_value_and_publishes_only_the_combination(tmp_path):
