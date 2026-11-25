@@ -14,7 +14,7 @@ from types import MappingProxyType
 import numpy as np
 
 from experiments.memory.latent_feedback import (
-    FactoredValue, FeedbackKernel, FeedbackState, _frozen, _real_array,
+    FactoredValue, FeedbackKernel, FeedbackState, _apply_value, _frozen, _real_array,
 )
 
 
@@ -164,7 +164,7 @@ def _score(node, query, positive_query):
 
 
 def _revision_groups(opening, reference):
-    shared, removed, added = [], [], []
+    shared, removed, added, paired = [], [], [], []
     pending = [(opening, reference)]
     while pending:
         old, new = pending.pop()
@@ -176,27 +176,46 @@ def _revision_groups(opening, reference):
         elif new is None:
             removed.append(old)
         elif old.left is None and old.right is None:
-            removed.append(old)
-            added.append(new)
+            if np.array_equal(old.lower_key, new.lower_key):
+                paired.append((old, new.mean_row - old.mean_row))
+            else:
+                removed.append(old)
+                added.append(new)
         else:
             pending.extend(((old.left, new.left), (old.right, new.right)))
-    return shared, removed, added
+    return shared, removed, added, paired
 
 
-def _revision_probability_gap(groups, observation_query, history_logits):
+def _shifted_mass(scores, offset):
+    return sum(exp((score - offset) + log(multiplicity)) for score, multiplicity in scores)
+
+
+def _revision_attention_change(groups, observation_query, history_logits, paired_deltas):
     positive = observation_query >= 0
-    shared, removed, added = groups
+    shared, removed, added, paired = groups
     common = [(float(score), 1) for score in history_logits]
     common.extend((_key_interval(node, observation_query, positive)[0], node.count) for node in shared)
+    paired_scores = [_key_interval(node, observation_query, positive)[0] for node, _ in paired]
+    common.extend((score, 1) for score in paired_scores)
     before = [(_key_interval(node, observation_query, positive)[1], node.count) for node in removed]
-    after = [(_key_interval(node, observation_query, positive)[1], node.count) for node in added]
-    offset = max(score for scores in (common, before, after) for score, _ in scores)
-    kept, lost, gained = (
-        sum(exp((score - offset) + log(count)) for score, count in scores)
-        for scores in (common, before, after)
-    )
-    changed = max(lost, gained)
-    return 2. * (changed / (kept + changed))
+    after = [(*_key_interval(node, observation_query, positive), node.count) for node in added]
+
+    probability_gap = 0.
+    if before or after:
+        upper_after = [(upper, multiplicity) for _, upper, multiplicity in after]
+        offset = max(score for scores in (common, before, upper_after) for score, _ in scores)
+        kept = _shifted_mass(common, offset)
+        changed = max(_shifted_mass(before, offset), _shifted_mass(upper_after, offset))
+        probability_gap = 2. * (changed / (kept + changed))
+
+    delta = None
+    if paired_scores:
+        reference = common + [(lower, multiplicity) for lower, _, multiplicity in after]
+        offset = max(score for score, _ in reference)
+        weights = np.asarray([exp(score - offset) for score in paired_scores])
+        # Every paired term uses the same lower reference normalizer.
+        delta = (weights / _shifted_mass(reference, offset)) @ paired_deltas
+    return probability_gap, delta
 
 
 def _frontier(root, query, limit, tolerance, previous, recorded, retain_scores):
@@ -318,6 +337,22 @@ class TreeFeedbackKernel(FeedbackKernel):
         self._check_memory(memory)
         return TreeFeedbackState(self, memory, self._vector(seed))
 
+    def _revision_value_gap(self, hidden, delta):
+        if delta is None or not delta.any():
+            return 0.
+        change = _apply_value(self._observation_value, delta)
+        for axis, observed, output, threshold in self._conditional:
+            projection = delta @ observed
+            if projection:
+                gate = hidden @ axis
+                if threshold is not None:
+                    gate = max(0., gate - threshold)
+                change += (gate * projection) * output
+        gap = float(np.abs(change).max())
+        if not isfinite(gap):
+            raise FloatingPointError("nonfinite paired observation value change")
+        return gap
+
     def run_with_error_bounds(self, seed, memory=None, *, steps, reference_memory=None):
         """Bound dense-replay error, optionally for a revision of the opening bank."""
         if type(self) is not TreeFeedbackKernel or any(
@@ -340,6 +375,8 @@ class TreeFeedbackKernel(FeedbackKernel):
 
         groups = _revision_groups(opening_root, root) if opening_root is not root else None
         group_scores = 0 if groups is None else steps * sum(map(len, groups))
+        paired = () if groups is None else groups[-1]
+        paired_deltas = np.asarray([delta for _, delta in paired]) if paired else None
         observation_query = self._query if self._observation_query is None else self._observation_query
         with np.errstate(over="raise", invalid="raise", under="ignore"):
             bounds = []
@@ -347,6 +384,7 @@ class TreeFeedbackKernel(FeedbackKernel):
             latest_error = history_error = 0.
             for _ in range(steps):
                 previous = state
+                value_edit_gap = 0.
                 if groups is None:
                     state = self.step(previous)
                     local_gap = state.attention.joint_l1_bound
@@ -356,10 +394,12 @@ class TreeFeedbackKernel(FeedbackKernel):
                     projected = (previous.latest @ observation_query if opening_root is None
                                  else diagnostics["observation_query"])
                     history_logits = diagnostics["logits"][state.attention.groups:]
-                    local_gap = state.attention.joint_l1_bound
-                    local_gap += _revision_probability_gap(groups, projected, history_logits)
+                    revision_gap, delta = _revision_attention_change(groups, projected, history_logits, paired_deltas)
+                    local_gap = state.attention.joint_l1_bound + revision_gap
+                    value_edit_gap = self._revision_value_gap(previous.latest, delta)
                 if local_gap == latest_error == history_error == 0.:
-                    bounds.append(0.)
+                    latest_error = history_error = 2. * tanh(value_edit_gap / 2.)
+                    bounds.append(latest_error)
                     continue
 
                 if not gains_ready:
@@ -396,7 +436,7 @@ class TreeFeedbackKernel(FeedbackKernel):
                     value_gain = max(value_gain, feedback_value_gain)
 
                 probability_gap = min(2., local_gap + 2. * tanh(logit_gap / 2.))
-                preactivation_gap = probability_gap * value_gain + value_drift
+                preactivation_gap = probability_gap * value_gain + value_drift + value_edit_gap
                 latest_error = 2. * tanh(preactivation_gap / 2.)
                 history_error = max(history_error, latest_error)
                 bounds.append(latest_error)

@@ -208,7 +208,7 @@ def test_revision_bound_distinguishes_low_mass_edits_from_a_later_dominant_sourc
         assert (actual <= np.array(preview.error_bounds) + 1e-14).all()
         assert preview.state._memory is opening and preview.reference_memory is edited
         np.testing.assert_array_equal(preview.state.history, baseline.state.history)
-        assert preview.revision_group_scores == (18 if replacement is None else 21)
+        assert preview.revision_group_scores == (21 if replacement == [1., -1.] else 18)
         assert preview.state.observation_scores == 33
         assert reference.observation_scores == (93 if replacement is None else 96)
         results.append((preview, reference))
@@ -218,6 +218,94 @@ def test_revision_bound_distinguishes_low_mass_edits_from_a_later_dominant_sourc
     preview, reference = results[1]
     assert preview.state.latest[1] - preview.error_bounds[-1] <= .2
     assert reference.latest[1] < .2
+
+
+def test_paired_low_mass_edit_can_change_late_routing_and_history_competition():
+    weights = dict(
+        query=[[.3], [.2], [.1], [0.]], carry=None, observation_key=[[0.], [0.], [0.], [1.]],
+        observation_value=[[0., 0., 0., 0.], [0., 0., 0., 0.], [0., 1., 0., 0.], [0., 0., 1., 0.]],
+        feedback_key=[[0.], [1.], [1.], [0.]], feedback_value=np.diag([0., 0., .1, 0.]), max_steps=2,
+    )
+    query_edit = [[5.], [4000.], [0.], [0.]]
+    tree = TreeFeedbackKernel(depth=2, max_frontier=3, **weights)._with_observation_query(query_edit)
+    dense = FeedbackKernel(**weights)._with_observation_query(query_edit)
+    seed = [1., 0., 0., 0.]
+    rows = [[0., 0., 0., -1.], [0., 0., 0., .5], [0., 0., 0., -.25]]
+    replacement = [0., 0., -1., -1.]
+    opening = tree.prepare(rows)
+    edited = tree.revise(opening, {0: replacement})
+    preview = tree.run_with_error_bounds(seed, opening, steps=2, reference_memory=edited)
+
+    first_step, old_attention, new_attention = {}, {}, {}
+    old_first, _, _ = dense._advance(dense.start(seed, dense.prepare(rows)), diagnostics=first_step)
+    new_first = dense.step(dense.start(seed, dense.prepare([replacement, *rows[1:]])))
+    old_second, _, _ = dense._advance(old_first, diagnostics=old_attention)
+    new_second, _, _ = dense._advance(new_first, diagnostics=new_attention)
+    assert 0. < first_step["probabilities"][0] < .001
+    assert old_attention["probabilities"].argmax() != new_attention["probabilities"].argmax()
+    assert old_attention["logits"][1] == old_attention["logits"][2]
+    assert new_attention["logits"][1] < new_attention["logits"][2] - 1.
+    assert abs(old_attention["probabilities"][-1] - new_attention["probabilities"][-1]) > .05
+    assert old_second.latest[2] > -.4 and new_second.latest[2] < -.4
+    assert preview.state.latest[2] - preview.error_bounds[-1] < -.4
+    actual = np.max(np.abs(np.array(preview.state.history) - np.array(new_second.history)), axis=1)
+    assert 0. < actual[0] < .001 and actual[1] > .3
+    assert (actual <= np.array(preview.error_bounds) + 1e-14).all()
+    clamped = dense.step(dense.intervene(new_first, 0, old_first.latest))
+    assert clamped.latest[2] == old_second.latest[2]
+
+
+@pytest.mark.parametrize("conditional", [False, True])
+def test_paired_high_mass_edit_accounts_for_actual_value_and_gate_projections(conditional):
+    key = np.array([[1.], [0.], [0.]])
+    weights = dict(query=8 * key, carry=None, observation_key=key,
+                   observation_value=FactoredValue([[0.], [0.], [1.]], [[0., 0., 1.]]),
+                   feedback_key=np.zeros_like(key), feedback_value=np.zeros((3, 3)), max_steps=1)
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, **weights)
+    dense = FeedbackKernel(**weights)
+    if conditional:
+        term = ConditionalTerm((1., 0., 0.), (0., 1., 0.), (0., 0., .4), threshold=.5)
+        tree, dense = tree._with_conditional(term), dense._with_conditional(term)
+    rows = [[1., 0., .6], [-1., 0., .1]]
+    replacement = [1., .1, .6]
+    opening = tree.prepare(rows)
+    preview = tree.run_with_error_bounds([1., 0., 0.], opening, steps=1,
+                                         reference_memory=tree.revise(opening, {0: replacement}))
+    reference = dense.step(dense.start([1., 0., 0.], dense.prepare([replacement, rows[1]])))
+    error = np.max(np.abs(preview.state.latest - reference.latest))
+    if conditional:
+        assert .01 < error <= preview.error_bounds[0] < .021
+    else:
+        assert error == preview.error_bounds[0] == 0.
+    assert preview.state.latest[2] - preview.error_bounds[0] > .5
+
+
+def test_paired_opposing_value_changes_cancel_under_one_reference_normalizer():
+    weights = dict(query=[[0.]], carry=None, observation_key=[[0.]], observation_value=[[1.]],
+                   feedback_key=[[0.]], feedback_value=[[.25]], max_steps=2)
+    tree = TreeFeedbackKernel(depth=1, max_frontier=1, **weights)
+    dense = FeedbackKernel(**weights)
+    before = tree.prepare([[0.], [0.]])
+    edited = tree.revise(before, {0: [.5], 1: [-.5]})
+    preview = tree.run_with_error_bounds([0.], before, steps=2, reference_memory=edited)
+    reference = dense.step(dense.step(dense.start([0.], dense.prepare([[.5], [-.5]]))))
+    assert preview.error_bounds == (0., 0.) and preview.revision_group_scores == 4
+    np.testing.assert_array_equal(preview.state.history, reference.history)
+
+
+def test_paired_value_change_has_its_own_scale_when_an_extreme_logit_is_removed():
+    key = np.array([[1.], [0.]])
+    weights = dict(query=1e20 * key, carry=None, observation_key=key, observation_value=np.diag([0., .25]),
+                   feedback_key=np.zeros_like(key), feedback_value=np.zeros((2, 2)), max_steps=1)
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, **weights)
+    dense = FeedbackKernel(**weights)
+    memory = tree.prepare([[1., -.5], [0., .1]])
+    edited = tree.revise(memory, {0: None, 1: [0., .9]})
+    preview = tree.run_with_error_bounds([1., 0.], memory, steps=1, reference_memory=edited)
+    reference = dense.step(dense.start([1., 0.], dense.prepare([[0., .9]])))
+    actual = np.max(np.abs(preview.state.latest - reference.latest))
+    assert .3 < actual <= preview.error_bounds[0] < 1.
+    assert preview.revision_group_scores == 2
 
 
 def test_revision_bound_handles_empty_banks_and_insertion_beside_generated_history():
