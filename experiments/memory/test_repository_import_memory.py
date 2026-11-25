@@ -10,7 +10,7 @@ import pytest
 from experiments.memory import repository_import_memory as imports
 from experiments.memory.disjoint_feedback import (
     DisjointFeedback, DisjointFeedbackWorkspace, RelationGuardFailed, RelationOutcomeGuard, StaleRelationRevision,
-    TerminalRelationEvidence, TerminalRelationGrade,
+    TerminalHiddenDecision, TerminalRelationEvidence, TerminalRelationGrade,
 )
 from experiments.memory.latent_feedback import FeedbackKernel
 from experiments.memory.repository_import_readout import (
@@ -536,6 +536,170 @@ def test_discovered_growth_protects_two_successive_reads_on_the_same_workspace(h
     assert workspace.pin() is second_tip
     with pytest.raises(StaleRelationRevision):
         workspace.publish(first_tip, draft)
+
+
+@pytest.mark.parametrize("grade", [0., .5])
+def test_handoff_replaces_a_discovered_witness_without_appending_a_guard(history, grade):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    base = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    receiver, workspace = _published_import_workspace(base, "pkg.start", "pkg.before", ["pkg.relay"])
+    parent = workspace.pin()
+    seed = np.zeros(len(base.relation_coordinates))
+    seed[base.relation_coordinates["pkg.decoy"]] = .25 + grade
+    probe = receiver.step(receiver.start(seed, parent.memory))
+    grown = base.revise(_commit(repo, {"entry.py": "import pkg.old_mid\n",
+                                       "old_mid.py": "import pkg.target\n", "target.py": ""}))
+    growth = grown.draft_feedback_growth(base, receiver, parent, probe, destination="pkg.target",
+                                        grade=grade, max_update_norm=2.)
+    opening = workspace.publish(parent, growth)
+    retained = grown.revise(_commit(repo, {"entry.py": "import pkg.old_mid\nimport pkg.next_mid\n",
+                                           "next_mid.py": "import pkg.target\n"}))
+    with pytest.raises(ValueError, match="existing path still certifies"):
+        retained.draft_feedback_handoff(grown, receiver, opening, 1, destination="pkg.target", max_update_norm=0.)
+
+    corrected = grown.revise(_commit(repo, {"old_mid.py": "# old declaration withdrawn\n"}))
+    neutral = corrected.feedback_revision(grown, receiver, opening.memory,
+                                          added_anchors={"pkg.next_mid": np.zeros(seed.size)})
+    with pytest.raises(RelationGuardFailed, match="protected outcome 1"):
+        workspace.publish(opening, neutral)
+    draft = corrected.draft_feedback_handoff(grown, receiver, opening, 1, destination="pkg.target",
+                                             max_update_norm=0.)
+    assert draft.memory._transitions is neutral.memory._transitions
+    np.testing.assert_array_equal(draft.memory._anchors, neutral.memory._anchors)
+    other = DisjointFeedbackWorkspace(receiver, opening.memory)
+    with pytest.raises(StaleRelationRevision, match="different opening workspace pin"):
+        other.publish(other.pin(), draft)
+
+    tip = workspace.publish(opening, draft)
+    assert len(tip.protected) == len(opening.protected) == 2
+    assert tip._outcomes[0] is opening._outcomes[0]
+    assert tip._outcomes[1].grades == opening._outcomes[1].grades
+    layout = dict(context_tokens=4096, max_new_tokens=32)
+    old_read = prepare_published_import_readout(grown, opening, 1, "pkg.target", _FixtureTokenizer(), **layout)
+    new_read = prepare_published_import_readout(corrected, tip, 1, "pkg.target", _FixtureTokenizer(), **layout)
+    assert [q.declaring_module for q in old_read.quotes] == ["pkg.entry", "pkg.old_mid"]
+    assert [q.declaring_module for q in new_read.quotes] == ["pkg.entry", "pkg.next_mid"]
+    assert new_read.witness.strength == old_read.witness.strength == grade
+
+    reverted = corrected.revise(_commit(repo, {"old_mid.py": "import pkg.target\n",
+                                                "next_mid.py": "# latest declaration withdrawn\n"}))
+    with pytest.raises(RelationGuardFailed, match="protected outcome 1"):
+        workspace.publish(tip, reverted.feedback_revision(corrected, receiver, tip.memory))
+    assert workspace.pin() is tip
+
+
+def test_handoff_can_program_a_new_start_and_keeps_the_other_clauses(history):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    source = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    receiver, initial = _published_import_workspace(source, "pkg.start", "pkg.before", ["pkg.relay"])
+    state = initial.pin().protected[0]
+    before, always, decoy = (source.relation_coordinates[name] for name in ("pkg.before", "pkg.always", "pkg.decoy"))
+    original = RelationOutcomeGuard(
+        grades=[TerminalRelationGrade(before, (.5, .5)), TerminalRelationGrade(always, (.5, .5))],
+        decision=TerminalHiddenDecision((before, decoy), before, .4),
+        evidence=[
+            TerminalRelationEvidence(before, [source.relation_path("pkg.start", "pkg.relay")]),
+            TerminalRelationEvidence(always, [source.relation_path("pkg.start", "pkg.other")]),
+        ],
+    )
+    workspace = DisjointFeedbackWorkspace(receiver, initial.pin().memory, outcome_guards=[(state, original)])
+    opening = workspace.pin()
+    change = {"relay.py": "# old route is gone\n", "entry.py": "import pkg.next_mid\n",
+              "next_mid.py": "import pkg.before\n"}
+    broken = source.revise(_commit(repo, {**change, "other.py": "# unrelated witness is gone as well\n"}))
+    reply = dict(destination="pkg.before", max_update_norm=2.)
+    draft = broken.draft_feedback_handoff(source, receiver, opening, 0, **reply)
+    with pytest.raises(RelationGuardFailed, match="violates its protected outcome"):
+        workspace.publish(opening, draft)
+    assert workspace.pin() is opening
+
+    recovered = source.revise(_commit(repo, {"other.py": "import pkg.always\n"}))
+    both = DisjointFeedbackWorkspace(receiver, opening.memory, outcome_guards=[(state, original), (state, original)])
+    with pytest.raises(ValueError, match="incompatible"):
+        recovered.draft_feedback_handoff(source, receiver, both.pin(), 0, **reply)
+    control = recovered.feedback_revision(source, receiver, opening.memory, added_anchors={
+        name: np.zeros(state.latest.size) for name in recovered.relation_coordinates.keys()
+        - source.relation_coordinates.keys()
+    })
+    replayed, _ = receiver.rebase(state, control)
+    assert np.isneginf(replayed.grades[before])
+    with pytest.raises(RelationGuardFailed, match="protected outcome 0"):
+        workspace.publish(opening, control)
+    draft = recovered.draft_feedback_handoff(source, receiver, opening, 0, **reply)
+    tip = workspace.publish(opening, draft)
+    assert tip._outcomes[0].grades == original.grades and tip._outcomes[0].decision is original.decision
+    assert tip._outcomes[0].evidence[1] is original.evidence[1]
+    witnesses = dict(tip.witnesses[0])
+    assert witnesses[before].path == recovered.relation_path("pkg.entry", "pkg.next_mid")
+    assert witnesses[always] == dict(opening.witnesses[0])[always]
+    assert tip.protected[0].grades[before] == .5
+
+
+def test_handoff_does_not_lower_an_evidence_only_grade(history):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    source = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    receiver, initial = _published_import_workspace(source, "pkg.start", "pkg.before", ["pkg.relay"])
+    old = initial.pin()
+    destination = source.relation_coordinates["pkg.before"]
+    seed = old.protected[0].feedback.seed.copy()
+    seed[source.relation_coordinates["pkg.decoy"]] = .5
+    state = receiver.step(receiver.start(seed, old.memory))
+    workspace = DisjointFeedbackWorkspace(receiver, old.memory, outcome_guards=[(state, old._outcomes[0])])
+    opening = workspace.pin()
+    corrected = source.revise(_commit(repo, {"relay.py": "# old declaration withdrawn\n",
+                                              "start.py": "import pkg.relay\n",
+                                              "decoy.py": "import pkg.other\n",
+                                              "other.py": "import pkg.before\n"}))
+    control = corrected.feedback_revision(source, receiver, opening.memory)
+    replayed, _ = receiver.rebase(state, control)
+    assert replayed.grades[destination] == .25 and state.grades[destination] == .5
+    with pytest.raises(ValueError, match="no appended entry"):
+        corrected.draft_feedback_handoff(source, receiver, opening, 0, destination="pkg.before", max_update_norm=1.)
+    replacement = TerminalRelationEvidence(destination, [corrected.relation_path("pkg.decoy", "pkg.other")])
+    with pytest.raises(RelationGuardFailed, match="changed the certified terminal grade"):
+        workspace.publish(opening, control._with_evidence_handoff(opening, 0, replacement))
+    assert workspace.pin() is opening
+
+
+def test_handoff_keeps_a_collinear_earlier_read_inactive_without_forcing_zero(history):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    source = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    width = len(source.relation_coordinates)
+    start = source.relation_coordinates["pkg.start"]
+    destination = source.relation_coordinates["pkg.before"]
+    carry = np.zeros((width, width))
+    carry[start, start] = np.arctanh(.75) / .2
+    receiver, initial = _published_import_workspace(source, "pkg.start", "pkg.before", ["pkg.relay"], carry=carry)
+    old = initial.pin()
+    seed = np.zeros(width)
+    seed[start] = .2
+    state = receiver.step(receiver.step(receiver.start(seed, old.memory)))
+    workspace = DisjointFeedbackWorkspace(receiver, old.memory, outcome_guards=[(state, old._outcomes[0])])
+    opening = workspace.pin()
+    corrected = source.revise(_commit(repo, {"relay.py": "# old declaration withdrawn\n",
+                                              "entry.py": "import pkg.next_mid\n",
+                                              "next_mid.py": "import pkg.before\n"}))
+    draft = corrected.draft_feedback_handoff(source, receiver, opening, 0, destination="pkg.before",
+                                             max_update_norm=1.1)
+    target = corrected.relation_coordinates["pkg.entry"]
+    row = draft.memory._anchors[target]
+    assert row @ (seed @ receiver._query) == pytest.approx(.2)
+    _, eligible = receiver._relation_seed(draft.memory, seed)
+    assert not eligible[target]
+    _, at_floor = receiver._relation_seed(draft.memory, seed * 1.26)
+    assert at_floor[target]
+    assert state.feedback.history[0][start] == pytest.approx(.75)
+    assert np.count_nonzero(state.feedback.history[0]) == np.count_nonzero(seed) == 1
+
+    tip = workspace.publish(opening, draft)
+    new_state = tip.protected[0]
+    np.testing.assert_array_equal(new_state.feedback.history[0], state.feedback.history[0])
+    assert new_state.grades[destination] == pytest.approx(state.grades[destination])
+    assert dict(tip.witnesses[0])[destination].path == corrected.relation_path("pkg.entry", "pkg.next_mid")
 
 
 def test_growth_discovery_refuses_ambiguous_paths_and_the_source_only_control(history):

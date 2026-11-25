@@ -17,6 +17,7 @@ from experiments.memory.latent_feedback import FactoredValue, FeedbackKernel, Fe
 
 
 _CREATION_KEY = object()
+_RELATION_GRADE_ATOL = 1e-8
 
 
 class _IdentityRecord:
@@ -57,6 +58,7 @@ class _RelationRevision(_IdentityRecord):
     _entries: frozenset[int]
     _changed_sources: frozenset[str] | None
     _admission: tuple["_RelationWorkspacePin", "DisjointFeedbackState", "RelationOutcomeGuard"] | None = None
+    _handoff: tuple["_RelationWorkspacePin", int, "TerminalRelationEvidence"] | None = None
     _creation_key: InitVar[object | None] = None
 
     def __post_init__(self, _creation_key):
@@ -64,9 +66,17 @@ class _RelationRevision(_IdentityRecord):
             raise TypeError("construct relation revisions through revise_memory or merge_revisions")
 
     def _with_required_outcome(self, opening, state, guard):
-        if self._changed_sources is not None or self._admission is not None or opening.memory is not self._base:
-            raise ValueError("a required outcome needs an unbound authoritative revision at its opening pin")
+        self._require_unbound_adoption(opening)
         return replace(self, _admission=(opening, state, guard), _creation_key=_CREATION_KEY)
+
+    def _with_evidence_handoff(self, opening, protected_index, evidence):
+        self._require_unbound_adoption(opening)
+        return replace(self, _handoff=(opening, protected_index, evidence), _creation_key=_CREATION_KEY)
+
+    def _require_unbound_adoption(self, opening):
+        if (self._changed_sources is not None or self._admission is not None or self._handoff is not None
+                or opening.memory is not self._base):
+            raise ValueError("outcome editing needs an unbound authoritative revision at its opening pin")
 
 
 @dataclass(frozen=True, eq=False, slots=True)
@@ -348,6 +358,22 @@ class TerminalRelationEvidence:
         object.__setattr__(self, "paths", paths)
 
 
+def _same_supported_grade(previous, candidate):
+    if previous == 0. or candidate == 0.:
+        return previous == candidate
+    return abs(previous - candidate) <= _RELATION_GRADE_ATOL
+
+
+def _approved_evidence(state, seed, clause):
+    witness = _matching_witness(state, seed, clause.destination, clause.paths)
+    if witness is not None and state._memory._source is not None:
+        try:
+            state._memory._source._witness_edges(clause.destination, witness)
+        except ValueError:
+            return None
+    return witness
+
+
 @dataclass(frozen=True, slots=True)
 class TerminalHiddenDecision:
     """Keep the selected coordinate or abstention within a declared candidate set."""
@@ -438,16 +464,21 @@ class RelationOutcomeGuard:
         seed = state._receiver._terminal_seed(state)
         approved = []
         for clause in self.evidence:
-            witness = _matching_witness(state, seed, clause.destination, clause.paths)
+            witness = _approved_evidence(state, seed, clause)
             if witness is None:
                 return None
-            if state._memory._source is not None:
-                try:
-                    state._memory._source._witness_edges(clause.destination, witness)
-                except ValueError:
-                    return None
             approved.append((clause.destination, witness))
         return tuple(approved)
+
+    def _evidence_at(self, destination):
+        for clause in self.evidence:
+            if clause.destination == destination:
+                return clause
+        raise ValueError("the protected outcome has no evidence for that destination")
+
+    def _with_replaced_evidence(self, replacement):
+        original = self._evidence_at(replacement.destination)
+        return replace(self, evidence=tuple(replacement if clause is original else clause for clause in self.evidence))
 
 
 def _same_trajectory(left, right):
@@ -517,21 +548,38 @@ class DisjointFeedbackWorkspace:
             if opening is not parent:
                 raise StaleRelationRevision("relation draft belongs to a different opening workspace pin")
             required = ((state, outcome),)
+        handoff = revision._handoff
+        outcomes = list(parent._outcomes)
+        if handoff is not None:
+            opening, protected_index, replacement = handoff
+            if opening is not parent:
+                raise StaleRelationRevision("relation draft belongs to a different opening workspace pin")
+            old_outcome = outcomes[protected_index]
+            old_evidence = old_outcome._evidence_at(replacement.destination)
+            old_strength = dict(parent.witnesses[protected_index])[replacement.destination].strength
+            outcomes[protected_index] = old_outcome._with_replaced_evidence(replacement)
         checked = []
         witnesses = []
-        for i, (state, outcome) in enumerate(zip(parent.protected, parent._outcomes, strict=True)):
+        for i, (state, outcome) in enumerate(zip(parent.protected, outcomes, strict=True)):
             candidate, _ = receiver.rebase(state, revision)
             if outcome is None:
                 if not _same_trajectory(state, candidate):
                     raise RelationGuardFailed(f"joint relation revision changed protected trajectory {i}")
                 approved = ()
             else:
-                approved = outcome._evaluate(candidate)
-                if approved is None:
-                    raise RelationGuardFailed(f"joint relation revision violated protected outcome {i}")
+                if handoff is not None and i == protected_index:
+                    seed = receiver._terminal_seed(candidate)
+                    if _approved_evidence(candidate, seed, old_evidence) is not None:
+                        raise RelationGuardFailed("an existing path still certifies the handoff destination")
+                    approved = outcome._validate(candidate)
+                    if not _same_supported_grade(old_strength, dict(approved)[replacement.destination].strength):
+                        raise RelationGuardFailed("evidence handoff changed the certified terminal grade")
+                else:
+                    approved = outcome._evaluate(candidate)
+                    if approved is None:
+                        raise RelationGuardFailed(f"joint relation revision violated protected outcome {i}")
             checked.append(candidate)
             witnesses.append(approved)
-        outcomes = list(parent._outcomes)
         for state, outcome in (*required, *admit_outcomes):
             if type(outcome) is not RelationOutcomeGuard:
                 raise ValueError("admit_outcomes requires a state and a RelationOutcomeGuard")
