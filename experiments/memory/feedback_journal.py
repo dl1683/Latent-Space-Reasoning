@@ -31,7 +31,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
     """Share admitted revisions across processes using one trusted local SQLite file."""
 
     def __init__(self, path, kernel, observations, probes, *, max_update_norm, atol=1e-8,
-                 max_terms=0, source_ids=None):
+                 max_terms=0, source_ids=None, guards=()):
         self._source_bound = isinstance(kernel, LinearFeedbackKernel)
         initial_sources = None
         self._ready = True
@@ -48,7 +48,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         elif source_ids is not None:
             raise ValueError("source IDs require a linear feedback kernel")
         super().__init__(kernel, observations, probes, max_update_norm=max_update_norm,
-                         atol=atol, max_terms=max_terms)
+                         atol=atol, max_terms=max_terms, guards=guards)
         self._path = Path(path).resolve()
         self._root = self._root_digest(initial_sources)
         self._tip = self._root
@@ -104,6 +104,10 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         policy = (kernel._max_steps, self._max_terms, self._atol, self._max_update_norm,
                   [(probe.seed, probe.steps, probe.target) for probe in self._probes])
         digest.update(json.dumps(policy, allow_nan=False, separators=(",", ":")).encode())
+        if self._guards:
+            digest.update(b"\nfeedback guard probes v1\n")
+            guards = [(probe.seed, probe.steps, probe.target) for probe in self._guards]
+            digest.update(json.dumps(guards, allow_nan=False, separators=(",", ":")).encode())
 
         def add_array(array):
             shape = np.shape(array)

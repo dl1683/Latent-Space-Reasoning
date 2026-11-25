@@ -350,7 +350,8 @@ def test_journal_retains_the_selected_probe_that_determines_prefix_anchors(tmp_p
         second.publish(FeedbackProposal(second.snapshot(), 2, term=second_term))
 
 
-def _source_workspace(path, *, rows=None, source_ids=("left", "right"), pairs=(), **kernel_options):
+def _source_workspace(path, *, rows=None, source_ids=("left", "right"), pairs=(), guards=(),
+                      **kernel_options):
     zero, identity = np.zeros((2, 2)), np.eye(2)
     kernel = LinearFeedbackKernel(
         query=identity, carry=None, observation_key=identity, observation_value=zero,
@@ -358,7 +359,7 @@ def _source_workspace(path, *, rows=None, source_ids=("left", "right"), pairs=()
     )
     probes = [FeedbackProbe((1, 0), 1, (0.4, 0)), FeedbackProbe((0, 1), 1, (0, 0.5))]
     return JournaledFeedbackWorkspace(path, kernel, identity if rows is None else rows, probes,
-                                      source_ids=source_ids, max_update_norm=2)
+                                      source_ids=source_ids, max_update_norm=2, guards=guards)
 
 
 def test_source_and_operator_workers_share_one_recoverable_ancestry(tmp_path, monkeypatch):
@@ -532,3 +533,115 @@ def test_source_replay_reconstructs_disagreement_and_binds_its_transition_map(tm
     assert restored.errors == original.errors
     with pytest.raises(ValueError, match="initial workspace inputs disagree"):
         _source_workspace(path, rows=rows, disagreement_axes=[1], disagreement_value=[[1, 0]])
+
+
+def test_maintenance_tries_structural_repair_when_admission_guard_refuses_value_edit():
+    fit = FeedbackProbe((1, 0), 1, (0.4, 0))
+    guard = FeedbackProbe((0, 1), 1, (0, 0))
+    workspace = FeedbackWorkspace(_kernel(), [[1, 0]], [fit], max_update_norm=1,
+                                  max_terms=1, guards=[guard])
+    base = workspace.snapshot()
+    proposed = workspace.propose(base, 0)
+    with pytest.raises(ValueError, match="regresses a workspace guard"):
+        workspace.publish(proposed)
+
+    restricted = workspace.maintain(max_candidates=1)
+    assert restricted.status == "budget_exhausted"
+    assert restricted.revision is None and workspace.snapshot() is base
+    assert len(restricted.attempts) == 1
+    assert "workspace guard" in restricted.attempts[0].rejection
+
+    repair = workspace.maintain(max_candidates=1, resume=restricted)
+    assert repair.status == "committed"
+    assert repair.attempts[repair.selected_attempt].conditional
+    assert len(repair.attempts) == 1
+    assert repair.revision.kernel.conditional_terms == 1
+    assert repair.revision.errors[0] < 1e-12
+    assert repair.revision.guard_errors == base.guard_errors == (0,)
+    assert workspace.maintain(max_candidates=1, resume=restricted).status == "stale"
+    assert workspace.maintain(max_candidates=2).status == "satisfied"
+
+
+def test_maintenance_selects_the_tested_candidate_that_repairs_more_probes():
+    probes = [
+        FeedbackProbe((1, 0), 1, (0.4, 0)),
+        FeedbackProbe((0, 1), 1, (0.4, 0)),
+        FeedbackProbe((-1, 0), 1, (0.5, 0)),
+    ]
+    workspace = FeedbackWorkspace(_kernel(), [[1, 0]], probes, max_update_norm=1)
+    repair = workspace.maintain(max_candidates=3)
+    assert [attempt.probe for attempt in repair.attempts] == [2, 0, 1]
+    assert all(attempt.rejection is None for attempt in repair.attempts)
+    assert repair.selected_attempt == 1
+    assert repair.attempts[repair.selected_attempt].rank[0] == -2
+    assert repair.revision.number == 1
+    assert repair.revision.errors == pytest.approx((0, 0, 0.1))
+
+
+def test_maintenance_keeps_guard_only_failures_distinct_from_exhausted_search():
+    fit = FeedbackProbe((1, 0), 1, (0, 0))
+    failing = FeedbackProbe((1, 0), 1, (0.4, 0))
+    guard = FeedbackProbe((0, 1), 1, (0.5, 0))
+    unguarded = FeedbackWorkspace(_kernel(), np.empty((0, 2)), [failing], max_update_norm=1)
+    absent = unguarded.maintain(max_candidates=1)
+    assert absent.status == "no_candidate" and absent.attempts[0].rejection
+    guarded = FeedbackWorkspace(_kernel(), [[1, 0]], [fit], max_update_norm=1, guards=[guard])
+    result = guarded.maintain(max_candidates=1)
+    assert result.status == "guard_unsatisfied" and not result.attempts
+    assert guarded.snapshot().guard_errors == (0.5,)
+
+
+def test_maintenance_does_not_publish_when_both_edit_families_fail_the_gates():
+    probes = [FeedbackProbe((1, 0), 1, (0, 0)), FeedbackProbe((1, 1), 1, (0, 0.5))]
+    guard = FeedbackProbe((1, -1), 1, (0, 0))
+    workspace = FeedbackWorkspace(_kernel(), [[1, 0]], probes, max_update_norm=1,
+                                  max_terms=1, guards=[guard])
+    base = workspace.snapshot()
+    result = workspace.maintain(max_candidates=2)
+    assert result.status == "no_candidate" and workspace.snapshot() is base
+    assert [attempt.conditional for attempt in result.attempts] == [False, True]
+    assert "incompatible" in result.attempts[0].rejection
+    assert "workspace guard" in result.attempts[1].rejection
+    unguarded = FeedbackWorkspace(_kernel(), [[1, 0]], probes, max_update_norm=1, max_terms=1)
+    assert unguarded.maintain(max_candidates=2).status == "committed"
+
+
+def test_maintenance_rebases_after_a_source_worker_advances_the_journal(tmp_path, monkeypatch):
+    path = tmp_path / "maintain.sqlite"
+    guards = [FeedbackProbe((-1, 0), 1, (0, 0))]
+    operator = _source_workspace(path, guards=guards)
+    sources = _source_workspace(path, guards=guards)
+    validating, resume = Event(), Event()
+    prepare = operator._prepare_operator_revision
+
+    def interleave(proposal):
+        validated = prepare(proposal)
+        validating.set()
+        assert resume.wait(5)
+        return validated
+
+    with monkeypatch.context() as patch, ThreadPoolExecutor(max_workers=1) as pool:
+        patch.setattr(operator, "_prepare_operator_revision", interleave)
+        round_pending = pool.submit(operator.maintain, max_candidates=1)
+        try:
+            assert validating.wait(5)
+            sources.revise_sources(sources.snapshot(), {"right": [0, 0.5]})
+        finally:
+            resume.set()
+        stale = round_pending.result(timeout=5)
+    assert stale.status == "stale" and stale.revision is None
+    assert stale.base.number == 0 and operator.snapshot().number == 1
+
+    assert operator.maintain(max_candidates=2).status == "committed"
+    assert operator.maintain(max_candidates=2).status == "committed"
+    assert operator.maintain(max_candidates=2).status == "satisfied"
+    changed = sources.revise_sources(sources.snapshot(), {"right": [0, 1]})
+    assert changed.errors[1] > 0.2
+    repaired = operator.maintain(max_candidates=2)
+    assert repaired.status == "committed"
+    assert repaired.revision.number == 5
+    reopened = _source_workspace(path, guards=guards).snapshot()
+    assert reopened.errors == repaired.revision.errors
+    assert max(reopened.errors) < 1e-12 and reopened.guard_errors == (0,)
+    with pytest.raises(ValueError, match="initial workspace inputs disagree"):
+        _source_workspace(path, guards=[FeedbackProbe((-1, 0), 1, (0.1, 0))])

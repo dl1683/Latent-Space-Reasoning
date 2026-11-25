@@ -40,6 +40,7 @@ class FeedbackRevision:
     memory: ObservationMemory | MomentMemory
     errors: tuple[float, ...]
     _anchors: tuple[tuple[np.ndarray, ...] | None, ...]
+    guard_errors: tuple[float, ...] = ()
 
     def start(self, seed):
         return self.kernel.start(seed, self.memory)
@@ -66,12 +67,31 @@ class StaleFeedbackRevision(ValueError):
     """The observations or operator have advanced since this work was based."""
 
 
+@dataclass(frozen=True)
+class FeedbackRepairAttempt:
+    probe: int
+    conditional: bool
+    rejection: str | None = None
+    rank: tuple[int, float, int] | None = None
+
+
+@dataclass(frozen=True)
+class FeedbackMaintenanceRound:
+    status: str
+    base: FeedbackRevision
+    attempts: tuple[FeedbackRepairAttempt, ...] = ()
+    revision: FeedbackRevision | None = None
+    selected_attempt: int | None = None
+    next_candidate: int | None = None
+
+
 class FeedbackWorkspace:
     """A bounded in-process commit point. Numeric replays run outside its lock."""
 
     def __init__(self, kernel, observations, probes, *, max_update_norm, atol=1e-8,
-                 max_terms=0):
+                 max_terms=0, guards=()):
         self._probes = tuple(FeedbackProbe(p.seed, p.steps, p.target) for p in probes)
+        self._guards = tuple(FeedbackProbe(p.seed, p.steps, p.target) for p in guards)
         self._atol = float(atol)
         self._max_update_norm = float(max_update_norm)
         if not self._probes:
@@ -86,8 +106,9 @@ class FeedbackWorkspace:
         self._lock = Lock()
         memory = kernel.prepare(observations)
         errors, prefixes = self._measure(kernel, memory)
+        guard_errors = self._measure_guards(kernel, memory)
         self._head = FeedbackRevision(0, kernel, memory, errors,
-                                      self._anchors(errors, prefixes))
+                                      self._anchors(errors, prefixes), guard_errors)
 
     def snapshot(self):
         with self._lock:
@@ -111,16 +132,24 @@ class FeedbackWorkspace:
             state = kernel.step(state)
         return state
 
+    @staticmethod
+    def _probe_error(state, probe):
+        error = float(np.max(np.abs(state.latest - probe.target)))
+        if not isfinite(error):
+            raise ValueError("probe error must be finite")
+        return error
+
     def _measure(self, kernel, memory):
         errors, prefixes = [], []
         for probe in self._probes:
             state = self._run(kernel, memory, probe)
-            error = float(np.max(np.abs(state.latest - probe.target)))
-            if not isfinite(error):
-                raise ValueError("probe error must be finite")
-            errors.append(error)
+            errors.append(self._probe_error(state, probe))
             prefixes.append(state.history[:-1])
         return tuple(errors), tuple(prefixes)
+
+    def _measure_guards(self, kernel, memory):
+        return tuple(self._probe_error(self._run(kernel, memory, guard), guard)
+                     for guard in self._guards)
 
     def _anchors(self, errors, prefixes, previous=None):
         if previous is None:
@@ -145,6 +174,9 @@ class FeedbackWorkspace:
     def propose(self, base, probe, *, conditional=False):
         """Produce a candidate using the unresolved probe and satisfied runs."""
         self._require_current(base)
+        return self._propose(base, probe, conditional=conditional)
+
+    def _propose(self, base, probe, *, conditional):
         probe = self._open_probe(base, probe)
         goal = self._probes[probe]
         protected = (
@@ -171,6 +203,63 @@ class FeedbackWorkspace:
         self._require_current(base)
         return self._commit(base, self._prepare_operator_revision(proposal), proposal=proposal)
 
+    def maintain(self, *, max_candidates, resume=None):
+        """Compare a finite candidate batch on one revision and publish at most one edit."""
+        limit = index(max_candidates)
+        if limit < 1:
+            raise ValueError("maintenance candidate limit must be positive")
+        base = self.snapshot()
+        offset = 0
+        if resume is not None:
+            if (not isinstance(resume, FeedbackMaintenanceRound)
+                    or resume.status != "budget_exhausted" or resume.next_candidate is None):
+                raise ValueError("maintenance can only resume an exhausted candidate budget")
+            if resume.base is not base:
+                return FeedbackMaintenanceRound("stale", resume.base)
+            offset = index(resume.next_candidate)
+        unresolved = sorted(
+            (probe for probe, error in enumerate(base.errors) if error > self._atol),
+            key=lambda probe: (-base.errors[probe], probe),
+        )
+        if not unresolved:
+            status = "guard_unsatisfied" if any(e > self._atol for e in base.guard_errors) else "satisfied"
+            return FeedbackMaintenanceRound(status, base)
+        modes = (False, True) if base.kernel.conditional_terms < self._max_terms else (False,)
+        total = len(unresolved) * len(modes)
+        if not 0 <= offset < total:
+            raise ValueError("maintenance continuation is outside the candidate list")
+        stop = min(offset + limit, total)
+        attempts = []
+        best = None
+        try:
+            for candidate in range(offset, stop):
+                probe_offset, mode_offset = divmod(candidate, len(modes))
+                probe, conditional = unresolved[probe_offset], modes[mode_offset]
+                self._require_current(base)
+                try:
+                    proposal = self._propose(base, probe, conditional=conditional)
+                    revised = self._prepare_operator_revision(proposal)
+                except StaleFeedbackRevision:
+                    raise
+                except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
+                    attempts.append(FeedbackRepairAttempt(probe, conditional, str(error)))
+                    continue
+                rank = (-sum(error <= self._atol for error in revised.errors),
+                        sum(revised.errors), revised.kernel.conditional_terms)
+                if best is None or rank < best[0]:
+                    best = rank, proposal, revised, len(attempts)
+                attempts.append(FeedbackRepairAttempt(probe, conditional, rank=rank))
+            self._require_current(base)
+            if best is not None:
+                _, proposal, revised, selected = best
+                published = self._commit(base, revised, proposal=proposal)
+                return FeedbackMaintenanceRound("committed", base, tuple(attempts), published, selected)
+        except StaleFeedbackRevision:
+            return FeedbackMaintenanceRound("stale", base, tuple(attempts))
+        if stop < total:
+            return FeedbackMaintenanceRound("budget_exhausted", base, tuple(attempts), next_candidate=stop)
+        return FeedbackMaintenanceRound("no_candidate", base, tuple(attempts))
+
     def _prepare_operator_revision(self, proposal):
         base = proposal.base
         probe = self._open_probe(base, proposal.probe)
@@ -190,6 +279,10 @@ class FeedbackWorkspace:
         if any(new > max(old, self._atol)
                for old, new in zip(base.errors, errors, strict=True)):
             raise ValueError("proposed operator regresses a workspace probe")
+        guard_errors = self._measure_guards(candidate, base.memory)
+        if any(new > max(old, self._atol)
+               for old, new in zip(base.guard_errors, guard_errors, strict=True)):
+            raise ValueError("proposed operator regresses a workspace guard")
         anchors = list(base._anchors)
         goal = self._probes[probe]
         anchors[probe] = self._run(base.kernel, base.memory, goal).history[:-1]
@@ -197,7 +290,7 @@ class FeedbackWorkspace:
             if expected is not None and not np.allclose(actual, expected, atol=self._atol, rtol=0):
                 raise ValueError("proposed operator changes a protected trajectory prefix")
         anchors = self._anchors(errors, prefixes, tuple(anchors))
-        return FeedbackRevision(base.number + 1, candidate, base.memory, errors, anchors)
+        return FeedbackRevision(base.number + 1, candidate, base.memory, errors, anchors, guard_errors)
 
     def replace_observations(self, base, observations):
         """Install a new observation bank and measure its outcomes with the current operator."""
@@ -209,5 +302,6 @@ class FeedbackWorkspace:
 
     def _prepare_memory_revision(self, base, memory):
         errors, prefixes = self._measure(base.kernel, memory)
+        guard_errors = self._measure_guards(base.kernel, memory)
         return FeedbackRevision(base.number + 1, base.kernel, memory, errors,
-                                self._anchors(errors, prefixes))
+                                self._anchors(errors, prefixes), guard_errors)
