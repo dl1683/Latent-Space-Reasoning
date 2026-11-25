@@ -21,7 +21,7 @@ _ABSENT = -np.inf
 _Edge = tuple[int, int, float]
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class DisjointTransitionPath:
     """Address a two-hop path by coordinates and ordered source origins."""
 
@@ -43,7 +43,7 @@ class DisjointTransitionPath:
         object.__setattr__(self, "origins", origins)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class DisjointTransitionWitness:
     """One strongest compatible pair for a selected destination and seed."""
 
@@ -57,14 +57,14 @@ class DisjointTransitionWitness:
         return DisjointTransitionPath(self.start, self.middle, self.origins)
 
 
-@dataclass(frozen=True, eq=False)
+@dataclass(frozen=True, eq=False, slots=True)
 class _Postings:
     coordinates: np.ndarray
     origins: np.ndarray
     grades: np.ndarray
 
 
-@dataclass(frozen=True, eq=False)
+@dataclass(frozen=True, eq=False, slots=True)
 class _Middle:
     _order: int
     assertions: Mapping[str, tuple[_Edge, ...]]
@@ -163,7 +163,7 @@ def _seed(values, width):
     return grades
 
 
-@dataclass(frozen=True, eq=False)
+@dataclass(frozen=True, eq=False, slots=True)
 class DisjointTransitionMemory:
     """Immutable source assertions and compiled factors over a shared coordinate frame."""
 
@@ -172,6 +172,12 @@ class DisjointTransitionMemory:
     _middles: Mapping[int, _Middle]
     _entry_middles: Mapping[int, frozenset[int]]
     _destination_middles: Mapping[int, frozenset[int]]
+
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        return self
 
     @classmethod
     def prepare(cls, width, sources):

@@ -10,12 +10,23 @@ from threading import Lock
 import numpy as np
 
 from experiments.memory.disjoint_transition import (
-    DisjointTransitionMemory, DisjointTransitionPath, DisjointTransitionWitness, _EMPTY, propagate_disjoint,
+    DisjointTransitionMemory, DisjointTransitionPath, DisjointTransitionWitness, _EMPTY, _indexed_coordinates,
+    propagate_disjoint,
 )
 from experiments.memory.latent_feedback import FactoredValue, FeedbackKernel, FeedbackState, _apply_value, _frozen, _real_array
 
 
 _CREATION_KEY = object()
+
+
+class _IdentityRecord:
+    __slots__ = ()
+
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        return self
 
 
 def _same_replacement(left, right):
@@ -26,11 +37,12 @@ def _same_replacement(left, right):
         for middle in left for old, new in zip(left[middle], right[middle], strict=True)))
 
 
-@dataclass(frozen=True, eq=False)
-class _RelationObservation:
+@dataclass(frozen=True, eq=False, slots=True)
+class _RelationObservation(_IdentityRecord):
     _receiver: "DisjointFeedback"
     _transitions: DisjointTransitionMemory
     _anchors: np.ndarray
+    _source: object | None = None
     _creation_key: InitVar[object | None] = None
 
     def __post_init__(self, _creation_key):
@@ -38,12 +50,12 @@ class _RelationObservation:
             raise TypeError("construct relation memory through prepare")
 
 
-@dataclass(frozen=True, eq=False)
-class _RelationRevision:
+@dataclass(frozen=True, eq=False, slots=True)
+class _RelationRevision(_IdentityRecord):
     _base: _RelationObservation
     memory: _RelationObservation
     _entries: frozenset[int]
-    _changed_sources: frozenset[str]
+    _changed_sources: frozenset[str] | None
     _creation_key: InitVar[object | None] = None
 
     def __post_init__(self, _creation_key):
@@ -51,14 +63,14 @@ class _RelationRevision:
             raise TypeError("construct relation revisions through revise_memory or merge_revisions")
 
 
-@dataclass(frozen=True, eq=False)
+@dataclass(frozen=True, eq=False, slots=True)
 class _RelationStep:
     entries: frozenset[int]
     query: np.ndarray | None
 
 
-@dataclass(frozen=True, eq=False)
-class DisjointFeedbackState:
+@dataclass(frozen=True, eq=False, slots=True)
+class DisjointFeedbackState(_IdentityRecord):
     _receiver: "DisjointFeedback"
     _feedback: FeedbackState
     _memory: _RelationObservation | None
@@ -84,7 +96,7 @@ class DisjointFeedbackState:
         return None if self._grades is None else self._grades.view()
 
 
-@dataclass(frozen=True, eq=False, init=False)
+@dataclass(frozen=True, eq=False, init=False, slots=True)
 class DisjointFeedback:
     """A shared receiver with optional, numerically distinct relation and observation banks."""
 
@@ -108,12 +120,15 @@ class DisjointFeedback:
 
     def prepare(self, transitions, anchors):
         """Attach one supplied anchor row per transition coordinate to an immutable pin."""
+        return self._prepare(transitions, anchors, source=None)
+
+    def _prepare(self, transitions, anchors, *, source):
         if type(transitions) is not DisjointTransitionMemory:
             raise ValueError("expected a disjoint transition snapshot")
         anchors = _real_array(anchors)
         if anchors.shape != (transitions.width, self._kernel._width):
             raise ValueError("relation anchors need one hidden row per transition coordinate")
-        return _RelationObservation(self, transitions, _frozen(anchors), _creation_key=_CREATION_KEY)
+        return _RelationObservation(self, transitions, _frozen(anchors), source, _creation_key=_CREATION_KEY)
 
     def start(self, seed, memory=None, *, observations=None):
         """Pin the relation snapshot and the ordinary observation memory for this trajectory."""
@@ -183,6 +198,24 @@ class DisjointFeedback:
         bank = memory._transitions
         return self._compile_revision(memory, bank._replacements(bank.width, changes))
 
+    def _adopt_memory(self, memory, transitions, *, source):
+        """Prepare a single authoritative replacement in the same coordinate frame."""
+        self._require_memory(memory)
+        bank = memory._transitions
+        if type(transitions) is not DisjointTransitionMemory or bank.width != transitions.width:
+            raise ValueError("replacement needs a transition snapshot of the existing width")
+        if transitions is bank and source is memory._source:
+            return _RelationRevision(memory, memory, frozenset(), None, _creation_key=_CREATION_KEY)
+        entries = set()
+        if transitions is not bank:
+            old, new = bank._middles, transitions._middles
+            for coordinate in old.keys() | new.keys():
+                before, after = old.get(coordinate), new.get(coordinate)
+                if before is not after:
+                    entries.update(_indexed_coordinates(before)[0], _indexed_coordinates(after)[0])
+        revised = _RelationObservation(self, transitions, memory._anchors, source, _creation_key=_CREATION_KEY)
+        return _RelationRevision(memory, revised, frozenset(entries), None, _creation_key=_CREATION_KEY)
+
     def _compile_revision(self, memory, replacements):
         entries = set()
         bank = memory._transitions
@@ -198,16 +231,18 @@ class DisjointFeedback:
         self._require_memory(memory)
         if not drafts:
             raise ValueError("at least one relation draft is required")
+        if any(type(draft) is not _RelationRevision or draft._base is not memory for draft in drafts):
+            raise ValueError("relation drafts must start at the merge pin")
+        if len(drafts) == 1:
+            return drafts[0]
         updates = {}
         for draft in drafts:
-            if type(draft) is not _RelationRevision or draft._base is not memory:
-                raise ValueError("relation drafts must start at the merge pin")
+            if draft._changed_sources is None:
+                raise ValueError("an authoritative relation replacement must publish alone")
             for origin in draft._changed_sources:
                 replacement = draft.memory._transitions._sources.get(origin, _EMPTY)
                 if not _same_replacement(updates.setdefault(origin, replacement), replacement):
                     raise ValueError(f"conflicting relation drafts for source {origin!r}")
-        if len(drafts) == 1:
-            return drafts[0]
         return self._compile_revision(memory, updates)
 
     def rebase(self, state, revision):
@@ -245,7 +280,7 @@ class RelationGuardFailed(ValueError):
     """A joint revision violated a protected trajectory or outcome."""
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class TerminalRelationGrade:
     """Require one terminal destination grade within bounds, or require absence."""
 
@@ -276,7 +311,7 @@ def _matching_witness(state, seed, destination, paths):
     return witness if witness is not None and witness.strength == state._grades[destination] else None
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class TerminalRelationEvidence:
     """Require a declared path that explains the full terminal destination grade."""
 
@@ -294,7 +329,7 @@ class TerminalRelationEvidence:
         object.__setattr__(self, "paths", paths)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class TerminalHiddenDecision:
     """Keep the selected coordinate or abstention within a declared candidate set."""
 
@@ -322,7 +357,7 @@ class TerminalHiddenDecision:
         return selected == self.winner
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class RelationOutcomeGuard:
     """Freeze a conjunction of terminal grade, decision and evidence requirements."""
 
@@ -385,6 +420,11 @@ class RelationOutcomeGuard:
             witness = _matching_witness(state, seed, clause.destination, clause.paths)
             if witness is None:
                 return None
+            if state._memory._source is not None:
+                try:
+                    state._memory._source._witness_edges(clause.destination, witness)
+                except ValueError:
+                    return None
             approved.append((clause.destination, witness))
         return tuple(approved)
 
@@ -397,12 +437,17 @@ def _same_trajectory(left, right):
                for old, new in zip(before, after, strict=True))
 
 
-@dataclass(frozen=True, eq=False)
-class _RelationWorkspacePin:
+@dataclass(frozen=True, eq=False, slots=True)
+class _RelationWorkspacePin(_IdentityRecord):
     memory: _RelationObservation
     protected: tuple[DisjointFeedbackState, ...]
     _outcomes: tuple[RelationOutcomeGuard | None, ...]
     witnesses: tuple[tuple[tuple[int, DisjointTransitionWitness], ...], ...]
+    _creation_key: InitVar[object | None] = None
+
+    def __post_init__(self, _creation_key):
+        if _creation_key is not _CREATION_KEY:
+            raise TypeError("construct workspace pins through guarded publication")
 
 
 class DisjointFeedbackWorkspace:
@@ -423,7 +468,8 @@ class DisjointFeedbackWorkspace:
             witnesses.append(() if outcome is None else outcome._validate(state))
         self._receiver = receiver
         self._tip = _RelationWorkspacePin(memory, tuple(state for state, _ in checks),
-                                          tuple(outcome for _, outcome in checks), tuple(witnesses))
+                                          tuple(outcome for _, outcome in checks), tuple(witnesses),
+                                          _creation_key=_CREATION_KEY)
         self._lock = Lock()
 
     def pin(self):
@@ -454,5 +500,6 @@ class DisjointFeedbackWorkspace:
             if self._tip is not parent:
                 raise StaleRelationRevision("relation workspace tip changed during evaluation")
             if revision.memory is not parent.memory:
-                self._tip = _RelationWorkspacePin(revision.memory, tuple(checked), parent._outcomes, tuple(witnesses))
+                self._tip = _RelationWorkspacePin(revision.memory, tuple(checked), parent._outcomes, tuple(witnesses),
+                                                  _creation_key=_CREATION_KEY)
             return self._tip

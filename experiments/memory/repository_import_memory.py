@@ -4,7 +4,7 @@ import argparse
 import ast
 from codecs import BOM_UTF8, getincrementaldecoder
 from collections.abc import Mapping
-from dataclasses import asdict, dataclass, field
+from dataclasses import InitVar, asdict, dataclass, field
 from importlib.util import resolve_name
 from io import BytesIO
 import json
@@ -17,11 +17,12 @@ from types import MappingProxyType
 
 import numpy as np
 
-from experiments.memory.disjoint_transition import DisjointTransitionMemory, propagate_disjoint
+from experiments.memory.disjoint_transition import DisjointTransitionMemory, DisjointTransitionPath, propagate_disjoint
 
 
 _SOURCE_LINE = re.compile(rb"[^\r\n]*(?:\r\n?|\n|$)")
 _ASCII_HEADER = bytes(range(128)) + b"\x7f" * 128
+_CREATION_KEY = object()
 
 
 @dataclass(frozen=True)
@@ -31,7 +32,7 @@ class ImportEvidence:
     imported_module: str
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class ImportQuote:
     declaring_module: str
     imported_module: str
@@ -43,7 +44,7 @@ class ImportQuote:
     declared_targets: tuple[str, ...]
 
 
-@dataclass(frozen=True, order=True)
+@dataclass(frozen=True, order=True, slots=True)
 class _Declaration:
     lineno: int
     col_offset: int
@@ -52,7 +53,7 @@ class _Declaration:
     targets: tuple[str, ...] = field(compare=False)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class _Module:
     path: str
     blob: str
@@ -174,7 +175,7 @@ def _decode_python(contents):
     return decoded
 
 
-@dataclass(frozen=True, eq=False)
+@dataclass(frozen=True, eq=False, slots=True)
 class RepositoryImportMemory:
     """An in-memory projection of committed import declarations and source lines."""
 
@@ -188,6 +189,17 @@ class RepositoryImportMemory:
     _previous: object | None = None
     _changed_modules: frozenset[str] = frozenset()
     _identity: object = field(default_factory=object, init=False, repr=False)
+    _creation_key: InitVar[object | None] = None
+
+    def __post_init__(self, _creation_key):
+        if _creation_key is not _CREATION_KEY:
+            raise TypeError("construct repository import snapshots through prepare or revise")
+
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        return self
 
     @classmethod
     def prepare(cls, repo, revision, *, package, source_root="src"):
@@ -198,7 +210,7 @@ class RepositoryImportMemory:
             raise ValueError("expected a repo-relative source root and a dotted Python package")
         empty = MappingProxyType({})
         return cls("", Path(repo).resolve(), root, package, empty, empty,
-                   DisjointTransitionMemory.prepare(1, {})).revise(revision)
+                   DisjointTransitionMemory.prepare(1, {}), _creation_key=_CREATION_KEY).revise(revision)
 
     def revise(self, revision):
         """Apply the declared imports from another commit and preserve this snapshot."""
@@ -239,7 +251,49 @@ class RepositoryImportMemory:
         operator = self._operator.revise(changes, width=max(1, len(coordinates)))
         return type(self)(commit, self._repo, self._root, self._package,
                           MappingProxyType(modules), MappingProxyType(coordinates), operator,
-                          self._identity, frozenset(changed_modules))
+                          self._identity, frozenset(changed_modules), _creation_key=_CREATION_KEY)
+
+    @property
+    def relation_coordinates(self):
+        """Names and retained coordinates for placing feedback anchor rows."""
+        return self._coordinates
+
+    def relation_path(self, start, middle):
+        """Name a candidate witness by the two declaring modules on this pin."""
+        self._require_module(start)
+        self._require_module(middle)
+        return DisjointTransitionPath(self._coordinates[start], self._coordinates[middle],
+                                      (self._modules[start].path, self._modules[middle].path))
+
+    def _witness_edges(self, destination, witness):
+        names = tuple(self._coordinates)
+        coordinates = witness.start, witness.middle, destination
+        if any(not 0 <= coordinate < len(names) for coordinate in coordinates):
+            raise ValueError("published witness is outside the repository coordinate frame")
+        start, middle, end = (names[coordinate] for coordinate in coordinates)
+        self._require_module(end)
+        if self.relation_path(start, middle) != witness.path:
+            raise ValueError("published witness origins do not match the committed declaring modules")
+        edges = (start, middle), (middle, end)
+        if any(imported not in self._modules[declaring].imports for declaring, imported in edges):
+            raise ValueError("committed declarations do not explain the published witness")
+        return edges
+
+    def attach_feedback(self, receiver, anchors):
+        """Attach this exact source snapshot to a relation feedback receiver."""
+        return receiver._prepare(self._operator, anchors, source=self)
+
+    def feedback_revision(self, previous, receiver, memory):
+        """Adopt a directly revised repository snapshot with the same coordinate mapping."""
+        receiver._require_memory(memory)
+        if (type(previous) is not RepositoryImportMemory or memory._source is not previous
+                or memory._transitions is not previous._operator):
+            raise ValueError("feedback memory must be attached to the previous source snapshot")
+        if self is not previous and self._previous is not previous._identity:
+            raise ValueError("feedback revision needs a direct repository successor")
+        if self._coordinates != previous._coordinates:
+            raise ValueError("a changed repository coordinate frame needs fresh feedback anchors")
+        return receiver._adopt_memory(memory, self._operator, source=self)
 
     def _seed(self, start):
         self._require_module(start)

@@ -1,11 +1,14 @@
 """Prepare and check a small reader's two-hop import answer without running a model."""
 
-from dataclasses import InitVar, dataclass
+from dataclasses import InitVar, dataclass, replace
 from itertools import islice
 import json
+from operator import index
 from types import MappingProxyType
 from typing import Mapping
 
+from experiments.memory.disjoint_feedback import _RelationWorkspacePin
+from experiments.memory.disjoint_transition import DisjointTransitionWitness
 from experiments.memory.repository_import_memory import ImportQuote, RepositoryImportMemory, _Module
 from experiments.memory.verified_reader_bridge import encode_messages, frame_evidence
 
@@ -23,7 +26,7 @@ _SYSTEM = (
 )
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class ImportReadout:
     commit: str
     quotes: tuple[ImportQuote, ...]
@@ -33,6 +36,7 @@ class ImportReadout:
     _messages: tuple[tuple[str, str], ...]
     _middle: str | None
     _citations: frozenset[str]
+    witness: DisjointTransitionWitness | None = None
 
     @property
     def messages(self):
@@ -188,3 +192,27 @@ def prepare_import_readout(memory, start, destination, tokenizer, *, context_tok
     frozen_messages = tuple((message["role"], message["content"]) for message in messages)
     return ImportReadout(memory.commit, quotes, input_ids, bytes_read, max_new_tokens,
                          frozen_messages, middle, citations)
+
+
+def prepare_published_import_readout(memory, pin, protected_index, destination, tokenizer, *,
+                                     context_tokens, max_new_tokens, passage_ids=None):
+    """Frame the exact committed declarations of a workspace-approved witness."""
+    if (type(memory) is not RepositoryImportMemory or type(pin) is not _RelationWorkspacePin
+            or pin.memory._source is not memory or pin.memory._transitions is not memory._operator):
+        raise ValueError("published feedback and the exact repository source snapshot must match")
+    protected_index = index(protected_index)
+    if not 0 <= protected_index < len(pin.witnesses):
+        raise ValueError("protected trajectory index is outside this publication")
+    memory._require_module(destination)
+    destination_index = memory.relation_coordinates[destination]
+    witness = next((proof for coordinate, proof in pin.witnesses[protected_index] if coordinate == destination_index), None)
+    if witness is None:
+        raise ValueError("publication has no approved witness for this destination")
+    edges = memory._witness_edges(destination_index, witness)
+    start, middle = edges[0]
+    request = prepare_import_readout(memory, start, destination, tokenizer, context_tokens=context_tokens,
+                                     max_new_tokens=max_new_tokens, edges=edges,
+                                     passage_ids=passage_ids)
+    if request._middle != middle or tuple(quote.path for quote in request.quotes) != witness.origins:
+        raise ValueError("committed declarations do not explain the published witness")
+    return replace(request, witness=witness)

@@ -1,11 +1,21 @@
 import codecs
+from copy import copy, deepcopy
+from dataclasses import replace
 import json
 import subprocess
 
+import numpy as np
 import pytest
 
 from experiments.memory import repository_import_memory as imports
-from experiments.memory.repository_import_readout import RetainedImportRead, prepare_import_readout
+from experiments.memory.disjoint_feedback import (
+    DisjointFeedback, DisjointFeedbackWorkspace, RelationGuardFailed, RelationOutcomeGuard, StaleRelationRevision,
+    TerminalRelationEvidence,
+)
+from experiments.memory.latent_feedback import FeedbackKernel
+from experiments.memory.repository_import_readout import (
+    RetainedImportRead, prepare_import_readout, prepare_published_import_readout,
+)
 
 
 def _git(repo, *args):
@@ -106,6 +116,139 @@ class _FixtureTokenizer:
     def apply_chat_template(self, messages, *, tokenize, add_generation_prompt, return_dict):
         assert tokenize and add_generation_prompt and not return_dict
         return list(json.dumps(messages, ensure_ascii=True).encode())
+
+
+def _published_import_workspace(memory, start, destination, middles):
+    width = len(memory.relation_coordinates)
+    keys = np.zeros((width, 1))
+    zeros = np.zeros((width, width))
+    identity = np.eye(width)
+    kernel = FeedbackKernel(query=keys, carry=zeros, observation_key=keys, observation_value=zeros,
+                            feedback_key=keys, feedback_value=zeros, max_steps=1)
+    receiver = DisjointFeedback(kernel, query=identity, presence_value=zeros, grade_value=identity, floor=.25)
+    pin = memory.attach_feedback(receiver, identity)
+    seed = np.zeros(width)
+    seed[memory.relation_coordinates[start]] = .75
+    state = receiver.step(receiver.start(seed, pin))
+    paths = [memory.relation_path(start, middle) for middle in middles]
+    outcome = RelationOutcomeGuard(evidence=[TerminalRelationEvidence(memory.relation_coordinates[destination], paths)])
+    workspace = DisjointFeedbackWorkspace(receiver, pin, outcome_guards=[(state, outcome)])
+    return receiver, workspace
+
+
+def test_published_import_readout_preserves_witness_handoff_and_source_only_revisions(history, monkeypatch):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    base = _commit(repo, {"other.py": "# second route\nfrom .before import get\n"})
+    memory = imports.RepositoryImportMemory.prepare(repo, base, package="pkg")
+    start, destination = "pkg.start", "pkg.before"
+    receiver, workspace = _published_import_workspace(memory, start, destination, ("pkg.relay", "pkg.other"))
+    opening = workspace.pin()
+    assert memory.prove(start, destination)[0].imported_module == "pkg.other"
+    tokenizer = _FixtureTokenizer()
+    layout = dict(context_tokens=4096, max_new_tokens=32)
+
+    def read(source, publication):
+        return prepare_published_import_readout(source, publication, 0, destination, tokenizer, **layout)
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("published readout must not select a new import witness")
+
+    monkeypatch.setattr(imports.RepositoryImportMemory, "prove", unexpected)
+    original = read(memory, opening)
+    explicit = prepare_import_readout(memory, start, destination, tokenizer,
+                                      edges=[(start, "pkg.relay"), ("pkg.relay", destination)], **layout)
+    assert original.witness.strength == .5 and original.input_ids == explicit.input_ids
+    assert original.check('{"middle":"pkg.relay","citations":["P0","P1"]}', terminated=True) == "pass"
+    assert original.quotes[1].text == "from pkg.before import get"
+
+    later = memory.revise(_commit(repo, {"relay.py": "# withdrawn declaration\n"}))
+    handoff = workspace.publish(opening, later.feedback_revision(memory, receiver, opening.memory))
+    new = read(later, handoff)
+    assert new.witness.strength == .5 and new.commit == later.commit and new.quotes[1].line == 2
+    assert new.quotes[1].text == "from .before import get"
+    assert new.check('{"middle":"pkg.relay","citations":["P0","P1"]}', terminated=True) == "wrong_middle"
+    assert new.check('{"middle":"pkg.other","citations":["P0","P1"]}', terminated=True) == "pass"
+
+    commented = later.revise(_commit(repo, {"other.py": "# extra line\n# second route\nfrom .before import get\n"}))
+    assert commented._operator is later._operator
+    source_only = commented.feedback_revision(later, receiver, handoff.memory)
+    assert deepcopy(source_only, {id(source_only.memory): opening.memory}) is source_only
+    tip = workspace.publish(handoff, source_only)
+    assert tip is not handoff and tip.protected[0].feedback is handoff.protected[0].feedback
+    assert deepcopy(tip.protected[0], {id(tip.memory): opening.memory}) is tip.protected[0]
+    (repo / "src/pkg/other.py").write_text("invalid working copy !", encoding="utf-8")
+    latest = read(commented, tip)
+    assert latest.commit == commented.commit and latest.quotes[1].line == 3
+    assert latest.quotes[1].blob != new.quotes[1].blob and latest.quotes[1].text == new.quotes[1].text
+    assert read(memory, opening) == original and read(later, handoff) == new
+    with pytest.raises(ValueError, match="exact repository source snapshot"):
+        read(commented, handoff)
+    with pytest.raises(ValueError, match="trajectory index"):
+        prepare_published_import_readout(commented, tip, -1, destination, tokenizer, **layout)
+    with pytest.raises(TypeError, match="through guarded publication"):
+        replace(tip, witnesses=opening.witnesses)
+    with pytest.raises(TypeError, match="through prepare or revise"):
+        replace(commented, commit=later.commit)
+    assert copy(commented) is deepcopy(commented) is commented
+    assert copy(tip) is deepcopy(tip) is tip
+    for record in (commented, tip, tip.memory, latest, latest.witness, latest.quotes[1]):
+        with pytest.raises(TypeError, match="__dict__"):
+            vars(record)
+
+
+def test_repository_adoption_rejects_growth_mixing_and_loss_of_approved_evidence(history):
+    repo, first, second, _ = history
+    memory = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    start, destination = "pkg.start", "pkg.before"
+    receiver, workspace = _published_import_workspace(memory, start, destination, ["pkg.relay"])
+    parent = workspace.pin()
+    with pytest.raises(ValueError, match="changed repository coordinate frame"):
+        memory.revise(second).feedback_revision(memory, receiver, parent.memory)
+    with pytest.raises(ValueError, match="direct repository successor"):
+        imports.RepositoryImportMemory.prepare(repo, first, package="pkg").feedback_revision(memory, receiver, parent.memory)
+
+    _git(repo, "checkout", "--detach", first)
+    withdrawn = memory.revise(_commit(repo, {"relay.py": "# path withdrawn\n"}))
+    adoption = withdrawn.feedback_revision(memory, receiver, parent.memory)
+    noop = receiver.revise_memory(parent.memory, {})
+    with pytest.raises(ValueError, match="must publish alone"):
+        workspace.publish(parent, adoption, noop)
+    with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
+        workspace.publish(parent, adoption)
+    assert workspace.pin() is parent
+
+    _git(repo, "checkout", "--detach", first)
+    (repo / "src/pkg/relay").mkdir()
+    moved = memory.revise(_commit(repo, {"relay.py": None, "relay/__init__.py": "from pkg.before import get\n"}))
+    moved_revision = moved.feedback_revision(memory, receiver, parent.memory)
+    replayed, _ = receiver.rebase(parent.protected[0], moved_revision)
+    np.testing.assert_array_equal(replayed.grades, parent.protected[0].grades)
+    with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
+        workspace.publish(parent, moved_revision)
+    assert workspace.pin() is parent
+
+    _git(repo, "checkout", "--detach", first)
+    deleted = memory.revise(_commit(repo, {"before.py": None}))
+    assert deleted._operator is memory._operator
+    deleted_revision = deleted.feedback_revision(memory, receiver, parent.memory)
+    replayed, _ = receiver.rebase(parent.protected[0], deleted_revision)
+    assert receiver.prove_terminal(replayed, memory.relation_coordinates[destination]).strength == .5
+    with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
+        workspace.publish(parent, deleted_revision)
+    assert workspace.pin() is parent
+
+    layout = dict(context_tokens=4096, max_new_tokens=32)
+    numeric = DisjointFeedbackWorkspace(receiver, parent.memory, protected=parent.protected)
+    with pytest.raises(ValueError, match="no approved witness"):
+        prepare_published_import_readout(memory, numeric.pin(), 0, destination, _FixtureTokenizer(), **layout)
+
+    extra = receiver.revise_memory(parent.memory, {"other origin": [(0, 0, 0, .1)]})
+    changed = workspace.publish(parent, extra)
+    with pytest.raises(ValueError, match="exact repository source snapshot"):
+        prepare_published_import_readout(memory, changed, 0, destination, _FixtureTokenizer(), **layout)
+    with pytest.raises(StaleRelationRevision, match="before evaluation"):
+        workspace.publish(parent, adoption)
 
 
 def test_readout_quotes_pinned_multiline_imports_and_hides_reference_labels(history):
