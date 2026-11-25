@@ -606,6 +606,106 @@ def test_maintenance_does_not_publish_when_both_edit_families_fail_the_gates():
     assert unguarded.maintain(max_candidates=2).status == "committed"
 
 
+def test_hinge_repairs_the_fixed_mixture_failure_and_recovers_after_source_changes(tmp_path):
+    path = tmp_path / "hinge.sqlite"
+    zero, eye = np.zeros((2, 2)), np.eye(2)
+    kernel = LinearFeedbackKernel(
+        query=eye, carry=None, observation_key=eye, observation_value=zero,
+        feedback_key=zero, feedback_value=zero, max_steps=1,
+    )
+    probes = [FeedbackProbe((1, 0), 1, (0, 0)), FeedbackProbe((1, 1), 1, (0, 0.5))]
+    guard = FeedbackProbe((1, -1), 1, (0, 0))
+
+    def reopen(allow_hinge=True):
+        return JournaledFeedbackWorkspace(
+            path, kernel, [[1, 0]], probes, source_ids=["source"], max_update_norm=1,
+            max_terms=1, guards=[guard], allow_hinge=allow_hinge,
+        )
+
+    operator = reopen()
+    repair = operator.maintain(max_candidates=3)
+    assert repair.status == "committed"
+    assert repair.selected_attempt == 2 and repair.attempts[2].hinge
+    assert "incompatible" in repair.attempts[0].rejection
+    assert "workspace guard" in repair.attempts[1].rejection
+    assert max(repair.revision.errors) < 1e-12 and repair.revision.guard_errors == (0,)
+
+    source_worker = reopen()
+    absent = source_worker.revise_sources(source_worker.snapshot(), {"source": None})
+    assert absent.errors == (0, 0.5)
+    with pytest.raises(ValueError, match="term budget"):
+        source_worker.propose(absent, 1, hinge=True)
+    restored = source_worker.revise_sources(absent, {"source": [1, 0]})
+    assert max(restored.errors) < 1e-12 and restored.guard_errors == (0,)
+    recovered = reopen().snapshot()
+    assert recovered.number == 3 and recovered.kernel.conditional_terms == 1
+    assert recovered.errors == restored.errors
+    with pytest.raises(ValueError, match="initial workspace inputs disagree"):
+        reopen(allow_hinge=False)
+
+
+def test_hinge_threshold_separates_target_when_protected_states_span_the_space(tmp_path):
+    kernel = _kernel()
+    probes = [
+        FeedbackProbe((1, 0), 1, (0, 0)),
+        FeedbackProbe((0, 1), 1, (0, 0)),
+        FeedbackProbe((1, 1), 1, (0.4, -0.2)),
+    ]
+
+    def reopen():
+        return JournaledFeedbackWorkspace(tmp_path / "threshold.sqlite", kernel, [[1, 0]],
+                                          probes, max_update_norm=1, max_terms=1, allow_hinge=True)
+
+    workspace = reopen()
+    base = workspace.snapshot()
+    with pytest.raises(ValueError, match="no unprotected state direction"):
+        workspace.propose(base, 2, conditional=True)
+    proposal = workspace.propose(base, 2, hinge=True)
+    assert proposal.term.threshold == pytest.approx(1 / np.sqrt(2))
+    result = workspace.publish(proposal)
+    assert max(result.errors) < 1e-12
+    recovered = reopen().snapshot()
+    assert recovered.errors == result.errors
+    np.testing.assert_array_equal(recovered.kernel.step(recovered.start([0.5, 0.5])).latest, [0, 0])
+
+
+def test_hinge_installer_refuses_a_target_inside_the_protected_hull():
+    kernel = _kernel()
+    bank = kernel.prepare([[1, 0]])
+    with pytest.raises(ValueError, match="no resolved hinge margin"):
+        kernel.program_conditional(kernel.start([0.5, 0.5], bank), 1, [0.4, 0],
+                                   max_update_norm=1, hinge=True, protect=[((1, 0), 1), ((0, 1), 1)])
+
+
+def test_hinge_refuses_a_guard_on_the_active_side_of_the_separator():
+    kernel = FeedbackKernel(query=[[0]], carry=None, observation_key=[[0]], observation_value=[[0]],
+                            feedback_key=[[0]], feedback_value=[[0]], max_steps=1)
+    probes = [FeedbackProbe((0,), 1, (0,)), FeedbackProbe((1,), 1, (0.25,))]
+    guard = FeedbackProbe((2,), 1, (0,))
+    workspace = FeedbackWorkspace(kernel, [[1]], probes, max_update_norm=1, max_terms=1,
+                                  allow_hinge=True, guards=[guard])
+    base = workspace.snapshot()
+    proposed = workspace.propose(base, 1, hinge=True)
+    assert proposed.term.threshold == 0
+    with pytest.raises(ValueError, match="regresses a workspace guard"):
+        workspace.publish(proposed)
+    assert workspace.snapshot() is base
+
+
+def test_hinge_admission_checks_opt_in_and_finite_nonnegative_threshold():
+    probe = FeedbackProbe((1, 0), 1, (0.4, 0))
+    workspace = FeedbackWorkspace(_kernel(), [[1, 0]], [probe], max_update_norm=1, max_terms=1)
+    base = workspace.snapshot()
+    term = ConditionalTerm((1, 0), (1, 0), (0.4, 0), threshold=0)
+    with pytest.raises(ValueError, match="workspace hinge terms are disabled"):
+        workspace.publish(FeedbackProposal(base, 0, term=term))
+    with pytest.raises(ValueError, match="workspace hinge terms are disabled"):
+        workspace.propose(base, 0, hinge=True)
+    for threshold in (-1, np.inf, np.nan):
+        with pytest.raises(ValueError, match="hinge threshold must be finite and nonnegative"):
+            ConditionalTerm((1, 0), (1, 0), (0.4, 0), threshold=threshold)
+
+
 def test_maintenance_rebases_after_a_source_worker_advances_the_journal(tmp_path, monkeypatch):
     path = tmp_path / "maintain.sqlite"
     guards = [FeedbackProbe((-1, 0), 1, (0, 0))]

@@ -66,6 +66,7 @@ class ConditionalTerm:
     state_axis: tuple[float, ...]
     observation_axis: tuple[float, ...]
     output: tuple[float, ...]
+    threshold: float | None = None
 
     def __post_init__(self):
         for name in ("state_axis", "observation_axis", "output"):
@@ -75,6 +76,11 @@ class ConditionalTerm:
             if name != "output" and abs(_frobenius(vector) - 1.0) > 1e-12:
                 raise ValueError("conditional state and observation axes must have unit norm")
             object.__setattr__(self, name, tuple(vector))
+        if self.threshold is not None:
+            threshold = float(self.threshold)
+            if not isfinite(threshold) or threshold < 0:
+                raise ValueError("hinge threshold must be finite and nonnegative")
+            object.__setattr__(self, "threshold", threshold)
 
     @property
     def norm(self):
@@ -116,6 +122,41 @@ def _apply_value(value, vector):
     return vector @ value
 
 
+def _separating_hinge(hidden, protected, rcond):
+    """Search for a strict separator of hidden from protected states and zero."""
+    points = np.asarray(protected).reshape(-1, len(hidden))
+    scale = max(float(np.max(np.abs(hidden))), float(np.max(np.abs(points), initial=0)))
+    if scale == 0:
+        raise ValueError("target has no resolved hinge margin")
+    target = hidden / scale
+    vertices = np.vstack((np.zeros_like(target), points / scale))
+    nearest = np.zeros_like(target)
+    # Use a bounded Frank-Wolfe search; margin checks do not rely on convergence.
+    for _ in range(32):
+        residual = target - nearest
+        vertex = vertices[np.argmax(vertices @ residual)]
+        direction = vertex - nearest
+        squared = float(direction @ direction)
+        improvement = float(direction @ residual)
+        if squared == 0 or improvement <= 0:
+            break
+        fraction = 1.0 if improvement >= squared else improvement / squared
+        updated = nearest + fraction * direction
+        if np.array_equal(updated, nearest):
+            break
+        nearest = updated
+    direction = target - nearest
+    length = _frobenius(direction)
+    if length <= _frobenius(target, scale=rcond):
+        raise ValueError("target has no resolved hinge margin")
+    axis = direction / length
+    threshold = max(0.0, max((float(point @ axis) for point in points), default=0.0))
+    margin = float(hidden @ axis) - threshold
+    if not isfinite(margin) or margin <= _frobenius(hidden, scale=rcond):
+        raise ValueError("target has no resolved hinge margin")
+    return axis, threshold
+
+
 @dataclass(frozen=True, eq=False, repr=False, init=False)
 class FeedbackKernel:
     """A bounded shared transition with separate observation and feedback maps."""
@@ -129,7 +170,7 @@ class FeedbackKernel:
     _feedback_key: np.ndarray
     _feedback_value: np.ndarray | FactoredValue
     _empty: ObservationMemory
-    _conditional: tuple[tuple[np.ndarray, ...], ...]
+    _conditional: tuple[tuple[np.ndarray, np.ndarray, np.ndarray, float | None], ...]
 
     def __init__(self, *, query, carry, observation_key, observation_value,
                  feedback_key, feedback_value, max_steps):
@@ -206,10 +247,13 @@ class FeedbackKernel:
         if history_value is not None:
             fixed += history_value
         if has_observations:
-            for state_axis, observation_axis, output in self._conditional:
+            for state_axis, observation_axis, output, threshold in self._conditional:
                 observed = mixture @ observation_axis
                 if observed:
-                    fixed += ((hidden @ state_axis) * observed) * output
+                    state_gate = hidden @ state_axis
+                    if threshold is not None:
+                        state_gate = max(0.0, float(state_gate) - threshold)
+                    fixed += (state_gate * observed) * output
         if observation_extra is not None:
             fixed += observation_extra
         return fixed + _apply_value(self._observation_value, mixture), fixed
@@ -270,7 +314,7 @@ class FeedbackKernel:
         factors = tuple(self._vector(vector) for vector in
                         (term.state_axis, term.observation_axis, term.output))
         candidate = copy(self)
-        object.__setattr__(candidate, "_conditional", self._conditional + (factors,))
+        object.__setattr__(candidate, "_conditional", self._conditional + ((*factors, term.threshold),))
         return candidate
 
     def _trace(self, seed, memory, steps):
@@ -334,7 +378,7 @@ class FeedbackKernel:
         return candidate, candidate._check_edit(baseline, target, references, atol), edit
 
     def program_conditional(self, state, step, target, *, max_update_norm,
-                            atol=1e-8, protect=()):
+                            atol=1e-8, protect=(), hinge=False):
         """Append one interaction for a target that has a distinct prior state."""
         if not isfinite(max_update_norm) or max_update_norm < 0:
             raise ValueError("max_update_norm must be finite and nonnegative")
@@ -350,20 +394,28 @@ class FeedbackKernel:
             protected.extend((reference._seed, *reference._history[:-1]))
         rcond = 1e-12
         with np.errstate(over="raise", invalid="raise", divide="raise"):
-            basis = _row_basis(np.asarray(protected).reshape(-1, self._width), rcond)
-            direction = _remove_span(hidden, basis)
-            length = _frobenius(direction)
+            threshold = None
+            if hinge:
+                state_axis, threshold = _separating_hinge(hidden, protected, rcond)
+            else:
+                basis = _row_basis(np.asarray(protected).reshape(-1, self._width), rcond)
+                direction = _remove_span(hidden, basis)
+                length = _frobenius(direction)
+                if not isfinite(length) or length <= _frobenius(hidden, scale=rcond):
+                    raise ValueError("target has no unprotected state direction")
+                state_axis = direction / length
             observed = _frobenius(mixture)
-            if not isfinite(length) or length <= _frobenius(hidden, scale=rcond):
-                raise ValueError("target has no unprotected state direction")
             if not isfinite(observed) or observed == 0:
                 raise ValueError("target has no nonzero observation mixture")
-            state_axis, observation_axis = direction / length, mixture / observed
-            gate = float(hidden @ state_axis) * float(mixture @ observation_axis)
+            observation_axis = mixture / observed
+            state_gate = float(hidden @ state_axis)
+            if threshold is not None:
+                state_gate = max(0.0, state_gate - threshold)
+            gate = state_gate * float(mixture @ observation_axis)
             if not isfinite(gate) or gate <= 0:
                 raise ValueError("conditional gate is numerically unresolved")
             residual = np.arctanh(target) - (fixed + _apply_value(self._observation_value, mixture))
-            term = ConditionalTerm(state_axis, observation_axis, residual / gate)
+            term = ConditionalTerm(state_axis, observation_axis, residual / gate, threshold=threshold)
         norm = term.norm
         if not isfinite(norm) or norm > max_update_norm:
             raise ValueError("conditional term exceeds the update norm budget")

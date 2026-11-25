@@ -73,6 +73,7 @@ class FeedbackRepairAttempt:
     conditional: bool
     rejection: str | None = None
     rank: tuple[int, float, int] | None = None
+    hinge: bool = False
 
 
 @dataclass(frozen=True)
@@ -89,7 +90,7 @@ class FeedbackWorkspace:
     """A bounded in-process commit point. Numeric replays run outside its lock."""
 
     def __init__(self, kernel, observations, probes, *, max_update_norm, atol=1e-8,
-                 max_terms=0, guards=()):
+                 max_terms=0, guards=(), allow_hinge=False):
         self._probes = tuple(FeedbackProbe(p.seed, p.steps, p.target) for p in probes)
         self._guards = tuple(FeedbackProbe(p.seed, p.steps, p.target) for p in guards)
         self._atol = float(atol)
@@ -103,6 +104,11 @@ class FeedbackWorkspace:
         self._max_terms = index(max_terms)
         if self._max_terms < kernel.conditional_terms:
             raise ValueError("workspace term budget is below the initial architecture")
+        if type(allow_hinge) is not bool:
+            raise ValueError("workspace hinge permission must be a boolean")
+        if not allow_hinge and any(term[-1] is not None for term in kernel._conditional):
+            raise ValueError("workspace hinge terms are disabled")
+        self._allow_hinge = allow_hinge
         self._lock = Lock()
         memory = kernel.prepare(observations)
         errors, prefixes = self._measure(kernel, memory)
@@ -167,16 +173,18 @@ class FeedbackWorkspace:
             raise ValueError("probe already satisfies the workspace tolerance")
         return probe
 
-    def _require_term_capacity(self, base):
+    def _require_term_capacity(self, base, *, hinge=False):
+        if hinge and not self._allow_hinge:
+            raise ValueError("workspace hinge terms are disabled")
         if base.kernel.conditional_terms >= self._max_terms:
             raise ValueError("workspace conditional term budget exhausted")
 
-    def propose(self, base, probe, *, conditional=False):
+    def propose(self, base, probe, *, conditional=False, hinge=False):
         """Produce a candidate using the unresolved probe and satisfied runs."""
         self._require_current(base)
-        return self._propose(base, probe, conditional=conditional)
+        return self._propose(base, probe, conditional=conditional or hinge, hinge=hinge)
 
-    def _propose(self, base, probe, *, conditional):
+    def _propose(self, base, probe, *, conditional, hinge=False):
         probe = self._open_probe(base, probe)
         goal = self._probes[probe]
         protected = (
@@ -185,10 +193,10 @@ class FeedbackWorkspace:
             if error <= self._atol
         )
         if conditional:
-            self._require_term_capacity(base)
+            self._require_term_capacity(base, hinge=hinge)
             _, _, term = base.kernel.program_conditional(
                 base.start(goal.seed), goal.steps, goal.target, protect=protected,
-                atol=self._atol, max_update_norm=self._max_update_norm,
+                atol=self._atol, max_update_norm=self._max_update_norm, hinge=hinge,
             )
             return FeedbackProposal(base, probe, term=term)
         _, _, edit = base.kernel.retarget(
@@ -224,7 +232,11 @@ class FeedbackWorkspace:
         if not unresolved:
             status = "guard_unsatisfied" if any(e > self._atol for e in base.guard_errors) else "satisfied"
             return FeedbackMaintenanceRound(status, base)
-        modes = (False, True) if base.kernel.conditional_terms < self._max_terms else (False,)
+        modes = [(False, False)]
+        if base.kernel.conditional_terms < self._max_terms:
+            modes.append((True, False))
+            if self._allow_hinge:
+                modes.append((True, True))
         total = len(unresolved) * len(modes)
         if not 0 <= offset < total:
             raise ValueError("maintenance continuation is outside the candidate list")
@@ -234,21 +246,22 @@ class FeedbackWorkspace:
         try:
             for candidate in range(offset, stop):
                 probe_offset, mode_offset = divmod(candidate, len(modes))
-                probe, conditional = unresolved[probe_offset], modes[mode_offset]
+                probe = unresolved[probe_offset]
+                conditional, hinge = modes[mode_offset]
                 self._require_current(base)
                 try:
-                    proposal = self._propose(base, probe, conditional=conditional)
+                    proposal = self._propose(base, probe, conditional=conditional, hinge=hinge)
                     revised = self._prepare_operator_revision(proposal)
                 except StaleFeedbackRevision:
                     raise
                 except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
-                    attempts.append(FeedbackRepairAttempt(probe, conditional, str(error)))
+                    attempts.append(FeedbackRepairAttempt(probe, conditional, str(error), hinge=hinge))
                     continue
                 rank = (-sum(error <= self._atol for error in revised.errors),
                         sum(revised.errors), revised.kernel.conditional_terms)
                 if best is None or rank < best[0]:
                     best = rank, proposal, revised, len(attempts)
-                attempts.append(FeedbackRepairAttempt(probe, conditional, rank=rank))
+                attempts.append(FeedbackRepairAttempt(probe, conditional, rank=rank, hinge=hinge))
             self._require_current(base)
             if best is not None:
                 _, proposal, revised, selected = best
@@ -268,7 +281,7 @@ class FeedbackWorkspace:
                 norm = _frobenius(proposal._weight - base.kernel._dense_observation_value())
             candidate = base.kernel._with_observation_value(proposal._weight)
         else:
-            self._require_term_capacity(base)
+            self._require_term_capacity(base, hinge=proposal.term.threshold is not None)
             norm = proposal.term.norm
             candidate = base.kernel._with_conditional(proposal.term)
         if not isfinite(norm) or norm > self._max_update_norm:

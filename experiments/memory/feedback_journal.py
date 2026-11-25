@@ -31,7 +31,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
     """Share admitted revisions across processes using one trusted local SQLite file."""
 
     def __init__(self, path, kernel, observations, probes, *, max_update_norm, atol=1e-8,
-                 max_terms=0, source_ids=None, guards=()):
+                 max_terms=0, source_ids=None, guards=(), allow_hinge=False):
         self._source_bound = isinstance(kernel, LinearFeedbackKernel)
         initial_sources = None
         self._ready = True
@@ -48,7 +48,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         elif source_ids is not None:
             raise ValueError("source IDs require a linear feedback kernel")
         super().__init__(kernel, observations, probes, max_update_norm=max_update_norm,
-                         atol=atol, max_terms=max_terms, guards=guards)
+                         atol=atol, max_terms=max_terms, guards=guards, allow_hinge=allow_hinge)
         self._path = Path(path).resolve()
         self._root = self._root_digest(initial_sources)
         self._tip = self._root
@@ -108,6 +108,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             digest.update(b"\nfeedback guard probes v1\n")
             guards = [(probe.seed, probe.steps, probe.target) for probe in self._guards]
             digest.update(json.dumps(guards, allow_nan=False, separators=(",", ":")).encode())
+        if self._allow_hinge:
+            digest.update(b"\nfeedback hinge terms v1\n")
 
         def add_array(array):
             shape = np.shape(array)
@@ -140,7 +142,10 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
                 digest.update(json.dumps(name).encode())
                 add_array(row)
         for term in kernel._conditional:
-            add_array(term)
+            if term[-1] is not None:
+                digest.update(b"\nhinge threshold\n")
+                add_array((term[-1],))
+            add_array(term[:3])
         return digest.digest()
 
     def _read_root(self, db):
@@ -158,6 +163,9 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             proposal = FeedbackProposal(base, probe, values.reshape(width, width))
         elif kind == "conditional":
             proposal = FeedbackProposal(base, probe, term=ConditionalTerm(*values.reshape(3, width)))
+        elif kind == "hinge":
+            term = ConditionalTerm(*values[:-1].reshape(3, width), threshold=values[-1])
+            proposal = FeedbackProposal(base, probe, term=term)
         else:
             raise ValueError("unexpected feedback journal event")
         return self._prepare_operator_revision(proposal)
@@ -284,7 +292,10 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         elif proposal.term is None:
             kind, payload = "weight", _encode(revised.kernel._observation_value)
         else:
-            kind, payload = "conditional", _encode(revised.kernel._conditional[-1])
+            term = revised.kernel._conditional[-1]
+            kind, payload = "conditional", _encode(term[:3])
+            if term[-1] is not None:
+                kind, payload = "hinge", payload + _encode((term[-1],))
         with self._lock, closing(self._connect()) as db:
             self._require_ready()
             if self._head is not base:
