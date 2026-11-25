@@ -283,17 +283,32 @@ class RepositoryImportMemory:
         """Attach this exact source snapshot to a relation feedback receiver."""
         return receiver._prepare(self._operator, anchors, source=self)
 
-    def feedback_revision(self, previous, receiver, memory):
-        """Adopt a directly revised repository snapshot with the same coordinate mapping."""
+    def feedback_revision(self, previous, receiver, memory, *, added_anchors=None):
+        """Adopt a direct revision, with anchor rows keyed by appended module names."""
         receiver._require_memory(memory)
         if (type(previous) is not RepositoryImportMemory or memory._source is not previous
                 or memory._transitions is not previous._operator):
             raise ValueError("feedback memory must be attached to the previous source snapshot")
         if self is not previous and self._previous is not previous._identity:
             raise ValueError("feedback revision needs a direct repository successor")
-        if self._coordinates != previous._coordinates:
-            raise ValueError("a changed repository coordinate frame needs fresh feedback anchors")
-        return receiver._adopt_memory(memory, self._operator, source=self)
+        if any(self._coordinates.get(name) != coordinate for name, coordinate in previous._coordinates.items()):
+            raise ValueError("feedback revision must retain all earlier named coordinates")
+        prior_count = len(previous._coordinates)
+        names = sorted(self._coordinates.keys() - previous._coordinates.keys(), key=self._coordinates.__getitem__)
+        if added_anchors is None:
+            if names:
+                raise ValueError("a changed repository coordinate frame needs added feedback anchors")
+            return receiver._adopt_memory(memory, self._operator, source=self)
+        if not isinstance(added_anchors, Mapping) or added_anchors.keys() != set(names):
+            raise ValueError("added anchor names must match the new repository coordinates")
+        if not names:
+            return receiver._adopt_memory(memory, self._operator, source=self)
+        suffix = np.asarray([added_anchors[name] for name in names])
+        if suffix.shape != (len(names), memory._anchors.shape[1]):
+            raise ValueError("expected one added anchor row per new coordinate")
+        # An empty source has an unnamed placeholder row. Keep named rows only.
+        anchors = np.concatenate((memory._anchors[:prior_count], suffix))
+        return receiver._adopt_memory(memory, self._operator, source=self, anchor_rows=anchors)
 
     def _seed(self, start):
         self._require_module(start)

@@ -198,12 +198,17 @@ class DisjointFeedback:
         bank = memory._transitions
         return self._compile_revision(memory, bank._replacements(bank.width, changes))
 
-    def _adopt_memory(self, memory, transitions, *, source):
-        """Prepare a single authoritative replacement in the same coordinate frame."""
+    def _adopt_memory(self, memory, transitions, *, source, anchor_rows=None):
+        """Prepare a single authoritative replacement and an optional anchor extension."""
         self._require_memory(memory)
         bank = memory._transitions
-        if type(transitions) is not DisjointTransitionMemory or bank.width != transitions.width:
-            raise ValueError("replacement needs a transition snapshot of the existing width")
+        if type(transitions) is not DisjointTransitionMemory or transitions.width < bank.width:
+            raise ValueError("replacement needs a transition snapshot at least as wide as the existing frame")
+        if anchor_rows is not None:
+            revised = self._prepare(transitions, anchor_rows, source=source)
+            return _RelationRevision(memory, revised, frozenset(), None, _creation_key=_CREATION_KEY)
+        if bank.width != transitions.width:
+            raise ValueError("growing the transition frame needs anchor rows")
         if transitions is bank and source is memory._source:
             return _RelationRevision(memory, memory, frozenset(), None, _creation_key=_CREATION_KEY)
         entries = set()
@@ -254,8 +259,11 @@ class DisjointFeedback:
         memory = revision.memory
         if memory is state._memory:
             return state, steps
+        projection_changed = memory._anchors is not state._memory._anchors
+        # A resized projection can change the reduction even at retained coordinates.
         prefix = next((step for step, read in enumerate(state._trace)
-                       if read is not None and not revision._entries.isdisjoint(read.entries)), steps)
+                       if read is not None and (projection_changed or not revision._entries.isdisjoint(read.entries))),
+                      steps)
         if prefix == steps:
             return replace(state, _memory=memory, _creation_key=_CREATION_KEY), prefix
 
@@ -386,17 +394,19 @@ class RelationOutcomeGuard:
     def _validate(self, state):
         if not state._trace:
             raise ValueError("an outcome guard needs a completed trajectory step")
+        memory = state._memory
+        source_width = (memory._transitions.width if memory._source is None else len(memory._source.relation_coordinates))
         if self.grades:
             if state._grades is None:
                 raise ValueError("terminal grade checks require an executed relation read")
-            if any(grade.destination >= state._grades.size for grade in self.grades):
+            if any(grade.destination >= source_width for grade in self.grades):
                 raise ValueError("terminal grade destination is outside the relation frame")
         if self.evidence:
             if state._grades is None:
                 raise ValueError("terminal evidence requires an executed relation read")
-            if any(clause.destination >= state._grades.size for clause in self.evidence):
+            if any(clause.destination >= source_width for clause in self.evidence):
                 raise ValueError("terminal evidence destination is outside the relation frame")
-            if any(max(path.start, path.middle) >= state._grades.size for clause in self.evidence for path in clause.paths):
+            if any(max(path.start, path.middle) >= source_width for clause in self.evidence for path in clause.paths):
                 raise ValueError("terminal evidence path is outside the relation frame")
         if self.decision is not None and max(self.decision.candidates) >= state.latest.size:
             raise ValueError("terminal decision candidate is outside the hidden row")
@@ -430,8 +440,16 @@ class RelationOutcomeGuard:
 
 
 def _same_trajectory(left, right):
-    before = left._feedback._history + (left._grades,)
-    after = right._feedback._history + (right._grades,)
+    old_grades, new_grades = left._grades, right._grades
+    if old_grades is not None and new_grades is not None:
+        source = left._memory._source
+        prior_count = old_grades.size if source is None else len(source.relation_coordinates)
+        if new_grades.size > prior_count:
+            if not np.isneginf(new_grades[prior_count:]).all():
+                return False
+            old_grades, new_grades = old_grades[:prior_count], new_grades[:prior_count]
+    before = left._feedback._history + (old_grades,)
+    after = right._feedback._history + (new_grades,)
     return all(old is new or (old is not None and new is not None
                               and np.array_equal(old.view(np.uint64), new.view(np.uint64)))
                for old, new in zip(before, after, strict=True))
