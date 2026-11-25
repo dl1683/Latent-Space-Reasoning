@@ -6,11 +6,12 @@ state is available to later steps as both a query input and an attention row.
 
 from copy import copy
 from dataclasses import dataclass, replace
+from math import isfinite, prod
 from operator import index
 
 import numpy as np
 
-from experiments.memory.weight_program import program_weight
+from experiments.memory.weight_program import _frobenius, _remove_span, _row_basis, program_weight
 
 
 def _frozen(array):
@@ -58,6 +59,29 @@ class FeedbackState:
         return latest.view()
 
 
+@dataclass(frozen=True)
+class ConditionalTerm:
+    """Data for a rank-one interaction between state and observation axes."""
+
+    state_axis: tuple[float, ...]
+    observation_axis: tuple[float, ...]
+    output: tuple[float, ...]
+
+    def __post_init__(self):
+        for name in ("state_axis", "observation_axis", "output"):
+            vector = _real_array(getattr(self, name))
+            if vector.ndim != 1 or not len(vector):
+                raise ValueError("conditional factors must be nonempty vectors")
+            if name != "output" and abs(_frobenius(vector) - 1.0) > 1e-12:
+                raise ValueError("conditional state and observation axes must have unit norm")
+            object.__setattr__(self, name, tuple(vector))
+
+    @property
+    def norm(self):
+        factors = (self.state_axis, self.observation_axis, self.output)
+        return prod(_frobenius(np.asarray(factor)) for factor in factors)
+
+
 @dataclass(frozen=True, eq=False, repr=False, init=False)
 class FeedbackKernel:
     """A bounded shared transition with separate observation and feedback maps."""
@@ -71,6 +95,7 @@ class FeedbackKernel:
     _feedback_key: np.ndarray
     _feedback_value: np.ndarray
     _empty: ObservationMemory
+    _conditional: tuple[tuple[np.ndarray, ...], ...]
 
     def __init__(self, *, query, carry, observation_key, observation_value,
                  feedback_key, feedback_value, max_steps):
@@ -88,6 +113,7 @@ class FeedbackKernel:
         object.__setattr__(self, "_feedback_key", self._weight(feedback_key))
         object.__setattr__(self, "_feedback_value", self._weight(feedback_value))
         object.__setattr__(self, "_empty", self.prepare(np.empty((0, self._width))))
+        object.__setattr__(self, "_conditional", ())
 
     def _weight(self, value):
         matrix = _real_array(value)
@@ -151,6 +177,11 @@ class FeedbackKernel:
                 weights /= weights.sum()
                 mixture = weights[:observation_count] @ memory._observations
                 fixed += weights[observation_count:] @ history_values
+            if observation_count:
+                for state_axis, observation_axis, output in self._conditional:
+                    observed = mixture @ observation_axis
+                    if observed:
+                        fixed += ((hidden @ state_axis) * observed) * output
             next_hidden = _frozen(np.tanh(fixed + mixture @ self._observation_value))
         next_key, next_value = self._project_generated(next_hidden)
         next_state = replace(
@@ -166,6 +197,17 @@ class FeedbackKernel:
     def _with_observation_value(self, weight):
         candidate = copy(self)
         object.__setattr__(candidate, "_observation_value", self._weight(weight))
+        return candidate
+
+    @property
+    def conditional_terms(self):
+        return len(self._conditional)
+
+    def _with_conditional(self, term):
+        factors = tuple(self._vector(vector) for vector in
+                        (term.state_axis, term.observation_axis, term.output))
+        candidate = copy(self)
+        object.__setattr__(candidate, "_conditional", self._conditional + (factors,))
         return candidate
 
     def _trace(self, seed, memory, steps):
@@ -187,24 +229,36 @@ class FeedbackKernel:
                 raise ValueError("edited trajectory fails replay tolerance")
         return replay
 
+    def _edit_traces(self, state, step, target, protect):
+        self._require_state(state)
+        target = self._vector(target)
+        if np.any(np.abs(target) >= 1):
+            raise ValueError("target coordinates must be strictly inside tanh saturation")
+        bank = state._memory
+        baseline, mixtures, fixed = self._trace(state._seed, bank, step)
+        references = [self._trace(seed, bank, steps) for seed, steps in protect]
+        return target, baseline, mixtures, fixed, references
+
+    def _check_edit(self, baseline, target, references, atol):
+        bank = baseline._memory
+        replay = self._checked_replay(
+            baseline._seed, bank, (*baseline._history[:-1], target), atol,
+        )
+        for reference, _, _ in references:
+            self._checked_replay(reference._seed, bank, reference._history, atol)
+        return replay
+
     def retarget(self, state, step, target, *, max_update_norm, atol=1e-8, protect=()):
         """Program a one-based step and check its prefix and any protected runs.
 
         Each protected run is a (seed, step count) pair on the same observation
         bank. Return the candidate kernel, target replay, and weight edit.
         """
-        self._require_state(state)
-        target = self._vector(target)
-        if np.any(np.abs(target) >= 1):
-            raise ValueError("target coordinates must be strictly inside tanh saturation")
-
-        bank = state._memory
-        baseline, mixtures, fixed = self._trace(state._seed, bank, step)
+        target, baseline, mixtures, fixed, references = self._edit_traces(
+            state, step, target, protect,
+        )
         protected = mixtures[:-1]
-        references = []
-        for seed, steps in protect:
-            reference, reference_mixtures, _ = self._trace(seed, bank, steps)
-            references.append(reference)
+        for _, reference_mixtures, _ in references:
             protected.extend(reference_mixtures)
         anchors = np.asarray(protected).reshape(-1, self._width)
         with np.errstate(over="raise", invalid="raise"):
@@ -214,12 +268,44 @@ class FeedbackKernel:
             preserve_inputs=anchors, max_update_norm=max_update_norm, atol=atol,
         )
         candidate = self._with_observation_value(edit.weight)
-        replay = candidate._checked_replay(
-            baseline._seed, bank, (*baseline._history[:-1], target), atol,
+        return candidate, candidate._check_edit(baseline, target, references, atol), edit
+
+    def program_conditional(self, state, step, target, *, max_update_norm,
+                            atol=1e-8, protect=()):
+        """Append one interaction for a target that has a distinct prior state."""
+        if not isfinite(max_update_norm) or max_update_norm < 0:
+            raise ValueError("max_update_norm must be finite and nonnegative")
+        if not isfinite(atol) or atol <= 0:
+            raise ValueError("atol must be positive and finite")
+        target, baseline, mixtures, fixed, references = self._edit_traces(
+            state, step, target, protect,
         )
-        for reference in references:
-            candidate._checked_replay(reference._seed, bank, reference._history, atol)
-        return candidate, replay, edit
+        inputs = (baseline._seed, *baseline._history[:-1])
+        hidden, mixture = inputs[-1], mixtures[-1]
+        protected = list(inputs[:-1])
+        for reference, _, _ in references:
+            protected.extend((reference._seed, *reference._history[:-1]))
+        rcond = 1e-12
+        with np.errstate(over="raise", invalid="raise", divide="raise"):
+            basis = _row_basis(np.asarray(protected).reshape(-1, self._width), rcond)
+            direction = _remove_span(hidden, basis)
+            length = _frobenius(direction)
+            observed = _frobenius(mixture)
+            if not isfinite(length) or length <= _frobenius(hidden, scale=rcond):
+                raise ValueError("target has no unprotected state direction")
+            if not isfinite(observed) or observed == 0:
+                raise ValueError("target has no nonzero observation mixture")
+            state_axis, observation_axis = direction / length, mixture / observed
+            gate = float(hidden @ state_axis) * float(mixture @ observation_axis)
+            if not isfinite(gate) or gate <= 0:
+                raise ValueError("conditional gate is numerically unresolved")
+            residual = np.arctanh(target) - (fixed + mixture @ self._observation_value)
+            term = ConditionalTerm(state_axis, observation_axis, residual / gate)
+        norm = term.norm
+        if not isfinite(norm) or norm > max_update_norm:
+            raise ValueError("conditional term exceeds the update norm budget")
+        candidate = self._with_conditional(term)
+        return candidate, candidate._check_edit(baseline, target, references, atol), term
 
     def intervene(self, state, position, hidden):
         """Replace a generated state in a copy for a causal control.

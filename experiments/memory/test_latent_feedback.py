@@ -168,3 +168,16 @@ def test_public_array_metadata_and_edit_result_cannot_rewrite_old_states():
     edit.weight.shape = (1, 1, 1)
     assert edited.step(edited.start(seed.seed, seed._memory)).latest[0] == pytest.approx(-0.5)
     assert kernel.step(seed).latest[0] == pytest.approx(np.tanh(1))
+
+
+def test_conditional_program_requires_state_contrast_and_observation_support():
+    kernel = FeedbackKernel(
+        query=[[0]], carry=[[0]], observation_key=[[0]], observation_value=[[0]],
+        feedback_key=[[0]], feedback_value=[[0]], max_steps=2,
+    )
+    with pytest.raises(ValueError, match="no nonzero observation"):
+        kernel.program_conditional(kernel.start([1]), 1, [0.4], max_update_norm=1)
+    state = kernel.start([1], kernel.prepare([[1]]))
+    with pytest.raises(ValueError, match="no unprotected state"):
+        kernel.program_conditional(state, 1, [0.4], max_update_norm=1,
+                                   protect=[([2], 1)])

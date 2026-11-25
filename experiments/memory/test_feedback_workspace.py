@@ -10,7 +10,7 @@ from experiments.memory.feedback_workspace import (
     FeedbackWorkspace,
     StaleFeedbackRevision,
 )
-from experiments.memory.latent_feedback import FeedbackKernel
+from experiments.memory.latent_feedback import ConditionalTerm, FeedbackKernel
 
 
 def _kernel():
@@ -95,3 +95,103 @@ def test_observation_revision_during_admission_fences_out_stale_work(monkeypatch
     assert changed.memory is not base.memory
     assert changed.kernel is base.kernel
     assert changed.errors[0] > 0.01 > base.errors[0]
+
+
+def test_structural_proposal_resolves_a_shared_observation_collision():
+    probes = (FeedbackProbe((1, 0), 1, (0, 0)),
+              FeedbackProbe((0, 1), 1, (0.4, -0.2)))
+    workspace = FeedbackWorkspace(_kernel(), [[1, 0]], probes,
+                                  max_update_norm=1, max_terms=1)
+    base = workspace.snapshot()
+    with pytest.raises(ValueError, match="incompatible with target"):
+        workspace.propose(base, 1)
+    proposed = workspace.propose(base, 1, conditional=True)
+    revised = workspace.publish(proposed)
+
+    assert revised.kernel.conditional_terms == 1
+    assert revised.memory is base.memory
+    assert base.kernel.conditional_terms == 0
+    assert max(revised.errors) < 1e-12
+    np.testing.assert_array_equal(revised.kernel.step(revised.start([1, 0])).latest, [0, 0])
+    np.testing.assert_array_equal(revised.kernel.step(revised.kernel.start([0, 1])).latest,
+                                  [0, 0])
+    np.testing.assert_allclose(revised.kernel.step(revised.start([0, -1])).latest,
+                               [-0.4, 0.2], atol=1e-12, rtol=0)
+    opposite_source = revised.kernel.prepare([[-1, 0]])
+    opposite = revised.kernel.start([0, 1], opposite_source)
+    np.testing.assert_allclose(revised.kernel.step(opposite).latest, [-0.4, 0.2],
+                               atol=1e-12, rtol=0)
+    with pytest.raises(StaleFeedbackRevision):
+        workspace.publish(proposed)
+
+    # New observations change the goal error, but the term cap persists.
+    changed = workspace.replace_observations(revised, [[-1, 0]])
+    with pytest.raises(ValueError, match="term budget"):
+        workspace.propose(changed, 1, conditional=True)
+
+
+def test_conditional_publication_uses_workspace_owned_limits():
+    probes = (FeedbackProbe((0, 1), 1, (0.4, 0)),)
+    closed = FeedbackWorkspace(_kernel(), [[1, 0]], probes, max_update_norm=1)
+    term = ConditionalTerm((0, 1), (1, 0), (2, 0))
+    with pytest.raises(ValueError, match="term budget"):
+        closed.publish(FeedbackProposal(closed.snapshot(), 0, term=term))
+
+    bounded = FeedbackWorkspace(_kernel(), [[1, 0]], probes,
+                                max_update_norm=1, max_terms=1)
+    base = bounded.snapshot()
+    with pytest.raises(ValueError, match="update budget"):
+        bounded.publish(FeedbackProposal(base, 0, term=term))
+    assert bounded.snapshot() is base
+
+
+def test_conditional_axes_cannot_underflow_publication_budget():
+    with pytest.raises(ValueError, match="unit norm"):
+        ConditionalTerm([1e-200], [1e-200], [1e300])
+    tiny = ConditionalTerm([1], [1], [np.nextafter(0.0, 1.0)])
+    assert tiny.norm > 0
+
+
+def test_endpoint_success_cannot_bypass_target_prefix_admission():
+    kernel = FeedbackKernel(
+        query=[[0]], carry=[[0]], observation_key=[[0]], observation_value=[[0]],
+        feedback_key=[[0]], feedback_value=[[0]], max_steps=2,
+    )
+    target = np.tanh(np.tanh(1.0) / 2)
+    workspace = FeedbackWorkspace(
+        kernel, [[1]], [FeedbackProbe((1,), 2, (target,))],
+        max_update_norm=1, max_terms=1,
+    )
+    base = workspace.snapshot()
+    term = ConditionalTerm((1,), (1,), (1,))
+    unchecked = kernel._with_conditional(term)
+    first = unchecked.step(unchecked.start([1], base.memory))
+    assert first.latest[0] > 0.7
+    assert unchecked.step(first).latest[0] == pytest.approx(target)
+    with pytest.raises(ValueError, match="protected trajectory prefix"):
+        workspace.publish(FeedbackProposal(base, 0, term=term))
+    assert workspace.snapshot() is base
+
+
+def test_protected_prefix_anchor_does_not_move_after_each_accepted_edit():
+    zero = np.zeros((3, 3))
+    kernel = FeedbackKernel(
+        query=zero, carry=zero, observation_key=zero, observation_value=zero,
+        feedback_key=zero, feedback_value=zero, max_steps=2,
+    )
+    target = np.tanh(0.6)
+    probes = (
+        FeedbackProbe((0, 1, 1), 2, (0, 0, 0)),
+        FeedbackProbe((0, 10, 0), 1, (target, 0, 0)),
+        FeedbackProbe((0, 0, 10), 1, (target, 0, 0)),
+    )
+    workspace = FeedbackWorkspace(kernel, [[1, 0, 0]], probes, atol=0.1,
+                                  max_update_norm=1, max_terms=2)
+    base = workspace.snapshot()
+    first_term = ConditionalTerm((0, 1, 0), (1, 0, 0), (0.06, 0, 0))
+    first = workspace.publish(FeedbackProposal(base, 1, term=first_term))
+    second_term = ConditionalTerm((0, 0, 1), (1, 0, 0), (0.06, 0, 0))
+    assert first.errors[0] == 0
+    with pytest.raises(ValueError, match="protected trajectory prefix"):
+        workspace.publish(FeedbackProposal(first, 2, term=second_term))
+    assert workspace.snapshot() is first

@@ -7,7 +7,9 @@ from threading import Lock
 
 import numpy as np
 
-from experiments.memory.latent_feedback import FeedbackKernel, ObservationMemory, _real_array
+from experiments.memory.latent_feedback import (
+    ConditionalTerm, FeedbackKernel, ObservationMemory, _real_array,
+)
 from experiments.memory.weight_program import _frobenius
 
 
@@ -36,6 +38,7 @@ class FeedbackRevision:
     kernel: FeedbackKernel
     memory: ObservationMemory
     errors: tuple[float, ...]
+    _anchors: tuple[tuple[np.ndarray, ...] | None, ...]
 
     def start(self, seed):
         return self.kernel.start(seed, self.memory)
@@ -45,10 +48,16 @@ class FeedbackRevision:
 class FeedbackProposal:
     base: FeedbackRevision
     probe: int
-    _weight: np.ndarray
+    _weight: np.ndarray | None = None
+    term: ConditionalTerm | None = None
 
     def __post_init__(self):
-        object.__setattr__(self, "_weight", self.base.kernel._weight(self._weight))
+        if (self._weight is None) == (self.term is None):
+            raise ValueError("proposal must contain one value map or one conditional term")
+        if self.term is not None and type(self.term) is not ConditionalTerm:
+            raise ValueError("invalid conditional proposal data")
+        if self._weight is not None:
+            object.__setattr__(self, "_weight", self.base.kernel._weight(self._weight))
 
 
 class StaleFeedbackRevision(ValueError):
@@ -58,7 +67,8 @@ class StaleFeedbackRevision(ValueError):
 class FeedbackWorkspace:
     """A bounded in-process commit point. Numeric replays run outside its lock."""
 
-    def __init__(self, kernel, observations, probes, *, max_update_norm, atol=1e-8):
+    def __init__(self, kernel, observations, probes, *, max_update_norm, atol=1e-8,
+                 max_terms=0):
         self._probes = tuple(FeedbackProbe(p.seed, p.steps, p.target) for p in probes)
         self._atol = float(atol)
         self._max_update_norm = float(max_update_norm)
@@ -68,9 +78,14 @@ class FeedbackWorkspace:
             raise ValueError("atol must be positive and finite")
         if not isfinite(self._max_update_norm) or self._max_update_norm < 0:
             raise ValueError("max_update_norm must be finite and nonnegative")
+        self._max_terms = index(max_terms)
+        if self._max_terms < kernel.conditional_terms:
+            raise ValueError("workspace term budget is below the initial architecture")
         self._lock = Lock()
         memory = kernel.prepare(observations)
-        self._head = FeedbackRevision(0, kernel, memory, self._measure(kernel, memory))
+        errors, prefixes = self._measure(kernel, memory)
+        self._head = FeedbackRevision(0, kernel, memory, errors,
+                                      self._anchors(errors, prefixes))
 
     def snapshot(self):
         with self._lock:
@@ -80,24 +95,38 @@ class FeedbackWorkspace:
         if self.snapshot() is not base:
             raise StaleFeedbackRevision("feedback revision is no longer current")
 
-    def _commit(self, base, kernel, memory, errors):
+    def _commit(self, base, kernel, memory, errors, anchors):
         with self._lock:
             if self._head is not base:
                 raise StaleFeedbackRevision("feedback revision changed before publication")
-            self._head = FeedbackRevision(base.number + 1, kernel, memory, errors)
+            self._head = FeedbackRevision(base.number + 1, kernel, memory, errors, anchors)
             return self._head
 
+    @staticmethod
+    def _run(kernel, memory, probe):
+        state = kernel.start(probe.seed, memory)
+        for _ in range(probe.steps):
+            state = kernel.step(state)
+        return state
+
     def _measure(self, kernel, memory):
-        errors = []
+        errors, prefixes = [], []
         for probe in self._probes:
-            state = kernel.start(probe.seed, memory)
-            for _ in range(probe.steps):
-                state = kernel.step(state)
+            state = self._run(kernel, memory, probe)
             error = float(np.max(np.abs(state.latest - probe.target)))
             if not isfinite(error):
                 raise ValueError("probe error must be finite")
             errors.append(error)
-        return tuple(errors)
+            prefixes.append(state.history[:-1])
+        return tuple(errors), tuple(prefixes)
+
+    def _anchors(self, errors, prefixes, previous=None):
+        if previous is None:
+            previous = (None,) * len(errors)
+        return tuple(
+            anchor if anchor is not None else prefix if error <= self._atol else None
+            for error, prefix, anchor in zip(errors, prefixes, previous, strict=True)
+        )
 
     def _open_probe(self, base, probe):
         probe = index(probe)
@@ -107,7 +136,11 @@ class FeedbackWorkspace:
             raise ValueError("probe already satisfies the workspace tolerance")
         return probe
 
-    def propose(self, base, probe):
+    def _require_term_capacity(self, base):
+        if base.kernel.conditional_terms >= self._max_terms:
+            raise ValueError("workspace conditional term budget exhausted")
+
+    def propose(self, base, probe, *, conditional=False):
         """Produce a candidate using the unresolved probe and satisfied runs."""
         self._require_current(base)
         probe = self._open_probe(base, probe)
@@ -117,6 +150,13 @@ class FeedbackWorkspace:
             for check, error in zip(self._probes, base.errors, strict=True)
             if error <= self._atol
         )
+        if conditional:
+            self._require_term_capacity(base)
+            _, _, term = base.kernel.program_conditional(
+                base.start(goal.seed), goal.steps, goal.target, protect=protected,
+                atol=self._atol, max_update_norm=self._max_update_norm,
+            )
+            return FeedbackProposal(base, probe, term=term)
         _, _, edit = base.kernel.retarget(
             base.start(goal.seed), goal.steps, goal.target, protect=protected,
             atol=self._atol, max_update_norm=self._max_update_norm,
@@ -128,22 +168,34 @@ class FeedbackWorkspace:
         base = proposal.base
         self._require_current(base)
         probe = self._open_probe(base, proposal.probe)
-        with np.errstate(over="raise", invalid="raise"):
-            norm = _frobenius(proposal._weight - base.kernel._observation_value)
+        if proposal.term is None:
+            with np.errstate(over="raise", invalid="raise"):
+                norm = _frobenius(proposal._weight - base.kernel._observation_value)
+            candidate = base.kernel._with_observation_value(proposal._weight)
+        else:
+            self._require_term_capacity(base)
+            norm = proposal.term.norm
+            candidate = base.kernel._with_conditional(proposal.term)
         if not isfinite(norm) or norm > self._max_update_norm:
             raise ValueError("proposed operator exceeds the workspace update budget")
-        candidate = base.kernel._with_observation_value(proposal._weight)
-        errors = self._measure(candidate, base.memory)
+        errors, prefixes = self._measure(candidate, base.memory)
         if errors[probe] > self._atol:
             raise ValueError("proposed operator does not satisfy its target probe")
         if any(new > max(old, self._atol)
                for old, new in zip(base.errors, errors, strict=True)):
             raise ValueError("proposed operator regresses a workspace probe")
-        return self._commit(base, candidate, base.memory, errors)
+        anchors = list(base._anchors)
+        goal = self._probes[probe]
+        anchors[probe] = self._run(base.kernel, base.memory, goal).history[:-1]
+        for expected, actual in zip(anchors, prefixes, strict=True):
+            if expected is not None and not np.allclose(actual, expected, atol=self._atol, rtol=0):
+                raise ValueError("proposed operator changes a protected trajectory prefix")
+        anchors = self._anchors(errors, prefixes, tuple(anchors))
+        return self._commit(base, candidate, base.memory, errors, anchors)
 
     def replace_observations(self, base, observations):
         """Install a new observation bank and measure its outcomes with the current operator."""
         self._require_current(base)
         memory = base.kernel.prepare(observations)
-        errors = self._measure(base.kernel, memory)
-        return self._commit(base, base.kernel, memory, errors)
+        errors, prefixes = self._measure(base.kernel, memory)
+        return self._commit(base, base.kernel, memory, errors, self._anchors(errors, prefixes))

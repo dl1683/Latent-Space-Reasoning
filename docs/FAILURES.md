@@ -33,6 +33,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **Snapshot mutability, 24 November 2026.** A static review of the feedback candidate found that read-only NumPy arrays still allowed callers to change array metadata and thereby alter the shapes seen by descendant states. The reproducers became regression fixtures. Public access now returns independent view headers over immutable bytes, installed maps own their array headers, and ordinary kernel reassignment is refused. Verify this boundary whenever retained numerical state is exposed or reused across versions.
 
+**Equal observation mixtures, 24 November 2026.** A fixed shared value map could not give two different contributions for the same observation mixture while preserving a solved probe. The fixture isolates a representational limit of that edit surface. A bounded conditional term used the different hidden states to resolve this case. Repeated fitting of the same conflicting linear constraints cannot add the missing distinction. Admission audits also found that unnormalized factors could underflow the weight budget and that endpoint-only acceptance could hide prefix drift. The constructor now checks unit axes, and publication compares against fixed prefix anchors across edits on the same observation bank.
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.
