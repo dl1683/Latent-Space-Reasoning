@@ -10,6 +10,7 @@ import numpy as np
 from experiments.memory.latent_feedback import (
     ConditionalTerm, FeedbackKernel, ObservationMemory, _real_array,
 )
+from experiments.memory.linear_feedback import MomentMemory
 from experiments.memory.weight_program import _frobenius
 
 
@@ -36,7 +37,7 @@ class FeedbackProbe:
 class FeedbackRevision:
     number: int
     kernel: FeedbackKernel
-    memory: ObservationMemory
+    memory: ObservationMemory | MomentMemory
     errors: tuple[float, ...]
     _anchors: tuple[tuple[np.ndarray, ...] | None, ...]
 
@@ -204,7 +205,9 @@ class FeedbackWorkspace:
         return self._commit(base, self._prepare_observation_revision(base, observations))
 
     def _prepare_observation_revision(self, base, observations):
-        memory = base.kernel.prepare(observations)
+        return self._prepare_memory_revision(base, base.kernel.prepare(observations))
+
+    def _prepare_memory_revision(self, base, memory):
         errors, prefixes = self._measure(base.kernel, memory)
         return FeedbackRevision(base.number + 1, base.kernel, memory, errors,
                                 self._anchors(errors, prefixes))

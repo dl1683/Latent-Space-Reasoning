@@ -16,6 +16,7 @@ from experiments.memory.feedback_workspace import (
     StaleFeedbackRevision,
 )
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, FeedbackKernel
+from experiments.memory.linear_feedback import LinearFeedbackKernel
 
 
 def _kernel(*, factored=False):
@@ -347,3 +348,169 @@ def test_journal_retains_the_selected_probe_that_determines_prefix_anchors(tmp_p
     assert admitted.errors[2] <= 0.1
     with pytest.raises(ValueError, match="protected trajectory prefix"):
         second.publish(FeedbackProposal(second.snapshot(), 2, term=second_term))
+
+
+def _source_workspace(path, *, rows=None, source_ids=("left", "right"), pairs=()):
+    zero, identity = np.zeros((2, 2)), np.eye(2)
+    kernel = LinearFeedbackKernel(
+        query=identity, carry=None, observation_key=identity, observation_value=zero,
+        feedback_key=zero, feedback_value=zero, max_steps=1, feature_pairs=pairs,
+    )
+    probes = [FeedbackProbe((1, 0), 1, (0.4, 0)), FeedbackProbe((0, 1), 1, (0, 0.5))]
+    return JournaledFeedbackWorkspace(path, kernel, identity if rows is None else rows, probes,
+                                      source_ids=source_ids, max_update_norm=2)
+
+
+def test_source_and_operator_workers_share_one_recoverable_ancestry(tmp_path, monkeypatch):
+    path = tmp_path / "sources.sqlite"
+    operator, maintainer = _source_workspace(path), _source_workspace(path)
+    base = operator.publish(operator.propose(operator.snapshot(), 0))
+    pending = operator.propose(base, 1)
+    replaying, resume = Event(), Event()
+    measure = operator._measure
+
+    def interleave(kernel, memory):
+        if kernel is not base.kernel:
+            replaying.set()
+            assert resume.wait(5)
+        return measure(kernel, memory)
+
+    with monkeypatch.context() as patch, ThreadPoolExecutor(max_workers=1) as pool:
+        patch.setattr(operator, "_measure", interleave)
+        publishing = pool.submit(operator.publish, pending)
+        try:
+            assert replaying.wait(5)
+            changed = maintainer.revise_sources(maintainer.snapshot(), {"right": [1, 1]})
+        finally:
+            resume.set()
+        with pytest.raises(StaleFeedbackRevision, match="journal changed before publication"):
+            publishing.result(timeout=5)
+
+    np.testing.assert_allclose(changed.kernel.step(changed.start([0, 1])).latest, [0.4, 0])
+    latest = operator.snapshot()
+    assert latest.number == changed.number == 2
+    np.testing.assert_array_equal(latest.memory._moments, changed.memory._moments)
+    recovered = _source_workspace(path)
+    restored = recovered.revise_sources(recovered.snapshot(), {"right": None, "replacement": [0, 1]})
+    np.testing.assert_array_equal(restored.memory._moments, base.memory._moments)
+    repaired = recovered.publish(recovered.propose(restored, 1))
+    reopen = _source_workspace(path)
+    after_restart = reopen.snapshot()
+    assert after_restart.number == repaired.number == 4
+    assert max(after_restart.errors) < 1e-12
+    removed = reopen.revise_sources(after_restart, {"replacement": None})
+    assert removed.errors == pytest.approx((0, 0.5))
+    np.testing.assert_array_equal(base.memory._moments, base.kernel.prepare(np.eye(2))._moments)
+    with pytest.raises(ValueError, match="unknown source ID"):
+        reopen.revise_sources(removed, {"right": None})
+    assert reopen.snapshot() is removed
+
+
+def test_source_root_binds_row_identity_and_selected_feature_pairs(tmp_path):
+    path = tmp_path / "sources.sqlite"
+    _source_workspace(path, pairs=((0, 1),))
+    _source_workspace(path, rows=np.eye(2)[::-1], source_ids=("right", "left"), pairs=((0, 1),))
+    with pytest.raises(ValueError, match="initial workspace inputs disagree"):
+        _source_workspace(path, source_ids=("right", "left"), pairs=((0, 1),))
+    with pytest.raises(ValueError, match="initial workspace inputs disagree"):
+        _source_workspace(path, pairs=((0, 3),))
+    with pytest.raises(ValueError, match="unique nonempty"):
+        _source_workspace(path, source_ids=("left", "left"))
+
+
+def test_failed_source_replay_does_not_install_an_earlier_staged_revision(tmp_path):
+    path = tmp_path / "sources.sqlite"
+    reader, writer = _source_workspace(path), _source_workspace(path)
+    revision = writer.revise_sources(writer.snapshot(), {"left": [0.5, 0]})
+    writer.revise_sources(revision, {"left": [0.25, 0]})
+    with closing(sqlite3.connect(path)) as db, db:
+        payload = db.execute("SELECT payload FROM feedback_events WHERE number = 2").fetchone()[0]
+        db.execute("UPDATE feedback_events SET payload = ? WHERE number = 2", (b"damaged",))
+    with pytest.raises(ValueError, match="invalid feedback journal history"):
+        reader.snapshot()
+    assert reader._head.number == 0
+    assert reader._tip == reader._root
+    with closing(sqlite3.connect(path)) as db, db:
+        db.execute("UPDATE feedback_events SET payload = ? WHERE number = 2", (payload,))
+    head = reader.snapshot()
+    restored = reader.revise_sources(head, {"left": [1, 0]})
+    np.testing.assert_array_equal(restored.memory._moments, restored.kernel.prepare(np.eye(2))._moments)
+
+
+def test_source_commit_recovers_after_an_interrupted_local_install(tmp_path, monkeypatch):
+    path = tmp_path / "sources.sqlite"
+    writer = _source_workspace(path)
+    base = writer.snapshot()
+
+    install = writer._install
+
+    def interrupt_before_acknowledgment(head, tip):
+        if head.number:
+            raise KeyboardInterrupt
+        install(head, tip)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(writer, "_install", interrupt_before_acknowledgment)
+        with pytest.raises(KeyboardInterrupt):
+            writer.revise_sources(base, {"left": [0.5, 0], "right": [0, 0.5]})
+    assert writer._head is base
+    caught_up = writer.snapshot()
+    recovered = _source_workspace(path)
+    head = recovered.snapshot()
+    assert head.number == caught_up.number == 1
+    np.testing.assert_array_equal(caught_up.memory._moments, head.memory._moments)
+    np.testing.assert_array_equal(head.memory._moments, head.kernel.prepare(0.5 * np.eye(2))._moments)
+    restored = recovered.revise_sources(head, {"left": [1, 0], "right": [0, 1]})
+    np.testing.assert_array_equal(restored.memory._moments, base.memory._moments)
+
+
+def test_source_index_and_event_both_roll_back_on_a_mid_batch_failure(tmp_path, monkeypatch):
+    path = tmp_path / "sources.sqlite"
+    writer = _source_workspace(path)
+    base = writer.snapshot()
+    write = writer._write_sources
+
+    def fail_during_write(db, changes):
+        name = next(iter(changes))
+        write(db, {name: changes[name]})
+        raise RuntimeError("interrupted source write")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(writer, "_write_sources", fail_during_write)
+        with pytest.raises(RuntimeError, match="interrupted source write"):
+            writer.revise_sources(base, {"left": [0.5, 0], "right": [0, 0.5]})
+
+    reader = _source_workspace(path)
+    assert reader.snapshot().number == 0
+    changed = reader.revise_sources(reader.snapshot(), {"left": [0.25, 0], "right": [0, 0.25]})
+    np.testing.assert_array_equal(changed.memory._moments,
+                                  changed.kernel.prepare(0.25 * np.eye(2))._moments)
+
+
+def test_source_commit_rejects_a_competing_replacement_of_the_same_row(tmp_path, monkeypatch):
+    path = tmp_path / "sources.sqlite"
+    first, second = _source_workspace(path), _source_workspace(path)
+    base = first.snapshot()
+    preparing, resume = Event(), Event()
+    prepare = first._prepare_source_revision
+
+    def interleave(head, changes):
+        preparing.set()
+        assert resume.wait(5)
+        return prepare(head, changes)
+
+    with monkeypatch.context() as patch, ThreadPoolExecutor(max_workers=1) as pool:
+        patch.setattr(first, "_prepare_source_revision", interleave)
+        publishing = pool.submit(first.revise_sources, base, {"left": [0.25, 0]})
+        try:
+            assert preparing.wait(5)
+            second.revise_sources(second.snapshot(), {"left": [0.5, 0]})
+        finally:
+            resume.set()
+        with pytest.raises(StaleFeedbackRevision, match="journal changed before publication"):
+            publishing.result(timeout=5)
+    latest = first.snapshot()
+    updated = first.revise_sources(latest, {"left": None})
+    assert latest.number == 1
+    assert updated.number == 2
+    np.testing.assert_array_equal(updated.memory._moments, updated.kernel.prepare([[0, 1]])._moments)
