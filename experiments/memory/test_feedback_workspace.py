@@ -3,7 +3,7 @@ from contextlib import closing
 import sqlite3
 import subprocess
 import sys
-from threading import Event
+from threading import Barrier, Event, get_ident
 
 import numpy as np
 import pytest
@@ -351,7 +351,7 @@ def test_journal_retains_the_selected_probe_that_determines_prefix_anchors(tmp_p
 
 
 def _source_workspace(path, *, rows=None, source_ids=("left", "right"), pairs=(), guards=(),
-                      **kernel_options):
+                      max_terms=0, **kernel_options):
     zero, identity = np.zeros((2, 2)), np.eye(2)
     kernel = LinearFeedbackKernel(
         query=identity, carry=None, observation_key=identity, observation_value=zero,
@@ -359,7 +359,8 @@ def _source_workspace(path, *, rows=None, source_ids=("left", "right"), pairs=()
     )
     probes = [FeedbackProbe((1, 0), 1, (0.4, 0)), FeedbackProbe((0, 1), 1, (0, 0.5))]
     return JournaledFeedbackWorkspace(path, kernel, identity if rows is None else rows, probes,
-                                      source_ids=source_ids, max_update_norm=2, guards=guards)
+                                      source_ids=source_ids, max_update_norm=2, guards=guards,
+                                      max_terms=max_terms)
 
 
 def test_source_and_operator_workers_share_one_recoverable_ancestry(tmp_path, monkeypatch):
@@ -576,6 +577,140 @@ def test_maintenance_selects_the_tested_candidate_that_repairs_more_probes():
     assert repair.attempts[repair.selected_attempt].rank[0] == -2
     assert repair.revision.number == 1
     assert repair.revision.errors == pytest.approx((0, 0, 0.1))
+
+
+def test_parallel_maintenance_matches_serial_with_out_of_order_completion(monkeypatch):
+    probes = [
+        FeedbackProbe((1, 0), 1, (0.4, 0)),
+        FeedbackProbe((0, 1), 1, (0.4, 0)),
+        FeedbackProbe((-1, 0), 1, (0.5, 0)),
+    ]
+    serial = FeedbackWorkspace(_kernel(), [[1, 0]], probes, max_update_norm=1)
+    parallel = FeedbackWorkspace(_kernel(), [[1, 0]], probes, max_update_norm=1)
+    expected = serial.maintain(max_candidates=3)
+    evaluated = []
+    second_done = Event()
+    evaluate = parallel._evaluate_candidate
+
+    def finish_out_of_order(base, ordinal, unresolved, modes):
+        if ordinal == 0:
+            assert second_done.wait(5), "another candidate did not execute concurrently"
+        result = evaluate(base, ordinal, unresolved, modes)
+        evaluated.append((ordinal, get_ident()))
+        if ordinal == 1:
+            second_done.set()
+        return result
+
+    monkeypatch.setattr(parallel, "_evaluate_candidate", finish_out_of_order)
+    actual = parallel.maintain(max_candidates=3, max_workers=2)
+    assert [ordinal for ordinal, _ in evaluated] == [1, 0, 2]
+    assert evaluated[0][1] != evaluated[1][1]
+    assert actual.attempts == expected.attempts
+    assert actual.selected_attempt == expected.selected_attempt
+    assert actual.status == expected.status == "committed"
+    assert actual.revision.errors == expected.revision.errors
+    np.testing.assert_array_equal(actual.revision.kernel._observation_value,
+                                  expected.revision.kernel._observation_value)
+
+
+def test_parallel_maintenance_drains_only_inflight_wave_after_source_revision(tmp_path, monkeypatch):
+    path = tmp_path / "parallel.sqlite"
+    operator, source = (_source_workspace(path, max_terms=1) for _ in range(2))
+    wave = Barrier(3)
+    resume = Event()
+    completed = []
+    evaluate = operator._evaluate_candidate
+
+    def while_source_changes(base, ordinal, unresolved, modes):
+        if ordinal < 2:
+            wave.wait(timeout=5)
+            assert resume.wait(5), "source did not finish changing"
+        result = evaluate(base, ordinal, unresolved, modes)
+        completed.append(ordinal)
+        return result
+
+    with monkeypatch.context() as patch, ThreadPoolExecutor(max_workers=1) as coordinator:
+        patch.setattr(operator, "_evaluate_candidate", while_source_changes)
+        pending = coordinator.submit(operator.maintain, max_candidates=4, max_workers=2)
+        try:
+            wave.wait(timeout=5)
+            changed = source.revise_sources(source.snapshot(), {"right": [0, 0.5]})
+        finally:
+            resume.set()
+        stale = pending.result(timeout=5)
+
+    assert stale.status == "stale" and stale.revision is None
+    assert sorted(completed) == [0, 1]
+    assert [(attempt.probe, attempt.conditional) for attempt in stale.attempts] == [(1, False), (1, True)]
+    assert operator.snapshot().number == changed.number == 1
+    revised = operator.maintain(max_candidates=4, max_workers=2)
+    assert revised.status == "committed" and revised.revision.number == 2
+
+
+def test_parallel_maintenance_drains_other_work_before_propagating_unexpected_error(monkeypatch):
+    workspace = _workspace()
+    base = workspace.snapshot()
+    started = Barrier(2)
+    completed = Event()
+    evaluate = workspace._evaluate_candidate
+
+    def fail_one(base, ordinal, unresolved, modes):
+        started.wait(timeout=5)
+        if ordinal == 0:
+            raise RuntimeError("unexpected candidate failure")
+        result = evaluate(base, ordinal, unresolved, modes)
+        completed.set()
+        return result
+
+    monkeypatch.setattr(workspace, "_evaluate_candidate", fail_one)
+    with pytest.raises(RuntimeError, match="unexpected candidate failure"):
+        workspace.maintain(max_candidates=2, max_workers=2)
+    assert completed.is_set()
+    assert workspace.snapshot() is base
+
+
+def test_parallel_maintenance_preserves_callers_numpy_error_policy(monkeypatch):
+    workspace = _workspace()
+    evaluate = workspace._evaluate_candidate
+    received = []
+
+    def callback(*args):
+        pytest.fail(f"unexpected floating point callback: {args}")
+
+    def check_policy(base, ordinal, unresolved, modes):
+        received.append((np.geterr(), np.geterrcall()))
+        return evaluate(base, ordinal, unresolved, modes)
+
+    monkeypatch.setattr(workspace, "_evaluate_candidate", check_policy)
+    previous = np.geterrcall()
+    try:
+        np.seterrcall(callback)
+        with np.errstate(under="raise", divide="call"):
+            expected = np.geterr()
+            result = workspace.maintain(max_candidates=2, max_workers=2)
+    finally:
+        np.seterrcall(previous)
+    assert result.status == "committed"
+    assert received == [(expected, callback), (expected, callback)]
+
+
+def test_parallel_maintenance_reports_both_failures_in_candidate_order(monkeypatch):
+    workspace = _workspace()
+    base = workspace.snapshot()
+    second_failed = Event()
+
+    def fail_out_of_order(base, ordinal, unresolved, modes):
+        if ordinal == 0:
+            assert second_failed.wait(5)
+            raise RuntimeError("first candidate")
+        second_failed.set()
+        raise RuntimeError("second candidate")
+
+    monkeypatch.setattr(workspace, "_evaluate_candidate", fail_out_of_order)
+    with pytest.raises(ExceptionGroup) as captured:
+        workspace.maintain(max_candidates=2, max_workers=2)
+    assert [str(error) for error in captured.value.exceptions] == ["first candidate", "second candidate"]
+    assert workspace.snapshot() is base
 
 
 def test_maintenance_keeps_guard_only_failures_distinct_from_exhausted_search():

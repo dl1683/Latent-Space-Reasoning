@@ -1,5 +1,7 @@
 """Publish independently checked numerical operator edits on a pinned observation bank."""
 
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import closing, nullcontext
 from dataclasses import dataclass
 from math import isfinite
 from operator import index
@@ -211,11 +213,59 @@ class FeedbackWorkspace:
         self._require_current(base)
         return self._commit(base, self._prepare_operator_revision(proposal), proposal=proposal)
 
-    def maintain(self, *, max_candidates, resume=None):
+    def _evaluate_candidate(self, base, ordinal, unresolved, modes):
+        probe_offset, mode_offset = divmod(ordinal, len(modes))
+        probe = unresolved[probe_offset]
+        conditional, hinge = modes[mode_offset]
+        try:
+            proposal = self._propose(base, probe, conditional=conditional, hinge=hinge)
+            revised = self._prepare_operator_revision(proposal)
+        except StaleFeedbackRevision:
+            raise
+        except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
+            attempt = FeedbackRepairAttempt(probe, conditional, str(error), hinge=hinge)
+            return attempt, None, None
+        rank = (-sum(error <= self._atol for error in revised.errors),
+                sum(revised.errors), revised.kernel.conditional_terms)
+        return FeedbackRepairAttempt(probe, conditional, rank=rank, hinge=hinge), proposal, revised
+
+    def _maintenance_candidates(self, base, unresolved, modes, offset, stop, workers):
+        error_settings = np.geterr()
+        error_handler = np.geterrcall()
+
+        def inherit_error_policy():
+            np.seterr(**error_settings)
+            np.seterrcall(error_handler)
+
+        pool = (ThreadPoolExecutor(max_workers=workers, initializer=inherit_error_policy)
+                if workers > 1 else nullcontext())
+        with pool as executor:
+            for first in range(offset, stop, workers):
+                self._require_current(base)
+                if executor is None:
+                    yield self._evaluate_candidate(base, first, unresolved, modes)
+                    continue
+                futures = [
+                    executor.submit(self._evaluate_candidate, base, ordinal, unresolved, modes)
+                    for ordinal in range(first, min(first + workers, stop))
+                ]
+                failures = [error for future in futures if (error := future.exception()) is not None]
+                if len(failures) == 1:
+                    raise failures[0]
+                if failures:
+                    raise BaseExceptionGroup("multiple candidate evaluations failed", failures)
+                for future in futures:
+                    yield future.result()
+                del futures
+
+    def maintain(self, *, max_candidates, resume=None, max_workers=1):
         """Compare a finite candidate batch on one revision and publish at most one edit."""
         limit = index(max_candidates)
+        workers = index(max_workers)
         if limit < 1:
             raise ValueError("maintenance candidate limit must be positive")
+        if workers < 1:
+            raise ValueError("maintenance worker limit must be positive")
         base = self.snapshot()
         offset = 0
         if resume is not None:
@@ -241,27 +291,16 @@ class FeedbackWorkspace:
         if not 0 <= offset < total:
             raise ValueError("maintenance continuation is outside the candidate list")
         stop = min(offset + limit, total)
+        workers = min(workers, stop - offset)
         attempts = []
         best = None
         try:
-            for candidate in range(offset, stop):
-                probe_offset, mode_offset = divmod(candidate, len(modes))
-                probe = unresolved[probe_offset]
-                conditional, hinge = modes[mode_offset]
-                self._require_current(base)
-                try:
-                    proposal = self._propose(base, probe, conditional=conditional, hinge=hinge)
-                    revised = self._prepare_operator_revision(proposal)
-                except StaleFeedbackRevision:
-                    raise
-                except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
-                    attempts.append(FeedbackRepairAttempt(probe, conditional, str(error), hinge=hinge))
-                    continue
-                rank = (-sum(error <= self._atol for error in revised.errors),
-                        sum(revised.errors), revised.kernel.conditional_terms)
-                if best is None or rank < best[0]:
-                    best = rank, proposal, revised, len(attempts)
-                attempts.append(FeedbackRepairAttempt(probe, conditional, rank=rank, hinge=hinge))
+            search = self._maintenance_candidates(base, unresolved, modes, offset, stop, workers)
+            with closing(search) as results:
+                for attempt, proposal, revised in results:
+                    if attempt.rank is not None and (best is None or attempt.rank < best[0]):
+                        best = attempt.rank, proposal, revised, len(attempts)
+                    attempts.append(attempt)
             self._require_current(base)
             if best is not None:
                 _, proposal, revised, selected = best
