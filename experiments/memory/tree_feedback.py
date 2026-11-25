@@ -7,7 +7,7 @@ from copy import copy
 from dataclasses import dataclass, replace
 from heapq import heappop, heappush
 from itertools import count
-from math import expm1, isfinite, log, tanh
+from math import exp, expm1, isfinite, log, tanh
 from operator import index
 from types import MappingProxyType
 
@@ -92,6 +92,8 @@ class TreeFeedbackBoundedRun:
 
     state: TreeFeedbackState
     error_bounds: tuple[float, ...]
+    reference_memory: TreeMemory | None = None
+    revision_group_scores: int = 0
 
 
 def _column_l1(matrix):
@@ -143,7 +145,7 @@ def _scorable(node):
     return node
 
 
-def _score(node, query, positive_query):
+def _key_interval(node, query, positive_query):
     if node.count == 1:
         lower = upper = float(node.lower_key @ query)
     else:
@@ -151,9 +153,50 @@ def _score(node, query, positive_query):
         upper = float(np.where(positive_query, node.upper_key, node.lower_key) @ query)
     if not isfinite(lower) or not isfinite(upper) or upper < lower:
         raise FloatingPointError("unresolved tree attention key interval")
+    return lower, upper
+
+
+def _score(node, query, positive_query):
+    lower, upper = _key_interval(node, query, positive_query)
     logit = lower if lower == upper else lower * 0.5 + upper * 0.5
     radius = upper * 0.5 - lower * 0.5
     return _Score(node, logit, upper, -expm1(lower - upper), radius)
+
+
+def _revision_groups(opening, reference):
+    shared, removed, added = [], [], []
+    pending = [(opening, reference)]
+    while pending:
+        old, new = pending.pop()
+        if old is new:
+            if old is not None:
+                shared.append(old)
+        elif old is None:
+            added.append(new)
+        elif new is None:
+            removed.append(old)
+        elif old.left is None and old.right is None:
+            removed.append(old)
+            added.append(new)
+        else:
+            pending.extend(((old.left, new.left), (old.right, new.right)))
+    return shared, removed, added
+
+
+def _revision_probability_gap(groups, observation_query, history_logits):
+    positive = observation_query >= 0
+    shared, removed, added = groups
+    common = [(float(score), 1) for score in history_logits]
+    common.extend((_key_interval(node, observation_query, positive)[0], node.count) for node in shared)
+    before = [(_key_interval(node, observation_query, positive)[1], node.count) for node in removed]
+    after = [(_key_interval(node, observation_query, positive)[1], node.count) for node in added]
+    offset = max(score for scores in (common, before, after) for score, _ in scores)
+    kept, lost, gained = (
+        sum(exp((score - offset) + log(count)) for score, count in scores)
+        for scores in (common, before, after)
+    )
+    changed = max(lost, gained)
+    return 2. * (changed / (kept + changed))
 
 
 def _frontier(root, query, limit, tolerance, previous, recorded, retain_scores):
@@ -275,9 +318,10 @@ class TreeFeedbackKernel(FeedbackKernel):
         self._check_memory(memory)
         return TreeFeedbackState(self, memory, self._vector(seed))
 
-    def run_with_error_bounds(self, seed, memory=None, *, steps):
-        """Estimate exact-arithmetic error bounds without running the dense reference."""
-        if type(self) is not TreeFeedbackKernel or (memory is not None and type(memory) is not TreeMemory):
+    def run_with_error_bounds(self, seed, memory=None, *, steps, reference_memory=None):
+        """Bound dense-replay error, optionally for a revision of the opening bank."""
+        if type(self) is not TreeFeedbackKernel or any(
+                bank is not None and type(bank) is not TreeMemory for bank in (memory, reference_memory)):
             raise TypeError("error bounds require the standard tree feedback transition and memory")
         if any(type(value) not in (np.ndarray, FactoredValue)
                for value in (self._observation_value, self._feedback_value)):
@@ -286,28 +330,43 @@ class TreeFeedbackKernel(FeedbackKernel):
         if not 0 <= steps <= self._max_steps:
             raise ValueError("bounded run steps exceed the feedback budget")
         state = self.start(seed, memory)
-        root = state._memory._root
-        if not steps or root is None:
+        reference = state._memory if reference_memory is None else reference_memory
+        self._check_memory(reference)
+        opening_root, root = state._memory._root, reference._root
+        if not steps or opening_root is root is None:
             for _ in range(steps):
                 state = self.step(state)
-            return TreeFeedbackBoundedRun(state, (0.,) * steps)
+            return TreeFeedbackBoundedRun(state, (0.,) * steps, reference)
 
+        groups = _revision_groups(opening_root, root) if opening_root is not root else None
+        group_scores = 0 if groups is None else steps * sum(map(len, groups))
+        observation_query = self._query if self._observation_query is None else self._observation_query
         with np.errstate(over="raise", invalid="raise", under="ignore"):
             bounds = []
             gains_ready = False
             latest_error = history_error = 0.
             for _ in range(steps):
                 previous = state
-                state = self.step(previous)
-                local_gap = state.attention.joint_l1_bound
+                if groups is None:
+                    state = self.step(previous)
+                    local_gap = state.attention.joint_l1_bound
+                else:
+                    diagnostics = {}
+                    state, _, _ = self._advance(previous, diagnostics=diagnostics)
+                    projected = (previous.latest @ observation_query if opening_root is None
+                                 else diagnostics["observation_query"])
+                    history_logits = diagnostics["logits"][state.attention.groups:]
+                    local_gap = state.attention.joint_l1_bound
+                    local_gap += _revision_probability_gap(groups, projected, history_logits)
                 if local_gap == latest_error == history_error == 0.:
                     bounds.append(0.)
                     continue
 
                 if not gains_ready:
-                    observation_query = self._query if self._observation_query is None else self._observation_query
-                    observation_keys = np.maximum(np.abs(root.lower_key), np.abs(root.upper_key))
-                    observation_logit_gain = observation_keys @ _column_l1(observation_query)
+                    observation_logit_gain = 0.
+                    if root is not None:
+                        observation_keys = np.maximum(np.abs(root.lower_key), np.abs(root.upper_key))
+                        observation_logit_gain = observation_keys @ _column_l1(observation_query)
                     observation_value_gain = _value_linf(self._observation_value)
                     carry_gain = 0. if self._carry is None else _column_l1(self._carry).max()
                     feedback_keys = _column_l1(self._feedback_key) if steps > 1 else None
@@ -341,7 +400,7 @@ class TreeFeedbackKernel(FeedbackKernel):
                 latest_error = 2. * tanh(preactivation_gap / 2.)
                 history_error = max(history_error, latest_error)
                 bounds.append(latest_error)
-        return TreeFeedbackBoundedRun(state, tuple(bounds))
+        return TreeFeedbackBoundedRun(state, tuple(bounds), reference, group_scores)
 
     def _advance(self, state, *, diagnostics=None):
         self._require_can_step(state)
@@ -457,6 +516,7 @@ class TreeFeedbackKernel(FeedbackKernel):
                     history_value = probabilities[groups:] @ np.asarray(state._values)
             if diagnostics is not None:
                 diagnostics.update(logits=logits, joint_l1_bound=bound, frontier=frontier,
+                                   observation_query=observation_query,
                                    probabilities=probabilities if len(logits) else np.empty(0))
         attention = TreeAttention(groups, scored, bound, reused_node_scores=reused)
         scores = None if recorded is None else MappingProxyType(recorded)

@@ -185,6 +185,98 @@ def test_trajectory_bound_refuses_custom_value_maps_with_an_unknown_gain():
         tree.run_with_error_bounds([1., 0., 0., 0.], steps=1)
 
 
+def test_revision_bound_distinguishes_low_mass_edits_from_a_later_dominant_source():
+    key = np.array([[1.], [0.]])
+    weights = dict(query=15 * key, carry=np.diag([2., 0.]), observation_key=key,
+                   observation_value=np.diag([0., .5]), feedback_key=np.zeros_like(key),
+                   feedback_value=np.diag([0., .2]), max_steps=3)
+    tree = TreeFeedbackKernel(depth=5, max_frontier=6, **weights)
+    dense = FeedbackKernel(**weights)
+    seed = [1., 0.]
+    rows = [[-1., 1.], *[[.25, .8]] * 31]
+    opening = tree.prepare(rows)
+    baseline = tree.run_with_error_bounds(seed, opening, steps=3)
+    results = []
+    for replacement in ([-1., -1.], [1., -1.], None):
+        edited = tree.revise(opening, {0: replacement})
+        snapshot_rows = rows[1:] if replacement is None else [replacement, *rows[1:]]
+        preview = tree.run_with_error_bounds(seed, opening, steps=3, reference_memory=edited)
+        reference = dense.start(seed, dense.prepare(snapshot_rows))
+        for _ in range(3):
+            reference = dense.step(reference)
+        actual = np.max(np.abs(np.array(preview.state.history) - np.array(reference.history)), axis=1)
+        assert (actual <= np.array(preview.error_bounds) + 1e-14).all()
+        assert preview.state._memory is opening and preview.reference_memory is edited
+        np.testing.assert_array_equal(preview.state.history, baseline.state.history)
+        assert preview.revision_group_scores == (18 if replacement is None else 21)
+        assert preview.state.observation_scores == 33
+        assert reference.observation_scores == (93 if replacement is None else 96)
+        results.append((preview, reference))
+    for preview, reference in (results[0], results[2]):
+        assert preview.state.latest[1] - preview.error_bounds[-1] > .2
+        assert reference.latest[1] > .2
+    preview, reference = results[1]
+    assert preview.state.latest[1] - preview.error_bounds[-1] <= .2
+    assert reference.latest[1] < .2
+
+
+def test_revision_bound_handles_empty_banks_and_insertion_beside_generated_history():
+    key = np.array([[1.]])
+    weights = dict(query=key, carry=np.array([[.2]]), observation_key=key, observation_value=np.array([[.4]]),
+                   feedback_key=key, feedback_value=np.array([[.2]]), max_steps=2)
+    tree = TreeFeedbackKernel(depth=2, max_frontier=1, **weights)
+    dense = FeedbackKernel(**weights)
+    empty = tree.prepare(np.empty((0, 1)))
+    filled = tree.revise(empty, {2: [1.]})
+    for opening, edited, rows in ((empty, filled, [[1.]]), (filled, empty, np.empty((0, 1)))):
+        preview = tree.run_with_error_bounds([1.], opening, steps=2, reference_memory=edited)
+        reference = dense.step(dense.step(dense.start([1.], dense.prepare(rows))))
+        actual = np.abs(np.array(preview.state.history) - np.array(reference.history)).ravel()
+        assert (actual > 0.).all() and (actual <= preview.error_bounds).all()
+        assert preview.revision_group_scores == 2
+        assert preview.state._memory is opening and preview.reference_memory is edited
+    same = tree.run_with_error_bounds([1.], filled, steps=2, reference_memory=filled)
+    assert same.error_bounds == (0., 0.) and same.revision_group_scores == 0
+    with pytest.raises(ValueError, match="different tree feedback layout"):
+        tree.run_with_error_bounds([1.], filled, steps=0,
+                                   reference_memory=TreeFeedbackKernel(depth=2, max_frontier=1, **weights).prepare([[1.]]))
+
+
+@pytest.mark.parametrize("durable", [False, True])
+def test_workspace_previews_slot_impact_without_publishing_and_uses_the_current_pin(tmp_path, monkeypatch, durable):
+    tree = _repair_tree(coherent=True)
+    probe = FeedbackProbe((1,), 1, (.4,))
+    args = (tree, [[0.], [1.]], [probe])
+    options = dict(max_update_norm=1., max_reference_frontier=2)
+    if durable:
+        path = tmp_path / "preview.db"
+        workspace = JournaledFeedbackWorkspace(path, *args, create=True, **options)
+        writer = JournaledFeedbackWorkspace(path, *args, **options)
+    else:
+        writer = workspace = FeedbackWorkspace(*args, **options)
+    base = workspace.snapshot()
+    changes = {1: [-1.]}
+    preview = workspace.preview_observation_slots(base, changes, seed=probe.seed, steps=probe.steps)
+    assert workspace.snapshot() is base and writer.snapshot().number == base.number
+    assert preview.state._memory is base.memory and preview.reference_memory is not base.memory
+    assert preview.state._kernel._max_frontier == 1
+
+    bound = TreeFeedbackKernel.run_with_error_bounds
+
+    def publish_during_preview(kernel, *args, **kwargs):
+        writer.revise_observation_slots(writer.snapshot(), changes)
+        return bound(kernel, *args, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(TreeFeedbackKernel, "run_with_error_bounds", publish_during_preview)
+        with pytest.raises(StaleFeedbackRevision):
+            workspace.preview_observation_slots(base, changes, seed=probe.seed, steps=probe.steps)
+    committed = workspace.snapshot()
+    assert committed.number == base.number + 1 and committed.memory is not preview.reference_memory
+    with pytest.raises(StaleFeedbackRevision):
+        workspace.preview_observation_slots(base, changes, seed=probe.seed, steps=probe.steps)
+
+
 def test_multiplicity_survives_a_huge_common_observation_and_history_logit():
     key = np.array([[1.0], [0.0]])
     weights = dict(query=1e20 * key, carry=np.diag([40, 0]), observation_key=key,
