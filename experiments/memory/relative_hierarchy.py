@@ -676,9 +676,9 @@ class RelativeHierarchySnapshot:
         """Return this branch's sparse ordering, or None for the default SVD."""
         return None if self._elimination_rank is None else tuple(self._elimination_rank)
 
-    def read(self, cell, *, value_first=False):
+    def read(self, cell, *, value_first=False, retry_failed=False):
         """Read an anchored estimate and recover the boundary values it needs."""
-        return self.read_many((cell,), value_first=value_first)[0]
+        return self.read_many((cell,), value_first=value_first, retry_failed=retry_failed)[0]
 
     def support_witness(self, cell):
         """Return a named source path to an anchor, or None for an unsupported cell."""
@@ -772,17 +772,25 @@ class RelativeHierarchySnapshot:
             return resolve_elimination(self._elimination.steps, ports)
         return {port: float(self._values[self._port_positions[port]]) for port in ports}
 
-    def read_many(self, cells, *, value_first=False):
-        """Read in request order, optionally evaluating stored boundary values first."""
+    def read_many(self, cells, *, value_first=False, retry_failed=False):
+        """Read in request order, optionally retrying numerical failures in the other order."""
         if type(value_first) is not bool:
             raise ValueError("value_first must be a boolean")
+        if type(retry_failed) is not bool:
+            raise ValueError("retry_failed must be a boolean")
+        if retry_failed:
+            return self._read_retry_batch(cells, value_first=value_first)
         if value_first:
-            return self._read_value_batch(cells)
+            targets = self._read_targets(cells)
+            values = self._read_value_targets(targets, self._read_ports)
+            return tuple(None if cell is None else values[cell] for cell in targets)
         return self._read_batch(cells)[0]
 
-    def _read_value_batch(self, cells):
+    def _read_targets(self, cells):
         requested = [LatentField._checked_cell(cell, self._owner._cells) for cell in cells]
-        targets = [cell if self._is_supported(cell) else None for cell in requested]
+        return [cell if self._is_supported(cell) else None for cell in requested]
+
+    def _read_value_targets(self, targets, recover, *, failed=None):
         coarse, plans, ordered, pending = {}, {}, [], []
 
         def schedule(cell):
@@ -812,13 +820,48 @@ class RelativeHierarchySnapshot:
                 elif dependency not in plans and dependency not in coarse:
                     schedule(dependency)
 
-        values = self._read_ports(coarse)
-        with np.errstate(over="raise", invalid="raise"):
-            for cell in ordered:
-                dependencies, row = plans[cell]
-                values[cell] = float(row[-1] + row[:-1] @ [values[port] for port in dependencies])
-                if not isfinite(values[cell]):
-                    raise FloatingPointError("nonfinite reconstructed interior coordinate")
+        return _evaluate_regional_rows(ordered, plans, recover(coarse), failed=failed)
+
+    def _read_affine_targets(self, targets, recover, *, failed):
+        coarse, plans = {}, {}
+        for cell in targets:
+            try:
+                ports, row = self._readout(cell)
+            except FloatingPointError:
+                continue
+            coarse.update(dict.fromkeys(ports))
+            if row is not None:
+                plans[cell] = ports, row
+        return _evaluate_regional_rows(plans, plans, recover(coarse), failed=failed)
+
+    def _read_retry_batch(self, cells, *, value_first):
+        targets = self._read_targets(cells)
+        unique = dict.fromkeys(cell for cell in targets if cell is not None)
+        coarse, failed = {}, set()
+
+        def recover(ports):
+            missing = [cell for cell in ports if cell not in coarse and cell not in failed]
+            if missing:
+                if self._elimination is None:
+                    coarse.update(self._read_ports(missing))
+                else:
+                    resolve_elimination(self._elimination.steps, missing, solved=coarse, failed=failed)
+            return coarse
+
+        if value_first:
+            values = self._read_value_targets(unique, recover, failed=failed)
+        else:
+            values = self._read_affine_targets(unique, recover, failed=failed)
+        missing = [cell for cell in unique if cell not in values]
+        if missing:
+            if value_first:
+                alternate = self._read_affine_targets(missing, recover, failed=failed)
+            else:
+                alternate = self._read_value_targets(missing, recover, failed=failed)
+            for cell in missing:
+                if cell not in alternate:
+                    raise FloatingPointError(f"regional read unavailable for cell {cell} in both evaluation orders")
+                values[cell] = alternate[cell]
         return tuple(None if cell is None else values[cell] for cell in targets)
 
     def _read_batch(self, cells):
@@ -850,6 +893,29 @@ class RelativeHierarchySnapshot:
                 raise FloatingPointError("nonfinite reconstructed interior coordinate")
             reads.append(value)
         return tuple(reads), len(values) if values is not None else 0
+
+
+def _evaluate_regional_rows(ordered, plans, values, *, failed):
+    isolate = failed is not None
+    if isolate:
+        values, failed = dict(values), set(failed)
+    with np.errstate(over="raise", invalid="raise"):
+        for cell in ordered:
+            dependencies, row = plans[cell]
+            if isolate and any(port in failed for port in dependencies):
+                failed.add(cell)
+                continue
+            try:
+                value = float(row[-1] + row[:-1] @ [values[port] for port in dependencies])
+                if not isfinite(value):
+                    raise FloatingPointError("nonfinite reconstructed interior coordinate")
+            except FloatingPointError:
+                if not isolate:
+                    raise
+                failed.add(cell)
+            else:
+                values[cell] = value
+    return values
 
 
 class RelativeObservationHierarchy:
@@ -1065,7 +1131,8 @@ class RelativeObservationHierarchy:
             return base
         return self._snapshot(base._sources, base._bridges, base._regions, (), base=base, new_rank=rank)
 
-    def compact(self, base, *, max_regions=1, protected_cells=(), tolerance=1e-10, value_first=False):
+    def compact(self, base, *, max_regions=1, protected_cells=(), tolerance=1e-10,
+                value_first=False, retry_failed=False):
         """Retire inactive ports in a bounded number of regions of the selected branch."""
         if base._owner is not self:
             raise ValueError("relative snapshot belongs to a different hierarchy")
@@ -1074,6 +1141,8 @@ class RelativeObservationHierarchy:
             raise ValueError("compaction needs a positive region cap and finite nonnegative tolerance")
         if type(value_first) is not bool:
             raise ValueError("value_first must be a boolean")
+        if type(retry_failed) is not bool:
+            raise ValueError("retry_failed must be a boolean")
         protected = tuple(LatentField._checked_cell(cell, self._cells) for cell in protected_cells)
         active = {cell for bridge in base._bridges.values() for cell in bridge._endpoints()}
         candidates = [(sum(cell not in active for cell in region.ports), number)
@@ -1087,8 +1156,8 @@ class RelativeObservationHierarchy:
             regions[number] = _compact_region(regions[number], active)
         compacted = self._snapshot(base._sources, base._bridges, regions, (), base=base,
                                    compacted=chosen)
-        before_values = base.read_many(protected, value_first=value_first)
-        after_values = compacted.read_many(protected, value_first=value_first)
+        before_values = base.read_many(protected, value_first=value_first, retry_failed=retry_failed)
+        after_values = compacted.read_many(protected, value_first=value_first, retry_failed=retry_failed)
         for cell, before, after in zip(protected, before_values, after_values):
             if before is None or after is None:
                 agrees = before is after

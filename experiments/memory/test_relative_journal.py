@@ -300,3 +300,27 @@ def test_value_first_protects_finite_answer_and_reopens_existing_event_format(tm
         assert db.execute("SELECT kind FROM relative_events ORDER BY number").fetchall() == [
             ("merge_lazy",), ("split_region",),
         ]
+
+
+def test_retry_guard_recovers_affine_refusal_without_changing_replay(tmp_path):
+    from experiments.memory.test_relative_hierarchy import _finite_cancellation_sources
+
+    path = tmp_path / "retry-guard.sqlite"
+    sources = _finite_cancellation_sources()
+    hierarchy = RelativeObservationHierarchy((0, 1, 1, 2), ridge=0.002, elimination_order=range(4))
+    journal = JournaledRelativeHierarchyWorkspace(path, hierarchy, sources, create=True)
+    parent = journal.snapshot()
+    options = {"retain_children": True, "lazy_readout": True, "protected_cells": (2,), "tolerance": 1e296}
+    with pytest.raises(FloatingPointError):
+        journal.merge_regions(parent, 0, 1, **options)
+    assert journal.snapshot() is parent
+    fused = journal.merge_regions(parent, 0, 1, retry_failed=True, **options)
+    recovered = JournaledRelativeHierarchyWorkspace(path, hierarchy, sources).snapshot()
+    assert recovered.digest == fused.digest
+    assert recovered.snapshot.read(2, retry_failed=True) == pytest.approx(parent.snapshot.read(2), rel=1e-12)
+    restored = journal.split_region(fused, 0, protected_cells=(2,), tolerance=1e296, retry_failed=True)
+    assert restored.number == 2
+    with closing(sqlite3.connect(path)) as db:
+        assert db.execute("SELECT kind, payload FROM relative_events ORDER BY number").fetchall() == [
+            ("merge_lazy", b"[0,1]"), ("split_region", b"[0]"),
+        ]

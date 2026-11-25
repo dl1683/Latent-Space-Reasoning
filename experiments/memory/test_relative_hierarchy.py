@@ -1210,3 +1210,84 @@ def test_value_first_shares_stored_conditionals_after_compaction_and_split(order
         assert state.read_many(range(len(_MEMBERSHIP)), value_first=True) == pytest.approx(
             expected, abs=1e-12, rel=0,
         )
+
+
+@pytest.mark.parametrize("value_first", [False, True])
+def test_read_retry_isolates_mixed_overflow_and_reuses_shared_coarse_values(value_first, monkeypatch):
+    sources = _finite_cancellation_sources() | {
+        "reverse-anchor": RelativeObservation(7, 1.05e308, weight=0.25),
+        "reverse-boundary": RelativeObservation(4, 0, source=7, weight=0.25),
+        "reverse-rise": RelativeObservation(5, 1.02e308, source=4, weight=0.25),
+        "reverse-fall": RelativeObservation(6, -1.02e308, source=5, weight=0.25),
+    }
+    hierarchy = RelativeObservationHierarchy((0, 1, 1, 2, 3, 4, 4, 5, 6), ridge=0.002,
+                                             elimination_order=range(9))
+    original = hierarchy.initialize(sources)
+    left = hierarchy.merge_regions(original, 0, 1, retain_children=True, lazy_readout=True)
+    mixed = left._owner.merge_regions(left, 2, 3, retain_children=True, lazy_readout=True)
+    queries = (2, 8, 6, 2, 0, 4)
+    with pytest.raises(FloatingPointError):
+        mixed.read_many(queries, value_first=value_first)
+    primary_success = mixed.read(2 if value_first else 6, value_first=value_first)
+    calls, coarse_calls = [], []
+    affine = type(mixed)._read_affine_targets
+    scalar = type(mixed)._read_value_targets
+    recover = relative_hierarchy.resolve_elimination
+
+    def watch_affine(snapshot, targets, solve, **options):
+        calls.append(("affine", tuple(targets)))
+        return affine(snapshot, targets, solve, **options)
+
+    def watch_value(snapshot, targets, solve, **options):
+        calls.append(("value", tuple(targets)))
+        return scalar(snapshot, targets, solve, **options)
+
+    def watch_coarse(steps, cells, **options):
+        coarse_calls.append(tuple(cells))
+        return recover(steps, cells, **options)
+
+    monkeypatch.setattr(type(mixed), "_read_affine_targets", watch_affine)
+    monkeypatch.setattr(type(mixed), "_read_value_targets", watch_value)
+    monkeypatch.setattr(relative_hierarchy, "resolve_elimination", watch_coarse)
+    answers = mixed.read_many(iter(queries), value_first=value_first, retry_failed=True)
+    assert calls == ([("value", (2, 6, 0, 4)), ("affine", (6,))] if value_first else
+                     [("affine", (2, 6, 0, 4)), ("value", (2,))])
+    assert len(coarse_calls) == 1 and set(coarse_calls[0]) == {0, 4}
+    assert answers[0 if value_first else 2] == primary_success
+    assert answers[0] == answers[3] and answers[1] is None
+    scaled = {name: RelativeObservation(row.target, row.value / 1e308, source=row.source, weight=row.weight)
+              for name, row in sources.items()}
+    direct = solve_relative_direct(9, scaled, ridge=0.002)
+    assert tuple(None if answer is None else answer / 1e308 for answer in answers) == pytest.approx(
+        tuple(direct[cell] for cell in queries), abs=1e-12, rel=0,
+    )
+
+
+def test_retry_propagates_coarse_failure_without_poisoning_other_values():
+    def step(dependencies, row):
+        return relative_hierarchy.EliminationStep((), dependencies, _frozen(np.array(row)), None, 1.0)
+
+    steps = {
+        0: step((1,), [1.0, 1e308]),
+        1: step((), [1e308]),
+        2: step((0,), [1.0, 0.0]),
+        3: step((), [0.25]),
+        4: step((3,), [2.0, 0.5]),
+    }
+    with pytest.raises(FloatingPointError):
+        relative_hierarchy.resolve_elimination(steps, (2, 3))
+    values, failed = {}, set()
+    assert relative_hierarchy.resolve_elimination(steps, (2, 3), solved=values, failed=failed) is values
+    assert values == {1: 1e308, 3: 0.25} and failed == {0, 2}
+    relative_hierarchy.resolve_elimination(steps, (0, 4), solved=values, failed=failed)
+    assert values == {1: 1e308, 3: 0.25, 4: 1} and failed == {0, 2}
+
+    hierarchy = RelativeObservationHierarchy((0, 1), ridge=1e-6, elimination_order=(1, 0))
+    snapshot = hierarchy.initialize({
+        "anchor": RelativeObservation(0, 1e308, weight=0.25),
+        "bridge": RelativeObservation(1, 1e308, source=0, weight=0.25),
+    })
+    before = snapshot.read(0)
+    with pytest.raises(FloatingPointError, match="cell 1 in both evaluation orders"):
+        snapshot.read_many((0, 1, 0), retry_failed=True)
+    assert snapshot.read(0, retry_failed=True) == before

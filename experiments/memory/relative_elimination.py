@@ -133,29 +133,40 @@ def update_elimination(rank, prior_steps, prior_intakes, changes, promoted):
     return MappingProxyType(steps), MappingProxyType(intakes), tuple(rebuilt), tuple(visited)
 
 
-def resolve_elimination(steps: Mapping[int, EliminationStep], cells, *, offsets=None):
-    """Recover only the requested dependency closure with a per-call memo."""
-    solved = {}
+def resolve_elimination(steps: Mapping[int, EliminationStep], cells, *, offsets=None, solved=None, failed=None):
+    """Recover a dependency closure. Optional memos belong to the same steps and offsets."""
+    solved = {} if solved is None else solved
+    isolate = failed is not None
+    failed = set() if failed is None else failed
     with np.errstate(over="raise", invalid="raise"):
         for root in cells:
-            if root in solved:
+            if root in solved or root in failed:
                 continue
             pending = [(root, iter(steps[root].dependencies))]
             while pending:
                 cell, dependencies = pending[-1]
                 dependency = next(dependencies, None)
                 if dependency is not None:
-                    if dependency not in solved:
+                    if dependency not in solved and dependency not in failed:
                         pending.append((dependency, iter(steps[dependency].dependencies)))
                     continue
                 pending.pop()
                 step = steps[cell]
+                if failed and any(dependency in failed for dependency in step.dependencies):
+                    failed.add(cell)
+                    continue
                 later = [solved[dependency] for dependency in step.dependencies]
                 offset = step.readout[-1] if offsets is None else offsets.get(cell, 0.0)
-                value = float(offset + step.readout[:-1] @ later)
-                if not np.isfinite(value):
-                    raise FloatingPointError("nonfinite coarse elimination readout")
-                solved[cell] = value
+                try:
+                    value = float(offset + step.readout[:-1] @ later)
+                    if not np.isfinite(value):
+                        raise FloatingPointError("nonfinite coarse elimination readout")
+                except FloatingPointError:
+                    if not isolate:
+                        raise
+                    failed.add(cell)
+                else:
+                    solved[cell] = value
     return solved
 
 

@@ -173,6 +173,16 @@ The hierarchy's compaction guard and the journal's partition and compaction guar
 
 Compare with eager readout and deferred affine lifting at matched accuracy and source states. Charge root descents, all scheduled rows and edges, coarse closure, transient allocations, revisions and recovery. Sharing improves when multiple queries use the same internal boundaries. A short batch may schedule more rows than affine lifting, and the per-call memo offers no reuse across calls. The cost and availability tradeoff should guide a future readout policy, including a bounded retry through the other path.
 
+#### Selective numerical read retry
+
+[SLICE] Set `retry_failed=True` on `read` or `read_many` to use the other evaluation order for unresolved supported requests. The `value_first` option selects the primary order. Each pass can continue after an isolated floating-point failure. A row whose numerical dependency failed stays unavailable in that pass. Unsupported requests keep their structural `None` result.
+
+The alternate pass receives only distinct requested cells that failed the primary pass. It retains successful primary results and restores the original request order and duplicates. Both passes share successful and failed coarse coordinates from the same immutable solve. Regional plans and intermediate values stay local to their evaluator. A sparse coarse failure blocks its consumers while independent coarse values can still be solved. Structural and input errors propagate. If a requested cell remains unavailable through both passes, the call raises a floating-point error naming the first unresolved requested cell.
+
+Partition and compaction guards accept the same retry option for their parent and draft reads. Each read owns its memo. Journal records still describe the structural operation. The retry covers read admission and ordinary reads. Factor construction, coarse projection during compaction, sensitivity, and maintenance replay keep their own evaluation behavior.
+
+There are at most two evaluator passes per batch. Count both dependency closures, repeated regional work, failed arithmetic, and the per-call memo. A finite alternate result extends numerical availability under the current operators. Error guarantees and the full cost of choosing and verifying a readout order remain separate questions.
+
 #### Elimination order maintenance
 
 An elimination order belongs to its snapshot. Reordering keeps the selected sources, ports and regional factors and recompiles the sparse coarse conditionals. Source revisions and compaction inherit that branch's order, including after compaction drops the coarse cache.
