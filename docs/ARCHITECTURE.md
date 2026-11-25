@@ -219,7 +219,7 @@ For target input $h$, current observation query $q=hQ_o$, key contrast $c=k_a-k_
 
 The key and current hidden state must supply editable contrast. If $h_\perp$ is the part of $h$ outside the protected-input span, the minimum exact update norm for one requested gap is $|g-q\cdot c|/(\lVert h_\perp\rVert\lVert c\rVert)$ when both norms are nonzero. Source collisions and near-saturated preservation constraints can prevent a useful edit. A third source can dominate both selected sources even when their pairwise odds match. Compare actual late consequences under source interventions as well as route scores. Candidate rivals are editing the shared query map, installing a state-gated query residual, and editing the value map or a conditional payload term. Use the same source changes and protected inputs, and charge fitting, replay and ongoing projection costs.
 
-An edited tree separates whole-route reuse by the observation query map and keys retained node scores by the projected observation query. The journal can reopen with the fork supplied in its initial kernel and binds those weights in the root digest. Routing edits are constructed in process. The current journal and repair queue publish value and conditional edits.
+An edited tree separates whole-route reuse by the observation query map and keys retained node scores by the projected observation query. The journal can reopen with the fork supplied in its initial kernel and binds those weights in the root digest. A declared routing goal can also carry a proposed observation query through the shared journal and repair queue.
 
 #### Programming joint source mass
 
@@ -314,6 +314,16 @@ The coordinator can use `ready_plans()` after reopening to discover complete win
 `receipt(plan)` reads a recorded decision for a known window, including one on a past tip. `latest_receipt()` discovers the last recorded decision after reopening. When a proposal wins, the journal appends its operator edit and stores the receipt in the same write transaction. The receipt identifies the selected attempt and its published revision and digest. Reading it checks those identifiers against the recorded event. Calling `publish(plan)` again after a committed edit raises `StaleFeedbackRevision`. A refusal on the current tip yields the stored attempts and continuation offset, if one remains, together with the reopened workspace's live base. It skips numerical admission on that retry. [SQLite atomic commit](https://sqlite.org/atomiccommit.html)
 
 Decision metadata remains readable after obsolete leases and candidate payloads are pruned. Its storage grows with the windows and attempts recorded. Coordinators can still duplicate admission work when they race. The existing journal fence limits them to one committed edit. These recovery contracts apply to trusted local processes sharing one journal.
+
+#### Leasing source routing edits
+
+[SLICE] A working `FeedbackProbe` can declare `routing=FeedbackRoutingGoal(slot, min_mass)` with a floor strictly between zero and one. Its final transition measures the endpoint and the executed probability of that slot in the same trajectory. A missing source measures zero. A source revision can delete or restore a slot and establishes a new baseline for both quantities. Routing goals require standard dense softmax or a tree with zero logit tolerance and frontier capacity for all occupied slots. Guards still declare endpoints. Working probes with routing goals replay directly, while ordinary working probes and guards can use the existing optional tree caches.
+
+A selected working probe must meet its endpoint tolerance and its declared floor, if present. Independently, every floor attained on the base stays at or above its threshold through an operator edit. The workspace keeps endpoint error, anchor and guard checks, including an established prefix anchor when only the floor remains unresolved. The numerical mass is an admission criterion. Source causality and generalization still require independent interventions.
+
+The planner adds a `route` candidate after the other kinds for each working probe whose floor is unmet. `propose_routing(base, probe)` fits the observation query using the multivariate search at the full reference resolution. The query fitter targets the floor. The coordinator separately checks the output and all admission constraints. The result can be refused even with a valid mass increase. A joint query and value proposal is a possible successor when either map alone meets only half of the contract.
+
+A journal with routing goals binds their ordered probe indices, slots and floors in its initial fingerprint and uses repair-plan version 2. A `route` payload holds the full rectangular little-endian Float64 query map. The root-bound shape and exact length govern decoding. The same checked append handles the operator event and its durable queue decision. Reopening replays the original admission against its source revision. Journals without routing goals keep version 1. Leased work remains caller-started. [SQLite isolation](https://sqlite.org/isolation.html)
 
 ### Architectural exploration and review
 

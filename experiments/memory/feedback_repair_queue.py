@@ -273,8 +273,10 @@ class FeedbackRepairQueue:
             ).fetchone() != (kind, probe, digest):
                 raise ValueError("repair receipt disagrees with the journal")
         attempts = tuple(FeedbackRepairAttempt(probe, conditional, rejection,
-                                                None if rank is None else tuple(rank), hinge)
-                         for probe, conditional, rejection, rank, hinge in json.loads(attempts_data))
+                                                None if rank is None else tuple(rank), hinge,
+                                                routing=kind == "route")
+                         for (_, kind), (probe, conditional, rejection, rank, hinge)
+                         in zip(plan.candidates, json.loads(attempts_data), strict=True))
         return FeedbackRepairReceipt(plan, status, attempts, selected, next_candidate, revision,
                                      None if digest is None else digest.hex())
 

@@ -223,6 +223,11 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         policy = (kernel._max_steps, self._max_terms, self._atol, self._max_update_norm,
                   [(probe.seed, probe.steps, probe.target) for probe in self._probes])
         digest.update(json.dumps(policy, allow_nan=False, separators=(",", ":")).encode())
+        if self._has_routing:
+            digest.update(b"\nfeedback source routing goals v1\n")
+            routing = [(i, probe.routing.slot, probe.routing.min_mass)
+                       for i, probe in enumerate(self._probes) if probe.routing is not None]
+            digest.update(json.dumps(routing, allow_nan=False, separators=(",", ":")).encode())
         if self._guards:
             digest.update(b"\nfeedback guard probes v1\n")
             guards = [(probe.seed, probe.steps, probe.target) for probe in self._guards]
@@ -285,6 +290,11 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
     def _decode_operator(self, base, kind, probe, payload):
         width = base.kernel._width
         lengths = {"weight": width * width, "conditional": 3 * width, "hinge": 3 * width + 1}
+        if kind == "route" and self._has_routing:
+            probe = index(probe)
+            if not 0 <= probe < len(self._probes) or self._probes[probe].routing is None:
+                raise ValueError("routing event requires a declared source mass goal")
+            lengths["route"] = base.kernel._query.size
         if kind not in lengths:
             raise ValueError("unexpected feedback journal event")
         if len(payload) != 8 * lengths[kind]:
@@ -292,10 +302,22 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         values = np.frombuffer(payload, dtype="<f8")
         if kind == "weight":
             return FeedbackProposal(base, probe, values.reshape(width, width))
+        if kind == "route":
+            return FeedbackProposal(base, probe, _query=values.reshape(base.kernel._query.shape))
         if kind == "conditional":
             return FeedbackProposal(base, probe, term=ConditionalTerm(*values.reshape(3, width)))
         term = ConditionalTerm(*values[:-1].reshape(3, width), threshold=values[-1])
         return FeedbackProposal(base, probe, term=term)
+
+    @staticmethod
+    def _encode_operator(proposal):
+        if proposal._query is not None:
+            return "route", _encode(proposal._query)
+        if proposal.term is None:
+            return "weight", _encode(proposal._weight)
+        term = proposal.term
+        factors = (term.state_axis, term.observation_axis, term.output)
+        return ("conditional" if term.threshold is None else "hinge"), _encode_term(factors, term.threshold)
 
     def _replay(self, base, kind, probe, payload):
         if kind == "sources" and probe is None and self._source_bound:
@@ -316,20 +338,16 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             return base, self._root.hex(), self._tip.hex()
 
     def _search_plan(self, base, root, tip, offset, limit):
-        unresolved, modes = self._candidate_order(base)
-        total = len(unresolved) * len(modes)
+        candidates = self._candidate_order(base)
+        total = len(candidates)
         if not 0 <= offset < max(1, total):
             raise ValueError("search offset is outside the candidate list")
-        candidates = []
-        for ordinal in range(offset, min(total, offset + limit)):
-            probe_offset, mode_offset = divmod(ordinal, len(modes))
-            conditional, hinge = modes[mode_offset]
-            kind = "hinge" if hinge else "conditional" if conditional else "weight"
-            candidates.append((unresolved[probe_offset], kind))
         policy = tuple(sorted(np.geterr().items()))
         if any(mode in ("call", "log") for _, mode in policy):
             raise ValueError("process repair plans need a data-only NumPy error policy")
-        return FeedbackSearchPlan(root, tip, base.number, offset, total, tuple(candidates), policy)
+        return FeedbackSearchPlan(root, tip, base.number, offset, total,
+                                  tuple(candidates[offset:offset + limit]), policy,
+                                  version=2 if self._has_routing else 1)
 
     def plan_repairs(self, *, max_candidates, resume=None):
         """Describe the ordered candidates that separate processes may synthesize."""
@@ -368,18 +386,15 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         synthesize = self.propose if self._draft_tree_policy is not None else self._propose
         for probe, kind in plan.candidates[start:stop]:
             try:
-                proposal = synthesize(base, probe, conditional=kind != "weight", hinge=kind == "hinge")
+                proposal = (self.propose_routing(base, probe) if kind == "route"
+                            else synthesize(base, probe, conditional=kind in ("conditional", "hinge"),
+                                            hinge=kind == "hinge"))
             except StaleFeedbackRevision:
                 raise
             except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
                 results.append(FeedbackCandidateData(rejection=str(error) or type(error).__name__))
                 continue
-            if proposal.term is None:
-                payload = _encode(proposal._weight)
-            else:
-                term = proposal.term
-                factors = (term.state_axis, term.observation_axis, term.output)
-                payload = _encode_term(factors, term.threshold)
+            _, payload = self._encode_operator(proposal)
             results.append(FeedbackCandidateData(payload=payload))
         self._require_current(base)
         return FeedbackSearchShard(plan, start, tuple(results))
@@ -411,9 +426,11 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         best = None
         for (probe, kind), candidate in zip(plan.candidates, results, strict=True):
             self._require_current(base)
-            conditional, hinge = kind != "weight", kind == "hinge"
+            conditional, hinge = kind in ("conditional", "hinge"), kind == "hinge"
+            routing = kind == "route"
             if candidate.payload is None:
-                attempts.append(FeedbackRepairAttempt(probe, conditional, candidate.rejection, hinge=hinge))
+                attempts.append(FeedbackRepairAttempt(probe, conditional, candidate.rejection,
+                                                      hinge=hinge, routing=routing))
                 continue
             proposal = self._decode_operator(base, kind, probe, candidate.payload)
             try:
@@ -421,12 +438,12 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             except StaleFeedbackRevision:
                 raise
             except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
-                attempts.append(FeedbackRepairAttempt(probe, conditional, str(error), hinge=hinge))
+                attempts.append(FeedbackRepairAttempt(probe, conditional, str(error), hinge=hinge, routing=routing))
                 continue
             rank = self._repair_rank(revised)
             if best is None or rank < best[0]:
                 best = rank, proposal, revised, len(attempts)
-            attempts.append(FeedbackRepairAttempt(probe, conditional, rank=rank, hinge=hinge))
+            attempts.append(FeedbackRepairAttempt(probe, conditional, rank=rank, hinge=hinge, routing=routing))
         self._require_current(base)
         if best is not None:
             _, proposal, revised, selected = best
@@ -604,12 +621,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             kind, payload = tree_event
         elif proposal is None:
             kind, payload = "observations", _encode(revised.memory._observations)
-        elif proposal.term is None:
-            kind, payload = "weight", _encode(revised.kernel._observation_value)
         else:
-            term = revised.kernel._conditional[-1]
-            kind = "conditional" if term[-1] is None else "hinge"
-            payload = _encode_term(term[:3], term[-1])
+            kind, payload = self._encode_operator(proposal)
         with self._lock, closing(self._connect()) as db:
             self._require_ready()
             if self._head is not base:

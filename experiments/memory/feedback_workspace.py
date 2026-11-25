@@ -18,10 +18,24 @@ from experiments.memory.weight_program import _frobenius
 
 
 @dataclass(frozen=True)
+class FeedbackRoutingGoal:
+    slot: int
+    min_mass: float
+
+    def __post_init__(self):
+        slot, floor = index(self.slot), float(self.min_mass)
+        if slot < 0 or not 0 < floor < 1:
+            raise ValueError("routing goal needs a nonnegative slot and a mass floor in (0, 1)")
+        object.__setattr__(self, "slot", slot)
+        object.__setattr__(self, "min_mass", floor)
+
+
+@dataclass(frozen=True)
 class FeedbackProbe:
     seed: tuple[float, ...]
     steps: int
     target: tuple[float, ...]
+    routing: FeedbackRoutingGoal | None = None
 
     def __post_init__(self):
         seed = _real_array(self.seed)
@@ -31,6 +45,8 @@ class FeedbackProbe:
             raise ValueError("probe must have equally sized vector seed and target")
         if steps < 1 or np.any(np.abs(target) >= 1):
             raise ValueError("probe needs positive steps and an interior tanh target")
+        if self.routing is not None and type(self.routing) is not FeedbackRoutingGoal:
+            raise ValueError("invalid source routing goal")
         object.__setattr__(self, "seed", tuple(seed))
         object.__setattr__(self, "steps", steps)
         object.__setattr__(self, "target", tuple(target))
@@ -44,8 +60,9 @@ class FeedbackRevision:
     errors: tuple[float, ...]
     _anchors: tuple[tuple[np.ndarray, ...] | None, ...]
     guard_errors: tuple[float, ...] = ()
-    _probe_routes: tuple[_TreeReplay, ...] = ()
+    _probe_routes: tuple[_TreeReplay | None, ...] = ()
     _guard_routes: tuple[_TreeReplay, ...] = ()
+    source_masses: tuple[float | None, ...] = ()
 
     def start(self, seed):
         return self.kernel.start(seed, self.memory)
@@ -57,15 +74,19 @@ class FeedbackProposal:
     probe: int
     _weight: np.ndarray | None = None
     term: ConditionalTerm | None = None
+    _query: np.ndarray | None = None
 
     def __post_init__(self):
         object.__setattr__(self, "probe", index(self.probe))
-        if (self._weight is None) == (self.term is None):
-            raise ValueError("proposal must contain one value map or one conditional term")
+        if sum(value is not None for value in (self._weight, self.term, self._query)) != 1:
+            raise ValueError("proposal must contain exactly one operator edit")
         if self.term is not None and type(self.term) is not ConditionalTerm:
             raise ValueError("invalid conditional proposal data")
         if self._weight is not None:
             object.__setattr__(self, "_weight", self.base.kernel._weight(self._weight))
+        if self._query is not None:
+            kernel = self.base.kernel
+            object.__setattr__(self, "_query", kernel._weight(self._query, kernel._query.shape))
 
 
 class StaleFeedbackRevision(ValueError):
@@ -88,6 +109,7 @@ class FeedbackRepairAttempt:
     rank: tuple[int, float, int] | None = None
     hinge: bool = False
     fidelity_attempts: tuple[FeedbackFidelityAttempt, ...] = ()
+    routing: bool = False
 
 
 @dataclass(frozen=True)
@@ -123,8 +145,17 @@ class FeedbackWorkspace:
                 raise ValueError("reference frontier cannot be smaller than the draft frontier")
             self._draft_tree_policy = kernel._max_frontier, kernel._logit_tolerance
             kernel = kernel.with_frontier(reference_cap, logit_tolerance=0)
-        self._probes = tuple(FeedbackProbe(p.seed, p.steps, p.target) for p in probes)
-        self._guards = tuple(FeedbackProbe(p.seed, p.steps, p.target) for p in guards)
+        self._probes = tuple(FeedbackProbe(p.seed, p.steps, p.target, getattr(p, "routing", None)) for p in probes)
+        self._guards = tuple(FeedbackProbe(p.seed, p.steps, p.target, getattr(p, "routing", None)) for p in guards)
+        if any(p.routing is not None for p in self._guards):
+            raise ValueError("routing goals are supported only on working probes")
+        self._has_routing = any(p.routing is not None for p in self._probes)
+        if self._has_routing:
+            if type(kernel) not in (FeedbackKernel, TreeFeedbackKernel):
+                raise ValueError("routing goals require a supported softmax kernel")
+            if type(kernel) is TreeFeedbackKernel and any(
+                    p.routing is not None and p.routing.slot >= 1 << kernel._depth for p in self._probes):
+                raise ValueError("routing goal slot is outside the tree layout")
         self._atol = float(atol)
         self._max_update_norm = float(max_update_norm)
         if not self._probes:
@@ -156,6 +187,9 @@ class FeedbackWorkspace:
     def _check_reference_capacity(self, kernel, memory):
         if self._draft_tree_policy is not None and memory.count > kernel._max_frontier:
             raise ValueError("observation bank exceeds the full-reference frontier")
+        if (self._has_routing and type(kernel) is TreeFeedbackKernel
+                and (kernel._logit_tolerance != 0 or memory.count > kernel._max_frontier)):
+            raise ValueError("routing goals require a full-resolution tree")
 
     def _commit(self, base, revised, *, proposal=None):
         with self._lock:
@@ -178,13 +212,12 @@ class FeedbackWorkspace:
             raise ValueError("probe error must be finite")
         return error
 
-    def _measure(self, kernel, memory):
-        errors, prefixes = [], []
-        for probe in self._probes:
-            state = self._run(kernel, memory, probe)
-            errors.append(self._probe_error(state, probe))
-            prefixes.append(state.history[:-1])
-        return tuple(errors), tuple(prefixes)
+    @staticmethod
+    def _run_routed(kernel, memory, probe):
+        state = kernel.start(probe.seed, memory)
+        for _ in range(probe.steps - 1):
+            state = kernel.step(state)
+        return kernel._source_mass_step(state, probe.routing.slot)
 
     def _measure_guards(self, kernel, memory):
         return tuple(self._probe_error(self._run(kernel, memory, guard), guard)
@@ -199,11 +232,25 @@ class FeedbackWorkspace:
             yield self._probe_error(state, probe), replay
 
     def _working_results(self, kernel, memory, previous=()):
-        if not self._reuse_tree_routes:
-            errors, prefixes = self._measure(kernel, memory)
-            return errors, prefixes, ()
-        errors, traces = zip(*self._replay_tree_checks(kernel, memory, self._probes, previous))
-        return errors, tuple(trace.prefix() for trace in traces), traces
+        errors, prefixes, traces, masses = [], [], [], []
+        previous = previous or (None,) * len(self._probes)
+        for probe, trace in zip(self._probes, previous, strict=True):
+            mass, replay = None, None
+            if probe.routing is not None:
+                state, mass = self._run_routed(kernel, memory, probe)
+                if not 0.0 <= mass <= 1.0:
+                    raise ValueError("probe source mass must be a probability")
+            elif self._reuse_tree_routes:
+                state, replay = kernel._replay_routes(
+                    probe.seed, memory, probe.steps, trace, retain_scores=self._max_retained_tree_scores,
+                )
+            else:
+                state = self._run(kernel, memory, probe)
+            errors.append(self._probe_error(state, probe))
+            prefixes.append(state.history[:-1] if replay is None else replay.prefix())
+            traces.append(replay)
+            masses.append(mass)
+        return tuple(errors), tuple(prefixes), tuple(traces) if self._reuse_tree_routes else (), tuple(masses)
 
     def _guard_results(self, kernel, memory, previous=()):
         if not self._reuse_tree_routes:
@@ -211,6 +258,10 @@ class FeedbackWorkspace:
         runs = tuple(self._replay_tree_checks(kernel, memory, self._guards, previous))
         errors = tuple(error for error, _ in runs)
         return errors, tuple(trace for _, trace in runs)
+
+    def _probe_satisfied(self, probe, error, mass):
+        route = self._probes[probe].routing
+        return error <= self._atol and (route is None or mass >= route.min_mass)
 
     def _anchors(self, errors, prefixes, previous=None):
         if previous is None:
@@ -224,7 +275,7 @@ class FeedbackWorkspace:
         probe = index(probe)
         if not 0 <= probe < len(self._probes):
             raise ValueError("probe index out of range")
-        if base.errors[probe] <= self._atol:
+        if self._probe_satisfied(probe, base.errors[probe], base.source_masses[probe]):
             raise ValueError("probe already satisfies the workspace tolerance")
         return probe
 
@@ -251,11 +302,7 @@ class FeedbackWorkspace:
 
     def _synthesize(self, base, kernel, probe, *, conditional, hinge):
         goal = self._probes[probe]
-        protected = (
-            (check.seed, check.steps)
-            for check, error in zip(self._probes, base.errors, strict=True)
-            if error <= self._atol
-        )
+        protected = self._protected_runs(base, probe)
         if conditional:
             self._require_term_capacity(base, hinge=hinge)
             _, _, term = kernel.program_conditional(
@@ -269,6 +316,24 @@ class FeedbackWorkspace:
         )
         return FeedbackProposal(base, probe, edit.weight)
 
+    def _protected_runs(self, base, selected):
+        return ((check.seed, check.steps) for probe, check in enumerate(self._probes)
+                if probe != selected and base.errors[probe] <= self._atol)
+
+    def propose_routing(self, base, probe):
+        """Fit an observation query for a declared, unresolved source floor."""
+        self._require_current(base)
+        probe = self._open_probe(base, probe)
+        goal = self._probes[probe]
+        if goal.routing is None or base.source_masses[probe] >= goal.routing.min_mass:
+            raise ValueError("probe has no unmet source mass floor")
+        _, _, edit = base.kernel.program_observation_mass(
+            base.start(goal.seed), goal.steps, goal.routing.slot, goal.routing.min_mass,
+            max_update_norm=self._max_update_norm, atol=self._atol, protect=self._protected_runs(base, probe),
+            search="multivariate",
+        )
+        return FeedbackProposal(base, probe, _query=edit.weight)
+
     def publish(self, proposal):
         """Admit one newly satisfied probe with every other probe non-worsening."""
         base = proposal.base
@@ -277,18 +342,26 @@ class FeedbackWorkspace:
 
     def _candidate_order(self, base):
         unresolved = sorted(
-            (probe for probe, error in enumerate(base.errors) if error > self._atol),
+            (probe for probe, (error, mass) in enumerate(zip(base.errors, base.source_masses, strict=True))
+             if not self._probe_satisfied(probe, error, mass)),
             key=lambda probe: (-base.errors[probe], probe),
         )
-        modes = [(False, False)]
+        kinds = ["weight"]
         if base.kernel.conditional_terms < self._max_terms:
-            modes.append((True, False))
+            kinds.append("conditional")
             if self._allow_hinge:
-                modes.append((True, True))
-        return unresolved, modes
+                kinds.append("hinge")
+        candidates = []
+        for probe in unresolved:
+            candidates.extend((probe, kind) for kind in kinds)
+            goal = self._probes[probe].routing
+            if goal is not None and base.source_masses[probe] < goal.min_mass:
+                candidates.append((probe, "route"))
+        return candidates
 
     def _repair_rank(self, revision):
-        return (-sum(error <= self._atol for error in revision.errors),
+        return (-sum(self._probe_satisfied(probe, error, mass)
+                     for probe, (error, mass) in enumerate(zip(revision.errors, revision.source_masses, strict=True))),
                 sum(revision.errors), revision.kernel.conditional_terms)
 
     def _assess_tree_repair(self, base, probe, conditional, hinge):
@@ -315,11 +388,11 @@ class FeedbackWorkspace:
             return proposal, revised, tuple(trials)
         return None, None, tuple(trials)
 
-    def _evaluate_candidate(self, base, ordinal, unresolved, modes):
-        probe_offset, mode_offset = divmod(ordinal, len(modes))
-        probe = unresolved[probe_offset]
-        conditional, hinge = modes[mode_offset]
-        if self._draft_tree_policy is not None:
+    def _evaluate_candidate(self, base, ordinal, candidates):
+        probe, kind = candidates[ordinal]
+        conditional, hinge = kind in ("conditional", "hinge"), kind == "hinge"
+        routing = kind == "route"
+        if self._draft_tree_policy is not None and not routing:
             proposal, revised, trials = self._assess_tree_repair(base, probe, conditional, hinge)
             attempt = FeedbackRepairAttempt(
                 probe, conditional, rejection=trials[-1].rejection,
@@ -328,17 +401,18 @@ class FeedbackWorkspace:
             )
             return attempt, proposal, revised
         try:
-            proposal = self._propose(base, probe, conditional=conditional, hinge=hinge)
+            proposal = (self.propose_routing(base, probe) if routing
+                        else self._propose(base, probe, conditional=conditional, hinge=hinge))
             revised = self._prepare_operator_revision(proposal)
         except StaleFeedbackRevision:
             raise
         except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
-            attempt = FeedbackRepairAttempt(probe, conditional, str(error), hinge=hinge)
+            attempt = FeedbackRepairAttempt(probe, conditional, str(error), hinge=hinge, routing=routing)
             return attempt, None, None
         rank = self._repair_rank(revised)
-        return FeedbackRepairAttempt(probe, conditional, rank=rank, hinge=hinge), proposal, revised
+        return FeedbackRepairAttempt(probe, conditional, rank=rank, hinge=hinge, routing=routing), proposal, revised
 
-    def _maintenance_candidates(self, base, unresolved, modes, offset, stop, workers):
+    def _maintenance_candidates(self, base, candidates, offset, stop, workers):
         error_settings = np.geterr()
         error_handler = np.geterrcall()
 
@@ -352,10 +426,10 @@ class FeedbackWorkspace:
             for first in range(offset, stop, workers):
                 self._require_current(base)
                 if executor is None:
-                    yield self._evaluate_candidate(base, first, unresolved, modes)
+                    yield self._evaluate_candidate(base, first, candidates)
                     continue
                 futures = [
-                    executor.submit(self._evaluate_candidate, base, ordinal, unresolved, modes)
+                    executor.submit(self._evaluate_candidate, base, ordinal, candidates)
                     for ordinal in range(first, min(first + workers, stop))
                 ]
                 failures = [error for future in futures if (error := future.exception()) is not None]
@@ -386,11 +460,11 @@ class FeedbackWorkspace:
             if resume.base is not base:
                 return FeedbackMaintenanceRound("stale", resume.base)
             offset = index(resume.next_candidate)
-        unresolved, modes = self._candidate_order(base)
-        if not unresolved:
+        candidates = self._candidate_order(base)
+        if not candidates:
             status = "guard_unsatisfied" if any(e > self._atol for e in base.guard_errors) else "satisfied"
             return FeedbackMaintenanceRound(status, base)
-        total = len(unresolved) * len(modes)
+        total = len(candidates)
         if not 0 <= offset < total:
             raise ValueError("maintenance continuation is outside the candidate list")
         stop = min(offset + limit, total)
@@ -398,7 +472,7 @@ class FeedbackWorkspace:
         attempts = []
         best = None
         try:
-            search = self._maintenance_candidates(base, unresolved, modes, offset, stop, workers)
+            search = self._maintenance_candidates(base, candidates, offset, stop, workers)
             with closing(search) as results:
                 for attempt, proposal, revised in results:
                     if attempt.rank is not None and (best is None or attempt.rank < best[0]):
@@ -418,7 +492,17 @@ class FeedbackWorkspace:
     def _prepare_operator_revision(self, proposal):
         base = proposal.base
         probe = self._open_probe(base, proposal.probe)
-        if proposal.term is None:
+        goal = self._probes[probe]
+        if proposal._query is not None:
+            if goal.routing is None:
+                raise ValueError("routing edit requires a declared source mass goal")
+            old_query = base.kernel._observation_query
+            if old_query is None:
+                old_query = base.kernel._query
+            with np.errstate(over="raise", invalid="raise"):
+                norm = _frobenius(proposal._query - old_query)
+            candidate = base.kernel._with_observation_query(proposal._query)
+        elif proposal.term is None:
             with np.errstate(over="raise", invalid="raise"):
                 norm = _frobenius(proposal._weight - base.kernel._dense_observation_value())
             candidate = base.kernel._with_observation_value(proposal._weight)
@@ -428,9 +512,14 @@ class FeedbackWorkspace:
             candidate = base.kernel._with_conditional(proposal.term)
         if not isfinite(norm) or norm > self._max_update_norm:
             raise ValueError("proposed operator exceeds the workspace update budget")
-        errors, prefixes, probe_routes = self._working_results(candidate, base.memory, base._probe_routes)
+        errors, prefixes, probe_routes, masses = self._working_results(candidate, base.memory, base._probe_routes)
         if errors[probe] > self._atol:
             raise ValueError("proposed operator does not satisfy its target probe")
+        if goal.routing is not None and masses[probe] < goal.routing.min_mass:
+            raise ValueError("proposed operator does not meet the target source mass floor")
+        for check, old_mass, mass in zip(self._probes, base.source_masses, masses, strict=True):
+            if check.routing is not None and old_mass >= check.routing.min_mass > mass:
+                raise ValueError("proposed operator regresses a protected source mass floor")
         if any(new > max(old, self._atol)
                for old, new in zip(base.errors, errors, strict=True)):
             raise ValueError("proposed operator regresses a workspace probe")
@@ -439,17 +528,17 @@ class FeedbackWorkspace:
                for old, new in zip(base.guard_errors, guard_errors, strict=True)):
             raise ValueError("proposed operator regresses a workspace guard")
         anchors = list(base._anchors)
-        goal = self._probes[probe]
-        if base._probe_routes:
-            anchors[probe] = base._probe_routes[probe].prefix()
-        else:
-            anchors[probe] = self._run(base.kernel, base.memory, goal).history[:-1]
+        if anchors[probe] is None:
+            route = base._probe_routes[probe] if base._probe_routes else None
+            anchors[probe] = route.prefix() if route is not None else self._run(
+                base.kernel, base.memory, goal,
+            ).history[:-1]
         for expected, actual in zip(anchors, prefixes, strict=True):
             if expected is not None and not np.allclose(actual, expected, atol=self._atol, rtol=0):
                 raise ValueError("proposed operator changes a protected trajectory prefix")
         anchors = self._anchors(errors, prefixes, tuple(anchors))
         return FeedbackRevision(base.number + 1, candidate, base.memory, errors, anchors,
-                                guard_errors, probe_routes, guard_routes)
+                                guard_errors, probe_routes, guard_routes, masses)
 
     def replace_observations(self, base, observations):
         """Install a new observation bank and measure its outcomes with the current operator."""
@@ -478,7 +567,7 @@ class FeedbackWorkspace:
         self._check_reference_capacity(kernel, memory)
         probe_previous = () if previous is None or not self._max_retained_tree_scores else previous._probe_routes
         guard_previous = () if previous is None or not self._max_retained_tree_scores else previous._guard_routes
-        errors, prefixes, probe_routes = self._working_results(kernel, memory, probe_previous)
+        errors, prefixes, probe_routes, masses = self._working_results(kernel, memory, probe_previous)
         guard_errors, guard_routes = self._guard_results(kernel, memory, guard_previous)
         return FeedbackRevision(number, kernel, memory, errors, self._anchors(errors, prefixes),
-                                guard_errors, probe_routes, guard_routes)
+                                guard_errors, probe_routes, guard_routes, masses)

@@ -10,10 +10,11 @@ import numpy as np
 import pytest
 
 from experiments.memory import feedback_repair_queue
-from experiments.memory.feedback_journal import FeedbackCandidateData, FeedbackSearchShard
+from experiments.memory.feedback_journal import FeedbackCandidateData, FeedbackSearchShard, JournaledFeedbackWorkspace
 from experiments.memory.feedback_repair_queue import FeedbackRepairQueue, StaleFeedbackLease
-from experiments.memory.feedback_workspace import StaleFeedbackRevision
+from experiments.memory.feedback_workspace import FeedbackProbe, FeedbackRoutingGoal, StaleFeedbackRevision
 from experiments.memory.test_feedback_workspace import _tree_journal
+from experiments.memory.tree_feedback import TreeFeedbackKernel
 
 
 def _synthesize(workspace, lease):
@@ -27,6 +28,105 @@ def _complete_window(workspace, queue):
         lease = queue.claim(lease_seconds=60)
         queue.complete(lease, _synthesize(workspace, lease))
     return plan
+
+
+def _routing_journal(path, *, create=False, floor=0.8, conflicting_guard=False):
+    key = [[1], [0], [0]]
+    kernel = TreeFeedbackKernel(
+        depth=2, max_frontier=1, query=[[0], [0], [0]], carry=[[0, 1, 0], [0, 0, 0], [0, 0, 0.4]],
+        observation_key=key, observation_value=np.diag([1, 0, 0]),
+        feedback_key=np.zeros((3, 1)), feedback_value=np.zeros((3, 3)), max_steps=2,
+    )
+    # At the second step the unnormalized masses are t, 1/t and 1.
+    t = 2 + 2 * np.sqrt(2)
+    endpoint = np.tanh((t - 1 / t) / (t + 1 / t + 1))
+    probes = [FeedbackProbe([1, 0, 0], 2, [endpoint, 0, 0], FeedbackRoutingGoal(1, floor))]
+    guards = ([FeedbackProbe([0, 1, 0], 2, [0, 0, 0])] if conflicting_guard else
+              [FeedbackProbe([0, 0, 1], 2, [0, 0, np.tanh(0.4 * np.tanh(0.4))])])
+    return JournaledFeedbackWorkspace(path, kernel, [[-1, 0, 0], [1, 0, 0]], probes,
+                                      max_update_norm=4, guards=guards, max_reference_frontier=4,
+                                      max_retained_tree_scores=3, create=create)
+
+
+def test_worker_process_routes_a_source_and_coordinator_recovers_its_durable_receipt(tmp_path):
+    path = tmp_path / "routing.sqlite"
+    coordinator = _routing_journal(path, create=True)
+    queue = FeedbackRepairQueue(coordinator)
+    base = coordinator.snapshot()
+    plan = coordinator.plan_repairs(max_candidates=2)
+    assert plan.version == 2 and plan.candidates == ((0, "weight"), (0, "route"))
+    assert base.source_masses[0] == pytest.approx(1 / 3)
+    queue.enqueue(plan)
+    script = """
+import sys
+from experiments.memory.feedback_repair_queue import FeedbackRepairQueue
+from experiments.memory.test_feedback_repair_queue import _routing_journal, _synthesize
+worker = _routing_journal(sys.argv[1])
+queue = FeedbackRepairQueue(worker)
+while (lease := queue.claim(lease_seconds=60)) is not None:
+    queue.complete(lease, _synthesize(worker, lease))
+assert worker.snapshot().number == 0
+"""
+    subprocess.run([sys.executable, "-B", "-c", script, str(path)], check=True, timeout=30)
+    publisher = _routing_journal(path)
+    restored_queue = FeedbackRepairQueue(publisher)
+    assert restored_queue.ready_plans() == (plan,)
+    result = restored_queue.publish(plan)
+    assert result.status == "committed" and result.selected_attempt == 1
+    assert result.attempts[0].rejection and result.attempts[1].routing
+    assert result.revision.source_masses[0] >= 0.8 and result.revision.errors[0] < 1e-8
+    assert result.revision.guard_errors == base.guard_errors == (0.0,)
+    assert result.revision._probe_routes == (None,)
+    with closing(publisher._connect()) as db:
+        assert db.execute("SELECT kind, length(payload) FROM feedback_events").fetchall() == [("route", 24)]
+
+    opened = _routing_journal(path)
+    recovered = FeedbackRepairQueue(opened).latest_receipt()
+    assert recovered.plan == plan and recovered.attempts == result.attempts
+    assert recovered.published_revision == opened.snapshot().number == 1
+    np.testing.assert_array_equal(opened.snapshot().kernel._observation_query,
+                                  result.revision.kernel._observation_query)
+    assert opened.snapshot().source_masses == result.revision.source_masses
+    with pytest.raises(ValueError, match="disagree with the feedback journal"):
+        _routing_journal(path, floor=0.81)
+
+
+def test_deleted_routing_slot_invalidates_worker_results_and_remains_revisable(tmp_path):
+    path = tmp_path / "routing-revision.sqlite"
+    workspace = _routing_journal(path, create=True)
+    queue = FeedbackRepairQueue(workspace)
+    plan = _complete_window(workspace, queue)
+    source = _routing_journal(path)
+    removed = source.revise_observation_slots(source.snapshot(), {1: None})
+    assert removed.source_masses == (0.0,)
+    with pytest.raises(StaleFeedbackRevision):
+        queue.publish(plan)
+    assert queue.receipt(plan) is None
+
+    missing_plan = _complete_window(workspace, queue)
+    refused = queue.publish(missing_plan)
+    assert refused.status == "no_candidate" and "occupied" in refused.attempts[1].rejection
+    restored = source.revise_observation_slots(removed, {1: [1, 0, 0]})
+    assert restored.source_masses[0] == pytest.approx(1 / 3)
+    next_plan = _complete_window(workspace, queue)
+    admitted = queue.publish(next_plan)
+    assert admitted.status == "committed" and admitted.revision.source_masses[0] >= 0.8
+    reopened = FeedbackRepairQueue(_routing_journal(path))
+    assert reopened.receipt(missing_plan).attempts[1].routing
+    assert reopened.receipt(next_plan).published_revision == 3
+
+
+def test_coordinator_refuses_a_routing_draft_that_changes_an_independent_guard(tmp_path):
+    path = tmp_path / "routing-guard.sqlite"
+    worker = _routing_journal(path, create=True, conflicting_guard=True)
+    queue = FeedbackRepairQueue(worker)
+    plan = _complete_window(worker, queue)
+    # A worker can synthesize the route without passing the coordinator's guard check.
+    assert worker.synthesize_repairs(plan, start=1, stop=2).results[0].payload is not None
+    coordinator = _routing_journal(path, conflicting_guard=True)
+    result = FeedbackRepairQueue(coordinator).publish(plan)
+    assert result.status == "no_candidate" and coordinator.snapshot().number == 0
+    assert result.attempts[1].routing and "regresses a workspace guard" in result.attempts[1].rejection
 
 
 def test_expired_lease_cannot_complete_and_reassignment_has_a_new_token(tmp_path, monkeypatch):

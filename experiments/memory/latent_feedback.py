@@ -469,6 +469,8 @@ class FeedbackKernel:
         return memory._keys, slot
 
     def _source_mass_step(self, state, slot):
+        if not 0 <= slot < len(state._memory._keys):
+            return self.step(state), 0.0
         diagnostics = {}
         stepped = self._advance(state, diagnostics=diagnostics)[0]
         return stepped, float(diagnostics["probabilities"][slot])

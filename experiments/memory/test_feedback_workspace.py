@@ -17,6 +17,7 @@ from experiments.memory.feedback_journal import (
 from experiments.memory.feedback_workspace import (
     FeedbackProbe,
     FeedbackProposal,
+    FeedbackRoutingGoal,
     FeedbackWorkspace,
     StaleFeedbackRevision,
 )
@@ -32,6 +33,47 @@ def _kernel(*, factored=False):
         observation_key=identity, observation_value=FactoredValue(zero, identity) if factored else zero,
         feedback_key=zero, feedback_value=zero, max_steps=1,
     )
+
+
+def test_matching_an_endpoint_does_not_bypass_its_declared_source_floor():
+    kernel = FeedbackKernel(
+        query=[[0.4], [0]], carry=None, observation_key=[[1], [0]],
+        observation_value=np.zeros((2, 2)), feedback_key=[[0], [0]],
+        feedback_value=np.zeros((2, 2)), max_steps=1,
+    )
+    probe = FeedbackProbe([1, 0], 1, [0.5, 0], FeedbackRoutingGoal(1, 0.8))
+    workspace = FeedbackWorkspace(kernel, [[-1, 0], [1, 0]], [probe], max_update_norm=4)
+    base = workspace.snapshot()
+    value_edit = workspace.propose(base, 0)
+    candidate = kernel._with_observation_value(value_edit._weight)
+    endpoint, mass = candidate._source_mass_step(candidate.start(probe.seed, base.memory), 1)
+    np.testing.assert_allclose(endpoint.latest, probe.target, atol=1e-12, rtol=0)
+    assert mass == base.source_masses[0] < 0.8
+    with pytest.raises(ValueError, match="target source mass floor"):
+        workspace.publish(value_edit)
+    assert workspace.snapshot() is base
+
+
+def test_floor_only_repair_preserves_other_attained_floors():
+    kernel = FeedbackKernel(
+        query=[[1], [0]], carry=None, observation_key=[[1], [0]],
+        observation_value=np.zeros((2, 2)), feedback_key=[[0], [0]],
+        feedback_value=np.zeros((2, 2)), max_steps=1,
+    )
+    probes = [FeedbackProbe(seed, 1, [0, 0], FeedbackRoutingGoal(1, 0.8)) for seed in np.eye(2)]
+    workspace = FeedbackWorkspace(kernel, [[-1, 0], [1, 0]], probes, max_update_norm=2)
+    base = workspace.snapshot()
+    assert base.errors == (0, 0) and base.source_masses[0] > 0.8 > base.source_masses[1]
+    wrong = FeedbackProposal(base, 1, _query=[[0], [1]])
+    with pytest.raises(ValueError, match="protected source mass floor"):
+        workspace.publish(wrong)
+    assert workspace.snapshot() is base
+    repaired = workspace.maintain(max_candidates=2, max_workers=2)
+    assert repaired.status == "committed" and repaired.attempts[repaired.selected_attempt].routing
+    assert repaired.revision.errors == (0, 0)
+    assert repaired.revision.source_masses[0] == base.source_masses[0]
+    assert repaired.revision.source_masses[1] >= 0.8
+    assert workspace.maintain(max_candidates=2).status == "satisfied"
 
 
 def _workspace(second_target=(0, 0.5), *, journal=None):
@@ -85,15 +127,15 @@ def test_observation_revision_during_admission_fences_out_stale_work(monkeypatch
     base = workspace.publish(workspace.propose(workspace.snapshot(), 0))
     proposed = workspace.propose(base, 1)
     replaying, resume = Event(), Event()
-    measure = workspace._measure
+    measure = workspace._working_results
 
-    def interleave(kernel, memory):
+    def interleave(kernel, memory, previous=()):
         if kernel is not base.kernel:
             replaying.set()
             assert resume.wait(5), "publication replay did not resume"
-        return measure(kernel, memory)
+        return measure(kernel, memory, previous)
 
-    monkeypatch.setattr(workspace, "_measure", interleave)
+    monkeypatch.setattr(workspace, "_working_results", interleave)
     with ThreadPoolExecutor(max_workers=1) as worker:
         result = worker.submit(workspace.publish, proposed)
         try:
@@ -265,15 +307,15 @@ def test_journal_compare_and_swap_catches_another_writers_commit(tmp_path, monke
     base = first.snapshot()
     proposed = first.propose(base, 0)
     replaying, resume = Event(), Event()
-    measure = first._measure
+    measure = first._working_results
 
-    def interleave(kernel, memory):
+    def interleave(kernel, memory, previous=()):
         if kernel is not base.kernel:
             replaying.set()
             assert resume.wait(5)
-        return measure(kernel, memory)
+        return measure(kernel, memory, previous)
 
-    monkeypatch.setattr(first, "_measure", interleave)
+    monkeypatch.setattr(first, "_working_results", interleave)
     with ThreadPoolExecutor(max_workers=1) as thread:
         publication = thread.submit(first.publish, proposed)
         try:
@@ -375,16 +417,16 @@ def test_source_and_operator_workers_share_one_recoverable_ancestry(tmp_path, mo
     base = operator.publish(operator.propose(operator.snapshot(), 0))
     pending = operator.propose(base, 1)
     replaying, resume = Event(), Event()
-    measure = operator._measure
+    measure = operator._working_results
 
-    def interleave(kernel, memory):
+    def interleave(kernel, memory, previous=()):
         if kernel is not base.kernel:
             replaying.set()
             assert resume.wait(5)
-        return measure(kernel, memory)
+        return measure(kernel, memory, previous)
 
     with monkeypatch.context() as patch, ThreadPoolExecutor(max_workers=1) as pool:
-        patch.setattr(operator, "_measure", interleave)
+        patch.setattr(operator, "_working_results", interleave)
         publishing = pool.submit(operator.publish, pending)
         try:
             assert replaying.wait(5)
@@ -626,10 +668,10 @@ def test_parallel_maintenance_matches_serial_with_out_of_order_completion(monkey
     second_done = Event()
     evaluate = parallel._evaluate_candidate
 
-    def finish_out_of_order(base, ordinal, unresolved, modes):
+    def finish_out_of_order(base, ordinal, candidates):
         if ordinal == 0:
             assert second_done.wait(5), "another candidate did not execute concurrently"
-        result = evaluate(base, ordinal, unresolved, modes)
+        result = evaluate(base, ordinal, candidates)
         evaluated.append((ordinal, get_ident()))
         if ordinal == 1:
             second_done.set()
@@ -655,11 +697,11 @@ def test_parallel_maintenance_drains_only_inflight_wave_after_source_revision(tm
     completed = []
     evaluate = operator._evaluate_candidate
 
-    def while_source_changes(base, ordinal, unresolved, modes):
+    def while_source_changes(base, ordinal, candidates):
         if ordinal < 2:
             wave.wait(timeout=5)
             assert resume.wait(5), "source did not finish changing"
-        result = evaluate(base, ordinal, unresolved, modes)
+        result = evaluate(base, ordinal, candidates)
         completed.append(ordinal)
         return result
 
@@ -688,11 +730,11 @@ def test_parallel_maintenance_drains_other_work_before_propagating_unexpected_er
     completed = Event()
     evaluate = workspace._evaluate_candidate
 
-    def fail_one(base, ordinal, unresolved, modes):
+    def fail_one(base, ordinal, candidates):
         started.wait(timeout=5)
         if ordinal == 0:
             raise RuntimeError("unexpected candidate failure")
-        result = evaluate(base, ordinal, unresolved, modes)
+        result = evaluate(base, ordinal, candidates)
         completed.set()
         return result
 
@@ -711,9 +753,9 @@ def test_parallel_maintenance_preserves_callers_numpy_error_policy(monkeypatch):
     def callback(*args):
         pytest.fail(f"unexpected floating point callback: {args}")
 
-    def check_policy(base, ordinal, unresolved, modes):
+    def check_policy(base, ordinal, candidates):
         received.append((np.geterr(), np.geterrcall()))
-        return evaluate(base, ordinal, unresolved, modes)
+        return evaluate(base, ordinal, candidates)
 
     monkeypatch.setattr(workspace, "_evaluate_candidate", check_policy)
     previous = np.geterrcall()
@@ -733,7 +775,7 @@ def test_parallel_maintenance_reports_both_failures_in_candidate_order(monkeypat
     base = workspace.snapshot()
     second_failed = Event()
 
-    def fail_out_of_order(base, ordinal, unresolved, modes):
+    def fail_out_of_order(base, ordinal, candidates):
         if ordinal == 0:
             assert second_failed.wait(5)
             raise RuntimeError("first candidate")

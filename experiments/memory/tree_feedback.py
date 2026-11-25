@@ -267,7 +267,7 @@ class TreeFeedbackKernel(FeedbackKernel):
         if len(state._history) >= self._max_steps:
             raise RuntimeError("feedback step budget exhausted")
 
-    def _route_program_path(self, memory, slot):
+    def _route_program_path(self, memory, slot, *, missing_ok=False):
         if type(self) is not TreeFeedbackKernel:
             raise ValueError("route programming requires a supported softmax kernel")
         if self._logit_tolerance != 0.0 or self._max_frontier < memory.count:
@@ -282,6 +282,8 @@ class TreeFeedbackKernel(FeedbackKernel):
             path.append(node)
             node = node.right if slot & (1 << bit) else node.left
         if node is None:
+            if missing_ok:
+                return ()
             raise ValueError("route programming requires occupied observation slots")
         return (*path, node)
 
@@ -311,9 +313,12 @@ class TreeFeedbackKernel(FeedbackKernel):
         return np.asarray(keys), selected
 
     def _source_mass_step(self, state, slot):
+        self._require_state(state)
+        path = set(self._route_program_path(state._memory, slot, missing_ok=True))
+        if not path:
+            return self.step(state), 0.0
         diagnostics = {}
         stepped = self._advance(state, diagnostics=diagnostics)[0]
-        path = set(self._route_program_path(state._memory, slot))
         for (score, probability) in zip(diagnostics["frontier"], diagnostics["probabilities"]):
             if score.node in path:
                 return stepped, float(probability) / score.node.count
