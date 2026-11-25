@@ -139,6 +139,61 @@ def _compact_region(region, active_ports):
     return replace(region, ports=ports, positions=positions, factor=_frozen(factor), readout=_frozen(readout))
 
 
+def _merged_region(regions, internalized, active_ports):
+    old_ports = tuple(cell for region in regions for cell in region.ports)
+    retired_ports = tuple(cell for cell in old_ports if cell not in active_ports)
+    ports = tuple(sorted(active_ports))
+    columns = {cell: column for column, cell in enumerate((*retired_ports, *ports))}
+    matrix = np.zeros((len(old_ports) + len(internalized), len(old_ports) + 1))
+    row = 0
+    for region in regions:
+        block = slice(row, row + len(region.ports))
+        matrix[block, [columns[cell] for cell in region.ports]] = region.factor[:, :-1]
+        matrix[block, -1] = region.factor[:, -1]
+        row = block.stop
+    for row, name in enumerate(sorted(internalized), start=row):
+        source = internalized[name]
+        _write_coefficients(matrix[row, :-1], columns, source)
+        matrix[row, -1] = _weighted_value(source)
+
+    factor, retired_readout = _eliminate(matrix, len(retired_ports))
+    transport = np.concatenate((retired_readout, np.eye(len(ports) + 1)), axis=0)
+    interior = tuple(cell for region in regions for cell in tuple(region.positions)[:len(region.readout)])
+    readouts = [region.readout @ transport[[*(columns[cell] for cell in region.ports), -1]]
+                for region in regions]
+    readout = np.concatenate((*readouts, retired_readout), axis=0)
+    if not np.isfinite(readout).all():
+        raise FloatingPointError("nonfinite merged region read operator")
+    cells = (*interior, *retired_ports, *ports)
+    positions = MappingProxyType({cell: column for column, cell in enumerate(cells)})
+
+    components = _Components(cells)
+    sources, neighbors, anchors = {}, {}, {}
+    for region in regions:
+        for cell, component in region.components.items():
+            components.join(cell, component)
+        sources.update(region._sources)
+        neighbors.update(region.source_paths.neighbors)
+        anchors.update(region.source_paths.anchors)
+    sources.update(internalized)
+    joined_neighbors = {}
+    for name, source in sorted(internalized.items()):
+        first, second = source.source, source.target
+        components.join(first, second)
+        for cell, peer in ((first, second), (second, first)):
+            if cell not in joined_neighbors:
+                joined_neighbors[cell] = dict(neighbors.get(cell, {}))
+            joined_neighbors[cell].setdefault(peer, name)
+    neighbors.update({cell: MappingProxyType(edges) for cell, edges in joined_neighbors.items()})
+    return _Region(
+        MappingProxyType(sources), ports, positions,
+        MappingProxyType({cell: components.root(cell) for cell in cells}),
+        frozenset(components.root(cell) for cell in anchors),
+        LocalSourcePaths(MappingProxyType(neighbors), MappingProxyType(anchors)),
+        _frozen(factor), _frozen(readout),
+    )
+
+
 @dataclass(frozen=True, eq=False)
 class _CoarseOperator:
     left: np.ndarray
@@ -495,6 +550,11 @@ class RelativeHierarchySnapshot:
         return len(self._port_positions)
 
     @property
+    def membership(self):
+        """Return the cell-to-region assignment of this revision."""
+        return self._owner._membership
+
+    @property
     def elimination_order(self):
         """Return this branch's sparse ordering, or None for the default SVD."""
         return None if self._elimination_rank is None else tuple(self._elimination_rank)
@@ -767,6 +827,45 @@ class RelativeObservationHierarchy:
         magnitude = max((abs(row.value) for _, _, row in staged if row is not None), default=0.0)
         return self._snapshot(MappingProxyType(sources), MappingProxyType(bridges), factors, rebuilt,
                               base=base, bridge_edits=bridge_edits, source_magnitude=magnitude)
+
+    def merge_regions(self, base, first, second):
+        """Fuse two regional operators while keeping the represented measurements."""
+        if base._owner is not self:
+            raise ValueError("relative snapshot belongs to a different hierarchy")
+        first, second = sorted((index(first), index(second)))
+        if not 0 <= first < second < len(base._regions):
+            raise ValueError("merge needs two distinct existing region labels")
+
+        incident = base._support_graph.incident
+        left = incident.get(first, frozenset())
+        right = incident.get(second, frozenset())
+        internalized = {name: base._bridges[name] for name in left & right}
+        active_ports = {cell for name in left ^ right for cell in base._bridges[name]._endpoints()
+                        if self._membership[cell] in (first, second)}
+        merged = _merged_region((base._regions[first], base._regions[second]), internalized, active_ports)
+        regions = list(base._regions)
+        regions[first] = merged
+        del regions[second]
+        bridges = {name: source for name, source in base._bridges.items() if name not in internalized}
+        membership = tuple(first if label == second else label - int(label > second)
+                           for label in self._membership)
+        owner = RelativeObservationHierarchy(membership, ridge=self._ridge, elimination_order=base.elimination_order)
+        # Region IDs and incidence changed. Index the new topology from scratch.
+        return owner._snapshot(base._sources, MappingProxyType(bridges), regions, (first,),
+                               source_magnitude=base._source_magnitude)
+
+    def repartition(self, base, membership):
+        """Rebuild a partition from the current measurements, including after a merge."""
+        if base._owner is not self:
+            raise ValueError("relative snapshot belongs to a different hierarchy")
+        membership = tuple(map(index, membership))
+        if len(membership) != self._cells:
+            raise ValueError("partition must contain every cell")
+        if membership == self._membership:
+            return base
+        owner = RelativeObservationHierarchy(membership, ridge=self._ridge, elimination_order=base.elimination_order)
+        rebuilt = owner.initialize(base._sources)
+        return replace(rebuilt, _sources=base._sources, _source_magnitude=base._source_magnitude)
 
     def reorder(self, base, elimination_order):
         """Branch from the same sources with a different sparse elimination order."""

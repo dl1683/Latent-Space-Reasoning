@@ -4,6 +4,7 @@ from contextlib import closing
 from dataclasses import dataclass
 from hashlib import sha256
 import json
+from math import isfinite
 from operator import index
 from pathlib import Path
 import sqlite3
@@ -14,7 +15,7 @@ import numpy as np
 from experiments.memory.feedback_journal import _event_digest
 from experiments.memory.relative_hierarchy import RelativeHierarchySnapshot
 from experiments.memory.relative_observations import RelativeObservation
-from experiments.memory.relative_workspace import RelativeHierarchyWorkspace
+from experiments.memory.relative_workspace import RelativeHierarchyWorkspace, _agrees
 
 
 def _json(value):
@@ -54,7 +55,6 @@ class JournaledRelativeHierarchyWorkspace:
     def __init__(self, path, hierarchy, observations, *, create=False):
         self._path = Path(path).resolve()
         self._lock = Lock()
-        self._hierarchy = hierarchy
         self._error_policy = np.geterr()
         sources = dict(observations)
         initial = hierarchy.initialize(sources)
@@ -110,12 +110,17 @@ class JournaledRelativeHierarchyWorkspace:
 
     def _replay(self, snapshot, kind, payload):
         data = json.loads(payload)
+        owner = snapshot._owner
         if kind == "sources":
-            revised = self._hierarchy.revise(snapshot, _decode_sources(data))
+            revised = owner.revise(snapshot, _decode_sources(data))
         elif kind == "layout":
-            revised = self._hierarchy.reorder(snapshot, data["order"])
+            revised = owner.reorder(snapshot, data["order"])
         elif kind == "compact":
-            revised = self._hierarchy.compact(snapshot, max_regions=data)
+            revised = owner.compact(snapshot, max_regions=data)
+        elif kind == "merge_regions":
+            revised = owner.merge_regions(snapshot, *data)
+        elif kind == "repartition":
+            revised = owner.repartition(snapshot, *data)
         else:
             raise ValueError("unknown relative journal event")
         if revised is snapshot:
@@ -168,7 +173,7 @@ class JournaledRelativeHierarchyWorkspace:
         self._require_current(base)
         changes = dict(changes)
         with np.errstate(**self._error_policy):
-            revised = self._hierarchy.revise(base.snapshot, changes)
+            revised = base.snapshot._owner.revise(base.snapshot, changes)
         return self._commit(base, revised, "sources", _json(_source_rows(changes)))
 
     def maintain_generated(self, base, workload, *, max_candidates, max_symbolic_ports, protected=(),
@@ -192,6 +197,33 @@ class JournaledRelativeHierarchyWorkspace:
         self._require_current(base)
         max_regions = index(max_regions)
         with np.errstate(**self._error_policy):
-            revised = self._hierarchy.compact(base.snapshot, max_regions=max_regions,
-                                              protected_cells=protected_cells, tolerance=tolerance)
+            revised = base.snapshot._owner.compact(
+                base.snapshot, max_regions=max_regions, protected_cells=protected_cells, tolerance=tolerance,
+            )
         return self._commit(base, revised, "compact", _json(max_regions))
+
+    def _publish_partition(self, base, kind, data, prepare, protected_cells, tolerance):
+        self._require_current(base)
+        tolerance = float(tolerance)
+        if not isfinite(tolerance) or tolerance < 0:
+            raise ValueError("partition changes need a finite nonnegative tolerance")
+        protected = tuple(protected_cells)
+        with np.errstate(**self._error_policy):
+            revised = prepare(base.snapshot, *data)
+            if not _agrees(base.snapshot.read_many(protected), revised.read_many(protected), tolerance):
+                raise ValueError("partition change altered a protected read")
+        return self._commit(base, revised, kind, _json(data))
+
+    def merge_regions(self, base, first, second, *, protected_cells=(), tolerance=1e-10):
+        """Publish a fusion of retained operators on the selected tip."""
+        regions = tuple(sorted((index(first), index(second))))
+        return self._publish_partition(
+            base, "merge_regions", regions, base.snapshot._owner.merge_regions, protected_cells, tolerance,
+        )
+
+    def repartition(self, base, membership, *, protected_cells=(), tolerance=1e-10):
+        """Publish a rebuild of this tip's sources under the requested partition."""
+        membership = tuple(map(index, membership))
+        return self._publish_partition(
+            base, "repartition", (membership,), base.snapshot._owner.repartition, protected_cells, tolerance,
+        )

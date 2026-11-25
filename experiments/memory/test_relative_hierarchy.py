@@ -942,3 +942,61 @@ def test_source_patch_refuses_underflowed_open_boundary_influence():
     with pytest.raises(FloatingPointError, match="boundary error"):
         base.preview_source_patch(0, {}, max_cells=1)
     assert base.support_witness(0) is not None
+
+
+@pytest.mark.parametrize("order", [None, tuple(reversed(range(len(_MEMBERSHIP))))])
+def test_merge_transports_retained_factors_and_named_sources(order, monkeypatch):
+    hierarchy = RelativeObservationHierarchy(_MEMBERSHIP, ridge=_RIDGE, elimination_order=order)
+    sources = {**_sources(), "a_parallel": RelativeObservation(3, 0.2, source=2, weight=2)}
+    parent = hierarchy.initialize(sources)
+    shapes = []
+    eliminate = relative_hierarchy._eliminate
+
+    def track(matrix, split):
+        shapes.append((matrix.shape, split))
+        return eliminate(matrix, split)
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("merge rebuilt fine factors")
+
+    with monkeypatch.context() as probe:
+        probe.setattr(relative_hierarchy, "_eliminate", track)
+        probe.setattr(relative_hierarchy, "_build_region", unexpected)
+        merged = hierarchy.merge_regions(parent, 1, 0)
+
+    assert shapes == [((5, 4), 2)]
+    assert merged.membership == (0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 0)
+    assert merged.elimination_order == order
+    assert merged.coarse_size == 2 and merged.rebuilt_regions == (0,)
+    assert merged._regions[1] is parent._regions[2] and merged._regions[2] is parent._regions[3]
+    assert merged._sources is parent._sources
+    assert set(merged._bridges) == {"downstream"}
+    assert {"bridge", "a_parallel"} <= merged._regions[0]._sources.keys()
+    assert "a_parallel" in dict(merged.support_witness(8).relative_sources)
+    assert merged.support_witness(11) is None
+    _assert_direct(merged, sources)
+
+    rebuilt = hierarchy.repartition(parent, merged.membership)
+    assert merged.read_many(range(len(_MEMBERSHIP))) == pytest.approx(
+        rebuilt.read_many(range(len(_MEMBERSHIP))), abs=1e-12, rel=0,
+    )
+    detached = merged._owner.revise(merged, {"bridge": None, "a_parallel": None})
+    assert detached.rebuilt_regions == (0,) and detached.read(8) is None
+    assert detached.support_witness(8) is None and parent.support_witness(8) is not None
+    _assert_direct(detached, {name: row for name, row in sources.items() if name not in ("bridge", "a_parallel")})
+    _assert_direct(parent, sources)
+
+
+def test_merge_composes_an_idle_port_and_can_merge_portless_regions():
+    hierarchy = RelativeObservationHierarchy((0, 1, 2), ridge=_RIDGE, elimination_order=(2, 1, 0))
+    sources = {"anchor": RelativeObservation(0, 0.7), "edge": RelativeObservation(1, 1.2, source=0)}
+    parent = hierarchy.initialize(sources)
+    detached = hierarchy.revise(parent, {"edge": None})
+    assert detached.coarse_size == 2
+    merged = hierarchy.merge_regions(detached, 0, 1)
+    assert merged.membership == (0, 0, 1) and merged.coarse_size == 0
+    all_cells = merged._owner.merge_regions(merged, 0, 1)
+    assert all_cells.membership == (0, 0, 0) and all_cells.coarse_size == 0
+    _assert_direct(all_cells, {"anchor": sources["anchor"]}, cells=3)
+    with pytest.raises(ValueError, match="distinct existing"):
+        all_cells._owner.merge_regions(all_cells, 0, 0)

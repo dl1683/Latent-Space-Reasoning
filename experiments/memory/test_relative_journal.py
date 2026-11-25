@@ -150,3 +150,61 @@ def test_a_worker_open_does_not_create_or_recreate_a_missing_journal(tmp_path):
     with pytest.raises(sqlite3.OperationalError):
         journal.snapshot()
     assert not path.exists()
+
+
+def test_journal_fuses_then_restores_partition_around_a_new_source_tip(tmp_path):
+    path = tmp_path / "fusion.sqlite"
+    journal, follower = _open(path, create=True), _open(path)
+    _, sources = _root()
+    parent = journal.snapshot()
+    fused = journal.merge_regions(parent, 4, 5, protected_cells=_ORDER)
+    assert fused.number == 1 and fused.snapshot.coarse_size == parent.snapshot.coarse_size - 2
+    assert fused.snapshot._sources is parent.snapshot._sources
+    assert follower.snapshot().digest == fused.digest
+    assert follower.snapshot().snapshot.membership == fused.snapshot.membership
+    _assert_values(fused, sources)
+
+    revised = follower.revise(follower.snapshot(), _LATE)
+    assert revised.snapshot.rebuilt_regions == (4,) and "row-15" not in revised.snapshot._bridges
+    assert revised.snapshot.read(17) != fused.snapshot.read(17)
+    restored = journal.repartition(journal.snapshot(), parent.snapshot.membership, protected_cells=_ORDER)
+    assert restored.number == 3 and restored.snapshot.elimination_order == parent.snapshot.elimination_order
+    assert "row-15" in restored.snapshot._bridges
+    assert journal.repartition(restored, restored.snapshot.membership, protected_cells=_ORDER) is restored
+    reopened = _open(path).snapshot()
+    assert reopened.digest == restored.digest == follower.snapshot().digest
+    assert reopened.snapshot.membership == parent.snapshot.membership
+    _assert_values(reopened, sources | _LATE)
+    _assert_values(parent, sources)
+
+
+def test_guarded_merge_refuses_changed_reads_and_fences_a_competing_source(tmp_path, monkeypatch):
+    path = tmp_path / "fusion-fence.sqlite"
+    journal, writer = _open(path, create=True), _open(path)
+    parent = journal.snapshot()
+    read_many = type(parent.snapshot).read_many
+
+    def drift(snapshot, cells):
+        values = read_many(snapshot, cells)
+        if snapshot.membership != parent.snapshot.membership:
+            return tuple(value + 1 for value in values)
+        return values
+
+    with monkeypatch.context() as fault:
+        fault.setattr(type(parent.snapshot), "read_many", drift)
+        with pytest.raises(ValueError, match="altered a protected read"):
+            journal.merge_regions(parent, 4, 5, protected_cells=(17,))
+    assert journal.snapshot() is parent
+    commit = journal._commit
+
+    def publish_after_source(base, prepared, kind, payload):
+        assert kind == "merge_regions"
+        writer.revise(writer.snapshot(), _LATE)
+        return commit(base, prepared, kind, payload)
+
+    monkeypatch.setattr(journal, "_commit", publish_after_source)
+    with pytest.raises(StaleRelativeRevision, match="before publication"):
+        journal.merge_regions(parent, 4, 5, protected_cells=(17,))
+    current = journal.snapshot()
+    assert current.number == 1 and current.snapshot.membership == parent.snapshot.membership
+    assert current.snapshot._sources["row-15"] == _LATE["row-15"]
