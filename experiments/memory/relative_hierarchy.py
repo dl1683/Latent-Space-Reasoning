@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
+from itertools import zip_longest
 from math import isfinite, sqrt
 from operator import index
 from types import MappingProxyType
@@ -14,8 +15,8 @@ from experiments.memory.latent_field import LatentField, _frozen
 from experiments.memory.relative_elimination import (
     EliminationFactor,
     EliminationStep,
-    compile_elimination,
     resolve_elimination,
+    update_elimination,
 )
 from experiments.memory.relative_observations import (
     RelativeObservation,
@@ -241,6 +242,7 @@ class _EliminationCache:
     regions: Mapping[int, tuple[_Region, tuple[EliminationFactor, ...]]]
     bridges: Mapping[str, tuple[RelativeObservation, EliminationFactor]]
     steps: Mapping[int, EliminationStep]
+    intakes: Mapping[int, Mapping[tuple, EliminationFactor]]
 
 
 def _regional_elimination_factors(region):
@@ -258,32 +260,52 @@ def _regional_elimination_factors(region):
     )
 
 
-def _sparse_coarse(ports, regions, bridges, rank, previous):
-    prior_regions = previous.regions if previous is not None else {}
-    prior_bridges = previous.bridges if previous is not None else {}
-    prior_steps = previous.steps if previous is not None else {}
-    regional_factors, bridge_factors = {}, {}
-    for number, region in enumerate(regions):
+def _sparse_coarse(ports, regions, bridges, rank, previous, rebuilt_regions, bridge_edits):
+    if previous is None:
+        rebuilt_regions, bridge_edits = range(len(regions)), bridges
+        regional_factors, bridge_factors, prior_steps, prior_intakes = {}, {}, {}, {}
+        promoted = list(ports)
+    else:
+        if not bridge_edits and all(not regions[number].ports for number in rebuilt_regions):
+            return previous, (), ()
+        regional_factors, bridge_factors = dict(previous.regions), dict(previous.bridges)
+        prior_steps, prior_intakes = previous.steps, previous.intakes
+        promoted = []
+
+    changes = []
+    for number in rebuilt_regions:
+        region = regions[number]
+        old = regional_factors.pop(number, None)
+        old_factors = old[1] if old is not None else ()
+        new_factors = ()
         if region.ports:
-            old = prior_regions.get(number)
-            if old is None or old[0] is not region:
-                old = region, _regional_elimination_factors(region)
-            regional_factors[number] = old
-    for name, bridge in sorted(bridges.items()):
-        old = prior_bridges.get(name)
-        if old is None or old[0] != bridge:
+            new_factors = _regional_elimination_factors(region)
+            regional_factors[number] = region, new_factors
+            if previous is not None:
+                promoted.extend(cell for cell in region.ports if cell not in prior_steps)
+        changes.extend(((0, number, part), before, after)
+                       for part, (before, after) in enumerate(zip_longest(old_factors, new_factors)))
+
+    for name in bridge_edits:
+        bridge = bridges.get(name)
+        old = bridge_factors.pop(name, None)
+        old_factor = old[1] if old is not None else None
+        new_factor = None
+        if bridge is not None:
             cells = bridge._endpoints()
             row = np.zeros((1, 3))
             _write_coefficients(row[0, :-1], {cell: i for i, cell in enumerate(cells)}, bridge)
             row[0, -1] = _weighted_value(bridge)
-            old = bridge, EliminationFactor(cells, _frozen(row))
-        bridge_factors[name] = old
+            new_factor = EliminationFactor(cells, _frozen(row))
+            bridge_factors[name] = bridge, new_factor
+        changes.append(((1, name, 0), old_factor, new_factor))
 
-    factors = [factor for _, grouped in regional_factors.values() for factor in grouped]
-    factors.extend(factor for _, factor in bridge_factors.values())
-    steps, rebuilt = compile_elimination(ports, rank, factors, prior_steps)
-    cache = _EliminationCache(MappingProxyType(regional_factors), MappingProxyType(bridge_factors), steps)
-    return cache, rebuilt
+    steps, intakes, rebuilt, visited = update_elimination(
+        rank, prior_steps, prior_intakes, changes, promoted,
+    )
+    cache = _EliminationCache(MappingProxyType(regional_factors), MappingProxyType(bridge_factors),
+                              steps, intakes)
+    return cache, rebuilt, visited
 
 
 @dataclass(frozen=True, eq=False)
@@ -301,6 +323,7 @@ class RelativeHierarchySnapshot:
     coarse_factorizations: int = 0
     coarse_rhs_solves: int = 0
     rebuilt_buckets: tuple[int, ...] = ()
+    visited_buckets: tuple[int, ...] = ()
     _elimination: _EliminationCache | None = None
     _elimination_rank: Mapping[int, int] | None = None
 
@@ -397,7 +420,8 @@ class RelativeObservationHierarchy:
             return target
         return None
 
-    def _snapshot(self, sources, bridges, regions, rebuilt, *, base=None, compacted=(), new_rank=None):
+    def _snapshot(self, sources, bridges, regions, rebuilt, *, base=None, compacted=(), new_rank=None,
+                  bridge_edits=()):
         ports = {cell: position for position, cell in enumerate(
             cell for region in regions for cell in region.ports
         )}
@@ -407,7 +431,7 @@ class RelativeObservationHierarchy:
                    if region.components[cell] in region.anchored}
         for bridge in bridges.values():
             coarse_support.join(components[bridge.source], components[bridge.target])
-        cache, buckets = None, ()
+        cache, buckets, visited = None, (), ()
         factorizations = solves = 0
         blocks = MappingProxyType({})
         rank = self._initial_rank if base is None else base._elimination_rank
@@ -422,7 +446,8 @@ class RelativeObservationHierarchy:
             values = _frozen(np.fromiter((projected[cell] for cell in ports), dtype=float, count=len(ports)))
         else:
             prior = base._elimination if base is not None and new_rank is None else None
-            cache, buckets = _sparse_coarse(ports, regions, bridges, rank, prior)
+            cache, buckets, visited = _sparse_coarse(ports, regions, bridges, rank, prior,
+                                                      rebuilt, bridge_edits)
             values = None
         anchor_roots = {coarse_support.root(component) for component in anchors}
         supported = frozenset(component for component in components.values()
@@ -431,7 +456,7 @@ class RelativeObservationHierarchy:
             self, sources, bridges, tuple(regions), MappingProxyType(ports), values, blocks,
             supported, rebuilt_regions=tuple(rebuilt), compacted_regions=tuple(compacted),
             coarse_factorizations=factorizations, coarse_rhs_solves=solves, rebuilt_buckets=buckets,
-            _elimination=cache, _elimination_rank=rank,
+            visited_buckets=visited, _elimination=cache, _elimination_rank=rank,
         )
 
     def initialize(self, observations):
@@ -475,12 +500,13 @@ class RelativeObservationHierarchy:
         sources = dict(base._sources)
         bridges = dict(base._bridges)
         factors = list(base._regions)
-        local_edits, promotions = {}, {}
+        local_edits, promotions, bridge_edits = {}, {}, set()
         for name, previous, replacement in staged:
             if previous is not None:
                 region = self._region_of(previous)
                 if region is None:
                     del bridges[name]
+                    bridge_edits.add(name)
                 else:
                     local_edits.setdefault(region, {})[name] = None
                 del sources[name]
@@ -488,6 +514,7 @@ class RelativeObservationHierarchy:
                 region = self._region_of(replacement)
                 if region is None:
                     bridges[name] = replacement
+                    bridge_edits.add(name)
                     for cell in replacement._endpoints():
                         if cell not in base._port_positions:
                             promotions.setdefault(self._membership[cell], set()).add(cell)
@@ -507,7 +534,7 @@ class RelativeObservationHierarchy:
             ports = set(previous.ports).union(promotions.get(region, ()))
             factors[region] = _build_region(self._regions[region], ports, local, self._ridge)
         return self._snapshot(MappingProxyType(sources), MappingProxyType(bridges), factors, rebuilt,
-                              base=base)
+                              base=base, bridge_edits=bridge_edits)
 
     def reorder(self, base, elimination_order):
         """Branch from the same sources with a different sparse elimination order."""

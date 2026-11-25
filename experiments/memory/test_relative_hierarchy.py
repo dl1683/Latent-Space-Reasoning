@@ -314,6 +314,7 @@ def test_connected_bridge_reweighting_reuses_the_unchanged_elimination_prefix():
     change = RelativeObservation(15, -1.8, source=14, weight=3)
     revised = hierarchy.revise(base, {"row-15": change})
     assert revised.coarse_size == 10 and revised.rebuilt_buckets == (14, 15)
+    assert revised.visited_buckets == (14, 15)
     assert revised.rebuilt_regions == ()
     assert revised._elimination.steps[12] is base._elimination.steps[12]
     assert abs(revised.read(12) - base.read(12)) > 0.02
@@ -479,3 +480,72 @@ def test_demand_recovery_handles_a_deep_dependency_chain():
     values = relative_elimination.resolve_elimination(steps, (0, size - 1, 0))
     assert len(values) == size
     assert values[0] == size and values[size - 1] == 1
+
+
+def test_indexed_update_routes_to_both_old_and_new_remainder_recipients():
+    def factor(cells, rows):
+        return relative_elimination.EliminationFactor(cells, _frozen(np.asarray(rows, dtype=float)))
+
+    rank = {cell: cell for cell in range(4)}
+    anchors = [factor((cell,), [[2, cell]]) for cell in rank]
+    first = factor((0, 1), [[1, -1, 2]])
+    second = factor((0, 2), [[1, -1, 1]])
+    key = (1, "link", 0)
+    seeds = [((0, cell, 0), None, row) for cell, row in enumerate(anchors)]
+    parent, routes, _, _ = relative_elimination.update_elimination(
+        rank, {}, {}, [*seeds, (key, None, first)], rank,
+    )
+    result, new_routes, rebuilt, visited = relative_elimination.update_elimination(
+        rank, parent, routes, [(key, first, second)], (),
+    )
+    assert rebuilt == visited == (0, 1, 2)
+    assert result[3] is parent[3] and new_routes[3] is routes[3]
+    assert parent[0].remainder.cells == (1,) and result[0].remainder.cells == (2,)
+    assert (2, 0, 0) in routes[1] and (2, 0, 0) not in new_routes[1]
+    reference, _ = relative_elimination.compile_elimination(rank, rank, [*anchors, second], {})
+    assert relative_elimination.resolve_elimination(result, rank) == (
+        relative_elimination.resolve_elimination(reference, rank)
+    )
+
+
+def test_indexed_revisions_match_full_sweep_on_promotions_splits_and_forks():
+    hierarchy = RelativeObservationHierarchy(_MEMBERSHIP, ridge=_RIDGE,
+                                             elimination_order=reversed(range(len(_MEMBERSHIP))))
+    observations = _sources()
+    original = hierarchy.initialize(observations)
+
+    def check(base, sources, edits):
+        revised = hierarchy.revise(base, edits)
+        numeric = revised._elimination
+        seeds = [factor for number in sorted(numeric.regions) for factor in numeric.regions[number][1]]
+        seeds.extend(numeric.bridges[name][1] for name in sorted(numeric.bridges))
+        full, rebuilt = relative_elimination.compile_elimination(
+            revised._port_positions, revised._elimination_rank, seeds, base._elimination.steps,
+        )
+        assert revised.rebuilt_buckets == rebuilt
+        for cell, step in full.items():
+            indexed = numeric.steps[cell]
+            assert indexed.dependencies == step.dependencies and np.array_equal(indexed.readout, step.readout)
+            if step.remainder is None:
+                assert indexed.remainder is None
+            else:
+                assert indexed.remainder.cells == step.remainder.cells
+                assert np.array_equal(indexed.remainder.rows, step.remainder.rows)
+        updated = {**sources, **{name: row for name, row in edits.items() if row is not None}}
+        for name, row in edits.items():
+            if row is None:
+                del updated[name]
+        _assert_direct(revised, updated)
+        return revised, updated
+
+    moved, rows = check(original, observations, {
+        "bridge": RelativeObservation(4, 0.5, source=0),
+        "joined": RelativeObservation(11, 0.6, source=4),
+    })
+    assert moved.rebuilt_regions == (0, 1) and moved.coarse_size == 6
+    check(moved, rows, {"center": None, "downstream": None})
+    check(original, observations, {"bridge": None})
+    portless, _ = check(original, observations, {"other_anchor": RelativeObservation(9, 2)})
+    assert portless._elimination is original._elimination and portless.visited_buckets == ()
+    assert portless.read(10) != original.read(10)
+    _assert_direct(original, observations)

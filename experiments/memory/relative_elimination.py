@@ -2,6 +2,7 @@
 
 from collections.abc import Mapping
 from dataclasses import dataclass
+from heapq import heappop, heappush
 from types import MappingProxyType
 
 import numpy as np
@@ -85,6 +86,50 @@ def compile_elimination(cells, rank, factors, previous: Mapping[int, Elimination
         if step.remainder is not None:
             buckets[step.remainder.cells[0]].append(step.remainder)
     return MappingProxyType(steps), tuple(rebuilt)
+
+
+def update_elimination(rank, prior_steps, prior_intakes, changes, promoted):
+    """Reroute changed inputs and reduce their affected buckets in rank order."""
+    steps, intakes = dict(prior_steps), dict(prior_intakes)
+    pending, queue = {}, []
+
+    def touch(cell):
+        if cell not in pending:
+            pending[cell] = dict(intakes.get(cell, {}))
+            heappush(queue, (rank[cell], cell))
+        return pending[cell]
+
+    def route(key, previous, replacement):
+        if previous is replacement:
+            return
+        if previous is not None:
+            old_cell = min(previous.cells, key=rank.__getitem__)
+            del touch(old_cell)[key]
+        if replacement is not None:
+            new_cell = min(replacement.cells, key=rank.__getitem__)
+            touch(new_cell)[key] = replacement
+
+    for key, previous, replacement in changes:
+        route(key, previous, replacement)
+    for cell in promoted:
+        touch(cell)
+
+    rebuilt, visited = [], []
+    while queue:
+        position, cell = heappop(queue)
+        visited.append(cell)
+        intake = pending.pop(cell)
+        inputs = tuple(intake[key] for key in sorted(intake))
+        intakes[cell] = MappingProxyType(intake)
+        previous = steps.get(cell)
+        if previous is not None and previous.inputs == inputs:
+            continue
+        step = _reduce_bucket(cell, inputs, rank, previous)
+        steps[cell] = step
+        rebuilt.append(cell)
+        old_remainder = previous.remainder if previous is not None else None
+        route((2, position, 0), old_remainder, step.remainder)
+    return MappingProxyType(steps), MappingProxyType(intakes), tuple(rebuilt), tuple(visited)
 
 
 def resolve_elimination(steps: Mapping[int, EliminationStep], cells):
