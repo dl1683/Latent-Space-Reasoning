@@ -129,6 +129,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **A surviving witness does not certify the best score, 25 November 2026.** A new alternative rose above the retained optimum while the selected proof still worked. The reader invalidated the old score and a fresh solve found a stronger proof. In a different case the same origin moved between predicates, preserving the optimum through a different proof. The chosen derivation no longer existed, so the reader required a fresh solve. Retaining only an origin set would miss the row-level dependency. Compare this conservative check with incremental solvers that can certify an alternate proof inside the edit budget. [Binding controls](../experiments/memory/test_binding_memory.py)
 
+**A useful bound can outlive an exact answer, 25 November 2026.** Removing a selected leaf can preserve the earlier upper cutoff. Adding a new contender above the cutoff can leave a feasible earlier witness. Both cases invalidate the exact result, and either bound can still prune a later solve. A finite interval alone cannot resolve disjoint compatibility. Narrowing the threshold interval changed the order of expensive checks and raised the charged work in two of 1,528 partial-record reads. Track refusal and total cost across edit streams before using the bounds as a promotion policy. [Binding controls](../experiments/memory/test_binding_memory.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

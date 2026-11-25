@@ -44,18 +44,36 @@ class _Derivation:
 
 @dataclass(frozen=True)
 class _Retained:
+    upper: float | None
     proof: BindingProof | None
     leaves: frozenset[tuple[str, str]]
     inputs: frozenset[str]
 
-    def survives(self, changes, excluded):
-        cutoff = -np.inf if self.proof is None else self.proof.strength
+    @property
+    def exact(self):
+        return self.upper == -np.inf or (self.proof is not None and self.proof.strength == self.upper)
+
+    def advance(self, changes, excluded):
+        upper = self.upper
+        lower = -np.inf if self.proof is None else self.proof.strength
         for node, origin, before, after in changes:
             if node not in self.inputs or origin in excluded:
                 continue
-            if before <= cutoff < after or (after < cutoff and (node, origin) in self.leaves):
-                return False
-        return True
+            if upper is not None and before <= upper < after:
+                upper = None
+            if (node, origin) in self.leaves:
+                lower = min(lower, after)
+        if upper is None and lower == -np.inf:
+            return None
+        proof, leaves = self.proof, self.leaves
+        if proof is not None and lower < proof.strength:
+            if lower == -np.inf:
+                proof, leaves = None, frozenset()
+            else:
+                proof = BindingProof(lower, proof.sources)
+        if upper == self.upper and proof is self.proof:
+            return self
+        return _Retained(upper, proof, leaves, self.inputs)
 
 
 @dataclass(frozen=True)
@@ -232,9 +250,14 @@ class BindingMemory:
             install(node, binding, terms)
         retained = self._retained
         if deltas:
-            surviving = {key: result for key, result in retained.items()
-                         if result.survives(deltas.get(key[1], ()), key[2])}
-            if len(surviving) != len(retained):
+            surviving = {}
+            changed = False
+            for key, result in retained.items():
+                advanced = result.advance(deltas.get(key[1], ()), key[2])
+                if advanced is not None:
+                    surviving[key] = advanced
+                changed |= advanced is not result
+            if changed:
                 retained = MappingProxyType(surviving)
         return replace(self, _sources=MappingProxyType(sources), _rows=MappingProxyType(rows), _retained=retained)
 
@@ -258,10 +281,10 @@ class BindingMemory:
             return None if origins is None else BindingProof(strength, origins)
         work_limit = _proof_work_limit(work_limit)
         retained = self._retained.get((node, binding, excluded))
-        if retained is not None:
+        if retained is not None and retained.exact:
             return retained.proof
         search = _ProofSearch(self, node, excluded, work_limit)
-        return search.resolve(binding)
+        return search.resolve(binding, retained)
 
     def remember(self, node, binding, *, without_sources=(), work_limit=65536):
         """Return a factored snapshot with one completed proof read retained."""
@@ -269,17 +292,18 @@ class BindingMemory:
             raise ValueError("remember requires a factored binding bank")
         key = self._proof_key(node, binding, without_sources)
         work_limit = _proof_work_limit(work_limit)
-        if key in self._retained:
+        prior = self._retained.get(key)
+        if prior is not None and prior.exact:
             return self
         node, binding, excluded = key
         search = _ProofSearch(self, node, excluded, work_limit)
-        derivation = search.derive(binding)
+        derivation = search.derive(binding, prior)
         if derivation is None:
-            stored = _Retained(None, frozenset(), frozenset(search.inputs))
+            stored = _Retained(-np.inf, None, frozenset(), frozenset(search.inputs))
         else:
-            stored = _Retained(derivation.proof(), derivation.leaves, frozenset(search.inputs))
+            stored = _Retained(derivation.strength, derivation.proof(), derivation.leaves, frozenset(search.inputs))
         retained = dict(self._retained)
-        if len(retained) == self.retained_limit:
+        if key not in retained and len(retained) == self.retained_limit:
             del retained[next(iter(retained))]
         retained[key] = stored
         return replace(self, _retained=MappingProxyType(retained))
@@ -353,11 +377,11 @@ class _ProofSearch:
         if self.remaining < 0:
             raise BindingCapacityError("proof search work limit exceeded")
 
-    def resolve(self, binding):
-        derivation = self.derive(binding)
+    def resolve(self, binding, retained=None):
+        derivation = self.derive(binding, retained)
         return None if derivation is None else derivation.proof()
 
-    def derive(self, binding):
+    def derive(self, binding, retained=None):
         leaves, upper, strengths = {}, {}, set()
         for node in self.inputs:
             candidates = self.rows.get((node, binding), _UNSUPPORTED).terms
@@ -373,10 +397,17 @@ class _ProofSearch:
             upper[node] = reduce(upper[parent] for parent in gate.parents)
         # Ignoring source overlap yields an upper bound, not a feasible proof.
         ceiling = upper[self.output]
+        if retained is not None and retained.upper is not None:
+            ceiling = min(ceiling, retained.upper)
         if ceiling == -np.inf:
             return None
         if self.unguarded:
             return _Derivation(ceiling, self.unguarded_leaves(upper, leaves))
+        best = None
+        if retained is not None and retained.proof is not None:
+            best = _Derivation(retained.proof.strength, retained.leaves)
+            if best.strength == ceiling:
+                return best
         domains = self.matching_domains(leaves) if self.single_source_matching else None
 
         def witness(threshold):
@@ -387,9 +418,9 @@ class _ProofSearch:
         proof = witness(ceiling)
         if proof is not None:
             return _Derivation(ceiling, proof)
-        levels = sorted(value for value in strengths if value < ceiling)
+        floor = -np.inf if best is None else best.strength
+        levels = sorted(value for value in strengths if floor < value < ceiling)
         lo, hi = 0, len(levels)
-        best = None
         while lo < hi:
             middle = (lo + hi) // 2
             threshold = levels[middle]
@@ -528,10 +559,14 @@ def continue_bindings(seed, *, memory=None, output=None, without_sources=(), wor
         strengths = np.full(memory.width, -np.inf)
         for binding in range(memory.width):
             retained = memory._retained.get((output, binding, excluded))
-            if retained is None:
+            if retained is not None and retained.proof is not None and retained.proof.strength >= seed[binding]:
+                # A feasible witness at the seed cap fixes the clamped value.
+                strengths[binding] = seed[binding]
+                continue
+            if retained is None or not retained.exact:
                 if search is None:
                     search = _ProofSearch(memory, output, excluded, work_limit)
-                proof = search.resolve(binding)
+                proof = search.resolve(binding, retained)
             else:
                 proof = retained.proof
             if proof is not None:

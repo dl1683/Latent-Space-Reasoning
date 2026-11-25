@@ -419,3 +419,83 @@ def test_retention_capacity_and_search_refusal_leave_prior_snapshots_available()
     assert first.resolve("a", 0, work_limit=1).strength == .7
     with pytest.raises(ValueError):
         second.resolve("a", 1, work_limit=0)
+
+
+def test_repair_uses_old_upper_bound_when_selected_proof_disappears(monkeypatch):
+    gates = {"out": BindingGate("disjoint_and", ("a", "b"))}
+    sources = {"p": [("a", 0, .9), ("b", 0, 1)],
+               "q": [("a", 0, .5)], "r": [("a", 0, .5)]}
+    bank = BindingMemory.prepare(("a", "b"), 1, gates, sources, materialize=False)
+    retained = bank.remember("out", 0)
+    selected = next(iter(retained.resolve("out", 0).sources - {"p"}))
+    other = next(iter({"q", "r"} - {selected}))
+    changes = {selected: None}
+    prior_match = binding_memory._ProofSearch.match
+    thresholds = []
+
+    def trace(search, threshold, domains):
+        thresholds.append(threshold)
+        return prior_match(search, threshold, domains)
+
+    monkeypatch.setattr(binding_memory._ProofSearch, "match", trace)
+    expected = BindingProof(.5, frozenset({"p", other}))
+    assert bank.revise(changes).resolve("out", 0) == expected
+    assert thresholds == [.9, .5]
+    thresholds.clear()
+    revised = retained.revise(changes)
+    repaired = revised.remember("out", 0)
+    assert repaired.resolve("out", 0, work_limit=1) == expected
+    assert thresholds == [.5]
+    assert retained.resolve("out", 0, work_limit=1).sources == {"p", selected}
+
+
+def test_repair_reuses_lower_witness_but_still_searches_for_improvement(monkeypatch):
+    gates = {"out": BindingGate("disjoint_and", ("a", "b"))}
+    sources = {"p": [("a", 0, .6), ("b", 0, 1)], "q": [("a", 0, .6)]}
+    bank = BindingMemory.prepare(("a", "b"), 1, gates, sources, materialize=False)
+    retained = bank.remember("out", 0)
+    changes = {"p": [("a", 0, .9), ("b", 0, 1)]}
+    revised = retained.revise(changes)
+    np.testing.assert_array_equal(continue_bindings([.6], memory=revised, output="out", work_limit=1), [.6])
+    with pytest.raises(BindingCapacityError):
+        revised.resolve("out", 0, work_limit=1)
+    with pytest.raises(BindingCapacityError):
+        continue_bindings([.8], memory=revised, output="out", work_limit=1)
+    prior_match = binding_memory._ProofSearch.match
+    thresholds = []
+
+    def trace(search, threshold, domains):
+        thresholds.append(threshold)
+        return prior_match(search, threshold, domains)
+
+    monkeypatch.setattr(binding_memory._ProofSearch, "match", trace)
+    expected = BindingProof(.6, frozenset({"p", "q"}))
+    assert bank.revise(changes).resolve("out", 0) == expected
+    assert thresholds == [.9, .6]
+    thresholds.clear()
+    assert revised.resolve("out", 0) == expected
+    assert thresholds == [.9]
+    better = revised.revise({"s": [("a", 0, .8)]}).remember("out", 0)
+    assert better.resolve("out", 0, work_limit=1) == BindingProof(.8, frozenset({"p", "s"}))
+
+
+def test_partial_bounds_survive_multiple_edits_without_publishing_a_guess():
+    gates = {"out": BindingGate("disjoint_and", ("a", "b"))}
+    base = BindingMemory.prepare(("a", "b"), 1, gates, {
+        "p": [("a", 0, .9), ("b", 0, 1)], "q": [("a", 0, .8)],
+    }, materialize=False, retained_limit=1).remember("out", 0)
+    reduced = base.revise({"q": [("a", 0, .4)]})
+    part = reduced._retained[("out", 0, frozenset())]
+    assert part.upper == .8 and part.proof == BindingProof(.4, frozenset({"p", "q"}))
+    with pytest.raises(BindingCapacityError):
+        reduced.remember("out", 0, work_limit=1)
+
+    replaced = reduced.revise({"q": None, "r": [("a", 0, 0)]})
+    part = replaced._retained[("out", 0, frozenset())]
+    assert part.upper == .8 and part.proof is None
+    with pytest.raises(BindingCapacityError):
+        continue_bindings([0], memory=replaced, output="out", work_limit=1)
+    np.testing.assert_array_equal(continue_bindings([1], memory=replaced, output="out"), [0])
+    repaired = replaced.remember("out", 0)
+    assert repaired.resolve("out", 0, work_limit=1) == BindingProof(0, frozenset({"p", "r"}))
+    assert base.resolve("out", 0, work_limit=1).strength == .8
