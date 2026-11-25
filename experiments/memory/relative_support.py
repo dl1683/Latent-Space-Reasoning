@@ -1,9 +1,26 @@
-"""Snapshot-owned anchor reachability over bridged observation components."""
+"""Snapshot-owned anchor reachability and named observation witnesses."""
 
 from collections import Counter
 from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
+
+from experiments.memory.relative_observations import RelativeObservation
+
+
+@dataclass(frozen=True, eq=False)
+class LocalSourcePaths:
+    neighbors: Mapping[int, Mapping[int, str]]
+    anchors: Mapping[int, str]
+
+
+@dataclass(frozen=True)
+class RelativeSupportWitness:
+    """An oriented cell path with the selected snapshot's unchanged source rows."""
+
+    cells: tuple[int, ...]
+    relative_sources: tuple[tuple[str, RelativeObservation], ...]
+    anchor_source: tuple[str, RelativeObservation]
 
 
 @dataclass(frozen=True, eq=False)
@@ -144,3 +161,65 @@ def update_bridge_support(membership, regions, bridges, base, rebuilt, bridge_ed
     neighbors = _updated_neighbors(previous.neighbors, delta, dirty)
     groups, supported, visited = _reconnect(previous, neighbors, dirty, anchored)
     return BridgeSupport(edges, incident, neighbors, groups, supported), visited
+
+
+def _path(start, neighbors, goal):
+    queue = [start]
+    parent = {start: None}
+    for node in queue:
+        if goal(node):
+            path = [node]
+            while parent[path[-1]] is not None:
+                path.append(parent[path[-1]])
+            return tuple(reversed(path))
+        for other in sorted(neighbors.get(node, ())):
+            if other not in parent:
+                parent[other] = node
+                queue.append(other)
+    raise RuntimeError("supported observation component has no path to its witness")
+
+
+def support_witness(snapshot, cell):
+    """Find one structural witness without recovering numerical coordinates."""
+    membership = snapshot._owner._membership
+    regions = snapshot._regions
+    graph = snapshot._support_graph
+
+    def anchored(component):
+        return component in regions[membership[component]].anchored
+
+    component = regions[membership[cell]].components[cell]
+    if not anchored(component) and component not in snapshot._supported_ports:
+        return None
+    components = _path(component, graph.neighbors, anchored)
+    cells, names = [cell], []
+    bridge_names = {}
+
+    def append_local(paths, goal):
+        path = _path(cells[-1], paths.neighbors, goal)
+        cells.extend(path[1:])
+        names.extend(paths.neighbors[first][second] for first, second in zip(path, path[1:]))
+
+    for first, second in zip(components, components[1:]):
+        region = membership[first]
+        if region not in bridge_names:
+            chosen = {}
+            for name in sorted(graph.incident[region]):
+                chosen.setdefault(graph.edges[name], name)
+            bridge_names[region] = chosen
+        name = bridge_names[region][tuple(sorted((first, second)))]
+        bridge = snapshot._bridges[name]
+        exit_cell, entry = bridge.source, bridge.target
+        if membership[exit_cell] != region:
+            exit_cell, entry = entry, exit_cell
+        append_local(regions[region].source_paths, lambda node: node == exit_cell)
+        names.append(name)
+        cells.append(entry)
+
+    paths = regions[membership[components[-1]]].source_paths
+    append_local(paths, paths.anchors.__contains__)
+    name = paths.anchors[cells[-1]]
+    return RelativeSupportWitness(
+        tuple(cells), tuple((edge, snapshot._sources[edge]) for edge in names),
+        (name, snapshot._sources[name]),
+    )

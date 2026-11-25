@@ -57,6 +57,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **Lost acknowledgment and stale layout preparation, 25 November 2026.** A source process committed while another process had already prepared a guarded order change. The durable tip check refused that layout. A separate process exited before acknowledging its own committed source event. Recovery found the event on disk. Treat an interrupted call as an unresolved outcome until the journal is checked. [Durable relative-workspace fixtures](../experiments/memory/test_relative_journal.py)
 
+**Structural witness versus numerical estimation, 25 November 2026.** The signed sum along a valid named observation path yielded a different value from the retained weighted estimate in the conflicting-path fixture. The named path establishes anchor reachability. Claims about which observations changed an estimate require separate interventions. [Named-witness fixture](../experiments/memory/test_relative_hierarchy.py)
+
 **Equal observation mixtures, 24 November 2026.** A fixed shared value map could not give two different contributions for the same observation mixture while preserving a solved probe. The fixture isolates a representational limit of that edit surface. A bounded conditional term used the different hidden states to resolve this case. Repeated fitting of the same conflicting linear constraints cannot add the missing distinction. Admission audits also found that unnormalized factors could underflow the weight budget and that endpoint-only acceptance could hide prefix drift. The constructor now checks unit axes, and publication compares against fixed prefix anchors across edits on the same observation bank.
 
 ## Recovery and interpretation

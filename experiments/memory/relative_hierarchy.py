@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from itertools import zip_longest
 from math import isfinite, sqrt
 from operator import index
@@ -23,7 +23,12 @@ from experiments.memory.relative_observations import (
     _problem,
     _validate_observation,
 )
-from experiments.memory.relative_support import BridgeSupport, update_bridge_support
+from experiments.memory.relative_support import (
+    BridgeSupport,
+    LocalSourcePaths,
+    support_witness,
+    update_bridge_support,
+)
 
 
 class _Components:
@@ -61,6 +66,7 @@ class _Region:
     positions: Mapping[int, int]
     components: Mapping[int, int]
     anchored: frozenset[int]
+    source_paths: LocalSourcePaths
     factor: np.ndarray
     readout: np.ndarray
 
@@ -86,15 +92,17 @@ def _build_region(cells, ports, sources, ridge):
     size, split = len(order), len(interior)
     matrix = np.zeros((len(sources) + size, size + 1))
     components = _Components(cells)
-    anchors = set()
+    local_paths, anchor_sources = {}, {}
     for row, name in enumerate(sorted(sources)):
         observation = sources[name]
         _write_coefficients(matrix[row, :-1], positions, observation)
         matrix[row, -1] = _weighted_value(observation)
         if observation.source is None:
-            anchors.add(observation.target)
+            anchor_sources.setdefault(observation.target, name)
         else:
             components.join(observation.source, observation.target)
+            local_paths.setdefault(observation.source, {}).setdefault(observation.target, name)
+            local_paths.setdefault(observation.target, {}).setdefault(observation.source, name)
     columns = np.arange(size)
     matrix[len(sources) + columns, columns] = sqrt(ridge)
 
@@ -102,7 +110,11 @@ def _build_region(cells, ports, sources, ridge):
     return _Region(
         MappingProxyType(sources), ports, MappingProxyType(positions),
         MappingProxyType({cell: components.root(cell) for cell in cells}),
-        frozenset(components.root(cell) for cell in anchors),
+        frozenset(components.root(cell) for cell in anchor_sources),
+        LocalSourcePaths(
+            MappingProxyType({cell: MappingProxyType(edges) for cell, edges in local_paths.items()}),
+            MappingProxyType(anchor_sources),
+        ),
         _frozen(factor), _frozen(readout),
     )
 
@@ -121,8 +133,7 @@ def _compact_region(region, active_ports):
     order = (*tuple(region.positions)[:len(region.readout)],
              *(region.ports[column] for column in retired), *ports)
     positions = MappingProxyType({cell: column for column, cell in enumerate(order)})
-    return _Region(region._sources, ports, positions, region.components, region.anchored,
-                   _frozen(factor), _frozen(readout))
+    return replace(region, ports=ports, positions=positions, factor=_frozen(factor), readout=_frozen(readout))
 
 
 @dataclass(frozen=True, eq=False)
@@ -342,6 +353,11 @@ class RelativeHierarchySnapshot:
     def read(self, cell):
         """Read an anchored estimate and recover the boundary values it needs."""
         return self.read_many((cell,))[0]
+
+    def support_witness(self, cell):
+        """Return a named source path to an anchor, or None for an unsupported cell."""
+        cell = LatentField._checked_cell(cell, len(self._owner._membership))
+        return support_witness(self, cell)
 
     def _readout(self, cell):
         cell = LatentField._checked_cell(cell, len(self._owner._membership))

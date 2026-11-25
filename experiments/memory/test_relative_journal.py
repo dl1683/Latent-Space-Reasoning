@@ -55,6 +55,7 @@ def test_journal_replays_layout_sources_and_compaction_without_hypothetical_edit
     caught_up = follower.snapshot()
     assert caught_up.digest == selected.digest
     assert caught_up.snapshot.elimination_order == selected.snapshot.elimination_order
+    assert caught_up.snapshot.support_witness(16) == original.snapshot.support_witness(16)
     _assert_values(caught_up, sources)
 
     removed = journal.revise(selected, {"row-15": None})
@@ -65,6 +66,7 @@ def test_journal_replays_layout_sources_and_compaction_without_hypothetical_edit
     assert reopened.digest == follower.snapshot().digest == compacted.digest
     assert reopened.snapshot.elimination_order == selected.snapshot.elimination_order
     assert reopened.snapshot.coarse_size == 8 and reopened.snapshot.read(16) is None
+    assert reopened.snapshot.support_witness(16) is None
     _assert_values(reopened, {name: row for name, row in sources.items() if name != "row-15"})
     _assert_values(retained, sources)
 

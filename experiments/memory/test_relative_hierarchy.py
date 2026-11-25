@@ -468,6 +468,7 @@ def test_unrepresentable_sparse_port_can_fail_at_read_without_mutating_snapshot(
     with pytest.raises(FloatingPointError):
         snapshot.read_many((0, 1))
     assert snapshot.read(0) == before
+    assert snapshot.support_witness(1).cells == (1, 0)
 
 
 def test_demand_recovery_handles_a_deep_dependency_chain():
@@ -614,3 +615,76 @@ def test_indexed_support_reprojects_unchanged_bridges_on_local_splits_and_anchor
     restored = hierarchy.revise(no_anchor, {"anchor": sources["anchor"]})
     _assert_direct(restored, sources, len(membership))
     _assert_direct(parent, sources, len(membership))
+
+
+def _assert_witness(snapshot, cell):
+    witness = snapshot.support_witness(cell)
+    assert witness.cells[0] == cell and len(set(witness.cells)) == len(witness.cells)
+    assert len(witness.relative_sources) == len(witness.cells) - 1
+    for first, second, (name, row) in zip(witness.cells, witness.cells[1:], witness.relative_sources):
+        assert row is snapshot._sources[name] and {row.source, row.target} == {first, second}
+    name, row = witness.anchor_source
+    assert row is snapshot._sources[name] and row.source is None and row.target == witness.cells[-1]
+    return witness
+
+
+def test_named_witness_tracks_parallel_bridge_paths_and_selected_history():
+    hierarchy = RelativeObservationHierarchy(
+        _MEMBERSHIP, ridge=_RIDGE, elimination_order=range(len(_MEMBERSHIP)),
+    )
+    sources = _sources()
+    sources["parallel"] = RelativeObservation(3, 0.9, source=2, weight=2)
+    base = hierarchy.initialize(sources)
+    original = _assert_witness(base, 8)
+    assert original.cells == (8, 7, 6, 5, 4, 3, 2, 0)
+    assert tuple(name for name, _ in original.relative_sources) == (
+        "end", "late", "downstream", "continue", "center", "bridge", "conflict",
+    )
+    _, anchor = original.anchor_source
+    path_estimate = anchor.value - sum(
+        row.value if row.source == first else -row.value
+        for first, (_, row) in zip(original.cells, original.relative_sources)
+    )
+    assert base.read(8) != pytest.approx(path_estimate, abs=1e-3, rel=0)
+
+    changed_bridge = RelativeObservation(3, -0.9, source=2, weight=3)
+    revised = hierarchy.revise(base, {"bridge": changed_bridge})
+    assert revised._support_graph is base._support_graph
+    assert dict(_assert_witness(revised, 8).relative_sources)["bridge"] is changed_bridge
+    moved = hierarchy.revise(revised, {"bridge": RelativeObservation(3, -0.9, source=1, weight=3)})
+    assert moved._support_graph is revised._support_graph
+    assert _assert_witness(moved, 8).cells == (8, 7, 6, 5, 4, 3, 1, 0)
+    single = hierarchy.revise(moved, {"bridge": None})
+    assert "parallel" in dict(_assert_witness(single, 8).relative_sources)
+    disconnected = hierarchy.revise(single, {"parallel": None})
+    compacted = hierarchy.compact(disconnected, max_regions=2)
+    assert disconnected.support_witness(8) is compacted.support_witness(8) is None
+    reversed_bridge = RelativeObservation(2, 0.7, source=3)
+    restored = hierarchy.revise(compacted, {"bridge": reversed_bridge})
+    assert dict(_assert_witness(restored, 8).relative_sources)["bridge"].source == 3
+    reordered = hierarchy.reorder(restored, reversed(range(len(_MEMBERSHIP))))
+    assert _assert_witness(reordered, 8) == _assert_witness(restored, 8)
+    assert _assert_witness(base, 8) == original
+
+
+def test_support_witness_can_return_to_a_different_component_in_the_same_region():
+    hierarchy = RelativeObservationHierarchy((0, 0, 0, 0, 1, 1, 2), ridge=_RIDGE)
+    sources = {
+        "local_a": RelativeObservation(1, 0.2, source=0),
+        "local_b": RelativeObservation(3, -0.3, source=2),
+        "local_c": RelativeObservation(5, 0.6, source=4),
+        "to_other": RelativeObservation(4, 0.3, source=1),
+        "return": RelativeObservation(2, 0.4, source=5),
+        "anchor": RelativeObservation(3, 1.2),
+        "backup": RelativeObservation(3, 2.1),
+    }
+    base = hierarchy.initialize(sources)
+    witness = _assert_witness(base, 0)
+    assert witness.cells == (0, 1, 4, 5, 2, 3)
+    assert witness.anchor_source[0] == "anchor"
+    assert base.support_witness(6) is None
+    assert _assert_witness(base, 3).relative_sources == ()
+    revised = hierarchy.revise(base, {"anchor": None})
+    assert revised._support_graph is base._support_graph
+    assert _assert_witness(revised, 0).anchor_source[0] == "backup"
+    assert _assert_witness(base, 0) == witness
