@@ -1355,6 +1355,106 @@ def test_joint_fitted_handoffs_recover_protected_routes_and_a_later_hidden_read(
     assert guarded.snapshot() is parent
 
 
+def test_fitted_handoff_search_prefers_a_guarded_shared_row_and_records_named_targets(history, monkeypatch):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    source = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    receiver, initial = _published_import_workspace(source, "pkg.start", "pkg.before", ["pkg.relay"])
+    pin = initial.pin()
+    coordinates = source.relation_coordinates
+    guards = RelationOutcomeGuard(evidence=[
+        TerminalRelationEvidence(coordinates["pkg.before"], [source.relation_path("pkg.start", "pkg.relay")]),
+        TerminalRelationEvidence(coordinates["pkg.always"], [source.relation_path("pkg.start", "pkg.other")]),
+    ])
+    workspace = DisjointFeedbackWorkspace(receiver, pin.memory, outcome_guards=[(pin.protected[0], guards)])
+    opening = workspace.pin()
+    correction = _commit(repo, {
+        "relay.py": "", "other.py": "",
+        "a_always.py": "import pkg.mid_always\n", "mid_always.py": "import pkg.always\n",
+        "b_before.py": "import pkg.mid_before\n", "mid_before.py": "import pkg.before\n",
+        "z_shared.py": "import pkg.mid_always\nimport pkg.mid_before\n",
+    })
+    successor = source.revise(correction)
+    prefix = successor.search_feedback_fitted_handoffs(source, receiver, opening, max_update_norm=2., max_candidates=1)
+    ranked = successor.search_feedback_fitted_handoffs(source, receiver, opening, max_update_norm=2., max_candidates=4)
+    assert (prefix.attempted, prefix.feasible, prefix.total) == (1, 1, 4)
+    assert (ranked.attempted, ranked.feasible, ranked.total) == (4, 4, 4)
+    assert prefix.targets == ((0, "pkg.always", "pkg.a_always"), (0, "pkg.before", "pkg.b_before"))
+    assert ranked.targets == ((0, "pkg.always", "pkg.z_shared"), (0, "pkg.before", "pkg.z_shared"))
+    assert np.linalg.norm(prefix.pin.memory._anchor_blocks[-1]) == pytest.approx(np.sqrt(2.))
+    assert np.linalg.norm(ranked.pin.memory._anchor_blocks[-1]) == pytest.approx(1.)
+    assert np.count_nonzero(np.any(ranked.pin.memory._anchor_blocks[-1], axis=1)) == 1
+    assert workspace.pin() is opening
+
+    path = repo / "ranked.db"
+    journal = JournaledRepositoryImportWorkspace(path, opening, create=True)
+    base = journal.snapshot()
+    with pytest.raises(ValueError, match="multiple appended entries"):
+        journal.repair(base, correction, max_update_norm=2.)
+    assert journal.snapshot() is base
+    tip = journal.repair(base, correction, max_update_norm=2., max_candidates=4)
+    _check_bootstrap(tip.pin, receiver)
+    for _, destination, _ in ranked.targets:
+        readout = prepare_published_import_readout(tip.pin.memory._source, tip.pin, 0, destination,
+                                                   _FixtureTokenizer(), context_tokens=4096, max_new_tokens=32)
+        assert readout.quotes[0].declaring_module == "pkg.z_shared"
+    manual = JournaledRepositoryImportWorkspace(repo / "named.db", opening, create=True)
+    named = manual.publish(manual.snapshot(), correction, operation="fitted_handoffs",
+                           targets=ranked.targets, max_update_norm=2.)
+    assert named.digest == tip.digest
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("journal recovery must replay the named winner without searching")
+
+    monkeypatch.setattr(imports.RepositoryImportMemory, "search_feedback_fitted_handoffs", unexpected)
+    assert JournaledRepositoryImportWorkspace(path, opening).snapshot().digest == tip.digest
+
+
+def test_fitted_handoff_search_skips_an_assignment_that_leaks_on_replay(history):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    source = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    coordinates = source.relation_coordinates
+    width = len(coordinates)
+    receiver, initial = _published_import_workspace(source, "pkg.start", "pkg.before", ["pkg.relay"],
+                                                      carry=np.zeros((width, width)))
+    pin = initial.pin()
+    seed = np.zeros(width)
+    seed[coordinates["pkg"]] = .75
+    quiet = receiver.step(receiver.step(receiver.start(seed, pin.memory)))
+    absence = RelationOutcomeGuard(grades=[TerminalRelationGrade(coordinates["pkg.always"])])
+    workspace = DisjointFeedbackWorkspace(receiver, pin.memory, outcome_guards=[
+        (pin.protected[0], pin._outcomes[0]), (quiet, absence),
+    ])
+    opening = workspace.pin()
+    correction = _commit(repo, {
+        "relay.py": "", "__init__.py": "import pkg.tap\n", "tap.py": "import pkg.a_bad\n",
+        "a_bad.py": "import pkg.mid_bad\n", "mid_bad.py": "import pkg.before\n",
+        "z_good.py": "import pkg.mid_good\n", "mid_good.py": "import pkg.before\n",
+    })
+    successor = source.revise(correction)
+    journal = JournaledRepositoryImportWorkspace(repo / "replay-search.db", opening, create=True)
+    base = journal.snapshot()
+    with pytest.raises(ValueError, match="positive candidate budget"):
+        journal.repair(base, correction, max_update_norm=2., max_candidates=0)
+    with pytest.raises(RelationGuardFailed, match="candidate budget exhausted") as truncated:
+        journal.repair(base, correction, max_update_norm=2., max_candidates=1)
+    assert "unexpected appended entries" in str(truncated.value.__cause__)
+    with pytest.raises(RelationGuardFailed, match="all assignments examined"):
+        journal.repair(base, correction, max_update_norm=.5, max_candidates=2)
+    assert journal.snapshot() is base
+
+    ranked = successor.search_feedback_fitted_handoffs(source, receiver, opening, max_update_norm=2., max_candidates=2)
+    assert (ranked.attempted, ranked.feasible, ranked.total) == (2, 1, 2)
+    assert ranked.targets == ((0, "pkg.before", "pkg.z_good"),)
+    assert absence._evaluate(ranked.pin.protected[1]) == ()
+    tip = journal.repair(base, correction, max_update_norm=2., max_candidates=2)
+    assert tip.number == base.number + 1
+    readout = prepare_published_import_readout(tip.pin.memory._source, tip.pin, 0, "pkg.before",
+                                               _FixtureTokenizer(), context_tokens=4096, max_new_tokens=32)
+    assert readout.quotes[0].declaring_module == "pkg.z_good"
+
+
 def test_growth_discovery_refuses_ambiguous_paths_and_the_source_only_control(history):
     repo, first, _, _ = history
     _git(repo, "checkout", "--detach", first)

@@ -7,7 +7,9 @@ from collections.abc import Mapping
 from dataclasses import InitVar, asdict, dataclass, field
 from importlib.util import resolve_name
 from io import BytesIO
+from itertools import product
 import json
+from math import prod
 from numbers import Real
 from operator import index
 import os
@@ -20,12 +22,12 @@ from types import MappingProxyType
 import numpy as np
 
 from experiments.memory.disjoint_feedback import (
-    RelationGuardFailed, RelationOutcomeGuard, TerminalRelationEvidence, TerminalRelationGrade,
+    DisjointFeedbackWorkspace, RelationGuardFailed, RelationOutcomeGuard, TerminalRelationEvidence, TerminalRelationGrade,
     _EvidenceEdit, _RELATION_GRADE_ATOL, _RelationWorkspacePin, _approved_evidence,
     _check_retraction_absence, _matching_witness, _same_supported_grade,
 )
 from experiments.memory.disjoint_transition import DisjointTransitionMemory, DisjointTransitionPath, propagate_disjoint
-from experiments.memory.weight_program import program_weight
+from experiments.memory.weight_program import _frobenius, program_weight
 
 
 _SOURCE_LINE = re.compile(rb"[^\r\n]*(?:\r\n?|\n|$)")
@@ -217,6 +219,17 @@ def _normalize_fitted_handoffs(targets):
             raise ValueError("handoff targets must name distinct protected destinations")
         normalized[key] = entry
     return tuple((*key, normalized[key]) for key in sorted(normalized))
+
+
+@dataclass(frozen=True, slots=True)
+class FittedHandoffSearch:
+    """Validated winner and counts for a bounded set of route assignments."""
+
+    pin: _RelationWorkspacePin
+    targets: tuple[tuple[int, str, str | None], ...]
+    attempted: int
+    feasible: int
+    total: int
 
 
 @dataclass(frozen=True, eq=False, slots=True)
@@ -465,21 +478,24 @@ class RepositoryImportMemory:
                                      evidence=[TerminalRelationEvidence(coordinate, paths)])
         return revision._with_required_outcome(pin, probe, guard)
 
-    def _unique_appended_route(self, names, destination):
-        paths = ()
+    def _appended_routes(self, names, destination):
         for start in names:
             if start not in self._modules:
                 continue
-            candidates = tuple(self.relation_path(start, middle) for middle in sorted(self._modules[start].imports)
-                               if middle != start and middle in self._modules
-                               and destination in self._modules[middle].imports)
-            if candidates:
-                if paths:
-                    raise ValueError("multiple appended entries explain the destination")
-                entry, paths = start, candidates
-        if not paths:
+            paths = tuple(self.relation_path(start, middle) for middle in sorted(self._modules[start].imports)
+                          if middle != start and middle in self._modules
+                          and destination in self._modules[middle].imports)
+            if paths:
+                yield start, paths
+
+    def _unique_appended_route(self, names, destination):
+        routes = self._appended_routes(names, destination)
+        first = next(routes, None)
+        if first is None:
             raise ValueError("no appended entry explains the destination")
-        return entry, paths
+        if next(routes, None) is not None:
+            raise ValueError("multiple appended entries explain the destination")
+        return first
 
     def _zero_anchor_revision(self, previous, receiver, memory, names):
         zeros = np.zeros(receiver._kernel._width)
@@ -668,6 +684,20 @@ class RepositoryImportMemory:
 
     def draft_feedback_fitted_handoffs(self, previous, receiver, pin, *, max_update_norm, targets=None):
         """Draft same-grade handoffs, optionally fitting several new entry rows together."""
+        names, control, replays = self._fitted_handoff_control(previous, receiver, pin, max_update_norm)
+        if targets is None:
+            choices = self._handoff_choices(receiver, pin, replays, names)
+            if any(len(entries) > 1 for _, _, entries in choices):
+                raise ValueError("multiple appended entries explain the destination")
+            targets = [(i, destination, entries[0]) for i, destination, entries in choices]
+            if not targets:
+                return control, ()
+        selected = _normalize_fitted_handoffs(targets)
+        draft = self._draft_fitted_handoffs(previous, receiver, pin, max_update_norm,
+                                            names, control, replays, selected)
+        return draft, selected
+
+    def _fitted_handoff_control(self, previous, receiver, pin, max_update_norm):
         if type(pin) is not _RelationWorkspacePin:
             raise ValueError("joint handoff needs an issued workspace pin")
         if (not isinstance(max_update_norm, Real) or not np.isfinite(float(max_update_norm))
@@ -675,14 +705,10 @@ class RepositoryImportMemory:
             raise ValueError("max_update_norm must be finite and nonnegative")
         names = self._feedback_names(previous, receiver, pin.memory)
         control = self._zero_anchor_revision(previous, receiver, pin.memory, names)
-        if self is previous and targets is None:
-            return control, ()
         replays = {i: receiver.rebase(state, control)[0] for i, state in enumerate(pin.protected)}
-        if targets is None:
-            targets = self._discover_handoff_targets(receiver, pin, replays, names)
-            if not targets:
-                return control, ()
-        selected = _normalize_fitted_handoffs(targets)
+        return names, control, replays
+
+    def _draft_fitted_handoffs(self, previous, receiver, pin, max_update_norm, names, control, replays, selected):
         examples = {}
         edits = []
         for protected_index, destination, entry in selected:
@@ -717,11 +743,12 @@ class RepositoryImportMemory:
                                                  released=examples.keys(), replays=replays)
         fitted_entries = tuple((i, frozenset(self._coordinates[name] for name in grades))
                                for i, (_, grades) in examples.items())
-        return revision._with_evidence_edits(pin, edits, source_only=not examples, fitted_entries=fitted_entries), selected
+        return revision._with_evidence_edits(pin, edits, source_only=not examples, fitted_entries=fitted_entries)
 
-    def _discover_handoff_targets(self, receiver, pin, replays, names):
+    def _handoff_choices(self, receiver, pin, replays, names):
         coordinates = tuple(self._coordinates)
-        targets = []
+        appended = {}
+        choices = []
         for i, outcome in enumerate(pin._outcomes):
             if outcome is None or not outcome.evidence:
                 continue
@@ -733,11 +760,58 @@ class RepositoryImportMemory:
                     continue
                 destination = coordinates[coordinate]
                 self._require_module(destination)
-                entry = None
+                entries = (None,)
                 if np.isneginf(candidate._grades[coordinate]):
-                    entry, _ = self._unique_appended_route(names, destination)
-                targets.append((i, destination, entry))
-        return targets
+                    if destination not in appended:
+                        appended[destination] = tuple(start for start, _ in self._appended_routes(names, destination))
+                    entries = appended[destination]
+                    if not entries:
+                        raise ValueError("no appended entry explains the destination")
+                choices.append((i, destination, entries))
+        return sorted(choices, key=lambda row: row[:2])
+
+    def search_feedback_fitted_handoffs(self, previous, receiver, pin, *, max_update_norm, max_candidates):
+        """Validate a bounded number of route assignments on isolated workspace forks."""
+        max_candidates = index(max_candidates)
+        if max_candidates < 1:
+            raise ValueError("fitted handoff search requires a positive candidate budget")
+        names, control, replays = self._fitted_handoff_control(previous, receiver, pin, max_update_norm)
+        choices = self._handoff_choices(receiver, pin, replays, names)
+        if not choices:
+            accepted = DisjointFeedbackWorkspace._from_pin(pin).publish(pin, control)
+            return FittedHandoffSearch(accepted, (), 0, 0, 0)
+
+        total = prod(len(entries) for _, _, entries in choices)
+        assignments = product(*(entries for _, _, entries in choices))
+        attempted = feasible = 0
+        best = None
+        last_failure = None
+        for _, assignment in zip(range(max_candidates), assignments):
+            selected = tuple((i, destination, entry)
+                             for (i, destination, _), entry in zip(choices, assignment, strict=True))
+            attempted += 1
+            try:
+                draft = self._draft_fitted_handoffs(previous, receiver, pin, max_update_norm,
+                                                    names, control, replays, selected)
+            except (ValueError, FloatingPointError) as error:
+                last_failure = error
+                continue
+            try:
+                accepted = DisjointFeedbackWorkspace._from_pin(pin).publish(pin, draft)
+            except (RelationGuardFailed, FloatingPointError) as error:
+                last_failure = error
+                continue
+            feasible += 1
+            rows = draft._appended
+            score = ((int(np.count_nonzero(np.any(rows != 0., axis=1))), _frobenius(rows))
+                     if rows is not None else (0, 0.))
+            if best is None or score < best[0]:
+                best = score, accepted, selected
+        if best is None:
+            status = "all assignments examined" if attempted == total else "candidate budget exhausted"
+            raise RelationGuardFailed(f"no guard-valid fitted handoff after {attempted} attempts ({status})") from last_failure
+        _, accepted, selected = best
+        return FittedHandoffSearch(accepted, selected, attempted, feasible, total)
 
     def _seed(self, start):
         self._require_module(start)

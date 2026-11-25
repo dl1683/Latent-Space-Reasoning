@@ -313,16 +313,22 @@ class JournaledRepositoryImportWorkspace:
         command = (source.commit, "evidence_batch", {"edits": edits}) if edits else (source.commit, "adopt", {})
         return self._commit(base, pin, command)
 
-    def repair(self, base, revision, *, max_update_norm):
-        """Discover and publish joint handoffs under one finite anchor update budget."""
+    def repair(self, base, revision, *, max_update_norm, max_candidates=None):
+        """Publish joint handoffs, optionally searching within a finite candidate budget."""
         self._require_current(base)
         with np.errstate(**self._error_policy):
             previous = base.pin.memory._source
             source = previous.revise(revision)
-            draft, targets = source.draft_feedback_fitted_handoffs(
-                previous, self._receiver, base.pin, max_update_norm=max_update_norm,
-            )
-            pin = DisjointFeedbackWorkspace._from_pin(base.pin).publish(base.pin, draft)
+            if max_candidates is None:
+                draft, targets = source.draft_feedback_fitted_handoffs(
+                    previous, self._receiver, base.pin, max_update_norm=max_update_norm,
+                )
+                pin = DisjointFeedbackWorkspace._from_pin(base.pin).publish(base.pin, draft)
+            else:
+                result = source.search_feedback_fitted_handoffs(
+                    previous, self._receiver, base.pin, max_update_norm=max_update_norm, max_candidates=max_candidates,
+                )
+                pin, targets = result.pin, result.targets
         command = (source.commit, "adopt", {})
         if targets:
             args = self._parameters("fitted_handoffs", {"targets": targets, "max_update_norm": max_update_norm})
