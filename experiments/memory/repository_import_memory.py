@@ -273,13 +273,23 @@ class RepositoryImportMemory:
                                       (self._modules[start].path, self._modules[middle].path))
 
     def _witness_edges(self, destination, witness):
+        return self._path_edges(destination, witness.path)
+
+    def _declares_path(self, destination, path):
+        try:
+            self._path_edges(destination, path)
+        except ValueError:
+            return False
+        return True
+
+    def _path_edges(self, destination, path):
         names = tuple(self._coordinates)
-        coordinates = witness.start, witness.middle, destination
+        coordinates = path.start, path.middle, destination
         if any(not 0 <= coordinate < len(names) for coordinate in coordinates):
             raise ValueError("published witness is outside the repository coordinate frame")
         start, middle, end = (names[coordinate] for coordinate in coordinates)
         self._require_module(end)
-        if self.relation_path(start, middle) != witness.path:
+        if self.relation_path(start, middle) != path:
             raise ValueError("published witness origins do not match the committed declaring modules")
         edges = (start, middle), (middle, end)
         if any(imported not in self._modules[declaring].imports for declaring, imported in edges):
@@ -457,6 +467,22 @@ class RepositoryImportMemory:
         revision = self._fit_feedback_revision(previous, receiver, pin, {entry: (hidden, incumbent.strength)},
                                                max_update_norm, handoff=(protected_index, replayed))
         return revision._with_evidence_handoff(pin, protected_index, TerminalRelationEvidence(coordinate, paths))
+
+    def draft_feedback_retraction(self, previous, receiver, pin, protected_index, *, destination):
+        """Propose withdrawing one lost committed witness and guarding the resulting absence."""
+        if type(pin) is not _RelationWorkspacePin:
+            raise ValueError("evidence retraction needs an issued workspace pin")
+        names = self._feedback_names(previous, receiver, pin.memory)
+        if self is previous:
+            raise ValueError("evidence retraction needs a committed source correction")
+        protected_index = index(protected_index)
+        if not 0 <= protected_index < len(pin.protected) or pin._outcomes[protected_index] is None:
+            raise ValueError("evidence retraction needs an existing protected outcome")
+        previous._require_module(destination)
+        coordinate = previous._coordinates[destination]
+        pin._outcomes[protected_index]._evidence_at(coordinate)
+        revision = self._zero_anchor_revision(previous, receiver, pin.memory, names)
+        return revision._with_evidence_retraction(pin, protected_index, coordinate)
 
     def _seed(self, start):
         self._require_module(start)

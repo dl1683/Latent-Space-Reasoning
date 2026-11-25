@@ -26,6 +26,14 @@ _SYSTEM = (
 )
 
 
+class ImportEvidenceRetracted(ValueError):
+    """A published read has a checked retraction instead of current citations."""
+
+    def __init__(self, destination, receipt):
+        super().__init__(f"published import evidence for {destination} was retracted")
+        self.receipt = receipt
+
+
 @dataclass(frozen=True, slots=True)
 class ImportReadout:
     commit: str
@@ -203,10 +211,13 @@ def prepare_published_import_readout(memory, pin, protected_index, destination, 
     protected_index = index(protected_index)
     if not 0 <= protected_index < len(pin.witnesses):
         raise ValueError("protected trajectory index is outside this publication")
-    memory._require_module(destination)
-    destination_index = memory.relation_coordinates[destination]
+    destination_index = memory.relation_coordinates.get(destination)
     witness = next((proof for coordinate, proof in pin.witnesses[protected_index] if coordinate == destination_index), None)
     if witness is None:
+        for receipt in pin.retractions:
+            if receipt.protected_index == protected_index and receipt.destination == destination_index:
+                raise ImportEvidenceRetracted(destination, receipt)
+        memory._require_module(destination)
         raise ValueError("publication has no approved witness for this destination")
     edges = memory._witness_edges(destination_index, witness)
     start, middle = edges[0]
