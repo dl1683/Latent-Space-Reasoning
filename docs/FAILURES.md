@@ -131,6 +131,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **A useful bound can outlive an exact answer, 25 November 2026.** Removing a selected leaf can preserve the earlier upper cutoff. Adding a new contender above the cutoff can leave a feasible earlier witness. Both cases invalidate the exact result, and either bound can still prune a later solve. A finite interval alone cannot resolve disjoint compatibility. Narrowing the threshold interval changed the order of expensive checks and raised the charged work in two of 1,528 partial-record reads. Track refusal and total cost across edit streams before using the bounds as a promotion policy. [Binding controls](../experiments/memory/test_binding_memory.py)
 
+**Geometry can narrow the wrong candidates, 25 November 2026.** The encoded binding envelope relies on the supplied encoder and candidate coverage. A deliberate misrouting control sent an inspection and permit with different entity labels to one anchor. The banks agreed on 0.8 and a direct label join found no support. A missing mention can make both banks report modeled absence. An outlier that reaches no anchor expands to possible rows throughout the declared scope and can exhaust the expansion budget. Check these failure modes against labeled assignments and distinguish exact modeled scores from calibrated evidence. [Encoded binding controls](../experiments/memory/test_corpus_bindings.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.
