@@ -86,6 +86,14 @@ class TreeFeedbackState(FeedbackState):
     attention: TreeAttention | None = None
 
 
+@dataclass(frozen=True)
+class TreeRevisionScores:
+    """Physical comparison interval computation for one preview or batch."""
+
+    computed: int
+    reused: int
+
+
 @dataclass(frozen=True, eq=False)
 class TreeFeedbackBoundedRun:
     """Tree trajectory and per-step max-coordinate error models against dense replay."""
@@ -95,6 +103,7 @@ class TreeFeedbackBoundedRun:
     reference_memory: TreeMemory | None = None
     revision_group_scores: int = 0
     reused_opening_steps: int = 0
+    comparison_scores: TreeRevisionScores = TreeRevisionScores(0, 0)
 
 
 def _column_l1(matrix):
@@ -224,18 +233,37 @@ def _revision_mass_gap(common, before, after, paired_scores):
     return overlap_gap
 
 
-def _revision_attention_change(groups, observation_query, history_logits, paired_deltas):
-    positive = observation_query >= 0
+class _RevisionIntervalCache:
+    def __init__(self, query):
+        self.query = query
+        self.positive = query >= 0
+        self.intervals = {}
+
+    def __call__(self, node):
+        interval = self.intervals.get(node)
+        if interval is None:
+            interval = _key_interval(node, self.query, self.positive)
+            self.intervals[node] = interval
+        return interval
+
+
+def _revision_attention_change(groups, observation_query, history_logits, paired_deltas, *, scores=None):
+    if scores is None:
+        positive = observation_query >= 0
+
+        def scores(node):
+            return _key_interval(node, observation_query, positive)
+
     shared, removed, added, paired = groups
     common = [(float(score), 1) for score in history_logits]
-    common.extend((_key_interval(node, observation_query, positive)[0], node.count) for node in shared)
+    common.extend((scores(node)[0], node.count) for node in shared)
     paired_scores = []
     for opening, reference, _ in paired:
-        score = _key_interval(opening, observation_query, positive)[0]
-        updated = score if reference is None else _key_interval(reference, observation_query, positive)[0]
+        score = scores(opening)[0]
+        updated = score if reference is None else scores(reference)[0]
         paired_scores.append((score, updated))
-    before = [(_key_interval(node, observation_query, positive)[1], node.count) for node in removed]
-    after = [(*_key_interval(node, observation_query, positive), node.count) for node in added]
+    before = [(scores(node)[1], node.count) for node in removed]
+    after = [(*scores(node), node.count) for node in added]
     upper_after = [(upper, multiplicity) for _, upper, multiplicity in after]
     probability_gap = _revision_mass_gap(common, before, upper_after, paired_scores)
 
@@ -433,7 +461,10 @@ class TreeFeedbackKernel(FeedbackKernel):
 
         opening_root = state._memory._root
         comparisons = tuple(_BoundComparison(opening_root, bank) for bank in references)
-        has_edits = any(comparison.groups is not None for comparison in comparisons)
+        edited_count = sum(comparison.groups is not None for comparison in comparisons)
+        has_edits = edited_count > 0
+        share_intervals = edited_count > 1 and opening_root is not None
+        computed_intervals = 0
         observation_query = self._query if self._observation_query is None else self._observation_query
         with np.errstate(over="raise", invalid="raise", under="ignore"):
             gains_ready = False
@@ -459,11 +490,12 @@ class TreeFeedbackKernel(FeedbackKernel):
                         state = self.step(state)
                     opening_gap = state.attention.joint_l1_bound
 
+                scores = _RevisionIntervalCache(projected) if share_intervals else None
                 for comparison in comparisons:
                     local_gap, value_edit_gap = opening_gap, 0.
                     if comparison.groups is not None:
                         revision_gap, delta = _revision_attention_change(
-                            comparison.groups, projected, history_logits, comparison.paired_deltas,
+                            comparison.groups, projected, history_logits, comparison.paired_deltas, scores=scores,
                         )
                         local_gap += revision_gap
                         value_edit_gap = self._revision_value_gap(hidden, delta)
@@ -513,6 +545,8 @@ class TreeFeedbackKernel(FeedbackKernel):
                     probability_gap = min(2., local_gap + 2. * tanh(logit_gap / 2.))
                     preactivation_gap = probability_gap * value_gain + value_drift + value_edit_gap
                     comparison.record(2. * tanh(preactivation_gap / 2.))
+                if scores is not None:
+                    computed_intervals += len(scores.intervals)
 
         reused = 0
         if opening is not None:
@@ -524,8 +558,12 @@ class TreeFeedbackKernel(FeedbackKernel):
                             _values=retained._values[:steps], observation_scores=0,
                             feedback_scores=history_scores, attention=attention)
             reused = steps
+        total_intervals = steps * sum(comparison.intervals for comparison in comparisons)
+        if not share_intervals:
+            computed_intervals = total_intervals
+        comparison_scores = TreeRevisionScores(computed_intervals, total_intervals - computed_intervals)
         return tuple(TreeFeedbackBoundedRun(state, tuple(comparison.bounds), comparison.reference,
-                                            steps * comparison.intervals, reused)
+                                            steps * comparison.intervals, reused, comparison_scores)
                      for comparison in comparisons)
 
     def _advance(self, state, *, diagnostics=None):

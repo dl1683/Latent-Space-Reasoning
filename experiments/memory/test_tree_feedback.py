@@ -4,6 +4,7 @@ from threading import Barrier, Event
 import numpy as np
 import pytest
 
+from experiments.memory import tree_feedback
 from experiments.memory.feedback_journal import JournaledFeedbackWorkspace
 from experiments.memory.feedback_workspace import FeedbackProbe, FeedbackWorkspace, StaleFeedbackRevision
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, FeedbackKernel
@@ -511,6 +512,83 @@ def test_slot_preview_batch_shares_approximate_opening_without_mixing_alternativ
             reference = dense.step(reference)
         deviation = np.max(np.abs(np.array(state.history) - np.array(reference.history)), axis=1)
         assert (deviation <= np.array(preview.error_bounds) + 1e-14).all()
+
+
+def test_slot_preview_batch_shares_raw_intervals_across_roles_but_not_queries(monkeypatch):
+    key = np.array([[1.], [0.]])
+    weights = dict(query=3 * key, carry=np.diag([.9, 0.]), observation_key=key,
+                   observation_value=np.diag([0., .7]), feedback_key=key,
+                   feedback_value=np.diag([0., .2]), max_steps=3)
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, **weights)
+    rows = [[.6, .2], [-.2, .7]]
+    probe = FeedbackProbe((1., 0.), 3, (0., .2))
+    workspace = FeedbackWorkspace(tree, rows, [probe], max_update_norm=1., reuse_tree_routes=True)
+    base = workspace.snapshot()
+    alternatives = ({0: [.6, .25]}, {0: [.5, .3]}, {1: None}, {0: [.5, .3]}, {})
+    options = dict(seed=probe.seed, steps=3, published_opening=True)
+    singles = [workspace.preview_observation_slots(base, candidate, **options) for candidate in alternatives]
+    original_score = tree_feedback._key_interval
+    scored_by_query = {}
+
+    def watch(node, query, positive_query):
+        scored_by_query.setdefault(query.tobytes(), []).append(node)
+        return original_score(node, query, positive_query)
+
+    monkeypatch.setattr(tree_feedback, "_key_interval", watch)
+    previews = workspace.preview_observation_slot_batch(base, alternatives, max_candidates=5, **options)
+    counts = previews[0].comparison_scores
+    assert previews[0].reused_opening_steps == 3 and previews[0].state.observation_scores == 0
+    assert (counts.computed, counts.reused) == (12, 18)
+    assert len(scored_by_query) == 3
+    for scored in scored_by_query.values():
+        assert len(scored) == len(set(scored)) == 4
+        assert {base.memory._root.left, base.memory._root.right} <= set(scored)
+
+    assert tuple(item.revision_group_scores for item in previews) == (6, 9, 6, 9, 0)
+    for preview, single in zip(previews, singles, strict=True):
+        assert preview.error_bounds == single.error_bounds
+        assert preview.comparison_scores is counts
+        assert single.comparison_scores.computed == single.revision_group_scores
+        assert single.comparison_scores.reused == 0
+
+
+def test_slot_preview_batch_reuses_a_nondegenerate_interval_at_both_endpoints():
+    key = np.array([[1.], [0.]])
+    weights = dict(query=key, carry=np.diag([1., 0.]), observation_key=key,
+                   observation_value=np.diag([0., .5]), feedback_key=key,
+                   feedback_value=np.diag([0., .2]), max_steps=2)
+    tree = TreeFeedbackKernel(depth=2, max_frontier=4, **weights)
+    rows = [[.1, .2], [.9, .8], [-.4, .3], [-.2, .7]]
+    probe = FeedbackProbe((1., 0.), 2, (0., .2))
+    workspace = FeedbackWorkspace(tree, rows, [probe], max_update_norm=1.)
+    base = workspace.snapshot()
+    left = base.memory._root.left
+    assert left.lower_key[0] < left.upper_key[0]
+    alternatives = ({2: [-.4, .6]}, {0: None, 1: None})
+    options = dict(seed=probe.seed, steps=2)
+    forward = workspace.preview_observation_slot_batch(base, alternatives, max_candidates=2, **options)
+    reverse = workspace.preview_observation_slot_batch(base, reversed(alternatives), max_candidates=2, **options)
+    for edits, item, opposite_order in zip(alternatives, forward, reversed(reverse), strict=True):
+        separate = workspace.preview_observation_slots(base, edits, **options)
+        assert item.error_bounds == separate.error_bounds == opposite_order.error_bounds
+        assert item.comparison_scores.computed == 8 and item.comparison_scores.reused == 2
+
+
+def test_slot_preview_batch_skips_interval_cache_when_opening_bank_is_empty(monkeypatch):
+    tree = _repair_tree()
+    probe = FeedbackProbe((1.,), 1, (.4,))
+    workspace = FeedbackWorkspace(tree, np.empty((0, 1)), [probe], max_update_norm=1.)
+    base = workspace.snapshot()
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("independent insertions into an empty opening cannot share comparison nodes")
+
+    monkeypatch.setattr(tree_feedback, "_RevisionIntervalCache", unexpected)
+    previews = workspace.preview_observation_slot_batch(
+        base, ({0: [.1]}, {0: [.2]}, {}), seed=probe.seed, steps=1, max_candidates=3,
+    )
+    assert previews[0].comparison_scores.computed == 2 and previews[0].comparison_scores.reused == 0
+    assert tuple(item.revision_group_scores for item in previews) == (1, 1, 0)
 
 
 def test_slot_preview_batch_keeps_opposing_edits_separate_in_any_input_order():
