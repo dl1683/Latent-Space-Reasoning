@@ -193,6 +193,8 @@ The guarded maintenance trial now refuses the same route drift. A separate contr
 
 **An unchanged target proof can lose its improvement over ordinary reading, 25 November 2026.** Refreshing a weaker source raised the ordinary grade from 0.30 to 0.62 and kept the frozen target at 0.65. The prospective gain check prevented installation. A possible-only increment to the ordinary grade can also rule out a qualifying improvement. A one-candidate shortlist can miss a stronger proof, and a strongest exact target can still lack a realizable route column. An overflow during projection had left a sweep uncharged. Its regression now checks that the worker exhausts the shared budget before trying the next fit. The draft freezes the minimum gain. The worker reports whether discovery completed and how much work it used. [Discovery controls](../experiments/memory/test_binding_feedback.py)
 
+**An agreeing tip can hide a temporary regression, 25 November 2026.** In the retirement fixture, changing one source grade made the installed term necessary on the middle pin. The final pin agreed again. Replaying the full prospective window prevented retirement, using the affected probe recovered from the earlier publication. A separate removal passed its window and lost that route when the evidence reappeared after publication. Treat a retirement receipt as scoped to the checked runs and revisions. [Retirement controls](../experiments/memory/test_binding_feedback.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

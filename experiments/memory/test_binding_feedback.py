@@ -921,6 +921,117 @@ def test_discovery_charges_an_overflowed_sweep_before_trying_other_candidates(tm
     assert workspace.pending_program_trials(limit=3) == ()
 
 
+def _retirement_fixture(tmp_path):
+    frame, path, workspace, base, root, ready, guard = _discovery_fixture(tmp_path)
+    discovery = discover_binding_context(workspace, base, ready, "end", minimum_gain=.15, max_candidates=2,
+                                         proof_work_limit=128, future_batches=1, max_update_norm=4., max_sweeps=16,
+                                         padding=.25, protect=(guard,))
+    assert discovery.status == "opened"
+    _write(workspace, {"p": b"p,1,0,0.94"})
+    assert workspace.finish_program_trial(discovery.proposal.trial.trial_id, receiver=root).status == "published"
+    active = workspace.snapshot()
+    receiver = workspace.receiver_at(active, root)
+    assert len(receiver._coordinate_terms) == 1
+    probes = ((ready.feedback.seed, 3), (guard.feedback.seed, 3))
+    return frame, path, workspace, root, receiver, active, probes
+
+
+def test_context_retirement_preserves_dynamic_proofs_across_future_source_pins(tmp_path):
+    frame, path, workspace, root, receiver, active, probes = _retirement_fixture(tmp_path)
+    refused = workspace.begin_context_retirement(active, receiver, probes, future_batches=2, max_candidates=1,
+                                                 max_replay_events=active.revision + 2)
+    assert refused.status == "no_retirement" and refused.examined == 1 and refused.trial is None
+    base = _write(workspace, {"p": b"p,1,0,0.70"})
+    with pytest.raises(ValueError, match="covering the planned replay"):
+        workspace.begin_context_retirement(base, receiver, probes, future_batches=2, max_candidates=1,
+                                           max_replay_events=base.revision + 1)
+    spec = dict(future_batches=2, max_candidates=1, max_replay_events=base.revision + 2, atol=0.)
+    draft = workspace.begin_context_retirement(base, receiver, probes, **spec)
+    assert draft.status == "opened" and draft.examined == 1 and draft.position == 0
+    assert workspace.begin_context_retirement(base, receiver, (), **spec) == draft
+
+    def no_encoding(_raw):
+        pytest.fail("retirement verification attempted encoding")
+
+    _write(workspace, {"weak": b"end,1,0,0.32"})
+    worker = JournaledCorpusWorkspace(path, replace(frame, _encode=no_encoding))
+    assert worker.finish_program_trial(draft.trial.trial_id, receiver=receiver).status == "pending"
+    tip = _write(workspace, {"weak": None, "replacement": b"end,1,0,0.34"})
+    assert worker.finish_program_trial(draft.trial.trial_id).status == "receiver_required"
+    outcome = worker.finish_program_trial(draft.trial.trial_id, receiver=receiver)
+    assert outcome.status == "published" and outcome.published_revision == tip.revision + 1
+    reopened = JournaledCorpusWorkspace(path, replace(frame, _encode=no_encoding))
+    new_pin = reopened.snapshot()
+    shortened = reopened.receiver_at(new_pin, root)
+    assert not shortened._coordinate_terms
+    assert new_pin.memory.source_digests == tip.memory.source_digests
+    assert _receiver_digest(workspace.receiver_at(active, root)) == _receiver_digest(receiver)
+    assert reopened.finish_program_trial(draft.trial.trial_id) == outcome
+    for seed, steps in probes:
+        state = shortened.start(seed, new_pin.memory)
+        for _ in range(steps):
+            state = shortened.step(state)
+        assert state.reads[-1].bounds.certain.strength == .34
+        assert "replacement" in state.reads[-1].bounds.certain.sources
+    moved_again = _write(workspace, {"p": b"p,1,0,0.94"})
+    seed, _ = probes[0]
+    old = receiver.step(receiver.step(receiver.start(seed, moved_again.memory)))
+    new = shortened.step(shortened.step(shortened.start(seed, moved_again.memory)))
+    assert receiver._next_read(old).address == ("end", 1)
+    assert shortened._next_read(new).address == ("end", 0)
+
+
+def test_context_retirement_refuses_an_intermediate_regression_even_if_the_tip_agrees(tmp_path):
+    frame, path, workspace, root, receiver, _, probes = _retirement_fixture(tmp_path)
+    base = _write(workspace, {"p": b"p,1,0,0.70"})
+    draft = workspace.begin_context_retirement(base, receiver, probes[1:], future_batches=2, max_candidates=1,
+                                               max_replay_events=base.revision + 2, atol=2.)
+    assert draft.status == "opened"
+    middle = _write(workspace, {"p": b"p,1,0,0.94"})
+    later = _write(workspace, {"p": b"p,1,0,0.70"})
+    shorter = receiver._without_coordinate_term(0)
+
+    def terminal(model, pin):
+        seed, steps = probes[0]
+        state = model.start(seed, pin.memory)
+        for _ in range(steps):
+            state = model.step(state)
+        return state.reads[-1]
+
+    assert terminal(receiver, middle).address == ("end", 1)
+    assert terminal(shorter, middle).address == ("end", 0)
+    assert terminal(receiver, later).bounds == terminal(shorter, later).bounds
+    worker = JournaledCorpusWorkspace(path, frame)
+    receipt = worker.finish_program_trial(draft.trial.trial_id, receiver=receiver)
+    assert receipt.status == "retirement_read_changed" and receipt.observed_revision == later.revision
+    assert _receiver_digest(worker.receiver_at(worker.snapshot(), root)) == _receiver_digest(receiver)
+
+
+def test_context_retirement_cannot_publish_across_a_new_source_revision(tmp_path, monkeypatch):
+    frame, path, workspace, root, receiver, _, _ = _retirement_fixture(tmp_path)
+    base = _write(workspace, {"p": b"p,1,0,0.70"})
+    draft = workspace.begin_context_retirement(base, receiver, (), future_batches=1, max_candidates=1,
+                                               max_replay_events=base.revision + 1)
+    assert draft.status == "opened"
+    _write(workspace, {"weak": b"end,1,0,0.32"})
+    independent = JournaledCorpusWorkspace(path, frame)
+    check = workspace._check_retirement_window
+
+    def check_then_publish_source(*args):
+        status = check(*args)
+        assert status == "published"
+        _write(independent, {"p": b"p,1,0,0.94"})
+        return status
+
+    with monkeypatch.context() as patch:
+        patch.setattr(workspace, "_check_retirement_window", check_then_publish_source)
+        with pytest.raises(StaleCorpusRevision):
+            workspace.finish_program_trial(draft.trial.trial_id, receiver=receiver)
+    pin = workspace.snapshot()
+    assert _receiver_digest(workspace.receiver_at(pin, root)) == _receiver_digest(receiver)
+    assert workspace.finish_program_trial(draft.trial.trial_id, receiver=receiver).status == "horizon_passed"
+
+
 def _repair_receiver(frame, *, trials=1, earlier="p", observe=True, proof_limit=65536, reuse_weighted_matching=False):
     observation = np.zeros((6, 4))
     observation[5, 3] = float(observe)

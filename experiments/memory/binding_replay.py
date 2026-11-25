@@ -154,6 +154,8 @@ def apply_receiver_program(receiver, patch):
         raise ValueError("receiver program needs the matching incumbent receiver")
     if column == "context":
         candidate = receiver._with_coordinate_term(ConditionalTerm(*weights))
+    elif column == "retire_context":
+        candidate = receiver._without_coordinate_term(weights[0])
     elif column is None:
         candidate = receiver._with_coordinate_value(weights)
     elif 0 <= column < len(receiver._addresses):
@@ -421,6 +423,26 @@ def check_coordinate_protection(receiver, candidate, memory, seed, addresses, ex
     except FloatingPointError:
         return False
     return True
+
+
+def check_context_retirement(receiver, candidate, memory, probes, atol):
+    """Require equal supported ordinary traces on the same current source pin."""
+    try:
+        with np.errstate(**_REPLAY_ERRORS):
+            for seed, steps in probes:
+                prior, revised = receiver.start(seed, memory), candidate.start(seed, memory)
+                for _ in range(steps):
+                    prior, revised = receiver.step(prior), candidate.step(revised)
+                    old, new = prior.reads[-1], revised.reads[-1]
+                    if old.status != "resolved" or old.bounds.certain is None or not old.bounds.is_exact:
+                        return "retirement_incomplete"
+                    if not _same_binding_read(old, new):
+                        return "retirement_read_changed"
+                    if np.max(np.abs(prior.latest - revised.latest)) > atol:
+                        return "retirement_state_changed"
+    except FloatingPointError:
+        return "retirement_numerical"
+    return "published"
 
 
 def freeze_binding_replay(trajectory, memory, targets, downstream=None):

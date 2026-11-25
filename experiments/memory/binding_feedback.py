@@ -202,6 +202,13 @@ class BindingFeedback:
         candidate._coordinate_terms = (*self._coordinate_terms, (state, anchor, output, term.threshold))
         return candidate
 
+    def _without_coordinate_term(self, position):
+        if not 0 <= position < len(self._coordinate_terms):
+            raise ValueError("context retirement position is outside the receiver")
+        candidate = copy(self)
+        candidate._coordinate_terms = self._coordinate_terms[:position] + self._coordinate_terms[position + 1:]
+        return candidate
+
     def _read_with_route_map(self, state):
         """Evaluate an earlier route map on a ready state from the same kernel."""
         self._kernel._require_state(state.feedback)
