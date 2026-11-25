@@ -6,7 +6,9 @@ The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a
 
 ## Latent revision software verification, 24 November 2026
 
-The review branch's [latent field](../experiments/memory/latent_field.py) passed five focused CPU fixtures. An observation revision reached downstream states through a cycle and matched an independently assembled dense fixed-point reference within its declared residual bound. The fixtures also cover unrelated cells, earlier snapshots, restoration, aggregate contraction, inherited residuals and exhaustion without a write. The new field initialized from supplied arrays and used no model weights. Source-sensitive inference, growth, learned geometry, coordination and end-to-end economics remain unevaluated.
+The review branch's [latent field](../experiments/memory/latent_field.py) passed five focused CPU fixtures. An observation revision reached downstream states through a cycle and matched an independently assembled dense fixed-point reference within its declared residual bound. The fixtures also cover unrelated cells, earlier snapshots, restoration, aggregate contraction, inherited residuals and exhaustion without a write. The field initialized from supplied arrays and used no model weights.
+
+A follow-up extended the field to grow by appending observation cells and to revise links in the same batch. Eight focused field fixtures passed. The three new fixtures covered growth and rewiring against a dense reference, a full refresh when stronger coupling tightened the residual threshold, and rejection of an invalid batch with the old snapshot intact. Source-sensitive inference, coordinate learning, coordination and end-to-end economics remain unevaluated.
 
 ## Study result table
 
