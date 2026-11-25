@@ -15,6 +15,7 @@ from experiments.memory.latent_feedback import _frozen, _real_array
 
 
 _EMPTY = MappingProxyType({})
+_UNBUILT_WEIGHTED_PREFIX = object()
 _Address = tuple[str, int]
 _SearchNode = str | _Address | None
 
@@ -397,13 +398,24 @@ class _PrefixMatch:
     selected: Mapping[int, str]
 
 
+@dataclass(frozen=True)
+class _WeightedPrefix:
+    grade: float
+    owners: Mapping[str, int]
+    selected: Mapping[int, str]
+    releases: Mapping[str, tuple[float, str]] | None = None
+
+
 class _ProofWork:
-    def __init__(self, limit, *, reuse_rows=False, matching_scope=None, reuse_prefix_matching=False):
+    def __init__(self, limit, *, reuse_rows=False, matching_scope=None, reuse_prefix_matching=False,
+                 reuse_weighted_matching=False):
         self.limit = self.remaining = _proof_work_limit(limit)
         self.prepared_rows = {} if reuse_rows else None
         self.matching_scope = matching_scope
         self.failed_neighborhood = None
         self.prefix_matches = {} if reuse_prefix_matching else None
+        self.reuse_weighted_matching = reuse_weighted_matching
+        self.weighted_prefix = _UNBUILT_WEIGHTED_PREFIX
 
     @property
     def used(self):
@@ -461,7 +473,10 @@ class _ProofSearch:
             self.single_source_matching and bool(addresses) and scope is not None
             and scope[0] is memory and scope[1] == addresses[:-1] and not excluded
         )
-        self.reuse_matching_failure = share_matching and self.work.prefix_matches is None
+        self.reuse_weighted_matching = share_matching and self.work.reuse_weighted_matching
+        self.reuse_matching_failure = (
+            share_matching and self.work.prefix_matches is None and not self.reuse_weighted_matching
+        )
         self.reuse_prefix_matching = share_matching and self.work.prefix_matches is not None
 
     def charge(self, amount=1):
@@ -512,6 +527,8 @@ class _ProofSearch:
             if best.strength == ceiling:
                 return best
         domains = self.matching_domains(leaves) if self.single_source_matching else None
+        if self.reuse_weighted_matching:
+            return self._weighted_derivation(domains, upper)
         if self.reuse_matching_failure:
             neighborhood = self.work.failed_neighborhood
             candidate = domains[-1]
@@ -657,6 +674,98 @@ class _ProofSearch:
         self.charge(len(prefix.selected))
         selected = prefix.selected | changed
         return frozenset((domains[branch][origin][1], origin) for branch, origin in selected.items())
+
+    def _strongest_prefix(self, domains, ceiling):
+        grade = ceiling
+        matching = self._matching(self._threshold_choices(grade, domains))
+        if matching is None:
+            self.charge(1 + sum(map(len, domains)))
+            levels = sorted({value for domain in domains for value, _ in domain.values() if value < ceiling})
+            lo, hi = 0, len(levels)
+            while lo < hi:
+                middle = (lo + hi) // 2
+                tested = levels[middle]
+                result = self._matching(self._threshold_choices(tested, domains))
+                if result is None:
+                    hi = middle
+                else:
+                    grade, matching = tested, result
+                    lo = middle + 1
+        if matching is None:
+            return None
+        owners, selected = matching
+        return _WeightedPrefix(grade, MappingProxyType(owners), MappingProxyType(selected))
+
+    def _release_paths(self, prefix, domains):
+        incoming = {}
+        for origin, branch in prefix.owners.items():
+            self.charge(1 + len(domains[branch]))
+            for alternative, (grade, _) in domains[branch].items():
+                if alternative != origin:
+                    incoming.setdefault(alternative, []).append((origin, grade))
+        pending, releases = [], {}
+        self.charge(len(incoming))
+        for origin in incoming:
+            if origin not in prefix.owners:
+                heappush(pending, (-prefix.grade, origin))
+        # Every recorded next hop was popped before the occupied origin it releases.
+        while pending:
+            self.charge()
+            neg_grade, origin = heappop(pending)
+            grade = -neg_grade
+            if origin in prefix.owners and releases[origin][0] != grade:
+                continue
+            for occupied, edge in incoming.get(origin, ()):
+                self.charge()
+                candidate = min(grade, edge)
+                if occupied not in releases or candidate > releases[occupied][0]:
+                    releases[occupied] = (candidate, origin)
+                    heappush(pending, (-candidate, occupied))
+        return MappingProxyType(releases)
+
+    def _weighted_derivation(self, domains, upper):
+        self.charge()
+        prefix = self.work.weighted_prefix
+        if prefix is _UNBUILT_WEIGHTED_PREFIX:
+            self.charge(len(domains) - 1)
+            prefix_ceiling = min(upper[address] for address in self.rules[self.output][1][:-1])
+            prefix = self._strongest_prefix(domains[:-1], prefix_ceiling)
+            self.work.weighted_prefix = prefix
+        if prefix is None:
+            return None
+
+        best, chosen, occupied_upper = -np.inf, None, -np.inf
+        occupied = {}
+        self.charge(1 + len(domains[-1]))
+        for origin, (grade, _) in domains[-1].items():
+            score = min(prefix.grade, grade)
+            if origin in prefix.owners:
+                occupied[origin] = score
+                occupied_upper = max(occupied_upper, score)
+            elif score > best:
+                best, chosen = score, origin
+        if occupied_upper > best:
+            if prefix.releases is None:
+                prefix = replace(prefix, releases=self._release_paths(prefix, domains))
+                self.work.weighted_prefix = prefix
+            self.charge(len(occupied))
+            for origin, score in occupied.items():
+                if origin in prefix.releases:
+                    grade = min(score, prefix.releases[origin][0])
+                    if grade > best:
+                        best, chosen = grade, origin
+        if chosen is None:
+            return None
+
+        changed = {len(domains) - 1: chosen}
+        while chosen in prefix.owners:
+            self.charge()
+            branch = prefix.owners[chosen]
+            chosen = prefix.releases[chosen][1]
+            changed[branch] = chosen
+        self.charge(len(prefix.selected) + 1)
+        selected = prefix.selected | changed
+        return _Derivation(best, frozenset((domains[i][origin][1], origin) for i, origin in selected.items()))
 
     def _remember_matching_failure(self, domains, choices, visited, via):
         if self.work.failed_neighborhood is not None:

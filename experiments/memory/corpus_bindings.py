@@ -212,16 +212,19 @@ class CorpusBindingMemory:
 class _DisjointBranchReads:
     """One decision's alternative extensions of a nonempty prefix on pinned banks."""
 
-    def __init__(self, memory, prefix, work_limit, *, reuse_matching_failures=False, reuse_prefix_matching=False):
+    def __init__(self, memory, prefix, work_limit, *, reuse_matching_failures=False, reuse_prefix_matching=False,
+                 reuse_weighted_matching=False):
         self._memory, self._prefix = memory, tuple(prefix)
-        reuse_matching = reuse_matching_failures or reuse_prefix_matching
+        reuse_matching = reuse_matching_failures or reuse_prefix_matching or reuse_weighted_matching
         certain_scope = (memory._certain, self._prefix) if reuse_matching else None
         self._certain = _ProofWork(work_limit, reuse_rows=True, matching_scope=certain_scope,
-                                   reuse_prefix_matching=reuse_prefix_matching)
+                                   reuse_prefix_matching=reuse_prefix_matching,
+                                   reuse_weighted_matching=reuse_weighted_matching)
         possible_scope = (memory._possible, self._prefix) if reuse_matching else None
         self._possible = (self._certain if memory._certain is memory._possible
                           else _ProofWork(work_limit, reuse_rows=True, matching_scope=possible_scope,
-                                          reuse_prefix_matching=reuse_prefix_matching))
+                                          reuse_prefix_matching=reuse_prefix_matching,
+                                          reuse_weighted_matching=reuse_weighted_matching))
 
     def resolve(self, address):
         roots = self._memory._certain._joint_keys((*self._prefix, address), self._certain.limit)

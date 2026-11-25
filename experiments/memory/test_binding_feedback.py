@@ -79,7 +79,8 @@ def _matching_frame():
     )
 
 
-def _matching_receiver(frame, *, work_limit=65536, reuse_matching_failures=True, reuse_prefix_matching=False):
+def _matching_receiver(frame, *, work_limit=65536, reuse_matching_failures=True, reuse_prefix_matching=False,
+                       reuse_weighted_matching=False):
     carry = np.zeros((4, 4))
     carry[0, 1] = carry[1, 2] = 2
     keys, zeros = np.zeros((4, 1)), np.zeros((4, 4))
@@ -91,7 +92,8 @@ def _matching_receiver(frame, *, work_limit=65536, reuse_matching_failures=True,
     return BindingFeedback(kernel, frame, tuple((node, 0) for node in ("p", "q", "a", "b", "c")),
                            query=query, observation=observations, disjoint_reads=True, route_trials=3,
                            work_limit=work_limit, reuse_matching_failures=reuse_matching_failures,
-                           reuse_prefix_matching=reuse_prefix_matching)
+                           reuse_prefix_matching=reuse_prefix_matching,
+                           reuse_weighted_matching=reuse_weighted_matching)
 
 
 def test_matching_rejection_skips_a_subset_sibling_and_stays_on_its_pin(tmp_path, monkeypatch):
@@ -182,13 +184,15 @@ def test_prefix_matching_reassigns_weak_origins_without_changing_the_retained_ma
     assert repeat_session.resolve(("b", 0)) == CorpusBindingRead(BindingProof(0, origins), 0)
 
 
-def test_prefix_matching_routes_on_each_source_pin():
+@pytest.mark.parametrize("weighted", [False, True])
+def test_prefix_matching_routes_on_each_source_pin(weighted):
     frame = _matching_frame()
     original = frame.revise({"one": b"p,1,0,1\nq,1,0,1\na,1,0,1",
                              "two": b"p,1,0,1\na,1,0,1\nb,1,0,1", "three": b"c,1,0,1"})
     withdrawn = original.revise({"three": None})
     restored = withdrawn.revise({"three": b"b,1,0,0\nc,1,0,1"})
-    receiver = _matching_receiver(frame, reuse_matching_failures=False, reuse_prefix_matching=True)
+    receiver = _matching_receiver(frame, reuse_matching_failures=False, reuse_prefix_matching=not weighted,
+                                  reuse_weighted_matching=weighted)
 
     def decide(memory):
         state = receiver.start([1, 0, 0, 0], memory=memory)
@@ -202,26 +206,69 @@ def test_prefix_matching_routes_on_each_source_pin():
     assert decide(original) == old
 
 
-def test_retained_prefix_finishes_when_other_matching_methods_exhaust_the_budget():
+@pytest.mark.parametrize("ambiguous", [False, True])
+def test_weighted_matching_releases_origins_at_zero_and_defers_the_scan(ambiguous):
+    frame = _matching_frame()
+    third_q = b"q,1,1,0" if ambiguous else b"q,1,0,0"
+    memory = frame.revise({"one": b"p,1,0,1\na,1,0,1", "two": b"p,1,0,0\nq,1,0,1",
+                           "three": third_q + b"\nb,1,0,1"})
+    prefix = (("p", 0), ("q", 0))
+    session = _DisjointBranchReads(memory, prefix, 65536, reuse_weighted_matching=True)
+    origins = frozenset({"one", "two", "three"})
+    assert session.resolve(("b", 0)) == CorpusBindingRead(BindingProof(1, origins), 1)
+    assert session._possible.weighted_prefix.releases is None
+    support = CorpusBindingRead(None if ambiguous else BindingProof(0, origins), 0)
+    assert session.resolve(("a", 0)) == support
+    index = session._possible.weighted_prefix
+    assert index.releases["one"] == (0, "two")
+    assert index.releases["two"] == (0, "three")
+    assert session.resolve(("a", 0)) == support
+    assert session._possible.weighted_prefix is index
+    assert dict(index.selected) == {0: "one", 1: "two"}
+
+
+def test_weighted_matching_uses_the_strongest_prefix_and_keeps_infeasible_distinct():
+    frame = _matching_frame()
+    memory = frame.revise({"one": b"p,1,0,1\nq,1,0,1\na,1,0,1", "two": b"p,1,0,0.6",
+                           "three": b"q,1,0,0.4", "four": b"b,1,0,1"})
+    prefix = (("p", 0), ("q", 0))
+    session = _DisjointBranchReads(memory, prefix, 65536, reuse_weighted_matching=True)
+    assert session.resolve(("b", 0)) == CorpusBindingRead(BindingProof(.6, frozenset({"one", "two", "four"})), .6)
+    assert session._certain.weighted_prefix.grade == .6
+    assert session.resolve(("a", 0)) == CorpusBindingRead(BindingProof(.4, frozenset({"one", "two", "three"})), .4)
+
+    impossible = _DisjointBranchReads(memory, (("q", 0),) * 3, 65536, reuse_weighted_matching=True)
+    assert impossible.resolve(("a", 0)) == CorpusBindingRead(None, None)
+    assert impossible._certain.weighted_prefix is None
+    assert impossible.resolve(("b", 0)) == CorpusBindingRead(None, None)
+
+
+@pytest.mark.parametrize("weighted", [False, True])
+def test_matching_reuse_finishes_when_controls_exhaust_the_same_budget(weighted):
     prefix = tuple((f"p{i}", 0) for i in range(8))
     blocked = tuple((f"t{i}", 0) for i in range(len(prefix)))
     addresses = (*blocked, ("fresh", 0))
-    sources = {str(i): f"p{i},1,0,1\nt{i},1,0,1".encode() for i in range(len(prefix))}
+    sources = {str(i): f"p{i},1,0,1\nt{i},1,0,{(i + 1) / len(prefix) if weighted else 1}".encode()
+               for i in range(len(prefix))}
     sources["fresh"] = b"fresh,1,0,1"
     memory = CorpusBindingMemory.prepare(
         tuple(node for node, _ in (*prefix, *addresses)), np.eye(2), {}, sources, encode=_encode,
         encoder_version="matching-budget-fixture", min_similarity=.6, gap=.05,
     )
-    reusable = _DisjointBranchReads(memory, prefix, 65536, reuse_prefix_matching=True)
+    reuse = {"reuse_weighted_matching" if weighted else "reuse_prefix_matching": True}
+    reusable = _DisjointBranchReads(memory, prefix, 65536, **reuse)
     expected = [memory.resolve_disjoint((*prefix, address)) for address in addresses]
     assert [reusable.resolve(address) for address in addresses] == expected
     assert all(result == CorpusBindingRead(None, None) for result in expected[:-1])
     assert expected[-1].possible_strength == 1
     limit, = reusable.proof_work
-    bounded = _DisjointBranchReads(memory, prefix, limit, reuse_prefix_matching=True)
+    bounded = _DisjointBranchReads(memory, prefix, limit, **reuse)
     assert [bounded.resolve(address) for address in addresses] == expected
-    for retain_failures in (False, True):
-        control = _DisjointBranchReads(memory, prefix, limit, reuse_matching_failures=retain_failures)
+    controls = [{}, {"reuse_matching_failures": True}]
+    if weighted:
+        controls.append({"reuse_prefix_matching": True})
+    for mode in controls:
+        control = _DisjointBranchReads(memory, prefix, limit, **mode)
         with pytest.raises(BindingCapacityError):
             for address in addresses:
                 control.resolve(address)

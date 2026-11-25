@@ -153,6 +153,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **A sibling reassignment can corrupt the next route if it mutates the prefix, 25 November 2026.** One sibling succeeded only by moving two earlier assignments at grade zero. The next sibling still needed the original prefix assignment at grade one. Retain a read-only matching per bank, ordered prefix and threshold. Apply the augmenting path only to the current witness. Charge prefix construction even when the first candidate wins. [Receiver controls](../experiments/memory/test_binding_feedback.py)
 
+**The strongest prefix can need weaker edges later, 25 November 2026.** A grade-one prefix could free the sibling's origin only by taking grade-zero alternatives. Filtering the release graph to the strongest prefix grade would discard a valid answer. Keep weaker edges, preserve absence separately from zero, and charge for building the index. Weighted reuse saved work on the distinct-grade late fork and cost more on the first-winner control. [Receiver controls](../experiments/memory/test_binding_feedback.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.
