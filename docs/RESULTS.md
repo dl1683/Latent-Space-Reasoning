@@ -148,6 +148,14 @@ For each path policy, 84 interval and seed reads across four snapshots matched e
 
 A fresh static audit identified that a wider finite negative score could become an unreachable sentinel during conversion. After adding a guarded cast, the static recheck found no blocker. A separate Ubuntu CPU check used NumPy 2.3.5 with extended-precision inputs. Both path policies rejected finite values outside Float64 range during source revision and seed validation, while preserving an explicit $-\infty$ seed.
 
+Six CPU fixtures checked source-bound conjunctions. Two derivations of one origin retained a single support set. Adding a weaker second origin enabled a disjoint conjunction at strength 0.6 while both input maxima stayed fixed. Moving that source to another binding or withdrawing either premise removed the support, and restoring the source recovered it. A disjoint coordinate retained supported strength zero and shared its prior term map. Explicit proof enumeration agreed on 160 node-coordinate maps across four related snapshots. A redundant edit evaluated one affected gate and stopped when its full lineage map stayed equal. An edit that changed the map evaluated that gate and its consumer. [Binding controls](../experiments/memory/test_binding_memory.py)
+
+Withdrawal previews matched actual source deletion in the fixture while gate evaluation and input preparation were disabled. In a separate three-coordinate check, a preview showed scores of 0.6 in place of 0.8 after omitting one origin. A two-pair work limit refused the actual revision and the three prior scores stayed at 0.8. Capacity fixtures also exercised atomic refusal for a term overflow and candidate-pair work, including overlapping pairs. Six binary choices produced 64 distinct support sets at identical score, and seven choices exceeded the term limit.
+
+A separate join-order check used two eight-way inputs and one term that overlapped seven alternatives from the first input. Combining the eight-way inputs first needed 64 intermediate terms and exceeded a 16-term cap. Checking overlap first stayed within the cap and produced the same eight final support sets as the original order at a higher cap.
+
+The focused suite passed 289 CPU checks. A separate seeded check covered 192 source revisions across 12 small graphs. Full rebuilds agreed on 12,096 retained rows and 1,536 withdrawal previews, including 4,737 unsupported retained rows. A fresh static audit found no blocker within the declared contract. These checks use declared bindings and source identities. Learned acquisition, complete cost comparisons and continuously operating workers remain open.
+
 ## Study result table
 
 These are source-reported experiment results. Publication preparation independently checked Git, inventories, process metadata, ACLs, package structure and the integration suite; model outputs and judgments were not independently checked.
