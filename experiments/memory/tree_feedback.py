@@ -267,31 +267,57 @@ class TreeFeedbackKernel(FeedbackKernel):
         if len(state._history) >= self._max_steps:
             raise RuntimeError("feedback step budget exhausted")
 
-    def _route_program_keys(self, memory, slots):
+    def _route_program_path(self, memory, slot):
         if type(self) is not TreeFeedbackKernel:
             raise ValueError("route programming requires a supported softmax kernel")
         if self._logit_tolerance != 0.0 or self._max_frontier < memory.count:
             raise ValueError("route programming requires a full-resolution tree")
-        keys = []
-        for slot in slots:
-            if not 0 <= slot < 1 << self._depth:
-                raise ValueError("route programming requires occupied observation slots")
-            node = memory._root
-            for bit in range(self._depth - 1, -1, -1):
-                if node is None:
-                    break
-                node = node.right if slot & (1 << bit) else node.left
+        if not 0 <= slot < 1 << self._depth:
+            raise ValueError("route programming requires occupied observation slots")
+        path = []
+        node = memory._root
+        for bit in range(self._depth - 1, -1, -1):
             if node is None:
-                raise ValueError("route programming requires occupied observation slots")
-            keys.append(node.lower_key)
-        return tuple(keys)
+                break
+            path.append(node)
+            node = node.right if slot & (1 << bit) else node.left
+        if node is None:
+            raise ValueError("route programming requires occupied observation slots")
+        return (*path, node)
+
+    def _route_program_keys(self, memory, slots):
+        return tuple(self._route_program_path(memory, slot)[-1].lower_key for slot in slots)
 
     def _route_program_step(self, state, slots, keys):
         stepped = self.step(state)
         with np.errstate(over="raise", invalid="raise"):
-            query = state.latest @ self._observation_query
+            hidden = state.latest
+            query = self._query_observations(hidden, hidden @ self._query)
             gap = float(keys[0] @ query) - float(keys[1] @ query)
         return stepped, gap
+
+    def _source_mass_bank(self, memory, slot):
+        leaf = self._route_program_path(memory, slot)[-1]
+        keys = []
+        pending = [memory._root]
+        while pending:
+            node = pending.pop()
+            if node.left is None and node.right is None:
+                if node is leaf:
+                    selected = len(keys)
+                keys.append(node.lower_key)
+            else:
+                pending.extend(child for child in (node.right, node.left) if child is not None)
+        return np.asarray(keys), selected
+
+    def _source_mass_step(self, state, slot):
+        diagnostics = {}
+        stepped = self._advance(state, diagnostics=diagnostics)[0]
+        path = set(self._route_program_path(state._memory, slot))
+        for (score, probability) in zip(diagnostics["frontier"], diagnostics["probabilities"]):
+            if score.node in path:
+                return stepped, float(probability) / score.node.count
+        raise RuntimeError("tree softmax frontier omitted the selected source")
 
     def _route(self, state, diagnostics=None, *, previous=None, retain_scores=0):
         history_count = len(state._history)
@@ -339,7 +365,8 @@ class TreeFeedbackKernel(FeedbackKernel):
                 if history_count:
                     history_value = probabilities[groups:] @ np.asarray(state._values)
             if diagnostics is not None:
-                diagnostics.update(logits=logits, joint_l1_bound=bound)
+                diagnostics.update(logits=logits, joint_l1_bound=bound, frontier=frontier,
+                                   probabilities=probabilities if len(logits) else np.empty(0))
         attention = TreeAttention(groups, scored, bound, reused_node_scores=reused)
         scores = None if recorded is None else MappingProxyType(recorded)
         return _TreeRoute(mixture, history_value, attention, query_bytes, scores)

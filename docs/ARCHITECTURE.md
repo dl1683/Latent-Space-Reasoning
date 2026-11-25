@@ -221,6 +221,16 @@ The key and current hidden state must supply editable contrast. If $h_\perp$ is 
 
 An edited tree separates whole-route reuse by the observation query map and keys retained node scores by the projected observation query. The journal can reopen with the fork supplied in its initial kernel and binds those weights in the root digest. Routing edits are constructed in process. The current journal and repair queue publish value and conditional edits.
 
+#### Programming joint source mass
+
+[SLICE] `program_observation_mass(state, step, slot, min_mass, ...)` programs a floor on one occupied source slot's share of the same joint softmax. At the target input $h$, keep generated-history logits $c_\ell$ fixed. For source key $k_s$, the log mass at observation query $q$ is $k_s\cdot q-\log(\sum_j\exp(k_j\cdot q)+\sum_\ell\exp(c_\ell))$. Its gradient is $k_s-\sum_j P_j k_j$ with observation probabilities $P_j$ taken from the joint distribution. The objective is concave in $q$, so its derivative along a line cannot increase. [Log-sum-exp convexity](https://web.stanford.edu/~boyd/cvxbook/bv_cvxslides.pdf)
+
+The installer chooses one unit direction from the initial gradient. With update cap $M$ and target input component $h_\perp$ outside the protected span, the ideal query displacement cap is $M\lVert h_\perp\rVert$. The existing weight installer checks the materialized edit and protected inputs under its Float64 rank and norm policy. The line search brackets the bounded peak if needed and bisects toward the first observed feasible crossing. Each search uses at most two blocks of 60 bisections and allows numerical slack in the proposed displacement. A finite search can refuse near the threshold or miss a feasible direction. [Shifted softmax arithmetic](https://arxiv.org/abs/1909.03469)
+
+The target replay checks the actual slot probability against the requested floor. A full-resolution tree uses the executed probability of the frontier group containing the slot divided by its number of leaves. The fitting pass scans every observation key and includes generated-history competition. Every scalar search evaluation still scans the precomputed scores and slopes. The floor applies to the replayed step and pinned bank. A source intervention checks whether a change in that source also changes the late result.
+
+The strongest direct rival solves for minimum displacement over the whole feasible query ball, a convex problem in exact arithmetic for one named slot. It can turn away from competition introduced along the original gradient. A state-gated query residual is a separate candidate when the target input lies in the protected linear span. Compare both with the one-direction edit, a shared query edit, and the unmodified kernel on matched source corrections and protected runs. Include fitting scans, replay and projection in the cost.
+
 ### Conditional architecture growth
 
 [SLICE] The feedback kernel can expand by appending a new term to its computation. A signed [conditional term](../experiments/memory/latent_feedback.py) adds $(h\cdot u)(m\cdot v)w$ before tanh, using previous hidden state $h$ and observation mixture $m$. Two different hidden states that read the same mixture can require different value contributions. With other maps fixed, changing the shared value map alone gives the same contribution to both.

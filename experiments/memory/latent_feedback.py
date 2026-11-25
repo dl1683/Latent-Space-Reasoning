@@ -6,7 +6,7 @@ state is available to later steps as both a query input and an attention row.
 
 from copy import copy
 from dataclasses import dataclass, replace
-from math import isfinite, prod
+from math import isfinite, log, prod
 from operator import index
 
 import numpy as np
@@ -25,6 +25,55 @@ def _real_array(value):
     if not np.isfinite(array).all():
         raise ValueError("coordinates and weights must be finite")
     return array
+
+
+def _source_mass_shift(offsets, contrasts, log_floor, limit):
+    """Find the first feasible shift along the local log-mass gradient."""
+    def distribution(scores):
+        center = float(np.max(scores))
+        weights = np.exp(scores - center)
+        total = float(weights.sum())
+        return -center - log(total), weights / total
+
+    with np.errstate(over="raise", invalid="raise", under="ignore"):
+        current, probabilities = distribution(offsets)
+        if current >= log_floor:
+            return np.zeros(contrasts.shape[1])
+        direction = -(probabilities @ contrasts)
+        scale = float(np.max(np.abs(direction)))
+        if not scale or not limit:
+            raise ValueError("source mass has no editable ascent direction")
+        direction /= scale
+        direction /= np.linalg.norm(direction)
+        slopes = contrasts @ direction
+
+        def point(shift):
+            mass, weights = distribution(offsets + shift * slopes)
+            return mass, -float(weights @ slopes)
+
+        upper = limit
+        peak, derivative = point(upper)
+        if derivative < 0:
+            lower = 0.0
+            for _ in range(60):
+                middle = lower + (upper - lower) * 0.5
+                if point(middle)[1] > 0:
+                    lower = middle
+                else:
+                    upper = middle
+            peak, upper = max((point(shift)[0], shift) for shift in (lower, upper))
+        if peak < log_floor:
+            raise ValueError("source mass search found no feasible shift on the bounded direction")
+        # Leave room for a different floating-point reduction on installed replay.
+        search_floor = log_floor + min(1e-12, (peak - log_floor) * 0.5)
+        lower = 0.0
+        for _ in range(60):
+            middle = lower + (upper - lower) * 0.5
+            if point(middle)[0] >= search_floor:
+                upper = middle
+            else:
+                lower = middle
+        return upper * direction
 
 
 @dataclass(frozen=True, eq=False)
@@ -361,6 +410,38 @@ class FeedbackKernel:
         logits = diagnostics["logits"]
         return stepped, float(logits[first]) - float(logits[second])
 
+    def _source_mass_bank(self, memory, slot):
+        self._route_program_keys(memory, (slot,))
+        return memory._keys, slot
+
+    def _source_mass_step(self, state, slot):
+        diagnostics = {}
+        stepped = self._advance(state, diagnostics=diagnostics)[0]
+        return stepped, float(diagnostics["probabilities"][slot])
+
+    def _route_program_inputs(self, state, step, protect):
+        bank = state._memory
+        baseline, _, _ = self._trace(state._seed, bank, step)
+        prefix = baseline._history[:-1]
+        references = [self._trace(seed, bank, steps)[0] for seed, steps in protect]
+        protected_inputs = [baseline._seed, *prefix[:-1]] if prefix else []
+        for reference in references:
+            protected_inputs.extend((reference._seed, *reference._history[:-1]))
+        anchors = np.asarray(protected_inputs).reshape(-1, self._width)
+        prior = prefix[-1] if prefix else baseline._seed
+        weight = self._query if self._observation_query is None else self._observation_query
+        return baseline, references, anchors, prior, weight
+
+    def _fit_route_program(self, baseline, references, anchors, prior, weight, target, max_norm, atol):
+        edit = program_weight(weight, [prior], [target], preserve_inputs=anchors,
+                              max_update_norm=max_norm, atol=atol)
+        candidate = self._with_observation_query(edit.weight) if edit.update_norm else self
+        bank = baseline._memory
+        replay = candidate._checked_replay(baseline._seed, bank, baseline._history[:-1], atol)
+        for reference in references:
+            candidate._checked_replay(reference._seed, bank, reference._history, atol)
+        return candidate, replay, edit
+
     def program_observation_route(self, state, step, preferred_slot, other_slot, log_odds, *,
                                   max_update_norm, atol=1e-8, protect=()):
         """Fit the selected source log odds and replay protected trajectories.
@@ -374,17 +455,8 @@ class FeedbackKernel:
         slots = index(preferred_slot), index(other_slot)
         if slots[0] == slots[1] or not isfinite(log_odds):
             raise ValueError("route programming needs distinct slots and finite log odds")
-        bank = state._memory
-        keys = self._route_program_keys(bank, slots)
-        baseline, _, _ = self._trace(state._seed, bank, step)
-        prefix = baseline._history[:-1]
-        references = [self._trace(seed, bank, steps)[0] for seed, steps in protect]
-        protected_inputs = [baseline._seed, *prefix[:-1]] if prefix else []
-        for reference in references:
-            protected_inputs.extend((reference._seed, *reference._history[:-1]))
-        anchors = np.asarray(protected_inputs).reshape(-1, self._width)
-        prior = prefix[-1] if prefix else baseline._seed
-        weight = self._query if self._observation_query is None else self._observation_query
+        keys = self._route_program_keys(state._memory, slots)
+        baseline, references, anchors, prior, weight = self._route_program_inputs(state, step, protect)
         with np.errstate(over="raise", invalid="raise", divide="raise"):
             contrast = keys[0] - keys[1]
             scale = float(np.max(np.abs(contrast)))
@@ -395,15 +467,52 @@ class FeedbackKernel:
             gap = float(keys[0] @ old_query) - float(keys[1] @ old_query)
             shift = ((log_odds - gap) / scale) / (scaled_contrast @ scaled_contrast)
             target_query = old_query + shift * scaled_contrast
-        edit = program_weight(weight, [prior], [target_query], preserve_inputs=anchors,
-                              max_update_norm=max_update_norm, atol=atol)
-        candidate = self._with_observation_query(edit.weight)
-        replay = candidate._checked_replay(baseline._seed, bank, prefix, atol)
+        candidate, replay, edit = self._fit_route_program(
+            baseline, references, anchors, prior, weight, target_query, max_update_norm, atol,
+        )
         replay, replay_gap = candidate._route_program_step(replay, slots, keys)
         if not isfinite(replay_gap) or abs(replay_gap - log_odds) > atol:
             raise ValueError("programmed observation log odds fail replay tolerance")
-        for reference in references:
-            candidate._checked_replay(reference._seed, bank, reference._history, atol)
+        return candidate, replay, edit
+
+    def program_observation_mass(self, state, step, slot, min_mass, *,
+                                 max_update_norm, atol=1e-8, protect=()):
+        """Fit and replay a floor on one source's share of the joint attention.
+
+        Search along the baseline projected-query gradient, under the installed
+        map's Frobenius update cap. A refusal can be specific to that direction.
+        Return the candidate kernel, target replay and weight edit.
+        """
+        self._require_state(state)
+        slot = index(slot)
+        if not 0 < min_mass < 1:
+            raise ValueError("source mass floor must be strictly between zero and one")
+        if not isfinite(max_update_norm) or max_update_norm < 0:
+            raise ValueError("max_update_norm must be finite and nonnegative")
+        keys, selected = self._source_mass_bank(state._memory, slot)
+        baseline, references, anchors, prior, weight = self._route_program_inputs(state, step, protect)
+        with np.errstate(over="raise", invalid="raise"):
+            query = prior @ weight
+            history_keys = np.asarray(baseline._keys[:-1]).reshape(-1, self._query.shape[1])
+            scores = np.concatenate((keys @ query, history_keys @ (prior @ self._query)))
+            offsets = scores - scores[selected]
+            # Generated rows keep fixed scores when the observation query moves.
+            contrasts = np.concatenate((keys - keys[selected],
+                                        np.broadcast_to(-keys[selected], history_keys.shape)))
+            free_input = _remove_span(prior[None, :], _row_basis(anchors, 1e-12))
+            free_norm = _frobenius(free_input)
+            if free_norm <= _frobenius(prior, scale=1e-12):
+                free_norm = 0.0
+            limit = max_update_norm * free_norm
+            if not isfinite(limit):
+                raise ValueError("source mass search bound is outside numerical range")
+            target_query = query + _source_mass_shift(offsets, contrasts, log(float(min_mass)), limit)
+        candidate, replay, edit = self._fit_route_program(
+            baseline, references, anchors, prior, weight, target_query, max_update_norm, atol,
+        )
+        replay, achieved = candidate._source_mass_step(replay, slot)
+        if not achieved >= min_mass:
+            raise ValueError("programmed source mass falls below the replay floor")
         return candidate, replay, edit
 
     def _edit_traces(self, state, step, target, protect):

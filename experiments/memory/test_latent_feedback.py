@@ -291,13 +291,17 @@ def test_route_program_rechecks_actual_log_odds_when_map_tolerance_is_too_loose(
                                          max_update_norm=2, protect=[(seed, 2)])
 
 
-def test_pairwise_route_program_can_leave_both_sources_inconsequential():
+def _crowded_route_weights():
     weights = _route_weights()
-    kernel = FeedbackKernel(**{
+    return {
         **weights, "query": [[0, 0], [0, 80], [0.7, 0], [0, 0]],
         "observation_key": [[1, 0], [0, 0], [0, 1], [0, 0]],
         "feedback_key": [[0, 0], [0.6, 0], [0, 0], [0, 0]],
-    })
+    }
+
+
+def test_pairwise_route_program_can_leave_both_sources_inconsequential():
+    kernel = FeedbackKernel(**_crowded_route_weights())
     memory = kernel.prepare([[-1, 0, 0, -1], [1, 0, 0, 1], [0, 0, 1, 0]])
     start = kernel.start([1, 0, 0, 0], memory)
     candidate, replay, _ = kernel.program_observation_route(start, 2, 1, 0, np.log(9), max_update_norm=2)
@@ -308,6 +312,128 @@ def test_pairwise_route_program_can_leave_both_sources_inconsequential():
     assert second / first == pytest.approx(9)
     assert first + second < 1e-24
     np.testing.assert_array_equal(replay.latest, kernel.step(kernel.step(start)).latest)
+
+
+@pytest.mark.parametrize("tree", [False, True], ids=["dense", "tree"])
+def test_joint_mass_program_restores_a_late_source_consequence_amid_distractors(tree):
+    weights = _crowded_route_weights()
+    kernel = TreeFeedbackKernel(depth=3, max_frontier=3, **weights) if tree else FeedbackKernel(**weights)
+    rows = [[-1, 0, 0, -1], [1, 0, 0, 1], [0, 0, 1, 0]]
+    memory = kernel.prepare(rows)
+    if tree:
+        memory = kernel.revise(memory, {1: None, 7: rows[1]})
+    slot = 7 if tree else 1
+    state = kernel.start([1, 0, 0, 0], memory)
+    guard = [0, 0, 0, 1]
+    pair, pair_result, _ = kernel.program_observation_route(
+        state, 2, slot, 0, np.log(9), max_update_norm=64, protect=[(guard, 2)],
+    )
+    _, pair_mass = pair._source_mass_step(pair.step(pair.start(state.seed, memory)), slot)
+    assert pair_mass < 1e-24
+    candidate, result, edit = kernel.program_observation_mass(
+        state, 2, slot, 0.7, max_update_norm=64, protect=[(guard, 2)],
+    )
+    assert edit.update_norm < 64
+    assert result._memory is memory and candidate._observation_value is kernel._observation_value
+    np.testing.assert_array_equal(result.history[0], pair_result.history[0])
+    prior = candidate.step(candidate.start(state.seed, memory))
+    _, replay_mass = candidate._source_mass_step(prior, slot)
+    assert 0.7 <= replay_mass < 0.700000000002
+
+    # Independently compute joint mass and the late payload consequence.
+    query = prior.latest @ edit.weight
+    logits = np.array([-query[0], query[0], query[1], 0])
+    mass = np.exp(logits - logits.max())
+    mass /= mass.sum()
+    assert replay_mass == pytest.approx(mass[1], abs=1e-14)
+    assert result.latest[2] == pytest.approx(np.tanh(0.4 * prior.latest[1] + mass[1] - mass[0]))
+    assert result.latest[2] - pair_result.latest[2] > 0.45
+    original_guard = kernel.step(kernel.step(kernel.start(guard, memory)))
+    edited_guard = candidate.step(candidate.step(candidate.start(guard, memory)))
+    np.testing.assert_array_equal(original_guard.history, edited_guard.history)
+
+    correction = [1, 0, 0, -1]
+    revised = (candidate.revise(memory, {slot: correction}) if tree
+               else candidate.prepare([rows[0], correction, rows[2]]))
+    altered = candidate.step(candidate.start(state.seed, revised))
+    altered = candidate.intervene(altered, 0, prior.latest)
+    changed, corrected_mass = candidate._source_mass_step(altered, slot)
+    assert corrected_mass == replay_mass
+    assert changed.latest[2] < 0 < result.latest[2]
+    restored = (candidate.revise(revised, {slot: rows[1]}) if tree else candidate.prepare(rows))
+    earlier = candidate.step(candidate.start(state.seed, restored))
+    np.testing.assert_array_equal(candidate.step(earlier).latest, result.latest)
+    with pytest.raises(ValueError, match="no editable ascent direction"):
+        kernel.program_observation_mass(state, 2, slot, 0.7, max_update_norm=64,
+                                        protect=[(state.seed, 2)])
+
+
+def test_same_query_weight_edit_has_different_effect_with_shared_history_routing():
+    weights = _crowded_route_weights()
+    kernel = FeedbackKernel(**weights)
+    bank = kernel.prepare([[-1, 0, 0, -1], [1, 0, 0, 1], [0, 0, 1, 0]])
+    fork, result, edit = kernel.program_observation_mass(
+        kernel.start([1, 0, 0, 0], bank), 2, 1, 0.7, max_update_norm=64,
+    )
+    shared = FeedbackKernel(**{**weights, "query": edit.weight})
+    shared_bank = shared.prepare(bank._observations)
+    shared_early = shared.step(shared.start([1, 0, 0, 0], shared_bank))
+    shared_result, shared_mass = shared._source_mass_step(shared_early, 1)
+    assert 0.69 < shared_mass < 0.7
+    np.testing.assert_allclose(shared_result.latest, result.latest, atol=1e-6, rtol=0)
+
+    for empty in (None, np.empty((0, 4))):
+        seed = [1, 0, 0, 1]
+        runs = [k.start(seed, k.prepare(empty) if empty is not None else None)
+                for k in (kernel, fork, shared)]
+        for _ in range(4):
+            runs = [k.step(run) for k, run in zip((kernel, fork, shared), runs, strict=True)]
+            np.testing.assert_array_equal(runs[0].latest, runs[1].latest)
+        assert np.max(np.abs(runs[0].latest - runs[2].latest)) > 0.1
+
+
+def test_joint_mass_search_finds_the_first_crossing_before_an_interior_peak():
+    kernel = FeedbackKernel(
+        query=[[-1]], carry=None, observation_key=[[1]], observation_value=[[0.2]],
+        feedback_key=[[0]], feedback_value=[[0]], max_steps=1,
+    )
+    state = kernel.start([1], kernel.prepare([[1], [2], [-3]]))
+    candidate, _, edit = kernel.program_observation_mass(state, 1, 0, 0.32, max_update_norm=6)
+    q = edit.weight.item()
+    assert -1 < q < 0
+    _, mass = candidate._source_mass_step(candidate.start(state.seed, state._memory), 0)
+    assert 0.32 <= mass < 0.320000000002
+    assert np.exp(5) / sum(np.exp([5, 10, -15])) < 0.01
+    with pytest.raises(ValueError, match="no feasible shift on the bounded direction"):
+        kernel.program_observation_mass(state, 1, 0, 0.6, max_update_norm=6)
+
+
+def test_joint_mass_tree_checks_per_slot_mass_inside_a_collapsed_group():
+    kernel = TreeFeedbackKernel(depth=2, max_frontier=3, **_route_weights())
+    memory = kernel.prepare([[1, 0, 0, -1], [1, 0, 0, 1], [1, 0, 0, 0]])
+    state = kernel.start([1, 0, 0, 0], memory)
+    candidate, result, edit = kernel.program_observation_mass(state, 1, 2, 0.32, max_update_norm=0)
+    assert candidate is kernel and edit.update_norm == 0 and result.attention.groups == 1
+    _, mass = candidate._source_mass_step(state, 2)
+    assert mass == pytest.approx(1 / 3)
+    with pytest.raises(ValueError, match="no editable ascent direction"):
+        kernel.program_observation_mass(state, 1, 2, 0.34, max_update_norm=80)
+
+
+def test_joint_mass_gradient_ray_refuses_a_feasible_off_ray_solution():
+    kernel = FeedbackKernel(
+        query=[[-10, 0], [0, 0]], carry=None, observation_key=np.eye(2),
+        observation_value=np.eye(2), feedback_key=np.zeros((2, 2)),
+        feedback_value=np.zeros((2, 2)), max_steps=1,
+    )
+    memory = kernel.prepare([[0, 0], [-1, 0], [1, 4]])
+    seed = [1, 0]
+    with pytest.raises(ValueError, match="no feasible shift on the bounded direction"):
+        kernel.program_observation_mass(kernel.start(seed, memory), 1, 0, 0.8, max_update_norm=20)
+    feasible = kernel._with_observation_query([[3, -3], [0, 0]])
+    assert np.linalg.norm([13, -3]) < 20
+    _, mass = feasible._source_mass_step(feasible.start(seed, memory), 0)
+    assert mass > 0.95
 
 
 def test_public_array_metadata_and_edit_result_cannot_rewrite_old_states():
