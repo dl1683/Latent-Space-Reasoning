@@ -1,3 +1,6 @@
+from itertools import product
+from math import exp, log
+
 import numpy as np
 import pytest
 
@@ -85,24 +88,34 @@ def test_subranges_and_forks_match_equal_access_sequential_continuation():
     assert continue_latent([1, 2, 3], memory=revised, start=10, stop=11).tolist() == [0, 0, 0]
 
 
-def test_retention_counts_compilation_revision_and_late_read_separately(monkeypatch):
+@pytest.mark.parametrize("algebra", ["linear", "max_plus", "log_sum_exp"])
+def test_retention_counts_compilation_revision_and_late_read_separately(monkeypatch, algebra):
     slots = tuple(f"operator-{i}" for i in range(64))
-    operators = {source: np.eye(2) for source in slots}
+    if algebra == "linear":
+        identity = np.eye(2)
+        first, second = np.diag([2, 1]), np.diag([0.5, 1])
+        kernel = "_multiply"
+    else:
+        identity = np.array([[0, -np.inf], [-np.inf, 0]])
+        first, second = identity.copy(), identity.copy()
+        first[0, 0], second[0, 0] = 2, -2
+        kernel = "_path_product"
+    operators = dict.fromkeys(slots, identity)
     calls = []
-    multiply = transition_memory._multiply
+    multiply = getattr(transition_memory, kernel)
 
-    def watch(left, right):
+    def watch(left, right, **kwargs):
         calls.append(right.ndim)
-        return multiply(left, right)
+        return multiply(left, right, **kwargs)
 
-    monkeypatch.setattr(transition_memory, "_multiply", watch)
-    base = TransitionMemory.prepare(slots, 2, operators)
+    monkeypatch.setattr(transition_memory, kernel, watch)
+    base = TransitionMemory.prepare(slots, 2, operators, algebra=algebra)
     assert calls == [2] * 63
     calls.clear()
-    revised = base.revise({slots[7]: np.diag([2, 1]), slots[8]: np.diag([0.5, 1])})
+    revised = base.revise({slots[7]: first, slots[8]: second})
     assert calls == [2] * 9 and revised._root.right is base._root.right
     calls.clear()
-    assert revised.revise({slots[7]: np.diag([2, 1])}) is revised and calls == []
+    assert revised.revise({slots[7]: first}) is revised and calls == []
     np.testing.assert_array_equal(continue_latent([3, 4], memory=revised), [3, 4])
     assert calls == [1]
 
@@ -137,3 +150,140 @@ def test_source_and_result_arrays_are_isolated_and_range_failures_are_explicit()
     with pytest.raises(FloatingPointError):
         continue_latent([2], memory=large, stop=1)
     assert continue_latent([0.5], memory=large, stop=1).tolist() == [5e307]
+
+
+def test_late_path_aggregation_preserves_alternatives_and_is_nonlinear_in_scores():
+    slots = ("enter", "finish", "other", "tail")
+    enter = np.array([[2, -np.inf], [0, 1]])
+    finish = np.array([[0, 0], [-np.inf, -np.inf]])
+    identity = np.array([[0, -np.inf], [-np.inf, 0]])
+    sources = dict(zip(slots, (enter, finish, identity, identity)))
+    best = TransitionMemory.prepare(slots, 2, sources, algebra="max_plus")
+    all_paths = TransitionMemory.prepare(slots, 2, sources, algebra="log_sum_exp")
+    seed = [0, -np.inf]
+    result = continue_latent(seed, memory=all_paths, stop=2)
+    assert result[0] == pytest.approx(log(exp(2) + 1))
+    assert result[1] == -np.inf
+    assert continue_latent(seed, memory=best, stop=2)[0] == 2
+    tied = enter.copy()
+    tied[1, 0] = 2
+    assert continue_latent(seed, memory=best.revise({"enter": tied}), stop=2)[0] == 2
+    assert continue_latent(seed, memory=all_paths.revise({"enter": tied}), stop=2)[0] == pytest.approx(2 + log(2))
+
+    alternative_removed = enter.copy()
+    alternative_removed[1, 0] = -np.inf
+    for snapshot in (best, all_paths):
+        revised = snapshot.revise({"enter": alternative_removed})
+        assert revised._root.right is snapshot._root.right
+        assert continue_latent(seed, memory=revised, stop=2)[0] == 2
+        assert continue_latent([-np.inf, 0], memory=revised, stop=2)[0] == 1
+        assert continue_latent(seed, memory=snapshot.revise({"finish": None}), stop=2) is None
+        np.testing.assert_array_equal(continue_latent(seed, memory=revised, start=2), seed)
+        np.testing.assert_array_equal(continue_latent(seed, memory=revised, start=2, stop=2), seed)
+        restored = revised.revise({"enter": enter})
+        np.testing.assert_array_equal(continue_latent(seed, memory=restored, stop=2),
+                                      continue_latent(seed, memory=snapshot, stop=2))
+        a, b = np.array([0, -4]), np.array([-4, 4])
+        separate = (continue_latent(a, memory=snapshot)[0] + continue_latent(b, memory=snapshot)[0]) / 2
+        together = continue_latent((a + b) / 2, memory=snapshot)[0]
+        assert abs(together - separate) > 1
+    np.testing.assert_array_equal(continue_latent(seed, memory=all_paths, stop=2), result)
+
+
+def test_removing_a_weaker_path_changes_the_soft_decision_only():
+    enter = np.full((3, 3), -np.inf)
+    enter[:, 0] = [0, -0.5, -0.5]
+    finish = np.array([[0, -np.inf, -np.inf], [-np.inf, 0, 0], [-np.inf, -np.inf, -np.inf]])
+    sources = {"enter": enter, "finish": finish}
+    best = TransitionMemory.prepare(sources, 3, sources, algebra="max_plus")
+    all_paths = TransitionMemory.prepare(sources, 3, sources, algebra="log_sum_exp")
+    seed = [0, -np.inf, -np.inf]
+    entered = continue_latent(seed, memory=all_paths)
+    np.testing.assert_allclose(entered, [0, log(2) - 0.5, -np.inf])
+    assert np.argmax(entered) == 1
+    reduced = enter.copy()
+    reduced[2, 0] = -np.inf
+    np.testing.assert_array_equal(continue_latent(seed, memory=best), [0, -0.5, -np.inf])
+    for snapshot in (best, all_paths):
+        revised = snapshot.revise({"enter": reduced})
+        fallback = continue_latent(seed, memory=revised)
+        np.testing.assert_array_equal(fallback, [0, -0.5, -np.inf])
+        assert np.argmax(fallback) == 0
+
+
+def _enumerated_paths(seed, layers, algebra):
+    if any(layer is None for layer in layers):
+        return None
+    scores = [[] for _ in seed]
+    for path in product(range(len(seed)), repeat=len(layers) + 1):
+        score = seed[path[0]] + sum(layer[path[i + 1], path[i]] for i, layer in enumerate(layers))
+        scores[path[-1]].append(score)
+    if algebra == "max_plus":
+        return [max(paths) for paths in scores]
+    totals = [sum(exp(score) for score in paths) for paths in scores]
+    return [log(total) if total else -np.inf for total in totals]
+
+
+@pytest.mark.parametrize("algebra", ["max_plus", "log_sum_exp"])
+def test_path_products_match_explicit_enumeration_on_forked_subranges(algebra):
+    rng = np.random.default_rng(818)
+    slots = ("a", "b", "c", "d", "e")
+    bank = {}
+    for source in slots:
+        layer = rng.integers(-3, 4, size=(2, 2)).astype(float)
+        layer[rng.random(size=(2, 2)) < 0.3] = -np.inf
+        bank[source] = layer
+    original = TransitionMemory.prepare(slots, 2, bank, algebra=algebra)
+    edits = {"b": None, "d": np.full((2, 2), -np.inf)}
+    revised = original.revise(edits)
+    restored = revised.revise({"b": bank["b"]})
+    fork = original.revise({"e": np.zeros((2, 2))})
+    views = ((original, bank), (revised, bank | edits),
+             (restored, bank | edits | {"b": bank["b"]}), (fork, bank | {"e": np.zeros((2, 2))}))
+    for snapshot, sources in views:
+        for start in range(len(slots) + 1):
+            for stop in range(start, len(slots) + 1):
+                seed = rng.integers(-3, 4, size=2).astype(float)
+                seed[rng.random(size=2) < 0.3] = -np.inf
+                expected = _enumerated_paths(seed, [sources[key] for key in slots[start:stop]], algebra)
+                actual = continue_latent(seed, memory=snapshot, start=start, stop=stop)
+                if expected is None:
+                    assert actual is None
+                else:
+                    np.testing.assert_allclose(actual, expected, atol=2e-14, rtol=0)
+
+
+@pytest.mark.parametrize("algebra", ["max_plus", "log_sum_exp"])
+def test_path_products_distinguish_unreachable_from_invalid_and_overflow(algebra):
+    slots = ("a", "b")
+    snapshot = TransitionMemory.prepare(slots, 1, dict.fromkeys(slots, [[0]]), algebra=algebra)
+    for invalid in (np.nan, np.inf, 1j, "-inf"):
+        with pytest.raises(ValueError):
+            snapshot.revise({"a": [[invalid]]})
+        with pytest.raises(ValueError):
+            continue_latent([invalid], memory=snapshot)
+    widest = np.finfo(np.longdouble).max
+    if widest > np.finfo(np.float64).max:
+        with pytest.raises(FloatingPointError):
+            snapshot.revise({"a": np.array([[-widest]])})
+        with pytest.raises(FloatingPointError):
+            continue_latent(np.array([-widest]), memory=snapshot)
+    for large in (-1e308, 1e308):
+        with pytest.raises(FloatingPointError):
+            snapshot.revise(dict.fromkeys(slots, [[large]]))
+        partial = snapshot.revise({"a": [[large]], "b": None})
+        assert continue_latent([large], memory=partial) is None
+        with pytest.raises(FloatingPointError):
+            continue_latent([large], memory=partial, stop=1)
+        # A balanced tree adds the two large same-sign stages before cancellation.
+        stages = {"a": [[-large]], "b": [[large]], "c": [[large]]}
+        total = 0.0
+        for source in stages.values():
+            total += source[0][0]
+        assert total == large
+        with pytest.raises(FloatingPointError):
+            TransitionMemory.prepare(stages, 1, stages, algebra=algebra)
+    wide = TransitionMemory.prepare(("a",), 2, {"a": [[1e308, -1e308], [-np.inf, -np.inf]]}, algebra=algebra)
+    np.testing.assert_array_equal(continue_latent([0, 0], memory=wide), [1e308, -np.inf])
+    np.testing.assert_array_equal(continue_latent([-np.inf, -np.inf], memory=wide), [-np.inf, -np.inf])
+    np.testing.assert_array_equal(continue_latent([0], memory=snapshot), [0])
