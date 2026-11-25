@@ -3,13 +3,14 @@
 import argparse
 import ast
 from collections.abc import Mapping
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from importlib.util import resolve_name
 from io import BytesIO
 import json
 import os
 from pathlib import Path, PurePosixPath, PureWindowsPath
 import subprocess
+from tokenize import detect_encoding
 from types import MappingProxyType
 
 import numpy as np
@@ -25,10 +26,31 @@ class ImportEvidence:
 
 
 @dataclass(frozen=True)
+class ImportQuote:
+    declaring_module: str
+    imported_module: str
+    path: str
+    blob: str
+    line: int
+    end_line: int
+    text: str
+    declared_targets: tuple[str, ...]
+
+
+@dataclass(frozen=True, order=True)
+class _Declaration:
+    lineno: int
+    col_offset: int
+    end_lineno: int
+    end_col_offset: int
+    targets: tuple[str, ...] = field(compare=False)
+
+
+@dataclass(frozen=True)
 class _Module:
     path: str
     blob: str
-    imports: Mapping[str, int]
+    imports: Mapping[str, _Declaration]
 
 
 def _git(repo, *args, data=None):
@@ -98,9 +120,13 @@ def _module_imports(contents, path, name, package):
             targets = [target]
         else:
             continue
-        for target in targets:
-            if target != name and (target == package or target.startswith(package + ".")):
-                imports[target] = min(node.lineno, imports.get(target, node.lineno))
+        scoped = tuple(target for target in targets
+                       if target != name and (target == package or target.startswith(package + ".")))
+        if not scoped:
+            continue
+        span = _Declaration(node.lineno, node.col_offset, node.end_lineno, node.end_col_offset, tuple(targets))
+        for target in scoped:
+            imports[target] = min(span, imports.get(target, span))
     return MappingProxyType(imports)
 
 
@@ -185,8 +211,29 @@ class RepositoryImportMemory:
             return None
         left, right = witness.origins
         middle = names[witness.middle]
-        return (ImportEvidence(left, self._modules[start].imports[middle], middle),
-                ImportEvidence(right, self._modules[middle].imports[destination], destination))
+        return (ImportEvidence(left, self._modules[start].imports[middle].lineno, middle),
+                ImportEvidence(right, self._modules[middle].imports[destination].lineno, destination))
+
+    def read_imports(self, edges):
+        """Read exact declarations for named edges, charging each pinned blob once."""
+        requested = []
+        for declaring, imported in edges:
+            self._require_module(declaring)
+            self._require_module(imported)
+            module = self._modules[declaring]
+            if imported not in module.imports:
+                raise ValueError(f"no declared import from {declaring} to {imported}")
+            requested.append((declaring, imported, module, module.imports[imported]))
+        contents = _read_blobs(self._repo, sorted({module.blob for _, _, module, _ in requested}))
+        decoded = {blob: raw.decode(detect_encoding(BytesIO(raw).readline)[0]) for blob, raw in contents.items()}
+        quotes = []
+        for declaring, imported, module, span in requested:
+            fragment = ast.get_source_segment(decoded[module.blob], span)
+            if not fragment:
+                raise ValueError("pinned import declaration could not be quoted")
+            quotes.append(ImportQuote(declaring, imported, module.path, module.blob,
+                                      span.lineno, span.end_lineno, fragment, span.targets))
+        return tuple(quotes), sum(map(len, contents.values()))
 
 
 def main(argv=None):

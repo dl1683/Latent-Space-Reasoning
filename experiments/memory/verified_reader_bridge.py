@@ -48,17 +48,28 @@ class InputFrameOverflow(ValueError):
                                      for row in verification_checks)
 
 
+def frame_evidence(system, payload):
+    """Frame trusted instructions and JSON evidence as separate chat messages."""
+    content = json.dumps(payload, ensure_ascii=True, separators=(',', ':'))
+    # Keep source strings from becoming literal chat-template delimiters.
+    # This is framing hygiene, not semantic prompt-injection resistance.
+    content = content.replace('<', '\\u003c').replace('>', '\\u003e')
+    return [dict(role='system', content=system), dict(role='user', content=content)]
+
+
+def encode_messages(tokenizer, messages):
+    ids = tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, return_dict=False)
+    if not isinstance(ids, list) or any(type(i) is not int for i in ids):
+        raise TypeError('tokenizer must return a flat integer token list')
+    return ids
+
+
 def _frame(question, passages, provenance_mode, coverage, response_style='concise'):
     if provenance_mode == 'handles':
         passages = [{key: value for key, value in p.items() if key != 'source'}
                     for p in passages]
-    content = json.dumps(dict(question=question, evidence=passages, coverage=coverage),
-                         ensure_ascii=True, separators=(',', ':'))
-    # Keep source strings from becoming literal chat-template delimiters.
-    # This is framing hygiene, not semantic prompt-injection resistance.
-    content = content.replace('<', '\\u003c').replace('>', '\\u003e')
     system = SYSTEM if response_style == 'concise' else SYSTEM + ROLE_SLOTS
-    return [dict(role='system', content=system), dict(role='user', content=content)]
+    return frame_evidence(system, dict(question=question, evidence=passages, coverage=coverage))
 
 
 def prepare_request(tool, proposals, question, tokenizer, *,
@@ -123,13 +134,8 @@ def prepare_request(tool, proposals, question, tokenizer, *,
             semantic_absence='UNKNOWN')
 
     def encode(passages):
-        ids = tokenizer.apply_chat_template(
-            _frame(question, passages, provenance_mode, coverage(len(passages)), response_style),
-            tokenize=True, add_generation_prompt=True,
-            return_dict=False)
-        if not isinstance(ids, list) or any(type(i) is not int for i in ids):
-            raise TypeError('tokenizer must return a flat integer token list')
-        return ids
+        return encode_messages(tokenizer, _frame(question, passages, provenance_mode,
+                                                coverage(len(passages)), response_style))
 
     baseline_ids = encode([])
     if len(baseline_ids) + max_new_tokens > context_tokens:

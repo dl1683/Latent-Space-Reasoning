@@ -26,6 +26,8 @@ The [two-hop feedback receiver](docs/ARCHITECTURE.md#two-hop-feedback-into-the-h
 
 A [local repository demo](docs/ARCHITECTURE.md#committed-python-imports) reads a Git commit into those factors and accepts later commits as revisions. It answers structured two-hop import queries with both source lines and the exact commit.
 
+The [import reader check](docs/ARCHITECTURE.md#checking-an-import-reader) prepares exact committed declarations and checks a structured reply or abstention. It supports testing a small reader separately from the lookup and revision machinery.
+
 Current evidence is CPU software verification on supplied arrays, predicate rows and deterministic source encodings. Learned corpus encoding, trained operators and ongoing swarm maintenance remain research objectives. A grouped-query head adapter can initialize the feedback operator from supplied projection matrices with compact keys and factored values. Its [pinned checkpoint smoke](docs/ARCHITECTURE.md#reuse-of-one-pretrained-attention-head) awaits authorization for the first pretrained-weight run. The [architecture review brief](docs/ARCHITECTURE.md#architectural-exploration-and-review) invites competing designs and decisive tests.
 
 ## Results at a glance
