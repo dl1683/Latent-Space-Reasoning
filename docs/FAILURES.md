@@ -161,6 +161,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **A broad ancestor can exhaust expansion before a narrow intersection, 25 November 2026.** Adding 254 coordinates to one branch of an OR exhausted a 64-unit allowance before the enclosing AND could intersect it with its other, singleton parent. The direct proof at the singleton still returned 0.8. Compare sparse-parent enumeration and pointwise membership, and compare maintained projections on repeated reads after edits. Preserve the same proof and score rules across arms.
 
+**Probing a broad dependency can cost more than building it, 25 November 2026.** Pointwise projection recovered the sparse route, but spent 786 units where full sets spent 585 on the same 192 candidates in a dense control. It also cost more in most of the supplied mixed graphs after charging for planning. Keep pointwise opt-in and test any automatic selection on future revision batches, including forecast errors, costs paid by maintenance workers, and changes in admission at the same allowance. [Projection contract](ARCHITECTURE.md#expanding-the-route-catalog-on-a-pinned-corpus)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

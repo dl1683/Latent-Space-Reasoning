@@ -97,7 +97,7 @@ def _matching_receiver(frame, *, work_limit=65536, reuse_matching_failures=True,
 
 
 def _coverage_receiver(frame, *, expansion_limit=None, proof_limit=65536, trials=3, nodes=("b",),
-                       fixed_late=(1,)):
+                       fixed_late=(1,), projection="sets"):
     carry = np.zeros((4, 4))
     carry[0, 1] = 2
     keys, zeros = np.zeros((4, 1)), np.zeros((4, 4))
@@ -112,7 +112,8 @@ def _coverage_receiver(frame, *, expansion_limit=None, proof_limit=65536, trials
     if expansion_limit is not None:
         anchor_query = np.zeros((4, 2))
         anchor_query[1, 1] = 1
-        expansion = BindingRouteExpansion(nodes, anchor_query, np.zeros((4, len(nodes))), expansion_limit)
+        expansion = BindingRouteExpansion(
+            nodes, anchor_query, np.zeros((4, len(nodes))), expansion_limit, projection=projection)
     return BindingFeedback(kernel, frame, addresses, query=query, observation=observation,
                            disjoint_reads=True, route_trials=trials, work_limit=proof_limit,
                            reuse_weighted_matching=True, expansion=expansion)
@@ -238,7 +239,41 @@ def test_unrelated_possible_rows_do_not_influence_route_admission():
     assert len(original.proof_work) == 1 and len(crowded.proof_work) == 2
 
 
-def test_gate_scope_is_only_a_necessary_filter_and_replays_across_rewiring(tmp_path):
+def test_sparse_conjunct_can_read_through_a_broad_unmaterialized_union():
+    frame = _matching_frame(anchors=np.vstack((np.eye(2), np.tile([-1, 0], (254, 1))))).reprogram({
+        "wide": BindingGate("or", ("a", "c")),
+        "joint": BindingGate("and", ("wide", "b")),
+    })
+    sparse = frame.revise({"early": b"p,1,0,1", "left": b"b,0,1,0.8", "right": b"c,0,1,0.9"})
+    crowded = sparse.revise({"other_coordinates": b"a,-1,0,1"})
+    assert len(crowded._possible._leaf_coordinates["a"]) == 254
+    default = _coverage_receiver(frame, expansion_limit=64, nodes=("joint",))
+    assert _second_read(default, crowded).reads[-1].status == "expansion_capacity"
+    expanded = _coverage_receiver(frame, expansion_limit=64, nodes=("joint",), projection="pointwise")
+    expected = CorpusBindingRead(BindingProof(.8, frozenset({"early", "left", "right"})), .8)
+    late = _second_read(expanded, crowded).reads[-1]
+    assert late.address == ("joint", 1) and late.bounds == expected
+    assert late.expansion_work == 39
+    assert _second_read(expanded, sparse).reads[-1].expansion_work == 39
+
+    tight = _coverage_receiver(frame, expansion_limit=22, nodes=("joint",), projection="pointwise")
+    unfinished = _second_read(tight, crowded).reads[-1]
+    assert unfinished.status == "expansion_capacity" and unfinished.bounds is None
+    assert unfinished.expansion_work == 22 and [attempt.address for attempt in unfinished.tried] == [("b", 0)]
+
+    withdrawn = crowded.revise({"right": None})
+    missing = _second_read(expanded, withdrawn).reads[-1]
+    assert missing.status == "catalog_absent" and missing.bounds == CorpusBindingRead(None, None)
+    assert [attempt.address for attempt in missing.tried] == [("b", 0)]
+    assert _second_read(expanded, crowded).reads[-1] == late
+
+    both_nodes = _coverage_receiver(frame, expansion_limit=64, nodes=("joint", "wide"), projection="pointwise")
+    wider = _second_read(both_nodes, crowded).reads[-1]
+    assert wider.status == "expansion_capacity" and wider.bounds is None
+
+
+@pytest.mark.parametrize("projection", ("sets", "pointwise"))
+def test_gate_scope_is_only_a_necessary_filter_and_replays_across_rewiring(tmp_path, projection):
     parents = ("b", "c")
     frame = _matching_frame(anchors=[[1, 0], [0, 1], [-1, 0]]).reprogram({
         "either": BindingGate("or", parents),
@@ -249,10 +284,11 @@ def test_gate_scope_is_only_a_necessary_filter_and_replays_across_rewiring(tmp_p
     journal = JournaledCorpusWorkspace(path, frame, create=True)
     overlap = _write(journal, {"early": b"p,1,0,1", "other_anchor": b"c,-1,0,1",
                                "shared": b"b,1,0,1\nb,0,1,0.8\nc,0,1,0.9"})
-    projections = overlap.memory._possible._possible_coordinates(("either", "both", "joint"), lambda units: None)
+    projections = overlap.memory._possible._possible_coordinates(
+        ("either", "both", "joint"), lambda units: None, pointwise=projection == "pointwise")
     assert projections["either"] == {0, 1, 2}
     assert projections["both"] == projections["joint"] == {1}
-    receiver = _coverage_receiver(frame, expansion_limit=64, nodes=("joint",), fixed_late=(0,))
+    receiver = _coverage_receiver(frame, expansion_limit=64, nodes=("joint",), fixed_late=(0,), projection=projection)
     no_match = _second_read(receiver, overlap.memory).reads[-1]
     assert no_match.status == "catalog_absent"
     assert no_match.tried[-1].address == ("joint", 1)
@@ -274,6 +310,28 @@ def test_gate_scope_is_only_a_necessary_filter_and_replays_across_rewiring(tmp_p
     fresh = JournaledCorpusWorkspace(path, replace(frame, _encode=no_encoder)).snapshot()
     assert _second_read(receiver, fresh.memory).reads[-1] == changed
     assert _second_read(receiver, overlap.memory).reads[-1] == no_match
+
+
+def test_pointwise_gate_projection_is_stack_safe_and_reuses_a_shared_probe():
+    gates = {"base": BindingGate("or", ("a", "b"))}
+    wide = "base"
+    for offset in range(1500):
+        name = f"chain_{offset}"
+        gates[name] = BindingGate("or", (wide,))
+        wide = name
+    gates["left"] = BindingGate("and", ("p", wide))
+    gates["right"] = BindingGate("disjoint_and", ("p", wide))
+    bank = binding_memory.BindingMemory.prepare(
+        ("p", "a", "b"), 4, gates, {"seed": [("p", 0, 0), ("a", 3, 1), ("b", 0, 1)]},
+        materialize=False,
+    )
+    work = []
+    projection = bank._possible_coordinates(("left", "right"), work.append, pointwise=True)
+    assert projection == {"left": {0}, "right": {0}}
+    # Adding a second root pays for its traversal, plan and cached lookup.
+    single = []
+    assert bank._possible_coordinates(("left",), single.append, pointwise=True) == {"left": {0}}
+    assert sum(work) - sum(single) == 10
 
 
 def test_expanded_address_becomes_an_obligation_for_later_reads():

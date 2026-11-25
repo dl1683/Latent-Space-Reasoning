@@ -15,6 +15,7 @@ from experiments.memory.latent_feedback import _frozen, _real_array
 
 
 _EMPTY = MappingProxyType({})
+_NO_COORDINATES = frozenset()
 _UNBUILT_WEIGHTED_PREFIX = object()
 _Address = tuple[str, int]
 _SearchNode = str | _Address | None
@@ -135,6 +136,62 @@ def _gate_terms(gate, children, limit, pairs_left):
                     _retain(joined, left | right, min(left_strength, right_strength), limit)
         result = joined
     return result, pairs_left
+
+
+def _possible_at_coordinate(root, binding, rules, coordinates, checked, charge):
+    """Evaluate a Boolean gate at one coordinate, short-circuiting on a pinned graph."""
+    pending = [(root, None)]
+    while pending:
+        node, parents = pending.pop()
+        key = node, binding
+        if parents is None:
+            charge(1)
+            active = coordinates.get(node)
+            if active is not None:
+                found = binding in active
+            elif key in checked:
+                found = checked[key]
+            else:
+                parents = iter(rules[node].parents)
+                pending.append((node, parents))
+                pending.append((next(parents), None))
+        else:
+            terminal = rules[node].operation == "or"
+            parent = None if found == terminal else next(parents, None)
+            if parent is None:
+                checked[key] = found
+            else:
+                pending.append((node, parents))
+                pending.append((parent, None))
+    return found
+
+
+def _coordinate_projection_plan(rules, nodes, coordinates, width, charge):
+    # A conjunction can enumerate one parent and probe the remaining graph pointwise.
+    upper = {node: len(active) for node, active in coordinates.items()}
+    drivers = {}
+    for node, gate in rules.items():
+        charge(1 + len(gate.parents))
+        if gate.operation == "or":
+            upper[node] = min(width, sum(upper[parent] for parent in gate.parents))
+        else:
+            driver = min(gate.parents, key=upper.__getitem__)
+            drivers[node] = driver
+            upper[node] = upper[driver]
+        if not upper[node]:
+            coordinates[node] = _NO_COORDINATES
+
+    required = set(nodes)
+    charge(len(rules))
+    for node, gate in reversed(rules.items()):
+        if node in required and upper[node]:
+            if gate.operation == "or":
+                charge(len(gate.parents))
+                required.update(gate.parents)
+            else:
+                charge(1)
+                required.add(drivers[node])
+    return required, drivers
 
 
 @dataclass(frozen=True, eq=False)
@@ -303,8 +360,9 @@ class BindingMemory:
         return replace(self, _sources=MappingProxyType(sources), _rows=MappingProxyType(rows),
                        _leaf_coordinates=postings, _retained=retained)
 
-    def _possible_coordinates(self, nodes, charge):
+    def _possible_coordinates(self, nodes, charge, *, pointwise=False):
         """Return a necessary coordinate set for each declared node before checking origins."""
+        nodes = tuple(nodes)
         coordinates, positions, seen = {}, [], set()
         pending = list(nodes)
         while pending:
@@ -315,33 +373,49 @@ class BindingMemory:
             seen.add(node)
             position = self._gate_index.get(node)
             if position is None:
-                coordinates[node] = self._leaf_coordinates.get(node, frozenset())
+                coordinates[node] = self._leaf_coordinates.get(node, _NO_COORDINATES)
             else:
                 _, gate = self._gates[position]
                 charge(len(gate.parents))
                 positions.append(position)
                 pending.extend(gate.parents)
 
-        for position in sorted(positions):
-            node, gate = self._gates[position]
-            parents = [coordinates[parent] for parent in gate.parents]
-            if len(parents) == 1:
-                result = parents[0]
+        rules = dict(self._gates[position] for position in sorted(positions))
+        required, drivers = rules.keys(), {}
+        if pointwise:
+            required, drivers = _coordinate_projection_plan(rules, nodes, coordinates, self.width, charge)
+
+        point_checks = {}
+        for node, gate in rules.items():
+            if node not in required or node in coordinates:
+                continue
+            if len(gate.parents) == 1:
+                result = coordinates[gate.parents[0]]
             elif gate.operation == "or":
                 result = set()
-                for parent in parents:
-                    charge(len(parent))
-                    result.update(parent)
+                for parent in gate.parents:
+                    active = coordinates[parent]
+                    charge(len(active))
+                    result.update(active)
             else:
-                result = min(parents, key=len)
-                for parent in parents:
+                driver = drivers.get(node)
+                result = (coordinates[driver] if driver is not None
+                          else min((coordinates[parent] for parent in gate.parents), key=len))
+                for parent in gate.parents:
                     if not result:
                         break
-                    if parent is not result:
-                        charge(min(len(result), len(parent)))
-                        result = result.intersection(parent)
+                    if parent == driver:
+                        continue
+                    active = coordinates.get(parent)
+                    if active is None:
+                        charge(len(result))
+                        result = {binding for binding in result if _possible_at_coordinate(
+                            parent, binding, rules, coordinates, point_checks, charge)}
+                    elif active is not result:
+                        charge(min(len(result), len(active)))
+                        result = result.intersection(active)
             coordinates[node] = result
-        return coordinates
+        return {node: coordinates[node] for node in nodes}
 
     def supports(self, node, binding):
         """Return the retained source sets and strengths for a specific binding."""

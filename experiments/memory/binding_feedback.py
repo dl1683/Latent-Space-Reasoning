@@ -33,6 +33,7 @@ class BindingRouteExpansion:
     anchor_query: np.ndarray
     node_query: np.ndarray
     work_limit: int
+    projection: str = "sets"
 
     def __post_init__(self):
         nodes = tuple(self.nodes) if not isinstance(self.nodes, str) else ()
@@ -41,6 +42,8 @@ class BindingRouteExpansion:
         limit = index(self.work_limit)
         if limit < 1:
             raise ValueError("expansion work limit must be positive")
+        if type(self.projection) is not str or self.projection not in ("sets", "pointwise"):
+            raise ValueError("expansion projection must be sets or pointwise")
         object.__setattr__(self, "nodes", nodes)
         object.__setattr__(self, "work_limit", limit)
         object.__setattr__(self, "anchor_query", _frozen(_real_array(self.anchor_query)))
@@ -260,7 +263,8 @@ class BindingFeedback:
 
     def _expanded_scores(self, memory, hidden, charge):
         expansion = self._expansion
-        coordinates = memory._possible._possible_coordinates(expansion.nodes, charge)
+        coordinates = memory._possible._possible_coordinates(
+            expansion.nodes, charge, pointwise=expansion.projection == "pointwise")
         active, positions, candidates = {}, [], []
         for position, node in enumerate(expansion.nodes):
             eligible = coordinates[node]
