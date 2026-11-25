@@ -51,9 +51,25 @@ class LinearFeedbackKernel(FeedbackKernel):
     _integer_feedback_key: np.ndarray
     _pair_left: np.ndarray
     _pair_right: np.ndarray
+    _disagreement_axes: tuple[int, ...]
+    _disagreement_value: np.ndarray | None
 
     def __init__(self, *, query, carry, observation_key, observation_value,
-                 feedback_key, feedback_value, max_steps, feature_pairs=()):
+                 feedback_key, feedback_value, max_steps, feature_pairs=(),
+                 disagreement_axes=(), disagreement_value=None):
+        query = _real_array(query)
+        if query.ndim != 2 or not all(query.shape):
+            raise ValueError("query map must be a nonempty matrix")
+        axes = tuple(map(index, disagreement_axes))
+        if len(set(axes)) != len(axes) or any(not 0 <= axis < len(query) for axis in axes):
+            raise ValueError("disagreement axes must be unique state coordinates")
+        if disagreement_value is not None:
+            disagreement_value = _real_array(disagreement_value)
+            if not axes or disagreement_value.shape != (len(axes), len(query)):
+                raise ValueError("disagreement value map has incorrect shape")
+            disagreement_value = _frozen(disagreement_value)
+        object.__setattr__(self, "_disagreement_axes", axes)
+        object.__setattr__(self, "_disagreement_value", disagreement_value)
         observation_key, feedback_key = map(_real_array, (observation_key, feedback_key))
         if observation_key.ndim != 2:
             raise ValueError("linear feedback key maps must be matrices")
@@ -72,14 +88,17 @@ class LinearFeedbackKernel(FeedbackKernel):
                          observation_value=observation_value, feedback_key=feedback_key,
                          feedback_value=feedback_value, max_steps=max_steps)
 
-    def _summarize(self, rows, key_map):
+    def _summarize(self, rows, key_map, *, observation=False):
         payload = _quantize(rows)
         projected = payload @ key_map
         magnitude = (np.abs(projected) + _LEVELS // 2) // _LEVELS
         keys = np.sign(projected) * np.minimum(magnitude, _LEVELS)
         features = self._add_pairs(_sign_features(keys), _LEVELS)
         # Column zero carries the unnormalized mass for each feature.
-        packed = np.column_stack((np.ones(len(rows), dtype=np.int64), payload))
+        columns = (np.ones(len(rows), dtype=np.int64), payload)
+        if observation and self._disagreement_axes:
+            columns += (_sign_features(payload[:, self._disagreement_axes]),)
+        packed = np.column_stack(columns)
         return features.T @ packed
 
     def _add_pairs(self, unary, unary_scale):
@@ -96,7 +115,8 @@ class LinearFeedbackKernel(FeedbackKernel):
         if max(rows.shape) > _MAX_ROWS or np.any(np.abs(rows) > 1):
             raise ValueError("observations exceed the row or [-1, 1] coordinate bound")
         return MomentMemory(
-            self._observation_key, _frozen(self._summarize(rows, self._integer_observation_key)),
+            self._observation_key,
+            _frozen(self._summarize(rows, self._integer_observation_key, observation=True)),
             len(rows),
         )
 
@@ -118,12 +138,50 @@ class LinearFeedbackKernel(FeedbackKernel):
         if (np.any(mass < 0) or np.any(mass > (memory.count - retired.count) * max_feature)
                 or np.any(np.abs(remaining[:, 1:]) > mass[:, None] * _LEVELS)):
             raise ValueError("retraction exceeds the retained feature moments")
+        if self._disagreement_axes:
+            positive, negative = np.split(remaining[:, 1 + self._width:], 2, axis=1)
+            means = remaining[:, 1:1 + self._width][:, self._disagreement_axes]
+            if (np.any(positive < 0) or np.any(negative < 0)
+                    or np.any(positive + negative > mass[:, None] * _LEVELS)
+                    or np.any(positive - negative != means)):
+                raise ValueError("retraction exceeds the retained disagreement moments")
         return MomentMemory(self._observation_key, _frozen(remaining + added._moments), count)
 
     def start(self, seed, memory=None):
         memory = self._empty if memory is None else memory
         self._check_memory(memory)
         return MomentState(self, memory, self._vector(seed))
+
+    def _query_features(self, hidden):
+        unary = np.minimum(_sign_features(hidden @ self._query), 1)
+        return self._add_pairs(unary, 1)
+
+    @staticmethod
+    def _scaled_query(features, mass):
+        query = np.where(mass > 0, features, 0)
+        scale = query.max()
+        if scale > 0:
+            query /= scale
+        return query
+
+    def _read_disagreement(self, features, obs):
+        query = self._scaled_query(features, obs[:, 0])
+        mass = float(query @ obs[:, 0])
+        if mass == 0:
+            return np.zeros(len(self._disagreement_axes))
+        sign_values = (query @ obs[:, 1 + self._width:]) / (mass * _LEVELS)
+        positive, negative = np.split(sign_values, 2)
+        return np.minimum(2 * np.minimum(positive, negative), 1)
+
+    def observation_disagreement(self, state):
+        """Read balanced opposing payload support in the configured axis order."""
+        self._require_state(state)
+        if not self._disagreement_axes:
+            return _frozen(np.empty(0))
+        with np.errstate(over="raise", invalid="raise", divide="raise"):
+            return _frozen(self._read_disagreement(
+                self._query_features(state.latest), state._memory._moments,
+            ))
 
     def _advance(self, state, *, diagnostics=None):
         self._require_state(state)
@@ -133,23 +191,22 @@ class LinearFeedbackKernel(FeedbackKernel):
         generated = state._history_moments
         with np.errstate(over="raise", invalid="raise", divide="raise"):
             hidden = state.latest
-            unary = np.minimum(_sign_features(hidden @ self._query), 1)
-            query = self._add_pairs(unary, 1)
+            features = self._query_features(hidden)
             mass = obs[:, 0] if generated is None else obs[:, 0] + generated[:, 0]
-            query[mass == 0] = 0
-            scale = query.max()
+            query = self._scaled_query(features, mass)
             mixture = np.zeros(self._width)
             history_value = None
-            routed_mass = 0.0
-            if scale > 0:
-                query /= scale
-                routed_mass = float(query @ mass)
-                mixture = (query @ obs[:, 1:]) / (routed_mass * _LEVELS)
+            routed_mass = float(query @ mass)
+            if routed_mass > 0:
+                mixture = (query @ obs[:, 1:1 + self._width]) / (routed_mass * _LEVELS)
                 if generated is not None:
                     history_mix = (query @ generated[:, 1:]) / (routed_mass * _LEVELS)
                     history_value = _apply_value(self._feedback_value, history_mix)
+            extra = None
+            if self._disagreement_value is not None:
+                extra = self._read_disagreement(features, obs) @ self._disagreement_value
             preactivation, fixed = self._preactivation(
-                hidden, mixture, history_value, state._memory.count,
+                hidden, mixture, history_value, state._memory.count, observation_extra=extra,
             )
             next_hidden = _frozen(np.tanh(preactivation))
             if diagnostics is not None:

@@ -125,6 +125,13 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         else:
             pairs = list(zip(kernel._pair_left.tolist(), kernel._pair_right.tolist(), strict=True))
             digest.update(json.dumps(pairs, separators=(",", ":")).encode())
+            if kernel._disagreement_axes:
+                digest.update(b"\nobservation disagreement v1\n")
+                digest.update(json.dumps(kernel._disagreement_axes, separators=(",", ":")).encode())
+                if kernel._disagreement_value is None:
+                    digest.update(b"\nnone\n")
+                else:
+                    add_array(kernel._disagreement_value)
             for name, row in sorted(initial_sources.items()):
                 digest.update(json.dumps(name).encode())
                 add_array(row)

@@ -350,11 +350,11 @@ def test_journal_retains_the_selected_probe_that_determines_prefix_anchors(tmp_p
         second.publish(FeedbackProposal(second.snapshot(), 2, term=second_term))
 
 
-def _source_workspace(path, *, rows=None, source_ids=("left", "right"), pairs=()):
+def _source_workspace(path, *, rows=None, source_ids=("left", "right"), pairs=(), **kernel_options):
     zero, identity = np.zeros((2, 2)), np.eye(2)
     kernel = LinearFeedbackKernel(
         query=identity, carry=None, observation_key=identity, observation_value=zero,
-        feedback_key=zero, feedback_value=zero, max_steps=1, feature_pairs=pairs,
+        feedback_key=zero, feedback_value=zero, max_steps=1, feature_pairs=pairs, **kernel_options,
     )
     probes = [FeedbackProbe((1, 0), 1, (0.4, 0)), FeedbackProbe((0, 1), 1, (0, 0.5))]
     return JournaledFeedbackWorkspace(path, kernel, identity if rows is None else rows, probes,
@@ -514,3 +514,21 @@ def test_source_commit_rejects_a_competing_replacement_of_the_same_row(tmp_path,
     assert latest.number == 1
     assert updated.number == 2
     np.testing.assert_array_equal(updated.memory._moments, updated.kernel.prepare([[0, 1]])._moments)
+
+
+def test_source_replay_reconstructs_disagreement_and_binds_its_transition_map(tmp_path):
+    path = tmp_path / "disagreement.sqlite"
+    rows = [[1, 1], [1, -1]]
+    settings = dict(rows=rows, disagreement_axes=[1], disagreement_value=[[0, 1]])
+    workspace = _source_workspace(path, **settings)
+    original = workspace.snapshot()
+    np.testing.assert_array_equal(original.kernel.observation_disagreement(original.start([1, 0])), [1])
+    workspace.revise_sources(original, {"right": None})
+    reader = _source_workspace(path, **settings)
+    revised = reader.snapshot()
+    np.testing.assert_array_equal(revised.kernel.observation_disagreement(revised.start([1, 0])), [0])
+    restored = reader.revise_sources(revised, {"right": rows[1]})
+    np.testing.assert_array_equal(restored.memory._moments, original.memory._moments)
+    assert restored.errors == original.errors
+    with pytest.raises(ValueError, match="initial workspace inputs disagree"):
+        _source_workspace(path, rows=rows, disagreement_axes=[1], disagreement_value=[[1, 0]])

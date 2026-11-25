@@ -174,3 +174,115 @@ def test_selected_pair_feature_preserves_a_binding_lost_by_unary_moments():
     assert paired.step(paired.start(seed, extra)).latest[3] == pytest.approx(np.tanh(1 / 6))
     with pytest.raises(ValueError, match="unique signed axes"):
         LinearFeedbackKernel(**weights, feature_pairs=[(0, 3)])
+
+
+def test_opposing_sign_support_drives_a_late_consequence_after_cancellation():
+    key = np.eye(4)[:, [0, 2]]
+    kernel = LinearFeedbackKernel(
+        query=key, carry=None, observation_key=key, observation_value=np.diag([0, 0, 0, 1]),
+        feedback_key=np.zeros_like(key), feedback_value=np.zeros((4, 4)), max_steps=2,
+        disagreement_axes=[1], disagreement_value=[[0, 0, 1, 0]],
+    )
+    conflict = [[1, 1, 0, 0], [1, -1, 0, 0], [0, 0, 1, 1]]
+    neutral = [[1, 0, 0, 0], [1, 0, 0, 0], [0, 0, 1, 1]]
+    conflicted, inactive = kernel.prepare(conflict), kernel.prepare(neutral)
+    np.testing.assert_array_equal(conflicted._moments[:, :5], inactive._moments[:, :5])
+    positive_only = kernel.revise(conflicted, remove=conflict[1:2])
+    negative_only = kernel.revise(conflicted, remove=conflict[:1])
+    restored = kernel.revise(positive_only, append=conflict[1:2])
+    np.testing.assert_array_equal(restored._moments, conflicted._moments)
+
+    seed = [1, 0, 0, 0]
+    cases = ((conflicted, 1), (inactive, 0), (positive_only, 0), (negative_only, 0), (restored, 1))
+    for bank, expected in cases:
+        state = kernel.start(seed, bank)
+        np.testing.assert_array_equal(kernel.observation_disagreement(state), [expected])
+        result = kernel.step(kernel.step(state))
+        assert result.latest[3] == pytest.approx(expected * np.tanh(1))
+        unrelated = kernel.start([0, 0, 1, 0], bank)
+        assert kernel.step(unrelated).latest[3] == pytest.approx(np.tanh(1))
+
+    workspace = FeedbackWorkspace(
+        kernel, conflict, [FeedbackProbe(tuple(seed), 1, (0, 0, np.tanh(1), -0.2))],
+        max_update_norm=1,
+    )
+    before = workspace.snapshot()
+    after = workspace.publish(workspace.propose(before, 0))
+    assert after.memory is before.memory
+    assert after.errors[0] < 1e-12
+
+
+def test_disagreement_uses_pair_weights_and_only_observation_evidence():
+    key = np.eye(3)[:, :2]
+    kernel = LinearFeedbackKernel(
+        query=key, carry=np.eye(3), observation_key=key, observation_value=np.zeros((3, 3)),
+        feedback_key=key, feedback_value=np.zeros((3, 3)), max_steps=2,
+        feature_pairs=[(0, 1)], disagreement_axes=[2],
+    )
+    memory = kernel.prepare([[1, 1, 1], [1, 0, -0.5], [0, 1, 0]])
+    seed = [0.5, 1, 0]
+    start = kernel.start(seed, memory)
+    assert kernel.observation_disagreement(start)[0] == pytest.approx(2 * 0.5 * (64 / 127) / 3.5)
+    state = kernel.step(kernel.step(start))
+    changed = kernel.intervene(state, 0, [1, 1, -1])
+    assert np.any(changed._history_moments != state._history_moments)
+    np.testing.assert_array_equal(changed.latest, state.latest)
+    np.testing.assert_array_equal(kernel.observation_disagreement(changed),
+                                  kernel.observation_disagreement(state))
+    np.testing.assert_array_equal(kernel.observation_disagreement(kernel.start([-1, -1, 0], memory)),
+                                  [0])
+
+
+def test_disagreement_retraction_refuses_negative_sign_moments():
+    key = np.array([[1], [0]])
+    kernel = LinearFeedbackKernel(
+        query=key, carry=None, observation_key=key, observation_value=np.eye(2),
+        feedback_key=key, feedback_value=np.eye(2), max_steps=1, disagreement_axes=[1],
+    )
+    bank = kernel.prepare([[1, 0.25], [1, 0.25]])
+    with pytest.raises(ValueError, match="retained disagreement moments"):
+        kernel.revise(bank, remove=[[1, -0.25]])
+
+
+def test_disagreement_supplies_a_necessary_generated_value_with_routing_fixed():
+    route = np.eye(4)[:, :1]
+    carry = np.zeros((4, 4))
+    value = np.zeros((4, 4))
+    s = 64 / 127
+    carry[0, 0] = np.arctanh(s) / s
+    value[2, 3] = 1
+    weights = dict(
+        query=route, carry=carry, observation_key=route, observation_value=np.zeros((4, 4)),
+        feedback_key=route, feedback_value=value, max_steps=2, disagreement_axes=[1],
+    )
+    kernel = LinearFeedbackKernel(**weights, disagreement_value=[[0, 0, np.arctanh(s), 0]])
+    observations = [[1, 1, 0, 0], [1, -1, 0, 0]]
+    bank = kernel.prepare(observations)
+    seed = [s, 0, 0, 0]
+    first = kernel.step(kernel.start(seed, bank))
+    np.testing.assert_allclose(first.latest, [s, 0, s, 0], atol=1e-14, rtol=0)
+    assert kernel.step(first).latest[3] == pytest.approx(np.tanh((64 / 127) * (64 / 318)))
+
+    edited = kernel.intervene(first, 0, [s, 0, 0, 0])
+    np.testing.assert_array_equal(kernel.observation_disagreement(edited), [1])
+    assert kernel.step(edited).latest[3] == 0
+
+    diagnostic = LinearFeedbackKernel(**weights)
+    start = diagnostic.start(seed, diagnostic.prepare(observations))
+    np.testing.assert_array_equal(diagnostic.observation_disagreement(start), [1])
+    assert diagnostic.step(diagnostic.step(start)).latest[3] == 0
+
+
+def test_opposing_sign_measure_distinguishes_equal_mean_and_variance():
+    key = np.array([[1], [0]])
+    kernel = LinearFeedbackKernel(
+        query=key, carry=None, observation_key=key, observation_value=np.eye(2),
+        feedback_key=key, feedback_value=np.eye(2), max_steps=1, disagreement_axes=[1],
+    )
+    first = [32] * 4 + [-32] * 4
+    second = [64, -64] + [0] * 6
+    assert sum(first) == sum(second) == 0
+    assert sum(x ** 2 for x in first) == sum(x ** 2 for x in second)
+    for values, expected in ((first, 32 / 127), (second, 16 / 127)):
+        bank = kernel.prepare([[1, x / 127] for x in values])
+        assert kernel.observation_disagreement(kernel.start([1, 0], bank))[0] == pytest.approx(expected)

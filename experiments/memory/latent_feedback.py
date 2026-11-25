@@ -201,7 +201,7 @@ class FeedbackKernel:
         """Append one generated vector and tally the attention scores evaluated."""
         return self._advance(state)[0]
 
-    def _preactivation(self, hidden, mixture, history_value, has_observations):
+    def _preactivation(self, hidden, mixture, history_value, has_observations, *, observation_extra=None):
         fixed = np.zeros(self._width) if self._carry is None else hidden @ self._carry
         if history_value is not None:
             fixed += history_value
@@ -210,6 +210,8 @@ class FeedbackKernel:
                 observed = mixture @ observation_axis
                 if observed:
                     fixed += ((hidden @ state_axis) * observed) * output
+        if observation_extra is not None:
+            fixed += observation_extra
         return fixed + _apply_value(self._observation_value, mixture), fixed
 
     def _advance(self, state, *, diagnostics=None):
