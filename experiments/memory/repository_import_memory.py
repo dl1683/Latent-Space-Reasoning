@@ -20,8 +20,9 @@ from types import MappingProxyType
 import numpy as np
 
 from experiments.memory.disjoint_feedback import (
-    RelationOutcomeGuard, TerminalRelationEvidence, TerminalRelationGrade,
-    _EvidenceEdit, _RELATION_GRADE_ATOL, _RelationWorkspacePin, _approved_evidence, _same_supported_grade,
+    RelationGuardFailed, RelationOutcomeGuard, TerminalRelationEvidence, TerminalRelationGrade,
+    _EvidenceEdit, _RELATION_GRADE_ATOL, _RelationWorkspacePin, _approved_evidence,
+    _check_retraction_absence, _matching_witness, _same_supported_grade,
 )
 from experiments.memory.disjoint_transition import DisjointTransitionMemory, DisjointTransitionPath, propagate_disjoint
 from experiments.memory.weight_program import program_weight
@@ -482,9 +483,13 @@ class RepositoryImportMemory:
 
     def _source_handoff(self, receiver, pin, protected_index, coordinate, replayed):
         original = pin._outcomes[protected_index]._evidence_at(coordinate)
-        if _approved_evidence(replayed, receiver._terminal_seed(replayed), original) is not None:
+        seed = receiver._terminal_seed(replayed)
+        if _approved_evidence(replayed, seed, original) is not None:
             raise ValueError("an existing path still certifies the handoff destination")
-        existing = receiver.prove_terminal(replayed, coordinate)
+        return self._replacement_handoff(pin, protected_index, coordinate, replayed, seed)
+
+    def _replacement_handoff(self, pin, protected_index, coordinate, replayed, seed):
+        existing = _matching_witness(replayed, seed, coordinate, None)
         previous = dict(pin.witnesses[protected_index])[coordinate]
         if existing is not None and _same_supported_grade(previous.strength, existing.strength):
             return TerminalRelationEvidence(coordinate, (existing.path,))
@@ -523,14 +528,14 @@ class RepositoryImportMemory:
             raise ValueError("evidence restoration needs an active retraction")
         revision = self._zero_anchor_revision(previous, receiver, pin.memory, names)
         candidate, _ = receiver.rebase(pin.protected[protected_index], revision)
-        evidence = self._source_restoration(receiver, candidate, coordinate, receipt)
+        evidence = self._source_restoration(candidate, receiver._terminal_seed(candidate), coordinate, receipt)
         return revision._with_evidence_restoration(pin, receipt, evidence)
 
-    def _source_restoration(self, receiver, candidate, coordinate, receipt):
+    def _source_restoration(self, candidate, seed, coordinate, receipt):
         old_path = receipt.previous_witness.path
-        witness = receiver.prove_terminal(candidate, coordinate, paths=(old_path,))
+        witness = _matching_witness(candidate, seed, coordinate, (old_path,))
         if witness is None:
-            witness = receiver.prove_terminal(candidate, coordinate)
+            witness = _matching_witness(candidate, seed, coordinate, None)
         if witness is None or not _same_supported_grade(receipt.previous_witness.strength, witness.strength):
             raise ValueError("the corrected source does not restore the certified terminal grade")
         self._witness_edges(coordinate, witness)
@@ -568,9 +573,68 @@ class RepositoryImportMemory:
                 receipt = pin._active_retraction(protected_index, coordinate)
                 if receipt is None:
                     raise ValueError("evidence restoration needs an active retraction")
-                replacement = self._source_restoration(receiver, candidate, coordinate, receipt)
+                replacement = self._source_restoration(candidate, receiver._terminal_seed(candidate), coordinate, receipt)
                 changes.append(_EvidenceEdit(operation, protected_index, coordinate, replacement, receipt))
         return revision._with_evidence_edits(pin, changes)
+
+    def draft_feedback_maintenance(self, previous, receiver, pin):
+        """Find source-only evidence edits and return their draft and canonical target list."""
+        if type(pin) is not _RelationWorkspacePin:
+            raise ValueError("evidence maintenance needs an issued workspace pin")
+        names = self._feedback_names(previous, receiver, pin.memory)
+        revision = self._zero_anchor_revision(previous, receiver, pin.memory, names)
+        if self is previous:
+            return revision, ()
+
+        # A receipt can be active only while its destination has an absence guard.
+        closed = {id(result.retraction) for result in pin.restorations}
+        active = {}
+        for receipt in pin.retractions:
+            if id(receipt) not in closed:
+                active.setdefault(receipt.protected_index, []).append(receipt)
+
+        coordinate_names = tuple(self._coordinates)
+        changes = []
+        for i, (state, outcome) in enumerate(zip(pin.protected, pin._outcomes, strict=True)):
+            receipts = active.get(i, ())
+            clauses = () if outcome is None else outcome.evidence
+            if not clauses and not receipts:
+                continue
+            candidate, _ = receiver.rebase(state, revision)
+            seed = receiver._terminal_seed(candidate)
+            for clause in clauses:
+                coordinate = clause.destination
+                if _approved_evidence(candidate, seed, clause) is not None:
+                    continue
+                if np.isneginf(candidate._grades[coordinate]):
+                    if any(self._declares_path(coordinate, path) for path in clause.paths):
+                        raise RelationGuardFailed(
+                            f"maintenance cannot retract {coordinate_names[coordinate]} at protection {i}: "
+                            "a declared source path survives"
+                        )
+                    _check_retraction_absence(state, candidate, coordinate)
+                    changes.append(_EvidenceEdit("retraction", i, coordinate))
+                    continue
+                replacement = self._replacement_handoff(pin, i, coordinate, candidate, seed)
+                if replacement is None:
+                    raise RelationGuardFailed(
+                        f"maintenance needs source-only support at the certified terminal grade for "
+                        f"{coordinate_names[coordinate]} at protection {i}"
+                    )
+                self._path_edges(coordinate, replacement.paths[0])
+                changes.append(_EvidenceEdit("handoff", i, coordinate, replacement=replacement))
+            for receipt in receipts:
+                coordinate = receipt.destination
+                if np.isneginf(candidate._grades[coordinate]):
+                    continue
+                evidence = self._source_restoration(candidate, seed, coordinate, receipt)
+                changes.append(_EvidenceEdit("restoration", i, coordinate, evidence, receipt))
+        if not changes:
+            return revision, ()
+        edits = _normalize_feedback_edits([
+            (edit.operation, edit.protected_index, coordinate_names[edit.destination]) for edit in changes
+        ])
+        return revision._with_evidence_edits(pin, changes), edits
 
     def _seed(self, start):
         self._require_module(start)

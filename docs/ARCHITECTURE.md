@@ -227,7 +227,13 @@ The new pin retains the retraction and adds a `RelationEvidenceRestoration` link
 
 The worker derives candidate witnesses from one staged operator. Publication checks each edit against the opening pin and composes all amended clauses on each trajectory before checking the whole result. The old-path, absence, exact-receipt and certified-grade checks apply to each edited destination. Unrelated protections still apply. The source and all receipts advance together under the same pin check.
 
-The journal accepts `publish(head, revision, operation="evidence_batch", edits=...)` and records one event for the entire change. A cold check can reconstruct every protected trajectory and revalidate witnesses on the installed frame. The batch handles an explicit set of affected destinations. Automatic selection and arbitration of those edits remain open.
+The journal accepts `publish(head, revision, operation="evidence_batch", edits=...)` and records one event for the entire change. A cold check can reconstruct every protected trajectory and revalidate witnesses on the installed frame. A caller can supply an explicit set of affected destinations. The worker below can also derive that set from the staged source revision.
+
+#### Discovering evidence edits
+
+[SLICE] `new.draft_feedback_maintenance(old, receiver, opening_pin)` returns a source-only draft and the canonical edit list. It replays each relevant protected trajectory on one staged source successor. For each evidence clause it retains a still-certified path, proposes a full-grade replacement, or requires both structural withdrawal and absence on the existing and replayed terminal queries before proposing retraction. It proposes restoration only for an active retraction whose support returns at the prior certified grade. A finite result at the wrong grade or a result lacking valid committed declarations can block maintenance.
+
+The full publication guard still checks the proposed batch, decisions, explicit grade bounds, and unrelated protections. `journal.maintain(head, revision)` performs selection and publishes against the durable head. The journal records the selected `evidence_batch` or `adopt` command. Recovery therefore uses the recorded edit list and the batch's witness-selection rules, without calling the maintenance planner. Maintainers explicitly call this operation for a selected source revision. Ordinary publication still enforces the existing guards. Discovery covers existing declared protections and uses retained anchors. Automatic acquisition of new tasks, learned repairs, and a matched-cost comparison remain open.
 
 #### Recovering repository maintenance after restart
 

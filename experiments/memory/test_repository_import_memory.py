@@ -252,6 +252,8 @@ def test_repository_adoption_requires_growth_anchors_and_rejects_mixed_drafts_an
     retraction = deleted.draft_feedback_retraction(memory, receiver, parent, 0, destination=destination)
     with pytest.raises(RelationGuardFailed, match="still has terminal support"):
         workspace.publish(parent, retraction)
+    with pytest.raises(ValueError, match="outside this committed Python snapshot"):
+        deleted.draft_feedback_maintenance(memory, receiver, parent)
     assert workspace.pin() is parent
 
     layout = dict(context_tokens=4096, max_new_tokens=32)
@@ -676,6 +678,8 @@ def test_handoff_does_not_lower_an_evidence_only_grade(history):
     control = corrected.feedback_revision(source, receiver, opening.memory)
     replayed, _ = receiver.rebase(state, control)
     assert replayed.grades[destination] == .25 and state.grades[destination] == .5
+    with pytest.raises(RelationGuardFailed, match="source-only support at the certified terminal grade"):
+        corrected.draft_feedback_maintenance(source, receiver, opening)
     with pytest.raises(ValueError, match="no appended entry"):
         corrected.draft_feedback_handoff(source, receiver, opening, 0, destination="pkg.before", max_update_norm=1.)
     replacement = TerminalRelationEvidence(destination, [corrected.relation_path("pkg.decoy", "pkg.other")])
@@ -880,7 +884,8 @@ def test_restoration_accepts_supported_zero_after_an_evidence_only_retraction(hi
     with pytest.raises(ValueError, match="does not restore the certified terminal grade"):
         still_gone.draft_feedback_restoration(gone, receiver, retracted, 0, destination=destination)
     returned = gone.revise(_commit(repo, {"relay.py": "import pkg.before\n"}))
-    draft = returned.draft_feedback_restoration(gone, receiver, retracted, 0, destination=destination)
+    draft, edits = returned.draft_feedback_maintenance(gone, receiver, retracted)
+    assert edits == (("restoration", 0, destination),)
     tip = workspace.publish(retracted, draft)
     assert tip._outcomes[0].grades == ()
     assert tip.restorations[0].witness.strength == tip.retractions[0].previous_witness.strength == 0.
@@ -945,6 +950,8 @@ def test_retraction_rechecks_the_opening_query_when_replay_loses_its_route(histo
         "pkg.before", "pkg.later_mid")
     with pytest.raises(RelationGuardFailed, match="opening terminal query still has support"):
         workspace.publish(opening, draft)
+    with pytest.raises(RelationGuardFailed, match="opening terminal query still has support"):
+        corrected.draft_feedback_maintenance(source, receiver, opening)
     assert workspace.pin() is opening and not opening.retractions
 
 
@@ -1135,7 +1142,7 @@ journal.publish(journal.snapshot(), revision)
     assert replay._head.number == 0
 
 
-def test_repository_journal_commits_coupled_edits_as_one_source_corrected_pin(history):
+def test_repository_journal_commits_coupled_edits_as_one_source_corrected_pin(history, monkeypatch):
     repo, first, _, _ = history
     _git(repo, "checkout", "--detach", first)
     commit = _commit(repo, {"relay.py": "import pkg.before\nimport pkg.twice\n", "twice.py": ""})
@@ -1176,6 +1183,10 @@ def test_repository_journal_commits_coupled_edits_as_one_source_corrected_pin(hi
     assert lost.number == 1 and len(lost.pin.retractions) == 3
     second_log = JournaledRepositoryImportWorkspace(repo / "same_commands.db", workspace.pin(), create=True)
     assert second_log.publish(second_log.snapshot(), withdrawn, operation="evidence_batch", edits=edits).digest == lost.digest
+    auto_path = repo / "discovered.db"
+    automatic = JournaledRepositoryImportWorkspace(auto_path, workspace.pin(), create=True)
+    auto_lost = automatic.maintain(automatic.snapshot(), withdrawn)
+    assert auto_lost.digest == lost.digest
     assert lost.pin.memory._source.prove("pkg.start", "pkg.before") is None
 
     new = _commit(repo, {"start.py": "import pkg.bridge\nimport pkg.spare\n", "other.py": "",
@@ -1185,7 +1196,16 @@ def test_repository_journal_commits_coupled_edits_as_one_source_corrected_pin(hi
     with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
         journal.publish(lost, new, operation="restoration", protected_index=0, destination="pkg.before")
     tip = journal.publish(lost, new, operation="evidence_batch", edits=restored)
-    assert tip.number == 2
+    auto_tip = automatic.maintain(auto_lost, new)
+    assert tip.number == 2 and auto_tip.digest == tip.digest
+
+    def planner_offline(*args):
+        pytest.fail("journal replay must use the recorded edits without running the planner")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(imports.RepositoryImportMemory, "draft_feedback_maintenance", planner_offline)
+        replayed_auto = JournaledRepositoryImportWorkspace(auto_path, workspace.pin()).snapshot()
+        assert replayed_auto.digest == auto_tip.digest
     replayed = JournaledRepositoryImportWorkspace(path, workspace.pin()).snapshot()
     assert replayed.digest == tip.digest
     for published in (lost.pin, replayed.pin):
@@ -1202,6 +1222,34 @@ def test_repository_journal_commits_coupled_edits_as_one_source_corrected_pin(hi
         replayed.pin.memory._source, replayed.pin, 1, "pkg.before", _FixtureTokenizer(),
         context_tokens=4096, max_new_tokens=32,
     ).quotes[1].declaring_module == "pkg.bridge"
+
+
+def test_automatic_maintenance_keeps_live_evidence_and_cannot_amend_an_unrelated_absence(history):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    source = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    receiver, certified = _published_import_workspace(source, "pkg.start", "pkg.before", ["pkg.relay"])
+    initial = certified.pin()
+    auto = JournaledRepositoryImportWorkspace(repo / "maintenance.db", initial, create=True)
+    manual = JournaledRepositoryImportWorkspace(repo / "adopt.db", initial, create=True)
+    base = auto.snapshot()
+    assert auto.maintain(base, first) is base
+    harmless = _commit(repo, {"relay.py": "# comment moved\nimport pkg.before\n"})
+    current = auto.maintain(base, harmless)
+    assert manual.publish(manual.snapshot(), harmless).digest == current.digest
+    assert current.pin.witnesses == initial.witnesses and not current.pin.retractions
+
+    lost = current.pin.memory._source.revise(_commit(repo, {"relay.py": ""}))
+    neutral = lost.feedback_revision(current.pin.memory._source, receiver, current.pin.memory)
+    missed, _ = receiver.rebase(current.pin.protected[0], neutral)
+    absence = RelationOutcomeGuard(grades=[TerminalRelationGrade(source.relation_coordinates["pkg.before"])])
+    guard = DisjointFeedbackWorkspace(receiver, neutral.memory, outcome_guards=[(missed, absence)])
+    protected = JournaledRepositoryImportWorkspace(repo / "independent.db", guard.pin(), create=True)
+    opening = protected.snapshot()
+    returned = _commit(repo, {"relay.py": "import pkg.before\n"})
+    with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
+        protected.maintain(opening, returned)
+    assert protected.snapshot() is opening and not opening.pin.retractions
 
 
 def test_growth_discovery_refuses_ambiguous_paths_and_the_source_only_control(history):

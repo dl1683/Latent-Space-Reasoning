@@ -288,15 +288,32 @@ class JournaledRepositoryImportWorkspace:
 
     def publish(self, base, revision, *, operation="adopt", **arguments):
         """Stage one source operation and atomically publish it at the selected journal head."""
-        if self.snapshot() is not base:
-            raise StaleRelationRevision("repository journal changed before preparation")
+        self._require_current(base)
         args = self._parameters(operation, arguments)
         with np.errstate(**self._error_policy):
             source = base.pin.memory._source.revise(revision)
             pin = self._stage(base.pin, source, operation, args)
-            if pin is not base.pin:
-                raw = _json((source.commit, operation, args))
-                state_digest = sha256(_json(_pin_key(pin))).digest()
+        return self._commit(base, pin, (source.commit, operation, args))
+
+    def maintain(self, base, revision):
+        """Discover and publish source-only evidence changes for a selected source revision."""
+        self._require_current(base)
+        with np.errstate(**self._error_policy):
+            previous = base.pin.memory._source
+            source = previous.revise(revision)
+            draft, edits = source.draft_feedback_maintenance(previous, self._receiver, base.pin)
+            pin = DisjointFeedbackWorkspace._from_pin(base.pin).publish(base.pin, draft)
+        command = (source.commit, "evidence_batch", {"edits": edits}) if edits else (source.commit, "adopt", {})
+        return self._commit(base, pin, command)
+
+    def _require_current(self, base):
+        if self.snapshot() is not base:
+            raise StaleRelationRevision("repository journal changed before preparation")
+
+    def _commit(self, base, pin, command):
+        if pin is not base.pin:
+            raw = _json(command)
+            state_digest = sha256(_json(_pin_key(pin))).digest()
         with self._lock, closing(self._connect()) as db:
             db.execute("BEGIN IMMEDIATE")
             self._check_root(db)
