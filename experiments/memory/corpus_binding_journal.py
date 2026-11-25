@@ -14,7 +14,9 @@ from uuid import uuid4
 import numpy as np
 
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _exclusions, _proof_work_limit
-from experiments.memory.binding_replay import check_binding_replay, freeze_binding_replay, require_replay_receiver
+from experiments.memory.binding_replay import (
+    apply_route_program, check_binding_replay, freeze_binding_replay, require_replay_receiver, validate_route_program,
+)
 from experiments.memory.corpus_bindings import (
     CorpusBindingRead, CorpusBindingWorkspace, StaleCorpusRevision, _EncodedChange,
 )
@@ -80,6 +82,24 @@ def _encode(staged):
 def _encode_program(gates):
     _check_identifiers(name for name, _ in gates)
     return _json(["program", [(name, gate.operation, gate.parents) for name, gate in gates]])
+
+
+def _decode_route_event(payload):
+    event = json.loads(payload)
+    if type(event) is not list or len(event) != 3 or event[0] != "route_program":
+        raise ValueError("invalid route program event")
+    graph, patch = event[1:]
+    if type(patch) is not list or len(patch) != 4:
+        raise ValueError("invalid route program patch")
+    before, after, column, weights = patch
+    if (any(type(digest) is not str or re.fullmatch("[0-9a-f]{64}", digest) is None for digest in (before, after))
+            or before == after or type(column) is not int or column < 0 or type(weights) is not list or not weights
+            or any(type(weight) is not float or not np.isfinite(weight) for weight in weights)):
+        raise ValueError("invalid route program patch")
+    gates = _decode_program(_json(graph))
+    if _json(event) != payload:
+        raise ValueError("noncanonical route program event")
+    return gates, (before, after, column, tuple(weights))
 
 
 def _decode_program(payload):
@@ -320,7 +340,10 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             if (number != tip.revision + 1 or parent != digest or type(payload) is not bytes
                     or _event_digest(digest, number, payload) != recorded):
                 raise ValueError("corpus journal event chain mismatch")
-            if payload.startswith(b'["program",'):
+            if payload.startswith(b'["route_program",'):
+                gates, patch = _decode_route_event(payload)
+                tip = self._install_program_revision(tip, tip.memory.reprogram(gates), patch)
+            elif payload.startswith(b'["program",'):
                 memory = tip.memory.reprogram(_decode_program(payload))
                 if memory is tip.memory:
                     raise ValueError("unchanged graph in corpus program event")
@@ -329,6 +352,22 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 tip = self._apply_proposal(tip, _decode(payload, tip.memory))
             digest = recorded
         return tip, digest
+
+    def _install_program_revision(self, tip, memory, patch):
+        if memory is tip.memory:
+            raise ValueError("unchanged graph in route program event")
+        programs = tip._route_programs
+        if programs and programs[-1][1] != patch[0]:
+            raise ValueError("route program does not extend the installed receiver")
+        revised = self._replace_program(tip, memory)
+        return replace(revised, _route_programs=(*programs, patch))
+
+    def receiver_at(self, revision, root):
+        """Recover the receiver for a pinned revision from its original receiver."""
+        self._check_owner(revision)
+        for patch in revision._route_programs:
+            root = apply_route_program(root, patch)
+        return root
 
     def snapshot(self):
         with self._lock:
@@ -367,13 +406,15 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             return revised
 
     def begin_program_trial(self, base, gates, *, targets, future_batches, work_limit, protected=(), replay=None,
-                            downstream=None):
+                            downstream=None, route_edit=None, route_update_limit=None):
         """Freeze a candidate and its checks before the next source batches arrive."""
         future_batches, work_limit = index(future_batches), _proof_work_limit(work_limit)
         if future_batches < 1:
             raise ValueError("a corpus program trial needs a positive source horizon")
         if downstream is not None and replay is None:
             raise ValueError("a downstream target needs a feedback replay")
+        if route_edit is not None and (downstream is None or route_update_limit is None):
+            raise ValueError("a route program needs a downstream target and weight norm cap")
         proposal = self.prepare_program(base, gates)
         if proposal.preview is base.memory:
             raise ValueError("a corpus program trial needs different wiring")
@@ -390,8 +431,16 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         if replay is not None:
             followup = None if downstream is None else _trial_expectation(proposal.preview, downstream, work_limit)
             spec.update(version=2, replay=freeze_binding_replay(replay, base.memory, targets, followup))
+            if base._route_programs and base._route_programs[-1][1] != spec["replay"]["receiver"]:
+                raise ValueError("feedback trial does not use the installed receiver")
             if followup is not None:
                 spec.update(version=3, downstream=followup)
+            if route_edit is not None:
+                program = _json(["route_program", json.loads(program), route_edit])
+                _, patch = _decode_route_event(program)
+                cap = validate_route_program(replay, patch, route_update_limit, proposal.preview,
+                                             targets[0][0][0][-1], followup[0][0][-1])
+                spec.update(version=4, route_update_limit=cap)
         frozen = _json(spec)
         with self._lock, closing(self._connect()) as db:
             db.execute("BEGIN IMMEDIATE")
@@ -477,10 +526,11 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         checked_digest = digest
         spec = json.loads(frozen)
         version = spec["version"]
-        if version not in (1, 2, 3):
+        if version not in (1, 2, 3, 4):
             raise ValueError("unknown corpus program trial version")
         steps = base.revision - opened
         proposal = None
+        patch = None
         if base._program_revision != program_revision:
             status = "competing_program"
         elif steps < spec["future_batches"]:
@@ -492,14 +542,20 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 if receiver is None:
                     return CorpusProgramTrialResult(trial_id, "receiver_required", base.revision)
                 require_replay_receiver(spec["replay"], receiver)
-            proposal = self.prepare_program(base, _decode_program(program))
+            if version == 4:
+                gates, patch = _decode_route_event(program)
+                candidate_receiver = apply_route_program(receiver, patch)
+            else:
+                gates = _decode_program(program)
+                candidate_receiver = None
+            proposal = self.prepare_program(base, gates)
             status = _check_program_trial(base.memory, proposal.preview, spec)
             if status == "published" and version >= 2:
                 (raw_addresses, _), witness, upper = spec["targets"][0]
                 addresses = tuple(tuple(address) for address in raw_addresses)
                 prior, candidate = _cold_trial_memory(base.memory), _cold_trial_memory(proposal.preview)
                 downstream = None
-                if version == 3:
+                if version >= 3:
                     probe, lower, possible = spec["downstream"]
                     later_expected = _expected_read(lower, possible)
                     try:
@@ -510,7 +566,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                     downstream = tuple(probe[0][-1]), later_expected
                 if status == "published":
                     status = check_binding_replay(spec["replay"], receiver, prior, candidate, addresses,
-                                                  _expected_read(witness, upper), downstream=downstream)
+                                                  _expected_read(witness, upper), downstream=downstream,
+                                                  candidate_receiver=candidate_receiver)
 
         with self._lock, closing(self._connect()) as db:
             db.execute("BEGIN IMMEDIATE")
@@ -524,7 +581,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                     preview = proposal.preview
                     if tip is not base:
                         preview = tip.memory.reprogram(dict(preview._certain._gates))
-                    tip = self._replace_program(tip, preview)
+                    tip = (self._replace_program(tip, preview) if patch is None
+                           else self._install_program_revision(tip, preview, patch))
                     digest = self._append(db, digest, tip.revision, program)
                 db.execute("""UPDATE corpus_program_trials SET status = ?, observed_revision = ?
                     WHERE trial_id = ?""", (status, base.revision, trial_id))

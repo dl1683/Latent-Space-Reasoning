@@ -9,7 +9,7 @@ from experiments.memory import binding_memory, corpus_binding_journal
 from experiments.memory.binding_feedback import BindingFeedback, BindingRouteExpansion
 from experiments.memory.binding_maintenance import propose_binding_program
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _ProofWork
-from experiments.memory.binding_replay import _receiver_digest
+from experiments.memory.binding_replay import _receiver_digest, route_norm_cap
 from experiments.memory.corpus_binding_journal import (
     CorpusProgramExpectation, CorpusProgramProbe, JournaledCorpusWorkspace,
 )
@@ -528,10 +528,14 @@ def test_guarded_replay_keeps_extreme_negative_attention_terms_at_zero(tmp_path)
     assert installed.latest[2] == np.tanh(.8)
 
 
-@pytest.mark.parametrize("downstream", [False, True])
-def test_future_replay_reuses_the_journal_tip_fence(tmp_path, monkeypatch, downstream):
-    fixture = _downstream_fixture(tmp_path, "uses_state") if downstream else _repair_fixture(tmp_path)
+@pytest.mark.parametrize("mode", ["replay", "downstream", "route_program"])
+def test_future_replay_reuses_the_journal_tip_fence(tmp_path, monkeypatch, mode):
+    downstream = mode != "replay"
+    case = "route_mismatch" if mode == "route_program" else "uses_state"
+    fixture = _downstream_fixture(tmp_path, case) if downstream else _repair_fixture(tmp_path)
     path, frame, worker, base, receiver, failed, options = fixture
+    if mode == "route_program":
+        options["max_route_update"] = 1
     draft = propose_binding_program(worker, base, failed, **options)
     assert draft.status == "opened"
     changes = {"repair": b"c,0,1,0.8", "later": b"b,0,1,0.9"} if downstream else {"compatible": b"c,0,1,0.8"}
@@ -550,6 +554,7 @@ def test_future_replay_reuses_the_journal_tip_fence(tmp_path, monkeypatch, downs
         judge.finish_program_trial(draft.trial.trial_id, receiver=receiver)
     assert judge.finish_program_trial(draft.trial.trial_id).status == "horizon_passed"
     assert judge.snapshot().memory._certain._gates == base.memory._certain._gates
+    assert judge.receiver_at(judge.snapshot(), receiver) is receiver
 
 
 def _downstream_fixture(tmp_path, case, *, max_steps=3, disjoint=False, post_read_overflow=False):
@@ -669,6 +674,185 @@ def test_downstream_guard_requires_a_remaining_step_at_registration(tmp_path):
     with pytest.raises(ValueError, match="a remaining feedback step"):
         propose_binding_program(worker, base, failed, **options)
     assert worker.pending_program_trials(limit=1) == ()
+
+
+@pytest.mark.parametrize("interrupted", [False, True])
+def test_weight_program_and_graph_repair_publish_as_one_recoverable_revision(tmp_path, monkeypatch, interrupted):
+    path, frame, worker, base, receiver, failed, options = _downstream_fixture(tmp_path, "route_mismatch")
+    graph_only = propose_binding_program(worker, base, failed, **options)
+    draft = propose_binding_program(worker, base, failed, **options, max_route_update=1)
+    assert graph_only.status == draft.status == "opened"
+    later = _write(worker, {"repair": b"c,0,1,0.8", "later": b"b,0,1,0.9"})
+    assert worker.finish_program_trial(graph_only.trial.trial_id, receiver=receiver).status == "downstream_mismatch"
+    if interrupted:
+        append = worker._append
+
+        def append_then_fail(*args):
+            append(*args)
+            raise RuntimeError("interrupted route program commit")
+
+        with monkeypatch.context() as patch:
+            patch.setattr(worker, "_append", append_then_fail)
+            with pytest.raises(RuntimeError, match="interrupted route program commit"):
+                worker.finish_program_trial(draft.trial.trial_id, receiver=receiver)
+        observer = JournaledCorpusWorkspace(path, frame)
+        assert observer.snapshot().revision == later.revision
+        assert observer.snapshot().memory._certain._gates == base.memory._certain._gates
+        assert observer.receiver_at(observer.snapshot(), receiver) is receiver
+        assert observer.pending_program_trials(limit=1) == (draft.trial,)
+    outcome = worker.finish_program_trial(draft.trial.trial_id, receiver=receiver)
+    assert outcome.status == "published" and outcome.published_revision == later.revision + 1
+
+    def no_encoding(_raw):
+        pytest.fail("reopening a route program attempted encoding")
+
+    reopened = JournaledCorpusWorkspace(path, replace(frame, _encode=no_encoding))
+    pin = reopened.snapshot()
+    programmed = reopened.receiver_at(pin, receiver)
+    assert np.array_equal(programmed._query[:, [0, 1, 3]], receiver._query[:, [0, 1, 3]])
+    assert 0 < np.linalg.norm(programmed._query - receiver._query) <= 1
+    assert reopened.finish_program_trial(draft.trial.trial_id) == outcome
+    assert worker.receiver_at(base, receiver) is receiver
+    assert pin.memory.resolve("late", 1) == options["future_target"].expected
+    with pytest.raises(ValueError, match="matching incumbent receiver"):
+        reopened.receiver_at(pin, programmed)
+    old, new = _second_read(receiver, later.memory), _second_read(programmed, pin.memory)
+    assert programmed._next_read(new).bounds == options["downstream_target"].expected
+    assert receiver._read_with_route_map(new).address == ("q", 1)
+    control = programmed._intervene_latest(new, old.latest)
+    assert programmed._next_read(control).address == ("q", 1)
+    after = _write(worker, {"unrelated": b"p,0,1,0.2"})
+    assert np.array_equal(worker.receiver_at(after, receiver)._query, programmed._query)
+
+
+def test_route_program_refuses_an_edit_above_the_norm_cap(tmp_path):
+    _, _, worker, base, _, failed, options = _downstream_fixture(tmp_path, "route_mismatch")
+    outcome = propose_binding_program(worker, base, failed, **options, max_route_update=.1)
+    assert outcome.status == outcome.attempts[0].status == "route_fit_refused"
+    assert worker.pending_program_trials(limit=1) == ()
+
+
+@pytest.mark.parametrize("weights,cap,error", [
+    ((0., 0., 1., 0.), .1, "exceeds its weight norm cap"),
+    ((.2, 0., 1., 0.), 2., "changes a protected opening score"),
+])
+def test_route_program_registration_checks_supplied_columns(tmp_path, weights, cap, error):
+    _, _, worker, base, receiver, failed, options = _downstream_fixture(tmp_path, "route_mismatch")
+    edited = receiver._with_route_column(2, weights)
+    patch = (_receiver_digest(receiver), _receiver_digest(edited), 2, weights)
+    with pytest.raises(ValueError, match=error):
+        worker.begin_program_trial(
+            base, {"late": BindingGate("or", ("c",))}, targets=(options["future_target"],),
+            future_batches=1, work_limit=65536, replay=failed, downstream=options["downstream_target"],
+            route_edit=patch, route_update_limit=cap,
+        )
+    assert worker.pending_program_trials(limit=1) == ()
+
+
+def test_route_program_rejects_a_norm_that_rounds_down_to_the_cap(tmp_path):
+    _, frame, worker, base, prototype, _, options = _downstream_fixture(tmp_path, "route_mismatch")
+    query = prototype._query.copy()
+    query[2, 2] = -2.0 ** -53
+    receiver = BindingFeedback(prototype._kernel, frame, prototype._addresses, query=query,
+                               observation=prototype._observation)
+    failed = _second_read(receiver, base.memory)
+    weights = (2.0 ** -27, 0., 1., 0.)
+    edited = receiver._with_route_column(2, weights)
+    patch = (_receiver_digest(receiver), _receiver_digest(edited), 2, weights)
+    assert np.linalg.norm(edited._query[:, 2] - receiver._query[:, 2]) == 1.
+    with pytest.raises(ValueError, match="exceeds its weight norm cap"):
+        worker.begin_program_trial(
+            base, {"late": BindingGate("or", ("c",))}, targets=(options["future_target"],),
+            future_batches=1, work_limit=65536, replay=failed, downstream=options["downstream_target"],
+            route_edit=patch, route_update_limit=1.,
+        )
+    assert worker.pending_program_trials(limit=1) == ()
+
+
+@pytest.mark.parametrize("power", [100, 1000])
+def test_route_program_normalizes_integer_norm_caps(tmp_path, power):
+    _, _, worker, base, receiver, failed, options = _downstream_fixture(tmp_path, "route_mismatch")
+    weights = (0., 0., 1., 0.)
+    edited = receiver._with_route_column(2, weights)
+    patch = (_receiver_digest(receiver), _receiver_digest(edited), 2, weights)
+    arguments = dict(targets=(options["future_target"],), future_batches=1, work_limit=65536, replay=failed,
+                     downstream=options["downstream_target"], route_edit=patch, route_update_limit=10 ** power)
+    gates = {"late": BindingGate("or", ("c",))}
+    if power == 1000:
+        with pytest.raises(ValueError, match="finite positive weight norm cap"):
+            worker.begin_program_trial(base, gates, **arguments)
+        assert worker.pending_program_trials(limit=1) == ()
+        return
+    assert route_norm_cap(10 ** power) <= 10 ** power
+    draft = worker.begin_program_trial(base, gates, **arguments)
+    _write(worker, {"repair": b"c,0,1,0.8", "later": b"b,0,1,0.9"})
+    assert worker.finish_program_trial(draft.trial_id, receiver=receiver).status == "published"
+
+
+def test_route_program_rejects_a_margin_rounded_to_a_routing_tie(tmp_path):
+    _, frame, worker, base, prototype, _, options = _downstream_fixture(tmp_path, "route_mismatch")
+    observation = prototype._observation.copy()
+    observation[5, 2] = 100
+    query = prototype._query.copy()
+    query[2, [0, 1, 3]] = -1
+    query[3, 3] = 0
+    receiver = BindingFeedback(prototype._kernel, frame, prototype._addresses, query=query,
+                               observation=observation, route_gap=1)
+    failed = _second_read(receiver, base.memory)
+    weights = (0., 0., 1e-18, 0.)
+    edited = receiver._with_route_column(2, weights)
+    patch = (_receiver_digest(receiver), _receiver_digest(edited), 2, weights)
+    candidate = base.memory.reprogram({"late": BindingGate("or", ("c",))})
+    repaired = _second_read(edited, candidate)
+    assert edited._next_read(repaired).status == "ambiguous"
+    with pytest.raises(ValueError, match="does not clear the opening score floor and gap"):
+        worker.begin_program_trial(
+            base, {"late": BindingGate("or", ("c",))}, targets=(options["future_target"],),
+            future_batches=1, work_limit=65536, replay=failed, downstream=options["downstream_target"],
+            route_edit=patch, route_update_limit=1,
+        )
+    assert worker.pending_program_trials(limit=1) == ()
+
+
+def test_route_program_rechecks_the_protected_route_after_inputs_change(tmp_path):
+    _, _, worker, base, receiver, failed, options = _downstream_fixture(tmp_path, "route_mismatch")
+    draft = propose_binding_program(worker, base, failed, **options, max_route_update=5, route_margin=2)
+    assert draft.status == "opened"
+    later = _write(worker, {"earlier": b"p,1,0,0.9", "repair": b"c,0,1,0.8", "later": b"b,0,1,0.9"})
+    result = worker.finish_program_trial(draft.trial.trial_id, receiver=receiver)
+    assert result.status == "target_unrepaired"
+    assert worker.snapshot() is later
+    assert worker.receiver_at(later, receiver) is receiver
+
+
+def test_second_route_program_extends_the_installed_receiver_after_source_withdrawal(tmp_path):
+    path, frame, worker, base, root, failed, options = _downstream_fixture(tmp_path, "route_mismatch")
+    first = propose_binding_program(worker, base, failed, **options, max_route_update=1)
+    _write(worker, {"repair": b"c,0,1,0.8", "later": b"b,0,1,0.9"})
+    assert worker.finish_program_trial(first.trial.trial_id, receiver=root).status == "published"
+    first_pin = worker.snapshot()
+    first_receiver = worker.receiver_at(first_pin, root)
+
+    revised = _write(worker, {"repair": None, "decoy": b"q,0,1,0.35"})
+    target = replace(options["future_target"], expected=CorpusBindingRead(BindingProof(.45, frozenset({"decoy"})), .45))
+    second_request = options | {"future_target": target, "substitutions": (("c", "q"),)}
+    with pytest.raises(ValueError, match="installed receiver"):
+        propose_binding_program(worker, revised, _second_read(root, revised.memory), **second_request,
+                                max_route_update=2)
+    second = propose_binding_program(worker, revised, _second_read(first_receiver, revised.memory), **second_request,
+                                     max_route_update=2)
+    assert second.status == "opened"
+    _write(worker, {"decoy": b"q,0,1,0.45"})
+    reopened = JournaledCorpusWorkspace(path, frame)
+    assert reopened.finish_program_trial(second.trial.trial_id, receiver=first_receiver).status == "published"
+    latest = reopened.snapshot()
+    second_receiver = reopened.receiver_at(latest, root)
+    read = second_receiver._next_read(_second_read(second_receiver, latest.memory))
+    assert read.bounds == options["downstream_target"].expected
+    assert len(latest._route_programs) == 2
+    historical = worker.receiver_at(first_pin, root)
+    assert np.array_equal(historical._query, first_receiver._query)
+    assert not np.array_equal(second_receiver._query, historical._query)
 
 
 def test_disjoint_downstream_target_must_extend_the_repaired_proof_group(tmp_path):

@@ -181,6 +181,8 @@ The guarded maintenance trial now refuses the same route drift. A separate contr
 
 **A tied route leaves the intervention control incomplete, 25 November 2026.** Giving the two control routes equal scores left the expected read untested on those paths. The trial refused admission. A separate fixture resolved the expected later read and then overflowed the next hidden-state update. The read guard passed at its declared boundary. [Feedback controls](../experiments/memory/test_binding_feedback.py)
 
+**A repaired hidden row can land outside the installed readout, 25 November 2026.** The graph repair restored its proof and changed the hidden row while the old route map still chose a decoy. Programming a single column let the receiver use the repaired row. A larger edit fit the opening rows and then displaced an earlier read after a source change. The later replay refused publication. Check the graph, hidden row and route map on the same future source revision. The static audit also found that a rounded subtraction and norm could admit a column above its cap. Admission now compares the exact squared distance between the stored columns with the squared cap. [Feedback controls](../experiments/memory/test_binding_feedback.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

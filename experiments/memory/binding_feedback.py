@@ -1,5 +1,6 @@
 """Optional pinned binding reads inside a continuous-feedback trajectory."""
 
+from copy import copy
 from dataclasses import InitVar, dataclass, replace
 from math import isfinite
 from operator import index
@@ -154,6 +155,18 @@ class BindingFeedback:
         intervened = replace(feedback, _history=(*feedback._history[:-1], row),
                              _keys=(*feedback._keys[:-1], key), _values=(*feedback._values[:-1], value))
         return replace(state, _feedback=intervened, _creation_key=_STATE_CREATION_KEY)
+
+    def _with_route_column(self, column, weights):
+        candidate = copy(self)
+        query = self._query.copy()
+        query[:, column] = self._kernel._vector(weights)
+        candidate._query = _frozen(query)
+        return candidate
+
+    def _read_with_route_map(self, state):
+        """Evaluate an earlier route map on a ready state from the same kernel."""
+        self._kernel._require_state(state.feedback)
+        return self._next_read(replace(state, _receiver=self, _creation_key=_STATE_CREATION_KEY))
 
     def _next_read(self, state):
         if type(state) is not BindingFeedbackState or state._receiver is not self:
