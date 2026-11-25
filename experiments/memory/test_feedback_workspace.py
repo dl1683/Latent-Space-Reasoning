@@ -1,5 +1,8 @@
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
+from dataclasses import asdict, replace
+import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -8,7 +11,9 @@ from threading import Barrier, Event, get_ident
 import numpy as np
 import pytest
 
-from experiments.memory.feedback_journal import JournaledFeedbackWorkspace
+from experiments.memory.feedback_journal import (
+    FeedbackCandidateData, FeedbackSearchShard, JournaledFeedbackWorkspace,
+)
 from experiments.memory.feedback_workspace import (
     FeedbackProbe,
     FeedbackProposal,
@@ -711,6 +716,174 @@ def test_parallel_maintenance_reports_both_failures_in_candidate_order(monkeypat
         workspace.maintain(max_candidates=2, max_workers=2)
     assert [str(error) for error in captured.value.exceptions] == ["first candidate", "second candidate"]
     assert workspace.snapshot() is base
+
+
+def _sharded_workspace(path):
+    probes = [
+        FeedbackProbe((1, 0), 1, (0.4, 0)),
+        FeedbackProbe((0, 1), 1, (0.4, 0)),
+        FeedbackProbe((-1, 0), 1, (0.5, 0)),
+    ]
+    return JournaledFeedbackWorkspace(path, _kernel(), [[1, 0]], probes, max_update_norm=1)
+
+
+def test_separate_processes_synthesize_distinct_ranges_and_one_coordinator_ranks(tmp_path):
+    path = tmp_path / "shards.sqlite"
+    coordinator = _sharded_workspace(path)
+    plan = coordinator.plan_repairs(max_candidates=3)
+    assert plan.candidates == ((2, "weight"), (0, "weight"), (1, "weight"))
+    worker = """
+import json
+import os
+import sys
+from experiments.memory.feedback_journal import FeedbackSearchPlan
+from experiments.memory.test_feedback_workspace import _sharded_workspace
+
+data = json.load(sys.stdin)
+data['candidates'] = tuple(map(tuple, data['candidates']))
+data['error_policy'] = tuple(map(tuple, data['error_policy']))
+plan = FeedbackSearchPlan(**data)
+workspace = _sharded_workspace(sys.argv[1])
+result = workspace.synthesize_repairs(plan, start=int(sys.argv[2]), stop=int(sys.argv[3]))
+print(json.dumps({
+    'pid': os.getpid(), 'start': result.start,
+    'results': [
+        {'payload': record.payload.hex() if record.payload is not None else None,
+         'rejection': record.rejection}
+        for record in result.results
+    ],
+}))
+"""
+
+    def run(bounds):
+        start, stop = bounds
+        process = subprocess.run(
+            [sys.executable, "-B", "-c", worker, str(path), str(start), str(stop)],
+            input=json.dumps(asdict(plan)), text=True, capture_output=True, check=True, timeout=30,
+        )
+        output = json.loads(process.stdout)
+        results = tuple(
+            FeedbackCandidateData(bytes.fromhex(row["payload"]) if row["payload"] is not None else None,
+                                  row["rejection"])
+            for row in output["results"]
+        )
+        return output["pid"], FeedbackSearchShard(plan, output["start"], results)
+
+    with ThreadPoolExecutor(max_workers=2) as launcher:
+        first, second = launcher.map(run, [(0, 1), (1, 3)])
+    assert len({os.getpid(), first[0], second[0]}) == 3
+    assert coordinator.snapshot().number == 0
+    actual = coordinator.publish_repair_shards(plan, [second[1], first[1]])
+    serial = _sharded_workspace(tmp_path / "serial.sqlite").maintain(max_candidates=3)
+    assert actual.status == serial.status == "committed"
+    assert actual.attempts == serial.attempts and actual.selected_attempt == serial.selected_attempt == 1
+    assert actual.revision.errors == serial.revision.errors
+    assert _sharded_workspace(path).snapshot().number == 1
+
+
+def test_cross_process_coordinator_rejects_gaps_overlaps_and_malformed_payload(tmp_path):
+    coordinator = _sharded_workspace(tmp_path / "shards.sqlite")
+    plan = coordinator.plan_repairs(max_candidates=3)
+    first = coordinator.synthesize_repairs(plan, start=0, stop=1)
+    second = coordinator.synthesize_repairs(plan, start=1, stop=3)
+    with pytest.raises(ValueError, match="exactly cover"):
+        coordinator.publish_repair_shards(plan, [second])
+    with pytest.raises(ValueError, match="exactly cover"):
+        coordinator.publish_repair_shards(plan, [first, first, second])
+    damaged = replace(second, results=(FeedbackCandidateData(payload=b"x"), second.results[1]))
+    with pytest.raises(ValueError, match="incorrect byte length"):
+        coordinator.publish_repair_shards(plan, [first, damaged])
+    with pytest.raises(ValueError, match="candidate order"):
+        coordinator.synthesize_repairs(replace(plan, candidates=plan.candidates[::-1]), start=0, stop=1)
+    assert coordinator.snapshot().number == 0
+
+
+def test_cross_process_plan_pins_numeric_policy_and_protocol(tmp_path):
+    coordinator = _sharded_workspace(tmp_path / "shards.sqlite")
+    plan = coordinator.plan_repairs(max_candidates=1)
+    with np.errstate(under="raise"):
+        with pytest.raises(ValueError, match="numeric policy"):
+            coordinator.synthesize_repairs(plan, start=0, stop=1)
+    with np.errstate(divide="call"):
+        with pytest.raises(ValueError, match="data-only NumPy"):
+            coordinator.plan_repairs(max_candidates=1)
+    with pytest.raises(ValueError, match="protocol"):
+        coordinator.synthesize_repairs(replace(plan, version=2), start=0, stop=1)
+    assert coordinator.snapshot().number == 0
+
+
+def test_cross_process_plan_cannot_cross_a_fork_or_publish_after_source_change(tmp_path):
+    primary = _source_workspace(tmp_path / "primary.sqlite")
+    fork = _source_workspace(tmp_path / "fork.sqlite")
+    primary.revise_sources(primary.snapshot(), {"right": [0, 0.5]})
+    fork.revise_sources(fork.snapshot(), {"right": [0, 0.25]})
+    plan = primary.plan_repairs(max_candidates=1)
+    other = fork.plan_repairs(max_candidates=1)
+    assert plan.root == other.root and plan.revision == other.revision and plan.tip != other.tip
+    with pytest.raises(StaleFeedbackRevision):
+        fork.synthesize_repairs(plan, start=0, stop=1)
+    shard = primary.synthesize_repairs(plan, start=0, stop=1)
+    source = _source_workspace(tmp_path / "primary.sqlite")
+    source.revise_sources(source.snapshot(), {"right": [0, 1]})
+    with pytest.raises(StaleFeedbackRevision):
+        primary.publish_repair_shards(plan, [shard])
+    assert primary.snapshot().number == 2
+
+
+def test_cross_process_winner_is_fenced_by_a_source_commit_after_admission(tmp_path, monkeypatch):
+    path = tmp_path / "stale-winner.sqlite"
+    coordinator, source = _source_workspace(path), _source_workspace(path)
+    plan = coordinator.plan_repairs(max_candidates=1)
+    shard = coordinator.synthesize_repairs(plan, start=0, stop=1)
+    commit = coordinator._commit
+
+    def source_commits_first(base, revised, *, proposal=None):
+        source.revise_sources(source.snapshot(), {"right": [0, 0.5]})
+        return commit(base, revised, proposal=proposal)
+
+    monkeypatch.setattr(coordinator, "_commit", source_commits_first)
+    with pytest.raises(StaleFeedbackRevision, match="journal changed before publication"):
+        coordinator.publish_repair_shards(plan, [shard])
+    assert coordinator.snapshot().number == 1
+    assert max(coordinator.snapshot().errors) == 0.5
+
+
+def test_cross_process_coordinator_checks_guards_and_resumes_the_next_constructor(tmp_path):
+    def workspace():
+        return JournaledFeedbackWorkspace(
+            tmp_path / "guard.sqlite", _kernel(), [[1, 0]], [FeedbackProbe((1, 0), 1, (0.4, 0))],
+            guards=[FeedbackProbe((0, 1), 1, (0, 0))], max_terms=1, max_update_norm=1,
+        )
+
+    coordinator, worker = workspace(), workspace()
+    plan = coordinator.plan_repairs(max_candidates=1)
+    dense = worker.synthesize_repairs(plan, start=0, stop=1)
+    assert dense.results[0].payload is not None
+    paused = coordinator.publish_repair_shards(plan, [dense])
+    assert paused.status == "budget_exhausted" and "workspace guard" in paused.attempts[0].rejection
+    next_plan = coordinator.plan_repairs(max_candidates=1, resume=paused)
+    assert next_plan.offset == 1 and next_plan.candidates == ((0, "conditional"),)
+    signed = worker.synthesize_repairs(next_plan, start=0, stop=1)
+    repaired = coordinator.publish_repair_shards(next_plan, [signed])
+    assert repaired.status == "committed" and repaired.revision.kernel.conditional_terms == 1
+    assert repaired.revision.guard_errors == (0,)
+
+
+def test_cross_process_hinge_payload_reuses_the_durable_operator_codec(tmp_path):
+    workspace = JournaledFeedbackWorkspace(
+        tmp_path / "hinge_shard.sqlite", _kernel(), [[1, 0]],
+        [FeedbackProbe((1, 0), 1, (0, 0)), FeedbackProbe((1, 1), 1, (0, 0.5))],
+        guards=[FeedbackProbe((1, -1), 1, (0, 0))], max_terms=1, max_update_norm=1,
+        allow_hinge=True,
+    )
+    plan = workspace.plan_repairs(max_candidates=3)
+    shard = workspace.synthesize_repairs(plan, start=0, stop=3)
+    assert shard.results[0].rejection is not None
+    assert len(shard.results[1].payload) == 3 * 2 * 8
+    assert len(shard.results[2].payload) == (3 * 2 + 1) * 8
+    result = workspace.publish_repair_shards(plan, [shard])
+    assert result.status == "committed" and result.selected_attempt == 2
+    assert result.revision.guard_errors == (0,)
 
 
 def test_maintenance_keeps_guard_only_failures_distinct_from_exhausted_search():

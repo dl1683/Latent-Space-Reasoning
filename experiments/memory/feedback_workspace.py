@@ -213,6 +213,22 @@ class FeedbackWorkspace:
         self._require_current(base)
         return self._commit(base, self._prepare_operator_revision(proposal), proposal=proposal)
 
+    def _candidate_order(self, base):
+        unresolved = sorted(
+            (probe for probe, error in enumerate(base.errors) if error > self._atol),
+            key=lambda probe: (-base.errors[probe], probe),
+        )
+        modes = [(False, False)]
+        if base.kernel.conditional_terms < self._max_terms:
+            modes.append((True, False))
+            if self._allow_hinge:
+                modes.append((True, True))
+        return unresolved, modes
+
+    def _repair_rank(self, revision):
+        return (-sum(error <= self._atol for error in revision.errors),
+                sum(revision.errors), revision.kernel.conditional_terms)
+
     def _evaluate_candidate(self, base, ordinal, unresolved, modes):
         probe_offset, mode_offset = divmod(ordinal, len(modes))
         probe = unresolved[probe_offset]
@@ -225,8 +241,7 @@ class FeedbackWorkspace:
         except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
             attempt = FeedbackRepairAttempt(probe, conditional, str(error), hinge=hinge)
             return attempt, None, None
-        rank = (-sum(error <= self._atol for error in revised.errors),
-                sum(revised.errors), revised.kernel.conditional_terms)
+        rank = self._repair_rank(revised)
         return FeedbackRepairAttempt(probe, conditional, rank=rank, hinge=hinge), proposal, revised
 
     def _maintenance_candidates(self, base, unresolved, modes, offset, stop, workers):
@@ -275,18 +290,10 @@ class FeedbackWorkspace:
             if resume.base is not base:
                 return FeedbackMaintenanceRound("stale", resume.base)
             offset = index(resume.next_candidate)
-        unresolved = sorted(
-            (probe for probe, error in enumerate(base.errors) if error > self._atol),
-            key=lambda probe: (-base.errors[probe], probe),
-        )
+        unresolved, modes = self._candidate_order(base)
         if not unresolved:
             status = "guard_unsatisfied" if any(e > self._atol for e in base.guard_errors) else "satisfied"
             return FeedbackMaintenanceRound(status, base)
-        modes = [(False, False)]
-        if base.kernel.conditional_terms < self._max_terms:
-            modes.append((True, False))
-            if self._allow_hinge:
-                modes.append((True, True))
         total = len(unresolved) * len(modes)
         if not 0 <= offset < total:
             raise ValueError("maintenance continuation is outside the candidate list")

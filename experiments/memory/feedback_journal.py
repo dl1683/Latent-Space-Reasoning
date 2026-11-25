@@ -2,15 +2,18 @@
 
 from collections.abc import Mapping
 from contextlib import closing
+from dataclasses import dataclass
 from hashlib import sha256
 import json
+from operator import index
 from pathlib import Path
 import sqlite3
 
 import numpy as np
 
 from experiments.memory.feedback_workspace import (
-    FeedbackProposal, FeedbackWorkspace, StaleFeedbackRevision,
+    FeedbackMaintenanceRound, FeedbackProposal, FeedbackRepairAttempt, FeedbackWorkspace,
+    StaleFeedbackRevision,
 )
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, _frozen, _real_array
 from experiments.memory.linear_feedback import LinearFeedbackKernel
@@ -20,11 +23,48 @@ def _encode(array):
     return np.asarray(array, dtype="<f8", order="C").tobytes()
 
 
+def _encode_term(factors, threshold):
+    payload = _encode(factors)
+    return payload if threshold is None else payload + _encode((threshold,))
+
+
 def _event_digest(parent, number, kind, probe, payload):
     digest = sha256(parent)
     digest.update(f"\n{number}:{kind}:{probe}\n".encode("ascii"))
     digest.update(payload)
     return digest.digest()
+
+
+@dataclass(frozen=True)
+class FeedbackSearchPlan:
+    root: str
+    tip: str
+    revision: int
+    offset: int
+    total: int
+    candidates: tuple[tuple[int, str], ...]
+    error_policy: tuple[tuple[str, str], ...]
+    version: int = 1
+
+
+@dataclass(frozen=True)
+class FeedbackCandidateData:
+    payload: bytes | None = None
+    rejection: str | None = None
+
+    def __post_init__(self):
+        if self.payload is not None and type(self.payload) is bytes and self.rejection is None:
+            return
+        if self.payload is None and type(self.rejection) is str and self.rejection:
+            return
+        raise ValueError("candidate data needs a byte payload or a synthesis refusal")
+
+
+@dataclass(frozen=True)
+class FeedbackSearchShard:
+    plan: FeedbackSearchPlan
+    start: int
+    results: tuple[FeedbackCandidateData, ...]
 
 
 class JournaledFeedbackWorkspace(FeedbackWorkspace):
@@ -152,23 +192,153 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         if db.execute("SELECT digest FROM feedback_root WHERE singleton = 1").fetchone() != (self._root,):
             raise ValueError("initial workspace inputs disagree with the feedback journal")
 
-    def _replay(self, base, kind, probe, payload):
+    def _decode_operator(self, base, kind, probe, payload):
         width = base.kernel._width
+        lengths = {"weight": width * width, "conditional": 3 * width, "hinge": 3 * width + 1}
+        if kind not in lengths:
+            raise ValueError("unexpected feedback journal event")
+        if len(payload) != 8 * lengths[kind]:
+            raise ValueError("incorrect byte length for feedback operator payload")
+        values = np.frombuffer(payload, dtype="<f8")
+        if kind == "weight":
+            return FeedbackProposal(base, probe, values.reshape(width, width))
+        if kind == "conditional":
+            return FeedbackProposal(base, probe, term=ConditionalTerm(*values.reshape(3, width)))
+        term = ConditionalTerm(*values[:-1].reshape(3, width), threshold=values[-1])
+        return FeedbackProposal(base, probe, term=term)
+
+    def _replay(self, base, kind, probe, payload):
         if kind == "sources" and probe is None and self._source_bound:
             return self._prepare_source_revision(base, json.loads(payload))
-        values = np.frombuffer(payload, dtype="<f8")
         if kind == "observations" and probe is None and not self._source_bound:
-            return self._prepare_observation_revision(base, values.reshape(-1, width))
-        if kind == "weight":
-            proposal = FeedbackProposal(base, probe, values.reshape(width, width))
-        elif kind == "conditional":
-            proposal = FeedbackProposal(base, probe, term=ConditionalTerm(*values.reshape(3, width)))
-        elif kind == "hinge":
-            term = ConditionalTerm(*values[:-1].reshape(3, width), threshold=values[-1])
-            proposal = FeedbackProposal(base, probe, term=term)
-        else:
-            raise ValueError("unexpected feedback journal event")
-        return self._prepare_operator_revision(proposal)
+            values = np.frombuffer(payload, dtype="<f8")
+            return self._prepare_observation_revision(base, values.reshape(-1, base.kernel._width))
+        return self._prepare_operator_revision(self._decode_operator(base, kind, probe, payload))
+
+    def _search_base(self):
+        base = self.snapshot()
+        with self._lock:
+            self._require_ready()
+            if self._head is not base:
+                raise StaleFeedbackRevision("feedback revision changed before reading search stamp")
+            return base, self._root.hex(), self._tip.hex()
+
+    def _search_plan(self, base, root, tip, offset, limit):
+        unresolved, modes = self._candidate_order(base)
+        total = len(unresolved) * len(modes)
+        if not 0 <= offset < max(1, total):
+            raise ValueError("search offset is outside the candidate list")
+        candidates = []
+        for ordinal in range(offset, min(total, offset + limit)):
+            probe_offset, mode_offset = divmod(ordinal, len(modes))
+            conditional, hinge = modes[mode_offset]
+            kind = "hinge" if hinge else "conditional" if conditional else "weight"
+            candidates.append((unresolved[probe_offset], kind))
+        policy = tuple(sorted(np.geterr().items()))
+        if any(mode in ("call", "log") for _, mode in policy):
+            raise ValueError("process repair plans need a data-only NumPy error policy")
+        return FeedbackSearchPlan(root, tip, base.number, offset, total, tuple(candidates), policy)
+
+    def plan_repairs(self, *, max_candidates, resume=None):
+        """Describe the ordered candidates that separate processes may synthesize."""
+        limit = index(max_candidates)
+        if limit < 1:
+            raise ValueError("maintenance candidate limit must be positive")
+        base, root, tip = self._search_base()
+        offset = 0
+        if resume is not None:
+            if (not isinstance(resume, FeedbackMaintenanceRound)
+                    or resume.status != "budget_exhausted" or resume.next_candidate is None):
+                raise ValueError("repair planning can only resume an exhausted candidate budget")
+            if resume.base is not base:
+                raise StaleFeedbackRevision("repair continuation belongs to a stale revision")
+            offset = index(resume.next_candidate)
+        return self._search_plan(base, root, tip, offset, limit)
+
+    def _check_search_plan(self, plan):
+        if type(plan) is not FeedbackSearchPlan:
+            raise ValueError("expected a durable feedback search plan")
+        base, root, tip = self._search_base()
+        if (plan.root, plan.tip, plan.revision) != (root, tip, base.number):
+            raise StaleFeedbackRevision("repair plan does not match the current journal revision")
+        expected = self._search_plan(base, root, tip, index(plan.offset), len(plan.candidates))
+        if plan != expected or (plan.total and not plan.candidates):
+            raise ValueError("repair plan does not match the candidate order, numeric policy or protocol")
+        return base
+
+    def synthesize_repairs(self, plan, *, start, stop):
+        """Synthesize a contiguous range on the pinned base without publishing it."""
+        start, stop = index(start), index(stop)
+        base = self._check_search_plan(plan)
+        if not 0 <= start < stop <= len(plan.candidates):
+            raise ValueError("repair shard is outside the plan")
+        results = []
+        for probe, kind in plan.candidates[start:stop]:
+            try:
+                proposal = self._propose(base, probe, conditional=kind != "weight", hinge=kind == "hinge")
+            except StaleFeedbackRevision:
+                raise
+            except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
+                results.append(FeedbackCandidateData(rejection=str(error) or type(error).__name__))
+                continue
+            if proposal.term is None:
+                payload = _encode(proposal._weight)
+            else:
+                term = proposal.term
+                factors = (term.state_axis, term.observation_axis, term.output)
+                payload = _encode_term(factors, term.threshold)
+            results.append(FeedbackCandidateData(payload=payload))
+        self._require_current(base)
+        return FeedbackSearchShard(plan, start, tuple(results))
+
+    def publish_repair_shards(self, plan, shards):
+        """Validate complete coverage, independently admit candidates, and publish one winner."""
+        base = self._check_search_plan(plan)
+        shards = tuple(shards)
+        if any(type(shard) is not FeedbackSearchShard for shard in shards):
+            raise ValueError("expected feedback search shard records")
+        results = []
+        for shard in sorted(shards, key=lambda shard: shard.start):
+            if shard.plan != plan or index(shard.start) != len(results) or not shard.results:
+                raise ValueError("repair shards must exactly cover the plan without overlaps")
+            if any(type(candidate) is not FeedbackCandidateData for candidate in shard.results):
+                raise ValueError("expected repair candidate data records")
+            results.extend(shard.results)
+        if len(results) != len(plan.candidates):
+            raise ValueError("repair shards must exactly cover the plan without overlaps")
+
+        attempts = []
+        best = None
+        for (probe, kind), candidate in zip(plan.candidates, results, strict=True):
+            self._require_current(base)
+            conditional, hinge = kind != "weight", kind == "hinge"
+            if candidate.payload is None:
+                attempts.append(FeedbackRepairAttempt(probe, conditional, candidate.rejection, hinge=hinge))
+                continue
+            proposal = self._decode_operator(base, kind, probe, candidate.payload)
+            try:
+                revised = self._prepare_operator_revision(proposal)
+            except StaleFeedbackRevision:
+                raise
+            except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
+                attempts.append(FeedbackRepairAttempt(probe, conditional, str(error), hinge=hinge))
+                continue
+            rank = self._repair_rank(revised)
+            if best is None or rank < best[0]:
+                best = rank, proposal, revised, len(attempts)
+            attempts.append(FeedbackRepairAttempt(probe, conditional, rank=rank, hinge=hinge))
+        self._require_current(base)
+        if best is not None:
+            _, proposal, revised, selected = best
+            published = self._commit(base, revised, proposal=proposal)
+            return FeedbackMaintenanceRound("committed", base, tuple(attempts), published, selected)
+        stop = plan.offset + len(plan.candidates)
+        if stop < plan.total:
+            return FeedbackMaintenanceRound("budget_exhausted", base, tuple(attempts), next_candidate=stop)
+        if not plan.total:
+            status = "guard_unsatisfied" if any(e > self._atol for e in base.guard_errors) else "satisfied"
+            return FeedbackMaintenanceRound(status, base)
+        return FeedbackMaintenanceRound("no_candidate", base, tuple(attempts))
 
     @staticmethod
     def _normalize_source_changes(changes, width):
@@ -293,9 +463,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             kind, payload = "weight", _encode(revised.kernel._observation_value)
         else:
             term = revised.kernel._conditional[-1]
-            kind, payload = "conditional", _encode(term[:3])
-            if term[-1] is not None:
-                kind, payload = "hinge", payload + _encode((term[-1],))
+            kind = "conditional" if term[-1] is None else "hinge"
+            payload = _encode_term(term[:3], term[-1])
         with self._lock, closing(self._connect()) as db:
             self._require_ready()
             if self._head is not base:
