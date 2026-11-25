@@ -1,14 +1,19 @@
 from dataclasses import replace
+import subprocess
+import sys
 
 import numpy as np
 import pytest
 
 from experiments.memory import binding_memory
 from experiments.memory.binding_feedback import BindingFeedback, BindingRouteExpansion
+from experiments.memory.binding_maintenance import propose_binding_program
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _ProofWork
-from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
+from experiments.memory.corpus_binding_journal import (
+    CorpusProgramExpectation, CorpusProgramProbe, JournaledCorpusWorkspace,
+)
 from experiments.memory.corpus_bindings import (
-    BindingMention, CorpusBindingMemory, CorpusBindingRead, _DisjointBranchReads,
+    BindingMention, CorpusBindingMemory, CorpusBindingRead, StaleCorpusRevision, _DisjointBranchReads,
 )
 from experiments.memory.latent_feedback import FeedbackKernel
 
@@ -122,6 +127,230 @@ def _coverage_receiver(frame, *, expansion_limit=None, proof_limit=65536, trials
 def _second_read(receiver, memory):
     initial = receiver.start([1, 0, 0, 0], memory=memory)
     return receiver.step(receiver.step(initial))
+
+
+def _repair_fixture(tmp_path, *, trials=1, earlier="p", observe=True, source_vector="0,1", proof_limit=65536):
+    frame = _matching_frame().reprogram({"late": BindingGate("disjoint_and", ("a", "b"))})
+    path = tmp_path / "repair-program.sqlite"
+    journal = JournaledCorpusWorkspace(path, frame, create=True)
+    base = _write(journal, {
+        "early": b"p,1,0,1", "piece": b"a,1,0,0.9", "other_piece": b"b,1,0,1",
+        "combined": b"b,0,1,1\nq,0,1,1", "compatible": f"c,{source_vector},0.7".encode(),
+    })
+    fixture_kernel = _coverage_receiver(frame)._kernel
+    observation = np.zeros((6, 4))
+    observation[5, 3] = float(observe)
+    addresses = ((earlier, 0), ("late", 1))
+    receiver = BindingFeedback(fixture_kernel, frame, addresses, query=[[2, 0], [0, 1], [0, 0], [0, 0]],
+                               observation=observation, disjoint_reads=True, route_trials=trials,
+                               work_limit=proof_limit)
+    state = _second_read(receiver, base.memory)
+    expected_sources = {"early"} if earlier == "p" else {"piece", "other_piece"}
+    expected_sources.update(("combined", "compatible"))
+    target = CorpusProgramExpectation(CorpusProgramProbe(addresses),
+                                     CorpusBindingRead(BindingProof(.8, frozenset(expected_sources)), .8))
+    options = dict(substitutions=(("a", "q"), ("a", "c")), future_target=target, future_batches=1,
+                   work_limit=65536, max_candidates=2)
+    return path, frame, journal, base, receiver, state, options
+
+
+@pytest.mark.parametrize("trials", [1, 2])
+def test_failed_hidden_read_can_propose_a_rewrite_for_another_worker(tmp_path, trials):
+    path, frame, proposer, base, receiver, failed, options = _repair_fixture(tmp_path, trials=trials)
+    assert failed.reads[-1].status == ("resolved" if trials == 1 else "catalog_absent")
+    assert failed.reads[-1].bounds == CorpusBindingRead(None, None)
+    detached_before = _second_read(receiver, None)
+    draft = propose_binding_program(proposer, base, failed, **options)
+    assert draft.status == "opened" and draft.trial is not None
+    assert [a.status for a in draft.attempts] == ["target_unrepaired", "repaired"]
+    assert [(a.slot, a.replacement, a.replayed_steps) for a in draft.attempts] == [(0, "q", 2), (0, "c", 2)]
+    assert proposer.snapshot() is base
+
+    def no_encoding(_raw):
+        pytest.fail("trial worker attempted encoding")
+
+    judge = JournaledCorpusWorkspace(path, replace(frame, _encode=no_encoding))
+    assert judge.pending_program_trials(limit=1) == (draft.trial,)
+    assert judge.finish_program_trial(draft.trial.trial_id).status == "pending"
+    later = _write(proposer, {"compatible": b"c,0,1,0.8"})
+    assert _second_read(receiver, later.memory).reads[-1].bounds == CorpusBindingRead(None, None)
+    outcome = judge.finish_program_trial(draft.trial.trial_id)
+    assert outcome.status == "published"
+    installed = judge.snapshot()
+    after = _second_read(receiver, installed.memory)
+    assert after.reads[-1].bounds == options["future_target"].expected
+    assert after.latest[3] == np.tanh(.8) and failed.latest[3] == 0
+    assert _second_read(receiver, base.memory).reads[-1] == failed.reads[-1]
+    assert np.array_equal(_second_read(receiver, None).latest, detached_before.latest)
+    assert installed.memory.source_digests == later.memory.source_digests
+    withdrawn = _write(proposer, {"compatible": None})
+    assert _second_read(receiver, withdrawn.memory).reads[-1].bounds == CorpusBindingRead(None, None)
+
+
+@pytest.mark.parametrize("control,expected", [
+    ("candidate_cap", "candidate_limit"),
+    ("prefix", "no_candidate"),
+    ("unobserved", "no_candidate"),
+    ("possible_only", "no_candidate"),
+    ("stale", "stale"),
+])
+def test_maintenance_worker_keeps_refusals_out_of_the_journal(tmp_path, control, expected):
+    _, _, journal, base, _, failed, options = _repair_fixture(
+        tmp_path, earlier="late" if control == "prefix" else "p", observe=control != "unobserved",
+        source_vector="1,1" if control == "possible_only" else "0,1",
+    )
+    if control == "candidate_cap":
+        options["max_candidates"] = 1
+    if control == "stale":
+        _write(journal, {"unrelated": b"c,1,0,0.6"})
+        with pytest.raises(StaleCorpusRevision, match="tip changed"):
+            propose_binding_program(journal, base, failed, **options)
+    else:
+        outcome = propose_binding_program(journal, base, failed, **options)
+        assert outcome.status == expected and outcome.trial is None
+        suffix = {"prefix": "prefix_changed", "unobserved": "state_unchanged"}.get(control, "target_unrepaired")
+        assert outcome.attempts[-1].status == suffix
+        assert len(outcome.attempts) == options["max_candidates"]
+        assert journal.snapshot() is base
+    assert journal.pending_program_trials(limit=4) == ()
+
+
+def test_repaired_replay_leaves_the_future_proof_decision_to_the_judge(tmp_path):
+    path, frame, worker, base, _, failed, options = _repair_fixture(tmp_path)
+    draft = propose_binding_program(worker, base, failed, **options)
+    assert draft.status == "opened"
+    later = _write(worker, {"compatible": b"c,0,1,0.75"})
+    judge = JournaledCorpusWorkspace(path, frame)
+    outcome = judge.finish_program_trial(draft.trial.trial_id)
+    assert outcome.status == "target_mismatch"
+    assert judge.snapshot().revision == later.revision
+    assert judge.snapshot().memory._certain._gates == base.memory._certain._gates
+
+
+def test_workers_can_repeat_the_repair_after_an_installed_premise_is_withdrawn(tmp_path):
+    path, frame, worker, base, receiver, failed, options = _repair_fixture(tmp_path, trials=2)
+    judge = JournaledCorpusWorkspace(path, frame)
+    first = propose_binding_program(worker, base, failed, **options)
+    _write(worker, {"compatible": b"c,0,1,0.8"})
+    assert judge.finish_program_trial(first.trial.trial_id).status == "published"
+    first_installed = judge.snapshot()
+    assert _second_read(receiver, first_installed.memory).reads[-1].bounds == options["future_target"].expected
+
+    current = _write(worker, {"compatible": None, "replacement": b"q,0,1,0.7"})
+    again = _second_read(receiver, current.memory)
+    assert again.reads[-1].status == "catalog_absent"
+    new_witness = BindingProof(.9, frozenset({"early", "combined", "replacement"}))
+    target = replace(options["future_target"], expected=CorpusBindingRead(new_witness, .9))
+    second = propose_binding_program(worker, current, again, **(
+        options | {"substitutions": (("c", "q"),), "future_target": target}))
+    assert second.status == "opened" and second.trial.trial_id != first.trial.trial_id
+    _write(worker, {"replacement": b"q,0,1,0.9"})
+    assert judge.finish_program_trial(second.trial.trial_id).status == "published"
+    second_installed = _second_read(receiver, judge.snapshot().memory)
+    assert second_installed.reads[-1].bounds == target.expected
+    assert second_installed.latest[3] == np.tanh(.9)
+    assert _second_read(receiver, first_installed.memory).reads[-1].bounds == options["future_target"].expected
+
+
+def test_maintenance_does_not_treat_an_incomplete_read_as_a_failed_rule(tmp_path):
+    _, _, journal, base, _, incomplete, options = _repair_fixture(tmp_path, proof_limit=1)
+    assert [read.status for read in incomplete.reads] == ["capacity", "incomplete"]
+    outcome = propose_binding_program(journal, base, incomplete, **options)
+    assert outcome.status == "ineligible" and outcome.attempts == ()
+    assert journal.pending_program_trials(limit=4) == ()
+
+
+def test_maintenance_keeps_an_incomplete_candidate_replay_visible(tmp_path):
+    _, _, journal, base, _, failed, options = _repair_fixture(tmp_path, proof_limit=36)
+    assert failed.reads[-1].bounds == CorpusBindingRead(None, None)
+    outcome = propose_binding_program(journal, base, failed, **options)
+    assert outcome.status == "replay_incomplete" and outcome.trial is None
+    assert [a.status for a in outcome.attempts] == ["replay_incomplete", "replay_incomplete"]
+    assert journal.pending_program_trials(limit=4) == ()
+
+
+def test_maintenance_binds_the_future_expectation_to_the_actual_ordered_prefix(tmp_path):
+    _, _, journal, base, _, failed, options = _repair_fixture(tmp_path)
+    options["future_target"] = replace(options["future_target"],
+                                       probe=CorpusProgramProbe((("q", 1), ("late", 1))))
+    outcome = propose_binding_program(journal, base, failed, **options)
+    assert outcome.status == "ineligible" and outcome.attempts == ()
+    assert journal.pending_program_trials(limit=4) == ()
+
+
+def test_maintenance_keeps_an_expanded_route_tie_incomplete(tmp_path):
+    frame = _matching_frame(anchors=[[1, 0], [0, 1], [-1, 0]]).reprogram({
+        "late": BindingGate("disjoint_and", ("a", "b")),
+    })
+    journal = JournaledCorpusWorkspace(tmp_path / "repair-tie.sqlite", frame, create=True)
+    base = _write(journal, {"early": b"p,1,0,1", "shared": b"a,0,1,1\nb,0,1,1",
+                            "first": b"q,0,1,0.8", "second": b"q,-1,0,1", "other": b"b,-1,0,1"})
+    expansion = BindingRouteExpansion(("late",), np.zeros((4, 2)), [[0], [1], [0], [0]], 128)
+    receiver = BindingFeedback(
+        _coverage_receiver(frame)._kernel, frame, (("p", 0), ("late", 0)),
+        query=[[2, 0], [0, 1], [0, 0], [0, 0]], observation=np.zeros((6, 4)),
+        disjoint_reads=True, route_trials=3, expansion=expansion,
+    )
+    failed = _second_read(receiver, base.memory)
+    assert failed.reads[-1].status == "catalog_absent"
+    assert failed.reads[-1].tried[-1].address == ("late", 1)
+    proof = BindingProof(.8, frozenset({"early", "shared", "first"}))
+    target = CorpusProgramExpectation(CorpusProgramProbe((("p", 0), ("late", 1))), CorpusBindingRead(proof, .8))
+    preview = journal.prepare_program(base, {"late": BindingGate("disjoint_and", ("q", "b"))}).preview
+    assert _second_read(receiver, preview).reads[-1].status == "ambiguous"
+    outcome = propose_binding_program(journal, base, failed, substitutions=(("a", "q"),), future_target=target,
+                                      future_batches=1, work_limit=65536, max_candidates=1)
+    assert outcome.status == "replay_incomplete" and outcome.attempts[0].status == "replay_incomplete"
+    assert journal.pending_program_trials(limit=1) == ()
+
+
+def test_future_proof_admission_can_coincide_with_a_different_receiver_route(tmp_path):
+    path, frame, worker, base, prototype, _, options = _repair_fixture(tmp_path)
+    observation = np.zeros((6, 4))
+    observation[3, 2] = observation[5, 3] = 1
+    receiver = BindingFeedback(
+        prototype._kernel, frame, (("p", 0), ("late", 1), ("q", 1)),
+        query=[[2, 0, 0], [0, 1, 2], [0, 3, 0], [0, 0, 0]], observation=observation, disjoint_reads=True,
+    )
+    opening = _second_read(receiver, base.memory)
+    assert opening.reads[-1].address == ("late", 1) and opening.reads[-1].bounds == CorpusBindingRead(None, None)
+    proof = BindingProof(.2, frozenset({"early", "combined", "compatible"}))
+    expected = CorpusBindingRead(proof, .2)
+    options["future_target"] = replace(options["future_target"], expected=expected)
+    draft = propose_binding_program(worker, base, opening, **options)
+    assert draft.status == "opened"
+    later = _write(worker, {"early": b"p,1,0,0.2"})
+    judge = JournaledCorpusWorkspace(path, frame)
+    assert judge.finish_program_trial(draft.trial.trial_id).status == "published"
+    installed = judge.snapshot().memory
+    assert installed.resolve("p", 0) == later.memory.resolve("p", 0)
+    assert installed.resolve_disjoint((("p", 0), ("late", 1))) == expected
+    assert _second_read(receiver, installed).reads[-1].address == ("q", 1)
+
+
+def test_independent_process_can_find_and_complete_a_proposed_repair(tmp_path):
+    path, _, worker, base, receiver, failed, options = _repair_fixture(tmp_path, trials=2)
+    draft = propose_binding_program(worker, base, failed, **options)
+    assert draft.status == "opened"
+    _write(worker, {"compatible": b"c,0,1,0.8"})
+    script = """
+from dataclasses import replace
+from sys import argv
+from experiments.memory.binding_memory import BindingGate
+from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
+from experiments.memory.test_binding_feedback import _matching_frame
+
+def unexpected_encoding(_raw):
+    raise AssertionError("the reviewing worker tried to encode")
+
+frame = _matching_frame().reprogram({"late": BindingGate("disjoint_and", ("a", "b"))})
+judge = JournaledCorpusWorkspace(argv[1], replace(frame, _encode=unexpected_encoding))
+draft, = judge.pending_program_trials(limit=1)
+outcome = judge.finish_program_trial(draft.trial_id)
+assert outcome.status == "published"
+"""
+    subprocess.run([sys.executable, "-B", "-c", script, str(path)], check=True, timeout=15)
+    assert _second_read(receiver, worker.snapshot().memory).reads[-1].bounds == options["future_target"].expected
 
 
 def test_expansion_recovers_a_continuation_moved_outside_the_fixed_catalog(tmp_path):

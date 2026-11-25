@@ -167,6 +167,10 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **Coercion can change a frozen check, 25 November 2026.** Static review found that a rational grade greater than 0.5 could round to 0.5 at registration. It also found that a custom string subclass could compare equal to one gate and serialize as another. Registration now checks built-in grade and identifier types before freezing them. [Trial controls](../experiments/memory/test_corpus_binding_journal.py)
 
+**A graph edit can repair a late proof and still be unsuitable for the trajectory, 25 November 2026.** Worker controls rejected an edit that disturbed an earlier read, a possible-only proof, and a repaired proof whose observation map left the next hidden state unchanged. A different candidate passed replay but missed the future frozen grade and stayed unpublished. Treat absence, uncertainty and exhausted routing separately. Evaluate the proposal under later source edits and connect the changed state to answer quality before adopting it broadly. [Feedback controls](../experiments/memory/test_binding_feedback.py)
+
+**Future proof availability can outlast the route that motivated a repair, 25 November 2026.** Lowering an earlier premise from 1.0 to 0.2 kept both programs in agreement on the protected read. The prospective judge installed the candidate with the expected 0.2 joint proof. Replaying the receiver on that same future pin selected a different gate. Any claim about future receiver behavior needs a replay at the checked future tip with the receiver and seed fixed.
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.
