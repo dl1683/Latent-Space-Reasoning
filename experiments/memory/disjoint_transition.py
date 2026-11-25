@@ -15,6 +15,7 @@ from experiments.memory.transition_memory import _coordinates
 
 
 _EMPTY = MappingProxyType({})
+_NO_MIDDLES = frozenset()
 _ABSENT = -np.inf
 _Edge = tuple[int, int, float]
 
@@ -38,6 +39,7 @@ class _Postings:
 
 @dataclass(frozen=True, eq=False)
 class _Middle:
+    _order: int
     assertions: Mapping[str, tuple[_Edge, ...]]
     origins: tuple[str, ...]
     incoming: _Postings
@@ -75,7 +77,7 @@ def _pack(postings, origin_indices):
                      _frozen(np.asarray(grades, dtype=np.float64)))
 
 
-def _compile_middle(assertions):
+def _compile_middle(assertions, order):
     postings = defaultdict(list), defaultdict(list)
     for origin, rows in assertions.items():
         for hop, coordinate, grade in rows:
@@ -83,8 +85,34 @@ def _compile_middle(assertions):
     incoming, outgoing = map(_strongest, postings)
     origins = tuple(sorted({origin for edges in (incoming, outgoing) for _, origin, _ in edges}))
     origin_indices = {origin: position for position, origin in enumerate(origins)}
-    return _Middle(MappingProxyType(assertions), origins,
+    return _Middle(order, MappingProxyType(assertions), origins,
                    _pack(incoming, origin_indices), _pack(outgoing, origin_indices))
+
+
+def _indexed_coordinates(block):
+    if block is None or not (block.incoming.coordinates.size and block.outgoing.coordinates.size):
+        return _NO_MIDDLES, _NO_MIDDLES
+    return frozenset(block.incoming.coordinates.tolist()), frozenset(block.outgoing.coordinates.tolist())
+
+
+def _record_index_changes(updates, middle, old, new):
+    for coordinate in old ^ new:
+        updates[coordinate][middle] = coordinate in new
+
+
+def _revise_index(postings, changes):
+    if not changes:
+        return postings
+    revised = dict(postings)
+    for coordinate, changes_at_coordinate in changes.items():
+        current = set(revised.get(coordinate, _NO_MIDDLES))
+        current.difference_update(changes_at_coordinate)
+        current.update(middle for middle, enabled in changes_at_coordinate.items() if enabled)
+        if current:
+            revised[coordinate] = frozenset(current)
+        else:
+            revised.pop(coordinate, None)
+    return MappingProxyType(revised)
 
 
 def _activation(middle, seed):
@@ -115,6 +143,8 @@ class DisjointTransitionMemory:
     width: int
     _sources: Mapping[str, Mapping[int, tuple[_Edge, ...]]]
     _middles: Mapping[int, _Middle]
+    _entry_middles: Mapping[int, frozenset[int]]
+    _destination_middles: Mapping[int, frozenset[int]]
 
     @classmethod
     def prepare(cls, width, sources):
@@ -122,7 +152,7 @@ class DisjointTransitionMemory:
         width = index(width)
         if width < 1:
             raise ValueError("transition width must be positive")
-        return cls(width, _EMPTY, _EMPTY).revise(sources)
+        return cls(width, _EMPTY, _EMPTY, _EMPTY, _EMPTY).revise(sources)
 
     def revise(self, changes, *, width=None):
         """Replace source assertions and optionally append coordinates to the frame."""
@@ -146,6 +176,8 @@ class DisjointTransitionMemory:
             return self if width == self.width else replace(self, width=width)
 
         sources, middles = dict(self._sources), dict(self._middles)
+        entry_changes, destination_changes = defaultdict(dict), defaultdict(dict)
+        next_order = middles[next(reversed(middles))]._order + 1 if middles else 0
         for origin, rows in replacements.items():
             if rows:
                 sources[origin] = rows
@@ -160,10 +192,39 @@ class DisjointTransitionMemory:
                 else:
                     assertions[origin] = rows
             if assertions:
-                middles[middle] = _compile_middle(assertions)
+                order = old._order if old is not None else next_order
+                middles[middle] = _compile_middle(assertions, order)
+                if old is None:
+                    next_order += 1
             else:
                 del middles[middle]
-        return replace(self, width=width, _sources=MappingProxyType(sources), _middles=MappingProxyType(middles))
+            old_entries, old_destinations = _indexed_coordinates(old)
+            new_entries, new_destinations = _indexed_coordinates(middles.get(middle))
+            _record_index_changes(entry_changes, middle, old_entries, new_entries)
+            _record_index_changes(destination_changes, middle, old_destinations, new_destinations)
+        return replace(self, width=width, _sources=MappingProxyType(sources), _middles=MappingProxyType(middles),
+                       _entry_middles=_revise_index(self._entry_middles, entry_changes),
+                       _destination_middles=_revise_index(self._destination_middles, destination_changes))
+
+    def _candidate_middles(self, grades, destination=None):
+        eligible = self._middles if destination is None else self._destination_middles.get(destination, _NO_MIDDLES)
+        if not eligible or not self._entry_middles:
+            return _NO_MIDDLES
+        candidates = eligible
+        budget = len(eligible)
+        active = np.isfinite(grades)
+        if np.count_nonzero(active) < budget:
+            found = set()
+            for entry in np.flatnonzero(active):
+                postings = self._entry_middles.get(int(entry), _NO_MIDDLES)
+                budget -= len(postings)
+                if budget <= 0:
+                    break
+                found.update(postings)
+            else:
+                candidates = found if destination is None else found.intersection(eligible)
+        # Preserve the scan's accumulation and witness order on every path.
+        return candidates if candidates is self._middles else sorted(candidates, key=lambda m: self._middles[m]._order)
 
     def prove(self, seed, destination, *, middle_key=None):
         """Read one maximizing witness, with ties ordered by coordinate or middle_key."""
@@ -172,11 +233,10 @@ class DisjointTransitionMemory:
             raise ValueError("transition destination is outside the coordinate frame")
         grades = _seed(seed, self.width)
         best = best_key = None
-        for coordinate, middle in self._middles.items():
+        for coordinate in self._candidate_middles(grades, destination):
+            middle = self._middles[coordinate]
             outgoing = middle.outgoing
             selected = np.flatnonzero(outgoing.coordinates == destination)
-            if not selected.size or not middle.incoming.coordinates.size:
-                continue
             strengths, inputs, first, second = _activation(middle, grades)
             edge = selected[np.argmax(strengths[selected])]
             strength = float(strengths[edge])
@@ -204,7 +264,8 @@ def propagate_disjoint(seed, *, memory=None):
     if memory is None:
         return _frozen(grades)
     result = np.full(memory.width, _ABSENT)
-    for middle in memory._middles.values():
+    for coordinate in memory._candidate_middles(grades):
+        middle = memory._middles[coordinate]
         if middle.incoming.coordinates.size and middle.outgoing.coordinates.size:
             strengths, _, _, _ = _activation(middle, grades)
             np.maximum.at(result, middle.outgoing.coordinates, strengths)
