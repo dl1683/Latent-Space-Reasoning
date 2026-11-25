@@ -46,6 +46,9 @@ def _reduce_bucket(cell, inputs, rank, previous):
     with np.errstate(over="raise", invalid="raise", divide="raise"):
         readout = triangular[0, 1:] / triangular[0, 0]
     readout[:-1] *= -1
+    needed = np.flatnonzero(readout[:-1] != 0)
+    dependencies = tuple(cells[column + 1] for column in needed)
+    readout = readout[[*needed, len(cells) - 1]]
 
     tail = triangular[1:len(cells), 1:]
     nonconstant = tail[np.any(tail[:, :-1] != 0, axis=1)]
@@ -59,11 +62,11 @@ def _reduce_bucket(cell, inputs, rank, previous):
             remainder = old
         else:
             remainder = EliminationFactor(live_cells, _frozen(rows))
-    return EliminationStep(inputs, cells[1:], _frozen(readout), remainder)
+    return EliminationStep(inputs, dependencies, _frozen(readout), remainder)
 
 
-def solve_elimination(cells, rank, factors, previous: Mapping[int, EliminationStep]):
-    """Reuse equal input buckets, then recover coarse values in reverse order."""
+def compile_elimination(cells, rank, factors, previous: Mapping[int, EliminationStep]):
+    """Reuse equal input buckets and retain conditionals for later reads."""
     order = sorted(cells, key=rank.__getitem__)
     buckets = {cell: [] for cell in order}
     for factor in factors:
@@ -81,15 +84,29 @@ def solve_elimination(cells, rank, factors, previous: Mapping[int, EliminationSt
         steps[cell] = step
         if step.remainder is not None:
             buckets[step.remainder.cells[0]].append(step.remainder)
+    return MappingProxyType(steps), tuple(rebuilt)
 
+
+def resolve_elimination(steps: Mapping[int, EliminationStep], cells):
+    """Recover only the requested dependency closure with a per-call memo."""
     solved = {}
     with np.errstate(over="raise", invalid="raise"):
-        for cell in reversed(order):
-            step = steps[cell]
-            later = [solved[variable] for variable in step.dependencies]
-            value = float(step.readout[-1] + step.readout[:-1] @ later)
-            if not np.isfinite(value):
-                raise FloatingPointError("nonfinite coarse elimination readout")
-            solved[cell] = value
-    values = np.fromiter((solved[cell] for cell in cells), dtype=float, count=len(cells))
-    return MappingProxyType(steps), _frozen(values), tuple(rebuilt)
+        for root in cells:
+            if root in solved:
+                continue
+            pending = [(root, iter(steps[root].dependencies))]
+            while pending:
+                cell, dependencies = pending[-1]
+                dependency = next(dependencies, None)
+                if dependency is not None:
+                    if dependency not in solved:
+                        pending.append((dependency, iter(steps[dependency].dependencies)))
+                    continue
+                pending.pop()
+                step = steps[cell]
+                later = [solved[dependency] for dependency in step.dependencies]
+                value = float(step.readout[-1] + step.readout[:-1] @ later)
+                if not np.isfinite(value):
+                    raise FloatingPointError("nonfinite coarse elimination readout")
+                solved[cell] = value
+    return solved

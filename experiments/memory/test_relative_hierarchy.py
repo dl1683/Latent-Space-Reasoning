@@ -359,12 +359,12 @@ def test_equal_updated_remainder_keeps_downstream_elimination_step():
     first = relative_elimination.EliminationFactor((0, 1), _frozen(np.array([[2, 0, 4], [0, 3, 9]])))
     changed = relative_elimination.EliminationFactor((0, 1), _frozen(np.array([[2, 0, 8], [0, 3, 9]])))
     rank = {0: 0, 1: 1}
-    steps, old_values, _ = relative_elimination.solve_elimination((0, 1), rank, [first], {})
-    revised, values, rebuilt = relative_elimination.solve_elimination((0, 1), rank, [changed], steps)
+    steps, _ = relative_elimination.compile_elimination((0, 1), rank, [first], {})
+    revised, rebuilt = relative_elimination.compile_elimination((0, 1), rank, [changed], steps)
     assert rebuilt == (0,)
     assert revised[0].remainder is steps[0].remainder and revised[1] is steps[1]
-    assert np.array_equal(old_values, [2, 3])
-    assert np.array_equal(values, [4, 3])
+    assert relative_elimination.resolve_elimination(steps, (0, 1)) == {0: 2, 1: 3}
+    assert relative_elimination.resolve_elimination(revised, (0,)) == {0: 4}
 
 
 def test_elimination_failure_keeps_parent_snapshot_and_requires_explicit_permutation(monkeypatch):
@@ -384,3 +384,98 @@ def test_elimination_failure_keeps_parent_snapshot_and_requires_explicit_permuta
         hierarchy.revise(base, {"bridge": RelativeObservation(3, 1.5, source=2)})
     assert base.read(8) == before
     _assert_direct(base, sources)
+
+
+def test_late_batched_reads_recover_only_the_needed_connected_ports(monkeypatch):
+    membership = tuple(cell // 3 for cell in range(18))
+    hierarchy = RelativeObservationHierarchy(membership, ridge=_RIDGE, elimination_order=range(18))
+    sources = {"anchor": RelativeObservation(0, 0.7, weight=2)}
+    sources.update({f"row-{cell}": RelativeObservation(cell, 0.13, source=cell - 1)
+                    for cell in range(1, 18)})
+    change = RelativeObservation(15, -1.8, source=14, weight=3)
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("revision eagerly reconstructed boundary values")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(relative_hierarchy, "resolve_elimination", unexpected)
+        base = hierarchy.initialize(sources)
+        revised = hierarchy.revise(base, {"row-15": change})
+    assert base._values is revised._values is None
+    assert revised.coarse_size == 10
+
+    resolve = relative_hierarchy.resolve_elimination
+    calls = []
+
+    def track(steps, cells):
+        recovered = resolve(steps, cells)
+        calls.append((tuple(cells), tuple(recovered)))
+        return recovered
+
+    monkeypatch.setattr(relative_hierarchy, "resolve_elimination", track)
+    request = (16, 15, 17, 16)
+    expected = solve_relative_direct(18, {**sources, "row-15": change}, ridge=_RIDGE)
+    assert revised.read_many(iter(request)) == pytest.approx(tuple(expected[cell] for cell in request),
+                                                             abs=1e-12, rel=0)
+    assert calls == [((15,), (15,))]
+    assert revised.read_many(()) == ()
+    assert calls == [((15,), (15,))]
+    assert base.read(16) != revised.read(16)
+    assert all(roots == recovered == (15,) for roots, recovered in calls)
+
+
+def test_sparse_reads_skip_unanchored_components_and_zero_regional_weights(monkeypatch):
+    hierarchy = RelativeObservationHierarchy((0, 0, 0, 0, 1, 2), ridge=_RIDGE,
+                                             elimination_order=range(6))
+    sources = {
+        "anchor": RelativeObservation(0, 1),
+        "first": RelativeObservation(1, 0.5, source=0),
+        "supported_bridge": RelativeObservation(4, 0.5, source=1),
+        "unsupported_local": RelativeObservation(3, -0.5, source=2),
+        "unsupported_bridge": RelativeObservation(5, 0.5, source=3),
+    }
+    snapshot = hierarchy.initialize(sources)
+    assert snapshot.coarse_size == 4
+    resolve = relative_hierarchy.resolve_elimination
+    calls = []
+
+    def track(steps, cells):
+        recovered = resolve(steps, cells)
+        calls.append((tuple(cells), set(recovered)))
+        return recovered
+
+    monkeypatch.setattr(relative_hierarchy, "resolve_elimination", track)
+    expected = solve_relative_direct(6, sources, ridge=_RIDGE)
+    reads = snapshot.read_many((5, 0, 0, 4))
+    assert reads[0] is None
+    assert reads[1:] == pytest.approx((expected[0], expected[0], expected[4]), abs=1e-12, rel=0)
+    assert calls == [((1, 4), {1, 4})]
+    assert snapshot.read_many((5, 3)) == (None, None)
+    assert len(calls) == 1
+
+
+def test_unrepresentable_sparse_port_can_fail_at_read_without_mutating_snapshot():
+    hierarchy = RelativeObservationHierarchy((0, 1), ridge=1e-6, elimination_order=(1, 0))
+    sources = {
+        "anchor": RelativeObservation(0, 1e308, weight=0.25),
+        "bridge": RelativeObservation(1, 1e308, source=0, weight=0.25),
+    }
+    snapshot = hierarchy.initialize(sources)
+    assert snapshot.coarse_size == 2 and snapshot._values is None
+    before = snapshot.read(0)
+    assert 0.99 < before / 1e308 < 1
+    with pytest.raises(FloatingPointError):
+        snapshot.read_many((0, 1))
+    assert snapshot.read(0) == before
+
+
+def test_demand_recovery_handles_a_deep_dependency_chain():
+    size = 2048
+    readout = _frozen(np.array([1.0, 1.0]))
+    constant = _frozen(np.array([1.0]))
+    steps = {cell: relative_elimination.EliminationStep((), (cell + 1,), readout, None)
+             for cell in range(size - 1)}
+    steps[size - 1] = relative_elimination.EliminationStep((), (), constant, None)
+    values = relative_elimination.resolve_elimination(steps, (0, size - 1, 0))
+    assert len(values) == size
+    assert values[0] == size and values[size - 1] == 1

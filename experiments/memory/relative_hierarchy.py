@@ -11,7 +11,12 @@ from types import MappingProxyType
 import numpy as np
 
 from experiments.memory.latent_field import LatentField, _frozen
-from experiments.memory.relative_elimination import EliminationFactor, EliminationStep, solve_elimination
+from experiments.memory.relative_elimination import (
+    EliminationFactor,
+    EliminationStep,
+    compile_elimination,
+    resolve_elimination,
+)
 from experiments.memory.relative_observations import (
     RelativeObservation,
     _problem,
@@ -233,9 +238,24 @@ def _coarse_state(ports, regions, bridges, base, projecting):
 
 @dataclass(frozen=True, eq=False)
 class _EliminationCache:
-    regions: Mapping[int, tuple[_Region, EliminationFactor]]
+    regions: Mapping[int, tuple[_Region, tuple[EliminationFactor, ...]]]
     bridges: Mapping[str, tuple[RelativeObservation, EliminationFactor]]
     steps: Mapping[int, EliminationStep]
+
+
+def _regional_elimination_factors(region):
+    components = {}
+    for column, cell in enumerate(region.ports):
+        components.setdefault(region.components[cell], []).append(column)
+    if len(components) == 1:
+        return (EliminationFactor(region.ports, region.factor),)
+    # Coefficients between disconnected regional components are structural zeros.
+    rhs = len(region.ports)
+    return tuple(
+        EliminationFactor(tuple(region.ports[column] for column in columns),
+                          _frozen(region.factor[np.ix_(columns, [*columns, rhs])]))
+        for columns in components.values()
+    )
 
 
 def _sparse_coarse(ports, regions, bridges, rank, previous):
@@ -247,7 +267,7 @@ def _sparse_coarse(ports, regions, bridges, rank, previous):
         if region.ports:
             old = prior_regions.get(number)
             if old is None or old[0] is not region:
-                old = region, EliminationFactor(region.ports, region.factor)
+                old = region, _regional_elimination_factors(region)
             regional_factors[number] = old
     for name, bridge in sorted(bridges.items()):
         old = prior_bridges.get(name)
@@ -259,10 +279,11 @@ def _sparse_coarse(ports, regions, bridges, rank, previous):
             old = bridge, EliminationFactor(cells, _frozen(row))
         bridge_factors[name] = old
 
-    factors = [factor for _, factor in (*regional_factors.values(), *bridge_factors.values())]
-    steps, values, rebuilt = solve_elimination(ports, rank, factors, prior_steps)
+    factors = [factor for _, grouped in regional_factors.values() for factor in grouped]
+    factors.extend(factor for _, factor in bridge_factors.values())
+    steps, rebuilt = compile_elimination(ports, rank, factors, prior_steps)
     cache = _EliminationCache(MappingProxyType(regional_factors), MappingProxyType(bridge_factors), steps)
-    return cache, values, rebuilt
+    return cache, rebuilt
 
 
 @dataclass(frozen=True, eq=False)
@@ -272,7 +293,7 @@ class RelativeHierarchySnapshot:
     _bridges: Mapping[str, RelativeObservation]
     _regions: tuple[_Region, ...]
     _port_positions: Mapping[int, int]
-    _values: np.ndarray
+    _values: np.ndarray | None
     _coarse_blocks: Mapping[tuple[int, ...], _CoarseBlock]
     _supported_ports: frozenset[int]
     rebuilt_regions: tuple[int, ...]
@@ -287,21 +308,57 @@ class RelativeHierarchySnapshot:
         return len(self._port_positions)
 
     def read(self, cell):
-        """Read an anchored estimate, recovering only the requested interior coordinate."""
+        """Read an anchored estimate and recover the boundary values it needs."""
+        return self.read_many((cell,))[0]
+
+    def _readout(self, cell):
         cell = LatentField._checked_cell(cell, len(self._owner._membership))
         region = self._regions[self._owner._membership[cell]]
         component = region.components[cell]
         if component not in region.anchored and component not in self._supported_ports:
             return None
         if cell in self._port_positions:
-            return float(self._values[self._port_positions[cell]])
+            return (cell,), None
         coeffs = region.readout[region.positions[cell]]
-        start = self._port_positions[region.ports[0]] if region.ports else 0
-        values = self._values[start:start + len(region.ports)]
-        value = float(coeffs[-1] + coeffs[:-1] @ values)
-        if not isfinite(value):
-            raise FloatingPointError("nonfinite reconstructed interior coordinate")
-        return value
+        if self._elimination is None:
+            return region.ports, coeffs
+        needed = [column for column, port in enumerate(region.ports)
+                  if region.components[port] == component and coeffs[column] != 0]
+        return tuple(region.ports[column] for column in needed), coeffs[[*needed, len(region.ports)]]
+
+    def _read_ports(self, ports):
+        if not ports:
+            return {}
+        if self._elimination is not None:
+            return resolve_elimination(self._elimination.steps, ports)
+        return {port: float(self._values[self._port_positions[port]]) for port in ports}
+
+    def read_many(self, cells):
+        """Read in request order, sharing boundary recovery within this batch."""
+        plans = tuple(self._readout(cell) for cell in cells)
+        values = None
+        if self._elimination is not None:
+            requested = dict.fromkeys(port for plan in plans if plan is not None for port in plan[0])
+            values = self._read_ports(requested)
+        reads = []
+        for plan in plans:
+            if plan is None:
+                reads.append(None)
+                continue
+            ports, coeffs = plan
+            if values is None:
+                start = self._port_positions[ports[0]] if ports else 0
+                inputs = self._values[start:start + len(ports)]
+            else:
+                inputs = [values[port] for port in ports]
+            if coeffs is None:
+                reads.append(float(inputs[0]))
+                continue
+            value = float(coeffs[-1] + coeffs[:-1] @ inputs)
+            if not isfinite(value):
+                raise FloatingPointError("nonfinite reconstructed interior coordinate")
+            reads.append(value)
+        return tuple(reads)
 
 
 class RelativeObservationHierarchy:
@@ -348,11 +405,12 @@ class RelativeObservationHierarchy:
                 ports, regions, bridges, base, projecting=bool(compacted),
             )
         elif compacted:
-            old_columns = [base._port_positions[cell] for cell in ports]
-            values = _frozen(base._values[old_columns])
+            projected = base._read_ports(ports)
+            values = _frozen(np.fromiter((projected[cell] for cell in ports), dtype=float, count=len(ports)))
         else:
             prior = base._elimination if base is not None else None
-            cache, values, buckets = _sparse_coarse(ports, regions, bridges, self._elimination_rank, prior)
+            cache, buckets = _sparse_coarse(ports, regions, bridges, self._elimination_rank, prior)
+            values = None
         anchor_roots = {coarse_support.root(component) for component in anchors}
         supported = frozenset(component for component in components.values()
                               if coarse_support.root(component) in anchor_roots)
@@ -458,8 +516,7 @@ class RelativeObservationHierarchy:
             regions[number] = _compact_region(regions[number], active)
         compacted = self._snapshot(base._sources, base._bridges, regions, (), base=base,
                                    compacted=chosen)
-        for cell in protected:
-            before, after = base.read(cell), compacted.read(cell)
+        for cell, before, after in zip(protected, base.read_many(protected), compacted.read_many(protected)):
             if before is None or after is None:
                 agrees = before is after
             else:
