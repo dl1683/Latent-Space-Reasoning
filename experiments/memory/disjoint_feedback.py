@@ -51,6 +51,15 @@ class _RelationObservation(_IdentityRecord):
             raise TypeError("construct relation memory through prepare")
 
 
+@dataclass(frozen=True, slots=True)
+class _EvidenceEdit:
+    operation: str
+    protected_index: int
+    destination: int
+    replacement: "TerminalRelationEvidence | None" = None
+    receipt: "RelationEvidenceRetraction | None" = None
+
+
 @dataclass(frozen=True, eq=False, slots=True)
 class _RelationRevision(_IdentityRecord):
     _base: _RelationObservation
@@ -59,11 +68,7 @@ class _RelationRevision(_IdentityRecord):
     _changed_sources: frozenset[str] | None
     _appended: np.ndarray | None = None
     _admission: tuple["_RelationWorkspacePin", "DisjointFeedbackState", "RelationOutcomeGuard"] | None = None
-    _handoff: tuple["_RelationWorkspacePin", int, "TerminalRelationEvidence"] | None = None
-    _retraction: tuple["_RelationWorkspacePin", int, int] | None = None
-    _restoration: tuple[
-        "_RelationWorkspacePin", "RelationEvidenceRetraction", "TerminalRelationEvidence"
-    ] | None = None
+    _evidence_edits: tuple["_RelationWorkspacePin", tuple[_EvidenceEdit, ...], bool] | None = None
     _creation_key: InitVar[object | None] = None
 
     def __post_init__(self, _creation_key):
@@ -75,20 +80,28 @@ class _RelationRevision(_IdentityRecord):
         return replace(self, _admission=(opening, state, guard), _creation_key=_CREATION_KEY)
 
     def _with_evidence_handoff(self, opening, protected_index, evidence):
-        self._require_unbound_adoption(opening)
-        return replace(self, _handoff=(opening, protected_index, evidence), _creation_key=_CREATION_KEY)
+        edit = _EvidenceEdit("handoff", protected_index, evidence.destination, replacement=evidence)
+        return self._with_evidence_edits(opening, (edit,), source_only=False)
 
     def _with_evidence_retraction(self, opening, protected_index, destination):
-        self._require_unbound_adoption(opening)
-        return replace(self, _retraction=(opening, protected_index, destination), _creation_key=_CREATION_KEY)
+        return self._with_evidence_edits(opening, (_EvidenceEdit("retraction", protected_index, destination),))
 
     def _with_evidence_restoration(self, opening, receipt, evidence):
+        if type(receipt) is not RelationEvidenceRetraction:
+            raise RelationGuardFailed("restoration needs the exact active retraction")
+        return self._with_evidence_edits(opening, (_EvidenceEdit("restoration", receipt.protected_index,
+                                                               evidence.destination, evidence, receipt),))
+
+    def _with_evidence_edits(self, opening, edits, *, source_only=True):
         self._require_unbound_adoption(opening)
-        return replace(self, _restoration=(opening, receipt, evidence), _creation_key=_CREATION_KEY)
+        ordered = tuple(sorted(edits, key=lambda edit: (edit.protected_index, edit.destination)))
+        if not ordered or len({(edit.protected_index, edit.destination) for edit in ordered}) != len(ordered):
+            raise ValueError("evidence edits must name distinct protected destinations")
+        return replace(self, _evidence_edits=(opening, ordered, source_only), _creation_key=_CREATION_KEY)
 
     def _require_unbound_adoption(self, opening):
-        if (self._changed_sources is not None or self._admission is not None or self._handoff is not None
-                or self._retraction is not None or self._restoration is not None or opening.memory is not self._base):
+        if (self._changed_sources is not None or self._admission is not None or self._evidence_edits is not None
+                or opening.memory is not self._base):
             raise ValueError("outcome editing needs an unbound authoritative revision at its opening pin")
 
 
@@ -649,6 +662,79 @@ class _RelationWorkspacePin(_IdentityRecord):
         return None
 
 
+def _prepare_evidence_edits(parent, revision, outcomes):
+    if revision._evidence_edits is None:
+        return {}
+    opening, edits, source_only = revision._evidence_edits
+    if opening is not parent:
+        raise StaleRelationRevision("relation draft belongs to a different opening workspace pin")
+    if source_only or len(edits) > 1 or edits[0].operation != "handoff":
+        operation = "batch" if len(edits) > 1 else edits[0].operation
+        _check_source_only_adoption(parent.memory, revision.memory, operation)
+    selected = {}
+    for edit in edits:
+        i, destination = edit.protected_index, edit.destination
+        original = parent._protected_outcome(i)
+        current = outcomes[i]
+        if edit.operation in ("handoff", "restoration") and (
+                type(edit.replacement) is not TerminalRelationEvidence or edit.replacement.destination != destination):
+            raise ValueError("replacement evidence must match the edited destination")
+        if edit.operation == "handoff":
+            original._evidence_at(destination)
+            amended = current._with_replaced_evidence(edit.replacement)
+        elif edit.operation == "retraction":
+            evidence = original._evidence_at(destination)
+            if any(revision.memory._source._declares_path(destination, path) for path in evidence.paths):
+                raise RelationGuardFailed("a declared source path still supports the retraction destination")
+            amended = current._with_retracted_evidence(destination)
+        elif edit.operation == "restoration":
+            if (type(edit.receipt) is not RelationEvidenceRetraction
+                    or parent._active_retraction(i, destination) is not edit.receipt):
+                raise RelationGuardFailed("restoration needs the exact active retraction")
+            amended = current._with_restored_evidence(edit.receipt, edit.replacement)
+        else:
+            raise ValueError("unknown repository evidence edit")
+        outcomes[i] = amended
+        selected.setdefault(i, []).append(edit)
+    return selected
+
+
+def _check_evidence_replay(parent, before, candidate, edits):
+    seed = None
+    for edit in edits:
+        if edit.operation == "retraction":
+            _check_retraction_absence(before, candidate, edit.destination)
+        elif edit.operation == "handoff":
+            if seed is None:
+                seed = candidate._receiver._terminal_seed(candidate)
+            original = parent._outcomes[edit.protected_index]._evidence_at(edit.destination)
+            if _approved_evidence(candidate, seed, original) is not None:
+                raise RelationGuardFailed("an existing path still certifies the handoff destination")
+
+
+def _record_evidence_edits(parent, source, edits, approved, retractions, restorations):
+    if not edits:
+        return
+    previous_commit = parent.memory._source.commit
+    current = dict(approved)
+    for edit in edits:
+        i, destination = edit.protected_index, edit.destination
+        if edit.operation == "restoration":
+            receipt, witness = edit.receipt, current[destination]
+            if not _same_supported_grade(receipt.previous_witness.strength, witness.strength):
+                raise RelationGuardFailed("evidence restoration changed the certified terminal grade")
+            restorations.append(RelationEvidenceRestoration(receipt, previous_commit, source.commit, witness))
+        else:
+            previous = dict(parent.witnesses[i])[destination]
+            if edit.operation == "handoff":
+                if not _same_supported_grade(previous.strength, current[destination].strength):
+                    raise RelationGuardFailed("evidence handoff changed the certified terminal grade")
+            else:
+                prior = next((grade for grade in parent._outcomes[i].grades if grade.destination == destination), None)
+                retractions.append(RelationEvidenceRetraction(i, destination, previous_commit, source.commit,
+                                                              previous, prior))
+
+
 class DisjointFeedbackWorkspace:
     """One in-process publication point for guarded relation revisions."""
 
@@ -701,74 +787,26 @@ class DisjointFeedbackWorkspace:
             if opening is not parent:
                 raise StaleRelationRevision("relation draft belongs to a different opening workspace pin")
             required = ((state, outcome),)
-        handoff = revision._handoff
         outcomes = list(parent._outcomes)
-        if handoff is not None:
-            opening, protected_index, replacement = handoff
-            if opening is not parent:
-                raise StaleRelationRevision("relation draft belongs to a different opening workspace pin")
-            old_outcome = parent._protected_outcome(protected_index)
-            old_evidence = old_outcome._evidence_at(replacement.destination)
-            old_strength = dict(parent.witnesses[protected_index])[replacement.destination].strength
-            outcomes[protected_index] = old_outcome._with_replaced_evidence(replacement)
-        retractions = parent.retractions
-        retraction = revision._retraction
-        if retraction is not None:
-            opening, retraction_index, destination = retraction
-            if opening is not parent:
-                raise StaleRelationRevision("relation draft belongs to a different opening workspace pin")
-            _check_source_only_adoption(parent.memory, revision.memory, "retraction")
-            original = parent._protected_outcome(retraction_index)
-            evidence = original._evidence_at(destination)
-            if any(source._declares_path(destination, path) for path in evidence.paths):
-                raise RelationGuardFailed("a declared source path still supports the retraction destination")
-            previous = dict(parent.witnesses[retraction_index])[destination]
-            previous_grade = next((grade for grade in original.grades if grade.destination == destination), None)
-            outcomes[retraction_index] = original._with_retracted_evidence(destination)
-            retractions += (RelationEvidenceRetraction(retraction_index, destination, old_source.commit, source.commit,
-                                                       previous, previous_grade),)
-        restorations = parent.restorations
-        restoration = revision._restoration
-        if restoration is not None:
-            opening, receipt, restored_evidence = restoration
-            if opening is not parent:
-                raise StaleRelationRevision("relation draft belongs to a different opening workspace pin")
-            _check_source_only_adoption(parent.memory, revision.memory, "restoration")
-            if type(receipt) is not RelationEvidenceRetraction:
-                raise RelationGuardFailed("restoration needs the exact active retraction")
-            restoration_index = receipt.protected_index
-            restored_destination = restored_evidence.destination
-            if parent._active_retraction(restoration_index, restored_destination) is not receipt:
-                raise RelationGuardFailed("restoration needs the exact active retraction")
-            original = parent._protected_outcome(restoration_index)
-            outcomes[restoration_index] = original._with_restored_evidence(receipt, restored_evidence)
+        edits = _prepare_evidence_edits(parent, revision, outcomes)
+        retractions = []
+        restorations = []
         checked = []
         witnesses = []
         for i, (state, outcome) in enumerate(zip(parent.protected, outcomes, strict=True)):
             candidate, _ = receiver.rebase(state, revision)
-            if retraction is not None and i == retraction_index:
-                _check_retraction_absence(state, candidate, destination)
+            selected = edits.get(i, ())
+            _check_evidence_replay(parent, state, candidate, selected)
             if outcome is None:
                 if not _same_trajectory(state, candidate):
                     raise RelationGuardFailed(f"joint relation revision changed protected trajectory {i}")
                 approved = ()
             else:
-                if handoff is not None and i == protected_index:
-                    seed = receiver._terminal_seed(candidate)
-                    if _approved_evidence(candidate, seed, old_evidence) is not None:
-                        raise RelationGuardFailed("an existing path still certifies the handoff destination")
-                    approved = outcome._validate(candidate)
-                    if not _same_supported_grade(old_strength, dict(approved)[replacement.destination].strength):
-                        raise RelationGuardFailed("evidence handoff changed the certified terminal grade")
-                else:
-                    approved = outcome._evaluate(candidate)
-                    if approved is None:
-                        raise RelationGuardFailed(f"joint relation revision violated protected outcome {i}")
-            if restoration is not None and i == restoration_index:
-                witness = dict(approved)[restored_destination]
-                if not _same_supported_grade(receipt.previous_witness.strength, witness.strength):
-                    raise RelationGuardFailed("evidence restoration changed the certified terminal grade")
-                restorations += (RelationEvidenceRestoration(receipt, old_source.commit, source.commit, witness),)
+                approved = (outcome._validate(candidate) if any(edit.operation == "handoff" for edit in selected)
+                            else outcome._evaluate(candidate))
+                if approved is None:
+                    raise RelationGuardFailed(f"joint relation revision violated protected outcome {i}")
+            _record_evidence_edits(parent, source, selected, approved, retractions, restorations)
             checked.append(candidate)
             witnesses.append(approved)
         for state, outcome in (*required, *admit_outcomes):
@@ -782,9 +820,10 @@ class DisjointFeedbackWorkspace:
         with self._lock:
             if self._tip is not parent:
                 raise StaleRelationRevision("relation workspace tip changed during evaluation")
-            edited_outcome = handoff is not None or retraction is not None or restoration is not None
-            if revision.memory is not parent.memory or len(checked) != len(parent.protected) or edited_outcome:
-                self._tip = _RelationWorkspacePin(revision.memory, tuple(checked), tuple(outcomes), tuple(witnesses),
-                                                  retractions=retractions, restorations=restorations,
-                                                  _creation_key=_CREATION_KEY)
+            if revision.memory is not parent.memory or len(checked) != len(parent.protected) or edits:
+                self._tip = _RelationWorkspacePin(
+                    revision.memory, tuple(checked), tuple(outcomes), tuple(witnesses),
+                    retractions=parent.retractions + tuple(retractions),
+                    restorations=parent.restorations + tuple(restorations), _creation_key=_CREATION_KEY,
+                )
             return self._tip

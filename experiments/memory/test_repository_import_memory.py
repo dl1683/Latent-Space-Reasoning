@@ -18,7 +18,7 @@ from experiments.memory.disjoint_feedback import (
 )
 from experiments.memory.latent_feedback import FeedbackKernel
 from experiments.memory.repository_import_journal import (
-    JournaledRepositoryImportWorkspace, RepositoryJournalOutcomeUnknown, _event_digest,
+    JournaledRepositoryImportWorkspace, RepositoryJournalOutcomeUnknown, _check_bootstrap, _event_digest,
 )
 from experiments.memory.repository_import_readout import (
     ImportEvidenceRetracted, RetainedImportRead, prepare_import_readout, prepare_published_import_readout,
@@ -792,10 +792,10 @@ def test_retraction_records_exact_source_loss_and_keeps_other_protections(histor
     wrong_anchors = restored.feedback_revision(later, receiver, revised.memory,
                                                added_anchors={"pkg.resumed": np.ones(width)})
     with pytest.raises(RelationGuardFailed, match="source-only anchors"):
-        workspace.publish(revised, wrong_anchors._with_evidence_restoration(revised, receipt, restoration._restoration[2]))
+        workspace.publish(revised, wrong_anchors._with_evidence_restoration(revised, receipt, restoration._evidence_edits[1][0].replacement))
     equivalent = replace(receipt)
     with pytest.raises(RelationGuardFailed, match="exact active retraction"):
-        workspace.publish(revised, neutral._with_evidence_restoration(revised, equivalent, restoration._restoration[2]))
+        workspace.publish(revised, neutral._with_evidence_restoration(revised, equivalent, restoration._evidence_edits[1][0].replacement))
     assert workspace.pin() is revised
 
     reported = workspace.publish(revised, restoration)
@@ -821,7 +821,7 @@ def test_retraction_records_exact_source_loss_and_keeps_other_protections(histor
     returned = gone_again.revise(_commit(repo, {"resumed.py": "import pkg.before\n"}))
     draft = returned.draft_feedback_restoration(gone_again, receiver, second, 0, destination="pkg.before")
     neutral = returned.feedback_revision(gone_again, receiver, second.memory)
-    closed = neutral._with_evidence_restoration(second, receipt, draft._restoration[2])
+    closed = neutral._with_evidence_restoration(second, receipt, draft._evidence_edits[1][0].replacement)
     with pytest.raises(RelationGuardFailed, match="exact active retraction"):
         workspace.publish(second, closed)
     final = workspace.publish(second, draft)
@@ -1133,6 +1133,75 @@ journal.publish(journal.snapshot(), revision)
     with pytest.raises(ValueError, match="replay disagrees"):
         replay.snapshot()
     assert replay._head.number == 0
+
+
+def test_repository_journal_commits_coupled_edits_as_one_source_corrected_pin(history):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    commit = _commit(repo, {"relay.py": "import pkg.before\nimport pkg.twice\n", "twice.py": ""})
+    source = imports.RepositoryImportMemory.prepare(repo, commit, package="pkg")
+    receiver, initial = _published_import_workspace(source, "pkg.start", "pkg.before", ["pkg.relay"])
+    protected = initial.pin().protected[0]
+    coords = source.relation_coordinates
+    paths = {destination: TerminalRelationEvidence(coords[destination], (source.relation_path("pkg.start", middle),))
+             for destination, middle in (("pkg.before", "pkg.relay"), ("pkg.twice", "pkg.relay"),
+                                         ("pkg.always", "pkg.other"))}
+    combined = RelationOutcomeGuard(
+        grades=[TerminalRelationGrade(coords["pkg.before"], (.5, .5))],
+        decision=TerminalHiddenDecision((coords["pkg.always"], coords["pkg.decoy"]), coords["pkg.always"], .4),
+        evidence=list(paths.values()),
+    )
+    single = RelationOutcomeGuard(evidence=[paths["pkg.before"]])
+    workspace = DisjointFeedbackWorkspace(receiver, initial.pin().memory,
+                                          outcome_guards=[(protected, combined), (protected, single)])
+    path = repo / "coupled.db"
+    journal = JournaledRepositoryImportWorkspace(path, workspace.pin(), create=True)
+    root = journal.snapshot()
+    withdrawn = _commit(repo, {"relay.py": "", "unused.py": ""})
+    edits = [("retraction", 0, "pkg.before"), ("retraction", 0, "pkg.twice"), ("retraction", 1, "pkg.before")]
+    corrected = source.revise(withdrawn)
+    legitimate = corrected.draft_feedback_batch(source, receiver, root.pin, edits=edits)
+    edited_anchors = corrected.feedback_revision(
+        source, receiver, root.pin.memory, added_anchors={"pkg.unused": np.ones(len(coords))}
+    )
+    with pytest.raises(RelationGuardFailed, match="source-only anchors"):
+        workspace.publish(root.pin, edited_anchors._with_evidence_edits(root.pin, legitimate._evidence_edits[1]))
+    with pytest.raises(RelationGuardFailed, match="violated protected outcome 1"):
+        journal.publish(root, withdrawn, operation="evidence_batch", edits=edits[:2])
+    with pytest.raises(ValueError, match="distinct protected destinations"):
+        journal.publish(root, withdrawn, operation="evidence_batch", edits=[edits[0], edits[0]])
+    assert journal.snapshot() is root and not root.pin.retractions
+
+    lost = journal.publish(root, withdrawn, operation="evidence_batch", edits=list(reversed(edits)))
+    assert lost.number == 1 and len(lost.pin.retractions) == 3
+    second_log = JournaledRepositoryImportWorkspace(repo / "same_commands.db", workspace.pin(), create=True)
+    assert second_log.publish(second_log.snapshot(), withdrawn, operation="evidence_batch", edits=edits).digest == lost.digest
+    assert lost.pin.memory._source.prove("pkg.start", "pkg.before") is None
+
+    new = _commit(repo, {"start.py": "import pkg.bridge\nimport pkg.spare\n", "other.py": "",
+                         "bridge.py": "import pkg.before\nimport pkg.twice\n", "spare.py": "import pkg.always\n"})
+    restored = [("restoration", i, destination) for _, i, destination in edits]
+    restored.append(("handoff", 0, "pkg.always"))
+    with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
+        journal.publish(lost, new, operation="restoration", protected_index=0, destination="pkg.before")
+    tip = journal.publish(lost, new, operation="evidence_batch", edits=restored)
+    assert tip.number == 2
+    replayed = JournaledRepositoryImportWorkspace(path, workspace.pin()).snapshot()
+    assert replayed.digest == tip.digest
+    for published in (lost.pin, replayed.pin):
+        _check_bootstrap(published, receiver)
+    assert [result.retraction is receipt for result, receipt in
+            zip(replayed.pin.restorations, replayed.pin.retractions, strict=True)] == [True, True, True]
+    approved = dict(replayed.pin.witnesses[0])
+    assert {replayed.pin.memory._source._witness_edges(coord, proof)[0][1] for coord, proof in approved.items()} == {
+        "pkg.bridge", "pkg.spare"
+    }
+    assert replayed.pin._outcomes[0].decision is combined.decision
+    assert replayed.pin._outcomes[0].grades == combined.grades
+    assert prepare_published_import_readout(
+        replayed.pin.memory._source, replayed.pin, 1, "pkg.before", _FixtureTokenizer(),
+        context_tokens=4096, max_new_tokens=32,
+    ).quotes[1].declaring_module == "pkg.bridge"
 
 
 def test_growth_discovery_refuses_ambiguous_paths_and_the_source_only_control(history):

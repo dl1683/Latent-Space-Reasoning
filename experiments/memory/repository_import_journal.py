@@ -17,7 +17,7 @@ from experiments.memory.disjoint_feedback import (
     DisjointFeedback, DisjointFeedbackWorkspace, StaleRelationRevision, _RelationWorkspacePin,
 )
 from experiments.memory.latent_feedback import FactoredValue, FeedbackKernel
-from experiments.memory.repository_import_memory import RepositoryImportMemory
+from experiments.memory.repository_import_memory import RepositoryImportMemory, _normalize_feedback_edits
 
 
 _FIELDS = {
@@ -26,6 +26,7 @@ _FIELDS = {
     "handoff": frozenset(("protected_index", "destination", "max_update_norm")),
     "retraction": frozenset(("protected_index", "destination")),
     "restoration": frozenset(("protected_index", "destination")),
+    "evidence_batch": frozenset(("edits",)),
 }
 
 
@@ -210,6 +211,8 @@ class JournaledRepositoryImportWorkspace:
                 raise ValueError("repository journal growth steps outside receiver budget")
             args["steps"] = steps
             args["seed"] = self._receiver._kernel._vector(args["seed"]).tolist()
+        if operation == "evidence_batch":
+            args["edits"] = _normalize_feedback_edits(args["edits"])
         return args
 
     def _stage(self, opening, source, operation, args):
@@ -229,6 +232,7 @@ class JournaledRepositoryImportWorkspace:
                 "handoff": source.draft_feedback_handoff,
                 "retraction": source.draft_feedback_retraction,
                 "restoration": source.draft_feedback_restoration,
+                "evidence_batch": source.draft_feedback_batch,
             }[operation]
             draft = prepare(previous, receiver, opening, **args)
         return DisjointFeedbackWorkspace._from_pin(opening).publish(opening, draft)

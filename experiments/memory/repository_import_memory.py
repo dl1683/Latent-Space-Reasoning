@@ -21,7 +21,7 @@ import numpy as np
 
 from experiments.memory.disjoint_feedback import (
     RelationOutcomeGuard, TerminalRelationEvidence, TerminalRelationGrade,
-    _RELATION_GRADE_ATOL, _RelationWorkspacePin, _approved_evidence, _same_supported_grade,
+    _EvidenceEdit, _RELATION_GRADE_ATOL, _RelationWorkspacePin, _approved_evidence, _same_supported_grade,
 )
 from experiments.memory.disjoint_transition import DisjointTransitionMemory, DisjointTransitionPath, propagate_disjoint
 from experiments.memory.weight_program import program_weight
@@ -180,6 +180,24 @@ def _decode_python(contents):
     if decoded.replace("\r\n", "\n").replace("\r", "\n") != parser_text:
         raise ValueError(missing_alignment)
     return decoded
+
+
+def _normalize_feedback_edits(edits):
+    if not isinstance(edits, (tuple, list)) or not edits:
+        raise ValueError("evidence batch needs a nonempty sequence of edits")
+    normalized = {}
+    for row in edits:
+        if not isinstance(row, (tuple, list)) or len(row) != 3:
+            raise ValueError("an evidence edit needs an operation, protection index and destination")
+        operation, protected_index, destination = row
+        if (type(operation) is not str or operation not in ("handoff", "retraction", "restoration")
+                or type(destination) is not str or not destination):
+            raise ValueError("invalid evidence edit operation or destination")
+        key = index(protected_index), destination
+        if key in normalized:
+            raise ValueError("evidence edits must name distinct protected destinations")
+        normalized[key] = operation
+    return tuple((normalized[key], *key) for key in sorted(normalized))
 
 
 @dataclass(frozen=True, eq=False, slots=True)
@@ -447,26 +465,30 @@ class RepositoryImportMemory:
         self._require_module(destination)
         coordinate = self._coordinates[destination]
         outcome = pin._outcomes[protected_index]
-        original = outcome._evidence_at(coordinate)
+        outcome._evidence_at(coordinate)
         incumbent = dict(pin.witnesses[protected_index])[coordinate]
         probe = pin.protected[protected_index]
         control = self._zero_anchor_revision(previous, receiver, pin.memory, names)
         replayed, _ = receiver.rebase(probe, control)
-        seed = receiver._terminal_seed(replayed)
-        if _approved_evidence(replayed, seed, original) is not None:
-            raise ValueError("an existing path still certifies the handoff destination")
-
-        existing = receiver.prove_terminal(replayed, coordinate)
-        if existing is not None and _same_supported_grade(incumbent.strength, existing.strength):
-            replacement = TerminalRelationEvidence(coordinate, [existing.path])
-            if outcome._with_replaced_evidence(replacement)._evaluate(replayed) is not None:
-                return control._with_evidence_handoff(pin, protected_index, replacement)
+        replacement = self._source_handoff(receiver, pin, protected_index, coordinate, replayed)
+        if replacement is not None and outcome._with_replaced_evidence(replacement)._evaluate(replayed) is not None:
+            return control._with_evidence_handoff(pin, protected_index, replacement)
 
         entry, paths = self._unique_appended_route(names, destination)
         hidden = receiver._relation_read_input(replayed, len(replayed._trace) - 1)
         revision = self._fit_feedback_revision(previous, receiver, pin, {entry: (hidden, incumbent.strength)},
                                                max_update_norm, handoff=(protected_index, replayed))
         return revision._with_evidence_handoff(pin, protected_index, TerminalRelationEvidence(coordinate, paths))
+
+    def _source_handoff(self, receiver, pin, protected_index, coordinate, replayed):
+        original = pin._outcomes[protected_index]._evidence_at(coordinate)
+        if _approved_evidence(replayed, receiver._terminal_seed(replayed), original) is not None:
+            raise ValueError("an existing path still certifies the handoff destination")
+        existing = receiver.prove_terminal(replayed, coordinate)
+        previous = dict(pin.witnesses[protected_index])[coordinate]
+        if existing is not None and _same_supported_grade(previous.strength, existing.strength):
+            return TerminalRelationEvidence(coordinate, (existing.path,))
+        return None
 
     def draft_feedback_retraction(self, previous, receiver, pin, protected_index, *, destination):
         """Propose withdrawing one lost committed witness and guarding the resulting absence."""
@@ -501,6 +523,10 @@ class RepositoryImportMemory:
             raise ValueError("evidence restoration needs an active retraction")
         revision = self._zero_anchor_revision(previous, receiver, pin.memory, names)
         candidate, _ = receiver.rebase(pin.protected[protected_index], revision)
+        evidence = self._source_restoration(receiver, candidate, coordinate, receipt)
+        return revision._with_evidence_restoration(pin, receipt, evidence)
+
+    def _source_restoration(self, receiver, candidate, coordinate, receipt):
         old_path = receipt.previous_witness.path
         witness = receiver.prove_terminal(candidate, coordinate, paths=(old_path,))
         if witness is None:
@@ -508,8 +534,43 @@ class RepositoryImportMemory:
         if witness is None or not _same_supported_grade(receipt.previous_witness.strength, witness.strength):
             raise ValueError("the corrected source does not restore the certified terminal grade")
         self._witness_edges(coordinate, witness)
-        evidence = TerminalRelationEvidence(coordinate, (witness.path,))
-        return revision._with_evidence_restoration(pin, receipt, evidence)
+        return TerminalRelationEvidence(coordinate, (witness.path,))
+
+    def draft_feedback_batch(self, previous, receiver, pin, *, edits):
+        """Draft coupled source-only evidence edits against one opening pin and successor."""
+        if type(pin) is not _RelationWorkspacePin:
+            raise ValueError("evidence batch needs an issued workspace pin")
+        names = self._feedback_names(previous, receiver, pin.memory)
+        if self is previous:
+            raise ValueError("evidence batch needs a committed source correction")
+        requested = _normalize_feedback_edits(edits)
+        revision = self._zero_anchor_revision(previous, receiver, pin.memory, names)
+        replays = {}
+        changes = []
+        for operation, protected_index, destination in requested:
+            outcome = pin._protected_outcome(protected_index)
+            domain = previous if operation == "retraction" else self
+            domain._require_module(destination)
+            coordinate = domain._coordinates[destination]
+            if operation == "retraction":
+                outcome._evidence_at(coordinate)
+                changes.append(_EvidenceEdit(operation, protected_index, coordinate))
+                continue
+            if protected_index not in replays:
+                replays[protected_index], _ = receiver.rebase(pin.protected[protected_index], revision)
+            candidate = replays[protected_index]
+            if operation == "handoff":
+                replacement = self._source_handoff(receiver, pin, protected_index, coordinate, candidate)
+                if replacement is None:
+                    raise ValueError("batch handoff needs source-only support at the certified terminal grade")
+                changes.append(_EvidenceEdit(operation, protected_index, coordinate, replacement=replacement))
+            else:
+                receipt = pin._active_retraction(protected_index, coordinate)
+                if receipt is None:
+                    raise ValueError("evidence restoration needs an active retraction")
+                replacement = self._source_restoration(receiver, candidate, coordinate, receipt)
+                changes.append(_EvidenceEdit(operation, protected_index, coordinate, replacement, receipt))
+        return revision._with_evidence_edits(pin, changes)
 
     def _seed(self, start):
         self._require_module(start)
