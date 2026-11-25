@@ -164,6 +164,10 @@ A separate matching check gave ten disjoint branches ten distinct origins overal
 
 A fresh static audit found no blocker in the bounded contract. Its proposed nested OR and disjoint-AND case gave both readers the same zero-strength proof after rejecting an optimistic score of one. Removing the only remaining compatible origin made the answer unsupported.
 
+Three additional CPU fixtures checked matching and proof reuse. A weighted OR branch needed an augmenting path to reassign an origin and recover the strongest compatible proof at 0.8. An exclusion made it unsupported, and revising the alternate source yielded supported zero while the prior snapshot kept 0.8. A chain of fifteen doubled ordinary conjunctions returned 0.9 when queried alone and 0.6 when an enclosing disjoint gate needed a different source. A compound-branch control still exhausted the factored budget and the eager bank established absence.
+
+On the same pinned inputs, the preceding reader refused the shared-subset example and both forms of the doubled DAG within a 5,000-unit allowance. The new reader established absence in 238 charged units and found the unguarded and guarded proofs in 110 and 173 units. The units account for the operations of each reader. A separate check matched 1,152 exhaustive singleton-source assignment comparisons, including 316 unsupported reads, across nested OR branches, exclusions, revisions and earlier snapshots. A compound-branch check verified that two required origins remained in the proof and that duplicate OR paths to one origin kept its strongest weight. The focused suite passed 296 CPU checks. A fresh static audit found no blocker and independently identified the unary-wrapper limit. Complete time and memory comparisons remain open. [Binding controls](../experiments/memory/test_binding_memory.py)
+
 ## Study result table
 
 These are source-reported experiment results. Publication preparation independently checked Git, inventories, process metadata, ACLs, package structure and the integration suite; model outputs and judgments were not independently checked.

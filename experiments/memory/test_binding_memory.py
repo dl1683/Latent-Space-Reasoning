@@ -273,11 +273,61 @@ def test_factored_search_handles_deep_gate_chains_without_recursion():
     assert bank.resolve("a", 0, work_limit=10) == BindingProof(.55, frozenset({"p"}))
 
 
-def test_factored_search_can_exhaust_budget_where_materialization_proves_absence():
-    gates = {"out": BindingGate("disjoint_and", ("a",) * 9)}
+def test_single_source_matching_detects_a_shared_subset_deficit():
+    gates = {"out": BindingGate("disjoint_and", ("a",) * 9 + ("b",))}
     records = {f"source-{i}": [("a", 0, 1)] for i in range(8)}
-    eager = BindingMemory.prepare(("a",), 1, gates, records, term_limit=256)
-    factored = BindingMemory.prepare(("a",), 1, gates, records, materialize=False)
+    records.update({"extra-1": [("b", 0, 1)], "extra-2": [("b", 0, 1)]})
+    eager = BindingMemory.prepare(("a", "b"), 1, gates, records, term_limit=256)
+    factored = BindingMemory.prepare(("a", "b"), 1, gates, records, materialize=False)
+    assert eager.resolve("out", 0) is None
+    assert factored.resolve("out", 0, work_limit=1000) is None
+
+
+def test_matching_reassigns_an_origin_and_finds_a_weighted_or_alternative():
+    gates = {
+        "choice": BindingGate("or", ("x", "y")),
+        "out": BindingGate("disjoint_and", ("choice", "z", "w")),
+    }
+    records = {
+        "a": [("x", 0, 1), ("z", 0, 1), ("w", 0, 1)],
+        "b": [("y", 0, .8)],
+        "c": [("z", 0, 1), ("w", 0, 1)],
+    }
+    predicates = ("x", "y", "z", "w")
+    eager = BindingMemory.prepare(predicates, 1, gates, records)
+    factored = BindingMemory.prepare(predicates, 1, gates, records, materialize=False)
+    expected = BindingProof(.8, frozenset({"a", "b", "c"}))
+    assert factored.resolve("out", 0) == eager.resolve("out", 0) == expected
+    assert factored.resolve("out", 0, without_sources=("b",)) is None
+    revised = factored.revise({"b": [("y", 0, 0)]})
+    assert revised.resolve("out", 0) == BindingProof(0, expected.sources)
+    assert factored.resolve("out", 0) == expected
+
+
+def test_unguarded_dag_shares_selected_nodes_and_scoped_and_contracts_duplicates():
+    rules = {}
+    parent = "a"
+    for i in range(15):
+        node = f"gate-{i}"
+        rules[node] = BindingGate("and", (parent, parent))
+        parent = node
+    rules["out"] = BindingGate("disjoint_and", (parent, "b"))
+    facts = {"p": [("a", 0, .9), ("b", 0, 1)], "q": [("a", 0, .6)]}
+    factored = BindingMemory.prepare(("a", "b"), 1, rules, facts, materialize=False)
+    eager = BindingMemory.prepare(("a", "b"), 1, rules, facts)
+    assert factored.resolve(parent, 0, work_limit=500) == BindingProof(.9, frozenset({"p"}))
+    assert factored.resolve("out", 0, work_limit=1000) == BindingProof(.6, frozenset({"p", "q"}))
+    assert factored.resolve("out", 0) == eager.resolve("out", 0)
+
+
+def test_general_nested_overlap_can_still_exhaust_search_budget():
+    gates = {
+        "pair": BindingGate("and", ("a", "b")),
+        "out": BindingGate("disjoint_and", ("pair",) * 9),
+    }
+    records = {f"source-{i}": [("a", 0, 1), ("b", 0, 1)] for i in range(8)}
+    eager = BindingMemory.prepare(("a", "b"), 1, gates, records, term_limit=256, pair_limit=500000)
+    factored = BindingMemory.prepare(("a", "b"), 1, gates, records, materialize=False)
     assert eager.resolve("out", 0) is None
     with pytest.raises(BindingCapacityError, match="proof search work limit"):
         factored.resolve("out", 0, work_limit=5000)

@@ -1,5 +1,6 @@
 """Retain same-coordinate conjunctions and their declared source sets across edits."""
 
+from collections import deque
 from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from heapq import heappop, heappush
@@ -260,8 +261,19 @@ class _ProofSearch:
                 self.charge(len(gate.parents))
                 positions.append(position)
                 pending.extend(gate.parents)
-        self.rules = dict(memory._gates[position] for position in sorted(positions))
+        self.rules = {}
+        for position in sorted(positions):
+            node, gate = memory._gates[position]
+            if gate.operation != "disjoint_and":
+                # Reusing one proof for identical ordinary parents can only shrink its source set.
+                gate = BindingGate(gate.operation, tuple(dict.fromkeys(gate.parents)))
+            self.rules[node] = gate
         self.inputs = sorted(inputs)
+        disjoint = [node for node, gate in self.rules.items() if gate.operation == "disjoint_and"]
+        self.unguarded = not disjoint
+        self.single_source_matching = disjoint == [output] and all(
+            node == output or gate.operation == "or" for node, gate in self.rules.items()
+        )
 
     def charge(self, amount=1):
         self.remaining -= amount
@@ -286,7 +298,16 @@ class _ProofSearch:
         ceiling = upper[self.output]
         if ceiling == -np.inf:
             return None
-        proof = self.witness(ceiling, upper, leaves)
+        if self.unguarded:
+            return BindingProof(ceiling, self.unguarded_sources(upper, leaves))
+        domains = self.matching_domains(leaves) if self.single_source_matching else None
+
+        def witness(threshold):
+            if domains is not None:
+                return self.match(threshold, domains)
+            return self.witness(threshold, upper, leaves)
+
+        proof = witness(ceiling)
         if proof is not None:
             return BindingProof(ceiling, proof)
         levels = sorted(value for value in strengths if value < ceiling)
@@ -295,13 +316,81 @@ class _ProofSearch:
         while lo < hi:
             middle = (lo + hi) // 2
             threshold = levels[middle]
-            proof = self.witness(threshold, upper, leaves)
+            proof = witness(threshold)
             if proof is None:
                 hi = middle
             else:
                 best = BindingProof(threshold, proof)
                 lo = middle + 1
         return best
+
+    def unguarded_sources(self, upper, leaves):
+        pending, seen, origins = [self.output], set(), set()
+        while pending:
+            node = pending.pop()
+            if node in seen:
+                continue
+            seen.add(node)
+            self.charge()
+            gate = self.rules.get(node)
+            if gate is None:
+                origins.add(leaves[node][0][1])
+                continue
+            self.charge(len(gate.parents))
+            if gate.operation == "or":
+                pending.append(max(gate.parents, key=upper.__getitem__))
+            else:
+                pending.extend(gate.parents)
+        return frozenset(origins)
+
+    def matching_domains(self, leaves):
+        domains = {node: {origin: value for value, origin in choices} for node, choices in leaves.items()}
+        for node, gate in self.rules.items():
+            if node == self.output:
+                break
+            merged = {}
+            for parent in gate.parents:
+                self.charge(1 + len(domains[parent]))
+                for origin, value in domains[parent].items():
+                    merged[origin] = max(merged.get(origin, 0.0), value)
+            domains[node] = merged
+        return tuple(domains[parent] for parent in self.rules[self.output].parents)
+
+    def match(self, threshold, domains):
+        choices = []
+        for domain in domains:
+            self.charge(1 + len(domain))
+            choices.append(tuple(sorted(origin for origin, value in domain.items() if value >= threshold)))
+        owners, selected = {}, {}
+        for start in sorted(range(len(choices)), key=lambda branch: len(choices[branch])):
+            pending, visited = deque([start]), {start}
+            via = {}
+            free = None
+            while pending and free is None:
+                branch = pending.popleft()
+                for origin in choices[branch]:
+                    self.charge()
+                    if origin in via:
+                        continue
+                    via[origin] = branch
+                    owner = owners.get(origin)
+                    if owner is None:
+                        free = origin
+                        break
+                    if owner not in visited:
+                        pending.append(owner)
+                        visited.add(owner)
+            if free is None:
+                return None
+            # Follow the alternating path back to the unassigned starting branch.
+            while free is not None:
+                self.charge()
+                branch = via[free]
+                owners[free] = branch
+                previous = selected.get(branch)
+                selected[branch] = free
+                free = previous
+        return frozenset(owners)
 
     def witness(self, threshold, upper, leaves):
         scopes = count()
