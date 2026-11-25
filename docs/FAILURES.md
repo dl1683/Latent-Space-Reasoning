@@ -145,6 +145,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **A read trace cannot authorize another step, 25 November 2026.** Static review found a path that replaced a trajectory pin through generic dataclass reconstruction and a budget check that trusted the diagnostic trace. The receiver now owns trajectory construction and checks the generated history before any corpus read. The causal control also gives the steering coordinate a carry effect, which distinguishes editing only the lookup from editing the transition's state. [Receiver controls](../experiments/memory/test_binding_feedback.py)
 
+**The strongest early witness can block a later premise, 25 November 2026.** The best early and late reads could both cite origin A. Removing A from the late read alone gave absence in a case with a valid weaker early witness from B. The joint proof reconsidered the early witness and found the valid pair. An exhausted possible-bank search is still incomplete even when the certain bank finishes. [Receiver controls](../experiments/memory/test_binding_feedback.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

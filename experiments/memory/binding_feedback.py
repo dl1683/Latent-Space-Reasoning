@@ -58,7 +58,7 @@ class BindingFeedback:
     """Route each hidden state to at most one corpus address before generating the next."""
 
     def __init__(self, kernel, frame, addresses, *, query, observation,
-                 route_floor=0.0, route_gap=0.0, work_limit=65536):
+                 route_floor=0.0, route_gap=0.0, work_limit=65536, disjoint_reads=False):
         if type(kernel) is not FeedbackKernel or type(frame) is not CorpusBindingMemory:
             raise ValueError("binding feedback requires a dense feedback kernel and a corpus frame")
         addresses = tuple((node, index(binding)) for node, binding in addresses)
@@ -71,11 +71,14 @@ class BindingFeedback:
         work_limit, route_floor, route_gap = index(work_limit), float(route_floor), float(route_gap)
         if work_limit < 1 or not isfinite(route_floor) or not isfinite(route_gap) or route_gap < 0:
             raise ValueError("binding feedback requires a positive work limit, finite floor and nonnegative finite gap")
+        if type(disjoint_reads) is not bool:
+            raise ValueError("disjoint_reads must be a boolean")
         self._kernel = kernel
         self._contract, self._anchors = _frame_contract(frame), frame._anchors
         self._addresses = addresses
         self._query, self._observation = _frozen(query), _frozen(observation)
         self._route_floor, self._route_gap, self._work_limit = route_floor, route_gap, work_limit
+        self._disjoint_reads = disjoint_reads
 
     def start(self, seed, memory=None):
         """Pin an optional compiled corpus snapshot for this trajectory."""
@@ -93,7 +96,16 @@ class BindingFeedback:
         self._kernel._require_state(state.feedback)
         if len(state.feedback._history) >= self._kernel._max_steps:
             raise RuntimeError("feedback step budget exhausted")
-        read = self._read(state.memory, state.latest)
+        if self._disjoint_reads and state.memory is not None and state.reads:
+            prior = state.reads[-1]
+            if prior.status == "resolved":
+                prefix = tuple(read.address for read in state.reads)
+                read = self._read(state.memory, state.latest, prefix=prefix,
+                                  prefix_absent=prior.bounds.possible_strength is None)
+            else:
+                read = BindingStepRead("incomplete")
+        else:
+            read = self._read(state.memory, state.latest)
         extra = None
         if state.memory is not None:
             features = np.zeros(6)
@@ -110,7 +122,7 @@ class BindingFeedback:
         feedback, _, _ = self._kernel._advance(state.feedback, observation_extra=extra)
         return BindingFeedbackState(self, feedback, state.memory, _STATE_CREATION_KEY, state.reads + (read,))
 
-    def _read(self, memory, hidden):
+    def _read(self, memory, hidden, *, prefix=(), prefix_absent=False):
         if memory is None:
             return BindingStepRead("detached")
         with np.errstate(over="raise", invalid="raise"):
@@ -124,8 +136,14 @@ class BindingFeedback:
         address = self._addresses[best]
         if address[0] not in memory._certain._dependents:
             return BindingStepRead("unavailable", address)
+        if prefix_absent:
+            # Appending a root cannot make an infeasible conjunction feasible on this pin.
+            return BindingStepRead("resolved", address, CorpusBindingRead(None, None))
         try:
-            bounds = memory.resolve(*address, work_limit=self._work_limit)
+            if prefix:
+                bounds = memory.resolve_disjoint((*prefix, address), work_limit=self._work_limit)
+            else:
+                bounds = memory.resolve(*address, work_limit=self._work_limit)
         except BindingCapacityError:
             return BindingStepRead("capacity", address)
         return BindingStepRead("resolved", address, bounds)

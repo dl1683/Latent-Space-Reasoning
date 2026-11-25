@@ -9,6 +9,63 @@ from experiments.memory.binding_memory import (
 )
 
 
+def test_joint_address_matching_reassigns_origins_and_preserves_repeated_roots():
+    bank = BindingMemory.prepare(("a",), 3, {"alias": BindingGate("or", ("a",))}, {
+        "p": [("a", 0, .9), ("a", 1, .85)], "q": [("a", 0, .7)], "r": [("a", 2, 0)],
+    }, materialize=False)
+    addresses = (("alias", 0), ("a", 1))
+    assert bank.resolve(*addresses[0]).sources == {"p"}
+    assert bank.resolve_disjoint(addresses) == BindingProof(.7, frozenset({"p", "q"}))
+    assert bank.resolve_disjoint(addresses, without_sources=("q",)) is None
+    assert bank.resolve_disjoint((*addresses, ("a", 2))) == BindingProof(0, frozenset({"p", "q", "r"}))
+    repeated = (("a", 0),) * 2
+    assert bank.resolve_disjoint(repeated) == BindingProof(.7, frozenset({"p", "q"}))
+    assert bank.resolve_disjoint((*repeated, *addresses)) is None
+    with pytest.raises(BindingCapacityError):
+        bank.resolve_disjoint(addresses, work_limit=1)
+    with pytest.raises(BindingCapacityError):
+        bank.resolve_disjoint((addresses[0], None), work_limit=1)
+
+    def duplicate_exclusions():
+        yield "p"
+        yield "p"
+        pytest.fail("the joint solver continued consuming exclusions after the cap")
+
+    with pytest.raises(BindingCapacityError):
+        bank.resolve_disjoint(addresses[:1], without_sources=duplicate_exclusions(), work_limit=1)
+    with pytest.raises(ValueError, match="at least one binding address"):
+        bank.resolve_disjoint(())
+
+
+def test_joint_nested_rules_match_eager_source_sets_across_coordinates():
+    gates = {
+        "pair": BindingGate("disjoint_and", ("a", "b")),
+        "choice": BindingGate("or", ("pair", "c")),
+        "out": BindingGate("and", ("choice", "b")),
+    }
+    rows = {
+        "p": [("a", 0, .9), ("c", 1, 1)], "q": [("b", 0, .8), ("a", 1, .6)],
+        "r": [("c", 0, .7), ("b", 1, .9)], "s": [("b", 1, .5), ("c", 0, .4)],
+    }
+    eager = BindingMemory.prepare(("a", "b", "c"), 2, gates, rows)
+    factored = BindingMemory.prepare(("a", "b", "c"), 2, gates, rows, materialize=False)
+    catalog = (("pair", 0), ("out", 1), ("choice", 1), ("choice", 0), ("b", 1))
+    for addresses in product(catalog, repeat=3):
+        for excluded in (frozenset(), frozenset({"p"})):
+            valid = []
+            for group in product(*(eager.supports(*address).items() for address in addresses)):
+                sets = [origins for origins, _ in group]
+                union = frozenset.union(*sets)
+                if len(union) == sum(map(len, sets)) and union.isdisjoint(excluded):
+                    valid.append((min(grade for _, grade in group), union))
+            proof = factored.resolve_disjoint(addresses, without_sources=excluded)
+            if valid:
+                assert proof.strength == max(grade for grade, _ in valid)
+                assert (proof.strength, proof.sources) in valid
+            else:
+                assert proof is None
+
+
 def test_late_conjunction_keeps_binding_and_different_origins():
     gates = {
         "alias": BindingGate("or", ("a",)),

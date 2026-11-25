@@ -15,6 +15,8 @@ from experiments.memory.latent_feedback import _frozen, _real_array
 
 
 _EMPTY = MappingProxyType({})
+_Address = tuple[str, int]
+_SearchNode = str | _Address | None
 
 
 class BindingCapacityError(ValueError):
@@ -36,7 +38,7 @@ class BindingProof:
 @dataclass(frozen=True)
 class _Derivation:
     strength: float
-    leaves: frozenset[tuple[str, str]]
+    leaves: frozenset[tuple[str | _Address, str]]
 
     def proof(self):
         return BindingProof(self.strength, frozenset(origin for _, origin in self.leaves))
@@ -304,6 +306,31 @@ class BindingMemory:
         search = _ProofSearch(self, node, excluded, work_limit)
         return search.resolve(binding, retained)
 
+    def resolve_disjoint(self, addresses, *, without_sources=(), work_limit=65536):
+        """Find the strongest joint proof with disjoint origins across addressed roots."""
+        work_limit = _proof_work_limit(work_limit)
+        roots = self._joint_keys(addresses, work_limit)
+        return self._resolve_disjoint(roots, _exclusions(without_sources, limit=work_limit), work_limit)
+
+    def _joint_keys(self, addresses, work_limit):
+        roots = []
+        for address in addresses:
+            if len(roots) == work_limit:
+                raise BindingCapacityError("proof search work limit exceeded")
+            node, binding = address
+            if node not in self._dependents:
+                raise ValueError("unknown binding node")
+            roots.append((node, _checked_binding(binding, self.width)))
+        if not roots:
+            raise ValueError("a disjoint proof requires at least one binding address")
+        return tuple(roots)
+
+    def _resolve_disjoint(self, roots, excluded, work_limit):
+        if len(roots) == 1:
+            return self.resolve(*roots[0], without_sources=excluded, work_limit=work_limit)
+        search = _ProofSearch(self, None, excluded, work_limit, addresses=roots)
+        return search.resolve(None)
+
     def remember(self, node, binding, *, without_sources=(), work_limit=65536):
         """Return a factored snapshot with one completed proof read retained."""
         if self.materialize:
@@ -340,9 +367,16 @@ def _proof_work_limit(work_limit):
     return work_limit
 
 
-def _exclusions(without_sources):
+def _exclusions(without_sources, *, limit=None):
     if isinstance(without_sources, str):
         raise ValueError("without_sources must contain source IDs")
+    if limit is not None:
+        supplied = []
+        for source in without_sources:
+            if len(supplied) == limit:
+                raise BindingCapacityError("proof search work limit exceeded")
+            supplied.append(source)
+        without_sources = supplied
     excluded = frozenset(without_sources)
     if any(type(source) is not str or not source for source in excluded):
         raise ValueError("without_sources must contain source IDs")
@@ -351,43 +385,50 @@ def _exclusions(without_sources):
 
 @dataclass(frozen=True, eq=False)
 class _Task:
-    node: str
+    node: _SearchNode
     guards: tuple[tuple[int, int], ...]
     following: "_Task | None" = None
 
 
 class _ProofSearch:
-    def __init__(self, memory, output, excluded, work_limit):
+    def __init__(self, memory, output, excluded, work_limit, *, addresses=()):
         self.remaining = _proof_work_limit(work_limit)
         self.rows, self.output, self.excluded = memory._rows, output, excluded
-        pending, seen = [output], set()
+        pending, seen = list(addresses) if addresses else [output], set()
         inputs, positions = [], []
         while pending:
-            node = pending.pop()
-            if node in seen:
+            key = pending.pop()
+            if key in seen:
                 continue
-            seen.add(node)
+            seen.add(key)
             self.charge()
+            node, coordinate = key if addresses else (key, None)
             position = memory._gate_index.get(node)
             if position is None:
-                inputs.append(node)
+                inputs.append(key)
             else:
                 _, gate = memory._gates[position]
                 self.charge(len(gate.parents))
-                positions.append(position)
-                pending.extend(gate.parents)
+                positions.append((position, coordinate))
+                pending.extend(((parent, coordinate) for parent in gate.parents) if addresses else gate.parents)
         self.rules = {}
-        for position in sorted(positions):
+        for position, coordinate in sorted(positions):
             node, gate = memory._gates[position]
-            if gate.operation != "disjoint_and":
-                # Reusing one proof for identical ordinary parents can only shrink its source set.
-                gate = BindingGate(gate.operation, tuple(dict.fromkeys(gate.parents)))
-            self.rules[node] = gate
+            # Reusing one proof for identical ordinary parents can only shrink its source set.
+            parents = gate.parents if gate.operation == "disjoint_and" else tuple(dict.fromkeys(gate.parents))
+            key = node
+            if addresses:
+                key = (node, coordinate)
+                parents = tuple((parent, coordinate) for parent in parents)
+            self.rules[key] = (gate.operation, parents)
+        if addresses:
+            self.charge(1 + len(addresses))
+            self.rules[output] = ("disjoint_and", addresses)
         self.inputs = sorted(inputs)
-        disjoint = [node for node, gate in self.rules.items() if gate.operation == "disjoint_and"]
+        disjoint = [node for node, (operation, _) in self.rules.items() if operation == "disjoint_and"]
         self.unguarded = not disjoint
         self.single_source_matching = disjoint == [output] and all(
-            node == output or gate.operation == "or" for node, gate in self.rules.items()
+            node == output or operation == "or" for node, (operation, _) in self.rules.items()
         )
 
     def charge(self, amount=1):
@@ -402,17 +443,18 @@ class _ProofSearch:
     def derive(self, binding, retained=None):
         leaves, upper, strengths = {}, {}, set()
         for node in self.inputs:
-            candidates = self.rows.get((node, binding), _UNSUPPORTED).terms
+            address = node if binding is None else (node, binding)
+            candidates = self.rows.get(address, _UNSUPPORTED).terms
             self.charge(1 + len(candidates))
             choices = [(value, next(iter(sources))) for sources, value in candidates.items()
                        if sources.isdisjoint(self.excluded)]
             leaves[node] = sorted(choices, reverse=True)
             upper[node] = max((value for value, _ in choices), default=-np.inf)
             strengths.update(value for value, _ in choices)
-        for node, gate in self.rules.items():
-            self.charge(1 + len(gate.parents))
-            reduce = max if gate.operation == "or" else min
-            upper[node] = reduce(upper[parent] for parent in gate.parents)
+        for node, (operation, parents) in self.rules.items():
+            self.charge(1 + len(parents))
+            reduce = max if operation == "or" else min
+            upper[node] = reduce(upper[parent] for parent in parents)
         # Ignoring source overlap yields an upper bound, not a feasible proof.
         ceiling = upper[self.output]
         if retained is not None and retained.upper is not None:
@@ -462,26 +504,27 @@ class _ProofSearch:
             if gate is None:
                 selected.add((node, leaves[node][0][1]))
                 continue
-            self.charge(len(gate.parents))
-            if gate.operation == "or":
-                pending.append(max(gate.parents, key=upper.__getitem__))
+            operation, parents = gate
+            self.charge(len(parents))
+            if operation == "or":
+                pending.append(max(parents, key=upper.__getitem__))
             else:
-                pending.extend(gate.parents)
+                pending.extend(parents)
         return frozenset(selected)
 
     def matching_domains(self, leaves):
         domains = {node: {origin: (value, node) for value, origin in choices} for node, choices in leaves.items()}
-        for node, gate in self.rules.items():
+        for node, (_, parents) in self.rules.items():
             if node == self.output:
                 break
             merged = {}
-            for parent in gate.parents:
+            for parent in parents:
                 self.charge(1 + len(domains[parent]))
                 for origin, choice in domains[parent].items():
                     if origin not in merged or choice > merged[origin]:
                         merged[origin] = choice
             domains[node] = merged
-        return tuple(domains[parent] for parent in self.rules[self.output].parents)
+        return tuple(domains[parent] for parent in self.rules[self.output][1])
 
     def match(self, threshold, domains):
         choices = []
@@ -540,17 +583,18 @@ class _ProofSearch:
                         next_claims = claims | {(scope, source): branch for scope, branch in guards}
                         stack.append((following, next_claims, used | {(node, source)}))
                     break
-                self.charge(len(gate.parents))
-                if gate.operation == "or":
-                    for parent in sorted(gate.parents, key=upper.__getitem__):
+                operation, parents = gate
+                self.charge(len(parents))
+                if operation == "or":
+                    for parent in sorted(parents, key=upper.__getitem__):
                         if upper[parent] >= threshold:
                             stack.append((_Task(parent, guards, following), claims, used))
                     break
                 # Give each invocation its own sibling constraint, even for reused gates.
-                scope = next(scopes) if gate.operation == "disjoint_and" else None
-                for branch in range(len(gate.parents) - 1, -1, -1):
+                scope = next(scopes) if operation == "disjoint_and" else None
+                for branch in range(len(parents) - 1, -1, -1):
                     inherited = guards if scope is None else guards + ((scope, branch),)
-                    following = _Task(gate.parents[branch], inherited, following)
+                    following = _Task(parents[branch], inherited, following)
                 task = following
             else:
                 return used

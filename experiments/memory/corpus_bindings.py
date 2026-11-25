@@ -10,7 +10,9 @@ from types import MappingProxyType
 
 import numpy as np
 
-from experiments.memory.binding_memory import BindingCapacityError, BindingMemory, BindingProof, _exclusions
+from experiments.memory.binding_memory import (
+    BindingCapacityError, BindingMemory, BindingProof, _exclusions, _proof_work_limit,
+)
 from experiments.memory.latent_feedback import _frozen, _real_array
 
 
@@ -170,6 +172,15 @@ class CorpusBindingMemory:
         upper = lower if self._certain is self._possible else self._possible.resolve(
             node, binding, without_sources=excluded, work_limit=work_limit,
         )
+        return CorpusBindingRead(lower, None if upper is None else upper.strength)
+
+    def resolve_disjoint(self, addresses, *, without_sources=(), work_limit=65536):
+        """Bound one joint proof across addresses, with one work allowance per bank."""
+        work_limit = _proof_work_limit(work_limit)
+        roots = self._certain._joint_keys(addresses, work_limit)
+        excluded = _exclusions(without_sources, limit=work_limit)
+        lower = self._certain._resolve_disjoint(roots, excluded, work_limit)
+        upper = lower if self._certain is self._possible else self._possible._resolve_disjoint(roots, excluded, work_limit)
         return CorpusBindingRead(lower, None if upper is None else upper.strength)
 
     def reprogram(self, gates):
