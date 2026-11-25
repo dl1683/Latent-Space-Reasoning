@@ -366,7 +366,7 @@ class FeedbackKernel:
             fixed += observation_extra
         return fixed + _apply_value(self._observation_value, mixture), fixed
 
-    def _advance(self, state, *, diagnostics=None):
+    def _advance(self, state, *, diagnostics=None, observation_extra=None):
         self._require_state(state)
         if len(state._history) >= self._max_steps:
             raise RuntimeError("feedback step budget exhausted")
@@ -390,7 +390,7 @@ class FeedbackKernel:
                 mixture = weights[:observation_count] @ memory._observations
                 history_value = weights[observation_count:] @ history_values
             preactivation, fixed = self._preactivation(
-                hidden, mixture, history_value, observation_count,
+                hidden, mixture, history_value, observation_count, observation_extra=observation_extra,
             )
             next_hidden = _frozen(np.tanh(preactivation))
             if diagnostics is not None:

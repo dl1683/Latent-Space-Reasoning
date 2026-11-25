@@ -141,6 +141,10 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **A valid preview needs immutable definitions and replayable identifiers, 25 November 2026.** Static review identified a mutable operation that could pass an equality check and change the preview later. Review also found that ASCII JSON represents an explicit surrogate pair and its corresponding Unicode character identically. The compiler now requires string operations and parent names, and the journal refuses ambiguous identifiers before commit. The controls verify rejection and ordinary Unicode recovery. [Program controls](../experiments/memory/test_corpus_binding_journal.py)
 
+**Numerical zero carries several meanings, 25 November 2026.** A missing gate or an exhausted proof budget cannot establish modeled absence. A supported score of zero carries an origin, and a detached receiver has no attached evidence. The feedback port keeps attachment, completion and bound presence as separate numerical features. It also returns explicit reasons for incomplete reads. Equal projected numerical grades can still hide different origins. Use a joint binding gate or preserve origin identity before making cross-read independence claims. [Receiver controls](../experiments/memory/test_binding_feedback.py)
+
+**A read trace cannot authorize another step, 25 November 2026.** Static review found a path that replaced a trajectory pin through generic dataclass reconstruction and a budget check that trusted the diagnostic trace. The receiver now owns trajectory construction and checks the generated history before any corpus read. The causal control also gives the steering coordinate a carry effect, which distinguishes editing only the lookup from editing the transition's state. [Receiver controls](../experiments/memory/test_binding_feedback.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.
