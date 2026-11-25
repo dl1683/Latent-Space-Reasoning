@@ -2,6 +2,7 @@
 
 import argparse
 import ast
+from codecs import BOM_UTF8, getincrementaldecoder
 from collections.abc import Mapping
 from dataclasses import asdict, dataclass, field
 from importlib.util import resolve_name
@@ -9,6 +10,7 @@ from io import BytesIO
 import json
 import os
 from pathlib import Path, PurePosixPath, PureWindowsPath
+import re
 import subprocess
 from tokenize import detect_encoding
 from types import MappingProxyType
@@ -16,6 +18,10 @@ from types import MappingProxyType
 import numpy as np
 
 from experiments.memory.disjoint_transition import DisjointTransitionMemory, propagate_disjoint
+
+
+_SOURCE_LINE = re.compile(rb"[^\r\n]*(?:\r\n?|\n|$)")
+_ASCII_HEADER = bytes(range(128)) + b"\x7f" * 128
 
 
 @dataclass(frozen=True)
@@ -109,7 +115,9 @@ def _read_blobs(repo, blobs):
 def _module_imports(contents, path, name, package):
     imports = {}
     enclosing_package = name if path.endswith("/__init__.py") else name.rpartition(".")[0]
-    for node in ast.walk(ast.parse(contents, filename=path)):
+    syntax = ast.parse(contents, filename=path)
+    _decode_python(contents)
+    for node in ast.walk(syntax):
         if isinstance(node, ast.Import):
             targets = [alias.name for alias in node.names]
         elif isinstance(node, ast.ImportFrom) and node.module is not None:
@@ -130,6 +138,42 @@ def _module_imports(contents, path, name, package):
     return MappingProxyType(imports)
 
 
+def _decode_python(contents):
+    if contents.startswith(BOM_UTF8):
+        return contents.decode("utf-8-sig")
+    # The parser has already accepted this blob. The encoding cookie is ASCII,
+    # but comments on the first two physical lines can use the declared codec.
+    lines = _SOURCE_LINE.finditer(contents)
+    encoding, _ = detect_encoding(lambda: next(lines).group().translate(_ASCII_HEADER))
+    if encoding in {"utf-8", "ascii", "iso-8859-1"}:
+        return contents.decode(encoding)
+
+    # CPython applies the declared codec to universal newlines before parsing.
+    # A codec such as unicode_escape can join or insert physical lines. The AST
+    # offsets cannot safely identify committed text if those boundaries differ.
+    missing_alignment = "source codec does not preserve committed line boundaries"
+    normalized = contents.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    *lines, tail = normalized.split(b"\n")
+    decoder = getincrementaldecoder(encoding)()
+    parser_rows = []
+    for line in lines:
+        row = decoder.decode(line + b"\n")
+        if not row.endswith("\n") or "\n" in row[:-1] or "\r" in row:
+            raise ValueError(missing_alignment)
+        parser_rows.append(row)
+    last = decoder.decode(tail, final=True)
+    if "\n" in last or "\r" in last:
+        raise ValueError(missing_alignment)
+    parser_rows.append(last)
+    parser_text = normalized.decode(encoding)
+    if parser_text != "".join(parser_rows):
+        raise ValueError(missing_alignment)
+    decoded = contents.decode(encoding)
+    if decoded.replace("\r\n", "\n").replace("\r", "\n") != parser_text:
+        raise ValueError(missing_alignment)
+    return decoded
+
+
 @dataclass(frozen=True, eq=False)
 class RepositoryImportMemory:
     """An in-memory projection of committed import declarations and source lines."""
@@ -141,6 +185,9 @@ class RepositoryImportMemory:
     _modules: Mapping[str, _Module]
     _coordinates: Mapping[str, int]
     _operator: DisjointTransitionMemory
+    _previous: object | None = None
+    _changed_modules: frozenset[str] = frozenset()
+    _identity: object = field(default_factory=object, init=False, repr=False)
 
     @classmethod
     def prepare(cls, repo, revision, *, package, source_root="src"):
@@ -178,14 +225,21 @@ class RepositoryImportMemory:
             coordinates[name] = len(coordinates)
 
         retained_paths = {module.path for module in modules.values()}
-        changes = {module.path: None for module in self._modules.values() if module.path not in retained_paths}
+        changed_modules = set(pending)
+        changes = {}
+        for name, module in self._modules.items():
+            if name not in modules:
+                changed_modules.add(name)
+            if module.path not in retained_paths:
+                changes[module.path] = None
         for name in pending:
             module = modules[name]
             changes[module.path] = [(hop, coordinates[name], coordinates[target], 1.)
                                     for target in module.imports for hop in (0, 1)]
         operator = self._operator.revise(changes, width=max(1, len(coordinates)))
         return type(self)(commit, self._repo, self._root, self._package,
-                          MappingProxyType(modules), MappingProxyType(coordinates), operator)
+                          MappingProxyType(modules), MappingProxyType(coordinates), operator,
+                          self._identity, frozenset(changed_modules))
 
     def _seed(self, start):
         self._require_module(start)
@@ -225,7 +279,7 @@ class RepositoryImportMemory:
                 raise ValueError(f"no declared import from {declaring} to {imported}")
             requested.append((declaring, imported, module, module.imports[imported]))
         contents = _read_blobs(self._repo, sorted({module.blob for _, _, module, _ in requested}))
-        decoded = {blob: raw.decode(detect_encoding(BytesIO(raw).readline)[0]) for blob, raw in contents.items()}
+        decoded = {blob: _decode_python(raw) for blob, raw in contents.items()}
         quotes = []
         for declaring, imported, module, span in requested:
             fragment = ast.get_source_segment(decoded[module.blob], span)

@@ -1,10 +1,11 @@
+import codecs
 import json
 import subprocess
 
 import pytest
 
 from experiments.memory import repository_import_memory as imports
-from experiments.memory.repository_import_readout import prepare_import_readout
+from experiments.memory.repository_import_readout import RetainedImportRead, prepare_import_readout
 
 
 def _git(repo, *args):
@@ -190,3 +191,128 @@ def test_readout_counts_other_aliases_visible_in_the_quoted_declaration(history)
                                          context_tokens=4096, max_new_tokens=32,
                                          edges=[("pkg.start", "pkg.other"), ("pkg.start", "pkg.relay")])
     assert self_import.check('{"middle":null,"citations":[]}', terminated=True) == "pass"
+
+
+@pytest.mark.parametrize(("header", "newline", "encoding"), [
+    (["# coding: latin-1"], "\r", "latin-1"),
+    (["# café", "# coding: latin-1 café"], "\r\n", "latin-1"),
+    (["# coding: cp1252"], "\r\n", "cp1252"),
+    (["# coding: utf-8"], "\r", "utf-8-sig"),
+])
+def test_quote_decoding_matches_the_committed_python_parser(history, header, newline, encoding):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    _git(repo, "config", "core.autocrlf", "false")
+    expected = newline.join(("from .relay import (", "    worker,  # café", ")"))
+    source = newline.join((*header, expected, ""))
+    (repo / "src/pkg/start.py").write_bytes(source.encode(encoding))
+    revision = _commit(repo, {})
+    memory = imports.RepositoryImportMemory.prepare(repo, revision, package="pkg")
+    retained = RetainedImportRead.prepare(memory, "pkg.start", "pkg.before")
+    quote = retained.quotes[0]
+    assert quote.text == expected
+    assert (quote.line, quote.end_line) == (len(header) + 1, len(header) + 3)
+
+
+@pytest.mark.parametrize("newline", [b"\r", b"\r\n", b"\n"])
+def test_revision_refuses_a_codec_that_joins_source_lines(history, newline):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    _git(repo, "config", "core.autocrlf", "false")
+    memory = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    source = newline.join((b"# coding: unicode_escape", b"# join\\", b"# padding padding", b"import pkg.relay", b""))
+    (repo / "src/pkg/start.py").write_bytes(source)
+    revision = _commit(repo, {})
+    with pytest.raises(ValueError, match="source codec does not preserve committed line boundaries"):
+        memory.revise(revision)
+    assert memory.prove("pkg.start", "pkg.before")[0].line == 1
+
+
+def test_codec_whole_decode_must_agree_with_its_incremental_line_check():
+    class IncrementalAscii(codecs.IncrementalDecoder):
+        def decode(self, contents, final=False):
+            return contents.decode("ascii")
+
+    def decode(contents, errors="strict"):
+        text = bytes(contents).decode("ascii", errors)
+        return text.replace("# pad\n", "# pad\n# added line\n"), len(contents)
+
+    def lookup(name):
+        if name == "lsr_fixture_codec":
+            return codecs.CodecInfo(None, decode, incrementaldecoder=IncrementalAscii, name=name)
+
+    source = b"# coding: lsr_fixture_codec\r# pad\rimport pkg.relay\rimport pkg.decoy\r"
+    codecs.register(lookup)
+    try:
+        with pytest.raises(ValueError, match="source codec does not preserve committed line boundaries"):
+            imports._module_imports(source, "src/pkg/start.py", "pkg.start", "pkg")
+    finally:
+        codecs.unregister(lookup)
+
+
+def test_retained_import_read_reuses_quotes_and_changes_the_canonical_witness(history, monkeypatch):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    base = _commit(repo, {"start.py": "import pkg.ahead, pkg.relay, pkg.zz\n", "zz.py": "import pkg.before\n"})
+    memory = imports.RepositoryImportMemory.prepare(repo, base, package="pkg")
+    layout = dict(context_tokens=4096, max_new_tokens=32)
+    start, destination = "pkg.start", "pkg.before"
+    tokenizer = _FixtureTokenizer()
+    initial = RetainedImportRead.prepare(memory, start, destination)
+    assert initial.source_bytes_read > 0 and initial.quotes[0].imported_module == "pkg.relay"
+
+    later = memory.revise(_commit(repo, {"zz.py": "import pkg.always\n", "before.py": "# unrelated edit\n"}))
+    fresh = prepare_import_readout(later, start, destination, tokenizer, **layout)
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("a valid retained read should require neither a fresh proof nor Git blob access")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(imports.RepositoryImportMemory, "prove", unexpected)
+        patch.setattr(imports.RepositoryImportMemory, "read_imports", unexpected)
+        carried = initial.advance(later)
+        framed = prepare_import_readout(later, start, destination, tokenizer, retained=carried, **layout)
+    assert carried.reused and carried.quotes is initial.quotes
+    assert framed.commit == later.commit and framed.source_bytes_read == carried.source_bytes_read == 0
+    assert framed.quotes == fresh.quotes and framed.input_ids == fresh.input_ids and framed.messages == fresh.messages
+    assert framed.check('{"middle":"pkg.relay","citations":["P0","P1"]}', terminated=True) == "pass"
+
+    earlier_winner = later.revise(_commit(repo, {"ahead.py": "import pkg.before\n"}))
+    for prior in (initial, carried):
+        changed = prior.advance(earlier_winner)
+        readout = prepare_import_readout(earlier_winner, start, destination, tokenizer, retained=changed, **layout)
+        assert not changed.reused and changed.source_bytes_read > 0
+        assert readout.check('{"middle":"pkg.ahead","citations":["P0","P1"]}', terminated=True) == "pass"
+        assert readout.quotes[1].path == "src/pkg/ahead.py"
+        assert prior.quotes[0].imported_module == "pkg.relay"
+    with pytest.raises(ValueError, match="match the snapshot"):
+        prepare_import_readout(earlier_winner, start, destination, tokenizer, retained=carried, **layout)
+    with pytest.raises(ValueError, match="cannot override evidence"):
+        prepare_import_readout(later, start, destination, tokenizer, retained=carried, edges=[], **layout)
+
+
+def test_retained_import_absence_depends_on_every_candidate_and_current_endpoints(history):
+    repo, first, second, _ = history
+    start, destination = "pkg.start", "pkg.before"
+    old = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    supported = RetainedImportRead.prepare(old, start, destination)
+    absent_pin = old.revise(second)
+    absent = supported.advance(absent_pin)
+    assert not absent.reused and not absent.quotes
+
+    _git(repo, "checkout", "--detach", second)
+    current = absent_pin.revise(_commit(repo, {"before.py": None}))
+    with pytest.raises(ValueError, match="outside this committed"):
+        absent.advance(current)
+    restored = current.revise(_commit(repo, {"before.py": "# restored endpoint\n"}))
+    assert absent.advance(restored).reused
+
+    alternate = restored.revise(_commit(repo, {"relay.py": "# no link\n", "other.py": "import pkg.before\n"}))
+    changed = absent.advance(alternate)
+    assert not changed.reused and changed.quotes[0].imported_module == "pkg.other"
+    earlier = alternate.revise(_commit(repo, {"other.py": "\nimport pkg.before\n"}))
+    relocated = changed.advance(earlier)
+    assert not relocated.reused and relocated.quotes[1].line == 2
+    fresh = imports.RepositoryImportMemory.prepare(repo, earlier.commit, package="pkg")
+    rebuilt = relocated.advance(fresh)
+    assert not rebuilt.reused and rebuilt.quotes == relocated.quotes

@@ -1,10 +1,12 @@
 """Prepare and check a small reader's two-hop import answer without running a model."""
 
-from dataclasses import dataclass
+from dataclasses import InitVar, dataclass
 from itertools import islice
 import json
+from types import MappingProxyType
+from typing import Mapping
 
-from experiments.memory.repository_import_memory import ImportQuote, RepositoryImportMemory
+from experiments.memory.repository_import_memory import ImportQuote, RepositoryImportMemory, _Module
 from experiments.memory.verified_reader_bridge import encode_messages, frame_evidence
 
 
@@ -66,20 +68,71 @@ def _unique_object(pairs):
     return obj
 
 
-def prepare_import_readout(memory, start, destination, tokenizer, *, context_tokens, max_new_tokens, edges=None,
-                           passage_ids=None):
-    """Frame a pinned proof or a bounded, caller-declared evidence intervention."""
-    if type(memory) is not RepositoryImportMemory:
-        raise ValueError("expected pinned repository import memory")
-    if (type(context_tokens) is not int or type(max_new_tokens) is not int
-            or not 0 < max_new_tokens < context_tokens):
-        raise ValueError("positive context and reserved generation budget required")
-    memory._require_module(start)
-    memory._require_module(destination)
-    if edges is None:
-        proof = memory.prove(start, destination)
-        edges = () if proof is None else ((start, proof[0].imported_module),
-                                          (proof[0].imported_module, destination))
+def _proof_edges(memory, start, destination):
+    proof = memory.prove(start, destination)
+    if proof is None:
+        return ()
+    middle = proof[0].imported_module
+    return (start, middle), (middle, destination)
+
+
+_RETAINED_READ_KEY = object()
+
+
+@dataclass(frozen=True, eq=False)
+class RetainedImportRead:
+    """An exact import answer carried across compatible repository snapshots."""
+
+    _memory: RepositoryImportMemory
+    start: str
+    destination: str
+    quotes: tuple[ImportQuote, ...]
+    source_bytes_read: int
+    reused: bool
+    _dependencies: Mapping[str, _Module | None]
+    _creation_key: InitVar[object | None] = None
+
+    def __post_init__(self, _creation_key):
+        if _creation_key is not _RETAINED_READ_KEY:
+            raise TypeError("construct retained import reads through prepare or advance")
+
+    @property
+    def commit(self):
+        return self._memory.commit
+
+    @classmethod
+    def prepare(cls, memory, start, destination):
+        if type(memory) is not RepositoryImportMemory:
+            raise ValueError("expected pinned repository import memory")
+        edges = _proof_edges(memory, start, destination)
+        quotes, bytes_read = memory.read_imports(edges)
+        source = memory._modules[start]
+        candidates = source.imports
+        if edges:
+            winner = edges[0][1]
+            candidates = (name for name in candidates if name <= winner)
+        dependencies = {name: memory._modules.get(name) for name in candidates}
+        dependencies[start] = source
+        return cls(memory, start, destination, quotes, bytes_read, False,
+                   MappingProxyType(dependencies), _RETAINED_READ_KEY)
+
+    def advance(self, memory):
+        """Check the new pin without re-reading support when all dependencies survive."""
+        if (type(memory) is not RepositoryImportMemory or memory._repo != self._memory._repo
+                or memory._root != self._memory._root or memory._package != self._memory._package):
+            raise ValueError("expected another snapshot of the same repository and package")
+        memory._require_module(self.destination)
+        if memory._previous is self._memory._identity:
+            changed = any(name in self._dependencies for name in memory._changed_modules)
+        else:
+            changed = any(memory._modules.get(name) is not old for name, old in self._dependencies.items())
+        if changed:
+            return self.prepare(memory, self.start, self.destination)
+        return RetainedImportRead(memory, self.start, self.destination, self.quotes, 0, True,
+                                  self._dependencies, _RETAINED_READ_KEY)
+
+
+def _read_evidence(memory, edges, passage_ids):
     edges = tuple(islice((tuple(edge) for edge in edges), 3))
     if len(edges) > 2 or len(set(edges)) != len(edges):
         raise ValueError("readout needs at most two distinct named edges")
@@ -88,6 +141,31 @@ def prepare_import_readout(memory, start, destination, tokenizer, *, context_tok
             or len(set(names)) != len(names)):
         raise ValueError("readout needs one distinct passage ID per edge")
     quotes, bytes_read = memory.read_imports(edges)
+    return quotes, bytes_read, names
+
+
+def prepare_import_readout(memory, start, destination, tokenizer, *, context_tokens, max_new_tokens, edges=None,
+                           passage_ids=None, retained=None):
+    """Frame a pinned proof or a bounded, caller-declared evidence intervention."""
+    if type(memory) is not RepositoryImportMemory:
+        raise ValueError("expected pinned repository import memory")
+    if (type(context_tokens) is not int or type(max_new_tokens) is not int
+            or not 0 < max_new_tokens < context_tokens):
+        raise ValueError("positive context and reserved generation budget required")
+    memory._require_module(start)
+    memory._require_module(destination)
+    if retained is None:
+        if edges is None:
+            edges = _proof_edges(memory, start, destination)
+        quotes, bytes_read, names = _read_evidence(memory, edges, passage_ids)
+    else:
+        if (type(retained) is not RetainedImportRead or retained._memory is not memory
+                or retained.start != start or retained.destination != destination):
+            raise ValueError("retained import read must match the snapshot and endpoints")
+        if edges is not None or passage_ids is not None:
+            raise ValueError("retained import reads cannot override evidence")
+        quotes, bytes_read = retained.quotes, 0
+        names = tuple(f"P{i}" for i in range(len(quotes)))
     evidence = []
     ids = {}
     for name, quote in zip(names, quotes, strict=True):
