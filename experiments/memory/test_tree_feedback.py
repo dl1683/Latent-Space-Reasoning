@@ -322,3 +322,85 @@ def test_workspace_route_reuse_preserves_admission_and_rebuilds_after_slot_edit(
     assert scores > 0 and after.memory is not before.memory
     assert after._probe_routes[0].memory is after.memory
     assert after._probe_routes[0].steps[0][0] is not before._probe_routes[0].steps[0][0]
+
+
+def _source_edit_tree(*, frontier):
+    key = np.array([[1.0], [0.0]])
+    return TreeFeedbackKernel(
+        depth=3, max_frontier=frontier, query=16 * key, carry=np.diag([40, 0]),
+        observation_key=key, observation_value=np.diag([0, 1]),
+        feedback_key=np.array([[0.0], [1.0]]), feedback_value=np.diag([0, 0.6]),
+        max_steps=2,
+    )
+
+
+def _source_edit_rows():
+    return [[-1, 0.2], [-1, -0.2], [-0.7, 0.2], [-0.7, -0.2],
+            [0, 0.3], [0, 0.4], [0.7, 0.5], [0.7, 0.6]]
+
+
+def test_revision_reorders_refinement_through_unchanged_node_scores():
+    tree = _source_edit_tree(frontier=3)
+    memory = tree.prepare(_source_edit_rows())
+    seed = [1, 0]
+    _, old_trace = tree._replay_routes(seed, memory, 1, retain_scores=16)
+    revised = tree.revise(memory, {0: [1, 0.9]})
+    actual, trace = tree._replay_routes(seed, revised, 1, old_trace, retain_scores=16)
+    fresh = tree.step(tree.start(seed, revised))
+    old_scores = old_trace.steps[0][0].node_scores
+    new_scores = trace.steps[0][0].node_scores
+    assert memory._root.right.left in old_scores and memory._root.right.left not in new_scores
+    assert revised._root.left.right in new_scores and revised._root.left.right not in old_scores
+    assert new_scores[revised._root.right] is old_scores[revised._root.right]
+    assert memory._root not in new_scores and revised._root in new_scores
+    assert actual.latest.tobytes() == fresh.latest.tobytes()
+    assert actual.attention.joint_l1_bound == fresh.attention.joint_l1_bound
+    assert actual.attention.reused_node_scores == 1
+    assert actual.observation_scores == fresh.observation_scores - 1
+    assert not actual.attention.reused_route
+
+
+def test_equal_projected_query_reuses_nodes_but_rescores_changed_generated_history():
+    tree = _source_edit_tree(frontier=8)
+    memory = tree.prepare(_source_edit_rows())
+    seed = [1, 0]
+    old_state, old_trace = tree._replay_routes(seed, memory, 2, retain_scores=15)
+    revised = tree.revise(memory, {7: [0.7, -0.9]})
+    actual, trace = tree._replay_routes(seed, revised, 2, old_trace, retain_scores=15)
+    fresh = tree.step(tree.step(tree.start(seed, revised)))
+
+    assert not np.array_equal(old_state.history[0], actual.history[0])
+    old_second, new_second = old_trace.steps[1][0], trace.steps[1][0]
+    assert old_second.query_bytes == new_second.query_bytes
+    assert not np.array_equal(old_second.history_value, new_second.history_value)
+    assert actual.attention.reused_node_scores > 0 and not actual.attention.reused_route
+    assert actual.feedback_scores == fresh.feedback_scores == 1
+    assert np.asarray(actual.history).tobytes() == np.asarray(fresh.history).tobytes()
+    assert actual.observation_scores < fresh.observation_scores
+
+    other, _ = tree._replay_routes([0.5, 0], revised, 1, old_trace, retain_scores=15)
+    assert other.attention.reused_node_scores == 0
+
+
+def test_workspace_retains_only_bounded_current_nodes_on_slot_and_bank_revisions():
+    tree = _source_edit_tree(frontier=8)
+    rows = _source_edit_rows()
+    probe = FeedbackProbe((1, 0), 1, (0.9, 0))
+    options = dict(max_update_norm=1)
+    cached = FeedbackWorkspace(tree, rows, [probe], max_retained_tree_scores=2, **options)
+    ordinary = FeedbackWorkspace(tree, rows, [probe], **options)
+    base = cached.snapshot()
+    change = {7: [0.7, 0.1]}
+    updated = cached.revise_observation_slots(base, change)
+    expected = ordinary.revise_observation_slots(ordinary.snapshot(), change)
+    first = updated._probe_routes[0].steps[0][0]
+    assert updated.errors == expected.errors
+    assert first.attention.reused_node_scores == 1 and len(first.node_scores) == 2
+    assert base.memory._root not in first.node_scores
+
+    replacement = cached.replace_observations(updated, rows)
+    next_route = replacement._probe_routes[0].steps[0][0]
+    assert next_route.attention.reused_node_scores == 0
+    assert next_route.attention.scored_nodes == base._probe_routes[0].steps[0][0].attention.scored_nodes
+    assert len(next_route.node_scores) == 2
+    assert replacement.errors == base.errors

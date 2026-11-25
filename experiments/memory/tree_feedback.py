@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from copy import copy
 from dataclasses import dataclass, replace
 from heapq import heappop, heappush
 from itertools import count
 from math import expm1, isfinite, log
 from operator import index
+from types import MappingProxyType
 
 import numpy as np
 
@@ -71,6 +73,7 @@ class TreeAttention:
     scored_nodes: int
     joint_l1_bound: float
     reused_route: bool = False
+    reused_node_scores: int = 0
 
 
 @dataclass(frozen=True, eq=False)
@@ -84,6 +87,8 @@ class _TreeRoute:
     mixture: np.ndarray
     history_value: np.ndarray | None
     attention: TreeAttention
+    query_bytes: bytes | None = None
+    node_scores: Mapping[_Node, _Score] | None = None
 
     def retain(self):
         history = None if self.history_value is None else _frozen(self.history_value)
@@ -110,9 +115,13 @@ class _Score:
     radius: float
 
 
-def _score(node, query, positive_query):
+def _scorable(node):
     while node.count > 1 and (node.left is None or node.right is None):
         node = node.right if node.left is None else node.left
+    return node
+
+
+def _score(node, query, positive_query):
     if node.count == 1:
         lower = upper = float(node.lower_key @ query)
     else:
@@ -125,15 +134,25 @@ def _score(node, query, positive_query):
     return _Score(node, logit, upper, -expm1(lower - upper), radius)
 
 
-def _frontier(root, query, limit, tolerance):
+def _frontier(root, query, limit, tolerance, previous, recorded, retain_scores):
     if root is None:
-        return (), 0
+        return (), 0, 0
     positive_query = query >= 0
     pending, settled = [], []
     ordinal = count()
+    scored = reused = 0
 
     def insert(node):
-        score = _score(node, query, positive_query)
+        nonlocal scored, reused
+        node = _scorable(node)
+        score = None if previous is None else previous.get(node)
+        if score is None:
+            score = _score(node, query, positive_query)
+            scored += 1
+        else:
+            reused += 1
+        if recorded is not None and len(recorded) < retain_scores:
+            recorded[node] = score
         if score.radius > tolerance:
             priority = score.upper_logit + log(score.node.count) + log(score.lost_fraction)
             heappush(pending, (-priority, next(ordinal), score))
@@ -141,13 +160,11 @@ def _frontier(root, query, limit, tolerance):
             settled.append(score)
 
     insert(root)
-    scored = 1
     while pending and len(pending) + len(settled) < limit:
         _, _, score = heappop(pending)
         insert(score.node.left)
         insert(score.node.right)
-        scored += 2
-    return (*settled, *(score for _, _, score in pending)), scored
+    return (*settled, *(score for _, _, score in pending)), scored, reused
 
 
 @dataclass(frozen=True, eq=False, repr=False, init=False)
@@ -244,13 +261,21 @@ class TreeFeedbackKernel(FeedbackKernel):
         if len(state._history) >= self._max_steps:
             raise RuntimeError("feedback step budget exhausted")
 
-    def _route(self, state, diagnostics=None):
+    def _route(self, state, diagnostics=None, *, previous=None, retain_scores=0):
         history_count = len(state._history)
         memory = state._memory
         with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
             hidden = state.latest
             query = hidden @ self._query
-            frontier, scored = _frontier(memory._root, query, self._max_frontier, self._logit_tolerance)
+            query_bytes = query.tobytes() if retain_scores else None
+            prior_scores = None
+            if retain_scores and previous is not None and previous.query_bytes == query_bytes:
+                prior_scores = previous.node_scores
+            recorded = {} if retain_scores else None
+            frontier, scored, reused = _frontier(
+                memory._root, query, self._max_frontier, self._logit_tolerance,
+                prior_scores, recorded, retain_scores,
+            )
             history_keys = np.asarray(state._keys).reshape(-1, self._query.shape[1])
             history_logits = history_keys @ query
             if not np.isfinite(history_logits).all():
@@ -282,7 +307,9 @@ class TreeFeedbackKernel(FeedbackKernel):
                     history_value = probabilities[groups:] @ np.asarray(state._values)
             if diagnostics is not None:
                 diagnostics.update(logits=logits, joint_l1_bound=bound)
-        return _TreeRoute(mixture, history_value, TreeAttention(groups, scored, bound))
+        attention = TreeAttention(groups, scored, bound, reused_node_scores=reused)
+        scores = None if recorded is None else MappingProxyType(recorded)
+        return _TreeRoute(mixture, history_value, attention, query_bytes, scores)
 
     def _apply_route(self, state, route, *, reused=False, diagnostics=None):
         mixture = route.mixture
@@ -294,7 +321,8 @@ class TreeFeedbackKernel(FeedbackKernel):
             if diagnostics is not None:
                 diagnostics.update(preactivation=preactivation)
         key, value = self._project_generated(next_hidden)
-        attention = replace(route.attention, scored_nodes=0, reused_route=True) if reused else route.attention
+        attention = (replace(route.attention, scored_nodes=0, reused_route=True, reused_node_scores=0)
+                     if reused else route.attention)
         return replace(
             state, _history=state._history + (next_hidden,), _keys=state._keys + (key,),
             _values=state._values + (value,), observation_scores=state.observation_scores + attention.scored_nodes,
@@ -312,18 +340,29 @@ class TreeFeedbackKernel(FeedbackKernel):
             == (other._depth, other._max_frontier, other._logit_tolerance)
         )
 
-    def _replay_routes(self, seed, memory, steps, previous=None):
+    def _replay_routes(self, seed, memory, steps, previous=None, *, retain_scores=0):
         state = self.start(seed, memory)
         seed_bytes = state._seed.tobytes()
         reusable = ()
         if (previous is not None and previous.memory is state._memory
                 and previous.seed == seed_bytes and self._shares_routing(previous.kernel)):
             reusable = previous.steps
+        prior_steps = ()
+        if (retain_scores and previous is not None and type(self) is type(previous.kernel) is TreeFeedbackKernel
+                and self._observation_key is previous.kernel._observation_key):
+            prior_steps = previous.steps
         trace = []
         for step in range(steps):
             self._require_can_step(state)
             hit = step < len(reusable)
-            route = reusable[step][0] if hit else self._route(state).retain()
+            if hit:
+                route = reusable[step][0]
+            else:
+                old_route = prior_steps[step][0] if step < len(prior_steps) else None
+                if retain_scores:
+                    route = self._route(state, previous=old_route, retain_scores=retain_scores).retain()
+                else:
+                    route = self._route(state).retain()
             state, _, _ = self._apply_route(state, route, reused=hit)
             hidden = state._history[-1]
             if hit and hidden.tobytes() != reusable[step][1].tobytes():

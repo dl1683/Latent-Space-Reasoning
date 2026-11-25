@@ -105,12 +105,15 @@ class FeedbackWorkspace:
 
     def __init__(self, kernel, observations, probes, *, max_update_norm, atol=1e-8,
                  max_terms=0, guards=(), allow_hinge=False, max_reference_frontier=None,
-                 reuse_tree_routes=False):
+                 reuse_tree_routes=False, max_retained_tree_scores=0):
         if type(reuse_tree_routes) is not bool:
             raise ValueError("tree route reuse must be a boolean")
-        if reuse_tree_routes and type(kernel) is not TreeFeedbackKernel:
+        self._max_retained_tree_scores = index(max_retained_tree_scores)
+        if self._max_retained_tree_scores < 0:
+            raise ValueError("retained tree score cap must be nonnegative")
+        self._reuse_tree_routes = reuse_tree_routes or self._max_retained_tree_scores > 0
+        if self._reuse_tree_routes and type(kernel) is not TreeFeedbackKernel:
             raise ValueError("route reuse requires a tree feedback kernel")
-        self._reuse_tree_routes = reuse_tree_routes
         self._draft_tree_policy = None
         if max_reference_frontier is not None:
             if not isinstance(kernel, TreeFeedbackKernel):
@@ -190,7 +193,9 @@ class FeedbackWorkspace:
     def _replay_tree_checks(self, kernel, memory, probes, previous):
         previous = previous or (None,) * len(probes)
         for probe, trace in zip(probes, previous, strict=True):
-            state, replay = kernel._replay_routes(probe.seed, memory, probe.steps, trace)
+            state, replay = kernel._replay_routes(
+                probe.seed, memory, probe.steps, trace, retain_scores=self._max_retained_tree_scores,
+            )
             yield self._probe_error(state, probe), replay
 
     def _working_results(self, kernel, memory, previous=()):
@@ -465,11 +470,13 @@ class FeedbackWorkspace:
         return self._prepare_memory_revision(base, base.kernel.prepare(observations))
 
     def _prepare_memory_revision(self, base, memory):
-        return self._measure_bank(base.number + 1, base.kernel, memory)
+        return self._measure_bank(base.number + 1, base.kernel, memory, base)
 
-    def _measure_bank(self, number, kernel, memory):
+    def _measure_bank(self, number, kernel, memory, previous=None):
         self._check_reference_capacity(kernel, memory)
-        errors, prefixes, probe_routes = self._working_results(kernel, memory)
-        guard_errors, guard_routes = self._guard_results(kernel, memory)
+        probe_previous = () if previous is None or not self._max_retained_tree_scores else previous._probe_routes
+        guard_previous = () if previous is None or not self._max_retained_tree_scores else previous._guard_routes
+        errors, prefixes, probe_routes = self._working_results(kernel, memory, probe_previous)
+        guard_errors, guard_routes = self._guard_results(kernel, memory, guard_previous)
         return FeedbackRevision(number, kernel, memory, errors, self._anchors(errors, prefixes),
                                 guard_errors, probe_routes, guard_routes)
