@@ -248,7 +248,7 @@ class CorpusRevision:
     _source_revisions: Mapping[str, int]
     _owner: object
     _program_revision: int = 0
-    _route_programs: tuple[tuple[str, str, int, tuple[float, ...]], ...] = ()
+    _receiver_programs: tuple[tuple[str, str, int | None, tuple[float, ...] | tuple[tuple[float, ...], ...]], ...] = ()
 
 
 @dataclass(frozen=True, eq=False)

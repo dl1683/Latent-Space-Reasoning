@@ -183,6 +183,12 @@ class BindingFeedback:
         candidate._query = _frozen(query)
         return candidate
 
+    def _with_coordinate_value(self, weight):
+        candidate = copy(self)
+        shape = (self._anchors.shape[1], self._kernel._width)
+        candidate._coordinate_value = None if weight is None else self._kernel._weight(weight, shape)
+        return candidate
+
     def _read_with_route_map(self, state):
         """Evaluate an earlier route map on a ready state from the same kernel."""
         self._kernel._require_state(state.feedback)
@@ -209,7 +215,7 @@ class BindingFeedback:
         """Read the chosen bounds, then perform the same transition with or without memory."""
         return self._advance_read(state, self._next_read(state))
 
-    def _advance_read(self, state, read):
+    def _advance_read(self, state, read, *, diagnostics=None):
         extra = None
         if state.memory is not None:
             features = np.zeros(6)
@@ -226,7 +232,7 @@ class BindingFeedback:
                 extra = features @ self._observation
                 if self._coordinate_value is not None and read.status == "resolved" and upper is not None:
                     extra += self._anchors[read.address[1]] @ self._coordinate_value
-        feedback, _, _ = self._kernel._advance(state.feedback, observation_extra=extra)
+        feedback, _, _ = self._kernel._advance(state.feedback, observation_extra=extra, diagnostics=diagnostics)
         return BindingFeedbackState(self, feedback, state.memory, _STATE_CREATION_KEY, state.reads + (read,))
 
     def search_to(self, state, target, *, steps, route_limit):

@@ -9,7 +9,7 @@ from experiments.memory import binding_memory, corpus_binding_journal
 from experiments.memory.binding_feedback import BindingFeedback, BindingRouteExpansion
 from experiments.memory.binding_maintenance import propose_binding_program
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _ProofWork
-from experiments.memory.binding_replay import _receiver_digest, route_norm_cap
+from experiments.memory.binding_replay import _receiver_digest, program_binding_coordinates, route_norm_cap
 from experiments.memory.corpus_binding_journal import (
     CorpusProgramExpectation, CorpusProgramProbe, JournaledCorpusWorkspace,
 )
@@ -296,6 +296,242 @@ def test_equal_grade_reads_use_coordinates_to_reach_different_late_routes():
 
 def test_adding_optional_coordinate_feedback_keeps_the_legacy_receiver_fingerprint():
     assert _receiver_digest(_receiver(_frame())) == "365facd647a9d176e9f5cca2109f441fe0d8d8339f1eb89589c69dee228bb8a0"
+
+
+def _coordinate_program_fixture():
+    def encode(raw):
+        for line in raw.decode().splitlines():
+            name, x, y, z, strength = line.split(",")
+            yield BindingMention(name, np.array([float(x), float(y), float(z)]), float(strength))
+
+    frame = CorpusBindingMemory.prepare(
+        ("p", "q", "guard", "claim", "end"), [*np.eye(3), [.6, .8, 0.]], {}, {},
+        encode=encode, encoder_version="coordinate-program", min_similarity=.7, gap=.02,
+    )
+    keys, zeros = np.zeros((4, 1)), np.zeros((4, 4))
+    carry = zeros.copy()
+    carry[0, 1] = .3
+    kernel = FeedbackKernel(query=keys, carry=carry, observation_key=keys, observation_value=zeros,
+                            feedback_key=keys, feedback_value=zeros, max_steps=2)
+    addresses = (("p", 0), ("q", 1), ("guard", 2), ("claim", 2), ("claim", 3), ("end", 0))
+    query = [[2., -2., 0., 0., 0., 0.], [0., 0., 1., 0., 0., 0.],
+             [0., 0., 0., 0., -2., 1.], [0., 0., 0., 2., 1., 0.]]
+    observation = np.zeros((6, 4))
+    observation[5, 1] = .2
+    old = np.zeros((3, 4))
+    old[2, 1] = .3
+    receiver = BindingFeedback(kernel, frame, addresses, query=query, observation=observation, route_floor=.05,
+                               disjoint_reads=True, coordinate_value=old)
+    teacher_weights = old.copy()
+    teacher_weights[:2, 2] = 1.2, -.2
+    teacher = receiver._with_coordinate_value(teacher_weights)
+    sources = {"p": b"p,1,0,0,0.8", "q": b"q,0,1,0,0.8", "guard": b"guard,0,0,1,0.7",
+               "moving": b"claim,0,0,1,0.7", "end": b"end,1,0,0,0.9"}
+    return frame, receiver, teacher, sources
+
+
+def test_programmed_coordinate_feedback_reaches_an_unseen_anchor_after_revision(tmp_path, monkeypatch):
+    frame, receiver, teacher, sources = _coordinate_program_fixture()
+    workspace = JournaledCorpusWorkspace(tmp_path / "coordinate-fit.sqlite", frame, create=True)
+    before = _write(workspace, sources)
+    seeds = ([1., 0., 0., 0.], [-1., 0., 0., 0.])
+    examples = tuple((receiver.start(seed, before.memory), teacher.step(teacher.start(seed, before.memory)).latest)
+                     for seed in seeds)
+    protected = receiver.step(receiver.start([0., 1., 0., 0.], before.memory))
+    candidate, replays, edit = program_binding_coordinates(receiver, examples, protect=(protected,), max_update_norm=2.)
+    assert edit.editable_rank == 2 and 0 < edit.update_norm < 2.
+    assert [replay.reads[-1].address[1] for replay in replays] == [0, 1]
+    np.testing.assert_allclose(replays[0].latest, examples[0][1], atol=1e-8, rtol=0.)
+    np.testing.assert_allclose(replays[1].latest, examples[1][1], atol=1e-8, rtol=0.)
+    np.testing.assert_array_equal(candidate.step(candidate.start(protected.feedback.seed, before.memory)).latest,
+                                  protected.latest)
+    assert not np.any(receiver._coordinate_value[:2])
+    assert candidate._query is receiver._query and candidate._kernel is receiver._kernel
+
+    terminal = ("end", 0)
+    expected = CorpusBindingRead(BindingProof(.7, frozenset({"moving", "end"})), .7)
+    target = CorpusProgramExpectation(CorpusProgramProbe((("claim", 3), terminal)), expected)
+    ordinary_seed = [0., 0., -1., 1.]
+    draft = workspace.begin_coordinate_trial(before, receiver, candidate, seed=ordinary_seed, target=target,
+                                             future_batches=1, max_update_norm=2.)
+    assert workspace.finish_program_trial(draft.trial_id, receiver=receiver).status == "pending"
+    later = _write(workspace, {"moving": b"claim,0.6,0.8,0,0.7"})
+    seed = [0., 0., 0., 1.]
+    assert before.memory.resolve_disjoint((("claim", 2), terminal)) == expected
+    assert later.memory.resolve_disjoint((("claim", 3), terminal)) == expected
+    outcome = candidate.search_to(candidate.start(seed, later.memory), terminal, steps=2, route_limit=3)
+    assert outcome.best.terminal.bounds == expected and outcome.unresolved_strength is None
+    assert outcome.best.prefix.reads[-1].address == ("claim", 3)
+    grown = outcome.best.prefix.latest.copy()
+    assert grown[2] == pytest.approx(np.tanh(.56))
+    nearest = int(np.argmax(frame._anchors[:2] @ frame._anchors[3]))
+    assert nearest == 1
+    grown[2] = np.tanh(candidate._coordinate_value[nearest, 2])
+    control = candidate._intervene_latest(outcome.best.prefix, grown)
+    assert candidate.search_to(control, terminal, steps=1, route_limit=1).possible_strength is None
+    nearest_read = candidate.step(control).reads[-1]
+    assert nearest_read.address == ("claim", 3) and nearest_read.bounds == CorpusBindingRead(None, None)
+    assert receiver.search_to(receiver.start(seed, later.memory), terminal, steps=2, route_limit=3).best is None
+    assert candidate.search_to(candidate.start(seed, before.memory), terminal, steps=2, route_limit=3).best is None
+
+    ordinary = candidate.step(candidate.start(ordinary_seed, later.memory))
+    prior = receiver.step(receiver.start(ordinary_seed, later.memory))
+    assert ordinary.reads[-1].address == prior.reads[-1].address == ("claim", 3)
+    assert ordinary.reads[-1].bounds == prior.reads[-1].bounds
+    assert candidate.step(ordinary).reads[-1].bounds == expected
+    assert receiver.step(prior).reads[-1].address == ("guard", 2)
+    rolled_back = candidate._intervene_latest(ordinary, prior.latest)
+    assert candidate.step(rolled_back).reads[-1].address == ("guard", 2)
+    coefficients = frame._anchors[3] @ frame._anchors[:2].T
+    row_deltas = frame._anchors[:2] @ (candidate._coordinate_value - receiver._coordinate_value)
+    interpolated = np.tanh(np.arctanh(prior.latest) + coefficients @ row_deltas)
+    np.testing.assert_allclose(interpolated, ordinary.latest, atol=1e-8, rtol=0.)
+    rival = candidate._intervene_latest(ordinary, interpolated)
+    assert candidate.step(rival).reads[-1].bounds == expected
+
+    def no_encoding(_raw):
+        pytest.fail("recovering a coordinate program attempted encoding")
+
+    worker = JournaledCorpusWorkspace(tmp_path / "coordinate-fit.sqlite", replace(frame, _encode=no_encoding))
+    assert worker.finish_program_trial(draft.trial_id).status == "receiver_required"
+    append = worker._append
+
+    def interrupt(*args):
+        append(*args)
+        raise RuntimeError("interrupted coordinate publication")
+
+    with monkeypatch.context() as override:
+        override.setattr(worker, "_append", interrupt)
+        with pytest.raises(RuntimeError, match="interrupted coordinate publication"):
+            worker.finish_program_trial(draft.trial_id, receiver=receiver)
+    assert workspace.snapshot() is later and workspace.pending_program_trials(limit=1) == (draft,)
+    assert workspace.receiver_at(later, receiver) is receiver
+    accepted = worker.finish_program_trial(draft.trial_id, receiver=receiver)
+    assert accepted.status == "published" and accepted.published_revision == later.revision + 1
+    reopened = JournaledCorpusWorkspace(tmp_path / "coordinate-fit.sqlite", replace(frame, _encode=no_encoding))
+    newest = reopened.snapshot()
+    installed = reopened.receiver_at(newest, receiver)
+    assert newest.memory.source_digests == later.memory.source_digests
+    assert _receiver_digest(installed) == _receiver_digest(candidate)
+    assert reopened.finish_program_trial(draft.trial_id) == accepted
+    assert installed.step(installed.step(installed.start(ordinary_seed, newest.memory))).reads[-1].bounds == expected
+    assert workspace.receiver_at(before, receiver) is receiver
+
+    # A second worker must use the installed map and can update it on a new source revision.
+    opened = workspace.snapshot()
+    guard = installed.start([0., 1., 0., 0.], opened.memory)
+    desired = installed.step(guard).latest.copy()
+    desired[2] = np.tanh(.8)
+    revised, _, _ = program_binding_coordinates(installed, [(guard, desired)], max_update_norm=1.)
+    old_address = replace(target, probe=CorpusProgramProbe((("claim", 2), terminal)))
+    with pytest.raises(ValueError, match="installed receiver"):
+        workspace.begin_coordinate_trial(opened, receiver, revised, seed=seed, target=old_address,
+                                         future_batches=1, max_update_norm=2.)
+    second = workspace.begin_coordinate_trial(opened, installed, revised, seed=seed, target=old_address,
+                                              future_batches=1, max_update_norm=1.)
+    _write(workspace, {"moving": sources["moving"]})
+    assert worker.finish_program_trial(second.trial_id, receiver=installed).status == "published"
+    assert _receiver_digest(workspace.receiver_at(workspace.snapshot(), receiver)) == _receiver_digest(revised)
+    assert _receiver_digest(workspace.receiver_at(opened, receiver)) == _receiver_digest(installed)
+
+
+def test_coordinate_program_replays_the_prefix_before_an_edited_second_step():
+    frame, receiver, _, sources = _coordinate_program_fixture()
+    memory = frame.revise(sources)
+    ready = receiver.step(receiver.start([1., 0., 0., 0.], memory))
+    assert ready.reads[0].address == ("p", 0)
+    desired = receiver.step(ready).latest.copy()
+    desired[2] = .4
+    candidate, (replay,), _ = program_binding_coordinates(receiver, [(ready, desired)], max_update_norm=1.)
+    assert tuple(read.address for read in replay.reads) == (("p", 0), ("guard", 2))
+    np.testing.assert_array_equal(replay.feedback.history[0], ready.latest)
+    np.testing.assert_allclose(replay.latest, desired, atol=1e-8, rtol=0.)
+    assert candidate._coordinate_value[0, 2] == 0.
+
+
+@pytest.mark.parametrize("failure", ["same_anchor", "protected", "cap", "no_proof", "uncertain", "saturation"])
+def test_coordinate_program_refuses_invalid_constraints_without_touching_the_receiver(failure):
+    frame, receiver, _, sources = _coordinate_program_fixture()
+    memory = frame.revise(sources)
+    seed = [1., 0., 0., 0.]
+    if failure == "no_proof":
+        memory = memory.revise({"p": None})
+    elif failure == "uncertain":
+        memory = memory.revise({"outlier": b"p,-1,0,0,0.95"})
+    start = receiver.start(seed, memory)
+    fingerprint = _receiver_digest(receiver)
+    prior = receiver.step(start)
+    desired = prior.latest.copy()
+    desired[2] = 1. if failure == "saturation" else .5
+    examples = [(start, desired)]
+    if failure == "same_anchor":
+        examples.append((start, prior.latest))
+    protect = (prior,) if failure == "protected" else ()
+    with pytest.raises(ValueError):
+        program_binding_coordinates(receiver, examples, protect=protect, max_update_norm=.1 if failure == "cap" else 1.)
+    assert _receiver_digest(receiver) == fingerprint
+
+
+def test_coordinate_trial_checks_the_cap_and_refuses_mismatched_future_proof(tmp_path):
+    frame, receiver, teacher, sources = _coordinate_program_fixture()
+    workspace = JournaledCorpusWorkspace(tmp_path / "coordinate-refusal.sqlite", frame, create=True)
+    base = _write(workspace, sources)
+    target = CorpusProgramExpectation(CorpusProgramProbe((("claim", 3), ("end", 0))),
+                                      CorpusBindingRead(BindingProof(.7, frozenset({"moving", "wrong"})), .7))
+    options = dict(seed=[0., 0., -1., 1.], target=target, future_batches=1)
+    with pytest.raises(ValueError, match="exact weight norm cap"):
+        workspace.begin_coordinate_trial(base, receiver, teacher, **options, max_update_norm=.1)
+    changed_route = teacher._with_route_column(5, [0., 0., 2., 0.])
+    with pytest.raises(ValueError, match="fingerprint mismatch"):
+        workspace.begin_coordinate_trial(base, receiver, changed_route, **options, max_update_norm=2.)
+    assert workspace.pending_program_trials(limit=1) == ()
+    trial = workspace.begin_coordinate_trial(base, receiver, teacher, **options, max_update_norm=2.)
+    later = _write(workspace, {"moving": b"claim,0.6,0.8,0,0.7"})
+    assert workspace.finish_program_trial(trial.trial_id, receiver=receiver).status == "coordinate_target_mismatch"
+    assert workspace.snapshot() is later and workspace.receiver_at(later, receiver) is receiver
+
+
+def test_coordinate_trial_refuses_an_edit_when_the_incumbent_already_reaches_the_target(tmp_path):
+    frame, _, teacher, sources = _coordinate_program_fixture()
+    workspace = JournaledCorpusWorkspace(tmp_path / "coordinate-incumbent.sqlite", frame, create=True)
+    base = _write(workspace, sources)
+    weights = teacher._coordinate_value.copy()
+    weights[0, 2] += .1
+    candidate = teacher._with_coordinate_value(weights)
+    target = CorpusProgramExpectation(CorpusProgramProbe((("claim", 3), ("end", 0))),
+                                      CorpusBindingRead(BindingProof(.7, frozenset({"moving", "end"})), .7))
+    trial = workspace.begin_coordinate_trial(base, teacher, candidate, seed=[0., 0., -1., 1.], target=target,
+                                             future_batches=1, max_update_norm=1.)
+    _write(workspace, {"moving": b"claim,0.6,0.8,0,0.7"})
+    assert workspace.finish_program_trial(trial.trial_id, receiver=teacher).status == "coordinate_incumbent_matches"
+
+
+def test_coordinate_trial_is_fenced_if_a_source_changes_after_the_judge_passes(tmp_path, monkeypatch):
+    frame, receiver, teacher, sources = _coordinate_program_fixture()
+    path = tmp_path / "coordinate-stale.sqlite"
+    workspace = JournaledCorpusWorkspace(path, frame, create=True)
+    base = _write(workspace, sources)
+    target = CorpusProgramExpectation(CorpusProgramProbe((("claim", 3), ("end", 0))),
+                                      CorpusBindingRead(BindingProof(.7, frozenset({"moving", "end"})), .7))
+    trial = workspace.begin_coordinate_trial(base, receiver, teacher, seed=[0., 0., -1., 1.], target=target,
+                                             future_batches=1, max_update_norm=2.)
+    _write(workspace, {"moving": b"claim,0.6,0.8,0,0.7"})
+    competing = JournaledCorpusWorkspace(path, frame)
+    check = corpus_binding_journal.check_coordinate_replay
+
+    def after_check(*args):
+        status = check(*args)
+        assert status == "published"
+        _write(competing, {"q": b"q,0,1,0,0.6"})
+        return status
+
+    with monkeypatch.context() as override:
+        override.setattr(corpus_binding_journal, "check_coordinate_replay", after_check)
+        with pytest.raises(StaleCorpusRevision):
+            workspace.finish_program_trial(trial.trial_id, receiver=receiver)
+    latest = workspace.snapshot()
+    assert workspace.receiver_at(latest, receiver) is receiver
+    assert workspace.finish_program_trial(trial.trial_id, receiver=receiver).status == "horizon_passed"
 
 
 def _repair_receiver(frame, *, trials=1, earlier="p", observe=True, proof_limit=65536, reuse_weighted_matching=False):
@@ -1017,7 +1253,7 @@ def test_second_route_program_extends_the_installed_receiver_after_source_withdr
     second_receiver = reopened.receiver_at(latest, root)
     read = second_receiver._next_read(_second_read(second_receiver, latest.memory))
     assert read.bounds == options["downstream_target"].expected
-    assert len(latest._route_programs) == 2
+    assert len(latest._receiver_programs) == 2
     historical = worker.receiver_at(first_pin, root)
     assert np.array_equal(historical._query, first_receiver._query)
     assert not np.array_equal(second_receiver._query, historical._query)

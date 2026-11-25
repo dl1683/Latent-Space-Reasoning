@@ -145,13 +145,18 @@ def program_binding_route(incumbent, repaired, address, *, margin, max_update_no
     return before, after, column, weights
 
 
-def apply_route_program(receiver, patch):
+def apply_receiver_program(receiver, patch):
     before, after, column, weights = patch
-    if _receiver_digest(receiver) != before or not 0 <= column < len(receiver._addresses):
-        raise ValueError("route program needs the matching incumbent receiver")
-    candidate = receiver._with_route_column(column, weights)
+    if _receiver_digest(receiver) != before:
+        raise ValueError("receiver program needs the matching incumbent receiver")
+    if column is None:
+        candidate = receiver._with_coordinate_value(weights)
+    elif 0 <= column < len(receiver._addresses):
+        candidate = receiver._with_route_column(column, weights)
+    else:
+        raise ValueError("route program column is outside the receiver")
     if _receiver_digest(candidate) != after or before == after:
-        raise ValueError("route program receiver fingerprint mismatch")
+        raise ValueError("programmed receiver fingerprint mismatch")
     return candidate
 
 
@@ -164,7 +169,7 @@ def _require_opening_rank(receiver, state, column):
 
 
 def route_norm_cap(value):
-    message = "route program needs a finite positive weight norm cap"
+    message = "weight program needs a finite positive weight norm cap"
     if type(value) is not float and type(value) is not int:
         raise ValueError(message)
     try:
@@ -176,18 +181,108 @@ def route_norm_cap(value):
     return nextafter(cap, 0.) if cap > value else cap
 
 
+def _within_exact_norm(old, new, cap):
+    # Compare exact squared distances between stored Float64 weights at admission.
+    squared_update = sum((Fraction(after) - Fraction(before)) ** 2
+                         for before, after in zip(old.ravel().tolist(), new.ravel().tolist(), strict=True))
+    return squared_update <= Fraction(cap) ** 2
+
+
+def _coordinate_weights(receiver):
+    weight = receiver._coordinate_value
+    return np.zeros((receiver._anchors.shape[1], receiver._kernel._width)) if weight is None else weight
+
+
+def freeze_coordinate_program(receiver, candidate, cap):
+    before, after = _receiver_digest(receiver), _receiver_digest(candidate)
+    weights = _coordinate_weights(candidate)
+    if np.array_equal(_coordinate_weights(receiver), weights):
+        raise ValueError("coordinate program needs a changed projection")
+    patch = before, after, None, tuple(tuple(row) for row in weights.tolist())
+    apply_receiver_program(receiver, patch)
+    if not _within_exact_norm(_coordinate_weights(receiver), weights, cap):
+        raise ValueError("coordinate program exceeds its exact weight norm cap")
+    return patch
+
+
+def _same_binding_read(left, right):
+    return (left.status, left.address, left.bounds) == (right.status, right.address, right.bounds)
+
+
+def _replay_coordinate_prefix(candidate, state, atol):
+    replay = candidate.start(state.feedback.seed, state.memory)
+    for read, hidden in zip(state.reads, state.feedback.history, strict=True):
+        replay = candidate.step(replay)
+        if not _same_binding_read(replay.reads[-1], read) or np.max(np.abs(replay.latest - hidden)) > atol:
+            raise ValueError("coordinate program changes a protected trajectory")
+    return replay
+
+
+def program_binding_coordinates(receiver, examples, *, max_update_norm, protect=(), atol=1e-8):
+    """Fit shared anchor-to-state weights and replay the normal decisions on their pins.
+
+    Examples are (ready state, desired next hidden row) pairs. Protected states
+    retain their complete generated prefixes. Return the candidate, example
+    replays, and weight edit for inspection.
+    """
+    if type(receiver) is not BindingFeedback:
+        raise ValueError("coordinate programming needs a binding feedback receiver")
+    if not np.isfinite(atol) or atol <= 0:
+        raise ValueError("coordinate programming needs a finite positive tolerance")
+    cap = route_norm_cap(max_update_norm)
+    examples, protect = tuple(examples), tuple(protect)
+    if not examples:
+        raise ValueError("coordinate programming needs at least one example")
+    states = tuple(state for state, _ in examples) + protect
+    if any(type(state) is not BindingFeedbackState or state._receiver is not receiver for state in states):
+        raise ValueError("coordinate programming states must come from the incumbent receiver")
+    protected = sorted({read.address[1] for state in states for read in state.reads
+                        if read.status == "resolved" and read.bounds.possible_strength is not None})
+    old = _coordinate_weights(receiver)
+    unprojected = receiver._with_coordinate_value(None)
+    inputs, values, steps = [], [], []
+    with np.errstate(**_REPLAY_ERRORS):
+        for state, desired in examples:
+            desired = receiver._kernel._vector(desired)
+            if np.any(np.abs(desired) >= 1.):
+                raise ValueError("target coordinates must be strictly inside tanh saturation")
+            if len(state.reads) >= receiver._kernel._max_steps:
+                raise ValueError("coordinate programming example has no step remaining")
+            read = receiver._next_read(state)
+            if read.status != "resolved" or read.bounds.certain is None or not read.bounds.is_exact:
+                raise ValueError("coordinate programming needs an exact supported next read")
+            diagnostics = {}
+            unprojected._advance_read(state, read, diagnostics=diagnostics)
+            inputs.append(receiver._anchors[read.address[1]])
+            values.append(np.arctanh(desired) - diagnostics["preactivation"])
+            steps.append((state, read, desired))
+
+        edit = program_weight(old, inputs, values, preserve_inputs=receiver._anchors[protected],
+                              max_update_norm=cap, atol=atol)
+        if not _within_exact_norm(old, edit.weight, cap):
+            raise ValueError("coordinate program exceeds its exact weight norm cap")
+        candidate = receiver._with_coordinate_value(edit.weight)
+        replays = []
+        for state, read, desired in steps:
+            replay = candidate.step(_replay_coordinate_prefix(candidate, state, atol))
+            if (not _same_binding_read(replay.reads[-1], read)
+                    or np.max(np.abs(replay.latest - desired)) > atol):
+                raise ValueError("coordinate program misses its next read or hidden target in replay")
+            replays.append(replay)
+        for state in protect:
+            _replay_coordinate_prefix(candidate, state, atol)
+    return candidate, tuple(replays), edit
+
+
 def validate_route_program(trajectory, patch, max_update_norm, memory, repair_address, later_address):
     max_update_norm = route_norm_cap(max_update_norm)
     receiver = trajectory._receiver
-    candidate = apply_route_program(receiver, patch)
+    candidate = apply_receiver_program(receiver, patch)
     column = patch[2]
     if candidate._addresses[column] != later_address:
         raise ValueError("route program must edit the downstream route column")
     old, new = receiver._query[:, column], candidate._query[:, column]
-    # Compare exact squared distances between stored Float64 weights at admission.
-    squared_update = sum((Fraction(after) - Fraction(before)) ** 2
-                         for before, after in zip(old.tolist(), new.tolist(), strict=True))
-    if squared_update > Fraction(max_update_norm) ** 2:
+    if not _within_exact_norm(old, new, max_update_norm):
         raise RouteFitRefusal("route program exceeds its weight norm cap")
     protected = np.asarray((trajectory.feedback.seed, *trajectory.feedback.history))
     with np.errstate(**_REPLAY_ERRORS):
@@ -198,6 +293,36 @@ def validate_route_program(trajectory, patch, max_update_norm, memory, repair_ad
             raise RouteFitRefusal("route program does not preserve the opening repair")
         _require_opening_rank(candidate, repaired, column)
     return max_update_norm
+
+
+def check_coordinate_replay(receiver, candidate, memory, seed, addresses, expected):
+    """Judge the changed transition and its state intervention on the same source pin."""
+    prior, revised = receiver.start(seed, memory), candidate.start(seed, memory)
+    try:
+        with np.errstate(**_REPLAY_ERRORS):
+            for address in addresses[:-1]:
+                prior, revised = receiver.step(prior), candidate.step(revised)
+                old, new = prior.reads[-1], revised.reads[-1]
+                if old.status in _INCOMPLETE_REPLAY or new.status in _INCOMPLETE_REPLAY:
+                    return "coordinate_incomplete"
+                if (new.status != "resolved" or new.address != address or new.bounds.certain is None
+                        or not new.bounds.is_exact or not _same_binding_read(old, new)):
+                    return "coordinate_prefix_changed"
+            terminal = candidate._next_read(revised)
+            incumbent = receiver._next_read(prior)
+            substitute = candidate._intervene_latest(revised, prior.latest)
+            control = candidate._next_read(substitute)
+    except FloatingPointError:
+        return "coordinate_numerical"
+    if any(read.status in _INCOMPLETE_REPLAY for read in (terminal, incumbent, control)):
+        return "coordinate_incomplete"
+    if terminal.status != "resolved" or terminal.address != addresses[-1] or terminal.bounds != expected:
+        return "coordinate_target_mismatch"
+    if _same_binding_read(terminal, incumbent):
+        return "coordinate_incumbent_matches"
+    if _same_binding_read(terminal, control):
+        return "coordinate_state_unused"
+    return "published"
 
 
 def freeze_binding_replay(trajectory, memory, targets, downstream=None):

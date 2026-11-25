@@ -15,7 +15,8 @@ import numpy as np
 
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _exclusions, _proof_work_limit
 from experiments.memory.binding_replay import (
-    apply_route_program, check_binding_replay, freeze_binding_replay, require_replay_receiver, validate_route_program,
+    apply_receiver_program, check_binding_replay, check_coordinate_replay, freeze_binding_replay,
+    freeze_coordinate_program, require_replay_receiver, route_norm_cap, validate_route_program,
 )
 from experiments.memory.corpus_bindings import (
     CorpusBindingRead, CorpusBindingWorkspace, StaleCorpusRevision, _EncodedChange,
@@ -100,6 +101,23 @@ def _decode_route_event(payload):
     if _json(event) != payload:
         raise ValueError("noncanonical route program event")
     return gates, (before, after, column, tuple(weights))
+
+
+def _decode_coordinate_event(payload, anchor_width):
+    event = json.loads(payload)
+    if type(event) is not list or len(event) != 2 or event[0] != "coordinate_program":
+        raise ValueError("invalid coordinate program event")
+    patch = event[1]
+    if type(patch) is not list or len(patch) != 4:
+        raise ValueError("invalid coordinate program patch")
+    before, after, column, weights = patch
+    if (any(type(digest) is not str or re.fullmatch("[0-9a-f]{64}", digest) is None for digest in (before, after))
+            or before == after or column is not None or type(weights) is not list or len(weights) != anchor_width
+            or any(type(row) is not list or not row or len(row) != len(weights[0])
+                   or any(type(value) is not float or not np.isfinite(value) for value in row) for row in weights)
+            or _json(event) != payload):
+        raise ValueError("invalid coordinate program patch")
+    return before, after, None, tuple(tuple(row) for row in weights)
 
 
 def _decode_program(payload):
@@ -343,6 +361,9 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             if payload.startswith(b'["route_program",'):
                 gates, patch = _decode_route_event(payload)
                 tip = self._install_program_revision(tip, tip.memory.reprogram(gates), patch)
+            elif payload.startswith(b'["coordinate_program",'):
+                patch = _decode_coordinate_event(payload, tip.memory._anchors.shape[1])
+                tip = self._install_program_revision(tip, tip.memory, patch)
             elif payload.startswith(b'["program",'):
                 memory = tip.memory.reprogram(_decode_program(payload))
                 if memory is tip.memory:
@@ -354,19 +375,20 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         return tip, digest
 
     def _install_program_revision(self, tip, memory, patch):
-        if memory is tip.memory:
+        if patch[2] is not None and memory is tip.memory:
             raise ValueError("unchanged graph in route program event")
-        programs = tip._route_programs
+        programs = tip._receiver_programs
         if programs and programs[-1][1] != patch[0]:
-            raise ValueError("route program does not extend the installed receiver")
-        revised = self._replace_program(tip, memory)
-        return replace(revised, _route_programs=(*programs, patch))
+            raise ValueError("program does not extend the installed receiver")
+        revision = tip.revision + 1
+        return replace(tip, revision=revision, memory=memory, _program_revision=revision,
+                       _receiver_programs=(*programs, patch))
 
     def receiver_at(self, revision, root):
         """Recover the receiver for a pinned revision from its original receiver."""
         self._check_owner(revision)
-        for patch in revision._route_programs:
-            root = apply_route_program(root, patch)
+        for patch in revision._receiver_programs:
+            root = apply_receiver_program(root, patch)
         return root
 
     def snapshot(self):
@@ -431,7 +453,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         if replay is not None:
             followup = None if downstream is None else _trial_expectation(proposal.preview, downstream, work_limit)
             spec.update(version=2, replay=freeze_binding_replay(replay, base.memory, targets, followup))
-            if base._route_programs and base._route_programs[-1][1] != spec["replay"]["receiver"]:
+            if base._receiver_programs and base._receiver_programs[-1][1] != spec["replay"]["receiver"]:
                 raise ValueError("feedback trial does not use the installed receiver")
             if followup is not None:
                 spec.update(version=3, downstream=followup)
@@ -441,6 +463,32 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 cap = validate_route_program(replay, patch, route_update_limit, proposal.preview,
                                              targets[0][0][0][-1], followup[0][0][-1])
                 spec.update(version=4, route_update_limit=cap)
+        return self._record_program_trial(base, program, spec)
+
+    def begin_coordinate_trial(self, base, receiver, candidate, *, seed, target, future_batches, max_update_norm):
+        """Freeze a projection edit and an ordinary continuation to judge on later sources."""
+        self._check_owner(base)
+        future_batches = index(future_batches)
+        if future_batches < 1:
+            raise ValueError("a coordinate trial needs a positive source horizon")
+        cap = route_norm_cap(max_update_norm)
+        patch = freeze_coordinate_program(receiver, candidate, cap)
+        if base._receiver_programs and base._receiver_programs[-1][1] != patch[0]:
+            raise ValueError("coordinate trial does not use the installed receiver")
+        state = receiver.start(seed, base.memory)
+        probe, witness, upper = _trial_expectation(base.memory, target, receiver._work_limit)
+        addresses, excluded = probe
+        if (excluded or witness is None or witness[0] != upper or not receiver._disjoint_reads
+                or not 2 <= len(addresses) <= receiver._kernel._max_steps
+                or receiver._expansion is not None
+                or any(address not in receiver._addresses for address in addresses)):
+            raise ValueError("a coordinate trial needs an exact supported disjoint continuation in the fixed catalog")
+        program = _json(["coordinate_program", patch])
+        spec = dict(version=5, seed=state.feedback.seed.tolist(), target=(probe, witness, upper),
+                    future_batches=future_batches, coordinate_update_limit=cap)
+        return self._record_program_trial(base, program, spec)
+
+    def _record_program_trial(self, base, program, spec):
         frozen = _json(spec)
         with self._lock, closing(self._connect()) as db:
             db.execute("BEGIN IMMEDIATE")
@@ -526,7 +574,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         checked_digest = digest
         spec = json.loads(frozen)
         version = spec["version"]
-        if version not in (1, 2, 3, 4):
+        if version not in (1, 2, 3, 4, 5):
             raise ValueError("unknown corpus program trial version")
         steps = base.revision - opened
         proposal = None
@@ -537,6 +585,15 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             return CorpusProgramTrialResult(trial_id, "pending", base.revision)
         elif steps > spec["future_batches"]:
             status = "horizon_passed"
+        elif version == 5:
+            if receiver is None:
+                return CorpusProgramTrialResult(trial_id, "receiver_required", base.revision)
+            patch = _decode_coordinate_event(program, base.memory._anchors.shape[1])
+            candidate_receiver = apply_receiver_program(receiver, patch)
+            (raw_addresses, _), witness, upper = spec["target"]
+            addresses = tuple(tuple(address) for address in raw_addresses)
+            status = check_coordinate_replay(receiver, candidate_receiver, _cold_trial_memory(base.memory),
+                                             spec["seed"], addresses, _expected_read(witness, upper))
         else:
             if version >= 2:
                 if receiver is None:
@@ -544,7 +601,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 require_replay_receiver(spec["replay"], receiver)
             if version == 4:
                 gates, patch = _decode_route_event(program)
-                candidate_receiver = apply_route_program(receiver, patch)
+                candidate_receiver = apply_receiver_program(receiver, patch)
             else:
                 gates = _decode_program(program)
                 candidate_receiver = None
@@ -578,8 +635,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                     raise StaleCorpusRevision("corpus workspace tip changed while checking trial")
                 if status == "published":
                     # A handle-local proof promotion can replace the pin without touching the durable revision.
-                    preview = proposal.preview
-                    if tip is not base:
+                    preview = tip.memory if version == 5 else proposal.preview
+                    if version != 5 and tip is not base:
                         preview = tip.memory.reprogram(dict(preview._certain._gates))
                     tip = (self._replace_program(tip, preview) if patch is None
                            else self._install_program_revision(tip, preview, patch))
