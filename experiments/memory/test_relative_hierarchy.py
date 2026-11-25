@@ -747,6 +747,10 @@ def test_source_gains_survive_compaction_for_a_retired_port_and_a_remaining_port
         assert changed.read(cell) - compacted.read(cell) == pytest.approx(
             0.6 * dict(response)["center"], abs=1e-12, rel=0,
         )
+        edits = {"center": replace(observations["center"], weight=0.25), "late": None}
+        predicted = compacted.predict_source_edits(cell, edits)
+        actual = hierarchy.revise(compacted, edits)
+        assert predicted == pytest.approx(actual.read(cell), abs=1e-12, rel=0)
 
 
 @pytest.mark.parametrize("sparse", (False, True))
@@ -766,3 +770,71 @@ def test_source_gains_are_zero_across_disconnected_components_sharing_a_region(s
     assert gains["other_link"] == gains["other_bridge"] == gains["other_anchor"] == 0
     assert gains["anchor"] > 0
     assert snapshot.read(5) is not None
+
+
+@pytest.mark.parametrize("sparse", (False, True))
+def test_prediction_combines_weights_values_and_removal_without_building_a_revision(sparse, monkeypatch):
+    order = reversed(range(len(_MEMBERSHIP))) if sparse else None
+    field = RelativeObservationHierarchy(_MEMBERSHIP, ridge=_RIDGE, elimination_order=order)
+    sources = {**_sources(), "parallel": RelativeObservation(3, 1.1, source=2, weight=2)}
+    baseline = field.initialize(sources)
+    edits = {
+        "bridge": None,
+        "conflict": replace(sources["conflict"], value=1.25, weight=0.7),
+        "late": replace(sources["late"], value=-0.6),
+    }
+    old_value = baseline.read(8)
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("prediction performed a full source revision")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(field, "revise", unexpected)
+        predicted = baseline.predict_source_edits(8, edits)
+        reversed_batch = baseline.predict_source_edits(8, dict(reversed(tuple(edits.items()))))
+        unsupported = baseline.predict_source_edits(8, {"bridge": None, "parallel": None})
+    assert predicted == pytest.approx(reversed_batch, abs=1e-12, rel=0)
+    assert unsupported is None
+    actual = field.revise(baseline, edits)
+    new_rows = {**sources, **edits}
+    del new_rows["bridge"]
+    dense = solve_relative_direct(len(_MEMBERSHIP), new_rows, ridge=_RIDGE)[8]
+    assert predicted == pytest.approx(actual.read(8), abs=1e-12, rel=0)
+    assert predicted == pytest.approx(dense, abs=1e-12, rel=0)
+    assert abs(predicted - old_value) > 0.1
+    assert baseline.read(8) == old_value and baseline._sources["bridge"] is sources["bridge"]
+    assert baseline.predict_source_edits(8, {"other_anchor": None}) == old_value
+    assert baseline.predict_source_edits(11, edits) is None
+
+
+def test_prediction_finds_alternate_local_support_and_rejects_endpoint_changes():
+    field = RelativeObservationHierarchy((0, 0), ridge=0.5)
+    sources = {
+        "anchor": RelativeObservation(0, 1),
+        "backup": RelativeObservation(0, 2),
+        "a": RelativeObservation(1, 0.4, source=0),
+        "b": RelativeObservation(1, 0.8, source=0),
+    }
+    base = field.initialize(sources)
+    edits = {"a": None, "anchor": None}
+    assert base.support_witness(1).anchor_source[0] == "anchor"
+    assert base.predict_source_edits(1, edits) == pytest.approx(
+        field.revise(base, edits).read(1), abs=1e-12, rel=0,
+    )
+    assert base.predict_source_edits(1, {"a": None, "b": None}) is None
+    with pytest.raises(ValueError, match="unchanged endpoints"):
+        base.predict_source_edits(1, {"a": RelativeObservation(0, 0.4, source=1)})
+    with pytest.raises(KeyError):
+        base.predict_source_edits(1, {"missing": None})
+
+
+@pytest.mark.parametrize("ridge", (1e-15, 1e-16))
+def test_prediction_refuses_unresolved_weight_correction_with_parent_preserved(ridge):
+    field = RelativeObservationHierarchy((0,), ridge=ridge)
+    base = field.initialize({"anchor": RelativeObservation(0, 1),
+                             "backup": RelativeObservation(0, 2, weight=ridge)})
+    old = base.read(0)
+    with pytest.raises(FloatingPointError, match="correction system"):
+        base.predict_source_edits(0, {"anchor": None})
+    assert field.revise(base, {"anchor": None}).read(0) == pytest.approx(1)
+    assert base.read(0) == old

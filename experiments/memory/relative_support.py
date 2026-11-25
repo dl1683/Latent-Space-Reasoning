@@ -223,3 +223,48 @@ def support_witness(snapshot, cell):
         tuple(cells), tuple((edge, snapshot._sources[edge]) for edge in names),
         (name, snapshot._sources[name]),
     )
+
+
+def supported_after_removal(snapshot, cell, removed):
+    """Check anchor reachability after excluding named observations."""
+    witness = support_witness(snapshot, cell)
+    if witness is None:
+        return False
+    if witness.anchor_source[0] not in removed and all(
+        name not in removed for name, _ in witness.relative_sources
+    ):
+        return True
+
+    membership = snapshot._owner._membership
+    paths = {}
+    queue, seen = [cell], {cell}
+    for node in queue:
+        number = membership[node]
+        if number not in paths:
+            local = snapshot._regions[number]
+            neighbors, anchors = {}, set()
+            for name, row in local._sources.items():
+                if name in removed:
+                    continue
+                if row.source is None:
+                    anchors.add(row.target)
+                else:
+                    neighbors.setdefault(row.source, set()).add(row.target)
+                    neighbors.setdefault(row.target, set()).add(row.source)
+            for name in snapshot._support_graph.incident.get(number, ()):
+                if name in removed:
+                    continue
+                row = snapshot._bridges[name]
+                source, target = row.source, row.target
+                if membership[source] != number:
+                    source, target = target, source
+                neighbors.setdefault(source, set()).add(target)
+            paths[number] = neighbors, anchors
+        neighbors, anchors = paths[number]
+        if node in anchors:
+            return True
+        for peer in neighbors.get(node, ()):
+            if peer not in seen:
+                seen.add(peer)
+                queue.append(peer)
+    return False

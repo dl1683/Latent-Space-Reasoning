@@ -27,6 +27,7 @@ from experiments.memory.relative_observations import (
 from experiments.memory.relative_support import (
     BridgeSupport,
     LocalSourcePaths,
+    supported_after_removal,
     support_witness,
     update_bridge_support,
 )
@@ -321,8 +322,7 @@ def _sparse_coarse(ports, regions, bridges, rank, previous, rebuilt_regions, bri
     return cache, rebuilt, visited
 
 
-def _local_adjoint(region, ridge, cell):
-    component = region.components[cell]
+def _local_root(region, ridge, component):
     interior = tuple(node for node, position in region.positions.items()
                      if position < len(region.readout) and region.components[node] == component)
     positions = {node: column for column, node in enumerate(interior)}
@@ -338,13 +338,7 @@ def _local_adjoint(region, ridge, cell):
             matrix[i, positions[row.source]] = -scale
     indices = np.arange(size)
     matrix[len(observations) + indices, indices] = sqrt(ridge)
-    root = np.linalg.qr(matrix, mode="r")
-    forcing = np.zeros(size)
-    forcing[positions[cell]] = 1.0
-    values = np.linalg.solve(root, np.linalg.solve(root.T, forcing))
-    if not np.isfinite(values).all():
-        raise FloatingPointError("nonfinite local adjoint")
-    return dict(zip(interior, values))
+    return interior, np.linalg.qr(matrix, mode="r")
 
 
 def _port_weights(snapshot, cell):
@@ -357,23 +351,25 @@ def _port_weights(snapshot, cell):
             if weight and region.components[port] == component}
 
 
-def _coarse_adjoint(snapshot, forcing, needed):
+def _coarse_adjoint(snapshot, forcing, needed, cold):
     if not forcing or not needed:
         return {}
     if snapshot._elimination_rank is not None:
-        cache = snapshot._elimination
+        cache = snapshot._elimination or cold.get("sparse")
         if cache is None:
             cache, _, _ = _sparse_coarse(
                 snapshot._port_positions, snapshot._regions, snapshot._bridges,
                 snapshot._elimination_rank, None, (), (),
             )
+            cold["sparse"] = cache
         return resolve_adjoint(cache.steps, snapshot._elimination_rank, forcing, sorted(needed))
     values = {}
     for cells, block in snapshot._coarse_blocks.items():
         if not forcing.keys().isdisjoint(cells) and not needed.isdisjoint(cells):
-            operator = block.operator
+            operator = block.operator or cold.get(cells)
             if operator is None:
                 operator = _factor_coarse(cells, block.bridges, block.regions)
+                cold[cells] = operator
             rhs = np.asarray([forcing.get(cell, 0.0) for cell in cells])
             with np.errstate(over="raise", invalid="raise", divide="raise"):
                 coordinates = (operator.right @ rhs) / operator.singular
@@ -382,6 +378,93 @@ def _coarse_adjoint(snapshot, forcing, needed):
                 raise FloatingPointError("nonfinite coarse adjoint")
             values.update(zip(cells, response))
     return values
+
+
+def _adjoint_values(snapshot, forcing, endpoints, local_roots, coarse_roots):
+    membership = snapshot._owner._membership
+    regions = snapshot._regions
+    ports = snapshot._port_positions
+    weights = {node: _port_weights(snapshot, node) for node in endpoints}
+    needed = {port for transfer in weights.values() for port in transfer}
+    interior_groups = {(membership[node], regions[membership[node]].components[node])
+                       for node in endpoints if node not in ports}
+    local_forcing, coarse_forcing = {}, {}
+    for cell, value in forcing.items():
+        for port, weight in _port_weights(snapshot, cell).items():
+            coarse_forcing[port] = coarse_forcing.get(port, 0.0) + weight * value
+        number = membership[cell]
+        group = number, regions[number].components[cell]
+        if cell not in ports and group in interior_groups:
+            local_forcing.setdefault(group, {})[cell] = value
+
+    coarse = _coarse_adjoint(snapshot, coarse_forcing, needed, coarse_roots)
+    local = {}
+    for (number, component), values in local_forcing.items():
+        group = number, component
+        if group not in local_roots:
+            local_roots[group] = _local_root(regions[number], snapshot._owner._ridge, component)
+        interior, root = local_roots[group]
+        rhs = np.asarray([values.get(node, 0.0) for node in interior])
+        response = np.linalg.solve(root, np.linalg.solve(root.T, rhs))
+        if not np.isfinite(response).all():
+            raise FloatingPointError("nonfinite local adjoint")
+        local.update(zip(interior, response))
+    answer = {node: local.get(node, 0.0) + sum(weight * coarse.get(port, 0.0)
+                                             for port, weight in transfer.items())
+              for node, transfer in weights.items()}
+    if any(not isfinite(value) for value in answer.values()):
+        raise FloatingPointError("nonfinite adjoint endpoint")
+    return answer
+
+
+def _source_projection(row, values):
+    return values.get(row.target, 0.0) - values.get(row.source, 0.0)
+
+
+def _source_direction(row):
+    return {row.target: 1.0} if row.source is None else {row.target: 1.0, row.source: -1.0}
+
+
+def _apply_source_prediction(snapshot, cell, edits):
+    rows = [old for _, old, _ in edits]
+    endpoints = {node for row in rows for node in row._endpoints()}
+    weights = np.asarray([0.0 if new is None else new.weight for _, _, new in edits])
+    change = weights - np.asarray([row.weight for row in rows])
+    weight_edits = np.flatnonzero(change)
+    baseline_endpoints = {cell}
+    for i in weight_edits:
+        baseline_endpoints.update(rows[i]._endpoints())
+    ordered = sorted(baseline_endpoints)
+    current = dict(zip(ordered, snapshot.read_many(ordered)))
+    local_roots, coarse_roots = {}, {}
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        u_query = _adjoint_values(snapshot, {cell: 1.0}, endpoints, local_roots, coarse_roots)
+        gain = np.asarray([_source_projection(row, u_query) for row in rows])
+        residual = np.asarray([
+            (0.0 if new is None else new.weight * (new.value - old.value))
+            + (change[i] * (old.value - _source_projection(old, current)) if change[i] else 0.0)
+            for i, (_, old, new) in enumerate(edits)
+        ])
+        if len(weight_edits):
+            response = []
+            for i in weight_edits:
+                values = _adjoint_values(snapshot, _source_direction(rows[i]), endpoints,
+                                         local_roots, coarse_roots)
+                response.append([_source_projection(row, values) for row in rows])
+            leverage = change[weight_edits, None] * np.asarray(response)
+            system = np.eye(len(weight_edits)) + leverage[:, weight_edits]
+            unchanged = change == 0
+            rhs = residual[weight_edits] - leverage[:, unchanged] @ residual[unchanged]
+            singular = np.linalg.svd(system, compute_uv=False)
+            # Downdates subtract nearly equal terms before the solve sees them.
+            formation_floor = sqrt(np.finfo(float).eps) * len(weight_edits) * max(1, singular[0])
+            if singular[-1] <= formation_floor:
+                raise FloatingPointError("source edits did not resolve a correction system")
+            residual[weight_edits] = np.linalg.solve(system, rhs)
+        prediction = float(current[cell] + gain @ residual)
+    if not isfinite(prediction):
+        raise FloatingPointError("nonfinite source edit prediction")
+    return prediction
 
 
 @dataclass(frozen=True, eq=False)
@@ -432,35 +515,47 @@ class RelativeHierarchySnapshot:
         if not observations:
             return ()
 
-        membership = self._owner._membership
-        region = self._regions[membership[cell]]
-        component = region.components[cell]
-        group = self._support_graph.groups.get(component, (component,))
-        relevant = (row for _, row in observations
-                    if self._regions[membership[row.target]].components[row.target] in group)
+        group = self._component_group(cell)
+        relevant = (row for _, row in observations if self._source_in_group(row, group))
         endpoints = {node for row in relevant for node in row._endpoints()}
         if not endpoints:
             return tuple((name, 0.0) for name, _ in observations)
-        weights = {node: _port_weights(self, node) for node in endpoints}
-        needed = {port for transfer in weights.values() for port in transfer}
-        need_local = cell not in self._port_positions and any(
-            node not in self._port_positions and region.components.get(node) == component
-            for node in endpoints
-        )
         with np.errstate(over="raise", invalid="raise", divide="raise"):
-            response = _coarse_adjoint(self, _port_weights(self, cell), needed)
-            local = _local_adjoint(region, self._owner._ridge, cell) if need_local else {}
-            values = {
-                node: local.get(node, 0.0) + sum(weight * response.get(port, 0.0)
-                                               for port, weight in transfer.items())
-                for node, transfer in weights.items()
-            }
-            gains = tuple((name, float(row.weight * (values.get(row.target, 0.0)
-                                                     - values.get(row.source, 0.0))))
+            values = _adjoint_values(self, {cell: 1.0}, endpoints, {}, {})
+            gains = tuple((name, float(row.weight * _source_projection(row, values)))
                           for name, row in observations)
         if any(not isfinite(gain) for _, gain in gains):
             raise FloatingPointError("nonfinite source gain")
         return gains
+
+    def _component_group(self, cell):
+        region = self._regions[self._owner._membership[cell]]
+        component = region.components[cell]
+        return self._support_graph.groups.get(component, (component,))
+
+    def _source_in_group(self, row, group):
+        region = self._regions[self._owner._membership[row.target]]
+        return region.components[row.target] in group
+
+    def predict_source_edits(self, cell, changes):
+        """Predict one read after value/weight changes or deletions of existing sources."""
+        cell = LatentField._checked_cell(cell, len(self._owner._membership))
+        group = self._component_group(cell)
+        edits = []
+        for name, replacement in changes.items():
+            previous = self._sources[name]
+            if replacement is not None:
+                _validate_observation(self._owner._cells, name, replacement)
+                if replacement._endpoints() != previous._endpoints():
+                    raise ValueError("source edit prediction requires unchanged endpoints")
+            if previous != replacement and self._source_in_group(previous, group):
+                edits.append((name, previous, replacement))
+        if self._readout(cell) is None:
+            return None
+        removed = {name for name, _, new in edits if new is None}
+        if removed and not supported_after_removal(self, cell, removed):
+            return None
+        return _apply_source_prediction(self, cell, edits) if edits else self.read(cell)
 
     def _readout(self, cell):
         cell = LatentField._checked_cell(cell, len(self._owner._membership))
