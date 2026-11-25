@@ -302,10 +302,16 @@ class RelativeHierarchySnapshot:
     coarse_rhs_solves: int = 0
     rebuilt_buckets: tuple[int, ...] = ()
     _elimination: _EliminationCache | None = None
+    _elimination_rank: Mapping[int, int] | None = None
 
     @property
     def coarse_size(self):
         return len(self._port_positions)
+
+    @property
+    def elimination_order(self):
+        """Return this branch's sparse ordering, or None for the default SVD."""
+        return None if self._elimination_rank is None else tuple(self._elimination_rank)
 
     def read(self, cell):
         """Read an anchored estimate and recover the boundary values it needs."""
@@ -335,6 +341,9 @@ class RelativeHierarchySnapshot:
 
     def read_many(self, cells):
         """Read in request order, sharing boundary recovery within this batch."""
+        return self._read_batch(cells)[0]
+
+    def _read_batch(self, cells):
         plans = tuple(self._readout(cell) for cell in cells)
         values = None
         if self._elimination is not None:
@@ -358,7 +367,7 @@ class RelativeHierarchySnapshot:
             if not isfinite(value):
                 raise FloatingPointError("nonfinite reconstructed interior coordinate")
             reads.append(value)
-        return tuple(reads)
+        return tuple(reads), len(values) if values is not None else 0
 
 
 class RelativeObservationHierarchy:
@@ -367,12 +376,7 @@ class RelativeObservationHierarchy:
     def __init__(self, membership, *, ridge, elimination_order=None):
         self._membership = tuple(map(index, membership))
         self._cells, self._ridge = _problem(len(self._membership), ridge)
-        self._elimination_rank = None
-        if elimination_order is not None:
-            order = tuple(map(index, elimination_order))
-            if len(order) != self._cells or set(order) != set(range(self._cells)):
-                raise ValueError("coarse elimination order must contain every cell once")
-            self._elimination_rank = MappingProxyType({cell: rank for rank, cell in enumerate(order)})
+        self._initial_rank = None if elimination_order is None else self._rank(elimination_order)
         labels = sorted(set(self._membership))
         if labels != list(range(len(labels))):
             raise ValueError("region labels must be consecutive integers from zero")
@@ -381,13 +385,19 @@ class RelativeObservationHierarchy:
             regions[region].append(cell)
         self._regions = tuple(map(tuple, regions))
 
+    def _rank(self, elimination_order):
+        order = tuple(map(index, elimination_order))
+        if len(order) != self._cells or set(order) != set(range(self._cells)):
+            raise ValueError("coarse elimination order must contain every cell once")
+        return MappingProxyType({cell: rank for rank, cell in enumerate(order)})
+
     def _region_of(self, observation):
         target = self._membership[observation.target]
         if observation.source is None or self._membership[observation.source] == target:
             return target
         return None
 
-    def _snapshot(self, sources, bridges, regions, rebuilt, *, base=None, compacted=()):
+    def _snapshot(self, sources, bridges, regions, rebuilt, *, base=None, compacted=(), new_rank=None):
         ports = {cell: position for position, cell in enumerate(
             cell for region in regions for cell in region.ports
         )}
@@ -400,7 +410,10 @@ class RelativeObservationHierarchy:
         cache, buckets = None, ()
         factorizations = solves = 0
         blocks = MappingProxyType({})
-        if self._elimination_rank is None:
+        rank = self._initial_rank if base is None else base._elimination_rank
+        if new_rank is not None:
+            rank = new_rank
+        if rank is None:
             blocks, values, factorizations, solves = _coarse_state(
                 ports, regions, bridges, base, projecting=bool(compacted),
             )
@@ -408,8 +421,8 @@ class RelativeObservationHierarchy:
             projected = base._read_ports(ports)
             values = _frozen(np.fromiter((projected[cell] for cell in ports), dtype=float, count=len(ports)))
         else:
-            prior = base._elimination if base is not None else None
-            cache, buckets = _sparse_coarse(ports, regions, bridges, self._elimination_rank, prior)
+            prior = base._elimination if base is not None and new_rank is None else None
+            cache, buckets = _sparse_coarse(ports, regions, bridges, rank, prior)
             values = None
         anchor_roots = {coarse_support.root(component) for component in anchors}
         supported = frozenset(component for component in components.values()
@@ -418,7 +431,7 @@ class RelativeObservationHierarchy:
             self, sources, bridges, tuple(regions), MappingProxyType(ports), values, blocks,
             supported, rebuilt_regions=tuple(rebuilt), compacted_regions=tuple(compacted),
             coarse_factorizations=factorizations, coarse_rhs_solves=solves, rebuilt_buckets=buckets,
-            _elimination=cache,
+            _elimination=cache, _elimination_rank=rank,
         )
 
     def initialize(self, observations):
@@ -495,6 +508,15 @@ class RelativeObservationHierarchy:
             factors[region] = _build_region(self._regions[region], ports, local, self._ridge)
         return self._snapshot(MappingProxyType(sources), MappingProxyType(bridges), factors, rebuilt,
                               base=base)
+
+    def reorder(self, base, elimination_order):
+        """Branch from the same sources with a different sparse elimination order."""
+        if base._owner is not self or base._elimination_rank is None:
+            raise ValueError("reordering needs a sparse snapshot from this hierarchy")
+        rank = self._rank(elimination_order)
+        if rank == base._elimination_rank:
+            return base
+        return self._snapshot(base._sources, base._bridges, base._regions, (), base=base, new_rank=rank)
 
     def compact(self, base, *, max_regions=1, protected_cells=(), tolerance=1e-10):
         """Retire inactive ports in a bounded number of regions of the selected branch."""
