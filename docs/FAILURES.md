@@ -151,6 +151,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **Retaining failed matches can cost more than solving again, 25 November 2026.** A contained sibling reused a failure and finished within a budget the row-cache dispatcher exhausted. A widened sibling defeated the containment check and paid its overhead. The seeded comparison also charged more work in aggregate when retention was enabled. Retain failures on a pinned bank with full origin domains, including supported grade zero. Keep the feature opt-in and compare against incremental prefix matching before expanding it. [Receiver controls](../experiments/memory/test_binding_feedback.py)
 
+**A sibling reassignment can corrupt the next route if it mutates the prefix, 25 November 2026.** One sibling succeeded only by moving two earlier assignments at grade zero. The next sibling still needed the original prefix assignment at grade one. Retain a read-only matching per bank, ordered prefix and threshold. Apply the augmenting path only to the current witness. Charge prefix construction even when the first candidate wins. [Receiver controls](../experiments/memory/test_binding_feedback.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

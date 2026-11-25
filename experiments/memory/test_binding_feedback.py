@@ -79,7 +79,7 @@ def _matching_frame():
     )
 
 
-def _matching_receiver(frame, *, work_limit=65536, reuse_matching_failures=True):
+def _matching_receiver(frame, *, work_limit=65536, reuse_matching_failures=True, reuse_prefix_matching=False):
     carry = np.zeros((4, 4))
     carry[0, 1] = carry[1, 2] = 2
     keys, zeros = np.zeros((4, 1)), np.zeros((4, 4))
@@ -90,7 +90,8 @@ def _matching_receiver(frame, *, work_limit=65536, reuse_matching_failures=True)
     query = [[2, 0, 0, 0, 0], [0, 2, 0, 0, 0], [0, 0, 3, 2, 1], [0, 0, 0, 0, 0]]
     return BindingFeedback(kernel, frame, tuple((node, 0) for node in ("p", "q", "a", "b", "c")),
                            query=query, observation=observations, disjoint_reads=True, route_trials=3,
-                           work_limit=work_limit, reuse_matching_failures=reuse_matching_failures)
+                           work_limit=work_limit, reuse_matching_failures=reuse_matching_failures,
+                           reuse_prefix_matching=reuse_prefix_matching)
 
 
 def test_matching_rejection_skips_a_subset_sibling_and_stays_on_its_pin(tmp_path, monkeypatch):
@@ -154,6 +155,76 @@ def test_matching_rejection_preserves_zero_grade_and_keeps_banks_independent():
     repeated_session = _DisjointBranchReads(memory, repeated, 65536, reuse_matching_failures=True)
     assert repeated_session.resolve(("a", 0)) == CorpusBindingRead(None, None)
     assert repeated_session.resolve(("b", 0)) == CorpusBindingRead(None, None)
+
+
+@pytest.mark.parametrize("ambiguous", [False, True])
+def test_prefix_matching_reassigns_weak_origins_without_changing_the_retained_matching(ambiguous):
+    frame = _matching_frame()
+    third_q = b"q,1,1,0" if ambiguous else b"q,1,0,0"
+    memory = frame.revise({"one": b"p,1,0,1\na,1,0,1", "two": b"p,1,0,0\nq,1,0,1",
+                           "three": third_q + b"\nb,1,0,1"})
+    prefix = (("p", 0), ("q", 0))
+    session = _DisjointBranchReads(memory, prefix, 65536, reuse_prefix_matching=True)
+    origins = frozenset({"one", "two", "three"})
+    first = CorpusBindingRead(None if ambiguous else BindingProof(0, origins), 0)
+    assert session.resolve(("a", 0)) == first
+    retained = session._possible.prefix_matches[1]
+    assert dict(retained.selected) == {0: "one", 1: "two"}
+    assert session.resolve(("b", 0)) == CorpusBindingRead(BindingProof(1, origins), 1)
+    assert session._possible.prefix_matches[1] is retained
+    assert dict(retained.selected) == {0: "one", 1: "two"}
+    assert session.resolve(("a", 0)) == first
+
+    repeated = (("p", 0), ("p", 0))
+    repeat_session = _DisjointBranchReads(memory, repeated, 65536, reuse_prefix_matching=True)
+    assert repeat_session.resolve(("a", 0)) == CorpusBindingRead(None, None)
+    assert repeat_session._certain.prefix_matches[1] is None
+    assert repeat_session.resolve(("b", 0)) == CorpusBindingRead(BindingProof(0, origins), 0)
+
+
+def test_prefix_matching_routes_on_each_source_pin():
+    frame = _matching_frame()
+    original = frame.revise({"one": b"p,1,0,1\nq,1,0,1\na,1,0,1",
+                             "two": b"p,1,0,1\na,1,0,1\nb,1,0,1", "three": b"c,1,0,1"})
+    withdrawn = original.revise({"three": None})
+    restored = withdrawn.revise({"three": b"b,1,0,0\nc,1,0,1"})
+    receiver = _matching_receiver(frame, reuse_matching_failures=False, reuse_prefix_matching=True)
+
+    def decide(memory):
+        state = receiver.start([1, 0, 0, 0], memory=memory)
+        return receiver.step(receiver.step(receiver.step(state))).reads[-1]
+
+    old = decide(original)
+    assert old.address == ("c", 0) and old.bounds.possible_strength == 1
+    assert decide(withdrawn).status == "catalog_absent"
+    new = decide(restored)
+    assert new.address == ("b", 0) and new.bounds.possible_strength == 0
+    assert decide(original) == old
+
+
+def test_retained_prefix_finishes_when_other_matching_methods_exhaust_the_budget():
+    prefix = tuple((f"p{i}", 0) for i in range(8))
+    blocked = tuple((f"t{i}", 0) for i in range(len(prefix)))
+    addresses = (*blocked, ("fresh", 0))
+    sources = {str(i): f"p{i},1,0,1\nt{i},1,0,1".encode() for i in range(len(prefix))}
+    sources["fresh"] = b"fresh,1,0,1"
+    memory = CorpusBindingMemory.prepare(
+        tuple(node for node, _ in (*prefix, *addresses)), np.eye(2), {}, sources, encode=_encode,
+        encoder_version="matching-budget-fixture", min_similarity=.6, gap=.05,
+    )
+    reusable = _DisjointBranchReads(memory, prefix, 65536, reuse_prefix_matching=True)
+    expected = [memory.resolve_disjoint((*prefix, address)) for address in addresses]
+    assert [reusable.resolve(address) for address in addresses] == expected
+    assert all(result == CorpusBindingRead(None, None) for result in expected[:-1])
+    assert expected[-1].possible_strength == 1
+    limit, = reusable.proof_work
+    bounded = _DisjointBranchReads(memory, prefix, limit, reuse_prefix_matching=True)
+    assert [bounded.resolve(address) for address in addresses] == expected
+    for retain_failures in (False, True):
+        control = _DisjointBranchReads(memory, prefix, limit, reuse_matching_failures=retain_failures)
+        with pytest.raises(BindingCapacityError):
+            for address in addresses:
+                control.resolve(address)
 
 
 def test_late_route_rejection_recovers_weaker_earlier_support_across_source_revisions(tmp_path, monkeypatch):

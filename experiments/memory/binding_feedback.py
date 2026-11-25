@@ -62,7 +62,7 @@ class BindingFeedback:
 
     def __init__(self, kernel, frame, addresses, *, query, observation,
                  route_floor=0.0, route_gap=0.0, work_limit=65536, disjoint_reads=False, route_trials=1,
-                 reuse_matching_failures=False):
+                 reuse_matching_failures=False, reuse_prefix_matching=False):
         if type(kernel) is not FeedbackKernel or type(frame) is not CorpusBindingMemory:
             raise ValueError("binding feedback requires a dense feedback kernel and a corpus frame")
         addresses = tuple((node, index(binding)) for node, binding in addresses)
@@ -82,6 +82,10 @@ class BindingFeedback:
             raise ValueError("multiple route trials require disjoint reads")
         if type(reuse_matching_failures) is not bool or (reuse_matching_failures and route_trials == 1):
             raise ValueError("matching failure reuse requires multiple route trials")
+        if type(reuse_prefix_matching) is not bool or (reuse_prefix_matching and route_trials == 1):
+            raise ValueError("prefix matching reuse requires multiple route trials")
+        if reuse_matching_failures and reuse_prefix_matching:
+            raise ValueError("select one matching reuse method")
         self._kernel = kernel
         self._contract, self._anchors = _frame_contract(frame), frame._anchors
         self._addresses = addresses
@@ -90,6 +94,7 @@ class BindingFeedback:
         self._disjoint_reads = disjoint_reads
         self._route_trials = route_trials
         self._reuse_matching_failures = reuse_matching_failures
+        self._reuse_prefix_matching = reuse_prefix_matching
 
     def start(self, seed, memory=None):
         """Pin an optional compiled corpus snapshot for this trajectory."""
@@ -165,7 +170,8 @@ class BindingFeedback:
 
     def _read_branches(self, memory, scores, prefix):
         session = _DisjointBranchReads(memory, prefix, self._work_limit,
-                                       reuse_matching_failures=self._reuse_matching_failures)
+                                       reuse_matching_failures=self._reuse_matching_failures,
+                                       reuse_prefix_matching=self._reuse_prefix_matching)
         ranked = np.argsort(-scores, kind="stable")
         tried = []
         result = None

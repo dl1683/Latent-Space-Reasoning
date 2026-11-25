@@ -390,12 +390,20 @@ class _Task:
     following: "_Task | None" = None
 
 
+@dataclass(frozen=True)
+class _PrefixMatch:
+    choices: tuple[tuple[str, ...], ...]
+    owners: Mapping[str, int]
+    selected: Mapping[int, str]
+
+
 class _ProofWork:
-    def __init__(self, limit, *, reuse_rows=False, matching_scope=None):
+    def __init__(self, limit, *, reuse_rows=False, matching_scope=None, reuse_prefix_matching=False):
         self.limit = self.remaining = _proof_work_limit(limit)
         self.prepared_rows = {} if reuse_rows else None
         self.matching_scope = matching_scope
         self.failed_neighborhood = None
+        self.prefix_matches = {} if reuse_prefix_matching else None
 
     @property
     def used(self):
@@ -449,10 +457,12 @@ class _ProofSearch:
             node == output or operation == "or" for node, (operation, _) in self.rules.items()
         )
         scope = self.work.matching_scope
-        self.reuse_matching_failure = (
+        share_matching = (
             self.single_source_matching and bool(addresses) and scope is not None
             and scope[0] is memory and scope[1] == addresses[:-1] and not excluded
         )
+        self.reuse_matching_failure = share_matching and self.work.prefix_matches is None
+        self.reuse_prefix_matching = share_matching and self.work.prefix_matches is not None
 
     def charge(self, amount=1):
         self.work.charge(amount)
@@ -567,42 +577,85 @@ class _ProofSearch:
             domains[node] = merged
         return tuple(domains[parent] for parent in self.rules[self.output][1])
 
-    def match(self, threshold, domains):
+    def _threshold_choices(self, threshold, domains):
         choices = []
         for domain in domains:
             self.charge(1 + len(domain))
             choices.append(tuple(sorted(origin for origin, (value, _) in domain.items() if value >= threshold)))
+        return tuple(choices)
+
+    def _augmenting_path(self, start, choices, owners, *, last_choices=()):
+        pending, visited = deque([start]), {start}
+        via = {}
+        while pending:
+            branch = pending.popleft()
+            origins = last_choices if branch == len(choices) else choices[branch]
+            for origin in origins:
+                self.charge()
+                if origin in via:
+                    continue
+                via[origin] = branch
+                owner = owners.get(origin)
+                if owner is None:
+                    return origin, via, visited
+                if owner not in visited:
+                    pending.append(owner)
+                    visited.add(owner)
+        return None, via, visited
+
+    def _reassign(self, free, via, selected):
+        while free is not None:
+            self.charge()
+            branch = via[free]
+            previous = selected.get(branch)
+            yield branch, free
+            free = previous
+
+    def _matching(self, choices, domains=None):
         owners, selected = {}, {}
         for start in sorted(range(len(choices)), key=lambda branch: len(choices[branch])):
-            pending, visited = deque([start]), {start}
-            via = {}
-            free = None
-            while pending and free is None:
-                branch = pending.popleft()
-                for origin in choices[branch]:
-                    self.charge()
-                    if origin in via:
-                        continue
-                    via[origin] = branch
-                    owner = owners.get(origin)
-                    if owner is None:
-                        free = origin
-                        break
-                    if owner not in visited:
-                        pending.append(owner)
-                        visited.add(owner)
+            free, via, visited = self._augmenting_path(start, choices, owners)
             if free is None:
-                if self.reuse_matching_failure:
+                if domains is not None and self.reuse_matching_failure:
                     self._remember_matching_failure(domains, choices, visited, via)
                 return None
-            # Follow the alternating path back to the unassigned starting branch.
-            while free is not None:
-                self.charge()
-                branch = via[free]
-                owners[free] = branch
-                previous = selected.get(branch)
-                selected[branch] = free
-                free = previous
+            for branch, origin in self._reassign(free, via, selected):
+                owners[origin] = branch
+                selected[branch] = origin
+        return owners, selected
+
+    def match(self, threshold, domains):
+        if self.reuse_prefix_matching:
+            return self._match_retained_prefix(threshold, domains)
+        matching = self._matching(self._threshold_choices(threshold, domains), domains)
+        if matching is None:
+            return None
+        _, selected = matching
+        return frozenset((domains[branch][origin][1], origin) for branch, origin in selected.items())
+
+    def _match_retained_prefix(self, threshold, domains):
+        cache = self.work.prefix_matches
+        self.charge()
+        if threshold not in cache:
+            choices = self._threshold_choices(threshold, domains[:-1])
+            matching = self._matching(choices)
+            if matching is None:
+                cache[threshold] = None
+            else:
+                owners, selected = matching
+                cache[threshold] = _PrefixMatch(choices, MappingProxyType(owners), MappingProxyType(selected))
+        prefix = cache[threshold]
+        if prefix is None:
+            return None
+
+        last_choices, = self._threshold_choices(threshold, domains[-1:])
+        free, via, _ = self._augmenting_path(len(prefix.choices), prefix.choices, prefix.owners,
+                                              last_choices=last_choices)
+        if free is None:
+            return None
+        changed = dict(self._reassign(free, via, prefix.selected))
+        self.charge(len(prefix.selected))
+        selected = prefix.selected | changed
         return frozenset((domains[branch][origin][1], origin) for branch, origin in selected.items())
 
     def _remember_matching_failure(self, domains, choices, visited, via):
