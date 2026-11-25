@@ -17,7 +17,9 @@ from experiments.memory.disjoint_feedback import (
     DisjointFeedback, DisjointFeedbackWorkspace, StaleRelationRevision, _RelationWorkspacePin,
 )
 from experiments.memory.latent_feedback import FactoredValue, FeedbackKernel
-from experiments.memory.repository_import_memory import RepositoryImportMemory, _normalize_feedback_edits
+from experiments.memory.repository_import_memory import (
+    RepositoryImportMemory, _normalize_feedback_edits, _normalize_fitted_handoffs,
+)
 
 
 _FIELDS = {
@@ -27,6 +29,7 @@ _FIELDS = {
     "retraction": frozenset(("protected_index", "destination")),
     "restoration": frozenset(("protected_index", "destination")),
     "evidence_batch": frozenset(("edits",)),
+    "fitted_handoffs": frozenset(("targets", "max_update_norm")),
 }
 
 
@@ -213,6 +216,8 @@ class JournaledRepositoryImportWorkspace:
             args["seed"] = self._receiver._kernel._vector(args["seed"]).tolist()
         if operation == "evidence_batch":
             args["edits"] = _normalize_feedback_edits(args["edits"])
+        if operation == "fitted_handoffs":
+            args["targets"] = _normalize_fitted_handoffs(args["targets"])
         return args
 
     def _stage(self, opening, source, operation, args):
@@ -227,6 +232,8 @@ class JournaledRepositoryImportWorkspace:
                 probe = receiver.step(probe)
             draft = source.draft_feedback_growth(previous, receiver, opening, probe, destination=args["destination"],
                                                   grade=args["grade"], max_update_norm=args["max_update_norm"])
+        elif operation == "fitted_handoffs":
+            draft, _ = source.draft_feedback_fitted_handoffs(previous, receiver, opening, **args)
         else:
             prepare = {
                 "handoff": source.draft_feedback_handoff,
@@ -304,6 +311,22 @@ class JournaledRepositoryImportWorkspace:
             draft, edits = source.draft_feedback_maintenance(previous, self._receiver, base.pin)
             pin = DisjointFeedbackWorkspace._from_pin(base.pin).publish(base.pin, draft)
         command = (source.commit, "evidence_batch", {"edits": edits}) if edits else (source.commit, "adopt", {})
+        return self._commit(base, pin, command)
+
+    def repair(self, base, revision, *, max_update_norm):
+        """Discover and publish joint handoffs under one finite anchor update budget."""
+        self._require_current(base)
+        with np.errstate(**self._error_policy):
+            previous = base.pin.memory._source
+            source = previous.revise(revision)
+            draft, targets = source.draft_feedback_fitted_handoffs(
+                previous, self._receiver, base.pin, max_update_norm=max_update_norm,
+            )
+            pin = DisjointFeedbackWorkspace._from_pin(base.pin).publish(base.pin, draft)
+        command = (source.commit, "adopt", {})
+        if targets:
+            args = self._parameters("fitted_handoffs", {"targets": targets, "max_update_norm": max_update_norm})
+            command = (source.commit, "fitted_handoffs", args)
         return self._commit(base, pin, command)
 
     def _require_current(self, base):

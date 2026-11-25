@@ -201,6 +201,24 @@ def _normalize_feedback_edits(edits):
     return tuple((normalized[key], *key) for key in sorted(normalized))
 
 
+def _normalize_fitted_handoffs(targets):
+    if not isinstance(targets, (list, tuple)) or not targets:
+        raise ValueError("joint handoff needs a nonempty target sequence")
+    normalized = {}
+    for target in targets:
+        if not isinstance(target, (list, tuple)) or len(target) != 3:
+            raise ValueError("a handoff target needs a protection index, destination and optional appended entry")
+        protected_index, destination, entry = target
+        if (type(destination) is not str or not destination
+                or (entry is not None and (type(entry) is not str or not entry))):
+            raise ValueError("invalid fitted handoff destination or appended entry")
+        key = index(protected_index), destination
+        if key in normalized:
+            raise ValueError("handoff targets must name distinct protected destinations")
+        normalized[key] = entry
+    return tuple((*key, normalized[key]) for key in sorted(normalized))
+
+
 @dataclass(frozen=True, eq=False, slots=True)
 class RepositoryImportMemory:
     """An in-memory projection of committed import declarations and source lines."""
@@ -358,31 +376,40 @@ class RepositoryImportMemory:
         names = self._feedback_names(previous, receiver, pin.memory)
         if not isinstance(targets, Mapping) or not targets or not targets.keys() <= set(names):
             raise ValueError("anchor targets must name at least one appended repository coordinate")
+        examples = [(targets[name][0], {name: targets[name][1]}) for name in names if name in targets]
+        released = () if handoff is None else (handoff[0],)
+        replays = {} if handoff is None else {handoff[0]: handoff[1]}
+        return self._fit_anchor_examples(previous, receiver, pin, names, examples, max_update_norm,
+                                         released=released, replays=replays)
+
+    def _fit_anchor_examples(self, previous, receiver, pin, names, examples, max_update_norm, *, released, replays):
         requests = []
-        for name in names:
-            if name in targets:
-                hidden, grade = targets[name]
-                if not isinstance(grade, Real) or not 0. <= grade <= 1.:
-                    raise ValueError("target seed grades must be in [0, 1]")
-                requests.append((name, receiver._kernel._vector(hidden), float(grade)))
-        released_terminal = None if handoff is None else handoff[0]
-        opening_inputs = [receiver._relation_read_input(state, step)
-                          for protection, state in enumerate(pin.protected)
-                          for step, read in enumerate(state._trace)
-                          if read is not None and (protection != released_terminal or step + 1 != len(state._trace))]
-        if handoff is not None:
-            replayed = handoff[1]
-            opening_inputs.extend(receiver._relation_read_input(replayed, step)
-                                  for step, read in enumerate(replayed._trace[:-1]) if read is not None)
+        for hidden, grades in examples:
+            if any(not isinstance(grade, Real) or not 0. <= grade <= 1. for grade in grades.values()):
+                raise ValueError("target seed grades must be in [0, 1]")
+            requests.append((receiver._kernel._vector(hidden), {name: float(grade) for name, grade in grades.items()}))
+        retained = [receiver._relation_read_input(state, step)
+                    for protection, state in enumerate(pin.protected)
+                    for step, read in enumerate(state._trace)
+                    if read is not None and (protection not in released or step + 1 != len(state._trace))]
+        retained.extend(receiver._relation_read_input(state, step)
+                        for protection, state in replays.items()
+                        for step, read in enumerate(state._trace)
+                        if read is not None and (protection not in released or step + 1 != len(state._trace)))
+        targeted = {name for _, grades in requests for name in grades}
+        columns = {name: column for column, name in enumerate(name for name in names if name in targeted)}
         hidden_width = receiver._kernel._width
         atol = _RELATION_GRADE_ATOL
         with np.errstate(over="raise", invalid="raise"):
-            inputs = np.stack([hidden @ receiver._query for _, hidden, _ in requests])
-            preserve = np.asarray([hidden @ receiver._query for hidden in opening_inputs]).reshape(-1, hidden_width)
-            scores = np.diag([receiver._floor + grade for _, _, grade in requests])
-        initial = np.zeros((hidden_width, len(requests)))
+            inputs = np.stack([hidden @ receiver._query for hidden, _ in requests])
+            preserve = np.asarray([hidden @ receiver._query for hidden in retained]).reshape(-1, hidden_width)
+            scores = np.zeros((len(requests), len(columns)))
+            for row, (_, grades) in enumerate(requests):
+                for name, grade in grades.items():
+                    scores[row, columns[name]] = receiver._floor + grade
+        initial = np.zeros((hidden_width, len(columns)))
         fit = None
-        if released_terminal is not None:
+        if released:
             minimal = program_weight(initial, inputs, scores, max_update_norm=max_update_norm, atol=atol)
             with np.errstate(over="raise", invalid="raise"):
                 if (preserve @ minimal.weight < receiver._floor).all():
@@ -391,19 +418,22 @@ class RepositoryImportMemory:
             fit = program_weight(initial, inputs, scores, preserve_inputs=preserve,
                                  max_update_norm=max_update_norm, atol=atol)
         anchors = {name: np.zeros(hidden_width) for name in names}
-        anchors.update({name: row for (name, _, _), row in zip(requests, fit.weight.T, strict=True)})
+        anchors.update({name: fit.weight[:, column] for name, column in columns.items()})
         revision = self.feedback_revision(previous, receiver, pin.memory, added_anchors=anchors)
         prior_count = len(previous._coordinates)
-        for hidden in opening_inputs:
+        for hidden in retained:
             _, active = receiver._relation_seed(revision.memory, hidden)
             if active[prior_count:].any():
                 raise ValueError("installed anchors activate new entries on a protected opening query")
-        for name, hidden, grade in requests:
+        for hidden, grades in requests:
             seed, active = receiver._relation_seed(revision.memory, hidden)
-            coordinate = self._coordinates[name]
-            match = seed[coordinate] == 0. if grade == 0. else abs(seed[coordinate] - grade) <= atol
-            if not active[coordinate] or np.count_nonzero(active[prior_count:]) != 1 or not match:
+            if np.count_nonzero(active[prior_count:]) != len(grades):
                 raise ValueError("installed anchors miss the requested exclusive seed grade")
+            for name, grade in grades.items():
+                coordinate = self._coordinates[name]
+                match = seed[coordinate] == 0. if grade == 0. else abs(seed[coordinate] - grade) <= atol
+                if not active[coordinate] or not match:
+                    raise ValueError("installed anchors miss the requested exclusive seed grade")
         return revision
 
     def draft_feedback_growth(self, previous, receiver, pin, probe, *, destination, grade, max_update_norm):
@@ -635,6 +665,79 @@ class RepositoryImportMemory:
             (edit.operation, edit.protected_index, coordinate_names[edit.destination]) for edit in changes
         ])
         return revision._with_evidence_edits(pin, changes), edits
+
+    def draft_feedback_fitted_handoffs(self, previous, receiver, pin, *, max_update_norm, targets=None):
+        """Draft same-grade handoffs, optionally fitting several new entry rows together."""
+        if type(pin) is not _RelationWorkspacePin:
+            raise ValueError("joint handoff needs an issued workspace pin")
+        if (not isinstance(max_update_norm, Real) or not np.isfinite(float(max_update_norm))
+                or max_update_norm < 0.):
+            raise ValueError("max_update_norm must be finite and nonnegative")
+        names = self._feedback_names(previous, receiver, pin.memory)
+        control = self._zero_anchor_revision(previous, receiver, pin.memory, names)
+        if self is previous and targets is None:
+            return control, ()
+        replays = {i: receiver.rebase(state, control)[0] for i, state in enumerate(pin.protected)}
+        if targets is None:
+            targets = self._discover_handoff_targets(receiver, pin, replays, names)
+            if not targets:
+                return control, ()
+        selected = _normalize_fitted_handoffs(targets)
+        examples = {}
+        edits = []
+        for protected_index, destination, entry in selected:
+            self._require_module(destination)
+            coordinate = self._coordinates[destination]
+            original = pin._protected_outcome(protected_index)._evidence_at(coordinate)
+            candidate = replays[protected_index]
+            seed = receiver._terminal_seed(candidate)
+            if _approved_evidence(candidate, seed, original) is not None:
+                raise ValueError("an existing path still certifies the handoff destination")
+            if entry is None:
+                evidence = self._replacement_handoff(pin, protected_index, coordinate, candidate, seed)
+                if evidence is None:
+                    raise RelationGuardFailed("joint handoff needs source support at the certified terminal grade")
+                self._path_edges(coordinate, evidence.paths[0])
+            else:
+                if entry not in names or not np.isneginf(candidate._grades[coordinate]):
+                    raise RelationGuardFailed("fitted handoff needs an appended entry and an absent destination")
+                _check_retraction_absence(pin.protected[protected_index], candidate, coordinate)
+                _, paths = self._unique_appended_route((entry,), destination)
+                evidence = TerminalRelationEvidence(coordinate, paths)
+                grade = dict(pin.witnesses[protected_index])[coordinate].strength
+                hidden = receiver._relation_read_input(candidate, len(candidate._trace) - 1)
+                _, grades = examples.setdefault(protected_index, (hidden, {}))
+                if grades.setdefault(entry, grade) != grade:
+                    raise RelationGuardFailed("one fitted entry cannot emit two seed grades on the same trajectory")
+            edits.append(_EvidenceEdit("handoff", protected_index, coordinate, replacement=evidence))
+
+        revision = control
+        if examples:
+            revision = self._fit_anchor_examples(previous, receiver, pin, names, examples.values(), max_update_norm,
+                                                 released=examples.keys(), replays=replays)
+        fitted_entries = tuple((i, frozenset(self._coordinates[name] for name in grades))
+                               for i, (_, grades) in examples.items())
+        return revision._with_evidence_edits(pin, edits, source_only=not examples, fitted_entries=fitted_entries), selected
+
+    def _discover_handoff_targets(self, receiver, pin, replays, names):
+        coordinates = tuple(self._coordinates)
+        targets = []
+        for i, outcome in enumerate(pin._outcomes):
+            if outcome is None or not outcome.evidence:
+                continue
+            candidate = replays[i]
+            seed = receiver._terminal_seed(candidate)
+            for original in outcome.evidence:
+                coordinate = original.destination
+                if _approved_evidence(candidate, seed, original) is not None:
+                    continue
+                destination = coordinates[coordinate]
+                self._require_module(destination)
+                entry = None
+                if np.isneginf(candidate._grades[coordinate]):
+                    entry, _ = self._unique_appended_route(names, destination)
+                targets.append((i, destination, entry))
+        return targets
 
     def _seed(self, start):
         self._require_module(start)

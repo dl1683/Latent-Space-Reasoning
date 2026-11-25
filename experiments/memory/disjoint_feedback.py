@@ -69,6 +69,7 @@ class _RelationRevision(_IdentityRecord):
     _appended: np.ndarray | None = None
     _admission: tuple["_RelationWorkspacePin", "DisjointFeedbackState", "RelationOutcomeGuard"] | None = None
     _evidence_edits: tuple["_RelationWorkspacePin", tuple[_EvidenceEdit, ...], bool] | None = None
+    _fitted_entries: tuple[tuple[int, frozenset[int]], ...] = ()
     _creation_key: InitVar[object | None] = None
 
     def __post_init__(self, _creation_key):
@@ -92,12 +93,13 @@ class _RelationRevision(_IdentityRecord):
         return self._with_evidence_edits(opening, (_EvidenceEdit("restoration", receipt.protected_index,
                                                                evidence.destination, evidence, receipt),))
 
-    def _with_evidence_edits(self, opening, edits, *, source_only=True):
+    def _with_evidence_edits(self, opening, edits, *, source_only=True, fitted_entries=()):
         self._require_unbound_adoption(opening)
         ordered = tuple(sorted(edits, key=lambda edit: (edit.protected_index, edit.destination)))
         if not ordered or len({(edit.protected_index, edit.destination) for edit in ordered}) != len(ordered):
             raise ValueError("evidence edits must name distinct protected destinations")
-        return replace(self, _evidence_edits=(opening, ordered, source_only), _creation_key=_CREATION_KEY)
+        return replace(self, _evidence_edits=(opening, ordered, source_only), _fitted_entries=tuple(fitted_entries),
+                       _creation_key=_CREATION_KEY)
 
     def _require_unbound_adoption(self, opening):
         if (self._changed_sources is not None or self._admission is not None or self._evidence_edits is not None
@@ -597,16 +599,18 @@ def _check_retraction_absence(before, after, destination):
         raise RelationGuardFailed("the opening terminal query still has support after the correction")
 
 
-def _check_source_only_adoption(before, after, operation):
+def _check_evidence_adoption(before, after, operation, *, source_only):
     source = before._source
     successor = after._source
     if source is None or successor is None or successor._previous is not source._identity:
         raise ValueError(f"evidence {operation} needs a direct committed source correction")
     old_blocks, blocks = before._anchor_blocks, after._anchor_blocks
-    if blocks is not old_blocks and (len(blocks) != len(old_blocks) + 1
-            or any(old is not new for old, new in zip(old_blocks, blocks))
-            or blocks[-1].view(np.uint64).any()):
-        raise RelationGuardFailed(f"evidence {operation} requires source-only anchors")
+    if blocks is not old_blocks:
+        if (len(blocks) != len(old_blocks) + 1
+                or any(old is not new for old, new in zip(old_blocks, blocks))):
+            raise RelationGuardFailed(f"evidence {operation} requires retained anchor blocks")
+        if source_only and blocks[-1].view(np.uint64).any():
+            raise RelationGuardFailed(f"evidence {operation} requires source-only anchors")
 
 
 @dataclass(frozen=True, slots=True)
@@ -668,9 +672,9 @@ def _prepare_evidence_edits(parent, revision, outcomes):
     opening, edits, source_only = revision._evidence_edits
     if opening is not parent:
         raise StaleRelationRevision("relation draft belongs to a different opening workspace pin")
-    if source_only or len(edits) > 1 or edits[0].operation != "handoff":
-        operation = "batch" if len(edits) > 1 else edits[0].operation
-        _check_source_only_adoption(parent.memory, revision.memory, operation)
+    operation = "batch" if len(edits) > 1 else edits[0].operation
+    source_only = source_only or any(edit.operation != "handoff" for edit in edits)
+    _check_evidence_adoption(parent.memory, revision.memory, operation, source_only=source_only)
     selected = {}
     for edit in edits:
         i, destination = edit.protected_index, edit.destination
@@ -710,6 +714,15 @@ def _check_evidence_replay(parent, before, candidate, edits):
             original = parent._outcomes[edit.protected_index]._evidence_at(edit.destination)
             if _approved_evidence(candidate, seed, original) is not None:
                 raise RelationGuardFailed("an existing path still certifies the handoff destination")
+
+
+def _check_fitted_entry_activation(candidate, previous_width, targets):
+    last = len(candidate._trace) - 1
+    for step, read in enumerate(candidate._trace):
+        entries = frozenset() if read is None else frozenset(i for i in read.entries if i >= previous_width)
+        expected = targets if step == last else frozenset()
+        if entries != expected:
+            raise RelationGuardFailed("unexpected appended entries during joint handoff replay")
 
 
 def _record_evidence_edits(parent, source, edits, approved, retractions, restorations):
@@ -789,6 +802,7 @@ class DisjointFeedbackWorkspace:
             required = ((state, outcome),)
         outcomes = list(parent._outcomes)
         edits = _prepare_evidence_edits(parent, revision, outcomes)
+        fitted = dict(revision._fitted_entries)
         retractions = []
         restorations = []
         checked = []
@@ -796,6 +810,8 @@ class DisjointFeedbackWorkspace:
         for i, (state, outcome) in enumerate(zip(parent.protected, outcomes, strict=True)):
             candidate, _ = receiver.rebase(state, revision)
             selected = edits.get(i, ())
+            if fitted:
+                _check_fitted_entry_activation(candidate, parent.memory._transitions.width, fitted.get(i, frozenset()))
             _check_evidence_replay(parent, state, candidate, selected)
             if outcome is None:
                 if not _same_trajectory(state, candidate):

@@ -1252,6 +1252,109 @@ def test_automatic_maintenance_keeps_live_evidence_and_cannot_amend_an_unrelated
     assert protected.snapshot() is opening and not opening.pin.retractions
 
 
+def test_joint_fitted_handoffs_recover_protected_routes_and_a_later_hidden_read(history, monkeypatch):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    original = _commit(repo, {
+        "start.py": "import pkg.relay\nimport pkg.extra\n", "extra.py": "import pkg.third\n", "third.py": "",
+        "decoy.py": "import pkg.alt_old\n", "alt_old.py": "import pkg.always\n",
+        "before.py": "import pkg.follow_mid\n", "follow_mid.py": "import pkg.follow_dest\n", "follow_dest.py": "",
+    })
+    source = imports.RepositoryImportMemory.prepare(repo, original, package="pkg")
+    coords = source.relation_coordinates
+    width = len(coords)
+    receiver, initial = _published_import_workspace(source, "pkg.start", "pkg.before", ["pkg.relay"],
+                                                       carry=np.zeros((width, width)))
+    memory = initial.pin().memory
+
+    def read(entry, *, variant=False):
+        seed = np.zeros(width)
+        seed[coords[entry]] = .75
+        if variant:
+            seed[coords["pkg"]] = .125
+        return receiver.step(receiver.start(seed, memory))
+
+    def evidence(entry, middle, destination):
+        return TerminalRelationEvidence(coords[destination], (source.relation_path(entry, middle),))
+
+    group = RelationOutcomeGuard(evidence=[evidence("pkg.start", "pkg.relay", "pkg.before"),
+                                            evidence("pkg.start", "pkg.extra", "pkg.third")])
+    second = RelationOutcomeGuard(evidence=[evidence("pkg.decoy", "pkg.alt_old", "pkg.always")])
+    control = RelationOutcomeGuard(evidence=[evidence("pkg.before", "pkg.follow_mid", "pkg.follow_dest")])
+    workspace = DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[
+        (read("pkg.start"), group), (read("pkg.decoy"), second),
+        (read("pkg.start", variant=True), group), (read("pkg.before"), control),
+    ])
+    path = repo / "fitted.db"
+    journal = JournaledRepositoryImportWorkspace(path, workspace.pin(), create=True)
+    opening = journal.snapshot()
+    correction = _commit(repo, {
+        "relay.py": "", "extra.py": "", "alt_old.py": "",
+        "new_before.py": "import pkg.mid_before\n", "mid_before.py": "import pkg.before\n",
+        "new_third.py": "import pkg.mid_third\n", "mid_third.py": "import pkg.third\n",
+        "new_always.py": "import pkg.mid_always\n", "mid_always.py": "import pkg.always\n",
+    })
+    plain = JournaledRepositoryImportWorkspace(repo / "source-only.db", workspace.pin(), create=True)
+    source_only = plain.maintain(plain.snapshot(), correction)
+    assert len(source_only.pin.retractions) == 5
+    downstream = coords["pkg.follow_dest"]
+    assert np.isneginf(receiver.step(source_only.pin.protected[0]).grades[downstream])
+
+    with pytest.raises(ValueError, match="norm budget"):
+        journal.repair(opening, correction, max_update_norm=1.1)
+    assert journal.snapshot() is opening
+    tip = journal.repair(opening, correction, max_update_norm=2.)
+    _check_bootstrap(tip.pin, receiver)
+    assert tip.pin.memory._anchor_blocks[0] is memory._anchor_blocks[0]
+    fitted = tip.pin.memory._anchor_blocks[-1]
+    assert np.count_nonzero(np.linalg.norm(fitted, axis=1)) == 3
+    assert np.linalg.norm(fitted) == pytest.approx(np.sqrt(3.))
+    assert not tip.pin.retractions and tip.pin.witnesses[3] == opening.pin.witnesses[3]
+    for index, destination, entry in ((0, "pkg.before", "pkg.new_before"), (0, "pkg.third", "pkg.new_third"),
+                                      (1, "pkg.always", "pkg.new_always"), (2, "pkg.before", "pkg.new_before")):
+        result = prepare_published_import_readout(tip.pin.memory._source, tip.pin, index, destination,
+                                                  _FixtureTokenizer(), context_tokens=4096, max_new_tokens=32)
+        assert result.quotes[0].declaring_module == entry and result.witness.strength == pytest.approx(.5)
+
+    fitted_later = receiver.step(tip.pin.protected[0])
+    assert fitted_later.grades[downstream] > 0.
+    bypassed = receiver.step(receiver.start(read("pkg.start").feedback.seed, tip.pin.memory), use_operator=False)
+    assert np.isneginf(receiver.step(bypassed).grades[downstream])
+    held_out = receiver.step(receiver.start(read("pkg.start").feedback.seed * 1.1, tip.pin.memory))
+    assert held_out.grades[coords["pkg.before"]] == pytest.approx(.575)
+
+    original_fit = imports.RepositoryImportMemory.draft_feedback_fitted_handoffs
+
+    def explicit_choices_only(self, *args, targets=None, **kwargs):
+        assert targets is not None
+        return original_fit(self, *args, targets=targets, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(imports.RepositoryImportMemory, "draft_feedback_fitted_handoffs", explicit_choices_only)
+        recovered = JournaledRepositoryImportWorkspace(path, workspace.pin()).snapshot()
+    assert recovered.digest == tip.digest
+
+    # Zero rows conceal a new destination reached on the first read. The fitted row would feed back and
+    # activate other new entries on a later protected read, even though its unrelated absence still holds.
+    quiet_seed = np.zeros(width)
+    quiet_seed[coords["pkg"]] = .75
+    quiet = receiver.step(receiver.step(receiver.start(quiet_seed, memory)))
+    quiet_guard = RelationOutcomeGuard(grades=[TerminalRelationGrade(coords["pkg.always"])])
+    more = DisjointFeedbackWorkspace(receiver, memory, outcome_guards=[
+        *zip(workspace.pin().protected, workspace.pin()._outcomes, strict=True), (quiet, quiet_guard),
+    ])
+    guarded = JournaledRepositoryImportWorkspace(repo / "negative-activation.db", more.pin(), create=True)
+    leaky = _commit(repo, {"__init__.py": "import pkg.tap\n", "tap.py": "import pkg.new_before\n"})
+    parent = guarded.snapshot()
+    changed = source.revise(leaky)
+    proposal, _ = changed.draft_feedback_fitted_handoffs(source, receiver, parent.pin, max_update_norm=2.)
+    affected, _ = receiver.rebase(quiet, proposal)
+    assert quiet_guard._evaluate(affected) == ()
+    with pytest.raises(RelationGuardFailed, match="unexpected appended entries"):
+        guarded.repair(parent, leaky, max_update_norm=2.)
+    assert guarded.snapshot() is parent
+
+
 def test_growth_discovery_refuses_ambiguous_paths_and_the_source_only_control(history):
     repo, first, _, _ = history
     _git(repo, "checkout", "--detach", first)
