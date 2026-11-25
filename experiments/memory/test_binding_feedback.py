@@ -11,7 +11,9 @@ from experiments.memory.binding_maintenance import (
     _project_context_route, discover_binding_context, propose_binding_context, propose_binding_program,
 )
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _ProofWork
-from experiments.memory.binding_replay import _receiver_digest, program_binding_context, program_binding_coordinates, route_norm_cap
+from experiments.memory.binding_replay import (
+    _receiver_digest, apply_receiver_program, program_binding_context, program_binding_coordinates, route_norm_cap,
+)
 from experiments.memory.corpus_binding_journal import (
     CorpusProgramExpectation, CorpusProgramProbe, JournaledCorpusWorkspace,
 )
@@ -1030,6 +1032,171 @@ def test_context_retirement_cannot_publish_across_a_new_source_revision(tmp_path
     pin = workspace.snapshot()
     assert _receiver_digest(workspace.receiver_at(pin, root)) == _receiver_digest(receiver)
     assert workspace.finish_program_trial(draft.trial.trial_id, receiver=receiver).status == "horizon_passed"
+
+
+def _restoration_fixture(tmp_path):
+    frame, path, workspace, root, active, active_pin, probes = _retirement_fixture(tmp_path)
+    quiet = _write(workspace, {"p": b"p,1,0,0.70"})
+    retirement = workspace.begin_context_retirement(quiet, active, (), future_batches=1, max_candidates=1,
+                                                    max_replay_events=quiet.revision + 1, atol=0.)
+    assert retirement.status == "opened"
+    _write(workspace, {"weak": b"end,1,0,0.32"})
+    assert workspace.finish_program_trial(retirement.trial.trial_id, receiver=active).status == "published"
+    pin = workspace.snapshot()
+    shorter = workspace.receiver_at(pin, root)
+    assert not shorter._coordinate_terms
+    return frame, path, workspace, root, active_pin, active, pin, shorter, probes
+
+
+def _restoration_options(pin, seed, **options):
+    return dict(seed=seed, terminal_node="end", steps=3, minimum_gain=.15, future_batches=2, max_candidates=2,
+                max_replay_events=pin.revision + 2, max_update_norm=4.) | options
+
+
+def _install_newer_context(workspace, quiet, shorter, seed, guard_seed, *, protect_seed=False):
+    guard_start = shorter.start(guard_seed, quiet.memory)
+    desired = shorter.step(guard_start).latest.copy()
+    desired[2], desired[3] = .8, 0.
+    guard = shorter.start(seed, quiet.memory)
+    for _ in range(3):
+        guard = shorter.step(guard)
+    newer, _, _ = program_binding_context(shorter, guard_start, desired, max_update_norm=5., protect=(guard,))
+    addresses = (("q", 0), ("end", 1))
+    expectation = CorpusProgramExpectation(CorpusProgramProbe(addresses), quiet.memory.resolve_disjoint(addresses))
+    protected = ()
+    if protect_seed:
+        probe = CorpusProgramProbe(tuple(read.address for read in guard.reads))
+        protected = ((seed, CorpusProgramExpectation(probe, guard.reads[-1].bounds)),)
+    newer_trial = workspace.begin_coordinate_trial(quiet, shorter, newer, seed=guard_seed, target=expectation,
+                                                   future_batches=1, max_update_norm=5., protect=protected)
+    _write(workspace, {"shared": b"shared,0,1,0.66"})
+    assert workspace.finish_program_trial(newer_trial.trial_id, receiver=shorter).status == "published"
+    return newer
+
+
+def test_context_restoration_recovers_the_archived_term_before_a_newer_live_term(tmp_path):
+    frame, path, workspace, root, active_pin, active, quiet, shorter, probes = _restoration_fixture(tmp_path)
+    seed, guard_seed = probes[0][0], probes[1][0]
+    asleep = workspace.begin_context_restoration(quiet, shorter, **_restoration_options(quiet, seed))
+    assert asleep.status == "no_restoration" and asleep.examined == 1
+
+    newer = _install_newer_context(workspace, quiet, shorter, seed, guard_seed)
+    base = _write(workspace, {"p": b"p,1,0,0.94"})
+    incumbent = workspace.receiver_at(base, root)
+    assert len(incumbent._coordinate_terms) == 1
+    capped = workspace.begin_context_restoration(base, incumbent, **_restoration_options(base, seed, max_update_norm=.01))
+    assert capped.status == "no_restoration" and capped.examined == 1
+    aliased_seed = seed.copy()
+    aliased_seed[1] = -0.
+    options = _restoration_options(base, aliased_seed, probes=((guard_seed, 1),))
+    restore = workspace.begin_context_restoration(base, incumbent, **options)
+    assert restore.status == "opened" and restore.examined == 1
+    assert restore.target.probe.addresses[-1] == ("end", 1)
+    assert restore.target.expected.certain.strength == .66
+    assert workspace.begin_context_restoration(base, incumbent, **options) == restore
+
+    _write(workspace, {"p": b"p,1,0,0.95"})
+    later = _write(workspace, {"weak": b"end,1,0,0.34"})
+    independent = JournaledCorpusWorkspace(path, frame)
+    receipt = independent.finish_program_trial(restore.trial.trial_id, receiver=incumbent)
+    assert receipt.status == "published" and receipt.published_revision == later.revision + 1
+
+    def no_encoding(_raw):
+        pytest.fail("restoration recovery attempted encoding")
+
+    reopened = JournaledCorpusWorkspace(path, replace(frame, _encode=no_encoding))
+    pin = reopened.snapshot()
+    restored = reopened.receiver_at(pin, root)
+    assert len(restored._coordinate_terms) == 2
+    for observed, expected in zip(restored._coordinate_terms, (active._coordinate_terms[0], newer._coordinate_terms[0]),
+                                  strict=True):
+        for actual, archived in zip(observed, expected, strict=True):
+            np.testing.assert_array_equal(actual, archived)
+    assert _receiver_digest(workspace.receiver_at(active_pin, root)) == _receiver_digest(active)
+    assert reopened.finish_program_trial(restore.trial.trial_id) == receipt
+    repeated = reopened.begin_context_restoration(pin, restored, **_restoration_options(pin, seed))
+    assert repeated.status == "no_restoration" and repeated.examined == 0
+    assert pin._receiver_programs[-1][3] == (restore.retirement, 0)
+    explicit_guard = guard_seed.tolist(), 1
+    inherited_target = guard_seed.tolist(), 2
+    assert explicit_guard in reopened._published_coordinate_probes(pin.revision, omit_target=explicit_guard)
+    assert inherited_target not in reopened._published_coordinate_probes(pin.revision, omit_target=inherited_target)
+
+
+def test_context_restoration_rejects_a_lost_gain_on_a_middle_source_pin(tmp_path):
+    _, _, workspace, root, _, _, _, shorter, probes = _restoration_fixture(tmp_path)
+    seed = probes[0][0]
+    base = _write(workspace, {"p": b"p,1,0,0.94"})
+    draft = workspace.begin_context_restoration(base, shorter, **_restoration_options(base, seed))
+    assert draft.status == "opened"
+    _write(workspace, {"weak": b"end,1,0,0.64"})
+    tip = _write(workspace, {"weak": b"end,1,0,0.32"})
+    assert tip.memory.resolve_disjoint(draft.target.probe.addresses) == draft.target.expected
+    outcome = workspace.finish_program_trial(draft.trial.trial_id, receiver=shorter)
+    assert outcome.status == "coordinate_gain_lost" and outcome.observed_revision == tip.revision
+    assert not workspace.receiver_at(workspace.snapshot(), root)._coordinate_terms
+
+
+def test_context_restoration_keeps_an_explicit_prior_guard_on_its_target_seed(tmp_path):
+    _, _, workspace, root, _, _, quiet, shorter, probes = _restoration_fixture(tmp_path)
+    seed, guard_seed = probes[0][0], probes[1][0]
+    _install_newer_context(workspace, quiet, shorter, seed, guard_seed, protect_seed=True)
+    base = _write(workspace, {"p": b"p,1,0,0.94"})
+    incumbent = workspace.receiver_at(base, root)
+    aliased_seed = seed.copy()
+    aliased_seed[1] = -0.
+    verdict = workspace.begin_context_restoration(base, incumbent, **_restoration_options(base, aliased_seed))
+    assert verdict.status == "no_restoration" and verdict.examined == 1
+    assert workspace.pending_program_trials(limit=2) == ()
+
+
+def test_context_restoration_refuses_factors_already_live_under_another_birth(tmp_path):
+    frame = CorpusBindingMemory.prepare(("p", "end"), np.eye(2), {}, {}, encode=_encode,
+                                        encoder_version="duplicate-context", min_similarity=.6, gap=.05)
+    keys, zero = np.zeros((3, 1)), np.zeros((3, 3))
+    kernel = FeedbackKernel(query=keys, carry=zero, observation_key=keys, observation_value=zero,
+                            feedback_key=keys, feedback_value=zero, max_steps=2)
+    observation = np.zeros((6, 3))
+    observation[0, 1], observation[3, 2] = .75, 1.
+    addresses = (("p", 0), ("end", 0), ("end", 1))
+    root = BindingFeedback(kernel, frame, addresses, query=np.eye(3), observation=observation, disjoint_reads=True)
+    journal = JournaledCorpusWorkspace(tmp_path / "duplicate-context.sqlite", frame, create=True)
+    seed = [1., 0., 0.]
+    term = ConditionalTerm((1., 0., 0.), (1., 0.), (0., 0., .25), 0.)
+    target = (addresses[0], addresses[2])
+
+    def publish_term(base, strong_source):
+        before = journal.receiver_at(base, root)
+        after = before._with_coordinate_term(term)
+        expected = CorpusProgramExpectation(CorpusProgramProbe(target), base.memory.resolve_disjoint(target))
+        trial = journal.begin_coordinate_trial(base, before, after, seed=seed, target=expected,
+                                               future_batches=1, max_update_norm=.25)
+        _write(journal, {"strong": strong_source})
+        assert journal.finish_program_trial(trial.trial_id, receiver=before).status == "published"
+        return after
+
+    start = _write(journal, {"p": b"p,1,0,0.625", "weak": b"end,1,0,0.0625", "strong": b"end,0,1,0.875"})
+    original = publish_term(start, b"end,0,1,0.9375")
+    quiet = _write(journal, {"p": b"p,1,0,0.375"})
+    retirement = journal.begin_context_retirement(quiet, original, (), future_batches=1, max_candidates=1,
+                                                  max_replay_events=quiet.revision + 1, atol=.25)
+    _write(journal, {"strong": b"end,0,1,0.875"})
+    assert journal.finish_program_trial(retirement.trial.trial_id, receiver=original).status == "published"
+    assert not journal.receiver_at(journal.snapshot(), root)._coordinate_terms
+
+    revived = _write(journal, {"p": b"p,1,0,0.625"})
+    incumbent = publish_term(revived, b"end,0,1,0.9375")
+    base = _write(journal, {"p": b"p,1,0,0.375"})
+    duplicate = incumbent._with_coordinate_term(term)
+    assert incumbent.step(incumbent.step(incumbent.start(seed, base.memory))).reads[-1].address == addresses[1]
+    assert duplicate.step(duplicate.step(duplicate.start(seed, base.memory))).reads[-1].address == addresses[2]
+    result = journal.begin_context_restoration(base, incumbent, seed=seed, terminal_node="end", steps=2,
+                                               future_batches=1, minimum_gain=.125, max_candidates=1,
+                                               max_replay_events=base.revision + 1, max_update_norm=.25)
+    assert result.status == "no_restoration" and result.examined == 1
+    forged = _receiver_digest(incumbent), _receiver_digest(duplicate), "restore_context", (1, 0)
+    with pytest.raises(ValueError, match="identical live term"):
+        apply_receiver_program(incumbent, forged, programs=base._receiver_programs)
 
 
 def _repair_receiver(frame, *, trials=1, earlier="p", observe=True, proof_limit=65536, reuse_weighted_matching=False):

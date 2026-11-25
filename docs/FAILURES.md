@@ -195,6 +195,10 @@ The guarded maintenance trial now refuses the same route drift. A separate contr
 
 **An agreeing tip can hide a temporary regression, 25 November 2026.** In the retirement fixture, changing one source grade made the installed term necessary on the middle pin. The final pin agreed again. Replaying the full prospective window prevented retirement, using the affected probe recovered from the earlier publication. A separate removal passed its window and lost that route when the evidence reappeared after publication. Treat a retirement receipt as scoped to the checked runs and revisions. [Retirement controls](../experiments/memory/test_binding_feedback.py)
 
+**A recovered proof can lose its gain inside the prospective restoration window, 25 November 2026.** A middle source batch improved the incumbent while the archived term's target proof stayed fixed. The restoration judge refused publication. A prior explicit guard on the target run also blocked a separate restoration at opening. Retain both the exact proof and its gain, and derive the archived term's insertion from the journal's birth order so that intervening updates keep their order. [Restoration controls](../experiments/memory/test_binding_feedback.py)
+
+**A distinct journal birth can duplicate a live context term, 25 November 2026.** An audit found a synthetic trajectory in which the duplicate doubles a contribution and switches the winning route. Reject identical live factors during search and replay. The audits also found that merging protected runs or comparing their serialized seeds can make an inherited target act as a permanent guard. Preserve explicit guard declarations and compare the target's validated seed coordinates numerically so either sign of zero identifies the same target run. [Restoration controls](../experiments/memory/test_binding_feedback.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

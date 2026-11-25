@@ -15,8 +15,9 @@ import numpy as np
 
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _exclusions, _proof_work_limit
 from experiments.memory.binding_replay import (
-    _receiver_digest, apply_receiver_program, check_binding_replay, check_context_retirement, check_coordinate_protection,
-    check_coordinate_replay, freeze_binding_replay, freeze_coordinate_program, require_replay_receiver, route_norm_cap,
+    _receiver_digest, _within_context_norm, apply_receiver_program, archived_context_terms, check_binding_replay,
+    check_context_retirement, check_coordinate_protection, check_coordinate_replay, context_archive, context_term_is_live,
+    freeze_binding_replay, freeze_coordinate_program, require_replay_receiver, route_norm_cap, supported_coordinate_continuation,
     validate_route_program,
 )
 from experiments.memory.corpus_bindings import (
@@ -56,6 +57,15 @@ class CorpusContextRetirement:
     status: str
     examined: int
     position: int | None = None
+    trial: CorpusProgramTrialResult | None = None
+
+
+@dataclass(frozen=True)
+class CorpusContextRestoration:
+    status: str
+    examined: int
+    retirement: int | None = None
+    target: CorpusProgramExpectation | None = None
     trial: CorpusProgramTrialResult | None = None
 
 
@@ -116,7 +126,7 @@ def _decode_route_event(payload):
 def _decode_coordinate_event(payload, anchor_width):
     event = json.loads(payload)
     if (type(event) is not list or len(event) != 2
-            or event[0] not in ("coordinate_program", "context_program", "context_retirement")):
+            or event[0] not in ("coordinate_program", "context_program", "context_retirement", "context_restoration")):
         raise ValueError("invalid coordinate program event")
     patch = event[1]
     if type(patch) is not list or len(patch) != 4:
@@ -129,6 +139,11 @@ def _decode_coordinate_event(payload, anchor_width):
         if (column != "retire_context" or type(weights) is not list or len(weights) != 1
                 or type(weights[0]) is not int or weights[0] < 0):
             raise ValueError("invalid context retirement position")
+        return before, after, column, tuple(weights)
+    if event[0] == "context_restoration":
+        if (column != "restore_context" or type(weights) is not list or len(weights) != 2
+                or any(type(value) is not int or value < 0 for value in weights)):
+            raise ValueError("invalid context restoration reference")
         return before, after, column, tuple(weights)
     if event[0] == "context_program":
         if column != "context" or type(weights) is not list or len(weights) != 4:
@@ -314,6 +329,13 @@ def _check_program_trial(memory, preview, spec):
     return "published" if gained_target else "no_target_gain"
 
 
+def _check_context_restoration(receiver, candidate, memory, seed, addresses, expected, minimum_gain, probes, atol):
+    status = check_coordinate_replay(receiver, candidate, memory, seed, addresses, expected, minimum_gain=minimum_gain)
+    if status == "published" and check_context_retirement(receiver, candidate, memory, probes, atol) != "published":
+        return "restoration_protected_changed"
+    return status
+
+
 class JournaledCorpusWorkspace(CorpusBindingWorkspace):
     """Replay encoded source changes and wiring changes without calling the encoder."""
 
@@ -395,7 +417,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             if payload.startswith(b'["route_program",'):
                 gates, patch = _decode_route_event(payload)
                 tip = self._install_program_revision(tip, tip.memory.reprogram(gates), patch)
-            elif payload.startswith((b'["coordinate_program",', b'["context_program",', b'["context_retirement",')):
+            elif payload.startswith((b'["coordinate_program",', b'["context_program",', b'["context_retirement",',
+                                     b'["context_restoration",')):
                 patch = _decode_coordinate_event(payload, tip.memory._anchors.shape[1])
                 tip = self._install_program_revision(tip, tip.memory, patch)
             elif payload.startswith(b'["program",'):
@@ -421,8 +444,10 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
     def receiver_at(self, revision, root):
         """Recover the receiver for a pinned revision from its original receiver."""
         self._check_owner(revision)
+        prefix = []
         for patch in revision._receiver_programs:
-            root = apply_receiver_program(root, patch)
+            root = apply_receiver_program(root, patch, programs=prefix)
+            prefix.append(patch)
         return root
 
     def snapshot(self):
@@ -547,23 +572,12 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         before = _receiver_digest(receiver)
         if base._receiver_programs and base._receiver_programs[-1][1] != before:
             raise ValueError("context retirement does not use the installed receiver")
-        future_batches, max_candidates, max_replay_events = map(index, (future_batches, max_candidates, max_replay_events))
-        if min(future_batches, max_candidates) < 1 or max_replay_events < base.revision + future_batches:
-            raise ValueError("context retirement needs positive limits covering the planned replay")
-        atol = float(atol)
-        if not np.isfinite(atol) or atol < 0.:
-            raise ValueError("context retirement needs a finite nonnegative tolerance")
+        future_batches, max_candidates, max_replay_events, atol = self._context_window_limits(
+            base, future_batches, max_candidates, max_replay_events, atol)
         memory = _cold_trial_memory(base.memory)
-        runs = {}
-        for seed, steps in (*probes, *self._published_coordinate_probes(base.revision)):
-            steps = index(steps)
-            if not 1 <= steps <= receiver._kernel._max_steps:
-                raise ValueError("context retirement probe must complete within the receiver horizon")
-            run = receiver.start(seed, memory).feedback.seed.tolist(), steps
-            runs[_json(run)] = run
-        if not runs:
+        probes = self._context_probe_runs(receiver, memory, (*probes, *self._published_coordinate_probes(base.revision)))
+        if not probes:
             raise ValueError("context retirement needs at least one ordinary probe")
-        probes = tuple(runs.values())
         count = len(receiver._coordinate_terms)
         examined = min(count, max_candidates)
         for position in range(examined):
@@ -578,7 +592,79 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         status = "candidate_limit" if examined < count else "no_retirement"
         return CorpusContextRetirement(status, examined)
 
-    def _published_coordinate_probes(self, revision):
+    def begin_context_restoration(self, base, receiver, *, seed, terminal_node, steps, minimum_gain,
+                                  future_batches, max_candidates, max_replay_events, max_update_norm, probes=(),
+                                  atol=1e-8):
+        """Propose a previously published term that can recover a useful continuation."""
+        self._check_owner(base)
+        if self.snapshot() is not base:
+            raise StaleCorpusRevision("corpus workspace tip changed")
+        before = _receiver_digest(receiver)
+        if base._receiver_programs and base._receiver_programs[-1][1] != before:
+            raise ValueError("context restoration does not use the installed receiver")
+        future_batches, max_candidates, max_replay_events, atol = self._context_window_limits(
+            base, future_batches, max_candidates, max_replay_events, atol)
+        steps, cap, minimum_gain = index(steps), route_norm_cap(max_update_norm), _trial_grade(minimum_gain)
+        terminal_node = _trial_name(terminal_node)
+        if (minimum_gain == 0. or not 2 <= steps <= receiver._kernel._max_steps or not receiver._disjoint_reads
+                or receiver._expansion is not None or all(node != terminal_node for node, _ in receiver._addresses)):
+            raise ValueError("context restoration needs a fixed disjoint continuation and positive proof gain")
+        memory = _cold_trial_memory(base.memory)
+        seed = receiver.start(seed, memory).feedback.seed.tolist()
+        inherited = self._published_coordinate_probes(base.revision, omit_target=(seed, steps))
+        explicit_probes = self._context_probe_runs(receiver, memory, probes)
+        probes = self._context_probe_runs(receiver, memory, (*explicit_probes, *inherited))
+        archives = archived_context_terms(receiver, base._receiver_programs)
+        examined = min(len(archives), max_candidates)
+        for attempt, archive in enumerate(archives[:examined], start=1):
+            retirement, origin, position, *factors = archive
+            if context_term_is_live(receiver, factors):
+                continue
+            term = ConditionalTerm(*factors)
+            if not _within_context_norm(term, cap):
+                continue
+            candidate = receiver._with_coordinate_term(term, position=position)
+            continuation = supported_coordinate_continuation(candidate, memory, seed, steps)
+            if continuation is None or continuation[0][-1][0] != terminal_node:
+                continue
+            addresses, expected = continuation
+            if _check_context_restoration(receiver, candidate, memory, seed, addresses, expected, minimum_gain,
+                                          probes, atol) != "published":
+                continue
+            target = CorpusProgramExpectation(CorpusProgramProbe(addresses), expected)
+            _, frozen_target = self._coordinate_trial_case(memory, receiver, seed, target)
+            patch = before, _receiver_digest(candidate), "restore_context", (retirement, origin)
+            program = _json(["context_restoration", patch])
+            spec = dict(version=9, future_batches=future_batches, max_replay_events=max_replay_events,
+                        seed=seed, target=frozen_target, minimum_gain=minimum_gain, update_limit=cap,
+                        explicit_probes=explicit_probes, probes=probes, atol=atol)
+            trial = self._record_program_trial(base, program, spec, reuse_pending=True)
+            return CorpusContextRestoration("opened", attempt, retirement, target, trial)
+        status = "candidate_limit" if examined < len(archives) else "no_restoration"
+        return CorpusContextRestoration(status, examined)
+
+    @staticmethod
+    def _context_window_limits(base, future_batches, max_candidates, max_replay_events, atol):
+        future_batches, max_candidates, max_replay_events = map(index, (future_batches, max_candidates, max_replay_events))
+        if min(future_batches, max_candidates) < 1 or max_replay_events < base.revision + future_batches:
+            raise ValueError("context trial needs positive limits covering the planned replay")
+        atol = float(atol)
+        if not np.isfinite(atol) or atol < 0.:
+            raise ValueError("context trial needs a finite nonnegative tolerance")
+        return future_batches, max_candidates, max_replay_events, atol
+
+    @staticmethod
+    def _context_probe_runs(receiver, memory, probes):
+        runs = {}
+        for seed, steps in probes:
+            steps = index(steps)
+            if not 1 <= steps <= receiver._kernel._max_steps:
+                raise ValueError("context probe must complete within the receiver horizon")
+            run = receiver.start(seed, memory).feedback.seed.tolist(), steps
+            runs[_json(run)] = run
+        return tuple(runs.values())
+
+    def _published_coordinate_probes(self, revision, *, omit_target=None):
         """Recover the ordinary cases behind durable coordinate and context publications."""
         with closing(self._connect()) as db:
             db.execute("BEGIN")
@@ -591,12 +677,18 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 WHERE t.status = 'published' AND e.revision <= ? ORDER BY e.revision""", (revision,)))
         probes = []
         for program, frozen in rows:
-            if not program.startswith((b'["coordinate_program",', b'["context_program",')):
+            if not program.startswith((b'["coordinate_program",', b'["context_program",', b'["context_restoration",')):
                 continue
             spec = json.loads(frozen)
-            cases = ((spec["seed"], spec["target"]), *spec.get("coordinate_protected", ()))
-            for seed, ((addresses, _), _, _) in cases:
+            (target_addresses, _), _, _ = spec["target"]
+            target = spec["seed"], len(target_addresses)
+            # Float64 seeds compare numerically, including either sign of zero.
+            if target != omit_target:
+                probes.append(target)
+            for seed, ((addresses, _), _, _) in spec.get("coordinate_protected", ()):
                 probes.append((seed, len(addresses)))
+            if spec["version"] == 9:
+                probes.extend((seed, steps) for seed, steps in spec["explicit_probes"])
         return tuple(probes)
 
     def _record_program_trial(self, base, program, spec, *, reuse_pending=False):
@@ -685,10 +777,10 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             revision = suffix[-1][0] if suffix else self._tip.revision
             opened, program_revision, program, frozen, outcome = self._read_program_trial(db, trial_id, revision)
             spec = None if outcome is not None else json.loads(frozen)
-            retirement_events = None
-            if (spec is not None and spec["version"] == 8 and receiver is not None
+            window_events = None
+            if (spec is not None and spec["version"] in (8, 9) and receiver is not None
                     and revision - opened == spec["future_batches"] and revision <= spec["max_replay_events"]):
-                retirement_events = tuple(db.execute(
+                window_events = tuple(db.execute(
                     "SELECT revision, parent, digest, payload FROM corpus_events WHERE revision <= ? ORDER BY revision",
                     (revision,),
                 ))
@@ -700,7 +792,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
 
         checked_digest = digest
         version = spec["version"]
-        if version not in (1, 2, 3, 4, 5, 6, 7, 8):
+        if version not in (1, 2, 3, 4, 5, 6, 7, 8, 9):
             raise ValueError("unknown corpus program trial version")
         steps = base.revision - opened
         proposal = None
@@ -718,17 +810,32 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             if patch[2] != "retire_context":
                 raise ValueError("retirement trial needs a context retirement event")
             candidate_receiver = apply_receiver_program(receiver, patch)
-            if retirement_events is None:
+            if window_events is None:
                 status = "retirement_replay_limit"
             else:
-                status = self._check_retirement_window(retirement_events, opened, base.revision, checked_digest,
+                status = self._check_retirement_window(window_events, opened, base.revision, checked_digest,
                                                        receiver, candidate_receiver, spec)
+        elif version == 9:
+            if receiver is None:
+                return CorpusProgramTrialResult(trial_id, "receiver_required", base.revision)
+            patch = _decode_coordinate_event(program, base.memory._anchors.shape[1])
+            if patch[2] != "restore_context":
+                raise ValueError("restoration trial needs a context restoration event")
+            archive = context_archive(receiver, base._receiver_programs, patch[3])
+            if not _within_context_norm(ConditionalTerm(*archive[3:]), route_norm_cap(spec["update_limit"])):
+                raise ValueError("restored term exceeds its exact update norm cap")
+            candidate_receiver = apply_receiver_program(receiver, patch, programs=base._receiver_programs)
+            if window_events is None:
+                status = "restoration_replay_limit"
+            else:
+                status = self._check_restoration_window(window_events, opened, base.revision, checked_digest,
+                                                        receiver, candidate_receiver, spec)
         elif version >= 5:
             if receiver is None:
                 return CorpusProgramTrialResult(trial_id, "receiver_required", base.revision)
             patch = _decode_coordinate_event(program, base.memory._anchors.shape[1])
-            if patch[2] == "retire_context":
-                raise ValueError("retirement event needs a retirement trial")
+            if patch[2] in ("retire_context", "restore_context"):
+                raise ValueError("context lifecycle event needs a matching trial version")
             if version == 5 and (patch[2] == "context" or "coordinate_protected" in spec):
                 raise ValueError("coordinate trial version does not match its program")
             minimum_gain = spec.get("coordinate_minimum_gain")
@@ -805,14 +912,35 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             return outcome
 
     def _check_retirement_window(self, events, opened, revision, checked_digest, receiver, candidate, spec):
+        return self._check_context_window(events, opened, revision, checked_digest,
+                                          lambda memory: check_context_retirement(receiver, candidate, memory,
+                                                                                 spec["probes"], spec["atol"]))
+
+    def _check_restoration_window(self, events, opened, revision, checked_digest, receiver, candidate, spec):
+        (raw_addresses, _), witness, upper = spec["target"]
+        addresses = tuple(tuple(address) for address in raw_addresses)
+        expected = _expected_read(witness, upper)
+        minimum_gain = _trial_grade(spec["minimum_gain"])
+        if minimum_gain == 0.:
+            raise ValueError("a context restoration proof gain must be positive")
+        inherited = self._published_coordinate_probes(opened, omit_target=(spec["seed"], len(addresses)))
+        required = {_json(run) for run in (*spec["explicit_probes"], *inherited)}
+        protected = {_json(probe) for probe in spec["probes"]}
+        if protected != required:
+            raise ValueError("context restoration protections do not match explicit and inherited runs")
+        return self._check_context_window(events, opened, revision, checked_digest,
+                                          lambda memory: _check_context_restoration(
+                                              receiver, candidate, memory, spec["seed"], addresses, expected,
+                                              minimum_gain, spec["probes"], spec["atol"]))
+
+    def _check_context_window(self, events, opened, revision, checked_digest, check):
         tip, digest = self._root_tip, sha256(self._frame + self._stream).digest()
         status = "published"
         for tip, digest in self._replay_states(events, tip, digest):
             if tip.revision > opened and status == "published":
-                status = check_context_retirement(receiver, candidate, _cold_trial_memory(tip.memory),
-                                                  spec["probes"], spec["atol"])
+                status = check(_cold_trial_memory(tip.memory))
         if tip.revision != revision or digest != checked_digest:
-            raise ValueError("retirement replay did not recover the checked tip")
+            raise ValueError("context window replay did not recover the checked tip")
         return status
 
     def _append(self, db, parent, revision, payload):

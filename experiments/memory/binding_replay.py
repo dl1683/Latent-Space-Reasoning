@@ -1,5 +1,6 @@
 """Freeze and check a binding repair's feedback trajectory across source revisions."""
 
+from bisect import bisect_left
 from fractions import Fraction
 from hashlib import sha256
 import json
@@ -148,7 +149,7 @@ def program_binding_route(incumbent, repaired, address, *, margin, max_update_no
     return before, after, column, weights
 
 
-def apply_receiver_program(receiver, patch):
+def apply_receiver_program(receiver, patch, *, programs=()):
     before, after, column, weights = patch
     if _receiver_digest(receiver) != before:
         raise ValueError("receiver program needs the matching incumbent receiver")
@@ -156,6 +157,9 @@ def apply_receiver_program(receiver, patch):
         candidate = receiver._with_coordinate_term(ConditionalTerm(*weights))
     elif column == "retire_context":
         candidate = receiver._without_coordinate_term(weights[0])
+    elif column == "restore_context":
+        archive = context_archive(receiver, programs, weights)
+        candidate = receiver._with_coordinate_term(ConditionalTerm(*archive[3:]), position=archive[2])
     elif column is None:
         candidate = receiver._with_coordinate_value(weights)
     elif 0 <= column < len(receiver._addresses):
@@ -165,6 +169,44 @@ def apply_receiver_program(receiver, patch):
     if _receiver_digest(candidate) != after or before == after:
         raise ValueError("programmed receiver fingerprint mismatch")
     return candidate
+
+
+def archived_context_terms(receiver, programs):
+    """Return eligible retirements with their chronological insertion positions and factors."""
+    initial = len(receiver._coordinate_terms)
+    for _, _, kind, _ in programs:
+        initial += (kind == "retire_context") - (kind in ("context", "restore_context"))
+    if initial < 0:
+        raise ValueError("context history is inconsistent with the installed receiver")
+    live, factors, retired = list(range(-initial, 0)), {}, {}
+    for ordinal, (_, _, kind, weights) in enumerate(programs):
+        if kind == "context":
+            live.append(ordinal)
+            factors[ordinal] = weights
+        elif kind == "retire_context":
+            retired[ordinal] = live.pop(weights[0])
+        elif kind == "restore_context":
+            retirement, expected_origin = weights
+            origin = retired.pop(retirement, None)
+            if origin != expected_origin or origin not in factors:
+                raise ValueError("restored term does not match its journal ancestry")
+            live.insert(bisect_left(live, origin), origin)
+    return tuple((retirement, origin, bisect_left(live, origin), *factors[origin])
+                 for retirement, origin in reversed(retired.items()) if origin in factors)
+
+
+def context_archive(receiver, programs, reference):
+    archive = next((item for item in archived_context_terms(receiver, programs) if item[:2] == reference), None)
+    if archive is None:
+        raise ValueError("context restoration does not reference a dormant published term")
+    if context_term_is_live(receiver, archive[3:]):
+        raise ValueError("context restoration would duplicate an identical live term")
+    return archive
+
+
+def context_term_is_live(receiver, factors):
+    return any(all(np.array_equal(expected, actual) for expected, actual in zip(factors, live, strict=True))
+               for live in receiver._coordinate_terms)
 
 
 def _clears_opening_rank(receiver, hidden, column):
@@ -368,6 +410,26 @@ def coordinate_proof_gain(incumbent, terminal_node, expected, minimum_gain):
     if incumbent.status == "resolved" and incumbent.address[0] == terminal_node:
         possible = incumbent.bounds.possible_strength or 0.
     return Fraction(float(expected.certain.strength)) - Fraction(float(possible)) >= Fraction(minimum_gain)
+
+
+def supported_coordinate_continuation(receiver, memory, seed, steps):
+    """Read a complete ordinary continuation through the terminal proof."""
+    state = receiver.start(seed, memory)
+    addresses = []
+    try:
+        with np.errstate(**_REPLAY_ERRORS):
+            for step in range(steps):
+                if step + 1 == steps:
+                    read = receiver._next_read(state)
+                else:
+                    state = receiver.step(state)
+                    read = state.reads[-1]
+                if read.status != "resolved" or read.bounds.certain is None or not read.bounds.is_exact:
+                    return None
+                addresses.append(read.address)
+    except FloatingPointError:
+        return None
+    return tuple(addresses), read.bounds
 
 
 def check_coordinate_replay(receiver, candidate, memory, seed, addresses, expected, *, minimum_gain=None):

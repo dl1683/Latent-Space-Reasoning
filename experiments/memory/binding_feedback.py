@@ -190,7 +190,7 @@ class BindingFeedback:
         candidate._coordinate_value = None if weight is None else self._kernel._weight(weight, shape)
         return candidate
 
-    def _with_coordinate_term(self, term):
+    def _with_coordinate_term(self, term, *, position=None):
         if type(term) is not ConditionalTerm or term.threshold is None:
             raise ValueError("coordinate context needs a hinged conditional term")
         anchor = _frozen(_real_array(term.observation_axis))
@@ -198,8 +198,13 @@ class BindingFeedback:
             raise ValueError("coordinate context anchor axis has the wrong width")
         state = self._kernel._vector(term.state_axis)
         output = self._kernel._vector(term.output)
+        if position is None:
+            position = len(self._coordinate_terms)
+        if not 0 <= position <= len(self._coordinate_terms):
+            raise ValueError("context insertion position is outside the receiver")
         candidate = copy(self)
-        candidate._coordinate_terms = (*self._coordinate_terms, (state, anchor, output, term.threshold))
+        candidate._coordinate_terms = (*self._coordinate_terms[:position], (state, anchor, output, term.threshold),
+                                        *self._coordinate_terms[position:])
         return candidate
 
     def _without_coordinate_term(self, position):
