@@ -3,6 +3,7 @@
 from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from heapq import heappop, heappush
+from itertools import count
 from numbers import Real
 from operator import index
 from types import MappingProxyType
@@ -23,6 +24,12 @@ class BindingCapacityError(ValueError):
 class BindingGate:
     operation: str
     parents: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class BindingProof:
+    strength: float
+    sources: frozenset[str]
 
 
 @dataclass(frozen=True)
@@ -93,16 +100,20 @@ class BindingMemory:
     _predicates: frozenset[str]
     _gates: tuple[tuple[str, BindingGate], ...]
     _dependents: Mapping[str, tuple[int, ...]]
+    _gate_index: Mapping[str, int]
     _sources: Mapping[str, Mapping[tuple[str, int], float]]
     _rows: Mapping[tuple[str, int], _Support]
+    materialize: bool = True
 
     @classmethod
-    def prepare(cls, predicates, width, gates, sources, *, term_limit=64, pair_limit=65536):
+    def prepare(cls, predicates, width, gates, sources, *, term_limit=64, pair_limit=65536, materialize=True):
         """Compile gates in topological order and apply the initial source batch."""
         predicates = tuple(predicates)
         width, term_limit, pair_limit = index(width), index(term_limit), index(pair_limit)
         if min(width, term_limit, pair_limit) < 1:
             raise ValueError("binding width and limits must be positive")
+        if type(materialize) is not bool:
+            raise ValueError("materialize must be a boolean")
         if (not predicates or any(type(name) is not str or not name for name in predicates)
                 or len(set(predicates)) != len(predicates)):
             raise ValueError("input predicates must have unique nonempty names")
@@ -121,7 +132,9 @@ class BindingMemory:
             known[name] = []
             ordered.append((name, BindingGate(gate.operation, parents)))
         dependents = MappingProxyType({node: tuple(users) for node, users in known.items()})
-        empty = cls(width, term_limit, pair_limit, frozenset(predicates), tuple(ordered), dependents, _EMPTY, _EMPTY)
+        positions = MappingProxyType({node: position for position, (node, _) in enumerate(ordered)})
+        empty = cls(width, term_limit, pair_limit, frozenset(predicates), tuple(ordered), dependents,
+                    positions, _EMPTY, _EMPTY, materialize)
         return empty.revise(sources)
 
     def revise(self, changes):
@@ -167,7 +180,7 @@ class BindingMemory:
                 rows[key] = _Support(MappingProxyType(dict(terms)), max(terms.values()))
             else:
                 rows.pop(key, None)
-            for user in self._dependents[node]:
+            for user in self._dependents[node] if self.materialize else ():
                 update = (user, binding)
                 if update not in scheduled:
                     heappush(pending, update)
@@ -188,19 +201,152 @@ class BindingMemory:
         """Return the retained source sets and strengths for a specific binding."""
         if node not in self._dependents:
             raise ValueError("unknown binding node")
+        if not self.materialize and node not in self._predicates:
+            raise ValueError("factored gates expose a selected proof through resolve")
         return self._rows.get((node, _checked_binding(binding, self.width)), _UNSUPPORTED).terms
 
+    def resolve(self, node, binding, *, without_sources=(), work_limit=65536):
+        """Select a strongest proof, or return None after establishing no support."""
+        binding = _checked_binding(binding, self.width)
+        if node not in self._dependents:
+            raise ValueError("unknown binding node")
+        excluded = _exclusions(without_sources)
+        if self.materialize:
+            candidates = self.supports(node, binding)
+            strength, origins = max(
+                ((value, sources) for sources, value in candidates.items() if sources.isdisjoint(excluded)),
+                key=lambda item: (item[0], tuple(sorted(item[1]))), default=(-np.inf, None),
+            )
+            return None if origins is None else BindingProof(strength, origins)
+        search = _ProofSearch(self, node, excluded, work_limit)
+        return search.resolve(binding)
 
-def continue_bindings(seed, *, memory=None, output=None, without_sources=()):
-    """Clamp each late seed coordinate by the strongest support at the selected node."""
-    seed = _real_array(seed)
-    if seed.ndim != 1 or not seed.size or np.any((seed < 0) | (seed > 1)):
-        raise ValueError("binding seed must be a nonempty vector in [0, 1]")
+
+def _exclusions(without_sources):
     if isinstance(without_sources, str):
         raise ValueError("without_sources must contain source IDs")
     excluded = frozenset(without_sources)
     if any(type(source) is not str or not source for source in excluded):
         raise ValueError("without_sources must contain source IDs")
+    return excluded
+
+
+@dataclass(frozen=True, eq=False)
+class _Task:
+    node: str
+    guards: tuple[tuple[int, int], ...]
+    following: "_Task | None" = None
+
+
+class _ProofSearch:
+    def __init__(self, memory, output, excluded, work_limit):
+        self.remaining = index(work_limit)
+        if self.remaining < 1:
+            raise ValueError("proof work limit must be positive")
+        self.rows, self.output, self.excluded = memory._rows, output, excluded
+        pending, seen = [output], set()
+        inputs, positions = [], []
+        while pending:
+            node = pending.pop()
+            if node in seen:
+                continue
+            seen.add(node)
+            self.charge()
+            position = memory._gate_index.get(node)
+            if position is None:
+                inputs.append(node)
+            else:
+                _, gate = memory._gates[position]
+                self.charge(len(gate.parents))
+                positions.append(position)
+                pending.extend(gate.parents)
+        self.rules = dict(memory._gates[position] for position in sorted(positions))
+        self.inputs = sorted(inputs)
+
+    def charge(self, amount=1):
+        self.remaining -= amount
+        if self.remaining < 0:
+            raise BindingCapacityError("proof search work limit exceeded")
+
+    def resolve(self, binding):
+        leaves, upper, strengths = {}, {}, set()
+        for node in self.inputs:
+            candidates = self.rows.get((node, binding), _UNSUPPORTED).terms
+            self.charge(1 + len(candidates))
+            choices = [(value, next(iter(sources))) for sources, value in candidates.items()
+                       if sources.isdisjoint(self.excluded)]
+            leaves[node] = sorted(choices, reverse=True)
+            upper[node] = max((value for value, _ in choices), default=-np.inf)
+            strengths.update(value for value, _ in choices)
+        for node, gate in self.rules.items():
+            self.charge(1 + len(gate.parents))
+            reduce = max if gate.operation == "or" else min
+            upper[node] = reduce(upper[parent] for parent in gate.parents)
+        # Ignoring source overlap yields an upper bound, not a feasible proof.
+        ceiling = upper[self.output]
+        if ceiling == -np.inf:
+            return None
+        proof = self.witness(ceiling, upper, leaves)
+        if proof is not None:
+            return BindingProof(ceiling, proof)
+        levels = sorted(value for value in strengths if value < ceiling)
+        lo, hi = 0, len(levels)
+        best = None
+        while lo < hi:
+            middle = (lo + hi) // 2
+            threshold = levels[middle]
+            proof = self.witness(threshold, upper, leaves)
+            if proof is None:
+                hi = middle
+            else:
+                best = BindingProof(threshold, proof)
+                lo = middle + 1
+        return best
+
+    def witness(self, threshold, upper, leaves):
+        scopes = count()
+        stack = [(_Task(self.output, ()), {}, frozenset())]
+        while stack:
+            task, claims, used = stack.pop()
+            while task is not None:
+                self.charge()
+                node, guards, following = task.node, task.guards, task.following
+                if upper[node] < threshold:
+                    break
+                gate = self.rules.get(node)
+                if gate is None:
+                    for strength, source in reversed(leaves[node]):
+                        self.charge(1 + len(guards))
+                        if strength < threshold:
+                            continue
+                        if any(claims.get((scope, source), branch) != branch for scope, branch in guards):
+                            continue
+                        next_claims = claims | {(scope, source): branch for scope, branch in guards}
+                        stack.append((following, next_claims, used | {source}))
+                    break
+                self.charge(len(gate.parents))
+                if gate.operation == "or":
+                    for parent in sorted(gate.parents, key=upper.__getitem__):
+                        if upper[parent] >= threshold:
+                            stack.append((_Task(parent, guards, following), claims, used))
+                    break
+                # Give each invocation its own sibling constraint, even for reused gates.
+                scope = next(scopes) if gate.operation == "disjoint_and" else None
+                for branch in range(len(gate.parents) - 1, -1, -1):
+                    inherited = guards if scope is None else guards + ((scope, branch),)
+                    following = _Task(gate.parents[branch], inherited, following)
+                task = following
+            else:
+                return used
+        return None
+
+
+def continue_bindings(seed, *, memory=None, output=None, without_sources=(), work_limit=65536):
+    """Clamp each late seed coordinate by the strongest support at the selected node."""
+    seed = _real_array(seed)
+    if seed.ndim != 1 or not seed.size or np.any((seed < 0) | (seed > 1)):
+        raise ValueError("binding seed must be a nonempty vector in [0, 1]")
+    excluded = _exclusions(without_sources)
     if memory is None:
         if output is not None or excluded:
             raise ValueError("an output node or source exclusion requires binding memory")
@@ -209,6 +355,14 @@ def continue_bindings(seed, *, memory=None, output=None, without_sources=()):
         raise ValueError("binding seed must match the memory width")
     if output not in memory._dependents:
         raise ValueError("unknown binding node")
+    if not memory.materialize:
+        search = _ProofSearch(memory, output, excluded, work_limit)
+        strengths = np.full(memory.width, -np.inf)
+        for binding in range(memory.width):
+            proof = search.resolve(binding)
+            if proof is not None:
+                strengths[binding] = proof.strength
+        return _frozen(np.minimum(seed, strengths))
     rows = (memory._rows.get((output, binding), _UNSUPPORTED) for binding in range(memory.width))
     if excluded:
         scores = (max((value for origins, value in row.terms.items() if origins.isdisjoint(excluded)),

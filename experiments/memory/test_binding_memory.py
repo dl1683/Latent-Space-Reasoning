@@ -4,7 +4,9 @@ import numpy as np
 import pytest
 
 from experiments.memory import binding_memory
-from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingMemory, continue_bindings
+from experiments.memory.binding_memory import (
+    BindingCapacityError, BindingGate, BindingMemory, BindingProof, continue_bindings,
+)
 
 
 def test_late_conjunction_keeps_binding_and_different_origins():
@@ -85,17 +87,19 @@ def test_forked_gate_graph_matches_explicit_proof_enumeration():
 
     records = {source: facts() for source in ("p", "q", "r", "s")}
     original = BindingMemory.prepare(predicates, 5, gates, records)
+    factored = BindingMemory.prepare(predicates, 5, gates, records, materialize=False)
     replacement, addition = facts(), facts()
     withdrawn = original.revise({"p": None, "q": replacement})
+    factored_withdrawn = factored.revise({"p": None, "q": replacement})
     fork = original.revise({"s": addition})
     recovered = withdrawn.revise({"p": records["p"], "q": records["q"]})
     views = (
-        (original, records),
-        (withdrawn, (records | {"q": replacement}) | {"p": []}),
-        (fork, records | {"s": addition}),
-        (recovered, records),
+        (original, factored, records),
+        (withdrawn, factored_withdrawn, records | {"q": replacement, "p": []}),
+        (fork, factored.revise({"s": addition}), records | {"s": addition}),
+        (recovered, factored_withdrawn.revise({"p": records["p"], "q": records["q"]}), records),
     )
-    for snapshot, sources in views:
+    for snapshot, on_demand, sources in views:
         for node in (*predicates, *gates):
             strongest = []
             for binding in range(5):
@@ -103,10 +107,19 @@ def test_forked_gate_graph_matches_explicit_proof_enumeration():
                 for origins, strength in _proofs(node, binding, gates, sources):
                     expected[origins] = max(expected.get(origins, 0), strength)
                 assert snapshot.supports(node, binding) == expected
+                proof = on_demand.resolve(node, binding)
+                if proof is None:
+                    assert not expected
+                else:
+                    assert proof.strength == expected[proof.sources] == max(expected.values())
                 strongest.append(max(expected.values(), default=-np.inf))
             seed = rng.random(size=5)
             np.testing.assert_array_equal(continue_bindings(seed, memory=snapshot, output=node),
                                           np.minimum(seed, strongest))
+            np.testing.assert_array_equal(
+                continue_bindings(seed, memory=on_demand, output=node, without_sources=("q",)),
+                continue_bindings(seed, memory=snapshot, output=node, without_sources=("q",)),
+            )
 
 
 def test_withdrawal_preview_uses_retained_lineage_without_repair(monkeypatch):
@@ -196,12 +209,12 @@ def test_capacity_and_invalid_edits_leave_prior_snapshot_readable():
 
 
 def test_independent_binary_choices_expand_source_sets_even_when_scores_tie():
-    def bank(count):
+    def bank(count, materialize=True):
         inputs = tuple(f"fact-{i}" for i in range(count))
         gates = {"all": BindingGate("disjoint_and", inputs)}
         sources = {f"{name}/{choice}": [(name, 0, .5)]
                    for name, choice in product(inputs, (0, 1))}
-        return BindingMemory.prepare(inputs, 1, gates, sources, term_limit=64)
+        return BindingMemory.prepare(inputs, 1, gates, sources, term_limit=64, materialize=materialize)
 
     filled = bank(6)
     assert len(filled.supports("all", 0)) == 64
@@ -209,3 +222,62 @@ def test_independent_binary_choices_expand_source_sets_even_when_scores_tie():
     np.testing.assert_array_equal(continue_bindings([1], memory=filled, output="all"), [.5])
     with pytest.raises(BindingCapacityError, match="source-set limit"):
         bank(7)
+    folded = bank(20, materialize=False)
+    assert len(folded._rows) == 20
+    proof = folded.resolve("all", 0, work_limit=300)
+    assert proof.strength == .5 and len(proof.sources) == 20
+    assert {source.split("/")[0] for source in proof.sources} == {f"fact-{i}" for i in range(20)}
+    with pytest.raises(ValueError, match="resolve"):
+        folded.supports("all", 0)
+
+
+def test_factored_search_backtracks_with_separate_scopes_for_repeated_gates():
+    predicates = ("a",)
+    gates = {
+        "shared": BindingGate("and", ("a", "a")),
+        "inner": BindingGate("disjoint_and", ("shared", "shared")),
+        "outer": BindingGate("disjoint_and", ("inner", "shared")),
+    }
+    records = {"p": [("a", 0, .9)], "q": [("a", 0, .8)], "r": [("a", 0, .4)]}
+    bank = BindingMemory.prepare(predicates, 2, gates, records, materialize=False)
+    assert bank.resolve("inner", 0) == BindingProof(.8, frozenset({"p", "q"}))
+    assert bank.resolve("outer", 0) == BindingProof(.4, frozenset({"p", "q", "r"}))
+    corrected = bank.revise({"r": [("a", 1, 1)], "s": [("a", 0, .5)]})
+    assert corrected.resolve("outer", 0) == BindingProof(.5, frozenset({"p", "q", "s"}))
+    assert bank.resolve("outer", 0, without_sources=("r",)) is None
+    assert bank.resolve("outer", 0).strength == .4
+    assert corrected.resolve("outer", 1) is None
+
+
+def test_factored_search_distinguishes_work_refusal_and_supported_zero():
+    gates = {"out": BindingGate("disjoint_and", ("a", "b"))}
+    bank = BindingMemory.prepare(("a", "b"), 2, gates, {
+        "p": [("a", 0, 0)], "q": [("b", 0, 1)],
+    }, materialize=False)
+    with pytest.raises(BindingCapacityError, match="proof search work limit"):
+        continue_bindings([1, 1], memory=bank, output="out", work_limit=8)
+    assert bank.resolve("out", 0) == BindingProof(0, frozenset({"p", "q"}))
+    assert bank.resolve("out", 1) is None
+    np.testing.assert_array_equal(continue_bindings([1, 1], memory=bank, output="out"), [0, -np.inf])
+
+
+def test_factored_search_handles_deep_gate_chains_without_recursion():
+    gates = {}
+    parent = "a"
+    for i in range(1500):
+        node = f"gate-{i}"
+        gates[node] = BindingGate("or", (parent,))
+        parent = node
+    bank = BindingMemory.prepare(("a",), 1, gates, {"p": [("a", 0, .55)]}, materialize=False)
+    assert bank.resolve(parent, 0, work_limit=12000) == BindingProof(.55, frozenset({"p"}))
+    assert bank.resolve("a", 0, work_limit=10) == BindingProof(.55, frozenset({"p"}))
+
+
+def test_factored_search_can_exhaust_budget_where_materialization_proves_absence():
+    gates = {"out": BindingGate("disjoint_and", ("a",) * 9)}
+    records = {f"source-{i}": [("a", 0, 1)] for i in range(8)}
+    eager = BindingMemory.prepare(("a",), 1, gates, records, term_limit=256)
+    factored = BindingMemory.prepare(("a",), 1, gates, records, materialize=False)
+    assert eager.resolve("out", 0) is None
+    with pytest.raises(BindingCapacityError, match="proof search work limit"):
+        factored.resolve("out", 0, work_limit=5000)
