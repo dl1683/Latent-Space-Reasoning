@@ -4,6 +4,10 @@ Status date: 22 October 2026. This is the single results ledger; [README](../REA
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Latent revision software verification, 24 November 2026
+
+The review branch's [latent field](../experiments/memory/latent_field.py) passed five focused CPU fixtures. An observation revision reached downstream states through a cycle and matched an independently assembled dense fixed-point reference within its declared residual bound. The fixtures also cover unrelated cells, earlier snapshots, restoration, aggregate contraction, inherited residuals and exhaustion without a write. The new field initialized from supplied arrays and used no model weights. Source-sensitive inference, growth, learned geometry, coordination and end-to-end economics remain unevaluated.
+
 ## Study result table
 
 These are source-reported experiment results. Publication preparation independently checked Git, inventories, process metadata, ACLs, package structure and the integration suite; model outputs and judgments were not independently checked.

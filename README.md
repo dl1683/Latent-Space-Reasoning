@@ -2,11 +2,13 @@
 
 **Reason over everything you have; do not depend on finding it.** LSR investigates one multimodal model that encodes an entire corpus once into the latent space where it reasons, with memory optional in the same call. The goal is useful computation over retained information, with source provenance, revision, multiscale access and calibrated “not in memory” judgments. The reasoning mechanism is open: reused-block recurrence and continuous hidden-state feedback are distinct candidates. The program also includes high-dimensional mathematics, pretrained capability reuse and new models of computation.
 
-## Status — 22 October 2026
+## Current status
 
 Execution is **PAUSED** after Rank 1 reached its three-round unsuccessful-repair cap. The implemented context tool is a **navigation slice**: it returns bounded, byte-verified source evidence through Python, CLI and MCP. It does not establish useful general latent reasoning, whole-corpus completeness, calibrated absence, multimodal optional-memory operation or a complete efficiency advantage.
 
 The latest Rank 1 output had correct observed decisions in two worlds but failed the frozen terminal parser. Post-hoc rescoring is diagnostic only; **30/32 worlds and causal controls remain unrun**. Resuming requires explicit new finite authorization, frozen parser fixtures, fresh competence worlds, a passed operation-specific positive control and reconciled resources. Historical protocols do not authorize execution.
+
+On 24 November, the review branch added a [numerical latent revision slice](docs/ARCHITECTURE.md#latent-space-and-maintenance-swarm). It applies recurrent tensor updates to supplied observations and keeps prior snapshots available. Current evidence is CPU software verification. Corpus encoding, trained operators and ongoing swarm maintenance remain research objectives.
 
 ## Results at a glance
 
