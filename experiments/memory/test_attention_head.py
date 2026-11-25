@@ -1,9 +1,12 @@
+import json
+
 import numpy as np
 import pytest
 
 from experiments.memory.attention_head import feedback_from_attention_head
+from experiments.memory import attention_head_smoke as smoke
 from experiments.memory.feedback_workspace import FeedbackProbe, FeedbackWorkspace
-from experiments.memory.latent_feedback import FactoredValue
+from experiments.memory.latent_feedback import FactoredValue, FeedbackKernel
 
 
 def _weights():
@@ -76,3 +79,43 @@ def test_port_rejects_ambiguous_head_layouts():
         feedback_from_attention_head(
             **weights, query_heads=4, key_value_heads=2, head=2, max_steps=2,
         )
+
+
+@pytest.mark.parametrize("head,group", [(1, 0), (2, 1)])
+def test_smoke_checks_two_steps_and_isolates_observation_effect(head, group):
+    rows = np.random.default_rng(177).normal(size=(5, 5))
+    report = smoke._check_head(_weights(), rows, query_heads=4, key_value_heads=2, head=head)
+    assert report["key_value_group"] == group
+    assert len(report["step_max_abs_errors"]) == 2
+    assert max(max(step.values()) for step in report["step_max_abs_errors"]) < 1e-12
+    assert report["first_preactivation_max_abs"] > smoke.MIN_OBSERVATION_EFFECT
+    assert report["ablated_preactivation_max_abs"] == 0
+
+
+def test_smoke_detects_second_step_preactivation_mismatch(monkeypatch):
+    advance = FeedbackKernel._advance
+
+    def corrupted(kernel, state, *, diagnostics=None):
+        result = advance(kernel, state, diagnostics=diagnostics)
+        if state.history and diagnostics is not None:
+            diagnostics["preactivation"] = diagnostics["preactivation"] + 0.01
+        return result
+
+    monkeypatch.setattr(FeedbackKernel, "_advance", corrupted)
+    rows = np.random.default_rng(177).normal(size=(5, 5))
+    with pytest.raises(smoke.SmokeFailure, match="preactivation disagrees"):
+        smoke._check_head(_weights(), rows, query_heads=4, key_value_heads=2, head=2)
+
+
+@pytest.mark.parametrize("matching_size", [False, True])
+def test_smoke_refuses_unverified_bytes(tmp_path, capsys, monkeypatch, matching_size):
+    checkpoint = tmp_path / "synthetic.safetensors"
+    checkpoint.write_bytes(b"unverified")
+    if matching_size:
+        monkeypatch.setattr(smoke, "CHECKPOINT_SIZE", checkpoint.stat().st_size)
+    assert smoke.main(["--checkpoint", str(checkpoint)]) == 1
+    receipt = json.loads(capsys.readouterr().out)
+    assert receipt["status"] == "fail"
+    assert not receipt["checkpoint_verified"]
+    assert receipt["reason"] == ("checkpoint failed pinned SHA256 verification"
+                                 if matching_size else "unexpected checkpoint type or size")

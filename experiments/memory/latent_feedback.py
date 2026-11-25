@@ -201,7 +201,7 @@ class FeedbackKernel:
         """Append one generated vector and tally the attention scores evaluated."""
         return self._advance(state)[0]
 
-    def _advance(self, state):
+    def _advance(self, state, *, diagnostics=None):
         self._require_state(state)
         if len(state._history) >= self._max_steps:
             raise RuntimeError("feedback step budget exhausted")
@@ -228,7 +228,14 @@ class FeedbackKernel:
                     observed = mixture @ observation_axis
                     if observed:
                         fixed += ((hidden @ state_axis) * observed) * output
-            next_hidden = _frozen(np.tanh(fixed + _apply_value(self._observation_value, mixture)))
+            preactivation = fixed + _apply_value(self._observation_value, mixture)
+            next_hidden = _frozen(np.tanh(preactivation))
+            if diagnostics is not None:
+                diagnostics.update(
+                    logits=logits if observation_count or history_count else np.empty(0),
+                    probabilities=weights if observation_count or history_count else np.empty(0),
+                    preactivation=preactivation,
+                )
         next_key, next_value = self._project_generated(next_hidden)
         next_state = replace(
             state,
