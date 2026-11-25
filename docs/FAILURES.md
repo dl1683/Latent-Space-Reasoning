@@ -189,6 +189,8 @@ The guarded maintenance trial now refuses the same route drift. A separate contr
 
 **A coordinate-only map cannot distinguish two valid contexts at the same anchor, 25 November 2026.** The shared fit refused incompatible next rows at one anchor, and the conditional fit refused a target that was itself protected. A fitted hinge resolved the tested context conflict. An overbroad hinge reached the new proof and broke the declared protected path, so the prospective judge withheld publication. An indexed rule using the earlier grade and shared coordinate matched all six decisions in the crossed control. An advantage over context-aware dispatch remains unmeasured. [Context programming controls](../experiments/memory/test_binding_feedback.py)
 
+**A small hidden displacement can exceed the transition's weight budget, 25 November 2026.** In the coupled-route fixture with an incumbent row starting at `(0.8, 0.6)`, uniform projection reached the route cell but exceeded a cap that the preactivation-weighted edit satisfied. A capped refusal leaves other feasible rows open. Weight-space updates should be checked against the actual installed coefficient tensor. The worker also refused an opening hidden row that did not reproduce under ordinary replay. [Proof worker controls](../experiments/memory/test_binding_feedback.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

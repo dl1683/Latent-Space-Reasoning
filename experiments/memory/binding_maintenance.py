@@ -1,19 +1,23 @@
-"""Propose one bounded graph rewrite from a failed pinned feedback read."""
+"""Propose bounded graph or transition edits from pinned feedback reads."""
 
 from dataclasses import dataclass
-from math import isfinite
+from math import isfinite, nextafter
 from operator import index
 
+import numpy as np
+
 from experiments.memory.binding_feedback import BindingFeedback, BindingFeedbackState
-from experiments.memory.binding_memory import BindingGate, BindingProof, _proof_work_limit
+from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _proof_work_limit
 from experiments.memory.binding_replay import (
-    RouteFitRefusal, failed_binding_prefix, program_binding_route, replay_binding_repair, route_norm_cap,
+    RouteFitRefusal, _REPLAY_ERRORS, _clears_opening_rank, _receiver_digest, _replay_coordinate_prefix,
+    check_coordinate_protection, check_coordinate_replay, failed_binding_prefix, program_binding_context,
+    program_binding_route, replay_binding_repair, route_norm_cap,
 )
 from experiments.memory.corpus_binding_journal import (
     CorpusProgramExpectation, CorpusProgramProbe, CorpusProgramTrialResult, JournaledCorpusWorkspace,
-    _trial_expectation,
+    _cold_trial_memory, _trial_expectation,
 )
-from experiments.memory.corpus_bindings import CorpusBindingRead
+from experiments.memory.corpus_bindings import CorpusBindingRead, StaleCorpusRevision
 
 
 @dataclass(frozen=True)
@@ -28,6 +32,14 @@ class BindingRepairAttempt:
 class BindingRepairResult:
     status: str
     attempts: tuple[BindingRepairAttempt, ...] = ()
+    trial: CorpusProgramTrialResult | None = None
+
+
+@dataclass(frozen=True)
+class BindingContextProposal:
+    status: str
+    sweeps: int = 0
+    target: CorpusProgramExpectation | None = None
     trial: CorpusProgramTrialResult | None = None
 
 
@@ -118,3 +130,137 @@ def propose_binding_program(workspace, base, trajectory, *, substitutions, futur
         if status in statuses:
             return BindingRepairResult(status, tuple(attempts))
     return BindingRepairResult("no_candidate", tuple(attempts))
+
+
+def _project_context_route(receiver, hidden, column, padding, max_sweeps, *, preactivation_weighted):
+    """Try a padded score cell in the open tanh box, then check the real scores."""
+    query = receiver._query
+    wanted = query[:, column]
+    rivals = np.delete(query, column, axis=1)
+    normals = np.vstack((wanted, (wanted[:, None] - rivals).T))
+    levels = np.full(len(normals), receiver._route_gap + padding)
+    levels[0] = receiver._route_floor + padding
+    if not np.isfinite(levels).all() or levels[0] <= receiver._route_floor:
+        return None, 0
+
+    scales = np.max(np.abs(normals), axis=1)
+    if np.any((scales == 0.) & (levels > 0.)):
+        return None, 0
+    keep = scales > 0.
+    axes, levels = normals[keep] / scales[keep, None], levels[keep] / scales[keep]
+    # One predecessor of 1.0 keeps inversion defined even when clipping.
+    edge = nextafter(1., 0.)
+    point = np.clip(hidden, -edge, edge)
+    # The inverse local metric favors coordinates with larger tanh derivatives.
+    directions = axes * (1. - point ** 2) ** 2 if preactivation_weighted else axes
+    squared_norms = np.einsum("ij,ij->i", axes, directions)
+    directions = directions / squared_norms[:, None]
+    for sweep in range(1, max_sweeps + 1):
+        previous = point.copy()
+        for axis, level, direction in zip(axes, levels, directions, strict=True):
+            violation = level - point @ axis
+            if violation > 0.:
+                point += violation * direction
+        np.clip(point, -edge, edge, out=point)
+        if _clears_opening_rank(receiver, point, column):
+            return point, sweep
+        if np.array_equal(previous, point):
+            return None, sweep
+    return None, max_sweeps
+
+
+def propose_binding_context(workspace, base, ready, terminal, *, future_batches, max_update_norm, max_sweeps,
+                            padding=.1, protect=()):
+    """Derive a context edit from an opening disjoint proof and freeze a future trial.
+
+    Ready is the incumbent state before the transition to edit. Each protected
+    trajectory has already performed its declared terminal read on this pin.
+    """
+    if type(workspace) is not JournaledCorpusWorkspace:
+        raise ValueError("context proposal needs a shared corpus journal")
+    workspace._check_owner(base)
+    if workspace.snapshot() is not base:
+        raise StaleCorpusRevision("corpus workspace tip changed")
+    if type(ready) is not BindingFeedbackState or type(ready._receiver) is not BindingFeedback:
+        raise ValueError("context proposal needs a binding feedback state")
+    receiver = ready._receiver
+    if not receiver._disjoint_reads or receiver._expansion is not None:
+        raise ValueError("context proposal needs a fixed disjoint receiver")
+    if base._receiver_programs and _receiver_digest(receiver) != base._receiver_programs[-1][1]:
+        raise ValueError("context proposal does not use the installed receiver")
+    protect = tuple(protect)
+    if any(type(state) is not BindingFeedbackState or state._receiver is not receiver or state.memory is not base.memory
+           for state in (ready, *protect)):
+        raise ValueError("context proposal states must come from the incumbent on the exact opening pin")
+    future_batches, max_sweeps = index(future_batches), index(max_sweeps)
+    padding, cap = float(padding), route_norm_cap(max_update_norm)
+    if min(future_batches, max_sweeps) < 1 or not isfinite(padding) or padding <= 0.:
+        raise ValueError("context proposal needs positive horizons, sweep limit and route padding")
+    name, coord = terminal
+    terminal = name, index(coord)
+    column = receiver._addresses.index(terminal)
+    if len(ready.reads) + 2 > receiver._kernel._max_steps:
+        raise ValueError("context proposal needs one transition and a terminal read remaining")
+    if any(len(run.reads) < 2 for run in protect):
+        raise ValueError("a protected continuation needs an observed terminal and an earlier read")
+    if any(read.status != "resolved" or not read.bounds.is_exact or read.bounds.certain is None
+           for state in (ready, *protect) for read in state.reads):
+        return BindingContextProposal("opening_incomplete")
+    memory = _cold_trial_memory(base.memory)
+    candidate, sweeps = None, 0
+    try:
+        with np.errstate(**_REPLAY_ERRORS):
+            try:
+                ready = _replay_coordinate_prefix(receiver, ready, 1e-8, memory=memory)
+                protect = tuple(_replay_coordinate_prefix(receiver, run, 1e-8, memory=memory) for run in protect)
+            except ValueError:
+                return BindingContextProposal("opening_trace_changed")
+            next_read = receiver._next_read(ready)
+            if next_read.status != "resolved" or not next_read.bounds.is_exact or next_read.bounds.certain is None:
+                return BindingContextProposal("opening_incomplete")
+            incumbent = receiver._advance_read(ready, next_read)
+            addresses = tuple(read.address for read in incumbent.reads) + (terminal,)
+            proof = memory.resolve_disjoint(addresses, work_limit=receiver._work_limit)
+            if proof.certain is None or not proof.is_exact:
+                return BindingContextProposal("target_not_exact")
+            previous = receiver._next_read(incumbent)
+            if previous.status == "resolved" and previous.address == terminal and previous.bounds == proof:
+                return BindingContextProposal("already_reached")
+            refusal = "route_projection_refused"
+            for preactivation_weighted in (True, False):
+                if sweeps == max_sweeps:
+                    break
+                hidden, used = _project_context_route(receiver, incumbent.latest, column, padding,
+                                                      max_sweeps - sweeps,
+                                                      preactivation_weighted=preactivation_weighted)
+                sweeps += used
+                if hidden is None:
+                    continue
+                try:
+                    candidate, _, _ = program_binding_context(receiver, ready, hidden, max_update_norm=cap,
+                                                              protect=protect)
+                    break
+                except ValueError:
+                    refusal = "context_fit_refused"
+    except BindingCapacityError:
+        return BindingContextProposal("opening_incomplete", sweeps)
+    except FloatingPointError:
+        return BindingContextProposal("coordinate_numerical", sweeps)
+
+    if candidate is None:
+        return BindingContextProposal(refusal, sweeps)
+    protected = tuple((run.feedback.seed, CorpusProgramExpectation(
+        CorpusProgramProbe(tuple(read.address for read in run.reads)), run.reads[-1].bounds,
+    )) for run in protect)
+    seed = ready.feedback.seed
+    status = check_coordinate_replay(receiver, candidate, memory, seed, addresses, proof)
+    if status != "published":
+        return BindingContextProposal(status, sweeps)
+    for start, expectation in protected:
+        if not check_coordinate_protection(receiver, candidate, memory, start, expectation.probe.addresses,
+                                           expectation.expected):
+            return BindingContextProposal("coordinate_protected_changed", sweeps)
+    target = CorpusProgramExpectation(CorpusProgramProbe(addresses), proof)
+    trial = workspace.begin_coordinate_trial(base, receiver, candidate, seed=seed, target=target,
+                                             future_batches=future_batches, max_update_norm=cap, protect=protected)
+    return BindingContextProposal("opened", sweeps, target, trial)

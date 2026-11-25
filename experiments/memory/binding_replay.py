@@ -165,11 +165,15 @@ def apply_receiver_program(receiver, patch):
     return candidate
 
 
-def _require_opening_rank(receiver, state, column):
-    scores = state.latest @ receiver._query
+def _clears_opening_rank(receiver, hidden, column):
+    scores = hidden @ receiver._query
     winning = float(scores[column])
     competitor = float(np.delete(scores, column).max(initial=-np.inf))
-    if winning <= receiver._route_floor or winning - competitor <= receiver._route_gap:
+    return winning > receiver._route_floor and winning - competitor > receiver._route_gap
+
+
+def _require_opening_rank(receiver, state, column):
+    if not _clears_opening_rank(receiver, state.latest, column):
         raise RouteFitRefusal("route program does not clear the opening score floor and gap")
 
 
@@ -223,8 +227,8 @@ def _same_binding_read(left, right):
     return (left.status, left.address, left.bounds) == (right.status, right.address, right.bounds)
 
 
-def _replay_coordinate_prefix(candidate, state, atol):
-    replay = candidate.start(state.feedback.seed, state.memory)
+def _replay_coordinate_prefix(candidate, state, atol, *, memory=None):
+    replay = candidate.start(state.feedback.seed, state.memory if memory is None else memory)
     for read, hidden in zip(state.reads, state.feedback.history, strict=True):
         replay = candidate.step(replay)
         if not _same_binding_read(replay.reads[-1], read) or np.max(np.abs(replay.latest - hidden)) > atol:

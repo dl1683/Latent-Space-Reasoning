@@ -7,7 +7,7 @@ import pytest
 
 from experiments.memory import binding_memory, corpus_binding_journal
 from experiments.memory.binding_feedback import BindingFeedback, BindingRouteExpansion
-from experiments.memory.binding_maintenance import propose_binding_program
+from experiments.memory.binding_maintenance import _project_context_route, propose_binding_context, propose_binding_program
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _ProofWork
 from experiments.memory.binding_replay import _receiver_digest, program_binding_context, program_binding_coordinates, route_norm_cap
 from experiments.memory.corpus_binding_journal import (
@@ -649,6 +649,137 @@ def test_coordinate_context_cannot_publish_if_a_protected_continuation_changes(t
     later = _write(workspace, {"p": b"p,1,0,0.86", "q": b"q,1,0,0.72"})
     assert workspace.finish_program_trial(trial.trial_id, receiver=receiver).status == "coordinate_protected_changed"
     assert workspace.snapshot() is later and workspace.receiver_at(later, receiver) is receiver
+
+
+def test_context_worker_compiles_a_proof_without_a_hidden_target(tmp_path):
+    frame, receiver, sources, positive, negative, target, protected = _coordinate_context_fixture()
+    receiver = receiver._with_route_column(5, [0., -1., 1.5, 0., 0.])
+    path = tmp_path / "proof-worker.sqlite"
+    workspace = JournaledCorpusWorkspace(path, frame, create=True)
+    base = _write(workspace, sources)
+    ready = receiver.step(receiver.start(positive, base.memory))
+    old = receiver.step(ready)
+    guard = receiver.start(negative, base.memory)
+    for _ in range(3):
+        guard = receiver.step(guard)
+    assert guard.reads[-1].bounds == protected.expected
+    assert old.latest[1] < 0. and old.latest[2] == 0.
+    # Steering only along the target column gives the decoy a larger score
+    # increase than the target at every positive target-floor crossing.
+    column = receiver._addresses.index(("end", 1))
+    assert receiver._query[:, column] @ receiver._query[:, 5] > receiver._query[:, column] @ receiver._query[:, column]
+    assert receiver._next_read(old).address == ("guard", 1)
+
+    proposal = propose_binding_context(workspace, base, ready, ("end", 1), protect=(guard,),
+                                       future_batches=1, max_update_norm=4., max_sweeps=16, padding=.2)
+    assert proposal.status == "opened" and 1 < proposal.sweeps <= 16 and proposal.target == target
+    assert workspace.finish_program_trial(proposal.trial.trial_id, receiver=receiver).status == "pending"
+    later = _write(workspace, {"p": b"p,1,0,0.94", "q": b"q,1,0,0.72"})
+    independent = JournaledCorpusWorkspace(path, frame)
+    receipt = independent.finish_program_trial(proposal.trial.trial_id, receiver=receiver)
+    assert receipt.status == "published" and receipt.published_revision == later.revision + 1
+    restored = JournaledCorpusWorkspace(path, frame)
+    pin = restored.snapshot()
+    installed = restored.receiver_at(pin, receiver)
+    assert len(installed._coordinate_terms) == 1
+    assert installed._coordinate_terms[0][2][1] > 0.
+    for seed, expected in ((positive, target), (negative, protected)):
+        state = installed.step(installed.step(installed.start(seed, pin.memory)))
+        read = installed._next_read(state)
+        assert (read.address, read.bounds) == (expected.probe.addresses[-1], expected.expected)
+    maintained = installed.step(installed.start(positive, pin.memory))
+    redundant = propose_binding_context(restored, pin, maintained, ("end", 1), future_batches=1,
+                                        max_update_norm=4., max_sweeps=16)
+    assert redundant.status == "already_reached" and redundant.trial is None
+    assert restored.pending_program_trials(limit=1) == ()
+    stale_receiver = receiver.step(receiver.start(positive, pin.memory))
+    with pytest.raises(ValueError, match="installed receiver"):
+        propose_binding_context(restored, pin, stale_receiver, ("end", 1), future_batches=1,
+                                max_update_norm=4., max_sweeps=16)
+
+
+@pytest.mark.parametrize("case, expected", [
+    ("missing", "target_not_exact"), ("over_cap", "context_fit_refused"),
+    ("identical_routes", "route_projection_refused"), ("sweep_limit", "route_projection_refused"),
+])
+def test_context_worker_refuses_without_creating_a_draft(tmp_path, case, expected):
+    frame, receiver, sources, positive, negative, _, _ = _coordinate_context_fixture()
+    if case == "missing":
+        del sources["end"]
+    if case == "identical_routes":
+        receiver = receiver._with_route_column(4, receiver._query[:, 5])
+    elif case == "sweep_limit":
+        receiver = receiver._with_route_column(5, [0., -1., 1.5, 0., 0.])
+    workspace = JournaledCorpusWorkspace(tmp_path / "proof-refusal.sqlite", frame, create=True)
+    base = _write(workspace, sources)
+    ready = receiver.step(receiver.start(positive, base.memory))
+    guard = receiver.step(receiver.step(receiver.start(negative, base.memory)))
+    result = propose_binding_context(workspace, base, ready, ("end", 1), protect=(guard,), future_batches=1,
+                                     max_update_norm=.01 if case == "over_cap" else 4.,
+                                     max_sweeps=1 if case == "sweep_limit" else 16)
+    assert result.status == expected and result.trial is None
+    assert workspace.snapshot() is base and workspace.pending_program_trials(limit=1) == ()
+
+
+def test_context_worker_freezes_opening_provenance_against_a_future_substitution(tmp_path):
+    frame, receiver, sources, positive, _, target, _ = _coordinate_context_fixture()
+    workspace = JournaledCorpusWorkspace(tmp_path / "proof-origin.sqlite", frame, create=True)
+    base = _write(workspace, sources)
+    ready = receiver.step(receiver.start(positive, base.memory))
+    proposal = propose_binding_context(workspace, base, ready, ("end", 1), future_batches=1,
+                                       max_update_norm=4., max_sweeps=16, padding=.35)
+    assert proposal.status == "opened" and proposal.target == target
+    later = _write(workspace, {"p": b"p,1,0,0.94", "end": None, "other_end": sources["end"]})
+    assert later.memory.resolve_disjoint(target.probe.addresses).possible_strength == .65
+    assert workspace.finish_program_trial(proposal.trial.trial_id, receiver=receiver).status == "coordinate_target_mismatch"
+    assert workspace.receiver_at(later, receiver) is receiver
+    with pytest.raises(StaleCorpusRevision):
+        propose_binding_context(workspace, base, ready, ("end", 1), future_batches=1,
+                                max_update_norm=4., max_sweeps=16)
+
+
+def test_context_worker_keeps_a_budget_that_uniform_projection_exceeds(tmp_path):
+    frame, prototype, sources, positive, negative, target, _ = _coordinate_context_fixture()
+    query = prototype._query.copy()
+    query[:, 4] = [0., 1., 0., 0., 0.]
+    query[:, 5] = [0., .5, 1., 0., 0.]
+    observation = prototype._observation.copy()
+    observation[1, 1] = np.arctanh(.8) - 4 * .65
+    observation[1, 2] = np.arctanh(.6)
+    receiver = BindingFeedback(prototype._kernel, frame, prototype._addresses, query=query, observation=observation,
+                               route_floor=.05, route_gap=.1, disjoint_reads=True, route_trials=2)
+    workspace = JournaledCorpusWorkspace(tmp_path / "proof-budget.sqlite", frame, create=True)
+    base = _write(workspace, sources)
+    ready = receiver.step(receiver.start(positive, base.memory))
+    guard = receiver.step(receiver.step(receiver.start(negative, base.memory)))
+    hidden = receiver.step(ready).latest
+    np.testing.assert_allclose(hidden[1:3], [.8, .6], atol=1e-8)
+    common = (receiver, hidden, 4, .02, 8)
+    uniform, _ = _project_context_route(*common, preactivation_weighted=False)
+    weighted, _ = _project_context_route(*common, preactivation_weighted=True)
+    initial = np.arctanh(hidden)
+    uniform_cost = np.linalg.norm(np.arctanh(uniform) - initial)
+    weighted_cost = np.linalg.norm(np.arctanh(weighted) - initial)
+    assert weighted_cost < .5 < uniform_cost
+    _, _, term = program_binding_context(receiver, ready, weighted, max_update_norm=100., protect=(guard,))
+    cap = float(term.norm * .5 / weighted_cost)
+    with pytest.raises(ValueError, match="exact update norm cap"):
+        program_binding_context(receiver, ready, uniform, max_update_norm=cap, protect=(guard,))
+    proposal = propose_binding_context(workspace, base, ready, ("end", 1), protect=(guard,), future_batches=1,
+                                       max_update_norm=cap, max_sweeps=8, padding=.02)
+    assert proposal.status == "opened" and proposal.target == target
+
+
+def test_context_worker_refuses_a_ready_state_that_differs_from_ordinary_replay(tmp_path):
+    frame, receiver, sources, positive, _, _, _ = _coordinate_context_fixture()
+    workspace = JournaledCorpusWorkspace(tmp_path / "proof-uncanonical.sqlite", frame, create=True)
+    base = _write(workspace, sources)
+    ready = receiver.step(receiver.start(positive, base.memory))
+    substituted = receiver._intervene_latest(ready, np.zeros_like(ready.latest))
+    proposal = propose_binding_context(workspace, base, substituted, ("end", 1), future_batches=1,
+                                       max_update_norm=4., max_sweeps=8)
+    assert proposal.status == "opening_trace_changed" and proposal.trial is None
+    assert workspace.pending_program_trials(limit=1) == ()
 
 
 def _repair_receiver(frame, *, trials=1, earlier="p", observe=True, proof_limit=65536, reuse_weighted_matching=False):
