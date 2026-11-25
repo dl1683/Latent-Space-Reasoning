@@ -11,7 +11,15 @@ from uuid import uuid4
 from experiments.memory.feedback_journal import (
     FeedbackCandidateData, FeedbackSearchPlan, FeedbackSearchShard, JournaledFeedbackWorkspace,
 )
-from experiments.memory.feedback_workspace import StaleFeedbackRevision
+from experiments.memory.feedback_workspace import (
+    FeedbackMaintenanceRound, FeedbackRepairAttempt, StaleFeedbackRevision,
+)
+
+
+_RECEIPT_SELECT = """
+    SELECT batch, plan, status, attempts, selected, next_candidate, published_revision, published_digest
+    FROM feedback_repair_receipts
+"""
 
 
 @dataclass(frozen=True)
@@ -20,6 +28,17 @@ class FeedbackRepairLease:
     position: int
     token: str
     expires_ns: int
+
+
+@dataclass(frozen=True)
+class FeedbackRepairReceipt:
+    plan: FeedbackSearchPlan
+    status: str
+    attempts: tuple[FeedbackRepairAttempt, ...]
+    selected_attempt: int | None
+    next_candidate: int | None
+    published_revision: int | None
+    published_digest: str | None
 
 
 class StaleFeedbackLease(ValueError):
@@ -82,6 +101,23 @@ class FeedbackRepairQueue:
                     CHECK ((finished_token IS NULL) = (payload IS NULL AND rejection IS NULL)),
                     CHECK ((payload IS NULL AND rejection IS NULL) OR token IS NULL)
                 ) WITHOUT ROWID
+            """)
+            db.execute("""
+                CREATE TABLE IF NOT EXISTS feedback_repair_receipts (
+                    sequence INTEGER PRIMARY KEY,
+                    batch TEXT NOT NULL UNIQUE,
+                    plan BLOB NOT NULL,
+                    status TEXT NOT NULL CHECK (status IN ('committed', 'no_candidate', 'budget_exhausted')),
+                    attempts BLOB NOT NULL,
+                    selected INTEGER,
+                    next_candidate INTEGER,
+                    published_revision INTEGER,
+                    published_digest BLOB,
+                    CHECK ((status = 'committed') = (published_revision IS NOT NULL)),
+                    CHECK ((status = 'committed') = (selected IS NOT NULL)),
+                    CHECK ((status = 'budget_exhausted') = (next_candidate IS NOT NULL)),
+                    CHECK ((published_revision IS NULL) = (published_digest IS NULL))
+                )
             """)
 
     @contextmanager
@@ -221,9 +257,65 @@ class FeedbackRepairQueue:
             """, (revision, tip)).fetchall()
         return tuple(self._stored_plan(batch, data, revision, tip) for batch, data in rows)
 
+    def _receipt(self, db, row):
+        if row is None:
+            return None
+        batch, data, status, attempts_data, selected, next_candidate, revision, digest = row
+        plan = _decode_plan(data)
+        if sha256(data).hexdigest() != batch or plan.root != self._workspace._root.hex():
+            raise ValueError("invalid repair receipt plan")
+        if revision is not None:
+            if selected is None or not 0 <= selected < len(plan.candidates):
+                raise ValueError("invalid repair receipt selection")
+            probe, kind = plan.candidates[selected]
+            if revision != plan.revision + 1 or db.execute(
+                "SELECT kind, probe, digest FROM feedback_events WHERE number = ?", (revision,),
+            ).fetchone() != (kind, probe, digest):
+                raise ValueError("repair receipt disagrees with the journal")
+        attempts = tuple(FeedbackRepairAttempt(probe, conditional, rejection,
+                                                None if rank is None else tuple(rank), hinge)
+                         for probe, conditional, rejection, rank, hinge in json.loads(attempts_data))
+        return FeedbackRepairReceipt(plan, status, attempts, selected, next_candidate, revision,
+                                     None if digest is None else digest.hex())
+
+    def receipt(self, plan):
+        """Read the durable admission decision for a known window, even after rebasing."""
+        batch, _ = _encode_plan(plan)
+        with self._transaction() as db:
+            return self._lookup_receipt(db, batch)
+
+    def _lookup_receipt(self, db, batch):
+        return self._receipt(db, db.execute(_RECEIPT_SELECT + " WHERE batch = ?", (batch,)).fetchone())
+
+    def latest_receipt(self):
+        """Recover the latest queue admission decision without prior plan state."""
+        with self._transaction() as db:
+            row = db.execute(_RECEIPT_SELECT + " ORDER BY sequence DESC LIMIT 1").fetchone()
+            return self._receipt(db, row)
+
+    @staticmethod
+    def _store_receipt(db, batch, plan_data, result, revision=None, digest=None):
+        attempts = [(attempt.probe, attempt.conditional, attempt.rejection, attempt.rank, attempt.hinge)
+                    for attempt in result.attempts]
+        return db.execute("""
+            INSERT INTO feedback_repair_receipts
+            (batch, plan, status, attempts, selected, next_candidate, published_revision, published_digest)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(batch) DO NOTHING
+        """, (batch, plan_data, result.status,
+              json.dumps(attempts, allow_nan=False, separators=(",", ":")).encode(),
+              result.selected_attempt, result.next_candidate, revision, digest)).rowcount
+
     def publish(self, plan):
         """Publish through ordinary coordinator admission once the whole window has results."""
-        batch, _ = _encode_plan(plan)
+        batch, data = _encode_plan(plan)
+        previous = self.receipt(plan)
+        if previous is not None:
+            if previous.published_revision is not None:
+                raise StaleFeedbackRevision("queued repair plan already published; read its durable receipt")
+            base = self._workspace._check_search_plan(plan)
+            return FeedbackMaintenanceRound(previous.status, base, previous.attempts,
+                                            selected_attempt=previous.selected_attempt,
+                                            next_candidate=previous.next_candidate)
         with self._transaction() as db:
             self._require_current(db, plan)
             rows = db.execute("""
@@ -237,4 +329,19 @@ class FeedbackRepairQueue:
         if any(payload is None and rejection is None for _, payload, rejection in rows):
             return None
         results = tuple(FeedbackCandidateData(payload, rejection) for _, payload, rejection in rows)
-        return self._workspace.publish_repair_shards(plan, (FeedbackSearchShard(plan, 0, results),))
+        result, proposal = self._workspace._admit_repair_shards(plan, (FeedbackSearchShard(plan, 0, results),))
+        if proposal is not None:
+            def record(db, revision, digest):
+                if self._store_receipt(db, batch, data, result, revision, digest) != 1:
+                    raise ValueError("repair window already has a publication receipt")
+
+            self._workspace._commit(result.base, result.revision, proposal=proposal, on_append=record)
+        else:
+            with self._transaction(write=True) as db:
+                self._require_current(db, plan)
+                if self._store_receipt(db, batch, data, result) != 1:
+                    receipt = self._lookup_receipt(db, batch)
+                    return FeedbackMaintenanceRound(receipt.status, result.base, receipt.attempts,
+                                                    selected_attempt=receipt.selected_attempt,
+                                                    next_candidate=receipt.next_candidate)
+        return result

@@ -94,6 +94,8 @@ Five repair-queue cases covered lease expiry, reassignment, renewal, retry of a 
 
 In a separate publication race, a source worker committed after the coordinator read a completed queue window and before numerical admission. The coordinator rejected the old plan and the source revision remained the sole journal update.
 
+Three additional repair-queue fixtures exercised durable coordinator decisions. Failure during receipt insertion rolled back the edit and allowed a later retry. A child coordinator exited after commit and before installing its local revision. Reopening recovered the exact edit and its receipt, which remained readable after queue cleanup. Two coordinators that admitted the same completed window concurrently produced one committed edit and one receipt. The continuation fixture reopened after a refused window and resumed at the next position with numerical readmission disabled. The combined selection passed 201 CPU checks. Separately, a queue created by the previous implementation reopened and published its retained window. In another race, a source revision between admission and append left only the source edit and no receipt for the stale proposal. These checks used supplied arrays and local process failures. [Queue fixtures](../experiments/memory/test_feedback_repair_queue.py)
+
 ## Study result table
 
 These are source-reported experiment results. Publication preparation independently checked Git, inventories, process metadata, ACLs, package structure and the integration suite; model outputs and judgments were not independently checked.

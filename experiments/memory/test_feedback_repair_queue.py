@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 import sys
+from threading import Barrier
 
 import numpy as np
 import pytest
@@ -17,6 +18,15 @@ from experiments.memory.test_feedback_workspace import _tree_journal
 
 def _synthesize(workspace, lease):
     return workspace.synthesize_repairs(lease.plan, start=lease.position, stop=lease.position + 1)
+
+
+def _complete_window(workspace, queue):
+    plan = workspace.plan_repairs(max_candidates=2)
+    queue.enqueue(plan)
+    for _ in plan.candidates:
+        lease = queue.claim(lease_seconds=60)
+        queue.complete(lease, _synthesize(workspace, lease))
+    return plan
 
 
 def test_expired_lease_cannot_complete_and_reassignment_has_a_new_token(tmp_path, monkeypatch):
@@ -112,21 +122,35 @@ def test_unclaimed_work_precedes_expired_work_and_admission_can_refuse_payloads(
     assert workspace.snapshot().number == 0
 
 
-def test_disjoint_queued_windows_can_continue_after_a_refusal(tmp_path):
-    workspace = _tree_journal(tmp_path / "resume.sqlite", create=True)
+def test_disjoint_queued_windows_can_continue_after_a_refusal(tmp_path, monkeypatch):
+    path = tmp_path / "resume.sqlite"
+    workspace = _tree_journal(path, create=True)
     queue = FeedbackRepairQueue(workspace)
     first = workspace.plan_repairs(max_candidates=1)
     queue.enqueue(first)
     lease = queue.claim(lease_seconds=60)
     queue.complete(lease, FeedbackSearchShard(first, 0, (FeedbackCandidateData(rejection="no draft"),)))
     receipt = queue.publish(first)
+    workspace = _tree_journal(path)
+    queue = FeedbackRepairQueue(workspace)
+    saved = queue.receipt(first)
+    assert saved.status == receipt.status == "budget_exhausted"
+    assert saved.next_candidate == 1 and saved.published_revision is None
+    assert saved.attempts == receipt.attempts and queue.latest_receipt() == saved
+    with monkeypatch.context() as patch:
+        def unexpected(*args):
+            pytest.fail("replayed admission for a recorded refusal")
+
+        patch.setattr(workspace, "_admit_repair_shards", unexpected)
+        receipt = queue.publish(first)
+    assert receipt.base is workspace.snapshot() and receipt.attempts == saved.attempts
     second = workspace.plan_repairs(max_candidates=1, resume=receipt)
     assert second.offset == 1
     queue.enqueue(second)
     lease = queue.claim(lease_seconds=60)
     assert lease.plan == second and lease.position == 0
     queue.complete(lease, _synthesize(workspace, lease))
-    reopened = FeedbackRepairQueue(_tree_journal(tmp_path / "resume.sqlite"))
+    reopened = FeedbackRepairQueue(_tree_journal(path))
     assert reopened.ready_plans() == (first, second)
     assert reopened.publish(reopened.ready_plans()[1]).status == "committed"
 
@@ -179,3 +203,100 @@ print(json.dumps([os.getpid(), lease.position]))
     assert actual.selected_attempt == expected.selected_attempt
     assert actual.revision.errors == expected.revision.errors
     assert _tree_journal(path).snapshot().number == 1
+
+
+def test_publication_and_receipt_fail_or_commit_together(tmp_path, monkeypatch):
+    path = tmp_path / "atomic.sqlite"
+    workspace = _tree_journal(path, create=True)
+    queue = FeedbackRepairQueue(workspace)
+    plan = _complete_window(workspace, queue)
+    with monkeypatch.context() as patch:
+        def interrupt_receipt(db, batch, data, result, revision, digest):
+            assert db.execute("SELECT digest FROM feedback_events WHERE number = ?", (revision,)).fetchone() == (digest,)
+            raise RuntimeError("simulated receipt failure")
+
+        patch.setattr(queue, "_store_receipt", interrupt_receipt)
+        with pytest.raises(RuntimeError, match="simulated receipt failure"):
+            queue.publish(plan)
+    reopened = _tree_journal(path)
+    assert reopened.snapshot().number == 0
+    assert FeedbackRepairQueue(reopened).latest_receipt() is None
+    result = queue.publish(plan)
+    receipt = queue.receipt(plan)
+    assert receipt.status == result.status == "committed"
+    assert receipt.published_revision == result.revision.number == 1
+    assert receipt.published_digest == workspace._tip.hex()
+    with closing(workspace._connect()) as db:
+        db.execute("UPDATE feedback_repair_receipts SET published_digest = ?", (bytes(32),))
+    with pytest.raises(ValueError, match="disagrees with the journal"):
+        queue.latest_receipt()
+
+
+def test_reopen_recovers_publication_receipt_after_coordinator_exits(tmp_path):
+    path = tmp_path / "lost.sqlite"
+    creator = _tree_journal(path, create=True)
+    plan = _complete_window(creator, FeedbackRepairQueue(creator))
+    worker = """
+import os
+import sys
+from experiments.memory.feedback_repair_queue import FeedbackRepairQueue
+from experiments.memory.test_feedback_workspace import _tree_journal
+
+workspace = _tree_journal(sys.argv[1])
+queue = FeedbackRepairQueue(workspace)
+plan, = queue.ready_plans()
+install = workspace._install
+def interrupt(head, tip):
+    if head.number > plan.revision:
+        os._exit(23)
+    install(head, tip)
+workspace._install = interrupt
+queue.publish(plan)
+"""
+    child = subprocess.run([sys.executable, "-B", "-c", worker, str(path)],
+                           text=True, capture_output=True, timeout=30)
+    assert child.returncode == 23, child.stderr
+    reader = _tree_journal(path)
+    queue = FeedbackRepairQueue(reader)
+    recovered = queue.latest_receipt()
+    assert recovered.plan == plan and recovered.status == "committed"
+    assert recovered.published_revision == reader.snapshot().number == 1
+    assert recovered.published_digest == reader._tip.hex()
+    with pytest.raises(StaleFeedbackRevision, match="already published"):
+        queue.publish(plan)
+
+    reader.revise_observation_slots(reader.snapshot(), {6: [0.25, 0]})
+    queue.enqueue(reader.plan_repairs(max_candidates=2))
+    assert queue.receipt(plan) == recovered == queue.latest_receipt()
+    with closing(reader._connect()) as db:
+        assert db.execute("SELECT revision FROM feedback_repair_batches").fetchall() == [(2,)]
+        assert db.execute("SELECT count(*) FROM feedback_repair_receipts").fetchone() == (1,)
+
+
+def test_concurrent_coordinators_cannot_append_twice_for_one_window(tmp_path, monkeypatch):
+    path = tmp_path / "coordinators.sqlite"
+    first, second = _tree_journal(path, create=True), _tree_journal(path)
+    queues = FeedbackRepairQueue(first), FeedbackRepairQueue(second)
+    plan = _complete_window(first, queues[0])
+    admitted = Barrier(2)
+
+    def synchronize(admit):
+        def both_ready(*args):
+            prepared = admit(*args)
+            admitted.wait(timeout=5)
+            return prepared
+        return both_ready
+
+    for workspace in (first, second):
+        monkeypatch.setattr(workspace, "_admit_repair_shards", synchronize(workspace._admit_repair_shards))
+    committed = []
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = [pool.submit(queue.publish, plan) for queue in queues]
+        for future in futures:
+            try:
+                committed.append(future.result(timeout=10))
+            except StaleFeedbackRevision:
+                continue
+    assert len(committed) == 1
+    assert first.snapshot().number == second.snapshot().number == 1
+    assert queues[0].receipt(plan) == queues[1].receipt(plan)

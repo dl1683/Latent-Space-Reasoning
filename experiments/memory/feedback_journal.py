@@ -2,7 +2,7 @@
 
 from collections.abc import Mapping
 from contextlib import closing
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from hashlib import sha256
 import json
 from operator import index
@@ -383,6 +383,13 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
 
     def publish_repair_shards(self, plan, shards):
         """Validate complete coverage, independently admit candidates, and publish one winner."""
+        result, proposal = self._admit_repair_shards(plan, shards)
+        if proposal is not None:
+            published = self._commit(result.base, result.revision, proposal=proposal)
+            return replace(result, revision=published)
+        return result
+
+    def _admit_repair_shards(self, plan, shards):
         base = self._check_search_plan(plan)
         shards = tuple(shards)
         if any(type(shard) is not FeedbackSearchShard for shard in shards):
@@ -420,15 +427,14 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         self._require_current(base)
         if best is not None:
             _, proposal, revised, selected = best
-            published = self._commit(base, revised, proposal=proposal)
-            return FeedbackMaintenanceRound("committed", base, tuple(attempts), published, selected)
+            return FeedbackMaintenanceRound("committed", base, tuple(attempts), revised, selected), proposal
         stop = plan.offset + len(plan.candidates)
         if stop < plan.total:
-            return FeedbackMaintenanceRound("budget_exhausted", base, tuple(attempts), next_candidate=stop)
+            return FeedbackMaintenanceRound("budget_exhausted", base, tuple(attempts), next_candidate=stop), None
         if not plan.total:
             status = "guard_unsatisfied" if any(e > self._atol for e in base.guard_errors) else "satisfied"
-            return FeedbackMaintenanceRound(status, base)
-        return FeedbackMaintenanceRound("no_candidate", base, tuple(attempts))
+            return FeedbackMaintenanceRound(status, base), None
+        return FeedbackMaintenanceRound("no_candidate", base, tuple(attempts)), None
 
     @staticmethod
     def _normalize_source_changes(changes, width):
@@ -582,7 +588,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             if result.rowcount != 1:
                 raise ValueError("source index disagrees with checked source revision")
 
-    def _commit(self, base, revised, *, proposal=None, source_changes=None, tree_event=None):
+    def _commit(self, base, revised, *, proposal=None, source_changes=None, tree_event=None, on_append=None):
         probe = None if proposal is None else proposal.probe
         if source_changes is not None:
             kind = "sources"
@@ -605,7 +611,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             self._require_ready()
             if self._head is not base:
                 raise StaleFeedbackRevision("feedback revision changed before publication")
-            if source_changes is not None:
+            transactional = source_changes is not None or on_append is not None
+            if transactional:
                 db.execute("BEGIN IMMEDIATE")
             tip = _event_digest(self._tip, revised.number, kind, probe, payload)
             appended = db.execute("""
@@ -622,6 +629,9 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
                 raise StaleFeedbackRevision("feedback journal changed before publication")
             if source_changes is not None:
                 self._write_sources(db, source_changes)
+            if on_append is not None:
+                on_append(db, revised.number, tip)
+            if transactional:
                 db.execute("COMMIT")
             self._install(revised, tip)
             return revised
