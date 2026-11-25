@@ -671,6 +671,17 @@ class DisjointFeedbackWorkspace:
                                           _creation_key=_CREATION_KEY)
         self._lock = Lock()
 
+    @classmethod
+    def _from_pin(cls, pin):
+        """Stage a publication without moving the workspace that issued the opening pin."""
+        if type(pin) is not _RelationWorkspacePin:
+            raise ValueError("staging needs an issued relation workspace pin")
+        staging = cls.__new__(cls)
+        staging._receiver = pin.memory._receiver
+        staging._tip = pin
+        staging._lock = Lock()
+        return staging
+
     def pin(self):
         with self._lock:
             return self._tip

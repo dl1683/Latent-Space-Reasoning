@@ -1,8 +1,12 @@
 import codecs
+from contextlib import closing
 from copy import copy, deepcopy
 from dataclasses import replace
 import json
+from pathlib import Path
+import sqlite3
 import subprocess
+import sys
 
 import numpy as np
 import pytest
@@ -13,6 +17,9 @@ from experiments.memory.disjoint_feedback import (
     TerminalHiddenDecision, TerminalRelationEvidence, TerminalRelationGrade,
 )
 from experiments.memory.latent_feedback import FeedbackKernel
+from experiments.memory.repository_import_journal import (
+    JournaledRepositoryImportWorkspace, RepositoryJournalOutcomeUnknown, _event_digest,
+)
 from experiments.memory.repository_import_readout import (
     ImportEvidenceRetracted, RetainedImportRead, prepare_import_readout, prepare_published_import_readout,
 )
@@ -939,6 +946,193 @@ def test_retraction_rechecks_the_opening_query_when_replay_loses_its_route(histo
     with pytest.raises(RelationGuardFailed, match="opening terminal query still has support"):
         workspace.publish(opening, draft)
     assert workspace.pin() is opening and not opening.retractions
+
+
+def test_repository_journal_recovers_growth_handoff_retraction_and_restoration_in_a_fresh_process(history):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    memory = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    _, initial = _published_import_workspace(memory, "pkg.start", "pkg.before", ["pkg.relay"])
+    path = repo / "witnesses.db"
+    journal = JournaledRepositoryImportWorkspace(path, initial.pin(), create=True)
+    root = journal.snapshot()
+    assert journal.publish(root, first) is root
+    with pytest.raises(ValueError, match="operation or arguments"):
+        journal.publish(root, first, operation="adopt", ignored=True)
+    seed = np.zeros(len(memory.relation_coordinates))
+    seed[memory.relation_coordinates["pkg.decoy"]] = .75
+    grown = _commit(repo, {"entry.py": "import pkg.old_mid\n", "old_mid.py": "import pkg.target\n", "target.py": ""})
+    first_pin = journal.publish(root, grown, operation="growth", destination="pkg.target", seed=seed,
+                                grade=.5, steps=1, max_update_norm=2.)
+    options = dict(protected_index=1, destination="pkg.target")
+    switched = _commit(repo, {"entry.py": "import pkg.next_mid\n", "old_mid.py": "",
+                               "next_mid.py": "import pkg.target\n"})
+    second_pin = journal.publish(first_pin, switched, operation="handoff", max_update_norm=2., **options)
+    withdrawn = _commit(repo, {"next_mid.py": ""})
+    third_pin = journal.publish(second_pin, withdrawn, operation="retraction", **options)
+    returned = _commit(repo, {"next_mid.py": "import pkg.target\n"})
+    with pytest.raises(RelationGuardFailed):
+        journal.publish(third_pin, returned)
+    final = journal.publish(third_pin, returned, operation="restoration", **options)
+    assert final.number == 4 and initial.pin() is root.pin
+
+    child = """
+import json
+import sys
+from experiments.memory.repository_import_journal import JournaledRepositoryImportWorkspace
+from experiments.memory.repository_import_memory import RepositoryImportMemory
+from experiments.memory.repository_import_readout import prepare_published_import_readout
+from experiments.memory.test_repository_import_memory import _published_import_workspace, _FixtureTokenizer
+repo, commit, path = sys.argv[1:]
+source = RepositoryImportMemory.prepare(repo, commit, package="pkg")
+_, initial = _published_import_workspace(source, "pkg.start", "pkg.before", ["pkg.relay"])
+head = JournaledRepositoryImportWorkspace(path, initial.pin()).snapshot()
+pin = head.pin
+read = prepare_published_import_readout(pin.memory._source, pin, 1, "pkg.target", _FixtureTokenizer(),
+                                        context_tokens=4096, max_new_tokens=32)
+episode, = pin.retractions
+result, = pin.restorations
+print(json.dumps([head.number, head.digest.hex(), read.commit, read.quotes[1].declaring_module,
+                  result.retraction is episode, episode.correction_commit, result.restoration_commit]))
+"""
+    replay = subprocess.run([sys.executable, "-c", child, str(repo), first, str(path)], text=True, capture_output=True,
+                            check=True, cwd=Path(__file__).resolve().parents[2], timeout=30)
+    assert json.loads(replay.stdout) == [4, final.digest.hex(), returned, "pkg.next_mid", True, withdrawn, returned]
+
+
+def test_repository_journal_fences_a_racing_publication_and_keeps_a_failed_write_invisible(history, monkeypatch):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    memory = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    _, initial = _published_import_workspace(memory, "pkg.start", "pkg.before", ["pkg.relay"])
+    path = repo / "shared.db"
+    left = JournaledRepositoryImportWorkspace(path, initial.pin(), create=True)
+    right = JournaledRepositoryImportWorkspace(path, initial.pin())
+    with closing(sqlite3.connect(path)) as db:
+        assert db.execute("PRAGMA journal_mode").fetchone() == ("delete",)
+    parent, other = left.snapshot(), right.snapshot()
+    revision = _commit(repo, {"relay.py": "# changed quoting\nimport pkg.before\n"})
+    stage = left._stage
+
+    def stage_while_another_writer_publishes(*args):
+        prepared = stage(*args)
+        right.publish(other, revision)
+        return prepared
+
+    with pytest.raises(StaleRelationRevision, match="before preparation"):
+        left.publish(other, revision)
+    with monkeypatch.context() as patch:
+        patch.setattr(left, "_stage", stage_while_another_writer_publishes)
+        with pytest.raises(StaleRelationRevision, match="before publication"):
+            left.publish(parent, revision)
+    assert left._head is parent and left.snapshot().digest == right.snapshot().digest
+
+    tip = left.snapshot()
+    next_revision = _commit(repo, {"relay.py": "# changed twice\nimport pkg.before\n"})
+    with closing(sqlite3.connect(path)) as db, db:
+        db.execute("""CREATE TRIGGER refuse_import BEFORE INSERT ON repository_import_events
+                      BEGIN SELECT RAISE(ABORT, 'fixture refused write'); END""")
+    with pytest.raises(sqlite3.IntegrityError, match="fixture refused write"):
+        left.publish(tip, next_revision)
+    assert left.snapshot() is tip and right.snapshot().number == 1
+    with closing(sqlite3.connect(path)) as db, db:
+        db.execute("DROP TRIGGER refuse_import")
+    child = """
+import os
+import sys
+from experiments.memory.repository_import_journal import JournaledRepositoryImportWorkspace
+from experiments.memory.repository_import_memory import RepositoryImportMemory
+from experiments.memory.test_repository_import_memory import _published_import_workspace
+repo, initial_commit, path, revision, crash = sys.argv[1:]
+source = RepositoryImportMemory.prepare(repo, initial_commit, package="pkg")
+_, initial = _published_import_workspace(source, "pkg.start", "pkg.before", ["pkg.relay"])
+journal = JournaledRepositoryImportWorkspace(path, initial.pin())
+original = journal._connect
+
+class CrashConnection:
+    def __init__(self, db):
+        self.db = db
+
+    def execute(self, sql, *args):
+        if sql == "COMMIT" and crash == "before":
+            os._exit(27)
+        result = self.db.execute(sql, *args)
+        if sql == "COMMIT":
+            os._exit(28)
+        return result
+
+    def close(self):
+        self.db.close()
+
+journal._connect = lambda: CrashConnection(original())
+journal.publish(journal.snapshot(), revision)
+"""
+    command = [sys.executable, "-c", child, str(repo), first, str(path), next_revision]
+    for phase, code, number in (("before", 27, 1), ("after", 28, 2)):
+        crashed = subprocess.run([*command, phase], cwd=Path(__file__).resolve().parents[2], timeout=30,
+                                 capture_output=True, text=True, check=False)
+        assert crashed.returncode == code, crashed.stderr
+        assert left.snapshot().number == right.snapshot().number == number
+
+    lagging = JournaledRepositoryImportWorkspace(path, initial.pin())
+    later_revision = _commit(repo, {"relay.py": "# changed again\nimport pkg.before\n"})
+    original_replay = lagging._stage
+
+    def replay_while_another_writer_publishes(*args):
+        pin = original_replay(*args)
+        if right.snapshot().number == 2:
+            right.publish(right.snapshot(), later_revision)
+        return pin
+
+    with monkeypatch.context() as patch:
+        patch.setattr(lagging, "_stage", replay_while_another_writer_publishes)
+        assert lagging.snapshot().number == 2
+    assert lagging.snapshot().digest == right.snapshot().digest and right.snapshot().number == 3
+
+    tip = left.snapshot()
+    ack_revision = _commit(repo, {"relay.py": "# acknowledgment check\nimport pkg.before\n"})
+    connect = left._connect
+
+    class LostAck:
+        def __init__(self, db, committed):
+            self.db = db
+            self.committed = committed
+
+        def execute(self, statement, *args):
+            if statement != "COMMIT":
+                return self.db.execute(statement, *args)
+            if self.committed:
+                self.db.execute(statement, *args)
+            raise sqlite3.OperationalError("fixture lost acknowledgment")
+
+        def close(self):
+            self.db.close()
+
+    for committed in (False, True):
+        with monkeypatch.context() as patch:
+            patch.setattr(left, "_connect", lambda: LostAck(connect(), committed))
+            with pytest.raises(RepositoryJournalOutcomeUnknown) as uncertain:
+                left.publish(tip, ack_revision)
+        assert left._head is tip and uncertain.value.number == 4
+        assert left.was_committed(uncertain.value) is committed
+    with pytest.raises(StaleRelationRevision, match="before preparation"):
+        left.publish(tip, ack_revision)
+    assert left.snapshot().digest == uncertain.value.digest == right.snapshot().digest
+
+    _, other_root = _published_import_workspace(memory, "pkg.start", "pkg.before", ["pkg.relay"], query_scale=2.)
+    with pytest.raises(ValueError, match="initial workspace inputs disagree"):
+        JournaledRepositoryImportWorkspace(path, other_root.pin())
+    replay = JournaledRepositoryImportWorkspace(path, initial.pin())
+    with closing(sqlite3.connect(path)) as db, db:
+        raw, parent_digest = db.execute("""SELECT second.command, first.digest
+            FROM repository_import_events AS first JOIN repository_import_events AS second
+              ON first.number = 1 AND second.number = 2""").fetchone()
+        wrong = bytes(32)
+        db.execute("UPDATE repository_import_events SET state_digest = ?, digest = ? WHERE number = 2",
+                   (wrong, _event_digest(parent_digest, 2, raw, wrong)))
+    with pytest.raises(ValueError, match="replay disagrees"):
+        replay.snapshot()
+    assert replay._head.number == 0
 
 
 def test_growth_discovery_refuses_ambiguous_paths_and_the_source_only_control(history):
