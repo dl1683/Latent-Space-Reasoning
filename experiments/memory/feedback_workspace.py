@@ -1,5 +1,6 @@
 """Publish independently checked numerical operator edits on a pinned observation bank."""
 
+from collections.abc import Mapping
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing, nullcontext
 from dataclasses import dataclass
@@ -755,16 +756,16 @@ class FeedbackWorkspace:
         revised = self._prepare_slot_revision(base, changes)
         return base if revised is base else self._commit(base, revised)
 
-    def preview_observation_slots(self, base, changes, *, seed, steps, published_opening=False):
-        """Compare an opening trajectory with dense replay of a proposed slot edit."""
+    def _slot_preview_kernel(self, base, published_opening):
         self._require_current(base)
         kernel = base.kernel
         if type(kernel) is not TreeFeedbackKernel:
             raise ValueError("slot impact preview requires a standard tree feedback kernel")
         if type(published_opening) is not bool:
             raise ValueError("published opening preference must be a boolean")
-        reference = kernel.revise(base.memory, changes)
-        self._check_reference_capacity(kernel, reference)
+        return kernel
+
+    def _slot_preview_opening(self, base, kernel, seed, steps, published_opening):
         opening = None
         if published_opening:
             steps = index(steps)
@@ -772,17 +773,48 @@ class FeedbackWorkspace:
             signature = seed.tobytes()
             opening = next((trace for trace in (*base._probe_routes, *base._guard_routes)
                             if trace is not None and trace.matches(kernel, base.memory, signature, steps)), None)
-        if opening is not None:
+        elif self._draft_tree_policy is not None:
+            frontier, tolerance = self._draft_tree_policy
+            kernel = kernel.with_frontier(frontier, logit_tolerance=tolerance)
+        return kernel, seed, steps, opening
+
+    def preview_observation_slots(self, base, changes, *, seed, steps, published_opening=False):
+        """Compare an opening trajectory with dense replay of a proposed slot edit."""
+        kernel = self._slot_preview_kernel(base, published_opening)
+        reference = kernel.revise(base.memory, changes)
+        self._check_reference_capacity(kernel, reference)
+        kernel, seed, steps, opening = self._slot_preview_opening(base, kernel, seed, steps, published_opening)
+        if opening is None:
+            preview = kernel.run_with_error_bounds(seed, base.memory, steps=steps, reference_memory=reference)
+        else:
             preview = kernel._run_with_error_bounds(
                 seed, base.memory, steps=steps, reference_memory=reference, opening=opening,
             )
-        else:
-            if not published_opening and self._draft_tree_policy is not None:
-                frontier, tolerance = self._draft_tree_policy
-                kernel = kernel.with_frontier(frontier, logit_tolerance=tolerance)
-            preview = kernel.run_with_error_bounds(seed, base.memory, steps=steps, reference_memory=reference)
         self._require_current(base)
         return preview
+
+    def preview_observation_slot_batch(self, base, candidates, *, seed, steps, max_candidates, published_opening=False):
+        """Compare independent proposed edits with a single opening trajectory."""
+        kernel = self._slot_preview_kernel(base, published_opening)
+        limit = index(max_candidates)
+        if limit < 1:
+            raise ValueError("preview batch needs a positive candidate budget")
+        references = []
+        for position, candidate in enumerate(candidates):
+            if position == limit:
+                raise ValueError("preview batch exceeds the candidate budget")
+            if not isinstance(candidate, Mapping):
+                raise TypeError("each preview candidate must be a slot-edit mapping")
+            reference = kernel.revise(base.memory, candidate)
+            self._check_reference_capacity(kernel, reference)
+            references.append(reference)
+        self._require_current(base)
+        kernel, seed, steps, opening = self._slot_preview_opening(base, kernel, seed, steps, published_opening)
+        previews = kernel._run_many_with_error_bounds(
+            seed, base.memory, steps=steps, references=tuple(references), opening=opening,
+        )
+        self._require_current(base)
+        return previews
 
     def _prepare_slot_revision(self, base, changes):
         if not isinstance(base.kernel, TreeFeedbackKernel):

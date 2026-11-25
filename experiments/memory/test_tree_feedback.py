@@ -463,6 +463,168 @@ def test_workspace_previews_slot_impact_without_publishing_and_uses_the_current_
         workspace.preview_observation_slots(base, changes, **preview_options)
 
 
+@pytest.mark.parametrize("retained", [False, True])
+def test_slot_preview_batch_shares_approximate_opening_without_mixing_alternatives(monkeypatch, retained):
+    key = np.array([[1.], [0.]])
+    weights = dict(query=[[1.], [.2]], carry=np.diag([.4, 0.]), observation_key=key,
+                   observation_value=np.diag([0., .6]), feedback_key=key,
+                   feedback_value=np.diag([0., .2]), max_steps=3)
+    tree = TreeFeedbackKernel(depth=2, max_frontier=1, **weights)
+    dense = FeedbackKernel(**weights)
+    rows = [[-.02, .10], [.03, .15], [.01, .20]]
+    probe = FeedbackProbe((1., 0.), 3, (0., .2))
+    workspace = FeedbackWorkspace(tree, rows, [probe], max_update_norm=1., reuse_tree_routes=retained)
+    base = workspace.snapshot()
+    moved, inserted = [.025, .19], [-.015, .16]
+    alternatives = ({0: moved}, {}, {2: None, 3: inserted}, {0: moved})
+    revised_rows = ([moved, *rows[1:]], rows, [*rows[:2], inserted], [moved, *rows[1:]])
+    expected = [workspace.preview_observation_slots(base, changes, seed=probe.seed, steps=3)
+                for changes in alternatives]
+    assert base.kernel.step(base.start(probe.seed)).attention.joint_l1_bound > 0.
+    calls = []
+    score_history = TreeFeedbackKernel._history_logits
+
+    def count_history(kernel, keys, query):
+        calls.append(len(keys))
+        return score_history(kernel, keys, query)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(TreeFeedbackKernel, "_history_logits", count_history)
+        previews = workspace.preview_observation_slot_batch(
+            base, iter(alternatives), seed=probe.seed, steps=3, max_candidates=4, published_opening=retained,
+        )
+    assert calls == [0, 1, 2]
+    assert sum(item.state.observation_scores for item in expected) == 12
+    assert sum(item.state.feedback_scores for item in expected) == 12
+    assert workspace.snapshot() is base
+    state = previews[0].state
+    assert state.feedback_scores == 3 and state.observation_scores == (0 if retained else 3)
+    assert len(previews) == 4
+    for preview, separate, snapshot_rows in zip(previews, expected, revised_rows, strict=True):
+        assert preview.state is state
+        assert preview.reused_opening_steps == (3 if retained else 0)
+        assert preview.error_bounds == separate.error_bounds
+        assert preview.revision_group_scores == separate.revision_group_scores
+        np.testing.assert_array_equal(preview.state.history, separate.state.history)
+        reference = dense.start(probe.seed, dense.prepare(snapshot_rows))
+        for _ in range(3):
+            reference = dense.step(reference)
+        deviation = np.max(np.abs(np.array(state.history) - np.array(reference.history)), axis=1)
+        assert (deviation <= np.array(preview.error_bounds) + 1e-14).all()
+
+
+def test_slot_preview_batch_keeps_opposing_edits_separate_in_any_input_order():
+    zero, one = np.zeros((1, 1)), np.ones((1, 1))
+    tree = TreeFeedbackKernel(depth=1, max_frontier=1, query=zero, carry=None,
+                              observation_key=zero, observation_value=one,
+                              feedback_key=zero, feedback_value=zero, max_steps=1)
+    probe = FeedbackProbe((0.,), 1, (.4,))
+    workspace = FeedbackWorkspace(tree, [[0.], [0.]], [probe], max_update_norm=1.)
+    base = workspace.snapshot()
+    positive, negative = {0: [.5]}, {1: [-.5]}
+    options = dict(seed=probe.seed, steps=1, max_candidates=3)
+    forward = workspace.preview_observation_slot_batch(base, (positive, negative, {}), **options)
+    reverse = workspace.preview_observation_slot_batch(base, ({}, negative, positive), **options)
+    assert tuple(item.error_bounds for item in forward) == tuple(item.error_bounds for item in reversed(reverse))
+    assert forward[2].error_bounds == (0.,)
+    for preview in forward[:2]:
+        edited = tree.step(tree.start(probe.seed, preview.reference_memory))
+        assert 0. < abs(edited.latest[0]) <= preview.error_bounds[0]
+
+
+def test_slot_preview_batch_freezes_yielded_slots_and_fences_invalid_or_over_budget_work(monkeypatch):
+    tree = _repair_tree()
+    probe = FeedbackProbe((1.,), 1, (.4,))
+    workspace = FeedbackWorkspace(tree, [[.0], [.5]], [probe], max_update_norm=1.)
+    base = workspace.snapshot()
+
+    def alternatives():
+        row = np.array([.1])
+        proposal = {0: row}
+        yield proposal
+        row[0] = .9
+        yield proposal
+
+    previews = workspace.preview_observation_slot_batch(
+        base, alternatives(), seed=probe.seed, steps=0, max_candidates=2,
+    )
+    assert len(previews) == 2 and all(not item.error_bounds for item in previews)
+    expected_rows = ([.1], [.9])
+    for preview, row in zip(previews, expected_rows, strict=True):
+        assert preview.reference_memory._root.mean_row[0] == pytest.approx((row[0] + .5) / 2.)
+    assert workspace.snapshot() is base
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("invalid or empty preview limits allowed opening scoring")
+
+    monkeypatch.setattr(TreeFeedbackKernel, "_route", unexpected)
+    pulled = []
+
+    def unbounded():
+        while True:
+            pulled.append(True)
+            yield {}
+
+    with pytest.raises(ValueError, match="exceeds the candidate budget"):
+        workspace.preview_observation_slot_batch(base, unbounded(), seed=probe.seed, steps=1, max_candidates=2)
+    assert len(pulled) == 3
+    with pytest.raises(ValueError, match="positive candidate budget"):
+        workspace.preview_observation_slot_batch(base, (), seed=probe.seed, steps=1, max_candidates=0)
+    with pytest.raises(TypeError, match="slot-edit mapping"):
+        workspace.preview_observation_slot_batch(base, ({}, None), seed=probe.seed, steps=1, max_candidates=2)
+    assert workspace.preview_observation_slot_batch(base, (), seed=probe.seed, steps=1, max_candidates=1) == ()
+    assert workspace.snapshot() is base
+
+
+def test_slot_preview_batch_rejects_a_journal_revision_advanced_by_another_writer(tmp_path, monkeypatch):
+    tree = _repair_tree()
+    probe = FeedbackProbe((1.,), 1, (.4,))
+    args = (tmp_path / "batch-preview.db", tree, [[.0], [.5]], [probe])
+    workspace = JournaledFeedbackWorkspace(*args, create=True, max_update_norm=1.)
+    writer = JournaledFeedbackWorkspace(*args, max_update_norm=1.)
+    base = workspace.snapshot()
+    run = TreeFeedbackKernel._run_many_with_error_bounds
+
+    def publish_during_preview(kernel, *args, **kwargs):
+        writer.revise_observation_slots(writer.snapshot(), {0: [.25]})
+        return run(kernel, *args, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(TreeFeedbackKernel, "_run_many_with_error_bounds", publish_during_preview)
+        with pytest.raises(StaleFeedbackRevision):
+            workspace.preview_observation_slot_batch(
+                base, ({1: [.25]}, {}), seed=probe.seed, steps=1, max_candidates=2,
+            )
+    next_base = workspace.snapshot()
+    assert next_base.number == writer.snapshot().number == base.number + 1
+
+    def publish_while_preparing():
+        yield {}
+        writer.revise_observation_slots(writer.snapshot(), {1: [.25]})
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("stale preparation allowed opening scoring")
+
+    monkeypatch.setattr(TreeFeedbackKernel, "_run_many_with_error_bounds", unexpected)
+    with pytest.raises(StaleFeedbackRevision):
+        workspace.preview_observation_slot_batch(
+            next_base, publish_while_preparing(), seed=probe.seed, steps=1, max_candidates=1,
+        )
+    assert workspace.snapshot().number == writer.snapshot().number == next_base.number + 1
+
+
+def test_empty_reference_does_not_evaluate_an_unused_overflowing_query_gain():
+    zeros = np.zeros((2, 2))
+    tree = TreeFeedbackKernel(depth=0, max_frontier=1, query=[[0.], [0.]], carry=None,
+                              observation_key=[[0.], [0.]], observation_value=np.diag([0., .4]),
+                              feedback_key=[[0.], [0.]], feedback_value=zeros,
+                              max_steps=1)._with_observation_query([[1e308], [1e308]])
+    opening = tree.prepare([[0., 1.]])
+    empty = tree.revise(opening, {0: None})
+    preview = tree.run_with_error_bounds([0., 0.], opening, steps=1, reference_memory=empty)
+    assert 0. < preview.state.latest[1] <= preview.error_bounds[0]
+
+
 def test_multiplicity_survives_a_huge_common_observation_and_history_logit():
     key = np.array([[1.0], [0.0]])
     weights = dict(query=1e20 * key, carry=np.diag([40, 0]), observation_key=key,

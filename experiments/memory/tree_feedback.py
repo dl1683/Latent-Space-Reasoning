@@ -250,6 +250,24 @@ def _revision_attention_change(groups, observation_query, history_logits, paired
     return probability_gap, delta
 
 
+class _BoundComparison:
+    def __init__(self, opening_root, reference):
+        self.reference = reference
+        root = reference._root
+        self.groups = _revision_groups(opening_root, root) if opening_root is not root else None
+        paired = () if self.groups is None else self.groups[-1]
+        self.intervals = 0 if self.groups is None else sum(map(len, self.groups))
+        self.intervals += sum(reference is not None for _, reference, _ in paired)
+        self.paired_deltas = np.asarray([delta for _, _, delta in paired]) if paired else None
+        self.bounds = []
+        self.history_error = 0.
+        self.observation_logit_gain = None
+
+    def record(self, error):
+        self.bounds.append(error)
+        self.history_error = max(self.history_error, error)
+
+
 def _frontier(root, query, limit, tolerance, previous, recorded, retain_scores):
     if root is None:
         return (), 0, 0
@@ -390,8 +408,13 @@ class TreeFeedbackKernel(FeedbackKernel):
         return self._run_with_error_bounds(seed, memory, steps=steps, reference_memory=reference_memory)
 
     def _run_with_error_bounds(self, seed, memory, *, steps, reference_memory, opening=None):
+        return self._run_many_with_error_bounds(
+            seed, memory, steps=steps, references=(reference_memory,), opening=opening,
+        )[0]
+
+    def _run_many_with_error_bounds(self, seed, memory, *, steps, references, opening=None):
         if type(self) is not TreeFeedbackKernel or any(
-                bank is not None and type(bank) is not TreeMemory for bank in (memory, reference_memory)):
+                bank is not None and type(bank) is not TreeMemory for bank in (memory, *references)):
             raise TypeError("error bounds require the standard tree feedback transition and memory")
         if any(type(value) not in (np.ndarray, FactoredValue)
                for value in (self._observation_value, self._feedback_value)):
@@ -402,102 +425,108 @@ class TreeFeedbackKernel(FeedbackKernel):
         state = self.start(seed, memory)
         if opening is not None and not opening.matches(self, state._memory, state._seed.tobytes(), steps):
             raise ValueError("retained trajectory does not match the opening run")
-        reference = state._memory if reference_memory is None else reference_memory
-        self._check_memory(reference)
-        opening_root, root = state._memory._root, reference._root
-        if not steps:
-            return TreeFeedbackBoundedRun(state, (), reference)
+        references = tuple(state._memory if bank is None else bank for bank in references)
+        for bank in references:
+            self._check_memory(bank)
+        if not steps or not references:
+            return tuple(TreeFeedbackBoundedRun(state, (), bank) for bank in references)
 
-        groups = _revision_groups(opening_root, root) if opening_root is not root else None
-        paired = () if groups is None else groups[-1]
-        intervals = 0 if groups is None else sum(map(len, groups))
-        intervals += sum(reference is not None for _, reference, _ in paired)
-        group_scores = steps * intervals
-        paired_deltas = np.asarray([delta for _, _, delta in paired]) if paired else None
+        opening_root = state._memory._root
+        comparisons = tuple(_BoundComparison(opening_root, bank) for bank in references)
+        has_edits = any(comparison.groups is not None for comparison in comparisons)
         observation_query = self._query if self._observation_query is None else self._observation_query
         with np.errstate(over="raise", invalid="raise", under="ignore"):
-            bounds = []
             gains_ready = False
-            latest_error = history_error = 0.
+            observation_query_gain = None
             for step in range(steps):
                 query = None
-                value_edit_gap = 0.
                 if opening is not None:
                     hidden = state._seed if not step else opening.final._history[step - 1]
-                    local_gap = opening.steps[step][0].attention.joint_l1_bound
-                    if groups is not None:
+                    opening_gap = opening.steps[step][0].attention.joint_l1_bound
+                    if has_edits:
                         query = hidden @ self._query
                         projected = self._query_observations(hidden, query)
                         history_logits = self._history_logits(opening.final._keys[:step], query)
                 else:
                     hidden = state.latest
-                    if groups is None:
-                        state = self.step(state)
-                    else:
+                    if has_edits:
                         diagnostics = {}
                         state, _, _ = self._advance(state, diagnostics=diagnostics)
                         projected = (hidden @ observation_query if opening_root is None
                                      else diagnostics["observation_query"])
                         history_logits = diagnostics["logits"][state.attention.groups:]
-                    local_gap = state.attention.joint_l1_bound
-                if groups is not None:
-                    revision_gap, delta = _revision_attention_change(groups, projected, history_logits, paired_deltas)
-                    local_gap += revision_gap
-                    value_edit_gap = self._revision_value_gap(hidden, delta)
-                if local_gap == latest_error == history_error == 0.:
-                    latest_error = history_error = 2. * tanh(value_edit_gap / 2.)
-                    bounds.append(latest_error)
-                    continue
+                    else:
+                        state = self.step(state)
+                    opening_gap = state.attention.joint_l1_bound
 
-                if not gains_ready:
-                    observation_logit_gain = 0.
-                    if root is not None:
-                        observation_keys = np.maximum(np.abs(root.lower_key), np.abs(root.upper_key))
-                        observation_logit_gain = observation_keys @ _column_l1(observation_query)
-                    observation_value_gain = _value_linf(self._observation_value)
-                    carry_gain = 0. if self._carry is None else _column_l1(self._carry).max()
-                    feedback_keys = _column_l1(self._feedback_key) if steps > 1 else None
-                    feedback_query_gain = 0. if feedback_keys is None else feedback_keys @ _column_l1(self._query)
-                    feedback_value_gain = 0. if feedback_keys is None else _value_linf(self._feedback_value)
-                    conditional = tuple(
-                        (axis, threshold, np.abs(observed).sum() * np.abs(output).max(), np.abs(axis).sum())
-                        for axis, observed, output, threshold in self._conditional
-                    )
-                    gains_ready = True
+                for comparison in comparisons:
+                    local_gap, value_edit_gap = opening_gap, 0.
+                    if comparison.groups is not None:
+                        revision_gap, delta = _revision_attention_change(
+                            comparison.groups, projected, history_logits, comparison.paired_deltas,
+                        )
+                        local_gap += revision_gap
+                        value_edit_gap = self._revision_value_gap(hidden, delta)
+                    latest_error = comparison.bounds[-1] if step else 0.
+                    history_error = comparison.history_error
+                    if local_gap == latest_error == history_error == 0.:
+                        comparison.record(2. * tanh(value_edit_gap / 2.))
+                        continue
 
-                logit_gap = latest_error * observation_logit_gain
-                value_gain = observation_value_gain
-                value_drift = latest_error * carry_gain
-                if step:
-                    query = hidden @ self._query if query is None else query
-                    feedback_logit_gap = latest_error * feedback_query_gain
-                    feedback_logit_gap += history_error * (feedback_keys @ np.abs(query))
-                    logit_gap = max(logit_gap, feedback_logit_gap)
-                    value_drift += history_error * feedback_value_gain
-                for axis, threshold, amplitude, slope in conditional:
-                    gate = hidden @ axis
-                    gate_size = abs(gate) if threshold is None else max(0., gate - threshold)
-                    value_gain += gate_size * amplitude
-                    value_drift += latest_error * slope * amplitude
-                if step:
-                    value_gain = max(value_gain, feedback_value_gain)
+                    if not gains_ready:
+                        observation_value_gain = _value_linf(self._observation_value)
+                        carry_gain = 0. if self._carry is None else _column_l1(self._carry).max()
+                        feedback_keys = _column_l1(self._feedback_key) if steps > 1 else None
+                        feedback_query_gain = 0. if feedback_keys is None else feedback_keys @ _column_l1(self._query)
+                        feedback_value_gain = 0. if feedback_keys is None else _value_linf(self._feedback_value)
+                        conditional = tuple(
+                            (axis, threshold, np.abs(observed).sum() * np.abs(output).max(), np.abs(axis).sum())
+                            for axis, observed, output, threshold in self._conditional
+                        )
+                        gains_ready = True
 
-                probability_gap = min(2., local_gap + 2. * tanh(logit_gap / 2.))
-                preactivation_gap = probability_gap * value_gain + value_drift + value_edit_gap
-                latest_error = 2. * tanh(preactivation_gap / 2.)
-                history_error = max(history_error, latest_error)
-                bounds.append(latest_error)
+                    if comparison.observation_logit_gain is None:
+                        root = comparison.reference._root
+                        comparison.observation_logit_gain = 0.
+                        if root is not None:
+                            if observation_query_gain is None:
+                                observation_query_gain = _column_l1(observation_query)
+                            observation_keys = np.maximum(np.abs(root.lower_key), np.abs(root.upper_key))
+                            comparison.observation_logit_gain = observation_keys @ observation_query_gain
+                    logit_gap = latest_error * comparison.observation_logit_gain
+                    value_gain = observation_value_gain
+                    value_drift = latest_error * carry_gain
+                    if step:
+                        query = hidden @ self._query if query is None else query
+                        feedback_logit_gap = latest_error * feedback_query_gain
+                        feedback_logit_gap += history_error * (feedback_keys @ np.abs(query))
+                        logit_gap = max(logit_gap, feedback_logit_gap)
+                        value_drift += history_error * feedback_value_gain
+                    for axis, threshold, amplitude, slope in conditional:
+                        gate = hidden @ axis
+                        gate_size = abs(gate) if threshold is None else max(0., gate - threshold)
+                        value_gain += gate_size * amplitude
+                        value_drift += latest_error * slope * amplitude
+                    if step:
+                        value_gain = max(value_gain, feedback_value_gain)
+
+                    probability_gap = min(2., local_gap + 2. * tanh(logit_gap / 2.))
+                    preactivation_gap = probability_gap * value_gain + value_drift + value_edit_gap
+                    comparison.record(2. * tanh(preactivation_gap / 2.))
+
         reused = 0
         if opening is not None:
             retained = opening.final
             attention = replace(opening.steps[steps - 1][0].attention, scored_nodes=0,
                                 reused_route=True, reused_node_scores=0)
-            history_scores = 0 if groups is None else steps * (steps - 1) // 2
+            history_scores = steps * (steps - 1) // 2 if has_edits else 0
             state = replace(state, _history=retained._history[:steps], _keys=retained._keys[:steps],
                             _values=retained._values[:steps], observation_scores=0,
                             feedback_scores=history_scores, attention=attention)
             reused = steps
-        return TreeFeedbackBoundedRun(state, tuple(bounds), reference, group_scores, reused)
+        return tuple(TreeFeedbackBoundedRun(state, tuple(comparison.bounds), comparison.reference,
+                                            steps * comparison.intervals, reused)
+                     for comparison in comparisons)
 
     def _advance(self, state, *, diagnostics=None):
         self._require_can_step(state)
