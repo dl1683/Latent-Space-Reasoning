@@ -117,6 +117,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **An observed winner can lose at the publication tip, 25 November 2026.** An order proposal frozen before the six source events saved work at its opening state, 372 to 350 proxy units. Repreparing the same operation at the current tip and charging conversion again changed the comparison to 313 against 330. The worker refused it. A prospective win establishes what would have happened on its declared interval. Publication still requires the current guard and its own conversion comparison. [Prospective trial fixtures](../experiments/memory/test_relative_journal.py)
 
+**Pooling can erase order, and eager composition can erase range, 25 November 2026.** Two supplied banks with identical operator sums produced third-coordinate values of 0.75 and 0 after the same late query. The order has to survive ingestion. Independently, composing two scalar operators of $10^{200}$ overflowed at compilation, though applying them sequentially to a $10^{-300}$ seed returned about $10^{100}$. Two $10^{-200}$ operators compiled to zero while sequential evaluation from $10^{300}$ returned about $10^{-100}$. Future architecture comparisons should register a numerical envelope and check different evaluation orders before treating a zero as evidence about the encoded state. [Ordered operator fixtures](../experiments/memory/test_transition_memory.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.
