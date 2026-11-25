@@ -459,12 +459,14 @@ class FeedbackWorkspace:
     def revise_observation_slots(self, base, changes):
         """Revise slots in a tree bank and admit them against the current workspace tip."""
         self._require_current(base)
+        revised = self._prepare_slot_revision(base, changes)
+        return base if revised is base else self._commit(base, revised)
+
+    def _prepare_slot_revision(self, base, changes):
         if not isinstance(base.kernel, TreeFeedbackKernel):
             raise ValueError("slot revisions require a tree feedback kernel")
         memory = base.kernel.revise(base.memory, changes)
-        if memory is base.memory:
-            return base
-        return self._commit(base, self._prepare_memory_revision(base, memory))
+        return base if memory is base.memory else self._prepare_memory_revision(base, memory)
 
     def _prepare_observation_revision(self, base, observations):
         return self._prepare_memory_revision(base, base.kernel.prepare(observations))

@@ -8,6 +8,7 @@ import json
 from operator import index
 from pathlib import Path
 import sqlite3
+from struct import Struct
 
 import numpy as np
 
@@ -20,6 +21,9 @@ from experiments.memory.linear_feedback import LinearFeedbackKernel
 from experiments.memory.tree_feedback import TreeFeedbackKernel
 
 
+_SLOT_HEADER = Struct("<QB")
+
+
 def _encode(array):
     return np.asarray(array, dtype="<f8", order="C").tobytes()
 
@@ -27,6 +31,39 @@ def _encode(array):
 def _encode_term(factors, threshold):
     payload = _encode(factors)
     return payload if threshold is None else payload + _encode((threshold,))
+
+
+def _encode_slots(changes):
+    payload = bytearray()
+    for slot, row in sorted(changes.items()):
+        payload.extend(_SLOT_HEADER.pack(slot, row is not None))
+        if row is not None:
+            payload.extend(_encode(row))
+    return bytes(payload)
+
+
+def _decode_slots(payload, width):
+    changes = {}
+    offset = 0
+    last_slot = -1
+    if not payload:
+        raise ValueError("empty tree slot payload")
+    while offset < len(payload):
+        if len(payload) - offset < _SLOT_HEADER.size:
+            raise ValueError("truncated tree slot header")
+        slot, tag = _SLOT_HEADER.unpack_from(payload, offset)
+        offset += _SLOT_HEADER.size
+        if slot <= last_slot or tag not in (0, 1):
+            raise ValueError("noncanonical tree slot payload")
+        row = None
+        if tag == 1:
+            if len(payload) - offset < 8 * width:
+                raise ValueError("truncated tree slot row")
+            row = np.frombuffer(payload, dtype="<f8", count=width, offset=offset)
+            offset += 8 * width
+        changes[slot] = row
+        last_slot = slot
+    return changes
 
 
 def _event_digest(parent, number, kind, probe, payload):
@@ -72,9 +109,16 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
     """Share admitted revisions across processes using one trusted local SQLite file."""
 
     def __init__(self, path, kernel, observations, probes, *, max_update_norm, atol=1e-8,
-                 max_terms=0, source_ids=None, guards=(), allow_hinge=False):
-        if isinstance(kernel, TreeFeedbackKernel):
-            raise ValueError("the feedback journal does not support tree layouts")
+                 max_terms=0, source_ids=None, guards=(), allow_hinge=False, max_reference_frontier=None,
+                 reuse_tree_routes=False, max_retained_tree_scores=0, create=False):
+        if type(create) is not bool:
+            raise ValueError("journal creation flag must be a boolean")
+        self._tree_bound = isinstance(kernel, TreeFeedbackKernel)
+        if self._tree_bound and type(kernel) is not TreeFeedbackKernel:
+            raise ValueError("the feedback journal requires the standard tree kernel")
+        self._tree_error_policy = np.geterr() if self._tree_bound else None
+        if self._tree_bound and any(mode in ("call", "log") for mode in self._tree_error_policy.values()):
+            raise ValueError("tree feedback journals require a data-only NumPy error policy")
         self._source_bound = isinstance(kernel, LinearFeedbackKernel)
         initial_sources = None
         self._ready = True
@@ -90,60 +134,92 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             initial_sources = dict(zip(names, observations, strict=True))
         elif source_ids is not None:
             raise ValueError("source IDs require a linear feedback kernel")
+        if self._tree_bound:
+            observations = _real_array(observations).copy()
         super().__init__(kernel, observations, probes, max_update_norm=max_update_norm,
-                         atol=atol, max_terms=max_terms, guards=guards, allow_hinge=allow_hinge)
+                         atol=atol, max_terms=max_terms, guards=guards, allow_hinge=allow_hinge,
+                         max_reference_frontier=max_reference_frontier, reuse_tree_routes=reuse_tree_routes,
+                         max_retained_tree_scores=max_retained_tree_scores)
         self._path = Path(path).resolve()
-        self._root = self._root_digest(initial_sources)
+        self._root = self._root_digest(initial_sources, observations if self._tree_bound else None)
         self._tip = self._root
-        with closing(self._connect()) as db:
-            if db.execute("PRAGMA journal_mode=WAL").fetchone()[0] != "wal":
-                raise RuntimeError("feedback journal requires SQLite WAL mode")
-            db.execute("BEGIN IMMEDIATE")
-            db.execute("""
-                CREATE TABLE IF NOT EXISTS feedback_root (
-                    singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
-                    digest BLOB NOT NULL
-                )
-            """)
-            db.execute("""
-                CREATE TABLE IF NOT EXISTS feedback_events (
-                    number INTEGER PRIMARY KEY CHECK (number > 0),
-                    kind TEXT NOT NULL,
-                    probe INTEGER,
-                    payload BLOB NOT NULL,
-                    digest BLOB NOT NULL
-                )
-            """)
-            created = db.execute("INSERT OR IGNORE INTO feedback_root VALUES (1, ?)", (self._root,))
-            self._read_root(db)
-            if self._source_bound and created.rowcount:
-                db.execute("""
-                    CREATE TABLE feedback_sources (
-                        name TEXT PRIMARY KEY NOT NULL,
-                        coordinates BLOB NOT NULL
-                    ) WITHOUT ROWID
-                """)
-                db.executemany("INSERT INTO feedback_sources VALUES (?, ?)",
-                               ((name, _encode(row)) for name, row in initial_sources.items()))
-            elif self._source_bound:
-                db.execute("SELECT name, coordinates FROM feedback_sources LIMIT 0")
-            db.execute("COMMIT")
+        with closing(self._connect(create=create)) as db:
+            if self._tree_bound and not create:
+                if not self._has_root_table(db):
+                    raise ValueError("tree feedback journal has no root; create it explicitly")
+                self._read_root(db)
+            else:
+                self._initialize_journal(db, initial_sources)
         self.snapshot()
 
-    def _connect(self):
-        db = sqlite3.connect(self._path, isolation_level=None)
+    @staticmethod
+    def _has_root_table(db):
+        return db.execute("SELECT 1 FROM sqlite_master WHERE name = 'feedback_root'").fetchone() is not None
+
+    def _initialize_journal(self, db, initial_sources):
+        if self._has_root_table(db):
+            self._read_root(db)
+        if not self._tree_bound and db.execute("PRAGMA journal_mode=WAL").fetchone()[0] != "wal":
+            raise RuntimeError("feedback journal requires SQLite WAL mode")
+        db.execute("BEGIN IMMEDIATE")
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS feedback_root (
+                singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
+                digest BLOB NOT NULL
+            )
+        """)
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS feedback_events (
+                number INTEGER PRIMARY KEY CHECK (number > 0),
+                kind TEXT NOT NULL,
+                probe INTEGER,
+                payload BLOB NOT NULL,
+                digest BLOB NOT NULL
+            )
+        """)
+        if self._tree_bound and (db.execute("SELECT 1 FROM feedback_root").fetchone() is None
+                                and db.execute("SELECT 1 FROM feedback_events LIMIT 1").fetchone()):
+            raise ValueError("tree feedback journal has events but no root")
+        created = db.execute("INSERT OR IGNORE INTO feedback_root VALUES (1, ?)", (self._root,))
+        self._read_root(db)
+        if self._source_bound and created.rowcount:
+            db.execute("""
+                CREATE TABLE feedback_sources (
+                    name TEXT PRIMARY KEY NOT NULL,
+                    coordinates BLOB NOT NULL
+                ) WITHOUT ROWID
+            """)
+            db.executemany("INSERT INTO feedback_sources VALUES (?, ?)",
+                           ((name, _encode(row)) for name, row in initial_sources.items()))
+        elif self._source_bound:
+            db.execute("SELECT name, coordinates FROM feedback_sources LIMIT 0")
+        db.execute("COMMIT")
+
+    def _connect(self, *, create=False):
+        if self._tree_bound:
+            if np.geterr() != self._tree_error_policy:
+                raise ValueError("tree feedback journal NumPy error policy changed")
+            mode = "rwc" if create else "rw"
+            db = sqlite3.connect(f"{self._path.as_uri()}?mode={mode}", uri=True, isolation_level=None)
+        else:
+            db = sqlite3.connect(self._path, isolation_level=None)
         try:
             db.execute("PRAGMA synchronous=FULL")
-        except sqlite3.Error:
+            if self._tree_bound and db.execute("PRAGMA journal_mode").fetchone() != ("delete",):
+                raise ValueError("tree feedback journal requires SQLite DELETE rollback mode")
+        except (sqlite3.Error, ValueError):
             db.close()
             raise
         return db
 
-    def _root_digest(self, initial_sources):
+    def _root_digest(self, initial_sources, tree_rows):
         head = self._head
         kernel = head.kernel
-        digest = sha256(b"feedback workspace root v1\n" if initial_sources is None
-                        else b"feedback workspace source moments v1\n")
+        if self._tree_bound:
+            digest = sha256(b"feedback workspace tree v1\n")
+        else:
+            digest = sha256(b"feedback workspace root v1\n" if initial_sources is None
+                            else b"feedback workspace source moments v1\n")
         policy = (kernel._max_steps, self._max_terms, self._atol, self._max_update_norm,
                   [(probe.seed, probe.steps, probe.target) for probe in self._probes])
         digest.update(json.dumps(policy, allow_nan=False, separators=(",", ":")).encode())
@@ -169,7 +245,12 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
                 add_array(value._right)
             else:
                 add_array(value)
-        if initial_sources is None:
+        if self._tree_bound:
+            layout = (kernel._depth, kernel._max_frontier, kernel._logit_tolerance,
+                      self._draft_tree_policy, np.__version__, sorted(self._tree_error_policy.items()))
+            digest.update(json.dumps(layout, allow_nan=False, separators=(",", ":")).encode())
+            add_array(tree_rows)
+        elif initial_sources is None:
             add_array(head.memory._observations)
         else:
             pairs = list(zip(kernel._pair_left.tolist(), kernel._pair_right.tolist(), strict=True))
@@ -219,6 +300,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         if kind == "observations" and probe is None and not self._source_bound:
             values = np.frombuffer(payload, dtype="<f8")
             return self._prepare_observation_revision(base, values.reshape(-1, base.kernel._width))
+        if kind == "tree_slots" and probe is None and self._tree_bound:
+            return self._prepare_slot_revision(base, _decode_slots(payload, base.kernel._width))
         return self._prepare_operator_revision(self._decode_operator(base, kind, probe, payload))
 
     def _search_base(self):
@@ -279,9 +362,10 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         if not 0 <= start < stop <= len(plan.candidates):
             raise ValueError("repair shard is outside the plan")
         results = []
+        synthesize = self.propose if self._draft_tree_policy is not None else self._propose
         for probe, kind in plan.candidates[start:stop]:
             try:
-                proposal = self._propose(base, probe, conditional=kind != "weight", hinge=kind == "hinge")
+                proposal = synthesize(base, probe, conditional=kind != "weight", hinge=kind == "hinge")
             except StaleFeedbackRevision:
                 raise
             except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
@@ -413,7 +497,29 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
     def replace_observations(self, base, observations):
         if self._source_bound:
             raise ValueError("use revise_sources for source-bound observations")
+        if self._tree_bound:
+            self._require_current(base)
+            rows = _real_array(observations).copy()
+            revised = self._prepare_observation_revision(base, rows)
+            return self._commit(base, revised, tree_event=("observations", _encode(rows)))
         return super().replace_observations(base, observations)
+
+    def revise_observation_slots(self, base, changes):
+        if not self._tree_bound:
+            raise ValueError("slot revisions require a tree feedback kernel")
+        self._require_current(base)
+        if not isinstance(changes, Mapping):
+            raise ValueError("tree slot changes require a mapping")
+        edits = {}
+        for supplied_slot, row in changes.items():
+            slot = index(supplied_slot)
+            if slot in edits:
+                raise ValueError("duplicate normalized tree slot")
+            edits[slot] = None if row is None else _frozen(_real_array(row))
+        revised = self._prepare_slot_revision(base, edits)
+        if revised is base:
+            return base
+        return self._commit(base, revised, tree_event=("tree_slots", _encode_slots(edits)))
 
     def snapshot(self):
         """Replay unseen events and return the head of one consistent journal read."""
@@ -426,18 +532,40 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
                 "SELECT digest FROM feedback_events WHERE number = ?", (head.number,),
             ).fetchone() != (tip,):
                 raise ValueError("feedback journal lost or replaced the local revision")
-            for number, kind, probe, payload, stored in db.execute("""
-                SELECT number, kind, probe, payload, digest FROM feedback_events
-                WHERE number > ? ORDER BY number
-            """, (head.number,)):
-                if number != head.number + 1 or stored != _event_digest(
-                    tip, number, kind, probe, payload,
-                ):
-                    raise ValueError("invalid feedback journal history")
-                head = self._replay(head, kind, probe, payload)
-                tip = stored
+            if self._tree_bound:
+                head, tip = self._catch_up_tree(db, head, tip)
+            else:
+                for event in db.execute("""
+                    SELECT number, kind, probe, payload, digest FROM feedback_events
+                    WHERE number > ? ORDER BY number
+                """, (head.number,)):
+                    head, tip = self._replay_event(head, tip, event)
             self._install(head, tip)
             return head
+
+    def _replay_event(self, head, tip, event):
+        number, kind, probe, payload, stored = event
+        if number != head.number + 1 or stored != _event_digest(tip, number, kind, probe, payload):
+            raise ValueError("invalid feedback journal history")
+        return self._replay(head, kind, probe, payload), stored
+
+    def _catch_up_tree(self, db, head, tip):
+        end = db.execute("SELECT number, digest FROM feedback_events ORDER BY number DESC LIMIT 1").fetchone()
+        end_number, end_digest = end or (0, self._root)
+        db.execute("COMMIT")
+        # The append-only prefix is pinned by its final digest. Release SQLite reads
+        # before numerical replay so a rollback-mode reader does not hold up writers.
+        for number in range(head.number + 1, end_number + 1):
+            with closing(db.execute("""
+                SELECT number, kind, probe, payload, digest FROM feedback_events WHERE number = ?
+            """, (number,))) as cursor:
+                event = cursor.fetchone()
+            if event is None:
+                raise ValueError("feedback journal lost an event during replay")
+            head, tip = self._replay_event(head, tip, event)
+        if (head.number, tip) != (end_number, end_digest):
+            raise ValueError("feedback journal changed its pinned replay tip")
+        return head, tip
 
     @staticmethod
     def _write_sources(db, source_changes):
@@ -454,7 +582,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             if result.rowcount != 1:
                 raise ValueError("source index disagrees with checked source revision")
 
-    def _commit(self, base, revised, *, proposal=None, source_changes=None):
+    def _commit(self, base, revised, *, proposal=None, source_changes=None, tree_event=None):
         probe = None if proposal is None else proposal.probe
         if source_changes is not None:
             kind = "sources"
@@ -463,6 +591,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
                 for name, pair in source_changes.items()
             }
             payload = json.dumps(changes, allow_nan=False, separators=(",", ":")).encode()
+        elif tree_event is not None:
+            kind, payload = tree_event
         elif proposal is None:
             kind, payload = "observations", _encode(revised.memory._observations)
         elif proposal.term is None:

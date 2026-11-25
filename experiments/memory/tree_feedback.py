@@ -40,18 +40,22 @@ def _join(left, right):
                  _frozen(np.maximum(left.upper_key, right.upper_key)), mean, left, right)
 
 
-def _set_slot(node, depth, slot, leaf):
+def _set_slots(node, depth, edits):
+    if not edits:
+        return node
     if depth == 0:
+        (slot, leaf), = edits
         if node is None and leaf is None:
             raise KeyError(slot)
         return leaf
     left = None if node is None else node.left
     right = None if node is None else node.right
-    if slot & (1 << (depth - 1)):
-        right = _set_slot(right, depth - 1, slot, leaf)
-    else:
-        left = _set_slot(left, depth - 1, slot, leaf)
-    return _join(left, right)
+    bit = 1 << (depth - 1)
+    left_edits, right_edits = [], []
+    for slot, leaf in edits:
+        (right_edits if slot & bit else left_edits).append((slot, leaf))
+    return _join(_set_slots(left, depth - 1, left_edits),
+                 _set_slots(right, depth - 1, right_edits))
 
 
 @dataclass(frozen=True, eq=False)
@@ -237,13 +241,15 @@ class TreeFeedbackKernel(FeedbackKernel):
         self._check_memory(memory)
         if not changes:
             return memory
-        root = memory._root
+        edits = {}
         for slot, row in changes.items():
             slot = index(slot)
             if not 0 <= slot < 1 << self._depth:
                 raise ValueError("observation slot outside tree layout")
-            leaf = None if row is None else next(self._leaves([row]))
-            root = _set_slot(root, self._depth, slot, leaf)
+            if slot in edits:
+                raise ValueError("duplicate normalized tree slot")
+            edits[slot] = None if row is None else next(self._leaves([row]))
+        root = _set_slots(memory._root, self._depth, tuple(edits.items()))
         return replace(memory, _root=root)
 
     def start(self, seed, memory=None):

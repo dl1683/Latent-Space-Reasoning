@@ -141,8 +141,12 @@ def test_workspace_fences_slot_revisions_and_reuses_tree_for_operator_edits(tmp_
     assert workspace.snapshot() is after and after.memory.count == 8
     with pytest.raises(ValueError, match="different tree"):
         TreeFeedbackKernel(depth=4, max_frontier=2, **_weights()).start(seed, old.memory)
-    with pytest.raises(ValueError, match="journal does not support"):
-        JournaledFeedbackWorkspace(tmp_path / "tree.db", kernel, rows, probes, max_update_norm=1)
+    class CustomTree(TreeFeedbackKernel):
+        pass
+
+    with pytest.raises(ValueError, match="standard tree kernel"):
+        JournaledFeedbackWorkspace(tmp_path / "tree.db", CustomTree(depth=4, max_frontier=2, **_weights()),
+                                  rows, probes, max_update_norm=1)
     assert not (tmp_path / "tree.db").exists()
 
 

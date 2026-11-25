@@ -12,7 +12,7 @@ import numpy as np
 import pytest
 
 from experiments.memory.feedback_journal import (
-    FeedbackCandidateData, FeedbackSearchShard, JournaledFeedbackWorkspace,
+    FeedbackCandidateData, FeedbackSearchShard, JournaledFeedbackWorkspace, _event_digest,
 )
 from experiments.memory.feedback_workspace import (
     FeedbackProbe,
@@ -22,6 +22,7 @@ from experiments.memory.feedback_workspace import (
 )
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, FeedbackKernel
 from experiments.memory.linear_feedback import LinearFeedbackKernel
+from experiments.memory.tree_feedback import TreeFeedbackKernel
 
 
 def _kernel(*, factored=False):
@@ -755,23 +756,262 @@ def _sharded_workspace(path):
     return JournaledFeedbackWorkspace(path, _kernel(), [[1, 0]], probes, max_update_norm=1)
 
 
-def test_separate_processes_synthesize_distinct_ranges_and_one_coordinator_ranks(tmp_path):
+def _tree_journal(path, *, depth=3, draft_cap=1, reference_cap=4, draft_tolerance=0, cache=True,
+                  rows=((-1, 0), (1, 0)), create=False):
+    key = np.array([[1.0], [0.0]])
+    zeros = np.zeros((2, 2))
+    kernel = TreeFeedbackKernel(
+        depth=depth, max_frontier=draft_cap, logit_tolerance=draft_tolerance,
+        query=20 * key, carry=None, observation_key=key, observation_value=zeros,
+        feedback_key=np.zeros_like(key), feedback_value=zeros, max_steps=1,
+    )
+    probes = [FeedbackProbe((1, 0), 1, (0, 0.4)), FeedbackProbe((-1, 0), 1, (0, -0.25))]
+    return JournaledFeedbackWorkspace(
+        path, kernel, rows, probes, max_update_norm=1, max_reference_frontier=reference_cap,
+        max_retained_tree_scores=15 if cache else 0, create=create,
+    )
+
+
+def _tree_leaf(memory, slot):
+    node = memory._root
+    for bit in reversed(range(memory._depth)):
+        if node is None:
+            return None
+        node = node.right if slot & (1 << bit) else node.left
+    return node
+
+
+def test_tree_journal_replays_sparse_binary_rows_operator_and_full_replacement(tmp_path):
+    path = tmp_path / "tree.sqlite"
+    writer = _tree_journal(path, create=True)
+    reader = _tree_journal(path, cache=False)
+    root = writer.snapshot()
+    row = np.array([-1.0, -0.0])
+    tiny = np.array([0.0, np.nextafter(0.0, 1.0)])
+    revised = writer.revise_observation_slots(root, {7: tiny, 0: None, 6: row})
+    assert revised._probe_routes and revised.number == 1
+    assert _tree_leaf(root.memory, 0) is not None and _tree_leaf(revised.memory, 0) is None
+    assert _tree_leaf(revised.memory, 1) is _tree_leaf(root.memory, 1)
+    caught = reader.snapshot()
+    assert not caught._probe_routes
+    assert _tree_leaf(caught.memory, 6).mean_row.tobytes() == row.tobytes()
+    assert _tree_leaf(caught.memory, 7).mean_row.tobytes() == tiny.tobytes()
+    assert caught.errors == revised.errors and reader._tip == writer._tip
+    assert writer.revise_observation_slots(revised, {}) is revised
+    with pytest.raises(ValueError, match="full-reference frontier"):
+        writer.revise_observation_slots(revised, {2: [0, 0], 3: [0, 0]})
+    assert writer.snapshot() is revised
+
+    repair = reader.maintain(max_candidates=2)
+    assert repair.status == "committed"
+    caught_up = writer.snapshot()
+    assert caught_up.errors == repair.revision.errors and writer._tip == reader._tip
+    assert caught_up.memory is revised.memory
+    empty = writer.replace_observations(caught_up, np.empty((0, 2)))
+    reopened = _tree_journal(path)
+    recovered = reopened.snapshot()
+    assert recovered.number == empty.number == 3 and recovered.memory.count == 0
+    assert recovered.errors == empty.errors and reopened._tip == writer._tip
+    assert recovered.kernel._observation_value.tobytes() == empty.kernel._observation_value.tobytes()
+    with closing(sqlite3.connect(path)) as db:
+        events = db.execute("SELECT kind, length(payload) FROM feedback_events ORDER BY number").fetchall()
+        assert events == [("tree_slots", 59), ("weight", 32), ("observations", 0)]
+
+
+@pytest.mark.parametrize("changed", [
+    {"depth": 4}, {"draft_cap": 2}, {"reference_cap": 3}, {"draft_tolerance": 0.2},
+    {"rows": ((1, 0), (-1, 0))},
+])
+def test_tree_journal_root_binds_slot_order_and_both_resolution_policies(tmp_path, changed):
+    path = tmp_path / "root.sqlite"
+    workspace = _tree_journal(path, create=True)
+    with pytest.raises(ValueError, match="initial workspace inputs"):
+        _tree_journal(path, **changed)
+    assert workspace.snapshot().number == 0
+
+
+def test_cross_format_journal_open_does_not_switch_sqlite_mode(tmp_path):
+    tree_path, dense_path = tmp_path / "tree.sqlite", tmp_path / "dense.sqlite"
+    _tree_journal(tree_path, create=True)
+    _sharded_workspace(dense_path)
+    with pytest.raises(ValueError, match="initial workspace inputs"):
+        _sharded_workspace(tree_path)
+    with pytest.raises(ValueError, match="DELETE rollback mode"):
+        _tree_journal(dense_path)
+    with closing(sqlite3.connect(tree_path)) as tree_db, closing(sqlite3.connect(dense_path)) as dense_db:
+        assert tree_db.execute("PRAGMA journal_mode").fetchone() == ("delete",)
+        assert dense_db.execute("PRAGMA journal_mode").fetchone() == ("wal",)
+
+
+def test_tree_journal_open_requires_an_existing_initialized_file(tmp_path):
+    path = tmp_path / "explicit.sqlite"
+    with pytest.raises(sqlite3.OperationalError):
+        _tree_journal(path)
+    assert not path.exists()
+    path.touch()
+    with pytest.raises(ValueError, match="no root; create"):
+        _tree_journal(path)
+    assert path.stat().st_size == 0
+    _tree_journal(path, create=True)
+    assert _tree_journal(path).snapshot().number == 0
+    orphan = tmp_path / "orphan.sqlite"
+    with closing(sqlite3.connect(orphan)) as db, db:
+        db.execute("CREATE TABLE feedback_events (number INTEGER)")
+        db.execute("INSERT INTO feedback_events VALUES (1)")
+    with pytest.raises(ValueError, match="events but no root"):
+        _tree_journal(orphan, create=True)
+    with closing(sqlite3.connect(orphan)) as db:
+        assert db.execute("SELECT name FROM sqlite_master WHERE name='feedback_root'").fetchone() is None
+
+
+def test_tree_journal_pins_replay_error_policy_at_create_and_open(tmp_path):
+    path = tmp_path / "policy.sqlite"
+    writer = _tree_journal(path, create=True)
+    current = writer.revise_observation_slots(writer.snapshot(), {6: [0.0, np.nextafter(0.0, 1.0)]})
+    with np.errstate(under="raise"):
+        with pytest.raises(ValueError, match="NumPy error policy changed"):
+            writer.snapshot()
+        with pytest.raises(ValueError, match="initial workspace inputs"):
+            _tree_journal(path)
+    assert writer.snapshot() is current
+    assert _tree_journal(path).snapshot().number == current.number
+
+
+def test_tree_slot_batch_builds_final_children_before_strict_numerical_replay(tmp_path):
+    path = tmp_path / "strict.sqlite"
+    rows = np.empty((0, 2))
+    subnormal = np.nextafter(0.0, 1.0)
+    with np.errstate(under="raise"):
+        writer = _tree_journal(path, rows=rows, create=True)
+        first = writer.revise_observation_slots(writer.snapshot(), {7: [0.0, subnormal]})
+        final = writer.revise_observation_slots(first, {7: None, 0: [1.0, 0.0]})
+        reader = _tree_journal(path, rows=rows)
+        latest = reader.snapshot()
+        assert (latest.number, reader._tip) == (final.number, writer._tip)
+        assert latest.memory.count == final.memory.count == 1
+        assert _tree_leaf(latest.memory, 7) is None
+        assert _tree_leaf(latest.memory, 0).mean_row.tobytes() == _tree_leaf(final.memory, 0).mean_row.tobytes()
+
+
+def test_tree_journal_refuses_a_malformed_slot_event_without_partly_installing_replay(tmp_path):
+    path = tmp_path / "malformed.sqlite"
+    primary, observer = _tree_journal(path, create=True), _tree_journal(path, cache=False)
+    base = observer.snapshot()
+    latest = primary.revise_observation_slots(primary.snapshot(), {3: [0.2, 0]})
+    payload = bytes(8) + b"\x02"
+    digest = _event_digest(primary._tip, 2, "tree_slots", None, payload)
+    with closing(sqlite3.connect(path)) as db, db:
+        db.execute("INSERT INTO feedback_events VALUES (2, 'tree_slots', NULL, ?, ?)", (payload, digest))
+    with pytest.raises(ValueError, match="noncanonical"):
+        observer.snapshot()
+    assert observer._head is base and observer._tip == observer._root
+    assert latest.number == 1
+
+
+def test_tree_slot_writers_racing_after_preparation_share_one_durable_tip(tmp_path, monkeypatch):
+    path = tmp_path / "race.sqlite"
+    writers = (_tree_journal(path, create=True), _tree_journal(path, cache=False))
+    bases = tuple(writer.snapshot() for writer in writers)
+    pending = Barrier(2)
+
+    def fenced(prepare):
+        def wait(base, edits):
+            revised = prepare(base, edits)
+            pending.wait(timeout=5)
+            return revised
+        return wait
+
+    for writer in writers:
+        monkeypatch.setattr(writer, "_prepare_slot_revision", fenced(writer._prepare_slot_revision))
+    rows = ([0.1, -0.5], [0.2, 0.5])
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = [pool.submit(writer.revise_observation_slots, base, {6: row})
+                   for writer, base, row in zip(writers, bases, rows, strict=True)]
+        succeeded = []
+        for i, future in enumerate(futures):
+            try:
+                future.result(timeout=10)
+                succeeded.append(i)
+            except StaleFeedbackRevision:
+                continue
+    assert len(succeeded) == 1
+    reader = _tree_journal(path)
+    assert reader.snapshot().number == 1
+    np.testing.assert_array_equal(_tree_leaf(reader.snapshot().memory, 6).mean_row, rows[succeeded[0]])
+    assert all(_tree_leaf(base.memory, 6) is None for base in bases)
+
+
+def test_tree_catchup_pins_tip_without_holding_database_read_lock_during_replay(tmp_path, monkeypatch):
+    path = tmp_path / "catchup.sqlite"
+    writer, observer = _tree_journal(path, create=True), _tree_journal(path)
+    first = writer.revise_observation_slots(writer.snapshot(), {6: [0.25, 0]})
+    replaying, writer_finished = Event(), Event()
+    original = observer._replay
+
+    def pause(base, kind, probe, payload):
+        if base.number == 0:
+            replaying.set()
+            assert writer_finished.wait(5)
+        return original(base, kind, probe, payload)
+
+    monkeypatch.setattr(observer, "_replay", pause)
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        reading = pool.submit(observer.snapshot)
+        try:
+            assert replaying.wait(5)
+            second = writer.revise_observation_slots(first, {7: [0.5, 0]})
+        finally:
+            writer_finished.set()
+    assert second.number == 2
+    assert reading.result().number == first.number == 1
+    assert observer.snapshot().number == second.number
+    assert observer._tip == writer._tip
+
+
+@pytest.mark.parametrize("tree", (False, True))
+def test_separate_processes_synthesize_distinct_ranges_and_one_coordinator_ranks(tmp_path, tree):
     path = tmp_path / "shards.sqlite"
-    coordinator = _sharded_workspace(path)
+    build = _tree_journal if tree else _sharded_workspace
+    coordinator = build(path, create=True) if tree else build(path)
+    if tree:
+        stale = coordinator.plan_repairs(max_candidates=2)
+        # Simulate a child that commits a slot event and exits before installing its local head.
+        source = """
+import os
+import sys
+from experiments.memory.test_feedback_workspace import _tree_journal
+
+workspace = _tree_journal(sys.argv[1])
+base = workspace.snapshot()
+install = workspace._install
+def interrupted(head, tip):
+    if head.number > base.number:
+        os._exit(23)
+    install(head, tip)
+workspace._install = interrupted
+workspace.revise_observation_slots(base, {6: [0.25, 0]})
+"""
+        process = subprocess.run([sys.executable, "-B", "-c", source, str(path)],
+                                 capture_output=True, timeout=30)
+        assert process.returncode == 23, process.stderr
+        assert coordinator.snapshot().number == 1
+        with pytest.raises(StaleFeedbackRevision):
+            coordinator.synthesize_repairs(stale, start=0, stop=1)
     plan = coordinator.plan_repairs(max_candidates=3)
-    assert plan.candidates == ((2, "weight"), (0, "weight"), (1, "weight"))
+    expected = ((0, "weight"), (1, "weight")) if tree else ((2, "weight"), (0, "weight"), (1, "weight"))
+    assert plan.candidates == expected
     worker = """
 import json
 import os
 import sys
 from experiments.memory.feedback_journal import FeedbackSearchPlan
-from experiments.memory.test_feedback_workspace import _sharded_workspace
+from experiments.memory.test_feedback_workspace import _sharded_workspace, _tree_journal
 
 data = json.load(sys.stdin)
 data['candidates'] = tuple(map(tuple, data['candidates']))
 data['error_policy'] = tuple(map(tuple, data['error_policy']))
 plan = FeedbackSearchPlan(**data)
-workspace = _sharded_workspace(sys.argv[1])
+workspace = (_tree_journal if sys.argv[4] == "tree" else _sharded_workspace)(sys.argv[1])
 result = workspace.synthesize_repairs(plan, start=int(sys.argv[2]), stop=int(sys.argv[3]))
 print(json.dumps({
     'pid': os.getpid(), 'start': result.start,
@@ -786,7 +1026,7 @@ print(json.dumps({
     def run(bounds):
         start, stop = bounds
         process = subprocess.run(
-            [sys.executable, "-B", "-c", worker, str(path), str(start), str(stop)],
+            [sys.executable, "-B", "-c", worker, str(path), str(start), str(stop), "tree" if tree else "dense"],
             input=json.dumps(asdict(plan)), text=True, capture_output=True, check=True, timeout=30,
         )
         output = json.loads(process.stdout)
@@ -798,15 +1038,25 @@ print(json.dumps({
         return output["pid"], FeedbackSearchShard(plan, output["start"], results)
 
     with ThreadPoolExecutor(max_workers=2) as launcher:
-        first, second = launcher.map(run, [(0, 1), (1, 3)])
+        first, second = launcher.map(run, [(0, 1), (1, len(plan.candidates))])
     assert len({os.getpid(), first[0], second[0]}) == 3
-    assert coordinator.snapshot().number == 0
+    assert coordinator.snapshot().number == (1 if tree else 0)
     actual = coordinator.publish_repair_shards(plan, [second[1], first[1]])
-    serial = _sharded_workspace(tmp_path / "serial.sqlite").maintain(max_candidates=3)
+    serial_path = tmp_path / "serial.sqlite"
+    independent = build(serial_path, create=True) if tree else build(serial_path)
+    if tree:
+        independent.revise_observation_slots(independent.snapshot(), {6: [0.25, 0]})
+    serial = independent.maintain(max_candidates=3)
     assert actual.status == serial.status == "committed"
-    assert actual.attempts == serial.attempts and actual.selected_attempt == serial.selected_attempt == 1
+    if tree:
+        assert [(entry.probe, entry.rank, entry.rejection) for entry in actual.attempts] == [
+            (entry.probe, entry.rank, entry.rejection) for entry in serial.attempts
+        ]
+        assert actual.selected_attempt == serial.selected_attempt
+    else:
+        assert actual.attempts == serial.attempts and actual.selected_attempt == serial.selected_attempt == 1
     assert actual.revision.errors == serial.revision.errors
-    assert _sharded_workspace(path).snapshot().number == 1
+    assert build(path).snapshot().number == (2 if tree else 1)
 
 
 def test_cross_process_coordinator_rejects_gaps_overlaps_and_malformed_payload(tmp_path):
