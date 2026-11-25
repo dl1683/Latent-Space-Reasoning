@@ -22,6 +22,8 @@ The route expansion slice can opt into checking broad dependencies point by poin
 
 The [two-hop propagation slice](docs/ARCHITECTURE.md#two-hop-propagation-with-distinct-origins) prepares source-tagged factors before a query names a destination. It propagates a late seed across all destinations, checks that both hops use distinct origins, and rebuilds only affected intermediate blocks when sources change.
 
+A [local repository demo](docs/ARCHITECTURE.md#committed-python-imports) reads a Git commit into those factors and accepts later commits as revisions. It answers structured two-hop import queries with both source lines and the exact commit.
+
 Current evidence is CPU software verification on supplied arrays, predicate rows and deterministic source encodings. Learned corpus encoding, trained operators and ongoing swarm maintenance remain research objectives. A grouped-query head adapter can initialize the feedback operator from supplied projection matrices with compact keys and factored values. Its [pinned checkpoint smoke](docs/ARCHITECTURE.md#reuse-of-one-pretrained-attention-head) awaits authorization for the first pretrained-weight run. The [architecture review brief](docs/ARCHITECTURE.md#architectural-exploration-and-review) invites competing designs and decisive tests.
 
 ## Results at a glance

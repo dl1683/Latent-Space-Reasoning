@@ -124,15 +124,18 @@ class DisjointTransitionMemory:
             raise ValueError("transition width must be positive")
         return cls(width, _EMPTY, _EMPTY).revise(sources)
 
-    def revise(self, changes):
-        """Replace whole source assertions, or pass None to withdraw a source."""
+    def revise(self, changes, *, width=None):
+        """Replace source assertions and optionally append coordinates to the frame."""
+        width = self.width if width is None else index(width)
+        if width < self.width:
+            raise ValueError("transition revisions cannot shrink the coordinate frame")
         replacements = {}
         by_middle = defaultdict(dict)
         for origin, rows in changes.items():
             if type(origin) is not str or not origin:
                 raise ValueError("transition sources need nonempty string IDs")
             old = self._sources.get(origin, _EMPTY)
-            new = _EMPTY if rows is None else _source_edges(self.width, rows)
+            new = _EMPTY if rows is None else _source_edges(width, rows)
             if new == old:
                 continue
             replacements[origin] = new
@@ -140,7 +143,7 @@ class DisjointTransitionMemory:
                 if old.get(middle) != new.get(middle):
                     by_middle[middle][origin] = new.get(middle)
         if not replacements:
-            return self
+            return self if width == self.width else replace(self, width=width)
 
         sources, middles = dict(self._sources), dict(self._middles)
         for origin, rows in replacements.items():
@@ -160,15 +163,15 @@ class DisjointTransitionMemory:
                 middles[middle] = _compile_middle(assertions)
             else:
                 del middles[middle]
-        return replace(self, _sources=MappingProxyType(sources), _middles=MappingProxyType(middles))
+        return replace(self, width=width, _sources=MappingProxyType(sources), _middles=MappingProxyType(middles))
 
-    def prove(self, seed, destination):
-        """Read one maximizing witness, or None for absent support on this revision."""
+    def prove(self, seed, destination, *, middle_key=None):
+        """Read one maximizing witness, with ties ordered by coordinate or middle_key."""
         destination = index(destination)
         if not 0 <= destination < self.width:
             raise ValueError("transition destination is outside the coordinate frame")
         grades = _seed(seed, self.width)
-        best = None
+        best = best_key = None
         for coordinate, middle in self._middles.items():
             outgoing = middle.outgoing
             selected = np.flatnonzero(outgoing.coordinates == destination)
@@ -177,7 +180,11 @@ class DisjointTransitionMemory:
             strengths, inputs, first, second = _activation(middle, grades)
             edge = selected[np.argmax(strengths[selected])]
             strength = float(strengths[edge])
-            if strength == _ABSENT or (best is not None and (strength, -coordinate) <= (best.strength, -best.middle)):
+            if strength == _ABSENT:
+                continue
+            tie_order = coordinate if middle_key is None else middle_key(coordinate)
+            key = -strength, tie_order
+            if best_key is not None and key >= best_key:
                 continue
             right = outgoing.origins[edge]
             left = second if right == first else first
@@ -185,6 +192,7 @@ class DisjointTransitionMemory:
             entry = np.argmax(np.where(incoming.origins == left, inputs, _ABSENT))
             best = DisjointTransitionWitness(strength, int(incoming.coordinates[entry]), coordinate,
                                              (middle.origins[left], middle.origins[right]))
+            best_key = key
         return best
 
 
