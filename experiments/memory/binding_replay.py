@@ -360,7 +360,15 @@ def validate_route_program(trajectory, patch, max_update_norm, memory, repair_ad
     return max_update_norm
 
 
-def check_coordinate_replay(receiver, candidate, memory, seed, addresses, expected):
+def coordinate_proof_gain(incumbent, terminal_node, expected, minimum_gain):
+    """Compare a certain target grade to the incumbent's possible grade in its family."""
+    possible = 0.
+    if incumbent.status == "resolved" and incumbent.address[0] == terminal_node:
+        possible = incumbent.bounds.possible_strength or 0.
+    return Fraction(float(expected.certain.strength)) - Fraction(float(possible)) >= Fraction(minimum_gain)
+
+
+def check_coordinate_replay(receiver, candidate, memory, seed, addresses, expected, *, minimum_gain=None):
     """Judge the changed transition and its state intervention on the same source pin."""
     prior, revised = receiver.start(seed, memory), candidate.start(seed, memory)
     try:
@@ -387,6 +395,11 @@ def check_coordinate_replay(receiver, candidate, memory, seed, addresses, expect
         return "coordinate_incumbent_matches"
     if _same_binding_read(terminal, control):
         return "coordinate_state_unused"
+    if minimum_gain is not None:
+        if not _same_binding_read(control, incumbent):
+            return "coordinate_rollback_changed"
+        if not coordinate_proof_gain(incumbent, terminal.address[0], expected, minimum_gain):
+            return "coordinate_gain_lost"
     return "published"
 
 

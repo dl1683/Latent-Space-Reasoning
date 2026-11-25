@@ -7,7 +7,9 @@ import pytest
 
 from experiments.memory import binding_memory, corpus_binding_journal
 from experiments.memory.binding_feedback import BindingFeedback, BindingRouteExpansion
-from experiments.memory.binding_maintenance import _project_context_route, propose_binding_context, propose_binding_program
+from experiments.memory.binding_maintenance import (
+    _project_context_route, discover_binding_context, propose_binding_context, propose_binding_program,
+)
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _ProofWork
 from experiments.memory.binding_replay import _receiver_digest, program_binding_context, program_binding_coordinates, route_norm_cap
 from experiments.memory.corpus_binding_journal import (
@@ -780,6 +782,143 @@ def test_context_worker_refuses_a_ready_state_that_differs_from_ordinary_replay(
                                        max_update_norm=4., max_sweeps=8)
     assert proposal.status == "opening_trace_changed" and proposal.trial is None
     assert workspace.pending_program_trials(limit=1) == ()
+
+
+def _discovery_fixture(tmp_path, *, strongest_unroutable=False, uncertain=False):
+    frame, prototype, sources, positive, negative, _, _ = _coordinate_context_fixture()
+    frame = CorpusBindingMemory.prepare(frame._certain._predicates, [[1., 0.], [0., 1.], [-1., 0.]], {}, {},
+                                       encode=_encode, encoder_version="proof-discovery", min_similarity=.7, gap=.02)
+    addresses = (*prototype._addresses[:-1], ("end", 0), ("end", 2))
+    secondary = [0., -.1, 1., 0., 0.] if strongest_unroutable else [0., -.1, -.5, 0., 0.]
+    query = np.column_stack((prototype._query, secondary))
+    if strongest_unroutable:
+        query[:, 4] = 0.
+    receiver = BindingFeedback(prototype._kernel, frame, addresses, query=query, observation=prototype._observation,
+                               route_floor=.05, disjoint_reads=True, route_trials=2)
+    sources.update({"weak": b"end,1,0,0.3", "secondary": b"end,-1,0,0.5"})
+    if uncertain:
+        sources["ambiguous"] = b"end,1,1,0.61"
+    path = tmp_path / "proof-discovery.sqlite"
+    workspace = JournaledCorpusWorkspace(path, frame, create=True)
+    base = _write(workspace, sources)
+    ready = receiver.step(receiver.start(positive, base.memory))
+    guard = receiver.start(negative, base.memory)
+    for _ in range(3):
+        guard = receiver.step(guard)
+    return frame, path, workspace, base, receiver, ready, guard
+
+
+def test_discovery_opens_the_stronger_exact_proof_and_checks_gain_on_later_sources(tmp_path):
+    frame, path, workspace, base, receiver, ready, guard = _discovery_fixture(tmp_path)
+    incumbent = receiver._next_read(receiver.step(ready))
+    assert incumbent.address == ("end", 0) and incumbent.bounds.possible_strength == .3
+    discovered = discover_binding_context(workspace, base, ready, "end", minimum_gain=.15, max_candidates=2,
+                                          proof_work_limit=128, future_batches=1, max_update_norm=4., max_sweeps=16,
+                                          padding=.25, protect=(guard,))
+    assert discovered.status == "opened" and discovered.discovery_complete
+    assert discovered.proof_checks == 2 and discovered.fit_attempts == 1 and 0 < discovered.sweeps <= 16
+    assert len(discovered.proof_work) == 1 and 0 < discovered.proof_work[0] <= 128
+    proposal = discovered.proposal
+    assert proposal.target.probe.addresses[-1] == ("end", 1)
+    assert proposal.target.expected.certain == BindingProof(.65, frozenset({"p", "shared", "end"}))
+    assert workspace.pending_program_trials(limit=3) == (proposal.trial,)
+    retry_worker = JournaledCorpusWorkspace(path, frame)
+    retry_pin = retry_worker.snapshot()
+    retry_ready = receiver.step(receiver.start(ready.feedback.seed, retry_pin.memory))
+    retry_guard = receiver.start(guard.feedback.seed, retry_pin.memory)
+    for _ in range(3):
+        retry_guard = receiver.step(retry_guard)
+    retry = discover_binding_context(retry_worker, retry_pin, retry_ready, "end", minimum_gain=.15,
+                                     max_candidates=2, proof_work_limit=128, future_batches=1,
+                                     max_update_norm=4., max_sweeps=16, padding=.25, protect=(retry_guard,))
+    assert retry.proposal.trial == proposal.trial
+    assert retry_worker.pending_program_trials(limit=3) == (proposal.trial,)
+
+    later = _write(workspace, {"p": b"p,1,0,0.94", "q": b"q,1,0,0.72"})
+    judge = JournaledCorpusWorkspace(path, frame)
+    receipt = judge.finish_program_trial(proposal.trial.trial_id, receiver=receiver)
+    assert receipt.status == "published" and receipt.published_revision == later.revision + 1
+    pin = judge.snapshot()
+    installed = judge.receiver_at(pin, receiver)
+    state = installed.step(installed.step(installed.start(ready.feedback.seed, pin.memory)))
+    assert installed._next_read(state).bounds == proposal.target.expected
+    state = installed.step(installed.step(installed.start(guard.feedback.seed, pin.memory)))
+    assert installed._next_read(state).bounds == guard.reads[-1].bounds
+    installed_ready = installed.step(installed.start(ready.feedback.seed, pin.memory))
+    repeated = discover_binding_context(judge, pin, installed_ready, "end", minimum_gain=.15, max_candidates=2,
+                                       proof_work_limit=128, future_batches=1, max_update_norm=4., max_sweeps=16)
+    assert repeated.status == "no_improvement" and repeated.discovery_complete and repeated.fit_attempts == 0
+    assert repeated.proof_checks == 0
+
+
+@pytest.mark.parametrize("prefix_grade,minimum_gain,later_grade,outcome", [
+    (.65, .15, .62, "coordinate_gain_lost"),
+    (.625, .125, .5, "published"),
+    (.625, .125, .5625, "coordinate_gain_lost"),
+])
+def test_discovery_checks_future_gain_when_the_incumbent_route_stays_fixed(tmp_path, prefix_grade, minimum_gain,
+                                                                         later_grade, outcome):
+    _, _, workspace, base, receiver, ready, _ = _discovery_fixture(tmp_path)
+    if prefix_grade != .65:
+        base = _write(workspace, {"shared": f"shared,0,1,{prefix_grade}".encode()})
+        ready = receiver.step(receiver.start(ready.feedback.seed, base.memory))
+    discovered = discover_binding_context(workspace, base, ready, "end", minimum_gain=minimum_gain, max_candidates=2,
+                                          proof_work_limit=128, future_batches=1, max_update_norm=4., max_sweeps=16,
+                                          padding=.25)
+    assert discovered.status == "opened"
+    later = _write(workspace, {"p": b"p,1,0,0.94", "weak": f"end,1,0,{later_grade}".encode()})
+    target = discovered.proposal.target
+    assert later.memory.resolve_disjoint(target.probe.addresses) == target.expected
+    assert workspace.finish_program_trial(discovered.proposal.trial.trial_id, receiver=receiver).status == outcome
+    if outcome == "published":
+        assert workspace.snapshot().revision == later.revision + 1
+    else:
+        assert workspace.snapshot() is later and workspace.receiver_at(later, receiver) is receiver
+
+
+@pytest.mark.parametrize("case", ["partial", "unroutable", "work_cap", "uncertain"])
+def test_discovery_accounts_for_budgets_and_incumbent_possible_support(tmp_path, case):
+    _, _, workspace, base, receiver, ready, _ = _discovery_fixture(
+        tmp_path, strongest_unroutable=case == "unroutable", uncertain=case == "uncertain",
+    )
+    incumbent = receiver._next_read(receiver.step(ready))
+    if case == "uncertain":
+        assert incumbent.bounds.certain.strength == .3 and incumbent.bounds.possible_strength == .61
+    discovered = discover_binding_context(workspace, base, ready, "end", minimum_gain=.15,
+                                          max_candidates=1 if case == "partial" else 2,
+                                          proof_work_limit=1 if case == "work_cap" else 128,
+                                          future_batches=1, max_update_norm=4., max_sweeps=16, padding=.25)
+    if case in ("partial", "unroutable"):
+        assert discovered.status == "opened" and discovered.proposal.target.probe.addresses[-1] == ("end", 2)
+        assert discovered.discovery_complete == (case == "unroutable")
+        assert discovered.fit_attempts == (2 if case == "unroutable" else 1)
+    else:
+        assert discovered.status == ("discovery_incomplete" if case == "work_cap" else "no_improvement")
+        assert discovered.discovery_complete == (case == "uncertain") and discovered.fit_attempts == 0
+        assert workspace.pending_program_trials(limit=3) == ()
+        if case == "work_cap":
+            assert discovered.proof_checks == 1 and discovered.proof_work[0] <= 1
+        else:
+            assert discovered.proof_checks == 0
+
+
+def test_discovery_charges_an_overflowed_sweep_before_trying_other_candidates(tmp_path):
+    frame, _, workspace, base, prototype, ready, _ = _discovery_fixture(tmp_path, strongest_unroutable=True)
+    query, observation = prototype._query.copy(), prototype._observation.copy()
+    query[:, 4] = [0., 2. ** -1020, 2. ** -1022, 0., 0.]
+    observation[1, 1], observation[5, 1] = -74., 83.
+    receiver = BindingFeedback(prototype._kernel, frame, prototype._addresses, query=query, observation=observation,
+                               route_floor=.05, disjoint_reads=True, route_trials=2)
+    ready = receiver.step(receiver.start(ready.feedback.seed, base.memory))
+    with np.errstate(over="raise", invalid="raise"):
+        with pytest.raises(FloatingPointError, match="during a sweep"):
+            _project_context_route(receiver, receiver.step(ready).latest, 4, 8., 1, preactivation_weighted=True)
+    result = discover_binding_context(workspace, base, ready, "end", minimum_gain=.15, max_candidates=2,
+                                      proof_work_limit=128, future_batches=1, max_update_norm=4., max_sweeps=1,
+                                      padding=8.)
+    assert result.status == "sweep_limit" and result.fit_attempts == result.sweeps == 1
+    assert result.proof_checks == 2
+    assert workspace.pending_program_trials(limit=3) == ()
 
 
 def _repair_receiver(frame, *, trials=1, earlier="p", observe=True, proof_limit=65536, reuse_weighted_matching=False):

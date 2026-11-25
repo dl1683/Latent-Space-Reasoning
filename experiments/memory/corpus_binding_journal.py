@@ -479,7 +479,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         return self._record_program_trial(base, program, spec)
 
     def begin_coordinate_trial(self, base, receiver, candidate, *, seed, target, future_batches, max_update_norm,
-                               protect=()):
+                               protect=(), minimum_gain=None):
         """Freeze a projection edit and an ordinary continuation to judge on later sources."""
         self._check_owner(base)
         future_batches = index(future_batches)
@@ -498,7 +498,12 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                     coordinate_update_limit=cap)
         if protected:
             spec["coordinate_protected"] = protected
-        return self._record_program_trial(base, program, spec)
+        if minimum_gain is not None:
+            minimum_gain = _trial_grade(minimum_gain)
+            if minimum_gain == 0.:
+                raise ValueError("a coordinate proof gain must be positive")
+            spec.update(version=7, coordinate_minimum_gain=minimum_gain)
+        return self._record_program_trial(base, program, spec, reuse_pending=minimum_gain is not None)
 
     @staticmethod
     def _coordinate_trial_case(memory, receiver, seed, target):
@@ -512,7 +517,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             raise ValueError("a coordinate trial needs an exact supported disjoint continuation in the fixed catalog")
         return state.feedback.seed.tolist(), (probe, witness, upper)
 
-    def _record_program_trial(self, base, program, spec):
+    def _record_program_trial(self, base, program, spec, *, reuse_pending=False):
         frozen = _json(spec)
         with self._lock, closing(self._connect()) as db:
             db.execute("BEGIN IMMEDIATE")
@@ -528,6 +533,14 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             )""")
             db.execute("""CREATE INDEX IF NOT EXISTS corpus_program_pending
                 ON corpus_program_trials (trial_id) WHERE status IS NULL""")
+            if reuse_pending:
+                previous = db.execute("""SELECT trial_id FROM corpus_program_trials
+                    WHERE status IS NULL AND opened_revision = ? AND opened_digest = ?
+                    AND opened_program = ? AND program = ? AND spec = ? ORDER BY trial_id LIMIT 1""",
+                    (tip.revision, digest, tip._program_revision, program, frozen)).fetchone()
+                if previous is not None:
+                    db.commit()
+                    return CorpusProgramTrialResult(previous[0], "opened", base.revision)
             trial_id = db.execute("""INSERT INTO corpus_program_trials
                 (opened_revision, opened_digest, opened_program, program, spec)
                 VALUES (?, ?, ?, ?, ?)""",
@@ -598,7 +611,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         checked_digest = digest
         spec = json.loads(frozen)
         version = spec["version"]
-        if version not in (1, 2, 3, 4, 5, 6):
+        if version not in (1, 2, 3, 4, 5, 6, 7):
             raise ValueError("unknown corpus program trial version")
         steps = base.revision - opened
         proposal = None
@@ -609,18 +622,24 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             return CorpusProgramTrialResult(trial_id, "pending", base.revision)
         elif steps > spec["future_batches"]:
             status = "horizon_passed"
-        elif version in (5, 6):
+        elif version >= 5:
             if receiver is None:
                 return CorpusProgramTrialResult(trial_id, "receiver_required", base.revision)
             patch = _decode_coordinate_event(program, base.memory._anchors.shape[1])
             if version == 5 and (patch[2] == "context" or "coordinate_protected" in spec):
                 raise ValueError("coordinate trial version does not match its program")
+            minimum_gain = spec.get("coordinate_minimum_gain")
+            if (version == 7) != (minimum_gain is not None):
+                raise ValueError("coordinate proof gain does not match its trial version")
+            if minimum_gain is not None and _trial_grade(minimum_gain) == 0.:
+                raise ValueError("a coordinate proof gain must be positive")
             candidate_receiver = apply_receiver_program(receiver, patch)
             (raw_addresses, _), witness, upper = spec["target"]
             addresses = tuple(tuple(address) for address in raw_addresses)
             memory = _cold_trial_memory(base.memory)
+            gain_policy = {} if minimum_gain is None else {"minimum_gain": minimum_gain}
             status = check_coordinate_replay(receiver, candidate_receiver, memory, spec["seed"], addresses,
-                                             _expected_read(witness, upper))
+                                             _expected_read(witness, upper), **gain_policy)
             if status == "published":
                 for seed, ((raw_addresses, _), witness, upper) in spec.get("coordinate_protected", ()):
                     addresses = tuple(tuple(address) for address in raw_addresses)
