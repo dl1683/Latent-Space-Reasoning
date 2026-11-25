@@ -201,6 +201,17 @@ class FeedbackKernel:
         """Append one generated vector and tally the attention scores evaluated."""
         return self._advance(state)[0]
 
+    def _preactivation(self, hidden, mixture, history_value, has_observations):
+        fixed = np.zeros(self._width) if self._carry is None else hidden @ self._carry
+        if history_value is not None:
+            fixed += history_value
+        if has_observations:
+            for state_axis, observation_axis, output in self._conditional:
+                observed = mixture @ observation_axis
+                if observed:
+                    fixed += ((hidden @ state_axis) * observed) * output
+        return fixed + _apply_value(self._observation_value, mixture), fixed
+
     def _advance(self, state, *, diagnostics=None):
         self._require_state(state)
         if len(state._history) >= self._max_steps:
@@ -211,8 +222,8 @@ class FeedbackKernel:
         with np.errstate(over="raise", invalid="raise"):
             hidden = state.latest
             query = hidden @ self._query
-            fixed = np.zeros(self._width) if self._carry is None else hidden @ self._carry
             mixture = np.zeros(self._width)
+            history_value = None
             if observation_count or history_count:
                 history_keys = np.asarray(state._keys).reshape(-1, self._query.shape[1])
                 history_values = np.asarray(state._values).reshape(-1, self._width)
@@ -222,13 +233,10 @@ class FeedbackKernel:
                     weights = np.exp(logits - logits.max())
                 weights /= weights.sum()
                 mixture = weights[:observation_count] @ memory._observations
-                fixed += weights[observation_count:] @ history_values
-            if observation_count:
-                for state_axis, observation_axis, output in self._conditional:
-                    observed = mixture @ observation_axis
-                    if observed:
-                        fixed += ((hidden @ state_axis) * observed) * output
-            preactivation = fixed + _apply_value(self._observation_value, mixture)
+                history_value = weights[observation_count:] @ history_values
+            preactivation, fixed = self._preactivation(
+                hidden, mixture, history_value, observation_count,
+            )
             next_hidden = _frozen(np.tanh(preactivation))
             if diagnostics is not None:
                 diagnostics.update(
