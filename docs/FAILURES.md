@@ -171,6 +171,12 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **Future proof availability can outlast the route that motivated a repair, 25 November 2026.** Lowering an earlier premise from 1.0 to 0.2 kept both programs in agreement on the protected read. The prospective judge installed the candidate with the expected 0.2 joint proof. Replaying the receiver on that same future pin selected a different gate. Any claim about future receiver behavior needs a replay at the checked future tip with the receiver and seed fixed.
 
+The guarded maintenance trial now refuses the same route drift. A separate control shows that a future proof can have certain support at grade zero while leaving the final hidden state unchanged. Keep proof availability, routing and numerical uptake as separate admission checks. [Feedback controls](../experiments/memory/test_binding_feedback.py)
+
+**The receiver's proof selector can choose a different witness, 25 November 2026.** The direct solver and the weighted receiver both found a valid 0.5 proof with distinct origins, using different earlier sources. Requiring identical witnesses across solvers would have refused this repair regardless of which witness the worker froze. The direct check verifies the frozen witness and the replay checks the selected address and both grades. The receiver fingerprint also distinguishes a Unicode code point from its two explicit surrogate code units in routes and expansion names. [Feedback controls](../experiments/memory/test_binding_feedback.py)
+
+**A stronger future proof can overflow the receiver, 25 November 2026.** With finite observation weights, a grade of 0.7 allowed rehearsal while 0.8 overflowed the same receiver on the future pin. The journal recorded a numerical refusal and a fresh worker recovered it. The same overflow during rehearsal refused the draft. A different review case exposed that worker-local underflow settings could alter the receipt. Replay now sets one policy for both workers and restores the ambient setting afterward. [Feedback controls](../experiments/memory/test_binding_feedback.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

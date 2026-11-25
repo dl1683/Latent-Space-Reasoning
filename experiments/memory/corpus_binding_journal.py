@@ -14,6 +14,7 @@ from uuid import uuid4
 import numpy as np
 
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _exclusions, _proof_work_limit
+from experiments.memory.binding_replay import check_binding_replay, freeze_binding_replay, require_replay_receiver
 from experiments.memory.corpus_bindings import (
     CorpusBindingRead, CorpusBindingWorkspace, StaleCorpusRevision, _EncodedChange,
 )
@@ -223,6 +224,11 @@ def _probe_program(memory, probe, work_limit):
     return memory.resolve_disjoint(addresses, without_sources=excluded, work_limit=work_limit)
 
 
+def _expected_read(witness, upper):
+    certain = None if witness is None else BindingProof(witness[0], frozenset(witness[1]))
+    return CorpusBindingRead(certain, upper)
+
+
 def _check_program_trial(memory, preview, spec):
     prior, candidate = _cold_trial_memory(memory), _cold_trial_memory(preview)
     work_limit = spec["work_limit"]
@@ -232,8 +238,7 @@ def _check_program_trial(memory, preview, spec):
             if _probe_program(candidate, probe, work_limit) != _probe_program(prior, probe, work_limit):
                 return "protected_changed"
         for probe, witness, upper in spec["targets"]:
-            expected = CorpusBindingRead(None if witness is None else BindingProof(witness[0], frozenset(witness[1])),
-                                         upper)
+            expected = _expected_read(witness, upper)
             if _probe_program(candidate, probe, work_limit) != expected:
                 return "target_mismatch"
             incumbent = _probe_program(prior, probe, work_limit)
@@ -361,7 +366,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             self._tip, self._digest = revised, digest
             return revised
 
-    def begin_program_trial(self, base, gates, *, targets, future_batches, work_limit, protected=()):
+    def begin_program_trial(self, base, gates, *, targets, future_batches, work_limit, protected=(), replay=None):
         """Freeze a candidate and its checks before the next source batches arrive."""
         future_batches, work_limit = index(future_batches), _proof_work_limit(work_limit)
         if future_batches < 1:
@@ -377,8 +382,11 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         if any(node not in candidate_nodes for addresses, _ in protected for node, _ in addresses):
             raise ValueError("a corpus program trial cannot remove a protected node")
         program = _encode_program(proposal.preview._certain._gates)
-        spec = _json(dict(version=1, targets=targets, protected=protected,
-                          future_batches=future_batches, work_limit=work_limit))
+        spec = dict(version=1, targets=targets, protected=protected,
+                    future_batches=future_batches, work_limit=work_limit)
+        if replay is not None:
+            spec.update(version=2, replay=freeze_binding_replay(replay, base.memory, targets))
+        frozen = _json(spec)
         with self._lock, closing(self._connect()) as db:
             db.execute("BEGIN IMMEDIATE")
             tip, digest = self._replay(self._read_suffix(db))
@@ -396,7 +404,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             trial_id = db.execute("""INSERT INTO corpus_program_trials
                 (opened_revision, opened_digest, opened_program, program, spec)
                 VALUES (?, ?, ?, ?, ?)""",
-                (tip.revision, digest, tip._program_revision, program, spec),
+                (tip.revision, digest, tip._program_revision, program, frozen),
             ).lastrowid
             db.commit()
         return CorpusProgramTrialResult(trial_id, "opened", base.revision)
@@ -444,7 +452,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                     raise ValueError("corpus program trial lost its published event")
         return opened, program_revision, program, spec, outcome
 
-    def finish_program_trial(self, trial_id):
+    def finish_program_trial(self, trial_id, *, receiver=None):
         """Check the frozen rewrite on its exact later source pin and publish atomically."""
         trial_id = index(trial_id)
         if trial_id < 1:
@@ -462,7 +470,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
 
         checked_digest = digest
         spec = json.loads(frozen)
-        if spec["version"] != 1:
+        version = spec["version"]
+        if version not in (1, 2):
             raise ValueError("unknown corpus program trial version")
         steps = base.revision - opened
         proposal = None
@@ -473,8 +482,19 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         elif steps > spec["future_batches"]:
             status = "horizon_passed"
         else:
+            if version == 2:
+                if receiver is None:
+                    return CorpusProgramTrialResult(trial_id, "receiver_required", base.revision)
+                require_replay_receiver(spec["replay"], receiver)
             proposal = self.prepare_program(base, _decode_program(program))
             status = _check_program_trial(base.memory, proposal.preview, spec)
+            if status == "published" and version == 2:
+                (raw_addresses, _), witness, upper = spec["targets"][0]
+                addresses = tuple(tuple(address) for address in raw_addresses)
+                status = check_binding_replay(
+                    spec["replay"], receiver, _cold_trial_memory(base.memory), _cold_trial_memory(proposal.preview),
+                    addresses, _expected_read(witness, upper),
+                )
 
         with self._lock, closing(self._connect()) as db:
             db.execute("BEGIN IMMEDIATE")
