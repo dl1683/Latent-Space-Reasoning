@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from experiments.memory.binding_feedback import BindingFeedback
-from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof
+from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _ProofWork
 from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
 from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemory, CorpusBindingRead
 from experiments.memory.latent_feedback import FeedbackKernel
@@ -16,11 +16,11 @@ def _encode(raw):
         yield BindingMention(node, np.array([float(x), float(y)]), float(strength))
 
 
-def _frame(*, anchors=None, encode=_encode):
+def _frame(*, anchors=None, encode=_encode, version="feedback-fixture"):
     return CorpusBindingMemory.prepare(
         ("permit", "inspection", "verified", "manual"), np.eye(2) if anchors is None else anchors,
         {"release": BindingGate("and", ("permit", "inspection"))}, {},
-        encode=encode, encoder_version="feedback-fixture", min_similarity=.6, gap=.05,
+        encode=encode, encoder_version=version, min_similarity=.6, gap=.05,
     )
 
 
@@ -44,6 +44,147 @@ def _receiver(frame, *, route_floor=0.0, route_gap=0.0, work_limit=65536, disjoi
 
 def _write(workspace, changes):
     return workspace.publish(workspace.prepare_changes(workspace.snapshot(), changes))
+
+
+def _branch_receiver(frame, *, trials=3, load=65536, tied=False, max_steps=2):
+    base = _receiver(frame, max_steps=max_steps)
+    addresses = (("release", 0), ("crowded", 1), ("verified", 1), ("spare", 1))
+    query = [[2, 0, 0, 0], [0, 3, 2, 2 if tied else 1], [0, 0, 0, 0], [0, 0, 0, 0]]
+    return BindingFeedback(base._kernel, frame, addresses, query=query, observation=base._observation,
+                           disjoint_reads=True, route_trials=trials, work_limit=load)
+
+
+def _mixed_frame():
+    def encode(raw):
+        text, marker, sensor = raw.partition(b"\x00")
+        yield from _encode(text)
+        if marker:
+            predicate, grade = sensor
+            yield BindingMention(("verified", "manual")[predicate], np.array([0, 1]), grade / 100)
+
+    return _frame(encode=encode, version="mixed-feedback-fixture").reprogram({
+        "release": BindingGate("and", ("permit", "inspection")),
+        "crowded": BindingGate("disjoint_and", ("verified", "manual")),
+        "spare": BindingGate("or", ("verified",)),
+    })
+
+
+def test_late_route_rejection_recovers_weaker_earlier_support_across_source_revisions(tmp_path, monkeypatch):
+    frame = _mixed_frame()
+    path = tmp_path / "branches.sqlite"
+    workspace = JournaledCorpusWorkspace(path, frame, create=True)
+    prior = _write(workspace, {
+        "A": b"permit,1,0,0.9\ninspection,1,0,0.9\x00\x00\x50",
+        "B": b"permit,1,0,0.6\ninspection,1,0,0.6\x00\x01\x50",
+    })
+    revised = _write(workspace, {"B": b"\x00\x01\x50"})
+    seed = [1, 0, .3, 0]
+    receiver = _branch_receiver(frame, max_steps=3)
+    original = receiver.step(receiver.start(seed, memory=prior.memory))
+    changed = receiver.step(receiver.start(seed, memory=revised.memory))
+    np.testing.assert_array_equal(original.latest, changed.latest)
+    assert original.reads[0].bounds.certain == BindingProof(.9, frozenset({"A"}))
+    assert changed.reads[0].bounds == original.reads[0].bounds
+
+    selected = receiver.step(original)
+    read = selected.reads[-1]
+    assert [trial.address for trial in read.tried] == [("crowded", 1), ("verified", 1)]
+    assert read.tried[0].bounds == CorpusBindingRead(None, None)
+    assert read.address == ("verified", 1)
+    assert read.bounds == CorpusBindingRead(BindingProof(.6, frozenset({"A", "B"})), .6)
+    assert selected.latest[3] == np.tanh(.6)
+    assert len(selected.reads) == 2
+
+    closed = receiver.step(changed)
+    absent = closed.reads[-1]
+    assert len(absent.tried) == 3
+    assert absent.status == "catalog_absent" and absent.address is None
+    assert absent.bounds == CorpusBindingRead(None, None)
+    assert receiver.step(original).reads[-1] == read
+    baseline = _branch_receiver(frame, trials=1)
+    top_only = baseline.step(baseline.step(baseline.start(seed, memory=prior.memory))).reads[-1]
+    assert top_only.bounds == CorpusBindingRead(None, None)
+    def no_encoder(_raw):
+        pytest.fail("reopening the branch fixture attempted encoding")
+
+    replay = JournaledCorpusWorkspace(path, replace(frame, _encode=no_encoder)).snapshot()
+    assert receiver.step(receiver.step(receiver.start(seed, memory=replay.memory))).reads[-1] == absent
+
+    def unexpected_read(*_args, **_kwargs):
+        pytest.fail("a closed catalog attempted another route")
+
+    monkeypatch.setattr(receiver, "_read", unexpected_read)
+    continued = receiver.step(closed).reads[-1]
+    assert continued.status == "catalog_absent" and continued.tried == ()
+    assert continued.address is None and continued.bounds == absent.bounds
+
+
+def test_ranked_routes_share_budget_and_keep_unsearched_choices_unresolved():
+    frame = _mixed_frame()
+    seed = [1, 0, .3, 0]
+    memory = frame.revise({
+        "A": b"permit,1,0,0.9\ninspection,1,0,0.9\x00\x00\x50",
+        "B": b"permit,1,0,0.6\ninspection,1,0,0.6\x00\x01\x50",
+    })
+
+    def last(receiver, snapshot):
+        return receiver.step(receiver.step(receiver.start(seed, memory=snapshot))).reads[-1]
+
+    completed = last(_branch_receiver(frame), memory)
+    assert len(completed.proof_work) == 1 and completed.proof_work[0] > 1
+    assert [attempt.score for attempt in completed.tried] == sorted(
+        (attempt.score for attempt in completed.tried), reverse=True,
+    )
+    assert sum(attempt.proof_work[0] for attempt in completed.tried) == completed.proof_work[0]
+    limit = completed.proof_work[0] - 1
+    for gate in ("crowded", "verified"):
+        memory.resolve_disjoint((("release", 0), (gate, 1)), work_limit=limit)
+    exhausted = last(_branch_receiver(frame, load=limit), memory)
+    assert exhausted.status == "capacity" and exhausted.bounds is None
+    assert [trial.status for trial in exhausted.tried] == ["resolved", "capacity"]
+    assert exhausted.proof_work == (limit,)
+
+    tied = last(_branch_receiver(frame, tied=True), memory)
+    assert tied.status == "ambiguous" and tied.bounds is None
+    assert [trial.address for trial in tied.tried] == [("crowded", 1)]
+    without_b = memory.revise({"B": b"\x00\x01\x50"})
+    capped = last(_branch_receiver(frame, trials=2), without_b)
+    assert capped.status == "candidate_limit" and capped.bounds is None
+    assert len(capped.tried) == 2 and capped.address is None
+    uncertain = memory.revise({"B": b"permit,1,1,0.6\ninspection,1,1,0.6\x00\x01\x50"})
+    wide = last(_branch_receiver(frame), uncertain)
+    assert wide.address == ("verified", 1)
+    assert wide.bounds == CorpusBindingRead(None, .6)
+    assert len(wide.tried) == 2 and len(wide.proof_work) == 2
+    possible_first = memory.revise({"C": b"verified,1,1,0.95"})
+    uncertain_winner = last(_branch_receiver(frame), possible_first)
+    assert uncertain_winner.address == ("crowded", 1)
+    assert uncertain_winner.bounds == CorpusBindingRead(None, .8)
+    assert len(uncertain_winner.tried) == 1
+    unavailable = last(_branch_receiver(frame), memory.reprogram({
+        "release": BindingGate("and", ("permit", "inspection")), "spare": BindingGate("or", ("verified",)),
+    }))
+    assert unavailable.status == "unavailable" and unavailable.address == ("crowded", 1)
+    assert len(unavailable.tried) == 1 and unavailable.proof_work == (0,)
+
+
+def test_reusing_prepared_rows_fits_a_budget_that_cold_siblings_exhaust():
+    frame = _mixed_frame()
+    sources = {f"source-{i}": b"permit,1,0,0.9\ninspection,1,0,0.9" for i in range(32)}
+    memory = frame.revise({**sources, "sensor": b"\x00\x00\x50"})
+    seed = [1, 0, .3, 0]
+    receiver = _branch_receiver(frame)
+    result = receiver.step(receiver.step(receiver.start(seed, memory=memory))).reads[-1]
+    assert result.address == ("verified", 1) and result.bounds.possible_strength == .8
+    limit, = result.proof_work
+    limited = _branch_receiver(frame, load=limit)
+    assert limited.step(limited.step(limited.start(seed, memory=memory))).reads[-1] == result
+
+    cold = _ProofWork(limit)
+    prefix = (("release", 0),)
+    assert memory._disjoint_bounds((*prefix, ("crowded", 1)), frozenset(), cold, cold) == result.tried[0].bounds
+    with pytest.raises(BindingCapacityError):
+        memory._disjoint_bounds((*prefix, ("verified", 1)), frozenset(), cold, cold)
 
 
 def test_joint_hidden_read_recovers_alternate_earlier_and_later_witnesses(tmp_path):

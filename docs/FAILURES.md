@@ -147,6 +147,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **The strongest early witness can block a later premise, 25 November 2026.** The best early and late reads could both cite origin A. Removing A from the late read alone gave absence in a case with a valid weaker early witness from B. The joint proof reconsidered the early witness and found the valid pair. An exhausted possible-bank search is still incomplete even when the certain bank finishes. [Receiver controls](../experiments/memory/test_binding_feedback.py)
 
+**The highest route score can hide a feasible alternative, 25 November 2026.** The leading address required both available origins and left none for the first premise. A lower-ranked address succeeded by using the weaker first witness. A partial route search still cannot establish catalog absence. The receiver skips only a completed modeled failure and keeps score ambiguities, untried candidates and proof refusals visible. [Receiver controls](../experiments/memory/test_binding_feedback.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

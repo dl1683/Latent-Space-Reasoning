@@ -11,7 +11,7 @@ from types import MappingProxyType
 import numpy as np
 
 from experiments.memory.binding_memory import (
-    BindingCapacityError, BindingMemory, BindingProof, _exclusions, _proof_work_limit,
+    BindingCapacityError, BindingMemory, BindingProof, _exclusions, _ProofWork, _proof_work_limit,
 )
 from experiments.memory.latent_feedback import _frozen, _real_array
 
@@ -179,8 +179,13 @@ class CorpusBindingMemory:
         work_limit = _proof_work_limit(work_limit)
         roots = self._certain._joint_keys(addresses, work_limit)
         excluded = _exclusions(without_sources, limit=work_limit)
-        lower = self._certain._resolve_disjoint(roots, excluded, work_limit)
-        upper = lower if self._certain is self._possible else self._possible._resolve_disjoint(roots, excluded, work_limit)
+        return self._disjoint_bounds(roots, excluded, work_limit, work_limit)
+
+    def _disjoint_bounds(self, roots, excluded, certain_work, possible_work):
+        lower = self._certain._resolve_disjoint(roots, excluded, certain_work)
+        upper = lower if self._certain is self._possible else self._possible._resolve_disjoint(
+            roots, excluded, possible_work,
+        )
         return CorpusBindingRead(lower, None if upper is None else upper.strength)
 
     def reprogram(self, gates):
@@ -202,6 +207,26 @@ class CorpusBindingMemory:
         if lower is self._certain and upper is self._possible:
             return self
         return replace(self, _certain=lower, _possible=upper)
+
+
+class _DisjointBranchReads:
+    """One decision's alternative extensions of a nonempty prefix on pinned banks."""
+
+    def __init__(self, memory, prefix, work_limit):
+        self._memory, self._prefix = memory, prefix
+        self._certain = _ProofWork(work_limit, reuse_rows=True)
+        self._possible = (self._certain if memory._certain is memory._possible
+                          else _ProofWork(work_limit, reuse_rows=True))
+
+    def resolve(self, address):
+        roots = self._memory._certain._joint_keys((*self._prefix, address), self._certain.limit)
+        return self._memory._disjoint_bounds(roots, frozenset(), self._certain, self._possible)
+
+    @property
+    def proof_work(self):
+        if self._certain is self._possible:
+            return (self._certain.used,)
+        return self._certain.used, self._possible.used
 
 
 class StaleCorpusRevision(ValueError):

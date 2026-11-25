@@ -1,13 +1,13 @@
 """Optional pinned binding reads inside a continuous-feedback trajectory."""
 
-from dataclasses import InitVar, dataclass
+from dataclasses import InitVar, dataclass, replace
 from math import isfinite
 from operator import index
 
 import numpy as np
 
 from experiments.memory.binding_memory import BindingCapacityError
-from experiments.memory.corpus_bindings import CorpusBindingMemory, CorpusBindingRead
+from experiments.memory.corpus_bindings import CorpusBindingMemory, CorpusBindingRead, _DisjointBranchReads
 from experiments.memory.latent_feedback import FeedbackKernel, FeedbackState, _frozen, _real_array
 
 
@@ -19,6 +19,9 @@ class BindingStepRead:
     status: str
     address: tuple[str, int] | None = None
     bounds: CorpusBindingRead | None = None
+    tried: tuple["BindingStepRead", ...] = ()
+    proof_work: tuple[int, ...] = ()
+    score: float | None = None
 
 
 @dataclass(frozen=True, eq=False)
@@ -55,10 +58,10 @@ def _frame_contract(memory):
 
 
 class BindingFeedback:
-    """Route each hidden state to at most one corpus address before generating the next."""
+    """Commit at most one corpus address before generating the next hidden state."""
 
     def __init__(self, kernel, frame, addresses, *, query, observation,
-                 route_floor=0.0, route_gap=0.0, work_limit=65536, disjoint_reads=False):
+                 route_floor=0.0, route_gap=0.0, work_limit=65536, disjoint_reads=False, route_trials=1):
         if type(kernel) is not FeedbackKernel or type(frame) is not CorpusBindingMemory:
             raise ValueError("binding feedback requires a dense feedback kernel and a corpus frame")
         addresses = tuple((node, index(binding)) for node, binding in addresses)
@@ -73,12 +76,16 @@ class BindingFeedback:
             raise ValueError("binding feedback requires a positive work limit, finite floor and nonnegative finite gap")
         if type(disjoint_reads) is not bool:
             raise ValueError("disjoint_reads must be a boolean")
+        route_trials = index(route_trials)
+        if route_trials < 1 or (route_trials > 1 and not disjoint_reads):
+            raise ValueError("multiple route trials require disjoint reads")
         self._kernel = kernel
         self._contract, self._anchors = _frame_contract(frame), frame._anchors
         self._addresses = addresses
         self._query, self._observation = _frozen(query), _frozen(observation)
         self._route_floor, self._route_gap, self._work_limit = route_floor, route_gap, work_limit
         self._disjoint_reads = disjoint_reads
+        self._route_trials = route_trials
 
     def start(self, seed, memory=None):
         """Pin an optional compiled corpus snapshot for this trajectory."""
@@ -102,6 +109,8 @@ class BindingFeedback:
                 prefix = tuple(read.address for read in state.reads)
                 read = self._read(state.memory, state.latest, prefix=prefix,
                                   prefix_absent=prior.bounds.possible_strength is None)
+            elif prior.status == "catalog_absent":
+                read = BindingStepRead("catalog_absent", bounds=prior.bounds)
             else:
                 read = BindingStepRead("incomplete")
         else:
@@ -131,6 +140,8 @@ class BindingFeedback:
         winning = float(scores[best])
         if winning <= self._route_floor:
             return BindingStepRead("below_floor")
+        if prefix and not prefix_absent and self._route_trials > 1:
+            return self._read_branches(memory, scores, prefix)
         if len(scores) > 1 and winning - float(np.partition(scores, -2)[-2]) <= self._route_gap:
             return BindingStepRead("ambiguous")
         address = self._addresses[best]
@@ -144,6 +155,43 @@ class BindingFeedback:
                 bounds = memory.resolve_disjoint((*prefix, address), work_limit=self._work_limit)
             else:
                 bounds = memory.resolve(*address, work_limit=self._work_limit)
+        except BindingCapacityError:
+            return BindingStepRead("capacity", address)
+        return BindingStepRead("resolved", address, bounds)
+
+    def _read_branches(self, memory, scores, prefix):
+        session = _DisjointBranchReads(memory, prefix, self._work_limit)
+        ranked = np.argsort(-scores, kind="stable")
+        tried = []
+        result = None
+        for position, candidate in enumerate(ranked):
+            score = float(scores[candidate])
+            if score <= self._route_floor:
+                break
+            if position + 1 < len(ranked) and score - float(scores[ranked[position + 1]]) <= self._route_gap:
+                result = BindingStepRead("ambiguous")
+                break
+            if len(tried) == self._route_trials:
+                result = BindingStepRead("candidate_limit")
+                break
+            address = self._addresses[candidate]
+            before = session.proof_work
+            attempt = self._read_branch(memory, session, address)
+            work = tuple(used - prior for used, prior in zip(session.proof_work, before, strict=True))
+            attempt = replace(attempt, score=score, proof_work=work)
+            tried.append(attempt)
+            if attempt.bounds is None or attempt.bounds.possible_strength is not None:
+                result = attempt
+                break
+        if result is None:
+            result = BindingStepRead("catalog_absent", bounds=tried[0].bounds)
+        return replace(result, tried=tuple(tried), proof_work=session.proof_work)
+
+    def _read_branch(self, memory, session, address):
+        if address[0] not in memory._certain._dependents:
+            return BindingStepRead("unavailable", address)
+        try:
+            bounds = session.resolve(address)
         except BindingCapacityError:
             return BindingStepRead("capacity", address)
         return BindingStepRead("resolved", address, bounds)

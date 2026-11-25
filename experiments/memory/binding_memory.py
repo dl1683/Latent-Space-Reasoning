@@ -390,9 +390,25 @@ class _Task:
     following: "_Task | None" = None
 
 
+class _ProofWork:
+    def __init__(self, limit, *, reuse_rows=False):
+        self.limit = self.remaining = _proof_work_limit(limit)
+        self.prepared_rows = {} if reuse_rows else None
+
+    @property
+    def used(self):
+        return self.limit - self.remaining
+
+    def charge(self, amount):
+        if amount > self.remaining:
+            self.remaining = 0
+            raise BindingCapacityError("proof search work limit exceeded")
+        self.remaining -= amount
+
+
 class _ProofSearch:
     def __init__(self, memory, output, excluded, work_limit, *, addresses=()):
-        self.remaining = _proof_work_limit(work_limit)
+        self.work = work_limit if isinstance(work_limit, _ProofWork) else _ProofWork(work_limit)
         self.rows, self.output, self.excluded = memory._rows, output, excluded
         pending, seen = list(addresses) if addresses else [output], set()
         inputs, positions = [], []
@@ -432,9 +448,22 @@ class _ProofSearch:
         )
 
     def charge(self, amount=1):
-        self.remaining -= amount
-        if self.remaining < 0:
-            raise BindingCapacityError("proof search work limit exceeded")
+        self.work.charge(amount)
+
+    def _leaf_choices(self, address):
+        prepared = self.work.prepared_rows
+        if prepared is not None and address in prepared:
+            choices, levels = prepared[address]
+            self.charge(1 + len(levels))
+            return choices, levels
+        candidates = self.rows.get(address, _UNSUPPORTED).terms
+        self.charge(1 + len(candidates))
+        choices = tuple(sorted(((value, next(iter(sources))) for sources, value in candidates.items()
+                                if sources.isdisjoint(self.excluded)), reverse=True))
+        levels = frozenset(value for value, _ in choices)
+        if prepared is not None:
+            prepared[address] = choices, levels
+        return choices, levels
 
     def resolve(self, binding, retained=None):
         derivation = self.derive(binding, retained)
@@ -444,13 +473,10 @@ class _ProofSearch:
         leaves, upper, strengths = {}, {}, set()
         for node in self.inputs:
             address = node if binding is None else (node, binding)
-            candidates = self.rows.get(address, _UNSUPPORTED).terms
-            self.charge(1 + len(candidates))
-            choices = [(value, next(iter(sources))) for sources, value in candidates.items()
-                       if sources.isdisjoint(self.excluded)]
-            leaves[node] = sorted(choices, reverse=True)
-            upper[node] = max((value for value, _ in choices), default=-np.inf)
-            strengths.update(value for value, _ in choices)
+            choices, levels = self._leaf_choices(address)
+            leaves[node] = choices
+            upper[node] = choices[0][0] if choices else -np.inf
+            strengths.update(levels)
         for node, (operation, parents) in self.rules.items():
             self.charge(1 + len(parents))
             reduce = max if operation == "or" else min
