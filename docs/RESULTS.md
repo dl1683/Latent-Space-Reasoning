@@ -12,6 +12,8 @@ A follow-up extended the field to grow by appending observation cells and to rev
 
 The separately implemented feedback kernel passed three CPU fixtures with hand-written weights. The fixtures verify a two-step numerical composition, an earlier-state intervention with the latest state held fixed, a payload ablation with routing held fixed, and immutable memory and step limits. The combined field, feedback and dependency-evidence test selection passed 17 checks. These are software checks on supplied vectors. Learned reasoning, semantic revision and comparative cost remain unmeasured.
 
+The weight-program slice passed six fixtures. A Float64 edit changed a second feedback result while the entire first latent state matched within $10^{-12}$. The fixtures also covered reinstallation in rotated coordinates, infeasible protected targets, norm limits, stored-weight rounding and scale handling. The combined weight-program, feedback, field and dependency-evidence selection passed 23 checks. The inputs and weights were supplied arrays, and the edited operation was checked on the construction fixture.
+
 ## Study result table
 
 These are source-reported experiment results. Publication preparation independently checked Git, inventories, process metadata, ACLs, package structure and the integration suite; model outputs and judgments were not independently checked.
