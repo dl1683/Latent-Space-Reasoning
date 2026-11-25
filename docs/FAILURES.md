@@ -135,6 +135,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **Restored bytes can hide a stale source edit, 25 November 2026.** A delete and restore brought the digest back to its old value. The source generation still changed, and publication refused a delayed replacement, a stale no-op and a dependent edit. Insert-then-delete likewise invalidated a draft deletion of an absent source. Check source revisions and keep deletion generations while old proposals may still be submitted. [Workspace controls](../experiments/memory/test_corpus_bindings.py)
 
+**A prepared change can fail after row admission, 25 November 2026.** An injected SQLite append refusal occurred after the staged banks had been built. The handle retained its old pin and a fresh opener saw the same durable revision. Retrying the original draft after removing the fixture trigger published it once. Publish in-memory state only after the journal commit, and check the durable head before retrying a write whose acknowledgment was lost. [Journal controls](../experiments/memory/test_corpus_binding_journal.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

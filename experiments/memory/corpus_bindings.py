@@ -241,24 +241,32 @@ class CorpusBindingWorkspace:
 
     def publish(self, proposal):
         """Check the dependencies and apply the prepared sources to the current tip."""
+        self._check_proposal(proposal)
+        with self._lock:
+            self._check_dependencies(self._tip, proposal)
+            self._tip = self._apply_proposal(self._tip, proposal._staged)
+            return self._tip
+
+    def _check_proposal(self, proposal):
         if type(proposal) is not CorpusSourceProposal:
             raise ValueError("expected a corpus source proposal")
         self._check_owner(proposal.base)
-        with self._lock:
-            tip = self._tip
-            if proposal._require_tip and tip is not proposal.base:
-                raise StaleCorpusRevision("corpus workspace tip changed")
-            if any(tip._source_revisions.get(source, 0) != proposal.base._source_revisions.get(source, 0)
-                   for source in proposal._dependencies):
-                raise StaleCorpusRevision("corpus source dependency changed")
-            if not proposal._staged:
-                return tip
-            memory = tip.memory._apply_changes(proposal._staged)
-            revision = tip.revision + 1
-            source_revisions = dict(tip._source_revisions)
-            source_revisions.update((edit.source, revision) for edit in proposal._staged)
-            self._tip = CorpusRevision(revision, memory, MappingProxyType(source_revisions), self._owner)
-            return self._tip
+
+    def _check_dependencies(self, tip, proposal):
+        if proposal._require_tip and tip is not proposal.base:
+            raise StaleCorpusRevision("corpus workspace tip changed")
+        if any(tip._source_revisions.get(source, 0) != proposal.base._source_revisions.get(source, 0)
+               for source in proposal._dependencies):
+            raise StaleCorpusRevision("corpus source dependency changed")
+
+    def _apply_proposal(self, tip, staged):
+        if not staged:
+            return tip
+        memory = tip.memory._apply_changes(staged)
+        revision = tip.revision + 1
+        source_revisions = dict(tip._source_revisions)
+        source_revisions.update((edit.source, revision) for edit in staged)
+        return CorpusRevision(revision, memory, MappingProxyType(source_revisions), self._owner)
 
     def remember(self, base, node, binding, *, without_sources=(), work_limit=65536):
         """Retain a completed read only if its pinned revision is still current."""
