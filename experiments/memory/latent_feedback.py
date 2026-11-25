@@ -163,40 +163,62 @@ class FeedbackKernel:
         )
         return next_state, mixture, fixed
 
-    def retarget(self, state, step, target, *, max_update_norm, atol=1e-8):
-        """Program the observation-value map for a one-based step, preserving its prefix.
+    def _with_observation_value(self, weight):
+        candidate = copy(self)
+        object.__setattr__(candidate, "_observation_value", self._weight(weight))
+        return candidate
 
-        Start from the supplied state's seed and original observation bank. Return
-        a candidate kernel, replayed trajectory, and weight edit. The old kernel,
-        bank and trajectories remain usable.
+    def _trace(self, seed, memory, steps):
+        steps = index(steps)
+        if not 1 <= steps <= self._max_steps:
+            raise ValueError("target step is outside the feedback budget")
+        traced = self.start(seed, memory)
+        mixtures = []
+        for _ in range(steps):
+            traced, mixture, fixed = self._advance(traced)
+            mixtures.append(mixture)
+        return traced, mixtures, fixed
+
+    def _checked_replay(self, seed, memory, expected_history, atol):
+        replay = self.start(seed, memory)
+        for expected in expected_history:
+            replay = self.step(replay)
+            if not np.allclose(replay.latest, expected, atol=atol, rtol=0):
+                raise ValueError("edited trajectory fails replay tolerance")
+        return replay
+
+    def retarget(self, state, step, target, *, max_update_norm, atol=1e-8, protect=()):
+        """Program a one-based step and check its prefix and any protected runs.
+
+        Each protected run is a (seed, step count) pair on the same observation
+        bank. Return the candidate kernel, target replay, and weight edit.
         """
         self._require_state(state)
-        step = index(step)
-        if not 1 <= step <= self._max_steps:
-            raise ValueError("target step is outside the feedback budget")
         target = self._vector(target)
         if np.any(np.abs(target) >= 1):
             raise ValueError("target coordinates must be strictly inside tanh saturation")
 
-        baseline = self.start(state._seed, state._memory)
-        mixtures = []
-        for _ in range(step):
-            baseline, mixture, fixed = self._advance(baseline)
-            mixtures.append(mixture)
-        protected = np.asarray(mixtures[:-1]).reshape(-1, self._width)
+        bank = state._memory
+        baseline, mixtures, fixed = self._trace(state._seed, bank, step)
+        protected = mixtures[:-1]
+        references = []
+        for seed, steps in protect:
+            reference, reference_mixtures, _ = self._trace(seed, bank, steps)
+            references.append(reference)
+            protected.extend(reference_mixtures)
+        anchors = np.asarray(protected).reshape(-1, self._width)
         with np.errstate(over="raise", invalid="raise"):
             target_values = np.arctanh(target) - fixed
         edit = program_weight(
             self._observation_value, mixtures[-1:], [target_values],
-            preserve_inputs=protected, max_update_norm=max_update_norm, atol=atol,
+            preserve_inputs=anchors, max_update_norm=max_update_norm, atol=atol,
         )
-        candidate = copy(self)
-        object.__setattr__(candidate, "_observation_value", candidate._weight(edit.weight))
-        replay = candidate.start(state._seed, state._memory)
-        for expected in (*baseline._history[:-1], target):
-            replay = candidate.step(replay)
-            if not np.allclose(replay.latest, expected, atol=atol, rtol=0):
-                raise ValueError("edited trajectory fails replay tolerance")
+        candidate = self._with_observation_value(edit.weight)
+        replay = candidate._checked_replay(
+            baseline._seed, bank, (*baseline._history[:-1], target), atol,
+        )
+        for reference in references:
+            candidate._checked_replay(reference._seed, bank, reference._history, atol)
         return candidate, replay, edit
 
     def intervene(self, state, position, hidden):

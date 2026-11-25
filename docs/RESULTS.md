@@ -16,6 +16,8 @@ The weight-program slice passed six fixtures. A Float64 edit changed a second fe
 
 The feedback kernel now installs a replay-checked value edit using its own recorded observation mixtures. Four additional fixtures checked agreement with an eager attention reference, reuse of the same coordinate bank and keys across the edit, refusal of incompatible or saturated targets, and protection against changes to public array metadata and kernel reassignment. The combined latent and dependency-evidence selection passed 27 checks. The edited trajectory matched the protected prefix and the full requested target on the supplied arrays. The comparison covers numerical behavior and leaves cost, semantic transfer and autonomous coordination open.
 
+The feedback workspace passed three additional CPU fixtures. Two proposals based on one revision were serialized, and a fresh second proposal satisfied the remaining target while preserving the accepted first target. Admission refused an otherwise successful edit that regressed a protected probe and an edit outside its own norm budget. In a threaded fixture, replacing the observations during publication replay changed a previously accepted probe error, invalidated the pending proposal and preserved the newer revision. The combined latent and dependency-evidence selection passed 30 checks. The fixtures exercise numeric coordination within one process; learned task success, durable recovery and comparative cost remain open.
+
 ## Study result table
 
 These are source-reported experiment results. Publication preparation independently checked Git, inventories, process metadata, ACLs, package structure and the integration suite; model outputs and judgments were not independently checked.
