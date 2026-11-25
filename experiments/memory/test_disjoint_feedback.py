@@ -343,6 +343,39 @@ def test_workspace_fences_a_publication_that_loses_the_tip_during_replay(monkeyp
         workspace.publish(parent, blocked)
 
 
+def test_guard_only_publication_advances_tip_and_fences_an_admission_in_flight(monkeypatch):
+    receiver = DisjointFeedback(_kernel(), query=np.eye(5), presence_value=np.zeros((5, 5)),
+                                grade_value=np.eye(5), floor=.1)
+    memory = receiver.prepare(DisjointTransitionMemory.prepare(5, {}), np.eye(5))
+    workspace = DisjointFeedbackWorkspace(receiver, memory)
+    parent = workspace.pin()
+    state = receiver.step(receiver.start([1., 0., 0., 0., 0.], memory))
+    first = RelationOutcomeGuard([TerminalRelationGrade(2)])
+    second = RelationOutcomeGuard([TerminalRelationGrade(3)])
+    noop = receiver.revise_memory(memory, {})
+    entered, resume = Event(), Event()
+    validate = RelationOutcomeGuard._validate
+
+    def wait_for_competitor(self, candidate):
+        if self is first:
+            entered.set()
+            assert resume.wait(5)
+        return validate(self, candidate)
+
+    monkeypatch.setattr(RelationOutcomeGuard, "_validate", wait_for_competitor)
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        attempt = pool.submit(workspace.publish, parent, noop, admit_outcomes=[(state, first)])
+        try:
+            assert entered.wait(5)
+            tip = workspace.publish(parent, noop, admit_outcomes=[(state, second)])
+        finally:
+            resume.set()
+        with pytest.raises(StaleRelationRevision, match="during evaluation"):
+            attempt.result(timeout=5)
+    assert tip is workspace.pin() and tip is not parent and tip.memory is memory
+    assert parent.protected == () and tip.protected == (state,) and tip._outcomes == (second,)
+
+
 def test_outcome_guard_allows_hidden_change_and_keeps_absolute_limits_across_pins():
     receiver = DisjointFeedback(_kernel(carry_from_two=.42), query=np.eye(5), presence_value=np.zeros((5, 5)),
                                 grade_value=np.eye(5), floor=.1)

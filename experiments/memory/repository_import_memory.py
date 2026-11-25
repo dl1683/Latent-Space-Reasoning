@@ -18,7 +18,9 @@ from types import MappingProxyType
 
 import numpy as np
 
-from experiments.memory.disjoint_feedback import _RelationWorkspacePin
+from experiments.memory.disjoint_feedback import (
+    RelationOutcomeGuard, TerminalRelationEvidence, TerminalRelationGrade, _RelationWorkspacePin,
+)
 from experiments.memory.disjoint_transition import DisjointTransitionMemory, DisjointTransitionPath, propagate_disjoint
 from experiments.memory.weight_program import program_weight
 
@@ -26,6 +28,7 @@ from experiments.memory.weight_program import program_weight
 _SOURCE_LINE = re.compile(rb"[^\r\n]*(?:\r\n?|\n|$)")
 _ASCII_HEADER = bytes(range(128)) + b"\x7f" * 128
 _CREATION_KEY = object()
+_ANCHOR_GRADE_ATOL = 1e-8
 
 
 @dataclass(frozen=True)
@@ -333,7 +336,7 @@ class RepositoryImportMemory:
         opening_inputs = [receiver._relation_read_input(state, step)
                           for state in pin.protected for step, read in enumerate(state._trace) if read is not None]
         hidden_width = pin.memory._anchors.shape[1]
-        atol = 1e-8
+        atol = _ANCHOR_GRADE_ATOL
         with np.errstate(over="raise", invalid="raise"):
             inputs = np.stack([hidden @ receiver._query for _, hidden, _ in requests])
             preserve = np.asarray([hidden @ receiver._query for hidden in opening_inputs]).reshape(-1, hidden_width)
@@ -355,6 +358,50 @@ class RepositoryImportMemory:
             if not active[coordinate] or np.count_nonzero(active[prior_count:]) != 1 or not match:
                 raise ValueError("installed anchors miss the requested exclusive seed grade")
         return revision
+
+    def draft_feedback_growth(self, previous, receiver, pin, probe, *, destination, grade, max_update_norm):
+        """Find one appended entry for an ordinary miss and draft its future protection."""
+        if type(pin) is not _RelationWorkspacePin:
+            raise ValueError("growth discovery needs an issued workspace pin")
+        names = self._feedback_names(previous, receiver, pin.memory)
+        receiver._require_state(probe)
+        if (probe._memory is not pin.memory or probe._grades is None
+                or any(read is None or read.query is not None for read in probe._trace)):
+            raise ValueError("growth discovery needs an ordinary terminal read on the opening pin")
+        self._require_module(destination)
+        coordinate = self._coordinates[destination]
+        if coordinate < len(previous._coordinates) and np.isfinite(probe._grades[coordinate]):
+            raise ValueError("opening trajectory already supports the destination")
+
+        paths = ()
+        for start in names:
+            if start not in self._modules:
+                continue
+            candidates = tuple(self.relation_path(start, middle) for middle in sorted(self._modules[start].imports)
+                               if middle != start and middle in self._modules
+                               and destination in self._modules[middle].imports)
+            if candidates:
+                if paths:
+                    raise ValueError("multiple appended entries explain the destination")
+                entry, paths = start, candidates
+        if not paths:
+            raise ValueError("no appended entry explains the destination")
+
+        zeros = np.zeros(pin.memory._anchors.shape[1])
+        control = self.feedback_revision(previous, receiver, pin.memory,
+                                         added_anchors=dict.fromkeys(names, zeros))
+        missed, _ = receiver.rebase(probe, control)
+        if np.isfinite(missed._grades[coordinate]):
+            raise ValueError("source adoption alone already supports the destination")
+        hidden = receiver._relation_read_input(missed, len(missed._trace) - 1)
+        revision = self.fit_feedback_revision(previous, receiver, pin, targets={entry: (hidden, grade)},
+                                              max_update_norm=max_update_norm)
+        grade = float(grade)
+        bounds = ((0., 0.) if grade == 0. else
+                  (max(0., grade - _ANCHOR_GRADE_ATOL), min(1., grade + _ANCHOR_GRADE_ATOL)))
+        guard = RelationOutcomeGuard(grades=[TerminalRelationGrade(coordinate, bounds)],
+                                     evidence=[TerminalRelationEvidence(coordinate, paths)])
+        return revision._with_required_outcome(pin, probe, guard)
 
     def _seed(self, start):
         self._require_module(start)

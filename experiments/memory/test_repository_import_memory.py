@@ -118,13 +118,15 @@ class _FixtureTokenizer:
         return list(json.dumps(messages, ensure_ascii=True).encode())
 
 
-def _published_import_workspace(memory, start, destination, middles, *, bypass=False, strength=.75, query_scale=1.):
+def _published_import_workspace(memory, start, destination, middles, *, bypass=False, strength=.75,
+                                query_scale=1., carry=None):
     width = len(memory.relation_coordinates)
     keys = np.zeros((width, 1))
     zeros = np.zeros((width, width))
     identity = np.eye(width)
-    kernel = FeedbackKernel(query=keys, carry=zeros, observation_key=keys, observation_value=zeros,
-                            feedback_key=keys, feedback_value=zeros, max_steps=2 if bypass else 1)
+    kernel = FeedbackKernel(query=keys, carry=zeros if carry is None else carry,
+                            observation_key=keys, observation_value=zeros, feedback_key=keys, feedback_value=zeros,
+                            max_steps=2 if bypass or carry is not None else 1)
     receiver = DisjointFeedback(kernel, query=query_scale * identity, presence_value=zeros, grade_value=identity, floor=.25)
     pin = memory.attach_feedback(receiver, identity)
     seed = np.zeros(width)
@@ -449,6 +451,164 @@ def test_feasible_appended_anchor_draft_still_requires_source_witness_admission(
     with pytest.raises(RelationGuardFailed, match="violated protected outcome"):
         workspace.publish(parent, revision)
     assert workspace.pin() is parent
+
+
+def test_discovered_growth_protects_two_successive_reads_on_the_same_workspace(history):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    memory = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    width = len(memory.relation_coordinates)
+    coords = memory.relation_coordinates
+    carry = np.zeros((width, width))
+    carry[coords["pkg.decoy"], coords["pkg.always"]] = 1.
+    carry[coords["pkg.always"], coords["pkg"]] = 1.
+    receiver, workspace = _published_import_workspace(memory, "pkg.start", "pkg.before", ["pkg.relay"], carry=carry)
+    parent = workspace.pin()
+    layout = dict(context_tokens=4096, max_new_tokens=32)
+
+    def discover(source, new, pin, entry, destination):
+        seed = np.zeros(width)
+        seed[coords[entry]] = .75
+        probe = receiver.step(receiver.step(receiver.start(seed, pin.memory)))
+        assert not np.array_equal(probe.feedback.history[0], seed)
+        assert not np.array_equal(probe.feedback.history[0], probe.latest)
+        draft = new.draft_feedback_growth(source, receiver, pin, probe, destination=destination,
+                                          grade=.5, max_update_norm=2.)
+        return probe, draft
+
+    grown = memory.revise(_commit(repo, {"new.py": "import pkg.left\nimport pkg.right\n",
+                                         "left.py": "import pkg.newdest\n", "right.py": "import pkg.newdest\n",
+                                         "newdest.py": "", "dangling.py": "import pkg.ghost\n"}))
+    probe, draft = discover(memory, grown, parent, "pkg.decoy", "pkg.newdest")
+    assert np.isneginf(probe.grades).all()
+    bypassed = receiver.step(receiver.step(receiver.start(probe.feedback.seed, parent.memory), use_operator=False))
+    with pytest.raises(ValueError, match="ordinary terminal read"):
+        grown.draft_feedback_growth(memory, receiver, parent, bypassed, destination="pkg.newdest",
+                                    grade=.5, max_update_norm=2.)
+    competing = DisjointFeedbackWorkspace(receiver, parent.memory)
+    with pytest.raises(StaleRelationRevision, match="different opening workspace pin"):
+        competing.publish(competing.pin(), draft)
+
+    zero = grown.feedback_revision(memory, receiver, parent.memory, added_anchors={
+        name: np.zeros(len(memory.relation_coordinates))
+        for name in grown.relation_coordinates.keys() - memory.relation_coordinates.keys()
+    })
+    with pytest.raises(RelationGuardFailed, match="initial trajectory violates"):
+        workspace.publish(parent, zero, admit_outcomes=[draft._admission[1:]])
+    assert workspace.pin() is parent
+    first_tip = workspace.publish(parent, draft)
+    assert len(parent.protected) == 1 and len(first_tip.protected) == 2
+    new_read = prepare_published_import_readout(grown, first_tip, 1, "pkg.newdest", _FixtureTokenizer(), **layout)
+    assert new_read.witness.strength == pytest.approx(.5)
+    fresh = receiver.step(receiver.step(receiver.start(probe.feedback.seed, first_tip.memory)))
+    np.testing.assert_array_equal(fresh.feedback.history, first_tip.protected[1].feedback.history)
+    np.testing.assert_array_equal(fresh.grades, first_tip.protected[1].grades)
+    assert [q.declaring_module for q in new_read.quotes] == ["pkg.new", "pkg.left"]
+
+    near_seed = probe.feedback.seed * .96
+    near = receiver.step(receiver.step(receiver.start(near_seed, first_tip.memory)))
+    destination = grown.relation_coordinates["pkg.newdest"]
+    assert .4 < near.grades[destination] < .5
+    assert receiver.prove_terminal(near, destination).start == new_read.witness.start
+    alias = receiver.step(receiver.start(near.feedback.history[0], first_tip.memory))
+    assert receiver.prove_terminal(alias, destination) == receiver.prove_terminal(near, destination)
+
+    grown_again = grown.revise(_commit(repo, {"newer.py": "import pkg.next_mid\n",
+                                              "next_mid.py": "import pkg.next_dest\n", "next_dest.py": "",
+                                              "left.py": "# right route survives\n"}))
+    _, draft = discover(grown, grown_again, first_tip, "pkg.always", "pkg.next_dest")
+    second_tip = workspace.publish(first_tip, draft)
+    assert len(second_tip.protected) == 3
+    for number, destination, modules in [
+        (0, "pkg.before", ["pkg.start", "pkg.relay"]),
+        (1, "pkg.newdest", ["pkg.new", "pkg.right"]),
+        (2, "pkg.next_dest", ["pkg.newer", "pkg.next_mid"]),
+    ]:
+        result = prepare_published_import_readout(grown_again, second_tip, number, destination,
+                                                  _FixtureTokenizer(), **layout)
+        assert [q.declaring_module for q in result.quotes] == modules
+        assert result.witness.strength == pytest.approx(.5)
+
+    withdrawn = grown_again.revise(_commit(repo, {"right.py": "# last route withdrawn\n"}))
+    withdrawal = withdrawn.feedback_revision(grown_again, receiver, second_tip.memory)
+    with pytest.raises(RelationGuardFailed, match="protected outcome 1"):
+        workspace.publish(second_tip, withdrawal)
+    assert workspace.pin() is second_tip
+    with pytest.raises(StaleRelationRevision):
+        workspace.publish(first_tip, draft)
+
+
+def test_growth_discovery_refuses_ambiguous_paths_and_the_source_only_control(history):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    memory = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    receiver, workspace = _published_import_workspace(memory, "pkg.start", "pkg.before", ["pkg.relay"])
+    parent = workspace.pin()
+    seed = np.zeros(len(memory.relation_coordinates))
+    seed[memory.relation_coordinates["pkg.decoy"]] = .75
+    started = receiver.start(seed, parent.memory)
+    probe = receiver.step(started)
+    new_commit = _commit(repo, {"new_a.py": "import pkg.bridge\n", "new_b.py": "import pkg.bridge\n",
+                                "bridge.py": "import pkg.newdest\n", "newdest.py": ""})
+    ambiguous = memory.revise(new_commit)
+    request = dict(destination="pkg.newdest", grade=.5, max_update_norm=2.)
+    with pytest.raises(ValueError, match="multiple appended entries"):
+        ambiguous.draft_feedback_growth(memory, receiver, parent, probe, **request)
+    unique = memory.revise(_commit(repo, {"new_b.py": "",
+                                          "decoy.py": "import pkg.bridge\n"}))
+    with pytest.raises(ValueError, match="source adoption alone"):
+        unique.draft_feedback_growth(memory, receiver, parent, probe, **request)
+    override = receiver.step(started, relation_query=seed)
+    with pytest.raises(ValueError, match="ordinary terminal read"):
+        unique.draft_feedback_growth(memory, receiver, parent, override, **request)
+    with pytest.raises(ValueError, match="opening trajectory already supports"):
+        unique.draft_feedback_growth(memory, receiver, parent, parent.protected[0],
+                                     destination="pkg.before", grade=.5, max_update_norm=2.)
+    assert workspace.pin() is parent
+
+
+def test_discovered_anchor_changes_a_later_read_and_the_hidden_message_rescues_it(history):
+    repo, first, _, _ = history
+    _git(repo, "checkout", "--detach", first)
+    memory = imports.RepositoryImportMemory.prepare(repo, first, package="pkg")
+    coords = memory.relation_coordinates
+    width = len(coords)
+    receiver, workspace = _published_import_workspace(memory, "pkg.start", "pkg.before", ["pkg.relay"],
+                                                        carry=np.zeros((width, width)))
+    parent = workspace.pin()
+    seed = np.zeros(width)
+    seed[coords["pkg.decoy"]] = .75
+    probe = receiver.step(receiver.start(seed, parent.memory))
+    grown = memory.revise(_commit(repo, {"arrival.py": "import pkg.relay\n",
+                                         "before.py": "import pkg.future_mid\n",
+                                         "future_mid.py": "import pkg.future_dest\n", "future_dest.py": ""}))
+    draft = grown.draft_feedback_growth(memory, receiver, parent, probe, destination="pkg.before",
+                                        grade=.5, max_update_norm=2.)
+    zero = grown.feedback_revision(memory, receiver, parent.memory, added_anchors={
+        name: np.zeros(width) for name in grown.relation_coordinates.keys() - coords.keys()
+    })
+    tip = workspace.publish(parent, draft)
+    removed, _ = receiver.rebase(probe, zero)
+    repaired = tip.protected[1]
+    assert np.flatnonzero(np.any(removed._memory._anchors != repaired._memory._anchors, axis=1)).tolist() == [
+        grown.relation_coordinates["pkg.arrival"]
+    ]
+    assert removed._memory._transitions is repaired._memory._transitions
+    assert removed.latest[coords["pkg.before"]] == 0.
+    assert repaired.latest[coords["pkg.before"]] == pytest.approx(np.tanh(.5))
+
+    destination = grown.relation_coordinates["pkg.future_dest"]
+    ordinary = receiver.step(repaired)
+    ablated = receiver.step(removed)
+    rescued = receiver.step(removed, relation_query=repaired.latest)
+    wrong = np.zeros(width)
+    wrong[coords["pkg.always"]] = np.linalg.norm(repaired.latest)
+    mismatch = receiver.step(removed, relation_query=wrong)
+    assert np.isneginf(ablated.grades[destination]) and np.isneginf(mismatch.grades[destination])
+    assert ordinary.grades[destination] == pytest.approx(np.tanh(.5) - .25)
+    witness = receiver.prove_terminal(ordinary, destination)
+    assert witness.path == grown.relation_path("pkg.before", "pkg.future_mid")
+    assert receiver.prove_terminal(rescued, destination) == witness
 
 
 def test_readout_quotes_pinned_multiline_imports_and_hides_reference_labels(history):

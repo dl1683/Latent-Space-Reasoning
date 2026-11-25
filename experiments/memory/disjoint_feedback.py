@@ -56,11 +56,17 @@ class _RelationRevision(_IdentityRecord):
     memory: _RelationObservation
     _entries: frozenset[int]
     _changed_sources: frozenset[str] | None
+    _admission: tuple["_RelationWorkspacePin", "DisjointFeedbackState", "RelationOutcomeGuard"] | None = None
     _creation_key: InitVar[object | None] = None
 
     def __post_init__(self, _creation_key):
         if _creation_key is not _CREATION_KEY:
             raise TypeError("construct relation revisions through revise_memory or merge_revisions")
+
+    def _with_required_outcome(self, opening, state, guard):
+        if self._changed_sources is not None or self._admission is not None or opening.memory is not self._base:
+            raise ValueError("a required outcome needs an unbound authoritative revision at its opening pin")
+        return replace(self, _admission=(opening, state, guard), _creation_key=_CREATION_KEY)
 
 
 @dataclass(frozen=True, eq=False, slots=True)
@@ -499,12 +505,18 @@ class DisjointFeedbackWorkspace:
         with self._lock:
             return self._tip
 
-    def publish(self, parent, *drafts):
-        """Check a joint revision outside the lock, then install it if the tip is current."""
+    def publish(self, parent, *drafts, admit_outcomes=()):
+        """Publish one checked revision with optional new guards on opening trajectories."""
         if self.pin() is not parent:
             raise StaleRelationRevision("relation workspace tip changed before evaluation")
         receiver = self._receiver
         revision = receiver.merge_revisions(parent.memory, *drafts)
+        required = ()
+        if revision._admission is not None:
+            opening, state, outcome = revision._admission
+            if opening is not parent:
+                raise StaleRelationRevision("relation draft belongs to a different opening workspace pin")
+            required = ((state, outcome),)
         checked = []
         witnesses = []
         for i, (state, outcome) in enumerate(zip(parent.protected, parent._outcomes, strict=True)):
@@ -519,10 +531,19 @@ class DisjointFeedbackWorkspace:
                     raise RelationGuardFailed(f"joint relation revision violated protected outcome {i}")
             checked.append(candidate)
             witnesses.append(approved)
+        outcomes = list(parent._outcomes)
+        for state, outcome in (*required, *admit_outcomes):
+            if type(outcome) is not RelationOutcomeGuard:
+                raise ValueError("admit_outcomes requires a state and a RelationOutcomeGuard")
+            candidate, _ = receiver.rebase(state, revision)
+            approved = outcome._validate(candidate)
+            checked.append(candidate)
+            outcomes.append(outcome)
+            witnesses.append(approved)
         with self._lock:
             if self._tip is not parent:
                 raise StaleRelationRevision("relation workspace tip changed during evaluation")
-            if revision.memory is not parent.memory:
-                self._tip = _RelationWorkspacePin(revision.memory, tuple(checked), parent._outcomes, tuple(witnesses),
+            if revision.memory is not parent.memory or len(checked) != len(parent.protected):
+                self._tip = _RelationWorkspacePin(revision.memory, tuple(checked), tuple(outcomes), tuple(witnesses),
                                                   _creation_key=_CREATION_KEY)
             return self._tip

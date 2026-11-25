@@ -40,7 +40,7 @@ A [published import readout](docs/ARCHITECTURE.md#returning-published-import-evi
 
 Repository publication can append coordinates with supplied anchors. Earlier coordinates and citations keep their addresses, and active relation steps replay against the enlarged frame.
 
-A worker can [fit appended anchors](docs/ARCHITECTURE.md#fitting-appended-anchors) from projected query examples while keeping new entries inactive on the protected opening reads.
+A worker can [fit appended anchors](docs/ARCHITECTURE.md#fitting-appended-anchors) from projected query examples while keeping new entries inactive on the protected opening reads. Given an ordinary miss and a requested destination, it can also [discover one newly available route](docs/ARCHITECTURE.md#repairing-an-ordinary-import-miss), fit from the receiver's own hidden input and make the recovered read a protection on later revisions.
 
 A [retained import read](docs/ARCHITECTURE.md#retaining-an-import-answer-across-commits) can carry exact quotes to a new commit when the witness dependencies survive. An indexed baseline with a blob-keyed quote cache read fewer source bytes in a local replay that repeatedly restored the same evidence.
 
