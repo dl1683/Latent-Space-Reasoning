@@ -1,5 +1,8 @@
+from dataclasses import replace
+
 import pytest
 
+from experiments.memory import relative_hierarchy
 from experiments.memory.relative_hierarchy import RelativeObservationHierarchy
 from experiments.memory.relative_observations import RelativeObservation, solve_relative_direct
 
@@ -112,3 +115,89 @@ def test_no_ports_or_all_ports_and_failed_update_preserves_the_base():
     retired = hierarchy.revise(revised, {"bridge": None})
     assert retired.coarse_size == 2 and retired.rebuilt_regions == ()
     assert retired.read(0) == pytest.approx(1) and retired.read(1) is None
+
+
+def test_compaction_skips_source_rebuild_and_coarse_solve_and_keeps_forks(monkeypatch):
+    hierarchy = RelativeObservationHierarchy(_MEMBERSHIP, ridge=_RIDGE)
+    sources = _sources()
+    original = hierarchy.initialize({**sources, "parallel": sources["bridge"]})
+    single = hierarchy.revise(original, {"parallel": None})
+    assert hierarchy.compact(single) is single
+    detached = hierarchy.revise(single, {"bridge": None})
+    without_bridge = {name: row for name, row in sources.items() if name != "bridge"}
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("pure compaction rebuilt from sources or reran the coarse solve")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(relative_hierarchy, "_build_region", unexpected)
+        patch.setattr(relative_hierarchy, "_solve_coarse", unexpected)
+        first = hierarchy.compact(detached, protected_cells=(0, 2, 3, 8, 11))
+        second = hierarchy.compact(first, protected_cells=(0, 2, 3, 8, 11))
+
+    assert first.compacted_regions == (0,) and first.coarse_size == 3
+    assert second.compacted_regions == (1,) and second.coarse_size == 2
+    assert first.rebuilt_regions == second.rebuilt_regions == ()
+    assert second._sources is detached._sources and second._bridges is detached._bridges
+    assert second._regions[2] is detached._regions[2]
+    assert second._regions[1]._sources is detached._regions[1]._sources
+    assert hierarchy.compact(second) is second
+    assert detached.coarse_size == 4 and hierarchy.compact(single) is single
+    for cell, position in second._port_positions.items():
+        assert second._values[position] == detached._values[detached._port_positions[cell]]
+    _assert_direct(first, without_bridge)
+    _assert_direct(second, without_bridge)
+
+    restored = hierarchy.revise(second, {"bridge": sources["bridge"]})
+    assert restored.rebuilt_regions == (0, 1) and restored.coarse_size == 4
+    _assert_direct(restored, sources)
+    _assert_direct(detached, without_bridge)
+
+
+def test_compaction_composes_retired_port_reads_across_two_rounds():
+    hierarchy = RelativeObservationHierarchy(_MEMBERSHIP, ridge=_RIDGE)
+    sources = {**_sources(), "remote_anchor": RelativeObservation(8, 1.1, weight=2)}
+    original = hierarchy.initialize(sources)
+    detached = hierarchy.revise(original, {"bridge": None})
+    first = hierarchy.compact(detached, max_regions=2, protected_cells=(2, 3, 4, 5))
+    assert first.compacted_regions == (0, 1) and first._regions[1].ports == (5,)
+    assert first.read(4) == pytest.approx(detached.read(4), abs=1e-12, rel=0)
+    without_bridge = {name: row for name, row in sources.items() if name != "bridge"}
+    _assert_direct(first, without_bridge)
+    before, after = detached._regions[1], first._regions[1]
+    assert before.factor.size + before.readout.size - after.factor.size - after.readout.size == 4
+
+    bridge = RelativeObservation(6, -1.3, source=5, weight=2)
+    changed = hierarchy.revise(first, {"downstream": bridge})
+    assert changed.rebuilt_regions == () and changed._regions[1] is after
+    assert abs(changed.read(4) - first.read(4)) > 0.02
+    _assert_direct(changed, {**without_bridge, "downstream": bridge})
+
+    isolated = hierarchy.revise(changed, {"downstream": None})
+    second = hierarchy.compact(isolated, max_regions=2, protected_cells=range(len(_MEMBERSHIP)))
+    assert second.compacted_regions == (1, 2) and second.coarse_size == 0
+    assert second.read(3) is None and second.read(6) is not None
+    _assert_direct(second, {name: row for name, row in sources.items()
+                            if name not in {"bridge", "downstream"}})
+    _assert_direct(original, sources)
+
+
+def test_compaction_refuses_changed_protected_reads_without_affecting_parent(monkeypatch):
+    hierarchy = RelativeObservationHierarchy(_MEMBERSHIP, ridge=_RIDGE)
+    original = hierarchy.initialize(_sources())
+    detached = hierarchy.revise(original, {"bridge": None})
+    expected = detached.read(0)
+    compact_region = relative_hierarchy._compact_region
+
+    def drift(region, active_ports):
+        proposed = compact_region(region, active_ports)
+        readout = proposed.readout.copy()
+        readout[0, -1] += 0.25
+        return replace(proposed, readout=readout)
+
+    monkeypatch.setattr(relative_hierarchy, "_compact_region", drift)
+    with pytest.raises(RuntimeError, match="compaction changed protected read 0"):
+        hierarchy.compact(detached, protected_cells=(0,))
+    assert detached.read(0) == expected and detached.coarse_size == 4
+    with pytest.raises(ValueError, match="positive region cap"):
+        hierarchy.compact(detached, max_regions=0)
