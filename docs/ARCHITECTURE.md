@@ -63,6 +63,18 @@ A field uses synchronous sweeps and immutable full arrays for each accepted snap
 
 Local revisions reduce the set of recomputed messages. Whole-state copying, retained snapshot bytes, topology rebuilds and setup still count. Growing the coordinate basis, learning links, resolving conflicts, natural-language readout and swarm scheduling remain open. Strict contraction can also attenuate distant influence. If a change first reaches a cell after $h$ edges, the worst-case norm bound contains the factor $q^h/(1-q)$. Long-distance and competing-path consequences must therefore be tested before adopting the geometry.
 
+### Relative observation revision
+
+[SLICE] The [relative observation field](../experiments/memory/relative_observations.py) compiles weighted scalar differences and absolute anchors into the recurrent field's optional identity activation. A relative source row measures $x_t-x_s=d_e$ with weight $w_e$, and an anchor measures $x_i=y_a$ with weight $w_a$. Both the affine recurrence and an independent direct incidence solve target
+
+$$\min_x \lambda\|x\|_2^2 + \sum_e w_e(x_t-x_s-d_e)^2 + \sum_a w_a(x_i-y_a)^2.$$
+
+Here $\lambda>0$ is a declared zero-centered ridge. A cell's diagonal is the ridge plus its incident and anchor weights. The drive divides its signed measurement sum by that diagonal, with $-w_e d_e$ on the source and $+w_e d_e$ on the target. A neighboring cell sends its state with coefficient $w_e$ divided by the receiver's diagonal. Parallel sources contribute their own terms. The row sum is below one in exact arithmetic, giving the existing fixed-point residual bound. The implementation rejects nonfinite affine updates and exhausted iteration budgets. Ridge changes the estimate, and a weak ridge can give slow convergence. The residual bound governs the compiled transition and excludes rounding and measurement uncertainty.
+
+A named source edit recompiles only its old and new endpoints using their retained incident rows. A change in normalized links uses the field's existing topology replacement. Relaxation warm-starts the affected components and preserves earlier snapshots. The bidirectional links can require revisiting the entire connected component. Source-index copies, topology rebuilds, support refreshes and retained snapshots still count. Readout returns an absolute estimate when the queried cell is connected to at least one observation anchor. A detached component returns `None` even if its regularized internal state is finite. This is a structural support policy for this task.
+
+The direct reference assembles weighted incidence and identity rows and solves by dense least squares. It obtains support independently from source connectivity. Agreement qualifies the numerical construction, including conflicting paths, fixed-topology corrections and removal of a necessary bridge. Cost comparisons need a competent warm-start conventional solver and an incremental factor-graph solver under equal source, history and revision access. Learned acquisition, calibrated absence and comparative cost remain open.
+
 ### Continuous feedback candidate
 
 [SLICE] The [feedback kernel](../experiments/memory/latent_feedback.py) retains immutable observation coordinates and prepares their keys once. For a query state $h_t$, it projects a key query and attends over both those observation rows and the previously generated hidden rows. The two row families have separate key and value maps. The next state is the coordinatewise tanh of a projected carry from $h_t$ plus the weighted values. The new state is appended and participates in later steps. The seed remains separate, and the same call accepts an empty observation snapshot.

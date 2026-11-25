@@ -20,12 +20,20 @@ def _frozen(array):
 @dataclass(frozen=True, eq=False)
 class FieldState:
     _field: object
-    drives: np.ndarray
-    values: np.ndarray
+    _drives: np.ndarray
+    _values: np.ndarray
     affected: tuple[int, ...]
     sweeps: int
     messages: int
     residual: float
+
+    @property
+    def drives(self):
+        return self._drives.view()
+
+    @property
+    def values(self):
+        return self._values.view()
 
     @property
     def error_bound(self):
@@ -37,11 +45,12 @@ class LatentField:
     """A fixed set of cells linked by directed linear maps and shared relaxation.
 
     Each edge is (source, target, matrix). Parallel edges add. Each cell updates
-    as tanh(drive + sum of incoming messages). The topology and weights stay
-    fixed within one field. Reconfiguration returns a new field and snapshot.
+    by applying tanh or identity to its drive plus incoming messages. The
+    topology and weights stay fixed within one field.
     """
 
-    def __init__(self, cells, width, edges, *, tolerance=1e-8, max_sweeps=128):
+    def __init__(self, cells, width, edges, *, tolerance=1e-8, max_sweeps=128,
+                 activation="tanh"):
         self._cells = index(cells)
         self._width = index(width)
         self._max_sweeps = index(max_sweeps)
@@ -50,6 +59,9 @@ class LatentField:
             raise ValueError("cells, width, and max_sweeps must be positive")
         if not isfinite(self._tolerance) or self._tolerance <= 0:
             raise ValueError("tolerance must be positive and finite")
+        if activation not in ("tanh", "identity"):
+            raise ValueError("field activation must be tanh or identity")
+        self._activation = activation
 
         sources, targets, weights = [], [], []
         incoming = [[] for _ in range(self._cells)]
@@ -149,7 +161,7 @@ class LatentField:
         if not affected:
             return self, self.revise(state, changes)
         candidate = LatentField(count, self._width, next_edges, tolerance=self._tolerance,
-                                max_sweeps=self._max_sweeps)
+                                max_sweeps=self._max_sweeps, activation=self._activation)
         return candidate, candidate._resume(state, changes, affected, additions)
 
     def _resume(self, state, changes, affected, additions=None):
@@ -158,7 +170,7 @@ class LatentField:
             for cell, value in changes.items()
         }
         for cell, value in replacements.items():
-            if cell >= len(state.drives) or not np.array_equal(state.drives[cell], value):
+            if cell >= len(state._drives) or not np.array_equal(state._drives[cell], value):
                 affected.add(cell)
         if not affected:
             return state
@@ -177,10 +189,10 @@ class LatentField:
         if len(affected) == self._cells:
             residual = 0.0
         if additions is None:
-            drives, values = state.drives.copy(), state.values.copy()
+            drives, values = state._drives.copy(), state._values.copy()
         else:
-            drives = np.concatenate((state.drives, additions))
-            values = np.concatenate((state.values, np.zeros_like(additions)))
+            drives = np.concatenate((state._drives, additions))
+            values = np.concatenate((state._values, np.zeros_like(additions)))
         for cell, value in replacements.items():
             drives[cell] = value
         return self._relax(drives, values, tuple(sorted(affected)), residual)
@@ -202,8 +214,13 @@ class LatentField:
             proposed = local_drives.copy()
             messages = np.einsum("eij,ej->ei", matrices, values[source])
             np.add.at(proposed, target, messages)
-            np.tanh(proposed, out=proposed)
+            if self._activation == "tanh":
+                np.tanh(proposed, out=proposed)
+            elif not np.isfinite(proposed).all():
+                raise FloatingPointError("nonfinite affine field update")
             residual = float(np.max(np.abs(proposed - values[rows])))
+            if self._activation == "identity" and not isfinite(residual):
+                raise FloatingPointError("nonfinite affine field residual")
             if residual <= threshold:
                 # Outside the forward closure, state and incoming inputs
                 # are unchanged. Carry their prior residual bound forward.

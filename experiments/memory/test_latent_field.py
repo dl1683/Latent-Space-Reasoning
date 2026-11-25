@@ -47,6 +47,9 @@ def test_old_states_and_weight_blocks_are_immutable():
     for array in (state.values, state.drives):
         with pytest.raises(ValueError, match="WRITEABLE"):
             array.setflags(write=True)
+        array.shape = (2,)
+    assert state.values.shape == state.drives.shape == (2, 1)
+    assert field.revise(state, {0: [0.2]}).values[1, 0] < state.values[1, 0]
 
     with pytest.raises(ValueError, match="different latent field"):
         LatentField(2, 1, []).revise(state, {1: [0]})
