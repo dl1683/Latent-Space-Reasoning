@@ -61,7 +61,8 @@ class BindingFeedback:
     """Commit at most one corpus address before generating the next hidden state."""
 
     def __init__(self, kernel, frame, addresses, *, query, observation,
-                 route_floor=0.0, route_gap=0.0, work_limit=65536, disjoint_reads=False, route_trials=1):
+                 route_floor=0.0, route_gap=0.0, work_limit=65536, disjoint_reads=False, route_trials=1,
+                 reuse_matching_failures=False):
         if type(kernel) is not FeedbackKernel or type(frame) is not CorpusBindingMemory:
             raise ValueError("binding feedback requires a dense feedback kernel and a corpus frame")
         addresses = tuple((node, index(binding)) for node, binding in addresses)
@@ -79,6 +80,8 @@ class BindingFeedback:
         route_trials = index(route_trials)
         if route_trials < 1 or (route_trials > 1 and not disjoint_reads):
             raise ValueError("multiple route trials require disjoint reads")
+        if type(reuse_matching_failures) is not bool or (reuse_matching_failures and route_trials == 1):
+            raise ValueError("matching failure reuse requires multiple route trials")
         self._kernel = kernel
         self._contract, self._anchors = _frame_contract(frame), frame._anchors
         self._addresses = addresses
@@ -86,6 +89,7 @@ class BindingFeedback:
         self._route_floor, self._route_gap, self._work_limit = route_floor, route_gap, work_limit
         self._disjoint_reads = disjoint_reads
         self._route_trials = route_trials
+        self._reuse_matching_failures = reuse_matching_failures
 
     def start(self, seed, memory=None):
         """Pin an optional compiled corpus snapshot for this trajectory."""
@@ -160,7 +164,8 @@ class BindingFeedback:
         return BindingStepRead("resolved", address, bounds)
 
     def _read_branches(self, memory, scores, prefix):
-        session = _DisjointBranchReads(memory, prefix, self._work_limit)
+        session = _DisjointBranchReads(memory, prefix, self._work_limit,
+                                       reuse_matching_failures=self._reuse_matching_failures)
         ranked = np.argsort(-scores, kind="stable")
         tried = []
         result = None

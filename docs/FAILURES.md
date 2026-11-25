@@ -149,6 +149,8 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **The highest route score can hide a feasible alternative, 25 November 2026.** The leading address required both available origins and left none for the first premise. A lower-ranked address succeeded by using the weaker first witness. A partial route search still cannot establish catalog absence. The receiver skips only a completed modeled failure and keeps score ambiguities, untried candidates and proof refusals visible. [Receiver controls](../experiments/memory/test_binding_feedback.py)
 
+**Retaining failed matches can cost more than solving again, 25 November 2026.** A contained sibling reused a failure and finished within a budget the row-cache dispatcher exhausted. A widened sibling defeated the containment check and paid its overhead. The seeded comparison also charged more work in aggregate when retention was enabled. Retain failures on a pinned bank with full origin domains, including supported grade zero. Keep the feature opt-in and compare against incremental prefix matching before expanding it. [Receiver controls](../experiments/memory/test_binding_feedback.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

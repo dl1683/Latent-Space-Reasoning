@@ -391,9 +391,11 @@ class _Task:
 
 
 class _ProofWork:
-    def __init__(self, limit, *, reuse_rows=False):
+    def __init__(self, limit, *, reuse_rows=False, matching_scope=None):
         self.limit = self.remaining = _proof_work_limit(limit)
         self.prepared_rows = {} if reuse_rows else None
+        self.matching_scope = matching_scope
+        self.failed_neighborhood = None
 
     @property
     def used(self):
@@ -446,6 +448,11 @@ class _ProofSearch:
         self.single_source_matching = disjoint == [output] and all(
             node == output or operation == "or" for node, (operation, _) in self.rules.items()
         )
+        scope = self.work.matching_scope
+        self.reuse_matching_failure = (
+            self.single_source_matching and bool(addresses) and scope is not None
+            and scope[0] is memory and scope[1] == addresses[:-1] and not excluded
+        )
 
     def charge(self, amount=1):
         self.work.charge(amount)
@@ -495,6 +502,14 @@ class _ProofSearch:
             if best.strength == ceiling:
                 return best
         domains = self.matching_domains(leaves) if self.single_source_matching else None
+        if self.reuse_matching_failure:
+            neighborhood = self.work.failed_neighborhood
+            candidate = domains[-1]
+            cost = 1 + len(candidate)
+            if neighborhood is not None and len(candidate) <= len(neighborhood) and cost <= self.work.remaining:
+                self.charge(cost)
+                if neighborhood.issuperset(candidate):
+                    return None
 
         def witness(threshold):
             if domains is not None:
@@ -577,6 +592,8 @@ class _ProofSearch:
                         pending.append(owner)
                         visited.add(owner)
             if free is None:
+                if self.reuse_matching_failure:
+                    self._remember_matching_failure(domains, choices, visited, via)
                 return None
             # Follow the alternating path back to the unassigned starting branch.
             while free is not None:
@@ -587,6 +604,21 @@ class _ProofSearch:
                 selected[branch] = free
                 free = previous
         return frozenset((domains[branch][origin][1], origin) for branch, origin in selected.items())
+
+    def _remember_matching_failure(self, domains, choices, visited, via):
+        if self.work.failed_neighborhood is not None:
+            return
+        if len(domains) - 1 not in visited or len(visited) > self.work.remaining:
+            return
+        self.charge(len(visited))
+        # A failed augmenting path exhausts the reached roots' neighborhood. Only
+        # keep it when the threshold left every origin of those roots available.
+        if any(len(choices[i]) != len(domains[i]) for i in visited):
+            return
+        cost = 1 + len(via)
+        if cost <= self.work.remaining:
+            self.charge(cost)
+            self.work.failed_neighborhood = frozenset(via)
 
     def witness(self, threshold, upper, leaves):
         scopes = count()

@@ -3,10 +3,13 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
+from experiments.memory import binding_memory
 from experiments.memory.binding_feedback import BindingFeedback
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _ProofWork
 from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
-from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemory, CorpusBindingRead
+from experiments.memory.corpus_bindings import (
+    BindingMention, CorpusBindingMemory, CorpusBindingRead, _DisjointBranchReads,
+)
 from experiments.memory.latent_feedback import FeedbackKernel
 
 
@@ -67,6 +70,90 @@ def _mixed_frame():
         "crowded": BindingGate("disjoint_and", ("verified", "manual")),
         "spare": BindingGate("or", ("verified",)),
     })
+
+
+def _matching_frame():
+    return CorpusBindingMemory.prepare(
+        ("p", "q", "a", "b", "c"), np.eye(2), {}, {}, encode=_encode,
+        encoder_version="matching-feedback-fixture", min_similarity=.6, gap=.05,
+    )
+
+
+def _matching_receiver(frame, *, work_limit=65536, reuse_matching_failures=True):
+    carry = np.zeros((4, 4))
+    carry[0, 1] = carry[1, 2] = 2
+    keys, zeros = np.zeros((4, 1)), np.zeros((4, 4))
+    kernel = FeedbackKernel(query=keys, carry=carry, observation_key=keys, observation_value=zeros,
+                            feedback_key=keys, feedback_value=zeros, max_steps=3)
+    observations = np.zeros((6, 4))
+    observations[5, 3] = 1
+    query = [[2, 0, 0, 0, 0], [0, 2, 0, 0, 0], [0, 0, 3, 2, 1], [0, 0, 0, 0, 0]]
+    return BindingFeedback(kernel, frame, tuple((node, 0) for node in ("p", "q", "a", "b", "c")),
+                           query=query, observation=observations, disjoint_reads=True, route_trials=3,
+                           work_limit=work_limit, reuse_matching_failures=reuse_matching_failures)
+
+
+def test_matching_rejection_skips_a_subset_sibling_and_stays_on_its_pin(tmp_path, monkeypatch):
+    frame = _matching_frame()
+    path = tmp_path / "matching.sqlite"
+    workspace = JournaledCorpusWorkspace(path, frame, create=True)
+    first = _write(workspace, {"one": b"p,1,0,1\nq,1,0,1\na,1,0,1",
+                              "two": b"p,1,0,1\na,1,0,1\nb,1,0,1", "three": b"c,1,0,1"})
+    without_third = _write(workspace, {"three": None})
+    widened = _write(workspace, {"three": b"b,1,0,1\nc,1,0,1"})
+    receiver = _matching_receiver(frame)
+    seed = [1, 0, 0, 0]
+    prefix = (("p", 0), ("q", 0))
+    original = receiver.step(receiver.step(receiver.start(seed, memory=first.memory)))
+    calls = []
+    match = binding_memory._ProofSearch.match
+
+    def track(search, threshold, domains):
+        calls.append(search.rules[search.output][1][-1])
+        return match(search, threshold, domains)
+
+    monkeypatch.setattr(binding_memory._ProofSearch, "match", track)
+    selected = receiver.step(original).reads[-1]
+    candidates = (("a", 0), ("b", 0), ("c", 0))
+    assert [trial.address for trial in selected.tried] == list(candidates)
+    assert calls == [candidates[0], candidates[-1]]
+    assert selected.address == candidates[-1]
+    reference = _DisjointBranchReads(first.memory, prefix, 65536, reuse_matching_failures=False)
+    assert [reference.resolve(address) for address in candidates] == [trial.bounds for trial in selected.tried]
+    assert calls[2:] == list(candidates)
+    assert selected.proof_work[0] < reference.proof_work[0]
+    limited = _matching_receiver(frame, work_limit=selected.proof_work[0])
+    limited_prefix = limited.step(limited.step(limited.start(seed, memory=first.memory)))
+    assert limited.step(limited_prefix).reads[-1] == selected
+    control = _matching_receiver(frame, work_limit=selected.proof_work[0], reuse_matching_failures=False)
+    before = control.step(control.step(control.start(seed, memory=first.memory)))
+    assert control.step(before).reads[-1].status == "capacity"
+
+    def final(memory):
+        initial = receiver.start(seed, memory=memory)
+        return receiver.step(receiver.step(receiver.step(initial))).reads[-1]
+
+    assert final(without_third.memory).status == "catalog_absent"
+    assert final(widened.memory).address == ("b", 0)
+    assert receiver.step(original).reads[-1] == selected
+
+
+def test_matching_rejection_preserves_zero_grade_and_keeps_banks_independent():
+    frame = _matching_frame()
+    memory = frame.revise({"one": b"p,1,0,1\nq,1,0,1\na,1,0,1",
+                           "two": b"p,1,0,1\na,1,0,1\nb,1,0,1", "three": b"q,1,1,0"})
+    prefix = (("p", 0), ("q", 0))
+    session = _DisjointBranchReads(memory, prefix, 65536, reuse_matching_failures=True)
+    for address in (("a", 0), ("b", 0)):
+        assert session.resolve(address) == CorpusBindingRead(None, 0)
+        assert session.resolve(address) == memory.resolve_disjoint((*prefix, address))
+    assert session._certain.failed_neighborhood == {"one", "two"}
+    assert session._possible.failed_neighborhood is None
+
+    repeated = (("p", 0), ("p", 0))
+    repeated_session = _DisjointBranchReads(memory, repeated, 65536, reuse_matching_failures=True)
+    assert repeated_session.resolve(("a", 0)) == CorpusBindingRead(None, None)
+    assert repeated_session.resolve(("b", 0)) == CorpusBindingRead(None, None)
 
 
 def test_late_route_rejection_recovers_weaker_earlier_support_across_source_revisions(tmp_path, monkeypatch):
