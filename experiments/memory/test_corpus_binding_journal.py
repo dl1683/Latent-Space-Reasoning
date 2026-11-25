@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
+from fractions import Fraction
 from pathlib import Path
 import sqlite3
 import subprocess
@@ -9,8 +10,11 @@ from threading import Barrier, Event
 import numpy as np
 import pytest
 
+from experiments.memory import corpus_binding_journal
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof
-from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace, _event_digest
+from experiments.memory.corpus_binding_journal import (
+    CorpusProgramExpectation, CorpusProgramProbe, JournaledCorpusWorkspace, _event_digest,
+)
 from experiments.memory.corpus_bindings import (
     BindingMention, CorpusBindingMemory, CorpusBindingRead, CorpusBindingWorkspace, StaleCorpusRevision,
 )
@@ -144,6 +148,271 @@ def test_program_publication_fences_drafts_and_allows_source_local_rebase(tmp_pa
     second.publish_program(second.prepare_program(recovered, original))
     with pytest.raises(StaleCorpusRevision, match="program changed"):
         first.publish(before_restore)
+
+
+def _program_with_extension():
+    return {"release": BindingGate("disjoint_and", ("inspection", "permit")),
+            "extension": BindingGate("or", ("inspection",))}
+
+
+def _extension_target():
+    return CorpusProgramExpectation(CorpusProgramProbe((("permit", 0), ("extension", 1))),
+                                    CorpusBindingRead(BindingProof(.8, frozenset({"license", "sensor"})), .8))
+
+
+class _FractionSubclass(Fraction):
+    pass
+
+
+class _FloatAlias(type(Fraction)):
+    def __eq__(cls, other):
+        return other is float or cls is other
+
+
+class _FractionWithFloatAlias(Fraction, metaclass=_FloatAlias):
+    pass
+
+
+@pytest.mark.parametrize("grade_type", [Fraction, _FractionSubclass, _FractionWithFloatAlias])
+@pytest.mark.parametrize("rounded_bound", ["certain", "possible"])
+def test_program_trial_requires_builtin_grade(tmp_path, rounded_bound, grade_type):
+    workspace = JournaledCorpusWorkspace(tmp_path / "precise-program.sqlite", _frame(), create=True)
+    rounded = grade_type(2 ** 54 + 1, 2 ** 55)
+    lower = rounded if rounded_bound == "certain" else .5
+    upper = rounded if rounded_bound == "possible" else .75
+    target = CorpusProgramExpectation(CorpusProgramProbe((("extension", 1),)),
+                                      CorpusBindingRead(BindingProof(lower, frozenset({"sensor"})), upper))
+    with pytest.raises(ValueError, match="built-in floats or integers"):
+        workspace.begin_program_trial(workspace.snapshot(), _program_with_extension(), targets=(target,),
+                                      future_batches=1, work_limit=65536)
+    assert workspace.pending_program_trials(limit=1) == ()
+
+
+@pytest.mark.parametrize("role", ["target", "protected"])
+def test_program_trial_requires_builtin_node_names(tmp_path, role):
+    class NodeName(str):
+        pass
+
+    workspace = JournaledCorpusWorkspace(tmp_path / "named-program.sqlite", _frame(), create=True)
+    probe = CorpusProgramProbe(((NodeName("permit"), 0),))
+    targets = (CorpusProgramExpectation(probe, CorpusBindingRead(None, None)),) if role == "target" else (
+        _extension_target(),)
+    protected = (probe,) if role == "protected" else ()
+    with pytest.raises(ValueError, match="built-in strings"):
+        workspace.begin_program_trial(workspace.snapshot(), _program_with_extension(), targets=targets,
+                                      protected=protected, future_batches=1, work_limit=65536)
+    assert workspace.pending_program_trials(limit=1) == ()
+
+
+def test_frozen_program_trial_installs_on_future_sources_and_recovers_receipt(tmp_path, monkeypatch):
+    path = tmp_path / "prospective-program.sqlite"
+    writer = JournaledCorpusWorkspace(path, _frame(), create=True)
+    before = _write(writer, {"license": b"permit,1,0,1"})
+    assert writer.pending_program_trials(limit=1) == ()
+    program, targets = _program_with_extension(), [_extension_target()]
+    preview = writer.prepare_program(before, program).preview
+    assert preview.resolve_disjoint(targets[0].probe.addresses) == CorpusBindingRead(None, None)
+    trial = writer.begin_program_trial(
+        before, program, targets=targets, protected=(CorpusProgramProbe((("permit", 0),)),),
+        future_batches=2, work_limit=65536,
+    )
+    assert trial.status == "opened" and trial.observed_revision == before.revision == 1
+    program.clear()
+    targets.clear()
+    reader = JournaledCorpusWorkspace(path, _frame(_no_encoding))
+    assert reader.snapshot().revision == before.revision
+    assert reader.pending_program_trials(limit=1) == (trial,)
+    assert reader.pending_program_trials(limit=1, after=trial.trial_id) == ()
+    assert reader.finish_program_trial(trial.trial_id).status == "pending"
+
+    _write(writer, {"unrelated": b"permit,0,1,0.6"})
+    assert reader.finish_program_trial(trial.trial_id).status == "pending"
+    unchanged = _write(writer, {"unrelated": b"permit,0,1,0.6"})
+    assert unchanged.revision == 2
+    assert reader.finish_program_trial(trial.trial_id).status == "pending"
+    ready = _write(writer, {"sensor": b"inspection,0,1,0.8"})
+    rival = JournaledCorpusWorkspace(path, _frame(_no_encoding))
+    barrier = Barrier(2)
+    evaluate = corpus_binding_journal._check_program_trial
+
+    def concur(*args):
+        result = evaluate(*args)
+        barrier.wait(timeout=10)
+        return result
+
+    monkeypatch.setattr(corpus_binding_journal, "_check_program_trial", concur)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = [pool.submit(handle.finish_program_trial, trial.trial_id) for handle in (reader, rival)]
+        published, repeated = [future.result(timeout=10) for future in futures]
+    assert repeated == published
+    assert published.status == "published" and published.observed_revision == 3 and published.published_revision == 4
+    assert reader.pending_program_trials(limit=1) == ()
+    revised = reader.snapshot()
+    target = _extension_target()
+    assert revised.memory.resolve_disjoint(target.probe.addresses) == target.expected
+    assert revised.memory.resolve_disjoint(target.probe.addresses, without_sources=("sensor",)).is_exact
+    assert revised.memory.resolve_disjoint(target.probe.addresses, without_sources=("sensor",)).certain is None
+    assert revised.memory.source_digests == ready.memory.source_digests
+    assert "extension" not in ready.memory._certain._dependents
+    assert "extension" not in before.memory._certain._dependents
+
+    fresh = JournaledCorpusWorkspace(path, _frame(_no_encoding))
+    assert fresh.finish_program_trial(trial.trial_id) == published
+    assert fresh.snapshot().memory.resolve_disjoint(target.probe.addresses) == target.expected
+    assert fresh.snapshot().revision == published.published_revision
+    _write(writer, {"sensor": None})
+    assert fresh.finish_program_trial(trial.trial_id) == published
+    assert fresh.snapshot().memory.resolve_disjoint(target.probe.addresses) == CorpusBindingRead(None, None)
+
+
+@pytest.mark.parametrize("decision", [
+    "protected_changed", "target_mismatch", "no_target_gain", "capacity", "new_absence",
+])
+def test_program_trial_rejects_failed_checks_without_installation(tmp_path, decision):
+    path = tmp_path / "rejected-program.sqlite"
+    journal = JournaledCorpusWorkspace(path, _frame(), create=True)
+    base = _write(journal, {"license": b"permit,1,0,1", "present": b"inspection,1,0,0.7"})
+    gates, target, checks, limit = _program_with_extension(), _extension_target(), (), 65536
+    if decision == "protected_changed":
+        gates["release"] = BindingGate("or", ("inspection", "permit"))
+        checks = (CorpusProgramProbe((("release", 0),)),)
+    if decision in ("capacity", "no_target_gain"):
+        probe = CorpusProgramProbe((("permit", 0),))
+        target = CorpusProgramExpectation(probe, base.memory.resolve("permit", 0))
+        if decision == "capacity":
+            limit = 1
+    if decision == "new_absence":
+        target = CorpusProgramExpectation(CorpusProgramProbe((("extension", 1),)), CorpusBindingRead(None, None))
+    trial = journal.begin_program_trial(base, gates, targets=(target,), protected=checks,
+                                        future_batches=1, work_limit=limit)
+    if decision == "capacity":
+        cold_trial = journal.begin_program_trial(base, gates, targets=(target,), future_batches=1, work_limit=limit)
+    late = b"permit,0,1,0.8" if decision == "new_absence" else b"inspection,1,1,0.8"
+    ready = _write(journal, {"sensor": late})
+    if decision == "capacity":
+        warm = journal.remember(ready, "permit", 0)
+        assert warm.memory.resolve("permit", 0, work_limit=1) == target.expected
+    rejected = journal.finish_program_trial(trial.trial_id)
+    expected = "no_target_gain" if decision == "new_absence" else decision
+    assert rejected.status == expected and rejected.published_revision is None
+    assert journal.snapshot().revision == ready.revision
+    fresh = JournaledCorpusWorkspace(path, _frame(_no_encoding))
+    if decision == "capacity":
+        cold = fresh.finish_program_trial(cold_trial.trial_id)
+        assert (cold.status, cold.observed_revision) == (rejected.status, rejected.observed_revision)
+    assert fresh.finish_program_trial(trial.trial_id) == rejected
+    assert "extension" not in fresh.snapshot().memory._certain._dependents
+
+
+def test_program_trial_target_can_require_abstaining_from_a_stronger_incumbent(tmp_path):
+    path = tmp_path / "abstention-program.sqlite"
+
+    def encode(raw):
+        return [mention for line in raw.splitlines() for mention in _encode(line)]
+
+    original = {"release": BindingGate("and", ("inspection", "permit"))}
+    frame = _frame(encode).reprogram(original)
+    writer = JournaledCorpusWorkspace(path, frame, create=True)
+    base = _write(writer, {"report": b"inspection,1,0,0.9\npermit,1,0,0.9",
+                           "sensor": b"inspection,1,1,0.7"})
+    probe = CorpusProgramProbe((("release", 0),))
+    assert base.memory.resolve("release", 0) == CorpusBindingRead(BindingProof(.9, frozenset({"report"})), .9)
+    target = CorpusProgramExpectation(probe, CorpusBindingRead(None, .7))
+    candidate = {"release": BindingGate("disjoint_and", ("inspection", "permit"))}
+    options = dict(targets=(target,), future_batches=1, work_limit=65536)
+    protected = writer.begin_program_trial(base, candidate, protected=(probe,), **options)
+    explicitly_changed = writer.begin_program_trial(base, candidate, **options)
+    assert writer.pending_program_trials(limit=1) == (protected,)
+    assert writer.pending_program_trials(limit=1, after=protected.trial_id) == (explicitly_changed,)
+    _write(writer, {"other": b"permit,0,1,1"})
+    assert writer.finish_program_trial(protected.trial_id).status == "protected_changed"
+    accepted = writer.finish_program_trial(explicitly_changed.trial_id)
+    assert accepted.status == "published"
+    assert writer.snapshot().memory.resolve("release", 0) == target.expected
+
+
+def test_program_trial_refuses_a_tip_change_during_the_check(tmp_path, monkeypatch):
+    path = tmp_path / "racing-program.sqlite"
+    writer = JournaledCorpusWorkspace(path, _frame(), create=True)
+    base = _write(writer, {"license": b"permit,1,0,1"})
+    trial = writer.begin_program_trial(base, _program_with_extension(), targets=(_extension_target(),),
+                                       future_batches=1, work_limit=65536)
+    _write(writer, {"sensor": b"inspection,0,1,0.8"})
+    follower = JournaledCorpusWorkspace(path, _frame(_no_encoding))
+    evaluate = corpus_binding_journal._check_program_trial
+
+    def check_and_edit(*args):
+        result = evaluate(*args)
+        assert result == "published"
+        _write(writer, {"newer": b"permit,0,1,0.7"})
+        return result
+
+    monkeypatch.setattr(corpus_binding_journal, "_check_program_trial", check_and_edit)
+    with pytest.raises(StaleCorpusRevision, match="while checking trial"):
+        follower.finish_program_trial(trial.trial_id)
+    result = follower.finish_program_trial(trial.trial_id)
+    assert result.status == "horizon_passed"
+    assert follower.snapshot().revision == 3
+    assert "extension" not in follower.snapshot().memory._certain._dependents
+
+
+def test_program_trial_keeps_a_concurrent_handle_local_proof(tmp_path, monkeypatch):
+    path = tmp_path / "retained-during-program.sqlite"
+    journal = JournaledCorpusWorkspace(path, _frame(), create=True)
+    base = _write(journal, {"license": b"permit,1,0,1"})
+    trial = journal.begin_program_trial(base, _program_with_extension(), targets=(_extension_target(),),
+                                        future_batches=1, work_limit=65536)
+    ready = _write(journal, {"sensor": b"inspection,0,1,0.8"})
+    evaluate = corpus_binding_journal._check_program_trial
+
+    def check_and_remember(*args):
+        result = evaluate(*args)
+        retained = journal.remember(ready, "permit", 0)
+        assert retained is not ready and retained.revision == ready.revision
+        return result
+
+    monkeypatch.setattr(corpus_binding_journal, "_check_program_trial", check_and_remember)
+    result = journal.finish_program_trial(trial.trial_id)
+    assert result.status == "published"
+    installed = journal.snapshot()
+    assert installed.memory.resolve("permit", 0, work_limit=1) == ready.memory.resolve("permit", 0)
+
+
+def test_program_trial_detects_competing_wiring_even_after_rollback(tmp_path):
+    path = tmp_path / "competing-program.sqlite"
+    journal = JournaledCorpusWorkspace(path, _frame(), create=True)
+    base = journal.snapshot()
+    trial = journal.begin_program_trial(base, _program_with_extension(), targets=(_extension_target(),),
+                                        future_batches=2, work_limit=65536)
+    other = journal.publish_program(journal.prepare_program(base, {}))
+    restored = journal.publish_program(journal.prepare_program(other, dict(base.memory._certain._gates)))
+    fresh = JournaledCorpusWorkspace(path, _frame(_no_encoding))
+    outcome = fresh.finish_program_trial(trial.trial_id)
+    assert outcome.status == "competing_program" and outcome.published_revision is None
+    assert fresh.snapshot().revision == restored.revision
+
+
+def test_program_trial_append_and_receipt_rollback_together(tmp_path):
+    path = tmp_path / "atomic-program.sqlite"
+    journal = JournaledCorpusWorkspace(path, _frame(), create=True)
+    base = _write(journal, {"license": b"permit,1,0,1"})
+    trial = journal.begin_program_trial(base, _program_with_extension(), targets=(_extension_target(),),
+                                        future_batches=1, work_limit=65536)
+    ready = _write(journal, {"sensor": b"inspection,0,1,0.8"})
+    with closing(sqlite3.connect(path)) as db, db:
+        db.execute("""CREATE TRIGGER fail_program_trial BEFORE UPDATE ON corpus_program_trials
+                      BEGIN SELECT RAISE(ABORT, 'trial receipt unavailable'); END""")
+    with pytest.raises(sqlite3.IntegrityError, match="trial receipt unavailable"):
+        journal.finish_program_trial(trial.trial_id)
+    fresh = JournaledCorpusWorkspace(path, _frame(_no_encoding))
+    assert fresh.snapshot().revision == ready.revision
+    assert "extension" not in fresh.snapshot().memory._certain._dependents
+    with closing(sqlite3.connect(path)) as db, db:
+        assert db.execute("SELECT status FROM corpus_program_trials").fetchone() == (None,)
+        db.execute("DROP TRIGGER fail_program_trial")
+    receipt = fresh.finish_program_trial(trial.trial_id)
+    assert receipt.status == "published"
+    assert journal.finish_program_trial(trial.trial_id) == receipt
 
 
 def test_unchanged_or_cyclic_graph_events_are_rejected_even_with_valid_hash(tmp_path):

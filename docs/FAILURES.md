@@ -163,6 +163,10 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **Probing a broad dependency can cost more than building it, 25 November 2026.** Pointwise projection recovered the sparse route, but spent 786 units where full sets spent 585 on the same 192 candidates in a dense control. It also cost more in most of the supplied mixed graphs after charging for planning. Keep pointwise opt-in and test any automatic selection on future revision batches, including forecast errors, costs paid by maintenance workers, and changes in admission at the same allowance. [Projection contract](ARCHITECTURE.md#expanding-the-route-catalog-on-a-pinned-corpus)
 
+**A passing graph check can expire before publication, 25 November 2026.** In the prospective trial fixture a proof check passed, then another handle published a source edit before the graph could commit. The candidate stayed unpublished, and retry found the exact horizon had passed. Another fixture forced the receipt write to fail and rolled the graph event back with it. Validate the same tip used for proof checks and commit the decision with its graph. A later study should measure how often this gate rejects useful candidates under unrelated writes. [Trial controls](../experiments/memory/test_corpus_binding_journal.py)
+
+**Coercion can change a frozen check, 25 November 2026.** Static review found that a rational grade greater than 0.5 could round to 0.5 at registration. It also found that a custom string subclass could compare equal to one gate and serialize as another. Registration now checks built-in grade and identifier types before freezing them. [Trial controls](../experiments/memory/test_corpus_binding_journal.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

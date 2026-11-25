@@ -1,23 +1,48 @@
 """Durable source and program publication in a trusted local SQLite file."""
 
 from contextlib import closing
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from hashlib import sha256
 import json
+from operator import index
 from pathlib import Path
 import re
 import sqlite3
+from types import MappingProxyType
 from uuid import uuid4
 
 import numpy as np
 
-from experiments.memory.binding_memory import BindingGate
+from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _exclusions, _proof_work_limit
 from experiments.memory.corpus_bindings import (
-    CorpusBindingWorkspace, StaleCorpusRevision, _EncodedChange,
+    CorpusBindingRead, CorpusBindingWorkspace, StaleCorpusRevision, _EncodedChange,
 )
 
 
 _SURROGATE_PAIR = re.compile(r"[\ud800-\udbff][\udc00-\udfff]")
+
+
+@dataclass(frozen=True)
+class CorpusProgramProbe:
+    addresses: tuple[tuple[str, int], ...]
+    without_sources: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class CorpusProgramExpectation:
+    probe: CorpusProgramProbe
+    expected: CorpusBindingRead
+
+
+@dataclass(frozen=True)
+class CorpusProgramTrialResult:
+    trial_id: int
+    status: str
+    observed_revision: int
+
+    @property
+    def published_revision(self):
+        return self.observed_revision + 1 if self.status == "published" else None
 
 
 def _check_identifiers(names):
@@ -126,6 +151,96 @@ def _decode(payload, memory):
 
 def _event_digest(parent, revision, payload):
     return sha256(parent + str(revision).encode("ascii") + b"\x00" + payload).digest()
+
+
+def _has_program_trials(db):
+    table = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='corpus_program_trials'")
+    return table.fetchone() is not None
+
+
+def _trial_name(name):
+    if type(name) is not str or not name:
+        raise ValueError("trial identifiers must be nonempty built-in strings")
+    _check_identifiers((name,))
+    return name
+
+
+def _trial_sources(sources, *, limit=None):
+    if isinstance(sources, str):
+        raise ValueError("trial sources must contain source IDs")
+    return tuple(sorted(_exclusions((_trial_name(source) for source in sources), limit=limit)))
+
+
+def _trial_probe(memory, probe, work_limit):
+    if type(probe) is not CorpusProgramProbe:
+        raise ValueError("expected a corpus program probe")
+    roots = ((_trial_name(node), coordinate) for node, coordinate in probe.addresses)
+    addresses = memory._certain._joint_keys(roots, work_limit)
+    excluded = _trial_sources(probe.without_sources, limit=work_limit)
+    return addresses, excluded
+
+
+def _trial_grade(value):
+    grade_type = type(value)
+    if (grade_type is not float and grade_type is not int) or not 0 <= value <= 1:
+        raise ValueError("expected proof grades must be built-in floats or integers in [0, 1]")
+    return float(value)
+
+
+def _trial_expectation(memory, expectation, work_limit):
+    if type(expectation) is not CorpusProgramExpectation or type(expectation.expected) is not CorpusBindingRead:
+        raise ValueError("expected a corpus program expectation")
+    read = expectation.expected
+    upper = None if read.possible_strength is None else _trial_grade(read.possible_strength)
+    lower = read.certain
+    witness = None
+    if lower is not None:
+        if type(lower) is not BindingProof or upper is None:
+            raise ValueError("invalid expected certain proof")
+        grade = _trial_grade(lower.strength)
+        if grade > upper:
+            raise ValueError("invalid expected certain proof")
+        origins = _trial_sources(lower.sources)
+        if not origins:
+            raise ValueError("an expected proof needs at least one origin")
+        witness = grade, origins
+    return _trial_probe(memory, expectation.probe, work_limit), witness, upper
+
+
+def _cold_trial_memory(memory):
+    if not memory._certain._retained and not memory._possible._retained:
+        return memory
+    empty = MappingProxyType({})
+    lower = replace(memory._certain, _retained=empty)
+    upper = lower if memory._certain is memory._possible else replace(memory._possible, _retained=empty)
+    return replace(memory, _certain=lower, _possible=upper)
+
+
+def _probe_program(memory, probe, work_limit):
+    addresses, excluded = probe
+    if any(node not in memory._certain._dependents for node, _ in addresses):
+        return None
+    return memory.resolve_disjoint(addresses, without_sources=excluded, work_limit=work_limit)
+
+
+def _check_program_trial(memory, preview, spec):
+    prior, candidate = _cold_trial_memory(memory), _cold_trial_memory(preview)
+    work_limit = spec["work_limit"]
+    gained_target = False
+    try:
+        for probe in spec["protected"]:
+            if _probe_program(candidate, probe, work_limit) != _probe_program(prior, probe, work_limit):
+                return "protected_changed"
+        for probe, witness, upper in spec["targets"]:
+            expected = CorpusBindingRead(None if witness is None else BindingProof(witness[0], frozenset(witness[1])),
+                                         upper)
+            if _probe_program(candidate, probe, work_limit) != expected:
+                return "target_mismatch"
+            incumbent = _probe_program(prior, probe, work_limit)
+            gained_target |= (incumbent != expected if incumbent is not None else upper is not None)
+    except BindingCapacityError:
+        return "capacity"
+    return "published" if gained_target else "no_target_gain"
 
 
 class JournaledCorpusWorkspace(CorpusBindingWorkspace):
@@ -245,6 +360,142 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             db.commit()
             self._tip, self._digest = revised, digest
             return revised
+
+    def begin_program_trial(self, base, gates, *, targets, future_batches, work_limit, protected=()):
+        """Freeze a candidate and its checks before the next source batches arrive."""
+        future_batches, work_limit = index(future_batches), _proof_work_limit(work_limit)
+        if future_batches < 1:
+            raise ValueError("a corpus program trial needs a positive source horizon")
+        proposal = self.prepare_program(base, gates)
+        if proposal.preview is base.memory:
+            raise ValueError("a corpus program trial needs different wiring")
+        targets = tuple(_trial_expectation(proposal.preview, target, work_limit) for target in targets)
+        if not targets:
+            raise ValueError("a corpus program trial needs at least one target")
+        protected = tuple(_trial_probe(base.memory, probe, work_limit) for probe in protected)
+        candidate_nodes = proposal.preview._certain._dependents
+        if any(node not in candidate_nodes for addresses, _ in protected for node, _ in addresses):
+            raise ValueError("a corpus program trial cannot remove a protected node")
+        program = _encode_program(proposal.preview._certain._gates)
+        spec = _json(dict(version=1, targets=targets, protected=protected,
+                          future_batches=future_batches, work_limit=work_limit))
+        with self._lock, closing(self._connect()) as db:
+            db.execute("BEGIN IMMEDIATE")
+            tip, digest = self._replay(self._read_suffix(db))
+            if tip is not base:
+                raise StaleCorpusRevision("corpus workspace tip changed")
+            db.execute("""CREATE TABLE IF NOT EXISTS corpus_program_trials (
+                trial_id INTEGER PRIMARY KEY,
+                opened_revision INTEGER NOT NULL, opened_digest BLOB NOT NULL,
+                opened_program INTEGER NOT NULL, program BLOB NOT NULL, spec BLOB NOT NULL,
+                status TEXT, observed_revision INTEGER,
+                CHECK ((status IS NULL) = (observed_revision IS NULL))
+            )""")
+            db.execute("""CREATE INDEX IF NOT EXISTS corpus_program_pending
+                ON corpus_program_trials (trial_id) WHERE status IS NULL""")
+            trial_id = db.execute("""INSERT INTO corpus_program_trials
+                (opened_revision, opened_digest, opened_program, program, spec)
+                VALUES (?, ?, ?, ?, ?)""",
+                (tip.revision, digest, tip._program_revision, program, spec),
+            ).lastrowid
+            db.commit()
+        return CorpusProgramTrialResult(trial_id, "opened", base.revision)
+
+    def pending_program_trials(self, *, limit, after=0):
+        """List unresolved drafts in trial ID order for another worker to check."""
+        limit, after = index(limit), index(after)
+        if limit < 1 or after < 0:
+            raise ValueError("a corpus program trial listing needs a positive limit and nonnegative cursor")
+        with closing(self._connect()) as db:
+            db.execute("BEGIN")
+            if self._read_root(db) != self._stream:
+                raise ValueError("corpus journal stream changed")
+            if not _has_program_trials(db):
+                return ()
+            return tuple(CorpusProgramTrialResult(trial_id, "opened", revision) for trial_id, revision in db.execute(
+                """SELECT trial_id, opened_revision FROM corpus_program_trials
+                   WHERE trial_id > ? AND status IS NULL ORDER BY trial_id LIMIT ?""",
+                (after, limit),
+            ))
+
+    def _read_program_trial(self, db, trial_id, revision):
+        if not _has_program_trials(db):
+            raise ValueError("unknown corpus program trial")
+        row = db.execute("""SELECT opened_revision, opened_digest, opened_program, program,
+            spec, status, observed_revision FROM corpus_program_trials WHERE trial_id = ?""",
+            (trial_id,),
+        ).fetchone()
+        if row is None:
+            raise ValueError("unknown corpus program trial")
+        opened, digest, program_revision, program, spec, status, observed = row
+        pinned = (db.execute("SELECT digest FROM corpus_events WHERE revision = ?", (opened,)).fetchone()
+                  if opened else (sha256(self._frame + self._stream).digest(),))
+        if pinned != (digest,) or opened > revision:
+            raise ValueError("corpus program trial lost its opening revision")
+        outcome = None
+        if status is not None:
+            outcome = CorpusProgramTrialResult(trial_id, status, observed)
+            if not opened <= observed <= revision:
+                raise ValueError("corpus program trial lost its checked revision")
+            if outcome.published_revision is not None:
+                published = db.execute("SELECT payload FROM corpus_events WHERE revision = ?",
+                                       (outcome.published_revision,)).fetchone()
+                if published != (program,) or outcome.published_revision > revision:
+                    raise ValueError("corpus program trial lost its published event")
+        return opened, program_revision, program, spec, outcome
+
+    def finish_program_trial(self, trial_id):
+        """Check the frozen rewrite on its exact later source pin and publish atomically."""
+        trial_id = index(trial_id)
+        if trial_id < 1:
+            raise ValueError("unknown corpus program trial")
+        with self._lock, closing(self._connect()) as db:
+            db.execute("BEGIN")
+            suffix = self._read_suffix(db)
+            revision = suffix[-1][0] if suffix else self._tip.revision
+            opened, program_revision, program, frozen, outcome = self._read_program_trial(db, trial_id, revision)
+            db.commit()
+            base, digest = self._replay(suffix)
+            self._tip, self._digest = base, digest
+        if outcome is not None:
+            return outcome
+
+        checked_digest = digest
+        spec = json.loads(frozen)
+        if spec["version"] != 1:
+            raise ValueError("unknown corpus program trial version")
+        steps = base.revision - opened
+        proposal = None
+        if base._program_revision != program_revision:
+            status = "competing_program"
+        elif steps < spec["future_batches"]:
+            return CorpusProgramTrialResult(trial_id, "pending", base.revision)
+        elif steps > spec["future_batches"]:
+            status = "horizon_passed"
+        else:
+            proposal = self.prepare_program(base, _decode_program(program))
+            status = _check_program_trial(base.memory, proposal.preview, spec)
+
+        with self._lock, closing(self._connect()) as db:
+            db.execute("BEGIN IMMEDIATE")
+            tip, digest = self._replay(self._read_suffix(db))
+            _, _, _, _, outcome = self._read_program_trial(db, trial_id, tip.revision)
+            if outcome is None:
+                if tip.revision != base.revision or digest != checked_digest:
+                    raise StaleCorpusRevision("corpus workspace tip changed while checking trial")
+                if status == "published":
+                    # A handle-local proof promotion can replace the pin without touching the durable revision.
+                    preview = proposal.preview
+                    if tip is not base:
+                        preview = tip.memory.reprogram(dict(preview._certain._gates))
+                    tip = self._replace_program(tip, preview)
+                    digest = self._append(db, digest, tip.revision, program)
+                db.execute("""UPDATE corpus_program_trials SET status = ?, observed_revision = ?
+                    WHERE trial_id = ?""", (status, base.revision, trial_id))
+                outcome = CorpusProgramTrialResult(trial_id, status, base.revision)
+            db.commit()
+            self._tip, self._digest = tip, digest
+            return outcome
 
     def _append(self, db, parent, revision, payload):
         digest = _event_digest(parent, revision, payload)
