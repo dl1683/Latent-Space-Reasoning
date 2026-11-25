@@ -324,3 +324,41 @@ def test_retry_guard_recovers_affine_refusal_without_changing_replay(tmp_path):
         assert db.execute("SELECT kind, payload FROM relative_events ORDER BY number").fetchall() == [
             ("merge_lazy", b"[0,1]"), ("split_region", b"[0]"),
         ]
+
+
+def test_structure_round_publishes_only_starting_layout_and_fences_stale_commit(tmp_path, monkeypatch):
+    from experiments.memory.test_relative_workspace import _STRUCTURE_CAPS, _structure_workload
+
+    path = tmp_path / "worker-structure.sqlite"
+    journal, observer = _open(path, create=True), _open(path)
+    _, sources = _root()
+    base = journal.snapshot()
+    stay, result = journal.maintain_structure(base, _structure_workload(6, 1), **_STRUCTURE_CAPS)
+    assert stay is base and result.change is None
+    fused, result = journal.maintain_structure(base, _structure_workload(6, 6), **_STRUCTURE_CAPS)
+    assert fused.number == 1 and result.change == ("merge_lazy", (0, 1))
+    assert observer.snapshot().digest == fused.digest and fused.snapshot._sources == sources
+    _assert_values(fused, sources)
+
+    commit = journal._commit
+
+    def publish_before_split(parent, revised, kind, payload):
+        assert kind == "split_region"
+        observer.revise(observer.snapshot(), _LATE)
+        return commit(parent, revised, kind, payload)
+
+    forecast = _structure_workload(1, 10, (0, 2))
+    with monkeypatch.context() as race:
+        race.setattr(journal, "_commit", publish_before_split)
+        with pytest.raises(StaleRelativeRevision, match="before publication"):
+            journal.maintain_structure(fused, forecast, **_STRUCTURE_CAPS)
+    changed = journal.snapshot()
+    assert changed.number == 2 and changed.snapshot._regions[0].lazy_readout
+    split, decision = journal.maintain_structure(changed, forecast, **_STRUCTURE_CAPS)
+    assert split.number == 3 and decision.change == ("split_region", (0,))
+    _assert_values(split, sources | _LATE)
+    assert _open(path).snapshot().digest == split.digest
+    with closing(sqlite3.connect(path)) as db:
+        assert db.execute("SELECT kind FROM relative_events ORDER BY number").fetchall() == [
+            ("merge_lazy",), ("sources",), ("split_region",),
+        ]

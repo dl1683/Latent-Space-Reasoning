@@ -196,6 +196,21 @@ class JournaledRelativeHierarchyWorkspace:
         head = self._commit(base, result.snapshot, "layout", payload)
         return head, result
 
+    def maintain_structure(self, base, workload, *, max_candidates, max_replay_batches, max_operator_entries,
+                           max_symbolic_ports, max_input_items, protected=(), tolerance=1e-10):
+        """Publish one forecast-selected starting structure and return its replay receipt."""
+        self._require_current(base)
+        workspace = RelativeHierarchyWorkspace(base.snapshot)
+        with np.errstate(**self._error_policy):
+            result = workspace.maintain_structure(
+                base.snapshot, workload, max_candidates=max_candidates, max_replay_batches=max_replay_batches,
+                max_operator_entries=max_operator_entries, max_symbolic_ports=max_symbolic_ports,
+                max_input_items=max_input_items, protected=protected, tolerance=tolerance,
+            )
+        kind, labels = result.change if result.change is not None else ("", ())
+        payload = _json({"order": labels} if kind == "layout" else labels)
+        return self._commit(base, result.snapshot, kind, payload), result
+
     def compact(self, base, *, max_regions=1, protected_cells=(), tolerance=1e-10,
                 value_first=False, retry_failed=False):
         """Retire unused ports while preserving the shared revision history."""

@@ -167,7 +167,7 @@ def _stored_readout(region, cell, path=None):
     return region, region.readout[region.positions[cell] - region.interior_size]
 
 
-def _region_readout_row(region, cell):
+def _region_readout_row(region, cell, *, work=None):
     path = []
     region, row = _stored_readout(region, cell, path)
     if not path:
@@ -184,6 +184,8 @@ def _region_readout_row(region, cell):
                     lifted += weight * parent.readout[column]
                 else:
                     lifted[column] += weight
+                if work is not None:
+                    work[0] += len(lifted) if column < 0 else 1
             row, region = lifted, parent
     return row
 
@@ -750,7 +752,7 @@ class RelativeHierarchySnapshot:
         component = region.components[cell]
         return component in region.anchored or component in self._supported_ports
 
-    def _readout(self, cell):
+    def _readout(self, cell, *, work=None):
         cell = LatentField._checked_cell(cell, len(self._owner._membership))
         if not self._is_supported(cell):
             return None
@@ -758,7 +760,8 @@ class RelativeHierarchySnapshot:
         component = region.components[cell]
         if cell in self._port_positions:
             return (cell,), None
-        coeffs = _region_readout_row(region, cell)
+        coeffs = (_region_readout_row(region, cell) if work is None else
+                  _region_readout_row(region, cell, work=work))
         if self._elimination is None:
             return region.ports, coeffs
         needed = [column for column, port in enumerate(region.ports)
@@ -864,16 +867,18 @@ class RelativeHierarchySnapshot:
                 values[cell] = alternate[cell]
         return tuple(None if cell is None else values[cell] for cell in targets)
 
-    def _read_batch(self, cells):
+    def _read_batch(self, cells, *, work=None):
         plans, by_cell = [], {}
         for cell in map(index, cells):
             if cell not in by_cell:
-                by_cell[cell] = self._readout(cell)
+                by_cell[cell] = self._readout(cell) if work is None else self._readout(cell, work=work)
             plans.append(by_cell[cell])
         values = None
         if self._elimination is not None:
             requested = dict.fromkeys(port for plan in plans if plan is not None for port in plan[0])
             values = self._read_ports(requested)
+            if work is not None:
+                work[0] += sum(len(self._elimination.steps[port].readout) for port in values)
         reads = []
         for plan in plans:
             if plan is None:
@@ -885,6 +890,8 @@ class RelativeHierarchySnapshot:
                 inputs = self._values[start:start + len(ports)]
             else:
                 inputs = [values[port] for port in ports]
+            if work is not None:
+                work[0] += 1 if coeffs is None else len(coeffs)
             if coeffs is None:
                 reads.append(float(inputs[0]))
                 continue

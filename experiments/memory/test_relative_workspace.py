@@ -187,3 +187,96 @@ def test_generated_maintenance_fences_a_source_revision_during_symbolic_search(m
                                      max_candidates=2, max_symbolic_ports=10)
     assert workspace.snapshot().elimination_order == base.elimination_order
     assert workspace.snapshot().read(0) != base.read(0)
+
+
+def _structure_workload(cell, count, queries=(16, 17)):
+    return tuple(({f"row-{cell}": RelativeObservation(cell, 0.7 if i % 2 == 0 else -0.3, source=cell - 1)}, queries)
+                 for i in range(count))
+
+
+_STRUCTURE_CAPS = dict(max_candidates=9, max_replay_batches=12, max_operator_entries=220,
+                       max_symbolic_ports=30, max_input_items=64)
+
+
+def test_structure_worker_pays_conversion_then_reverses_merge_after_forecast_changes():
+    _, base, sources = _chain()
+    workspace = RelativeHierarchyWorkspace(base)
+    short = workspace.maintain_structure(base, _structure_workload(6, 1), **_STRUCTURE_CAPS)
+    assert short.snapshot is workspace.snapshot() is base and short.change is None
+    def forecast_reusing_a_buffer():
+        buffer = {}
+        for edits, queries in _structure_workload(6, 6):
+            buffer.update(edits)
+            yield buffer, queries
+
+    first = workspace.maintain_structure(base, forecast_reusing_a_buffer(), protected=(0, 17), **_STRUCTURE_CAPS)
+    assert first.change == ("merge_lazy", (0, 1))
+    assert first.baseline_work.units == 492 and first.selected_work.units == 451
+    assert first.conversion_units == 217 and first.selected_work.peak_operator_entries == 95
+    assert first.snapshot._sources is base._sources
+    assert first.snapshot._regions[0].lazy_readout
+
+    def pairs_reusing_a_buffer(edits):
+        pair = []
+        for name, row in (*edits.items(), ("anchor", sources["anchor"])):
+            pair[:] = [name, row]
+            yield pair
+
+    pair_forecast = ((pairs_reusing_a_buffer(edits), queries) for edits, queries in _structure_workload(6, 6))
+    from_pairs = RelativeHierarchyWorkspace(base).maintain_structure(base, pair_forecast, **_STRUCTURE_CAPS)
+    assert from_pairs.change == first.change and from_pairs.selected_work == first.selected_work
+
+    second = workspace.maintain_structure(first.snapshot, _structure_workload(1, 10, (0, 2)),
+                                         protected=(0, 17), **_STRUCTURE_CAPS)
+    assert second.change == ("split_region", (0,))
+    assert second.baseline_work.units == 2070 and second.selected_work.units == 1416
+    assert second.conversion_units == 176 and second.snapshot._sources is base._sources
+    assert tuple(sorted(map(tuple, second.snapshot._owner._regions))) == tuple(base._owner._regions)
+    changed = workspace.revise(second.snapshot, _LATE_CHANGE)
+    dense = solve_relative_direct(18, sources | _LATE_CHANGE, ridge=_RIDGE)
+    assert changed.read_many(_ORDER) == pytest.approx(dense, abs=1e-12, rel=0)
+
+
+def test_structure_worker_can_publish_order_instead_of_merge():
+    _, base, _ = _chain()
+    result = RelativeHierarchyWorkspace(base).maintain_structure(
+        base, _structure_workload(15, 6), **_STRUCTURE_CAPS,
+    )
+    assert result.change[0] == "layout" and result.snapshot.elimination_order == tuple(result.change[1])
+    assert result.snapshot._regions == base._regions and result.snapshot._sources is base._sources
+    assert result.baseline_work.units == 1194 and result.selected_work.units == 326
+    assert result.considered > 1
+
+
+def test_structure_worker_caps_replay_and_declines_oversize_or_drifting_candidates(monkeypatch):
+    field, base, _ = _chain()
+    workspace = RelativeHierarchyWorkspace(base)
+    forecast = _structure_workload(6, 6)
+
+    def too_long():
+        yield forecast[0]
+        yield forecast[1]
+        pytest.fail("consumed past the replay-cap sentinel")
+
+    with pytest.raises(ValueError, match="outside the replay batch cap"):
+        workspace.maintain_structure(base, too_long(), **(_STRUCTURE_CAPS | {"max_replay_batches": 1}))
+    with pytest.raises(ValueError, match="exceeds the input item cap"):
+        workspace.maintain_structure(base, forecast, **(_STRUCTURE_CAPS | {"max_input_items": 2}))
+    edits_only = tuple((edits, ()) for edits, _ in forecast)
+    no_read = workspace.maintain_structure(base, edits_only, **_STRUCTURE_CAPS)
+    assert no_read.considered == 0 and no_read.snapshot is base
+    economical = _STRUCTURE_CAPS | {"max_candidates": 1, "max_operator_entries": 94}
+    rejected = workspace.maintain_structure(base, forecast, **economical)
+    assert rejected.considered == 1 and rejected.snapshot is base
+
+    merge = field.merge_regions
+
+    def drop_support(snapshot, *args, **kwargs):
+        return replace(merge(snapshot, *args, **kwargs), _supported_ports=frozenset())
+
+    with monkeypatch.context() as injected:
+        injected.setattr(field, "merge_regions", drop_support)
+        result = workspace.maintain_structure(
+            base, forecast, protected=(17,), **(_STRUCTURE_CAPS | {"max_candidates": 1}),
+        )
+    assert result.considered == 1 and result.change is None and workspace.snapshot() is base
