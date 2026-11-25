@@ -3,6 +3,7 @@
 from contextlib import closing
 from dataclasses import dataclass
 from hashlib import sha256
+from itertools import islice
 import json
 from math import isfinite
 from operator import index
@@ -15,7 +16,12 @@ import numpy as np
 from experiments.memory.feedback_journal import _event_digest
 from experiments.memory.relative_hierarchy import RelativeHierarchySnapshot
 from experiments.memory.relative_observations import RelativeObservation
-from experiments.memory.relative_workspace import RelativeHierarchyWorkspace, _agrees
+from experiments.memory.relative_workspace import (
+    RelativeHierarchyWorkspace,
+    RelativeStructureWork,
+    _agrees,
+    _check_structure_forecast,
+)
 
 
 def _json(value):
@@ -36,6 +42,34 @@ def _decode_sources(rows):
         )
         for name, data in rows
     }
+
+
+def _rebase_source_batches(snapshot, batches, queries):
+    presence = {}
+    replay = []
+    for edits in batches:
+        changes = {}
+        for name, replacement in edits.items():
+            if replacement is not None or presence.get(name, name in snapshot._sources):
+                changes[name] = replacement
+            presence[name] = replacement is not None
+        replay.append((changes, queries))
+    return tuple(replay)
+
+
+@dataclass(frozen=True, eq=False)
+class RelativeHistoryDecision:
+    decision: str
+    base_revision: int
+    base_digest: bytes
+    forecast_revisions: tuple[int, ...] = ()
+    check_revisions: tuple[int, ...] = ()
+    proposal: tuple[str, tuple[int, ...]] | None = None
+    forecast_baseline: RelativeStructureWork | None = None
+    forecast_candidate: RelativeStructureWork | None = None
+    check_baseline: RelativeStructureWork | None = None
+    check_candidate: RelativeStructureWork | None = None
+    omitted_deletions: tuple[int, int] = (0, 0)
 
 
 @dataclass(frozen=True, eq=False)
@@ -207,9 +241,120 @@ class JournaledRelativeHierarchyWorkspace:
                 max_operator_entries=max_operator_entries, max_symbolic_ports=max_symbolic_ports,
                 max_input_items=max_input_items, protected=protected, tolerance=tolerance,
             )
-        kind, labels = result.change if result.change is not None else ("", ())
+        return self._publish_structure_result(base, result), result
+
+    def _publish_structure_result(self, base, result):
+        if result is None or result.change is None:
+            return self._commit(base, base.snapshot, "", b"")
+        kind, labels = result.change
         payload = _json({"order": labels} if kind == "layout" else labels)
-        return self._commit(base, result.snapshot, kind, payload), result
+        return self._commit(base, result.snapshot, kind, payload)
+
+    def _recent_source_events(self, base, max_events, max_bytes):
+        first = max(0, base.number - max_events)
+        with closing(self._connect()) as db:
+            db.execute("BEGIN")
+            self._check_root(db)
+            tip = db.execute("SELECT number, digest FROM relative_events ORDER BY number DESC LIMIT 1").fetchone()
+            if (tip or (0, self._root)) != (base.number, base.digest):
+                raise StaleRelativeRevision("relative journal changed before reading maintenance history")
+            digest = self._root
+            if first:
+                predecessor = db.execute("SELECT digest FROM relative_events WHERE number = ?", (first,)).fetchone()
+                if predecessor is None:
+                    raise ValueError("relative maintenance history is missing its predecessor")
+                digest, = predecessor
+            byte_count, = db.execute("""
+                SELECT coalesce(sum(length(payload)), 0) FROM relative_events
+                WHERE number > ? AND number <= ?
+            """, (first, base.number)).fetchone()
+            if byte_count > max_bytes:
+                raise ValueError("relative maintenance history exceeds the payload byte cap")
+            number = first
+            sources = []
+            for revision, kind, payload, expected in db.execute("""
+                SELECT number, kind, payload, digest FROM relative_events
+                WHERE number > ? AND number <= ? ORDER BY number
+            """, (first, base.number)):
+                if revision != number + 1 or expected != _event_digest(digest, revision, kind, None, payload):
+                    raise ValueError("invalid relative maintenance history")
+                number, digest = revision, expected
+                if kind == "sources":
+                    sources.append((number, payload))
+            if (number, digest) != (base.number, base.digest):
+                raise ValueError("relative maintenance history does not reach the pinned tip")
+            return tuple(sources)
+
+    def maintain_structure_from_history(
+        self, base, queries, *, window_batches, max_history_events, max_history_bytes, max_candidates,
+        max_operator_entries, max_symbolic_ports, max_input_items, protected=(), tolerance=1e-10,
+    ):
+        """Forecast from older source events and require the same proposal to pass the newer window."""
+        (window_batches, max_history_events, max_history_bytes, max_candidates, max_operator_entries,
+         max_symbolic_ports, max_input_items) = map(index, (
+            window_batches, max_history_events, max_history_bytes, max_candidates, max_operator_entries,
+            max_symbolic_ports, max_input_items,
+        ))
+        tolerance = float(tolerance)
+        if (min(window_batches, max_history_bytes, max_candidates, max_operator_entries, max_symbolic_ports,
+                max_input_items) < 1 or max_history_events < 2 * window_batches
+                or not isfinite(tolerance) or tolerance < 0):
+            raise ValueError("history maintenance needs positive caps and room for two source windows")
+        self._require_current(base)
+        protected = tuple(map(index, islice(protected, max_input_items + 1)))
+        remaining = max_input_items - len(protected)
+        if remaining < 0:
+            raise ValueError("relative maintenance history exceeds the input item cap")
+        query_cap = remaining // (2 * window_batches)
+        queries = tuple(map(index, islice(queries, query_cap + 1)))
+        if len(queries) > query_cap:
+            raise ValueError("relative maintenance history exceeds the input item cap")
+        if not queries or any(not 0 <= cell < base.snapshot._owner._cells for cell in (*queries, *protected)):
+            raise ValueError("history maintenance needs valid read cell indices")
+        remaining -= 2 * window_batches * len(queries)
+
+        source_events = self._recent_source_events(base, max_history_events, max_history_bytes)
+        if len(source_events) < 2 * window_batches:
+            receipt = RelativeHistoryDecision("insufficient_history", base.number, base.digest)
+            return self._publish_structure_result(base, None), receipt
+        selected = source_events[-2 * window_batches:]
+        revisions = tuple(number for number, _ in selected)
+        batches = []
+        for _, payload in selected:
+            rows = json.loads(payload)
+            remaining -= len(rows)
+            if remaining < 0:
+                raise ValueError("relative maintenance history exceeds the input item cap")
+            batches.append(_decode_sources(rows))
+
+        older, newer = batches[:window_batches], batches[window_batches:]
+        forecast_workload = _rebase_source_batches(base.snapshot, older, queries)
+        check_workload = _rebase_source_batches(base.snapshot, newer, queries)
+        workspace = RelativeHierarchyWorkspace(base.snapshot)
+        with np.errstate(**self._error_policy):
+            forecast = workspace.maintain_structure(
+                base.snapshot, forecast_workload, max_candidates=max_candidates, max_replay_batches=window_batches,
+                max_operator_entries=max_operator_entries, max_symbolic_ports=max_symbolic_ports,
+                max_input_items=max_input_items, protected=protected, tolerance=tolerance,
+            )
+            decision, baseline, candidate = "forecast_kept", None, None
+            if forecast.change is not None:
+                decision, baseline, candidate = _check_structure_forecast(
+                    base.snapshot, forecast, check_workload,
+                    max_operator_entries=max_operator_entries, tolerance=tolerance,
+                )
+        omitted = (
+            sum(map(len, older)) - sum(len(edits) for edits, _ in forecast_workload),
+            sum(map(len, newer)) - sum(len(edits) for edits, _ in check_workload),
+        )
+        receipt = RelativeHistoryDecision(
+            decision=decision, base_revision=base.number, base_digest=base.digest,
+            forecast_revisions=revisions[:window_batches], check_revisions=revisions[window_batches:],
+            proposal=forecast.change, forecast_baseline=forecast.baseline_work,
+            forecast_candidate=forecast.selected_work, check_baseline=baseline, check_candidate=candidate,
+            omitted_deletions=omitted,
+        )
+        return self._publish_structure_result(base, forecast if decision == "published" else None), receipt
 
     def compact(self, base, *, max_regions=1, protected_cells=(), tolerance=1e-10,
                 value_first=False, retry_failed=False):

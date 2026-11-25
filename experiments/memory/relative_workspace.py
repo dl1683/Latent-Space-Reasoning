@@ -74,6 +74,23 @@ def _replay(snapshot, workload):
     return RelativeReplayWork(rebuilt, recovered, peak), tuple(answers)
 
 
+def _check_structure_forecast(base, proposal, workload, *, max_operator_entries, tolerance):
+    baseline, expected = _structure_replay(base, workload)
+    if all(value is None for value in expected):
+        return "check_unsupported", baseline, None
+    try:
+        candidate, actual = _structure_replay(
+            proposal.snapshot, workload, conversion=proposal.conversion_units, entry_cap=max_operator_entries,
+        )
+    except (FloatingPointError, ValueError, LinAlgError):
+        return "check_refused", baseline, None
+    if not _agrees(expected, actual, tolerance):
+        return "check_drift", baseline, candidate
+    if candidate.units >= baseline.units:
+        return "check_no_gain", baseline, candidate
+    return "published", baseline, candidate
+
+
 def _operator_inventory(snapshot):
     operators, pending = set(), list(snapshot._regions)
     while pending:

@@ -362,3 +362,117 @@ def test_structure_round_publishes_only_starting_layout_and_fences_stale_commit(
         assert db.execute("SELECT kind FROM relative_events ORDER BY number").fetchall() == [
             ("merge_lazy",), ("sources",), ("split_region",),
         ]
+
+
+_HISTORY_CAPS = dict(window_batches=6, max_history_events=24, max_history_bytes=5000, max_candidates=9,
+                     max_operator_entries=220, max_symbolic_ports=30, max_input_items=64)
+
+
+@pytest.mark.parametrize("shift", [False, True])
+def test_history_worker_publishes_a_stable_forecast_and_vetoes_shift(tmp_path, monkeypatch, shift):
+    from experiments.memory.relative_workspace import RelativeHierarchyWorkspace
+    from experiments.memory.test_relative_workspace import _structure_workload
+
+    path = tmp_path / "history-worker.sqlite"
+    observer, writer = _open(path, create=True), _open(path)
+    initial = observer.snapshot()
+    for edits, _ in _structure_workload(6, 6):
+        writer.revise(writer.snapshot(), edits)
+    fusion = writer.merge_regions(writer.snapshot(), 4, 5, retain_children=True, lazy_readout=True)
+    writer.split_region(fusion, 4)
+    for edits, _ in _structure_workload(1 if shift else 6, 6):
+        writer.revise(writer.snapshot(), edits)
+    base = observer.snapshot()
+    planning = []
+    original_plan = RelativeHierarchyWorkspace.maintain_structure
+
+    def watch(workspace, snapshot, workload, **options):
+        frozen = tuple(workload)
+        planning.append(tuple(tuple(edits) for edits, _ in frozen))
+        return original_plan(workspace, snapshot, frozen, **options)
+
+    monkeypatch.setattr(RelativeHierarchyWorkspace, "maintain_structure", watch)
+    head, receipt = observer.maintain_structure_from_history(base, iter((16, 17)), protected=(0, 17), **_HISTORY_CAPS)
+    assert planning == [(("row-6",),) * 6]
+    assert (receipt.base_revision, receipt.base_digest) == (base.number, base.digest)
+    assert receipt.omitted_deletions == (0, 0)
+    assert receipt.forecast_revisions == tuple(range(1, 7))
+    assert receipt.check_revisions == tuple(range(9, 15))
+    assert receipt.proposal == ("merge_lazy", (0, 1))
+    assert (receipt.forecast_baseline.units, receipt.forecast_candidate.units) == (492, 451)
+    assert head.snapshot._sources is base.snapshot._sources
+    reopened = _open(path).snapshot()
+    assert reopened.digest == head.digest == writer.snapshot().digest
+    assert initial.number == 0 and initial.snapshot._sources["row-6"] != head.snapshot._sources["row-6"]
+    if shift:
+        assert receipt.decision == "check_no_gain" and head is base
+        assert (receipt.check_baseline.units, receipt.check_candidate.units) == (858, 1531)
+    else:
+        assert receipt.decision == "published" and head.number == base.number + 1
+        assert (receipt.check_baseline.units, receipt.check_candidate.units) == (492, 451)
+        assert reopened.snapshot._regions[0].lazy_readout
+        with closing(sqlite3.connect(path)) as db:
+            assert db.execute("SELECT kind, payload FROM relative_events WHERE number = ?", (head.number,)).fetchone() == (
+                "merge_lazy", b"[0,1]",
+            )
+    _assert_values(reopened, base.snapshot._sources)
+
+
+def test_history_worker_fences_stale_publication_and_is_bounded(tmp_path, monkeypatch):
+    from experiments.memory.test_relative_workspace import _structure_workload
+
+    path = tmp_path / "history-fence.sqlite"
+    worker, writer = _open(path, create=True), _open(path)
+    base = worker.snapshot()
+    keep, receipt = worker.maintain_structure_from_history(base, (16,), **_HISTORY_CAPS)
+    assert keep is base and receipt.decision == "insufficient_history"
+    for edits, _ in _structure_workload(6, 12):
+        writer.revise(writer.snapshot(), edits)
+    tip = worker.snapshot()
+    for cap, limit, message in (
+        ("max_history_bytes", 1, "payload byte cap"),
+        ("max_input_items", 24, "input item cap"),
+    ):
+        with pytest.raises(ValueError, match=message):
+            worker.maintain_structure_from_history(tip, (16, 17), **(_HISTORY_CAPS | {cap: limit}))
+    assert worker.snapshot() is tip
+    commit = worker._commit
+
+    def compete(base, revised, kind, payload):
+        assert kind == "merge_lazy"
+        writer.revise(writer.snapshot(), _LATE)
+        return commit(base, revised, kind, payload)
+
+    with monkeypatch.context() as patcher:
+        patcher.setattr(worker, "_commit", compete)
+        with pytest.raises(StaleRelativeRevision, match="before publication"):
+            worker.maintain_structure_from_history(tip, (16, 17), **_HISTORY_CAPS)
+    raced = worker.snapshot()
+    assert raced.number == tip.number + 1 and raced.snapshot.membership == tip.snapshot.membership
+
+
+def test_history_worker_verifies_suffix_and_rebases_historical_deletions(tmp_path):
+    from experiments.memory.relative_journal import _rebase_source_batches
+
+    path = tmp_path / "history-custody.sqlite"
+    journal = _open(path, create=True)
+    point = journal.snapshot()
+    replacement = RelativeObservation(6, 0.8, source=5)
+    events = ({"row-6": None}, {"row-6": replacement}, {"row-6": None}, _LATE)
+    for edits in events:
+        point = journal.revise(point, edits)
+    cells = (0,)
+    assert _rebase_source_batches(point.snapshot, events[:3], cells) == (
+        ({}, cells), (events[1], cells), (events[2], cells),
+    )
+    # Start the verified suffix at revision 1, so its final digest is anchored at the cached tip.
+    recent_caps = _HISTORY_CAPS | {"window_batches": 1, "max_history_events": 3}
+    keep, receipt = journal.maintain_structure_from_history(point, cells, **recent_caps)
+    assert keep is point and receipt.forecast_revisions == (3,) and receipt.check_revisions == (4,)
+    assert receipt.omitted_deletions == (1, 0)
+    with closing(sqlite3.connect(path)) as db:
+        db.execute("UPDATE relative_events SET payload = ? WHERE number = 2", (b"[]",))
+        db.commit()
+    assert journal.snapshot() is point
+    with pytest.raises(ValueError, match="invalid relative maintenance history"):
+        journal.maintain_structure_from_history(point, cells, **recent_caps)
