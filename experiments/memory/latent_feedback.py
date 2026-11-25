@@ -27,16 +27,17 @@ def _real_array(value):
     return array
 
 
+def _source_mass_distribution(scores):
+    center = float(np.max(scores))
+    weights = np.exp(scores - center)
+    total = float(weights.sum())
+    return -center - log(total), weights / total
+
+
 def _source_mass_shift(offsets, contrasts, log_floor, limit):
     """Find the first feasible shift along the local log-mass gradient."""
-    def distribution(scores):
-        center = float(np.max(scores))
-        weights = np.exp(scores - center)
-        total = float(weights.sum())
-        return -center - log(total), weights / total
-
     with np.errstate(over="raise", invalid="raise", under="ignore"):
-        current, probabilities = distribution(offsets)
+        current, probabilities = _source_mass_distribution(offsets)
         if current >= log_floor:
             return np.zeros(contrasts.shape[1])
         direction = -(probabilities @ contrasts)
@@ -48,7 +49,7 @@ def _source_mass_shift(offsets, contrasts, log_floor, limit):
         slopes = contrasts @ direction
 
         def point(shift):
-            mass, weights = distribution(offsets + shift * slopes)
+            mass, weights = _source_mass_distribution(offsets + shift * slopes)
             return mass, -float(weights @ slopes)
 
         upper = limit
@@ -74,6 +75,59 @@ def _source_mass_shift(offsets, contrasts, log_floor, limit):
             else:
                 lower = middle
         return upper * direction
+
+
+def _source_mass_projection(offsets, contrasts, log_floor, limit):
+    """Seek a small feasible displacement by projecting onto two halfspaces."""
+    displacement = np.zeros(contrasts.shape[1])
+    slack = min(1e-10, -log_floor * 0.25)
+    with np.errstate(over="raise", invalid="raise", under="ignore", divide="raise"):
+        for _ in range(256):
+            mass, probabilities = _source_mass_distribution(offsets + contrasts @ displacement)
+            if mass >= log_floor:
+                return displacement
+            gradient = -(probabilities @ contrasts)
+            scale = float(np.max(np.abs(gradient)))
+            if not scale or not limit:
+                raise ValueError("source mass projection found no editable ascent direction")
+            normal = gradient / scale
+            length = float(np.linalg.norm(normal))
+            normal /= length
+            shortfall = log_floor - mass
+            padded_shortfall = shortfall + min(slack, 0.5 * shortfall)
+            gap = (padded_shortfall / scale) / length
+
+            # First project zero onto the new tangent halfspace alone.
+            tangent_offset = float(normal @ displacement) + gap
+            proposed = max(0.0, tangent_offset) * normal
+            radius = _frobenius(displacement)
+            if radius:
+                previous_normal = displacement / radius
+                if previous_normal @ proposed < radius:
+                    # Both boundaries are active. Move within the previous plane.
+                    tangent = normal - (previous_normal @ normal) * previous_normal
+                    tangent -= (previous_normal @ tangent) * previous_normal
+                    tangent_norm = _frobenius(tangent)
+                    if tangent_norm < 1e-12:
+                        raise ValueError("source mass projection has unresolved parallel constraints")
+                    proposed = displacement + (gap / tangent_norm) * (tangent / tangent_norm)
+
+            proposed_radius = _frobenius(proposed)
+            if not isfinite(proposed_radius):
+                raise ValueError("source mass projection is outside numerical range")
+            residual_tolerance = (32 * np.finfo(np.float64).eps
+                                  * max(radius, proposed_radius, abs(tangent_offset)))
+            if (normal @ proposed < tangent_offset - residual_tolerance
+                    or (radius and previous_normal @ proposed < radius - residual_tolerance)):
+                raise ValueError("source mass projection fails its halfspace residual check")
+            if proposed_radius > limit:
+                boundary = proposed * (limit / proposed_radius)
+                boundary_mass, _ = _source_mass_distribution(offsets + contrasts @ boundary)
+                if boundary_mass >= log_floor:
+                    return boundary
+                raise ValueError("source mass projection found no feasible shift within the norm budget")
+            displacement = proposed
+    raise ValueError("source mass projection exhausted its iteration budget")
 
 
 @dataclass(frozen=True, eq=False)
@@ -476,11 +530,12 @@ class FeedbackKernel:
         return candidate, replay, edit
 
     def program_observation_mass(self, state, step, slot, min_mass, *,
-                                 max_update_norm, atol=1e-8, protect=()):
+                                 max_update_norm, atol=1e-8, protect=(), search="directional"):
         """Fit and replay a floor on one source's share of the joint attention.
 
-        Search along the baseline projected-query gradient, under the installed
-        map's Frobenius update cap. A refusal can be specific to that direction.
+        Search along the baseline projected-query gradient or choose
+        search="multivariate" to use a bounded sequence of tangent projections.
+        Both honor the installed map's Frobenius update cap.
         Return the candidate kernel, target replay and weight edit.
         """
         self._require_state(state)
@@ -489,6 +544,8 @@ class FeedbackKernel:
             raise ValueError("source mass floor must be strictly between zero and one")
         if not isfinite(max_update_norm) or max_update_norm < 0:
             raise ValueError("max_update_norm must be finite and nonnegative")
+        if search not in ("directional", "multivariate"):
+            raise ValueError("source mass search must be directional or multivariate")
         keys, selected = self._source_mass_bank(state._memory, slot)
         baseline, references, anchors, prior, weight = self._route_program_inputs(state, step, protect)
         with np.errstate(over="raise", invalid="raise"):
@@ -506,7 +563,8 @@ class FeedbackKernel:
             limit = max_update_norm * free_norm
             if not isfinite(limit):
                 raise ValueError("source mass search bound is outside numerical range")
-            target_query = query + _source_mass_shift(offsets, contrasts, log(float(min_mass)), limit)
+            solve = _source_mass_projection if search == "multivariate" else _source_mass_shift
+            target_query = query + solve(offsets, contrasts, log(float(min_mass)), limit)
         candidate, replay, edit = self._fit_route_program(
             baseline, references, anchors, prior, weight, target_query, max_update_norm, atol,
         )

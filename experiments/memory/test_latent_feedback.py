@@ -434,6 +434,94 @@ def test_joint_mass_gradient_ray_refuses_a_feasible_off_ray_solution():
     assert np.linalg.norm([13, -3]) < 20
     _, mass = feasible._source_mass_step(feasible.start(seed, memory), 0)
     assert mass > 0.95
+    candidate, _, edit = kernel.program_observation_mass(
+        kernel.start(seed, memory), 1, 0, 0.8, max_update_norm=20, search="multivariate",
+    )
+    _, mass = candidate._source_mass_step(candidate.start(seed, memory), 0)
+    assert 0.8 <= mass < 0.800000001
+    assert edit.update_norm < 11.53 < np.linalg.norm([13, -3])
+
+
+def test_multivariate_source_mass_matches_symmetric_minimum_and_respects_the_cap():
+    kernel = FeedbackKernel(
+        query=np.zeros((2, 2)), carry=None, observation_key=np.eye(2),
+        observation_value=np.eye(2), feedback_key=np.zeros((2, 2)),
+        feedback_value=np.zeros((2, 2)), max_steps=1,
+    )
+    memory = kernel.prepare([[0, 0], [-1, 0], [0, -1]])
+    state = kernel.start([1, 0], memory)
+    candidate, _, edit = kernel.program_observation_mass(
+        state, 1, 0, 0.8, max_update_norm=3, search="multivariate",
+    )
+    np.testing.assert_allclose(edit.weight, [[np.log(8), np.log(8)], [0, 0]], atol=1e-8, rtol=0)
+    _, mass = candidate._source_mass_step(candidate.start(state.seed, memory), 0)
+    assert mass >= 0.8
+    with pytest.raises(ValueError, match="within the norm budget"):
+        kernel.program_observation_mass(state, 1, 0, 0.8, max_update_norm=2.9, search="multivariate")
+
+
+def test_multivariate_source_mass_can_approach_a_tight_interior_peak():
+    kernel = FeedbackKernel(
+        query=[[1]], carry=None, observation_key=[[1]], observation_value=[[1]],
+        feedback_key=[[0]], feedback_value=[[0]], max_steps=1,
+    )
+    memory = kernel.prepare([[0], [1], [-1]])
+    state = kernel.start([1], memory)
+    floor = 1 / 3 - 1e-14
+    candidate, _, edit = kernel.program_observation_mass(
+        state, 1, 0, floor, max_update_norm=2, search="multivariate",
+    )
+    _, mass = candidate._source_mass_step(candidate.start(state.seed, memory), 0)
+    assert mass >= floor and abs(edit.weight.item()) < 1e-6
+
+
+@pytest.mark.parametrize("tree", [False, True], ids=["dense", "tree"])
+def test_multivariate_source_mass_recovers_a_late_payload_after_directional_refusal(tree):
+    weights = _route_weights()
+    carry = np.zeros((4, 4))
+    carry[0, 1], carry[2, 3] = 1.0, 0.3
+    weights.update(carry=carry,
+                   query=[[0, 0], [-10 / np.tanh(1), 0], [0, 0.6], [0, 0]],
+                   observation_key=[[1, 0], [0, 4], [0, 0], [0, 0]],
+                   feedback_key=[[0, 0], [1, 0], [0, 0], [0, 0]])
+    kernel = TreeFeedbackKernel(depth=3, max_frontier=3, **weights) if tree else FeedbackKernel(**weights)
+    rows = [[0, 0, 0, 1], [-1, 0, 0, -0.5], [1, 1, 0, -0.5]]
+    memory = kernel.prepare(rows)
+    if tree:
+        memory = kernel.revise(memory, {0: None, 7: rows[0]})
+    slot = 7 if tree else 0
+    seed = [1, 0, 0, 0]
+    guard = [0, 0, 1, 0]
+    initial = kernel.start(seed, memory)
+    old = kernel.step(kernel.step(initial))
+    cap = 20
+    with pytest.raises(ValueError, match="no feasible shift on the bounded direction"):
+        kernel.program_observation_mass(initial, 2, slot, 0.8, max_update_norm=cap, protect=[(guard, 2)])
+    candidate, replay, edit = kernel.program_observation_mass(
+        initial, 2, slot, 0.8, max_update_norm=cap, protect=[(guard, 2)], search="multivariate",
+    )
+    assert edit.update_norm < 15.2 < cap
+    assert candidate._observation_value is kernel._observation_value and replay._memory is memory
+    np.testing.assert_array_equal(replay.history[0], old.history[0])
+    old_guard = kernel.step(kernel.step(kernel.start(guard, memory)))
+    new_guard = candidate.step(candidate.step(candidate.start(guard, memory)))
+    np.testing.assert_array_equal(new_guard.history, old_guard.history)
+    prior = candidate.step(candidate.start(seed, memory))
+    _, mass = candidate._source_mass_step(prior, slot)
+    assert 0.8 <= mass < 0.800000001
+    assert old.latest[2] < 0 < replay.latest[2]
+
+    corrected = [0, 0, 0, -1]
+    revised = (candidate.revise(memory, {slot: corrected}) if tree
+               else candidate.prepare([corrected, rows[1], rows[2]]))
+    changed = candidate.step(candidate.start(seed, revised))
+    held = candidate.intervene(changed, 0, prior.latest)
+    corrected_final, corrected_mass = candidate._source_mass_step(held, slot)
+    assert corrected_mass == mass and corrected_final.latest[2] < 0
+    plain_empty, edited_empty = kernel.start(seed), candidate.start(seed)
+    for _ in range(4):
+        plain_empty, edited_empty = kernel.step(plain_empty), candidate.step(edited_empty)
+        np.testing.assert_array_equal(edited_empty.latest, plain_empty.latest)
 
 
 def test_public_array_metadata_and_edit_result_cannot_rewrite_old_states():
