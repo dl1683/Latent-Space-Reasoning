@@ -28,8 +28,8 @@ def _sources():
     }
 
 
-def _assert_direct(snapshot, sources):
-    expected = solve_relative_direct(len(_MEMBERSHIP), sources, ridge=_RIDGE)
+def _assert_direct(snapshot, sources, cells=len(_MEMBERSHIP)):
+    expected = solve_relative_direct(cells, sources, ridge=_RIDGE)
     for cell, value in enumerate(expected):
         if value is None:
             assert snapshot.read(cell) is None
@@ -201,3 +201,101 @@ def test_compaction_refuses_changed_protected_reads_without_affecting_parent(mon
     assert detached.read(0) == expected and detached.coarse_size == 4
     with pytest.raises(ValueError, match="positive region cap"):
         hierarchy.compact(detached, max_regions=0)
+
+
+def test_coarse_rhs_edits_reuse_operators_and_unrelated_solutions(monkeypatch):
+    membership = (*_MEMBERSHIP, 4)
+    hierarchy = RelativeObservationHierarchy(membership, ridge=_RIDGE)
+    sources = {**_sources(), "unrelated_bridge": RelativeObservation(12, 0.4, source=10)}
+    base = hierarchy.initialize(sources)
+    assert base.coarse_factorizations == base.coarse_rhs_solves == 2
+    operator = base._coarse_blocks[(2, 3, 5, 6)].operator
+    unrelated = base._coarse_blocks[(10, 12)]
+    bridge = RelativeObservation(3, 1.5, source=2)
+    center = RelativeObservation(4, -0.7, source=3)
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("a value-only correction refactored the coarse system")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(relative_hierarchy, "_factor_coarse", unexpected)
+        corrected = hierarchy.revise(base, {"bridge": bridge})
+        revised = hierarchy.revise(corrected, {"center": center})
+    for snapshot in (corrected, revised):
+        assert snapshot.coarse_factorizations == 0 and snapshot.coarse_rhs_solves == 1
+        assert snapshot._coarse_blocks[(2, 3, 5, 6)].operator is operator
+        assert snapshot._coarse_blocks[(10, 12)] is unrelated
+        assert snapshot.read(12) == base.read(12)
+    assert abs(base.read(8) - corrected.read(8)) > 0.05
+    _assert_direct(corrected, {**sources, "bridge": bridge}, len(membership))
+    _assert_direct(revised, {**sources, "bridge": bridge, "center": center}, len(membership))
+
+    reweighted_bridge = RelativeObservation(3, 1.5, source=2, weight=3)
+    reweighted = hierarchy.revise(revised, {"bridge": reweighted_bridge})
+    assert reweighted.coarse_factorizations == reweighted.coarse_rhs_solves == 1
+    assert reweighted._coarse_blocks[(10, 12)] is unrelated
+    assert reweighted._coarse_blocks[(2, 3, 5, 6)].operator is not operator
+    _assert_direct(reweighted, {**sources, "bridge": reweighted_bridge, "center": center}, len(membership))
+    _assert_direct(base, sources, len(membership))
+
+
+def test_coarse_split_projection_and_lazy_factorization_follow_the_selected_branch():
+    membership = (*_MEMBERSHIP, 4)
+    hierarchy = RelativeObservationHierarchy(membership, ridge=_RIDGE)
+    sources = {**_sources(), "unrelated_bridge": RelativeObservation(12, 0.4, source=10)}
+    base = hierarchy.initialize(sources)
+    detached = hierarchy.revise(base, {"bridge": None})
+    assert detached.coarse_factorizations == detached.coarse_rhs_solves == 2
+    assert detached.read(8) is None
+
+    compacted = hierarchy.compact(detached, max_regions=2)
+    assert compacted.coarse_factorizations == compacted.coarse_rhs_solves == 0
+    projected = compacted._coarse_blocks[(5, 6)]
+    assert projected.operator is None
+    assert compacted._coarse_blocks[(10, 12)] is base._coarse_blocks[(10, 12)]
+
+    remote = RelativeObservation(12, -0.6, source=10)
+    independent = hierarchy.revise(compacted, {"unrelated_bridge": remote})
+    assert independent.coarse_factorizations == 0 and independent.coarse_rhs_solves == 1
+    assert independent._coarse_blocks[(5, 6)] is projected
+
+    downstream = RelativeObservation(6, 3, source=5)
+    refreshed = hierarchy.revise(independent, {"downstream": downstream})
+    assert refreshed.coarse_factorizations == refreshed.coarse_rhs_solves == 1
+    assert refreshed._coarse_blocks[(5, 6)].operator is not None
+    assert compacted._coarse_blocks[(5, 6)].operator is None
+
+    restored = hierarchy.revise(refreshed, {"bridge": sources["bridge"]})
+    assert restored.coarse_factorizations == restored.coarse_rhs_solves == 1
+    _assert_direct(restored, {**sources, "unrelated_bridge": remote, "downstream": downstream},
+                   len(membership))
+    _assert_direct(base, sources, len(membership))
+
+
+def test_coarse_scaled_transform_handles_large_finite_weighted_observations():
+    hierarchy = RelativeObservationHierarchy((0, 1), ridge=1e306)
+    sources = {"anchor": RelativeObservation(0, 0, weight=1e308)}
+    sources.update({str(i): RelativeObservation(1, 1e154, source=0, weight=1e308) for i in range(8)})
+    snapshot = hierarchy.initialize(sources)
+    # Analytic 2-by-2 normal equations after dividing by 1e308 and scaling values by 1e154.
+    target = (8 - 64 / 9.01) / (8.01 - 64 / 9.01)
+    source = (8 * target - 8) / 9.01
+    assert snapshot.read(0) / 1e154 == pytest.approx(source, abs=1e-13)
+    assert snapshot.read(1) / 1e154 == pytest.approx(target, abs=1e-13)
+
+
+def test_coarse_rank_threshold_is_local_to_each_independent_block():
+    hierarchy = RelativeObservationHierarchy((0, 1, 2, 3), ridge=1)
+    sources = {
+        "large_anchor": RelativeObservation(0, 1, weight=1e80),
+        "large_bridge": RelativeObservation(1, 2, source=0, weight=1e80),
+        "small_anchor": RelativeObservation(2, 2),
+        "small_bridge": RelativeObservation(3, 1, source=2),
+    }
+    snapshot = hierarchy.initialize(sources)
+    assert snapshot.coarse_factorizations == 2
+    assert tuple(snapshot.read(cell) for cell in range(4)) == pytest.approx(
+        (1, 3, 0.6, 0.8), abs=1e-12, rel=0,
+    )
+    with pytest.raises(ValueError, match="full numerical rank"):
+        solve_relative_direct(4, sources, ridge=1)

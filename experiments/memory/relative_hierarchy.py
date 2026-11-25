@@ -32,14 +32,18 @@ class _Components:
         self._parent[self.root(first)] = self.root(second)
 
 
-def _write_observation(row, positions, observation):
+def _weighted_value(observation):
+    value = sqrt(observation.weight) * observation.value
+    if not isfinite(value):
+        raise FloatingPointError("nonfinite weighted observation in region hierarchy")
+    return value
+
+
+def _write_coefficients(row, positions, observation):
     scale = sqrt(observation.weight)
     row[positions[observation.target]] = scale
     if observation.source is not None:
         row[positions[observation.source]] = -scale
-    row[-1] = scale * observation.value
-    if not isfinite(row[-1]):
-        raise FloatingPointError("nonfinite weighted observation in region hierarchy")
 
 
 @dataclass(frozen=True, eq=False)
@@ -77,7 +81,8 @@ def _build_region(cells, ports, sources, ridge):
     anchors = set()
     for row, name in enumerate(sorted(sources)):
         observation = sources[name]
-        _write_observation(matrix[row], positions, observation)
+        _write_coefficients(matrix[row, :-1], positions, observation)
+        matrix[row, -1] = _weighted_value(observation)
         if observation.source is None:
             anchors.add(observation.target)
         else:
@@ -112,23 +117,117 @@ def _compact_region(region, active_ports):
                    _frozen(factor), _frozen(readout))
 
 
-def _solve_coarse(ports, bridges, regions):
-    size = len(ports)
-    if not size:
-        return np.empty(0)
-    matrix = np.zeros((size + len(bridges), size + 1))
+@dataclass(frozen=True, eq=False)
+class _CoarseOperator:
+    left: np.ndarray
+    singular: np.ndarray
+    right: np.ndarray
+
+    def solve(self, rhs):
+        rhs_scale = np.max(np.abs(rhs))
+        if not rhs_scale:
+            return _frozen(np.zeros_like(self.singular))
+        design_scale = self.singular[0]
+        rhs_fraction, rhs_exponent = np.frexp(rhs_scale)
+        design_fraction, design_exponent = np.frexp(design_scale)
+        with np.errstate(over="raise", invalid="raise", divide="raise"):
+            # Transform at unit input scale before restoring the solution magnitude.
+            coordinates = (self.left.T @ (rhs / rhs_scale)) / (self.singular / design_scale)
+            values = self.right.T @ coordinates
+            values = np.ldexp(values * (rhs_fraction / design_fraction),
+                              rhs_exponent - design_exponent)
+        if not np.isfinite(values).all():
+            raise FloatingPointError("nonfinite coarse solution")
+        return _frozen(values)
+
+
+@dataclass(frozen=True, eq=False)
+class _CoarseBlock:
+    regions: tuple[_Region, ...]
+    bridges: tuple[tuple[str, RelativeObservation], ...]
+    operator: _CoarseOperator | None
+    values: np.ndarray
+
+    def matches_design(self, regions, bridges):
+        return (
+            len(self.regions) == len(regions)
+            and all(old is new or (
+                old.ports == new.ports
+                and np.array_equal(old.factor[:, :-1], new.factor[:, :-1])
+            ) for old, new in zip(self.regions, regions))
+            and _bridge_design(self.bridges) == _bridge_design(bridges)
+        )
+
+
+def _bridge_design(bridges):
+    return tuple((name, obs.source, obs.target, obs.weight) for name, obs in bridges)
+
+
+def _factor_coarse(cells, bridges, regions):
+    size = len(cells)
+    positions = {cell: column for column, cell in enumerate(cells)}
+    matrix = np.zeros((size + len(bridges), size))
     start = 0
     for region in regions:
         stop = start + len(region.ports)
         matrix[start:stop, start:stop] = region.factor[:, :-1]
-        matrix[start:stop, -1] = region.factor[:, -1]
         start = stop
-    for row, name in enumerate(sorted(bridges), start=size):
-        _write_observation(matrix[row], ports, bridges[name])
-    values, _, rank, _ = np.linalg.lstsq(matrix[:, :-1], matrix[:, -1], rcond=None)
-    if rank != size or not np.isfinite(values).all():
-        raise ValueError("coarse solve did not resolve the full numerical rank")
-    return values
+    for row, (_, observation) in enumerate(bridges, start=size):
+        _write_coefficients(matrix[row], positions, observation)
+    left, singular, right = np.linalg.svd(matrix, full_matrices=False)
+    threshold = np.finfo(matrix.dtype).eps * max(matrix.shape) * singular[0]
+    if not np.isfinite(singular).all() or singular[-1] <= threshold:
+        raise ValueError("coarse block did not resolve the full numerical rank")
+    return _CoarseOperator(_frozen(left), _frozen(singular), _frozen(right))
+
+
+def _solve_coarse(cells, regions, bridges, previous):
+    rhs = np.concatenate([*(region.factor[:, -1] for region in regions),
+                          [_weighted_value(observation) for _, observation in bridges]])
+    operator = None
+    if previous is not None and previous.operator is not None and previous.matches_design(regions, bridges):
+        operator = previous.operator
+    refactored = operator is None
+    if refactored:
+        operator = _factor_coarse(cells, bridges, regions)
+    return _CoarseBlock(regions, bridges, operator, operator.solve(rhs)), refactored
+
+
+def _coarse_groups(regions, bridges):
+    # A numerical block includes all ports in each member region. Support is finer.
+    owners = {cell: number for number, region in enumerate(regions) for cell in region.ports}
+    components = _Components(owners.values())
+    for observation in bridges.values():
+        components.join(owners[observation.source], owners[observation.target])
+    grouped_regions = {}
+    for number, region in enumerate(regions):
+        if region.ports:
+            grouped_regions.setdefault(components.root(number), []).append(region)
+    grouped_bridges = {root: [] for root in grouped_regions}
+    for name, observation in sorted(bridges.items()):
+        grouped_bridges[components.root(owners[observation.source])].append((name, observation))
+    return ((tuple(group), tuple(grouped_bridges[root])) for root, group in grouped_regions.items())
+
+
+def _coarse_state(ports, regions, bridges, base, projecting):
+    blocks = {}
+    values = np.empty(len(ports))
+    factorizations = solves = 0
+    for members, rows in _coarse_groups(regions, bridges):
+        cells = tuple(cell for region in members for cell in region.ports)
+        previous = base._coarse_blocks.get(cells) if base is not None else None
+        if previous is not None and previous.regions == members and previous.bridges == rows:
+            block = previous
+        elif projecting:
+            old_columns = [base._port_positions[cell] for cell in cells]
+            block = _CoarseBlock(members, rows, None, _frozen(base._values[old_columns]))
+        else:
+            block, refactored = _solve_coarse(cells, members, rows, previous)
+            factorizations += refactored
+            solves += 1
+        blocks[cells] = block
+        values[[ports[cell] for cell in cells]] = block.values
+    return MappingProxyType(blocks), _frozen(values), factorizations, solves
 
 
 @dataclass(frozen=True, eq=False)
@@ -139,9 +238,12 @@ class RelativeHierarchySnapshot:
     _regions: tuple[_Region, ...]
     _port_positions: Mapping[int, int]
     _values: np.ndarray
+    _coarse_blocks: Mapping[tuple[int, ...], _CoarseBlock]
     _supported_ports: frozenset[int]
     rebuilt_regions: tuple[int, ...]
     compacted_regions: tuple[int, ...] = ()
+    coarse_factorizations: int = 0
+    coarse_rhs_solves: int = 0
 
     @property
     def coarse_size(self):
@@ -185,7 +287,7 @@ class RelativeObservationHierarchy:
             return target
         return None
 
-    def _snapshot(self, sources, bridges, regions, rebuilt, *, compaction_base=None, compacted=()):
+    def _snapshot(self, sources, bridges, regions, rebuilt, *, base=None, compacted=()):
         ports = {cell: position for position, cell in enumerate(
             cell for region in regions for cell in region.ports
         )}
@@ -195,17 +297,15 @@ class RelativeObservationHierarchy:
                    if region.components[cell] in region.anchored}
         for bridge in bridges.values():
             coarse_support.join(components[bridge.source], components[bridge.target])
-        if compaction_base is None:
-            values = _solve_coarse(ports, bridges, regions)
-        else:
-            retained = [compaction_base._port_positions[cell] for cell in ports]
-            values = compaction_base._values[retained]
+        blocks, values, factorizations, solves = _coarse_state(
+            ports, regions, bridges, base, projecting=bool(compacted),
+        )
         anchor_roots = {coarse_support.root(component) for component in anchors}
         supported = frozenset(component for component in components.values()
                               if coarse_support.root(component) in anchor_roots)
         return RelativeHierarchySnapshot(
-            self, sources, bridges, tuple(regions), MappingProxyType(ports), _frozen(values),
-            supported, tuple(rebuilt), tuple(compacted),
+            self, sources, bridges, tuple(regions), MappingProxyType(ports), values, blocks,
+            supported, tuple(rebuilt), tuple(compacted), factorizations, solves,
         )
 
     def initialize(self, observations):
@@ -280,7 +380,8 @@ class RelativeObservationHierarchy:
                     local[name] = replacement
             ports = set(previous.ports).union(promotions.get(region, ()))
             factors[region] = _build_region(self._regions[region], ports, local, self._ridge)
-        return self._snapshot(MappingProxyType(sources), MappingProxyType(bridges), factors, rebuilt)
+        return self._snapshot(MappingProxyType(sources), MappingProxyType(bridges), factors, rebuilt,
+                              base=base)
 
     def compact(self, base, *, max_regions=1, protected_cells=(), tolerance=1e-10):
         """Retire inactive ports in a bounded number of regions of the selected branch."""
@@ -300,8 +401,8 @@ class RelativeObservationHierarchy:
         regions = list(base._regions)
         for number in chosen:
             regions[number] = _compact_region(regions[number], active)
-        compacted = self._snapshot(base._sources, base._bridges, regions, (),
-                                   compaction_base=base, compacted=chosen)
+        compacted = self._snapshot(base._sources, base._bridges, regions, (), base=base,
+                                   compacted=chosen)
         for cell in protected:
             before, after = base.read(cell), compacted.read(cell)
             if before is None or after is None:
