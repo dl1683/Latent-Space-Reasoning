@@ -31,6 +31,8 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 Proposals are not run authorization. Execution is paused as recorded in README and RESULTS. Rank1 reached the three-round unsuccessful-repair cap; a new finite authorization and resource reconciliation are required.
 
+**Snapshot mutability, 24 November 2026.** A static review of the feedback candidate found that read-only NumPy arrays still allowed callers to change array metadata and thereby alter the shapes seen by descendant states. The reproducers became regression fixtures. Public access now returns independent view headers over immutable bytes, installed maps own their array headers, and ordinary kernel reassignment is refused. Verify this boundary whenever retained numerical state is exposed or reused across versions.
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.
