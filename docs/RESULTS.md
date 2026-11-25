@@ -10,6 +10,8 @@ The review branch's [latent field](../experiments/memory/latent_field.py) passed
 
 A follow-up extended the field to grow by appending observation cells and to revise links in the same batch. Eight focused field fixtures passed. The three new fixtures covered growth and rewiring against a dense reference, a full refresh when stronger coupling tightened the residual threshold, and rejection of an invalid batch with the old snapshot intact. Source-sensitive inference, coordinate learning, coordination and end-to-end economics remain unevaluated.
 
+The separately implemented feedback kernel passed three CPU fixtures with hand-written weights. The fixtures verify a two-step numerical composition, an earlier-state intervention with the latest state held fixed, a payload ablation with routing held fixed, and immutable memory and step limits. The combined field, feedback and dependency-evidence test selection passed 17 checks. These are software checks on supplied vectors. Learned reasoning, semantic revision and comparative cost remain unmeasured.
+
 ## Study result table
 
 These are source-reported experiment results. Publication preparation independently checked Git, inventories, process metadata, ACLs, package structure and the integration suite; model outputs and judgments were not independently checked.
