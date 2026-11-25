@@ -11,6 +11,7 @@ from typing import NamedTuple
 from numpy.linalg import LinAlgError
 
 from experiments.memory.relative_hierarchy import RelativeHierarchySnapshot
+from experiments.memory.relative_ordering import propose_orders
 
 
 class RelativeReplayWork(NamedTuple):
@@ -90,6 +91,17 @@ class RelativeHierarchyWorkspace:
 
     def maintain(self, base, orders, workload, *, max_candidates, protected=(), tolerance=1e-10):
         """Replay a finite candidate round and publish only a better layout."""
+        return self._maintain(base, orders, workload, max_candidates, protected, tolerance)
+
+    def maintain_generated(self, base, workload, *, max_candidates, max_symbolic_ports, protected=(),
+                           tolerance=1e-10):
+        """Propose bounded symbolic orders and charge conversion in the admission score."""
+        max_ports = index(max_symbolic_ports)
+        if max_ports < 1:
+            raise ValueError("automatic order maintenance needs a positive symbolic port cap")
+        return self._maintain(base, None, workload, max_candidates, protected, tolerance, max_ports=max_ports)
+
+    def _maintain(self, base, orders, workload, max_candidates, protected, tolerance, *, max_ports=None):
         max_candidates, tolerance = index(max_candidates), float(tolerance)
         if max_candidates < 1 or not isfinite(tolerance) or tolerance < 0:
             raise ValueError("order maintenance needs a positive candidate cap and finite tolerance")
@@ -99,7 +111,10 @@ class RelativeHierarchyWorkspace:
         workload = tuple((MappingProxyType(dict(edits)), tuple(queries)) for edits, queries in workload)
         protected_values = base.read_many(protected)
         baseline, expected = _replay(base, workload)
+        if max_ports is not None:
+            orders = propose_orders(base, workload, max_ports)
         best, best_work, considered = base, baseline, 0
+        best_score = baseline
         seen = {base.elimination_order}
         for order in islice(orders, max_candidates):
             considered += 1
@@ -114,10 +129,13 @@ class RelativeHierarchyWorkspace:
                 work, answers = _replay(candidate, workload)
             except (FloatingPointError, ValueError, LinAlgError):
                 continue
-            if (work < best_work
-                    and all(value <= limit for value, limit in zip(work, baseline))
+            score = work
+            if max_ports is not None:
+                score = work._replace(rebuilt_buckets=work.rebuilt_buckets + len(candidate.rebuilt_buckets))
+            if (score < best_score
+                    and all(value <= limit for value, limit in zip(score, baseline))
                     and _agrees(expected, answers, tolerance)):
-                best, best_work = candidate, work
+                best, best_work, best_score = candidate, work, score
         self._publish(base, best)
         conversion = len(best.rebuilt_buckets) if best is not base else 0
         return RelativeMaintenanceRound(best, baseline, best_work, considered, conversion)
