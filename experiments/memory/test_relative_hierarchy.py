@@ -1,8 +1,10 @@
 from dataclasses import replace
 
+import numpy as np
 import pytest
 
-from experiments.memory import relative_hierarchy
+from experiments.memory import relative_elimination, relative_hierarchy
+from experiments.memory.latent_field import _frozen
 from experiments.memory.relative_hierarchy import RelativeObservationHierarchy
 from experiments.memory.relative_observations import RelativeObservation, solve_relative_direct
 
@@ -299,3 +301,86 @@ def test_coarse_rank_threshold_is_local_to_each_independent_block():
     )
     with pytest.raises(ValueError, match="full numerical rank"):
         solve_relative_direct(4, sources, ridge=1)
+
+
+def test_connected_bridge_reweighting_reuses_the_unchanged_elimination_prefix():
+    membership = tuple(cell // 3 for cell in range(18))
+    hierarchy = RelativeObservationHierarchy(membership, ridge=_RIDGE, elimination_order=range(18))
+    sources = {"anchor": RelativeObservation(0, 0.7, weight=2)}
+    sources.update({f"row-{cell}": RelativeObservation(cell, 0.13, source=cell - 1)
+                    for cell in range(1, 18)})
+    base = hierarchy.initialize(sources)
+    assert base.coarse_size == len(base.rebuilt_buckets) == 10
+    change = RelativeObservation(15, -1.8, source=14, weight=3)
+    revised = hierarchy.revise(base, {"row-15": change})
+    assert revised.coarse_size == 10 and revised.rebuilt_buckets == (14, 15)
+    assert revised.rebuilt_regions == ()
+    assert revised._elimination.steps[12] is base._elimination.steps[12]
+    assert abs(revised.read(12) - base.read(12)) > 0.02
+    assert revised.coarse_factorizations == revised.coarse_rhs_solves == 0
+    _assert_direct(revised, {**sources, "row-15": change}, len(membership))
+    _assert_direct(base, sources, len(membership))
+
+    reverse = RelativeObservationHierarchy(membership, ridge=_RIDGE,
+                                           elimination_order=reversed(range(18)))
+    reverse_base = reverse.initialize(sources)
+    reverse_revised = reverse.revise(reverse_base, {"row-15": change})
+    assert len(reverse_revised.rebuilt_buckets) == reverse_base.coarse_size == 10
+    _assert_direct(reverse_revised, {**sources, "row-15": change}, len(membership))
+
+
+def test_elimination_survives_changed_support_compaction_and_bridge_promotion():
+    hierarchy = RelativeObservationHierarchy(_MEMBERSHIP, ridge=_RIDGE,
+                                             elimination_order=reversed(range(len(_MEMBERSHIP))))
+    sources = _sources()
+    base = hierarchy.initialize(sources)
+    detached = hierarchy.revise(base, {"bridge": None})
+    remaining = {name: row for name, row in sources.items() if name != "bridge"}
+    assert detached.read(8) is None
+    _assert_direct(detached, remaining)
+    compacted = hierarchy.compact(detached, max_regions=2, protected_cells=range(len(_MEMBERSHIP)))
+    assert compacted.coarse_size == 2 and compacted.rebuilt_buckets == ()
+    assert compacted._elimination is None
+    _assert_direct(compacted, remaining)
+
+    bridge = RelativeObservation(4, -0.3, source=1, weight=2)
+    replaced = hierarchy.revise(compacted, {"bridge": bridge})
+    assert replaced.rebuilt_regions == (0, 1)
+    assert replaced.rebuilt_buckets == (6, 5, 4, 1)
+    assert replaced.read(8) is not None
+    _assert_direct(replaced, {**remaining, "bridge": bridge})
+
+    historical = hierarchy.revise(base, {"anchor": RelativeObservation(0, 1.7, weight=2)})
+    _assert_direct(historical, {**sources, "anchor": RelativeObservation(0, 1.7, weight=2)})
+    _assert_direct(base, sources)
+
+
+def test_equal_updated_remainder_keeps_downstream_elimination_step():
+    first = relative_elimination.EliminationFactor((0, 1), _frozen(np.array([[2, 0, 4], [0, 3, 9]])))
+    changed = relative_elimination.EliminationFactor((0, 1), _frozen(np.array([[2, 0, 8], [0, 3, 9]])))
+    rank = {0: 0, 1: 1}
+    steps, old_values, _ = relative_elimination.solve_elimination((0, 1), rank, [first], {})
+    revised, values, rebuilt = relative_elimination.solve_elimination((0, 1), rank, [changed], steps)
+    assert rebuilt == (0,)
+    assert revised[0].remainder is steps[0].remainder and revised[1] is steps[1]
+    assert np.array_equal(old_values, [2, 3])
+    assert np.array_equal(values, [4, 3])
+
+
+def test_elimination_failure_keeps_parent_snapshot_and_requires_explicit_permutation(monkeypatch):
+    with pytest.raises(ValueError, match="must contain every cell once"):
+        RelativeObservationHierarchy((0, 1), ridge=_RIDGE, elimination_order=(0, 0))
+    hierarchy = RelativeObservationHierarchy(_MEMBERSHIP, ridge=_RIDGE,
+                                             elimination_order=range(len(_MEMBERSHIP)))
+    sources = _sources()
+    base = hierarchy.initialize(sources)
+    before = base.read(8)
+
+    def refuse(*args):
+        raise ValueError("unresolved test pivot")
+
+    monkeypatch.setattr(relative_elimination, "_reduce_bucket", refuse)
+    with pytest.raises(ValueError, match="unresolved test pivot"):
+        hierarchy.revise(base, {"bridge": RelativeObservation(3, 1.5, source=2)})
+    assert base.read(8) == before
+    _assert_direct(base, sources)

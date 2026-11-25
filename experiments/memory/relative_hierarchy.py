@@ -11,6 +11,7 @@ from types import MappingProxyType
 import numpy as np
 
 from experiments.memory.latent_field import LatentField, _frozen
+from experiments.memory.relative_elimination import EliminationFactor, EliminationStep, solve_elimination
 from experiments.memory.relative_observations import (
     RelativeObservation,
     _problem,
@@ -231,6 +232,40 @@ def _coarse_state(ports, regions, bridges, base, projecting):
 
 
 @dataclass(frozen=True, eq=False)
+class _EliminationCache:
+    regions: Mapping[int, tuple[_Region, EliminationFactor]]
+    bridges: Mapping[str, tuple[RelativeObservation, EliminationFactor]]
+    steps: Mapping[int, EliminationStep]
+
+
+def _sparse_coarse(ports, regions, bridges, rank, previous):
+    prior_regions = previous.regions if previous is not None else {}
+    prior_bridges = previous.bridges if previous is not None else {}
+    prior_steps = previous.steps if previous is not None else {}
+    regional_factors, bridge_factors = {}, {}
+    for number, region in enumerate(regions):
+        if region.ports:
+            old = prior_regions.get(number)
+            if old is None or old[0] is not region:
+                old = region, EliminationFactor(region.ports, region.factor)
+            regional_factors[number] = old
+    for name, bridge in sorted(bridges.items()):
+        old = prior_bridges.get(name)
+        if old is None or old[0] != bridge:
+            cells = bridge._endpoints()
+            row = np.zeros((1, 3))
+            _write_coefficients(row[0, :-1], {cell: i for i, cell in enumerate(cells)}, bridge)
+            row[0, -1] = _weighted_value(bridge)
+            old = bridge, EliminationFactor(cells, _frozen(row))
+        bridge_factors[name] = old
+
+    factors = [factor for _, factor in (*regional_factors.values(), *bridge_factors.values())]
+    steps, values, rebuilt = solve_elimination(ports, rank, factors, prior_steps)
+    cache = _EliminationCache(MappingProxyType(regional_factors), MappingProxyType(bridge_factors), steps)
+    return cache, values, rebuilt
+
+
+@dataclass(frozen=True, eq=False)
 class RelativeHierarchySnapshot:
     _owner: RelativeObservationHierarchy
     _sources: Mapping[str, RelativeObservation]
@@ -244,6 +279,8 @@ class RelativeHierarchySnapshot:
     compacted_regions: tuple[int, ...] = ()
     coarse_factorizations: int = 0
     coarse_rhs_solves: int = 0
+    rebuilt_buckets: tuple[int, ...] = ()
+    _elimination: _EliminationCache | None = None
 
     @property
     def coarse_size(self):
@@ -270,9 +307,15 @@ class RelativeHierarchySnapshot:
 class RelativeObservationHierarchy:
     """Eliminate each region's interior and retain operators for cross-region revisions."""
 
-    def __init__(self, membership, *, ridge):
+    def __init__(self, membership, *, ridge, elimination_order=None):
         self._membership = tuple(map(index, membership))
         self._cells, self._ridge = _problem(len(self._membership), ridge)
+        self._elimination_rank = None
+        if elimination_order is not None:
+            order = tuple(map(index, elimination_order))
+            if len(order) != self._cells or set(order) != set(range(self._cells)):
+                raise ValueError("coarse elimination order must contain every cell once")
+            self._elimination_rank = MappingProxyType({cell: rank for rank, cell in enumerate(order)})
         labels = sorted(set(self._membership))
         if labels != list(range(len(labels))):
             raise ValueError("region labels must be consecutive integers from zero")
@@ -297,15 +340,27 @@ class RelativeObservationHierarchy:
                    if region.components[cell] in region.anchored}
         for bridge in bridges.values():
             coarse_support.join(components[bridge.source], components[bridge.target])
-        blocks, values, factorizations, solves = _coarse_state(
-            ports, regions, bridges, base, projecting=bool(compacted),
-        )
+        cache, buckets = None, ()
+        factorizations = solves = 0
+        blocks = MappingProxyType({})
+        if self._elimination_rank is None:
+            blocks, values, factorizations, solves = _coarse_state(
+                ports, regions, bridges, base, projecting=bool(compacted),
+            )
+        elif compacted:
+            old_columns = [base._port_positions[cell] for cell in ports]
+            values = _frozen(base._values[old_columns])
+        else:
+            prior = base._elimination if base is not None else None
+            cache, values, buckets = _sparse_coarse(ports, regions, bridges, self._elimination_rank, prior)
         anchor_roots = {coarse_support.root(component) for component in anchors}
         supported = frozenset(component for component in components.values()
                               if coarse_support.root(component) in anchor_roots)
         return RelativeHierarchySnapshot(
             self, sources, bridges, tuple(regions), MappingProxyType(ports), values, blocks,
-            supported, tuple(rebuilt), tuple(compacted), factorizations, solves,
+            supported, rebuilt_regions=tuple(rebuilt), compacted_regions=tuple(compacted),
+            coarse_factorizations=factorizations, coarse_rhs_solves=solves, rebuilt_buckets=buckets,
+            _elimination=cache,
         )
 
     def initialize(self, observations):
