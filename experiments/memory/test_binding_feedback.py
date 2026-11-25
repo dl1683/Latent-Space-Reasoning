@@ -538,9 +538,9 @@ def test_coordinate_trial_is_fenced_if_a_source_changes_after_the_judge_passes(t
     assert workspace.finish_program_trial(trial.trial_id, receiver=receiver).status == "horizon_passed"
 
 
-def _coordinate_context_fixture():
+def _coordinate_context_fixture(*, anchors=None):
     frame = CorpusBindingMemory.prepare(
-        ("p", "q", "shared", "end", "guard"), np.eye(2), {}, {}, encode=_encode,
+        ("p", "q", "shared", "end", "guard"), np.eye(2) if anchors is None else anchors, {}, {}, encode=_encode,
         encoder_version="coordinate-context", min_similarity=.7, gap=.02,
     )
     keys, zeros = np.zeros((5, 1)), np.zeros((5, 5))
@@ -784,6 +784,99 @@ def test_context_worker_refuses_a_ready_state_that_differs_from_ordinary_replay(
                                        max_update_norm=4., max_sweeps=8)
     assert proposal.status == "opening_trace_changed" and proposal.trial is None
     assert workspace.pending_program_trials(limit=1) == ()
+
+
+def test_context_worker_uses_anchor_when_protected_hidden_row_is_identical(tmp_path):
+    frame, receiver, sources, positive, negative, _, _ = _coordinate_context_fixture(anchors=[[1., 0.], [.6, .8]])
+    path = tmp_path / "anchor-context.sqlite"
+    workspace = JournaledCorpusWorkspace(path, frame, create=True)
+    sources.pop("q")
+    sources["q-shared"] = b"q,1,0,0.9\nshared,0.6,0.8,0.65"
+    sources["shared"] = b"shared,1,0,0.65"
+    sources["end"] = b"end,0.6,0.8,0.9"
+    sources["guard"] = b"guard,0.6,0.8,0.9"
+    base = _write(workspace, sources)
+    ready = receiver.step(receiver.start(positive, base.memory))
+    protected = receiver.step(receiver.start(negative, base.memory))
+    np.testing.assert_array_equal(ready.latest, protected.latest)
+    ordinary = receiver.step(ready)
+    protected = receiver.step(protected)
+    assert ordinary.reads[-1].address == ("shared", 1)
+    assert protected.reads[-1].address == ("shared", 0)
+    skipped = protected.reads[-1].tried[0]
+    assert skipped.address == ("shared", 1) and skipped.bounds.possible_strength is None
+    np.testing.assert_array_equal(ordinary.latest, protected.latest)
+    protected = receiver.step(protected)
+    assert protected.reads[-1].address == ("guard", 1)
+    desired = ordinary.latest.copy()
+    desired[2] = .8
+    with pytest.raises(ValueError, match="incompatible with target"):
+        program_binding_coordinates(receiver, [(ready, desired)], protect=(protected,), max_update_norm=4.)
+
+    proposal = propose_binding_context(workspace, base, ready, ("end", 1), protect=(protected,),
+                                       future_batches=1, max_update_norm=4., max_sweeps=16, padding=.2)
+    assert proposal.status == "opened"
+    later = _write(workspace, {"unrelated": b"end,1,0,0.5"})
+    worker = JournaledCorpusWorkspace(path, frame)
+    receipt = worker.finish_program_trial(proposal.trial.trial_id, receiver=receiver)
+    assert receipt.status == "published" and receipt.published_revision == later.revision + 1
+
+    def no_encoding(_raw):
+        pytest.fail("anchor projection recovery attempted encoding")
+
+    reopened = JournaledCorpusWorkspace(path, replace(frame, _encode=no_encoding))
+    pin = reopened.snapshot()
+    installed = reopened.receiver_at(pin, receiver)
+    axis, anchor, output, threshold = installed._coordinate_terms[-1]
+    np.testing.assert_array_equal(anchor, [0., 1.])
+
+    def two_steps(model, seed, memory):
+        return model.step(model.step(model.start(seed, memory)))
+
+    def terminal(model, seed, memory):
+        return model._next_read(two_steps(model, seed, memory))
+
+    raw_anchor = receiver._anchors[1]
+    rescaled = ((raw_anchor @ anchor) / (raw_anchor @ raw_anchor)) * output
+    raw_term = receiver._with_coordinate_term(ConditionalTerm(axis, raw_anchor, rescaled, threshold))
+    np.testing.assert_allclose(two_steps(raw_term, positive, pin.memory).latest,
+                               two_steps(installed, positive, pin.memory).latest, atol=1e-15, rtol=0.)
+    assert not np.allclose(two_steps(raw_term, negative, pin.memory).latest,
+                           two_steps(receiver, negative, pin.memory).latest, atol=1e-8, rtol=0.)
+
+    assert terminal(installed, positive, pin.memory).address == ("end", 1)
+    assert terminal(receiver, positive, pin.memory).address == ("guard", 1)
+    assert terminal(installed, negative, pin.memory) == terminal(receiver, negative, pin.memory)
+    withdrawn = _write(worker, {"q-shared": b"q,1,0,0.9"})
+    assert terminal(installed, positive, withdrawn.memory).address == ("guard", 1)
+    assert terminal(installed, positive, pin.memory).address == ("end", 1)
+
+
+def test_context_anchor_projection_recovers_from_hidden_fit_coefficient_overflow():
+    frame = CorpusBindingMemory.prepare(("p", "q"), np.eye(2), {}, {}, encode=_encode,
+                                        encoder_version="anchor-fit-overflow", min_similarity=.6, gap=.05)
+    memory = frame.revise({"p": b"p,1,0,1", "q": b"q,0,1,0.5"})
+    keys, zero = np.zeros((2, 1)), np.zeros((2, 2))
+    kernel = FeedbackKernel(query=keys, carry=zero, observation_key=keys, observation_value=zero,
+                            feedback_key=keys, feedback_value=zero, max_steps=2)
+    cap = float(2**1023)
+    observation = np.zeros((6, 2))
+    observation[3, 0] = cap
+    receiver = BindingFeedback(kernel, frame, (("p", 0), ("q", 1)), query=[[1., -1.], [-16., 16.]],
+                               observation=observation, disjoint_reads=True)
+    ready = receiver.start([1., 0.], memory)
+    guard_seed = [.875, .125]
+    protected = receiver.step(receiver.start(guard_seed, memory))
+    assert protected.reads[-1].address == ("q", 1)
+    np.testing.assert_array_equal(receiver.step(ready).latest, [1., 0.])
+
+    candidate, replay, term = program_binding_context(receiver, ready, [0., 0.],
+                                                      protect=(protected,), max_update_norm=cap)
+    assert replay.reads[-1].address == ("p", 0)
+    np.testing.assert_array_equal(replay.latest, [0., 0.])
+    assert term.observation_axis == (1., 0.) and term.output == (-cap, 0.)
+    revised = candidate.step(candidate.start(guard_seed, memory))
+    np.testing.assert_array_equal(revised.latest, protected.latest)
 
 
 def _discovery_fixture(tmp_path, *, strongest_unroutable=False, uncertain=False):

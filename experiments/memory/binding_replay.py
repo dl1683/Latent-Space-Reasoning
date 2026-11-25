@@ -10,7 +10,7 @@ import numpy as np
 
 from experiments.memory.binding_feedback import BindingFeedback, BindingFeedbackState
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, _separating_hinge
-from experiments.memory.weight_program import program_weight
+from experiments.memory.weight_program import _frobenius, _remove_span, _row_basis, program_weight
 
 
 _INCOMPLETE_REPLAY = frozenset({
@@ -18,6 +18,7 @@ _INCOMPLETE_REPLAY = frozenset({
 })
 _REPLAY_ERRORS = dict(over="raise", invalid="raise", divide="raise", under="ignore")
 _ROUTE_ATOL = 1e-8
+_CONTEXT_RCOND = 1e-12
 
 
 class RouteFitRefusal(ValueError):
@@ -305,6 +306,21 @@ def _within_context_norm(term, cap):
     return squared_norm <= Fraction(cap) ** 2
 
 
+def _fit_context_term(state, read, desired, residual, anchor_axis, protected_rows, protect, cap, atol):
+    receiver = state._receiver
+    anchor = receiver._anchors[read.address[1]]
+    axis, threshold = _separating_hinge(state.latest, protected_rows, _CONTEXT_RCOND)
+    activation = (float(state.latest @ axis) - threshold) * float(anchor @ anchor_axis)
+    term = ConditionalTerm(axis, anchor_axis, residual / activation, threshold)
+    if not any(term.output) or not _within_context_norm(term, cap):
+        raise ValueError("coordinate context has no change or exceeds its exact update norm cap")
+    candidate = receiver._with_coordinate_term(term)
+    replay = _check_coordinate_fit(candidate, state, read, desired, atol)
+    for run in protect:
+        _replay_coordinate_prefix(candidate, run, atol)
+    return candidate, replay, term
+
+
 def program_binding_context(receiver, state, desired, *, max_update_norm, protect=(), atol=1e-8):
     """Fit a hinged coordinate interaction and replay the target and protected runs."""
     protect = tuple(protect)
@@ -319,23 +335,29 @@ def program_binding_context(receiver, state, desired, *, max_update_norm, protec
         predecessors = (run.feedback.seed, *run.feedback.history)[:-1]
         for hidden, read in zip(predecessors, run.reads, strict=True):
             if read.status == "resolved" and read.bounds.possible_strength is not None:
-                protected.append(hidden)
+                protected.append((hidden, read.address[1]))
     with np.errstate(**_REPLAY_ERRORS):
         read, desired = _coordinate_fit_step(receiver, state, desired)
         diagnostics = {}
         receiver._advance_read(state, read, diagnostics=diagnostics)
-        anchor = receiver._anchors[read.address[1]]
-        axis, threshold = _separating_hinge(state.latest, protected, 1e-12)
-        activation = (float(state.latest @ axis) - threshold) * float(anchor @ anchor)
+        coordinate = read.address[1]
+        anchor = receiver._anchors[coordinate]
         residual = np.arctanh(desired) - diagnostics["preactivation"]
-        term = ConditionalTerm(axis, anchor, residual / activation, threshold)
-        if not any(term.output) or not _within_context_norm(term, cap):
-            raise ValueError("coordinate context has no change or exceeds its exact update norm cap")
-        candidate = receiver._with_coordinate_term(term)
-        replay = _check_coordinate_fit(candidate, state, read, desired, atol)
-        for run in protect:
-            _replay_coordinate_prefix(candidate, run, atol)
-    return candidate, replay, term
+        try:
+            return _fit_context_term(state, read, desired, residual, anchor,
+                                     [hidden for hidden, _ in protected], protect, cap, atol)
+        except (ValueError, FloatingPointError):
+            other_coordinates = sorted({index for _, index in protected if index != coordinate})
+            if not other_coordinates:
+                raise
+            basis = _row_basis(receiver._anchors[other_coordinates], _CONTEXT_RCOND)
+            projected = _remove_span(anchor, basis)
+            length = _frobenius(projected)
+            if length <= _CONTEXT_RCOND:
+                raise
+            anchor_axis = projected / length
+            return _fit_context_term(state, read, desired, residual, anchor_axis,
+                                     [hidden for hidden, index in protected if index == coordinate], protect, cap, atol)
 
 
 def program_binding_coordinates(receiver, examples, *, max_update_norm, protect=(), atol=1e-8):
