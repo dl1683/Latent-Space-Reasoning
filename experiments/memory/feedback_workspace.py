@@ -755,18 +755,32 @@ class FeedbackWorkspace:
         revised = self._prepare_slot_revision(base, changes)
         return base if revised is base else self._commit(base, revised)
 
-    def preview_observation_slots(self, base, changes, *, seed, steps):
+    def preview_observation_slots(self, base, changes, *, seed, steps, published_opening=False):
         """Compare an opening trajectory with dense replay of a proposed slot edit."""
         self._require_current(base)
         kernel = base.kernel
         if type(kernel) is not TreeFeedbackKernel:
             raise ValueError("slot impact preview requires a standard tree feedback kernel")
+        if type(published_opening) is not bool:
+            raise ValueError("published opening preference must be a boolean")
         reference = kernel.revise(base.memory, changes)
         self._check_reference_capacity(kernel, reference)
-        if self._draft_tree_policy is not None:
-            frontier, tolerance = self._draft_tree_policy
-            kernel = kernel.with_frontier(frontier, logit_tolerance=tolerance)
-        preview = kernel.run_with_error_bounds(seed, base.memory, steps=steps, reference_memory=reference)
+        opening = None
+        if published_opening:
+            steps = index(steps)
+            seed = kernel._vector(seed)
+            signature = seed.tobytes()
+            opening = next((trace for trace in (*base._probe_routes, *base._guard_routes)
+                            if trace is not None and trace.matches(kernel, base.memory, signature, steps)), None)
+        if opening is not None:
+            preview = kernel._run_with_error_bounds(
+                seed, base.memory, steps=steps, reference_memory=reference, opening=opening,
+            )
+        else:
+            if not published_opening and self._draft_tree_policy is not None:
+                frontier, tolerance = self._draft_tree_policy
+                kernel = kernel.with_frontier(frontier, logit_tolerance=tolerance)
+            preview = kernel.run_with_error_bounds(seed, base.memory, steps=steps, reference_memory=reference)
         self._require_current(base)
         return preview
 

@@ -94,6 +94,7 @@ class TreeFeedbackBoundedRun:
     error_bounds: tuple[float, ...]
     reference_memory: TreeMemory | None = None
     revision_group_scores: int = 0
+    reused_opening_steps: int = 0
 
 
 def _column_l1(matrix):
@@ -125,6 +126,14 @@ class _TreeReplay:
     memory: TreeMemory
     seed: bytes
     steps: tuple[tuple[_TreeRoute, np.ndarray], ...]
+    final: TreeFeedbackState
+    error_policy: tuple[tuple[str, str], ...]
+
+    def matches(self, kernel, memory, seed, steps):
+        return (self.kernel is kernel and self.memory is memory and self.seed == seed
+                and 0 < steps <= len(self.steps)
+                and all(mode not in ("call", "log") for _, mode in self.error_policy)
+                and self.error_policy == tuple(sorted(np.geterr().items())))
 
     def prefix(self):
         return tuple(hidden.view() for _, hidden in self.steps[:-1])
@@ -378,6 +387,9 @@ class TreeFeedbackKernel(FeedbackKernel):
 
     def run_with_error_bounds(self, seed, memory=None, *, steps, reference_memory=None):
         """Bound dense-replay error, optionally for a revision of the opening bank."""
+        return self._run_with_error_bounds(seed, memory, steps=steps, reference_memory=reference_memory)
+
+    def _run_with_error_bounds(self, seed, memory, *, steps, reference_memory, opening=None):
         if type(self) is not TreeFeedbackKernel or any(
                 bank is not None and type(bank) is not TreeMemory for bank in (memory, reference_memory)):
             raise TypeError("error bounds require the standard tree feedback transition and memory")
@@ -388,13 +400,13 @@ class TreeFeedbackKernel(FeedbackKernel):
         if not 0 <= steps <= self._max_steps:
             raise ValueError("bounded run steps exceed the feedback budget")
         state = self.start(seed, memory)
+        if opening is not None and not opening.matches(self, state._memory, state._seed.tobytes(), steps):
+            raise ValueError("retained trajectory does not match the opening run")
         reference = state._memory if reference_memory is None else reference_memory
         self._check_memory(reference)
         opening_root, root = state._memory._root, reference._root
-        if not steps or opening_root is root is None:
-            for _ in range(steps):
-                state = self.step(state)
-            return TreeFeedbackBoundedRun(state, (0.,) * steps, reference)
+        if not steps:
+            return TreeFeedbackBoundedRun(state, (), reference)
 
         groups = _revision_groups(opening_root, root) if opening_root is not root else None
         paired = () if groups is None else groups[-1]
@@ -407,21 +419,31 @@ class TreeFeedbackKernel(FeedbackKernel):
             bounds = []
             gains_ready = False
             latest_error = history_error = 0.
-            for _ in range(steps):
-                previous = state
+            for step in range(steps):
+                query = None
                 value_edit_gap = 0.
-                if groups is None:
-                    state = self.step(previous)
-                    local_gap = state.attention.joint_l1_bound
+                if opening is not None:
+                    hidden = state._seed if not step else opening.final._history[step - 1]
+                    local_gap = opening.steps[step][0].attention.joint_l1_bound
+                    if groups is not None:
+                        query = hidden @ self._query
+                        projected = self._query_observations(hidden, query)
+                        history_logits = self._history_logits(opening.final._keys[:step], query)
                 else:
-                    diagnostics = {}
-                    state, _, _ = self._advance(previous, diagnostics=diagnostics)
-                    projected = (previous.latest @ observation_query if opening_root is None
-                                 else diagnostics["observation_query"])
-                    history_logits = diagnostics["logits"][state.attention.groups:]
+                    hidden = state.latest
+                    if groups is None:
+                        state = self.step(state)
+                    else:
+                        diagnostics = {}
+                        state, _, _ = self._advance(state, diagnostics=diagnostics)
+                        projected = (hidden @ observation_query if opening_root is None
+                                     else diagnostics["observation_query"])
+                        history_logits = diagnostics["logits"][state.attention.groups:]
+                    local_gap = state.attention.joint_l1_bound
+                if groups is not None:
                     revision_gap, delta = _revision_attention_change(groups, projected, history_logits, paired_deltas)
-                    local_gap = state.attention.joint_l1_bound + revision_gap
-                    value_edit_gap = self._revision_value_gap(previous.latest, delta)
+                    local_gap += revision_gap
+                    value_edit_gap = self._revision_value_gap(hidden, delta)
                 if local_gap == latest_error == history_error == 0.:
                     latest_error = history_error = 2. * tanh(value_edit_gap / 2.)
                     bounds.append(latest_error)
@@ -446,18 +468,18 @@ class TreeFeedbackKernel(FeedbackKernel):
                 logit_gap = latest_error * observation_logit_gain
                 value_gain = observation_value_gain
                 value_drift = latest_error * carry_gain
-                if previous._history:
-                    query = previous.latest @ self._query
+                if step:
+                    query = hidden @ self._query if query is None else query
                     feedback_logit_gap = latest_error * feedback_query_gain
                     feedback_logit_gap += history_error * (feedback_keys @ np.abs(query))
                     logit_gap = max(logit_gap, feedback_logit_gap)
                     value_drift += history_error * feedback_value_gain
                 for axis, threshold, amplitude, slope in conditional:
-                    gate = previous.latest @ axis
+                    gate = hidden @ axis
                     gate_size = abs(gate) if threshold is None else max(0., gate - threshold)
                     value_gain += gate_size * amplitude
                     value_drift += latest_error * slope * amplitude
-                if previous._history:
+                if step:
                     value_gain = max(value_gain, feedback_value_gain)
 
                 probability_gap = min(2., local_gap + 2. * tanh(logit_gap / 2.))
@@ -465,7 +487,17 @@ class TreeFeedbackKernel(FeedbackKernel):
                 latest_error = 2. * tanh(preactivation_gap / 2.)
                 history_error = max(history_error, latest_error)
                 bounds.append(latest_error)
-        return TreeFeedbackBoundedRun(state, tuple(bounds), reference, group_scores)
+        reused = 0
+        if opening is not None:
+            retained = opening.final
+            attention = replace(opening.steps[steps - 1][0].attention, scored_nodes=0,
+                                reused_route=True, reused_node_scores=0)
+            history_scores = 0 if groups is None else steps * (steps - 1) // 2
+            state = replace(state, _history=retained._history[:steps], _keys=retained._keys[:steps],
+                            _values=retained._values[:steps], observation_scores=0,
+                            feedback_scores=history_scores, attention=attention)
+            reused = steps
+        return TreeFeedbackBoundedRun(state, tuple(bounds), reference, group_scores, reused)
 
     def _advance(self, state, *, diagnostics=None):
         self._require_can_step(state)
@@ -534,6 +566,12 @@ class TreeFeedbackKernel(FeedbackKernel):
                 return stepped, float(probability) / score.node.count
         raise RuntimeError("tree softmax frontier omitted the selected source")
 
+    def _history_logits(self, keys, query):
+        scores = np.asarray(keys).reshape(-1, self._query.shape[1]) @ query
+        if not np.isfinite(scores).all():
+            raise FloatingPointError("nonfinite tree feedback history score")
+        return scores
+
     def _route(self, state, diagnostics=None, *, previous=None, retain_scores=0):
         history_count = len(state._history)
         memory = state._memory
@@ -550,10 +588,7 @@ class TreeFeedbackKernel(FeedbackKernel):
                 memory._root, observation_query, self._max_frontier, self._logit_tolerance,
                 prior_scores, recorded, retain_scores,
             )
-            history_keys = np.asarray(state._keys).reshape(-1, self._query.shape[1])
-            history_logits = history_keys @ query
-            if not np.isfinite(history_logits).all():
-                raise FloatingPointError("nonfinite tree feedback history score")
+            history_logits = self._history_logits(state._keys, query)
             groups = len(frontier)
             logits = np.concatenate(([score.logit for score in frontier], history_logits))
             mixture = np.zeros(self._width)
@@ -645,4 +680,5 @@ class TreeFeedbackKernel(FeedbackKernel):
             if hit and hidden.tobytes() != reusable[step][1].tobytes():
                 reusable = ()
             trace.append((route, hidden))
-        return state, _TreeReplay(self, state._memory, seed_bytes, tuple(trace))
+        return state, _TreeReplay(self, state._memory, seed_bytes, tuple(trace), state,
+                                  tuple(sorted(np.geterr().items())))

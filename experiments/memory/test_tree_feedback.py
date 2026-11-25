@@ -423,11 +423,14 @@ def test_revision_bound_handles_empty_banks_and_insertion_beside_generated_histo
 
 
 @pytest.mark.parametrize("durable", [False, True])
-def test_workspace_previews_slot_impact_without_publishing_and_uses_the_current_pin(tmp_path, monkeypatch, durable):
+@pytest.mark.parametrize("published_opening", [False, True])
+def test_workspace_previews_slot_impact_without_publishing_and_uses_the_current_pin(
+    tmp_path, monkeypatch, durable, published_opening,
+):
     tree = _repair_tree(coherent=True)
     probe = FeedbackProbe((1,), 1, (.4,))
     args = (tree, [[0.], [1.]], [probe])
-    options = dict(max_update_norm=1., max_reference_frontier=2)
+    options = dict(max_update_norm=1., max_reference_frontier=2, reuse_tree_routes=published_opening)
     if durable:
         path = tmp_path / "preview.db"
         workspace = JournaledFeedbackWorkspace(path, *args, create=True, **options)
@@ -436,25 +439,28 @@ def test_workspace_previews_slot_impact_without_publishing_and_uses_the_current_
         writer = workspace = FeedbackWorkspace(*args, **options)
     base = workspace.snapshot()
     changes = {1: [-1.]}
-    preview = workspace.preview_observation_slots(base, changes, seed=probe.seed, steps=probe.steps)
+    preview_options = dict(seed=probe.seed, steps=probe.steps, published_opening=published_opening)
+    preview = workspace.preview_observation_slots(base, changes, **preview_options)
     assert workspace.snapshot() is base and writer.snapshot().number == base.number
     assert preview.state._memory is base.memory and preview.reference_memory is not base.memory
-    assert preview.state._kernel._max_frontier == 1
+    assert preview.state._kernel._max_frontier == (2 if published_opening else 1)
+    assert preview.reused_opening_steps == (1 if published_opening else 0)
 
-    bound = TreeFeedbackKernel.run_with_error_bounds
+    run = "_run_with_error_bounds" if published_opening else "run_with_error_bounds"
+    bound = getattr(TreeFeedbackKernel, run)
 
     def publish_during_preview(kernel, *args, **kwargs):
         writer.revise_observation_slots(writer.snapshot(), changes)
         return bound(kernel, *args, **kwargs)
 
     with monkeypatch.context() as patch:
-        patch.setattr(TreeFeedbackKernel, "run_with_error_bounds", publish_during_preview)
+        patch.setattr(TreeFeedbackKernel, run, publish_during_preview)
         with pytest.raises(StaleFeedbackRevision):
-            workspace.preview_observation_slots(base, changes, seed=probe.seed, steps=probe.steps)
+            workspace.preview_observation_slots(base, changes, **preview_options)
     committed = workspace.snapshot()
     assert committed.number == base.number + 1 and committed.memory is not preview.reference_memory
     with pytest.raises(StaleFeedbackRevision):
-        workspace.preview_observation_slots(base, changes, seed=probe.seed, steps=probe.steps)
+        workspace.preview_observation_slots(base, changes, **preview_options)
 
 
 def test_multiplicity_survives_a_huge_common_observation_and_history_logit():
@@ -621,6 +627,61 @@ def test_tree_refinement_cannot_publish_over_a_source_revision(monkeypatch, unex
     assert workspace.snapshot() is revised and revised.number == base.number + 1
     repaired = workspace.maintain(max_candidates=2, max_workers=2)
     assert repaired.status == "committed" and repaired.base is revised
+
+
+def test_workspace_reuses_the_published_opening_prefix_for_multiple_slot_previews(monkeypatch):
+    key = np.array([[1.], [0.]])
+    weights = dict(query=6 * key, carry=np.diag([.8, 0.]), observation_key=key,
+                   observation_value=np.diag([0., .7]), feedback_key=.4 * key,
+                   feedback_value=np.diag([0., .3]), max_steps=4)
+    tree = TreeFeedbackKernel(depth=3, max_frontier=2, **weights)
+    rows = [[x / 16., .5] for x in range(-4, 4)]
+    probe = FeedbackProbe((.5, 0.), 1, (0., .2))
+    guard = FeedbackProbe((1., 0.), 3, (0., .2))
+    workspace = FeedbackWorkspace(tree, rows, [probe], guards=[guard], max_update_norm=1.,
+                                  max_reference_frontier=8, reuse_tree_routes=True)
+    base = workspace.snapshot()
+    retained = base._guard_routes[0].final
+    edits = ({0: [-.125, .6]}, {7: None}, {})
+    cold = [base.kernel.run_with_error_bounds(guard.seed, base.memory, steps=2,
+                                             reference_memory=base.kernel.revise(base.memory, changes))
+            for changes in edits]
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("a retained opening prefix was traversed or regenerated")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(TreeFeedbackKernel, "_route", unexpected)
+        patch.setattr(TreeFeedbackKernel, "_apply_route", unexpected)
+        patch.setattr(TreeFeedbackKernel, "_project_generated", unexpected)
+        previews = [workspace.preview_observation_slots(base, changes, seed=guard.seed, steps=2,
+                                                         published_opening=True)
+                    for changes in edits]
+    for changes, actual, expected in zip(edits, previews, cold, strict=True):
+        assert actual.error_bounds == expected.error_bounds
+        assert actual.revision_group_scores == expected.revision_group_scores
+        assert actual.reused_opening_steps == 2
+        assert actual.state._kernel is base.kernel and actual.state._memory is base.memory
+        assert actual.state.observation_scores == 0 and expected.state.observation_scores == 30
+        assert actual.state.feedback_scores == (1 if changes else 0)
+        assert actual.state.attention.reused_route
+        assert actual.state._history[1] is retained._history[1]
+        assert actual.state._keys[1] is retained._keys[1]
+        assert actual.state._values[1] is retained._values[1]
+        np.testing.assert_array_equal(base.kernel.step(actual.state).latest, retained._history[2])
+    assert workspace.snapshot() is base
+
+    draft = workspace.preview_observation_slots(base, edits[0], seed=guard.seed, steps=2)
+    assert draft.reused_opening_steps == 0 and draft.state._kernel._max_frontier == 2
+    for seed, steps in (((1., -0.), 2), (guard.seed, 4)):
+        fallback = workspace.preview_observation_slots(base, edits[0], seed=seed, steps=steps,
+                                                       published_opening=True)
+        assert fallback.reused_opening_steps == 0 and fallback.state._kernel is base.kernel
+    other_underflow = "warn" if np.geterr()["under"] != "warn" else "ignore"
+    with np.errstate(under=other_underflow):
+        fallback = workspace.preview_observation_slots(base, edits[0], seed=guard.seed, steps=2,
+                                                       published_opening=True)
+        assert fallback.reused_opening_steps == 0 and fallback.state._kernel is base.kernel
 
 
 def test_route_reuse_recomputes_the_suffix_on_a_subtolerance_prefix_change():
