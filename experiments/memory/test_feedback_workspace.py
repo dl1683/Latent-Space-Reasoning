@@ -541,6 +541,34 @@ def test_source_replay_reconstructs_disagreement_and_binds_its_transition_map(tm
         _source_workspace(path, rows=rows, disagreement_axes=[1], disagreement_value=[[1, 0]])
 
 
+def test_source_replay_restores_payload_binding_and_binds_both_branch_axes(tmp_path):
+    path = tmp_path / "branch.sqlite"
+    keys = np.eye(3)[:, :1]
+    rows = [[1, 1, 1], [1, -1, -1]]
+    seed = [1, 0, 1]
+
+    def reopen(branch=(1, 2)):
+        kernel = LinearFeedbackKernel(
+            query=keys, carry=None, observation_key=keys, observation_value=np.eye(3),
+            feedback_key=keys, feedback_value=np.eye(3), max_steps=1, payload_branch=branch,
+        )
+        probe = FeedbackProbe(tuple(seed), 1, tuple(np.tanh(np.asarray(rows[0]) / 2)))
+        return JournaledFeedbackWorkspace(path, kernel, rows, [probe], source_ids=["left", "right"],
+                                          max_update_norm=1)
+
+    source = reopen()
+    base = source.snapshot()
+    updated = source.revise_sources(base, {"left": [1, 1, -1], "right": [1, -1, 1]})
+    recovered = reopen().snapshot()
+    np.testing.assert_array_equal(recovered.memory._moments, updated.memory._moments)
+    assert recovered.errors == updated.errors
+    assert recovered.kernel.step(recovered.start(seed)).latest[2] == pytest.approx(-np.tanh(0.5))
+    assert base.kernel.step(base.start(seed)).latest[2] == pytest.approx(np.tanh(0.5))
+    for changed_axis in ((0, 2), (1, 0)):
+        with pytest.raises(ValueError, match="initial workspace inputs disagree"):
+            reopen(branch=changed_axis)
+
+
 def test_maintenance_tries_structural_repair_when_admission_guard_refuses_value_edit():
     fit = FeedbackProbe((1, 0), 1, (0.4, 0))
     guard = FeedbackProbe((0, 1), 1, (0, 0))

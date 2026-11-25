@@ -14,13 +14,14 @@ def _key(row, weight):
     return np.asarray(key)
 
 
-def _dense_step(hidden, observations, history, weights, pairs):
+def _dense_step(hidden, observations, history, weights, pairs, branch=None):
     query = np.clip(hidden @ weights["query"], -1, 1)
     signed_query = [max(x, 0) for x in [*query, *-query]]
     scores, values = [], []
-    for rows, key_map, value_map in (
-        (observations, weights["observation_key"], weights["observation_value"]),
-        (history, weights["feedback_key"], weights["feedback_value"]),
+    routing_mass = 0
+    for rows, key_map, value_map, observed in (
+        (observations, weights["observation_key"], weights["observation_value"], True),
+        (history, weights["feedback_key"], weights["feedback_value"], False),
     ):
         for row in rows:
             key = _key(row, key_map)
@@ -29,14 +30,22 @@ def _dense_step(hidden, observations, history, weights, pairs):
             for left, right in pairs:
                 score += (signed_query[left] * signed_query[right]
                           * signed_key[left] * signed_key[right] / 127)
+            routing_mass += score
+            if observed and branch is not None:
+                axis, selector = branch
+                control = max(-1, min(1, hidden[selector]))
+                if np.sign(round(127 * row[axis])) != np.sign(control):
+                    score *= 1 - abs(control)
             scores.append(score)
             values.append((np.rint(127 * row) / 127) @ value_map)
-    attended = np.asarray(scores) @ values / sum(scores) if sum(scores) else 0
+    attended = np.asarray(scores) @ values / routing_mass if routing_mass else 0
     return np.tanh(hidden @ weights["carry"] + attended)
 
 
-@pytest.mark.parametrize("pairs", [(), ((0, 4), (2, 3))])
-def test_moment_feedback_matches_direct_row_scoring_with_generated_history(pairs):
+@pytest.mark.parametrize("pairs,branch", [
+    ((), None), (((0, 4), (2, 3)), None), (((0, 4), (2, 3)), (0, 3)),
+])
+def test_moment_feedback_matches_direct_row_scoring_with_generated_history(pairs, branch):
     rng = np.random.default_rng(423)
     weights = dict(
         query=rng.uniform(-1, 1, (4, 3)), carry=0.7 * np.eye(4),
@@ -44,30 +53,32 @@ def test_moment_feedback_matches_direct_row_scoring_with_generated_history(pairs
         observation_value=rng.uniform(-1, 1, (4, 4)),
         feedback_key=rng.uniform(-1, 1, (4, 3)), feedback_value=2 * np.eye(4),
     )
-    kernel = LinearFeedbackKernel(**weights, max_steps=3, feature_pairs=pairs)
+    kernel = LinearFeedbackKernel(**weights, max_steps=3, feature_pairs=pairs, payload_branch=branch)
     observations = rng.uniform(-1, 1, (19, 4))
     memory = kernel.prepare(observations)
     expected = np.array([0.3, 0.5, -0.25, 0.9])
     state = kernel.start(expected, memory)
     history = []
     for _ in range(2):
-        expected = _dense_step(expected, observations, history, weights, pairs)
+        expected = _dense_step(expected, observations, history, weights, pairs, branch)
         history.append(expected)
         state = kernel.step(state)
         np.testing.assert_allclose(state.latest, expected, atol=1e-14, rtol=0)
     baseline = kernel.step(state)
-    expected = _dense_step(expected, observations, history, weights, pairs)
+    expected = _dense_step(expected, observations, history, weights, pairs, branch)
     np.testing.assert_allclose(baseline.latest, expected, atol=1e-14, rtol=0)
 
     intervention = np.array([0.8, -0.5, 0.4, -0.2])
     swapped = kernel.intervene(state, 0, intervention)
     np.testing.assert_array_equal(swapped.latest, state.latest)
     altered = kernel.step(swapped)
-    expected = _dense_step(history[-1], observations, [intervention, history[-1]], weights, pairs)
+    expected = _dense_step(history[-1], observations, [intervention, history[-1]], weights, pairs, branch)
     np.testing.assert_allclose(altered.latest, expected, atol=1e-14, rtol=0)
     assert np.max(np.abs(altered.latest - baseline.latest)) > 1e-2
     assert baseline.observation_scores == baseline.feedback_scores == 0
-    assert memory.nbytes == kernel.prepare(observations[:1]).nbytes == 8 * (6 + len(pairs)) * 5
+    columns = 5 if branch is None else 15
+    assert memory.nbytes == kernel.prepare(observations[:1]).nbytes == 8 * (6 + len(pairs)) * columns
+    assert baseline._history_moments.shape[1] == 5
 
 
 def test_exact_revision_of_a_necessary_row_alters_only_the_affected_two_step_read():
@@ -286,3 +297,85 @@ def test_opposing_sign_measure_distinguishes_equal_mean_and_variance():
     for values, expected in ((first, 32 / 127), (second, 16 / 127)):
         bank = kernel.prepare([[1, x / 127] for x in values])
         assert kernel.observation_disagreement(kernel.start([1, 0], bank))[0] == pytest.approx(expected)
+
+
+def test_payload_branch_preserves_the_binding_used_at_the_next_latent_step():
+    keys = np.eye(6)[:, [0, 1, 5]]
+    values = np.zeros((6, 6))
+    values[0, 1] = values[4, 4] = 1
+    values[3, 3] = values[5, 3] = 1
+    kernel = LinearFeedbackKernel(
+        query=keys, carry=None, observation_key=keys, observation_value=values,
+        feedback_key=keys, feedback_value=np.zeros_like(values), max_steps=2,
+        disagreement_axes=[2, 3], payload_branch=(2, 4),
+    )
+    cue = [1, 0, 0, 0, 1, 0]
+    unrelated = [0, 0, 0, 0, 0, 1]
+    bound = [[0, 1, 1, 1, 0, 0], [0, 1, -1, -1, 0, 0]]
+    rebound = [[0, 1, 1, -1, 0, 0], [0, 1, -1, 1, 0, 0]]
+    bank = kernel.prepare([cue, *bound, unrelated])
+    edited_bank = kernel.revise(bank, remove=bound, append=rebound)
+    np.testing.assert_array_equal(edited_bank._moments, kernel.prepare([cue, *rebound, unrelated])._moments)
+    np.testing.assert_array_equal(bank._moments[:, :11], edited_bank._moments[:, :11])
+    seed = np.eye(6)[0]
+    first = kernel.step(kernel.start(seed, bank))
+    swapped_first = kernel.step(kernel.start(seed, edited_bank))
+    np.testing.assert_array_equal(first.latest, swapped_first.latest)
+    np.testing.assert_array_equal(kernel.observation_disagreement(first), [1, 1])
+    np.testing.assert_array_equal(kernel.observation_disagreement(swapped_first), [1, 1])
+    final = kernel.step(first).latest
+    s = np.tanh(1)
+    generated_mass = round(127 * s) / 127
+    assert final[3] == pytest.approx(np.tanh(s / (2 + generated_mass)))
+    assert kernel.step(swapped_first).latest[3] == pytest.approx(-final[3])
+
+    changed_selector = first.latest.copy()
+    changed_selector[4] *= -1
+    intervened = kernel.intervene(first, 0, changed_selector)
+    np.testing.assert_array_equal(intervened.latest @ keys, first.latest @ keys)
+    np.testing.assert_array_equal(intervened._history_moments[:, 0], first._history_moments[:, 0])
+    assert kernel.step(intervened).latest[3] == pytest.approx(-final[3])
+    reversed_cue = kernel.revise(bank, remove=[cue], append=[[1, 0, 0, 0, -1, 0]])
+    directive = kernel.step(kernel.start(seed, reversed_cue))
+    np.testing.assert_array_equal(directive.latest, intervened.latest)
+    assert kernel.step(directive).latest[3] == pytest.approx(-final[3])
+    changed_selector[4] = 0
+    assert kernel.step(kernel.intervene(first, 0, changed_selector)).latest[3] == 0
+
+    missing = kernel.revise(bank, remove=[cue])
+    no_cue = kernel.step(kernel.step(kernel.start(seed, missing)))
+    np.testing.assert_array_equal(no_cue.latest, np.zeros(6))
+    restored = kernel.revise(missing, append=[cue])
+    np.testing.assert_array_equal(kernel.step(kernel.step(kernel.start(seed, restored))).latest, final)
+    for revision in (bank, edited_bank, missing, restored):
+        assert kernel.step(kernel.start(np.eye(6)[5], revision)).latest[3] == pytest.approx(np.tanh(1))
+
+    target = [0, 0, 0, 0.5, 0, 0]
+    retargeted, replay, _ = kernel.retarget(first, 2, target, max_update_norm=1)
+    np.testing.assert_array_equal(replay.history[0], first.latest)
+    np.testing.assert_allclose(replay.latest, target, atol=1e-12, rtol=0)
+    assert replay._memory is bank
+    assert retargeted.step(retargeted.start(seed, bank)).latest[4] == first.latest[4]
+
+
+def test_payload_retraction_checks_partitions_even_when_pooled_moments_are_feasible():
+    key = np.eye(3)[:, :1]
+    kernel = LinearFeedbackKernel(
+        query=key, carry=None, observation_key=key, observation_value=np.eye(3),
+        feedback_key=key, feedback_value=np.eye(3), max_steps=1, payload_branch=(1, 2),
+    )
+    bank = kernel.prepare([[1, 0.25, 0.25], [1, -0.25, -0.25]])
+    with pytest.raises(ValueError, match="retained payload partition"):
+        kernel.revise(bank, remove=[[1, 0.25, -0.25]])
+
+
+def test_unsupported_payload_branch_attenuates_without_renormalizing_survivors():
+    key = np.eye(3)[:, :1]
+    kernel = LinearFeedbackKernel(
+        query=key, carry=None, observation_key=key, observation_value=np.diag([0, 0, 1]),
+        feedback_key=key, feedback_value=np.eye(3), max_steps=1, payload_branch=(1, 2),
+    )
+    bank = kernel.prepare([[1, -1, 1], [1, 0, 1]])
+    for control in (0, 0.5, 1 - 1e-6, 1):
+        output = kernel.step(kernel.start([1, 0, control], bank)).latest[2]
+        assert output == pytest.approx(np.tanh(1 - control), abs=1e-15)

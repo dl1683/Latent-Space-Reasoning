@@ -178,6 +178,9 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
                     digest.update(b"\nnone\n")
                 else:
                     add_array(kernel._disagreement_value)
+            if kernel._payload_branch is not None:
+                digest.update(b"\npayload branch v1\n")
+                digest.update(json.dumps(kernel._payload_branch, separators=(",", ":")).encode())
             for name, row in sorted(initial_sources.items()):
                 digest.update(json.dumps(name).encode())
                 add_array(row)

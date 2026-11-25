@@ -53,10 +53,11 @@ class LinearFeedbackKernel(FeedbackKernel):
     _pair_right: np.ndarray
     _disagreement_axes: tuple[int, ...]
     _disagreement_value: np.ndarray | None
+    _payload_branch: tuple[int, int] | None
 
     def __init__(self, *, query, carry, observation_key, observation_value,
                  feedback_key, feedback_value, max_steps, feature_pairs=(),
-                 disagreement_axes=(), disagreement_value=None):
+                 disagreement_axes=(), disagreement_value=None, payload_branch=None):
         query = _real_array(query)
         if query.ndim != 2 or not all(query.shape):
             raise ValueError("query map must be a nonempty matrix")
@@ -70,6 +71,11 @@ class LinearFeedbackKernel(FeedbackKernel):
             disagreement_value = _frozen(disagreement_value)
         object.__setattr__(self, "_disagreement_axes", axes)
         object.__setattr__(self, "_disagreement_value", disagreement_value)
+        if payload_branch is not None:
+            payload_branch = tuple(map(index, payload_branch))
+            if len(payload_branch) != 2 or any(not 0 <= axis < len(query) for axis in payload_branch):
+                raise ValueError("payload branch requires valid payload and selector axes")
+        object.__setattr__(self, "_payload_branch", payload_branch)
         observation_key, feedback_key = map(_real_array, (observation_key, feedback_key))
         if observation_key.ndim != 2:
             raise ValueError("linear feedback key maps must be matrices")
@@ -95,10 +101,15 @@ class LinearFeedbackKernel(FeedbackKernel):
         keys = np.sign(projected) * np.minimum(magnitude, _LEVELS)
         features = self._add_pairs(_sign_features(keys), _LEVELS)
         # Column zero carries the unnormalized mass for each feature.
-        columns = (np.ones(len(rows), dtype=np.int64), payload)
-        if observation and self._disagreement_axes:
-            columns += (_sign_features(payload[:, self._disagreement_axes]),)
-        packed = np.column_stack(columns)
+        base = np.column_stack((np.ones(len(rows), dtype=np.int64), payload))
+        columns = [base]
+        if observation:
+            if self._disagreement_axes:
+                columns.append(_sign_features(payload[:, self._disagreement_axes]))
+            if self._payload_branch is not None:
+                axis, _ = self._payload_branch
+                columns.extend((base * (payload[:, [axis]] > 0), base * (payload[:, [axis]] < 0)))
+        packed = np.column_stack(columns) if len(columns) > 1 else base
         return features.T @ packed
 
     def _add_pairs(self, unary, unary_scale):
@@ -124,6 +135,27 @@ class LinearFeedbackKernel(FeedbackKernel):
         if not isinstance(memory, MomentMemory) or memory._key_map is not self._observation_key:
             raise ValueError("memory belongs to a different linear feedback key map")
 
+    def _disagreement_columns(self, moments):
+        start = 1 + self._width
+        return moments[:, start:start + 2 * len(self._disagreement_axes)]
+
+    def _branch_partitions(self, moments):
+        start = 1 + self._width + 2 * len(self._disagreement_axes)
+        return np.split(moments[:, start:], 2, axis=1)
+
+    def _check_branch_retraction(self, remaining):
+        axis, _ = self._payload_branch
+        positive, negative = self._branch_partitions(remaining)
+        neutral = remaining[:, :1 + self._width] - positive - negative
+        for partition in (positive, negative, neutral):
+            mass = partition[:, :1]
+            if np.any(mass < 0) or np.any(np.abs(partition[:, 1:]) > mass * _LEVELS):
+                raise ValueError("retraction exceeds the retained payload partition")
+        if (np.any(positive[:, 1 + axis] < positive[:, 0])
+                or np.any(negative[:, 1 + axis] > -negative[:, 0])
+                or np.any(neutral[:, 1 + axis] != 0)):
+            raise ValueError("retraction violates the retained payload partition signs")
+
     def revise(self, memory, *, remove=None, append=None):
         """Apply source-ledger-verified row retractions and additions to a snapshot."""
         self._check_memory(memory)
@@ -139,12 +171,14 @@ class LinearFeedbackKernel(FeedbackKernel):
                 or np.any(np.abs(remaining[:, 1:]) > mass[:, None] * _LEVELS)):
             raise ValueError("retraction exceeds the retained feature moments")
         if self._disagreement_axes:
-            positive, negative = np.split(remaining[:, 1 + self._width:], 2, axis=1)
+            positive, negative = np.split(self._disagreement_columns(remaining), 2, axis=1)
             means = remaining[:, 1:1 + self._width][:, self._disagreement_axes]
             if (np.any(positive < 0) or np.any(negative < 0)
                     or np.any(positive + negative > mass[:, None] * _LEVELS)
                     or np.any(positive - negative != means)):
                 raise ValueError("retraction exceeds the retained disagreement moments")
+        if self._payload_branch is not None:
+            self._check_branch_retraction(remaining)
         return MomentMemory(self._observation_key, _frozen(remaining + added._moments), count)
 
     def start(self, seed, memory=None):
@@ -169,7 +203,7 @@ class LinearFeedbackKernel(FeedbackKernel):
         mass = float(query @ obs[:, 0])
         if mass == 0:
             return np.zeros(len(self._disagreement_axes))
-        sign_values = (query @ obs[:, 1 + self._width:]) / (mass * _LEVELS)
+        sign_values = (query @ self._disagreement_columns(obs)) / (mass * _LEVELS)
         positive, negative = np.split(sign_values, 2)
         return np.minimum(2 * np.minimum(positive, negative), 1)
 
@@ -182,6 +216,21 @@ class LinearFeedbackKernel(FeedbackKernel):
             return _frozen(self._read_disagreement(
                 self._query_features(state.latest), state._memory._moments,
             ))
+
+    def _selected_payloads(self, hidden, moments):
+        base = moments[:, 1:1 + self._width]
+        if self._payload_branch is None:
+            return base
+        _, selector = self._payload_branch
+        control = float(np.clip(hidden[selector], -1, 1))
+        if control == 0:
+            return base
+        positive, negative = self._branch_partitions(moments)
+        partition = (positive if control > 0 else negative)[:, 1:]
+        strength = abs(control)
+        if strength == 1:
+            return partition
+        return (1 - strength) * base + strength * partition
 
     def _advance(self, state, *, diagnostics=None):
         self._require_state(state)
@@ -198,7 +247,8 @@ class LinearFeedbackKernel(FeedbackKernel):
             history_value = None
             routed_mass = float(query @ mass)
             if routed_mass > 0:
-                mixture = (query @ obs[:, 1:1 + self._width]) / (routed_mass * _LEVELS)
+                payloads = self._selected_payloads(hidden, obs)
+                mixture = (query @ payloads) / (routed_mass * _LEVELS)
                 if generated is not None:
                     history_mix = (query @ generated[:, 1:]) / (routed_mass * _LEVELS)
                     history_value = _apply_value(self._feedback_value, history_mix)
