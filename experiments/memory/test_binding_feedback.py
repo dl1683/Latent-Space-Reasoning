@@ -528,16 +528,19 @@ def test_guarded_replay_keeps_extreme_negative_attention_terms_at_zero(tmp_path)
     assert installed.latest[2] == np.tanh(.8)
 
 
-def test_future_replay_reuses_the_journal_tip_fence(tmp_path, monkeypatch):
-    path, frame, worker, base, receiver, failed, options = _repair_fixture(tmp_path)
+@pytest.mark.parametrize("downstream", [False, True])
+def test_future_replay_reuses_the_journal_tip_fence(tmp_path, monkeypatch, downstream):
+    fixture = _downstream_fixture(tmp_path, "uses_state") if downstream else _repair_fixture(tmp_path)
+    path, frame, worker, base, receiver, failed, options = fixture
     draft = propose_binding_program(worker, base, failed, **options)
     assert draft.status == "opened"
-    _write(worker, {"compatible": b"c,0,1,0.8"})
+    changes = {"repair": b"c,0,1,0.8", "later": b"b,0,1,0.9"} if downstream else {"compatible": b"c,0,1,0.8"}
+    _write(worker, changes)
     judge = JournaledCorpusWorkspace(path, frame)
     check_replay = corpus_binding_journal.check_binding_replay
 
-    def check_and_write(*args):
-        result = check_replay(*args)
+    def check_and_write(*args, **kwargs):
+        result = check_replay(*args, **kwargs)
         assert result == "published"
         _write(worker, {"unrelated": b"q,1,0,0.6"})
         return result
@@ -547,6 +550,150 @@ def test_future_replay_reuses_the_journal_tip_fence(tmp_path, monkeypatch):
         judge.finish_program_trial(draft.trial.trial_id, receiver=receiver)
     assert judge.finish_program_trial(draft.trial.trial_id).status == "horizon_passed"
     assert judge.snapshot().memory._certain._gates == base.memory._certain._gates
+
+
+def _downstream_fixture(tmp_path, case, *, max_steps=3, disjoint=False, post_read_overflow=False):
+    gates = {"late": BindingGate("or", ("a",))}
+    terminal = "b"
+    if case == "state_unused":
+        terminal = "child"
+        gates["child"] = BindingGate("or", ("late",))
+    frame = _matching_frame().reprogram(gates)
+    path = tmp_path / "downstream.sqlite"
+    worker = JournaledCorpusWorkspace(path, frame, create=True)
+    first = b"p,1,0,1" if disjoint else b"p,1,0,0"
+    base = _write(worker, {"earlier": first, "repair": b"c,0,1,0.7", "decoy": b"q,0,1,0.3"})
+    width = 5 if post_read_overflow else 4
+    carry, values = np.zeros((width, width)), np.zeros((width, width))
+    carry[0, 1] = 2
+    carry[1, 3] = 1
+    values[2, 0] = .125
+    keys, feedback_key = np.zeros((width, 1)), np.zeros((width, 1))
+    feedback_key[2, 0] = 1
+    kernel = FeedbackKernel(query=keys, carry=carry, observation_key=keys,
+                            observation_value=np.zeros((width, width)), feedback_key=feedback_key,
+                            feedback_value=values, max_steps=max_steps)
+    observation, query = np.zeros((6, width)), np.zeros((width, 4))
+    observation[5, 2] = 1
+    if post_read_overflow:
+        observation[3, 4] = observation[5, 4] = 1.05e308
+    query[0, 0] = query[1, 1] = 2
+    if case in ("state_unused", "incumbent_matches"):
+        query[3, 2], query[3, 3] = 2, .5
+    else:
+        query[2, 2], query[3, 3] = (0 if case == "route_mismatch" else 2), .5
+        if case == "ambiguous_control":
+            query[3, 2] = .5
+    receiver = BindingFeedback(kernel, frame, (("p", 0), ("late", 1), (terminal, 1), ("q", 1)),
+                               query=query, observation=observation, disjoint_reads=disjoint)
+    seed = np.zeros(width)
+    seed[0] = 1
+    failed = receiver.step(receiver.step(receiver.start(seed, base.memory)))
+    prefix = (("p", 0), ("late", 1))
+    sources = {"earlier", "repair"} if disjoint else {"repair"}
+    future_target = CorpusProgramExpectation(
+        CorpusProgramProbe(prefix if disjoint else prefix[-1:]),
+        CorpusBindingRead(BindingProof(.8, frozenset(sources)), .8),
+    )
+    witness, grade = ("repair", .8) if case == "state_unused" else ("later", .9)
+    later_addresses = (*prefix, (terminal, 1)) if disjoint else ((terminal, 1),)
+    later_sources, grade = (sources | {witness}, min(grade, .8)) if disjoint else ({witness}, grade)
+    target = CorpusProgramExpectation(CorpusProgramProbe(later_addresses),
+                                      CorpusBindingRead(BindingProof(grade, frozenset(later_sources)), grade))
+    options = dict(substitutions=(("a", "c"),), future_target=future_target, downstream_target=target,
+                   future_batches=1, work_limit=65536, max_candidates=1)
+    return path, frame, worker, base, receiver, failed, options
+
+
+@pytest.mark.parametrize("disjoint", [False, True])
+def test_downstream_guard_requires_the_repaired_state_to_control_a_later_read(tmp_path, disjoint):
+    path, frame, worker, base, receiver, failed, options = _downstream_fixture(tmp_path, "uses_state", disjoint=disjoint)
+    assert failed.reads[-1].bounds == CorpusBindingRead(None, None)
+    draft = propose_binding_program(worker, base, failed, **options)
+    assert draft.status == "opened"
+    later = _write(worker, {"repair": b"c,0,1,0.8", "later": b"b,0,1,0.9"})
+    expected = options["downstream_target"].expected
+    assert later.memory.resolve("b", 1) == CorpusBindingRead(BindingProof(.9, frozenset({"later"})), .9)
+    judge = JournaledCorpusWorkspace(path, frame)
+    assert judge.finish_program_trial(draft.trial.trial_id).status == "receiver_required"
+    outcome = judge.finish_program_trial(draft.trial.trial_id, receiver=receiver)
+    assert outcome.status == "published"
+    assert judge.finish_program_trial(draft.trial.trial_id) == outcome
+
+    installed = judge.snapshot().memory
+    incumbent, repaired = (_second_read(receiver, memory) for memory in (later.memory, installed))
+    control = receiver._intervene_latest(repaired, incumbent.latest)
+    assert control.memory is repaired.memory and control.reads is repaired.reads
+    assert control.feedback._history[0] is repaired.feedback._history[0]
+    assert not np.array_equal(repaired.feedback._keys[-1], control.feedback._keys[-1])
+    assert not np.array_equal(repaired.feedback._values[-1], control.feedback._values[-1])
+    assert np.array_equal(control.feedback._keys[-1], incumbent.feedback._keys[-1])
+    assert np.array_equal(control.feedback._values[-1], incumbent.feedback._values[-1])
+    assert receiver.step(repaired).reads[-1].bounds == expected
+    assert receiver.step(control).reads[-1].address == ("q", 1)
+    assert receiver.step(incumbent).reads[-1].address == ("q", 1)
+
+    no_repair = installed.revise({"repair": None})
+    no_later = installed.revise({"later": None})
+    unrelated = installed.revise({"unrelated": b"q,1,0,0.4"})
+    rolled_back = installed.reprogram(dict(base.memory._certain._gates))
+    assert receiver.step(_second_read(receiver, no_repair)).reads[-1].address == ("q", 1)
+    assert receiver.step(_second_read(receiver, rolled_back)).reads[-1].address == ("q", 1)
+    absent = receiver.step(_second_read(receiver, no_later)).reads[-1]
+    assert absent.address == ("b", 1) and absent.bounds == CorpusBindingRead(None, None)
+    assert receiver.step(_second_read(receiver, unrelated)).reads[-1].bounds == expected
+
+
+@pytest.mark.parametrize("case,status", [
+    ("state_unused", "downstream_state_unused"),
+    ("incumbent_matches", "downstream_incumbent_matches"),
+    ("route_mismatch", "downstream_mismatch"),
+    ("proof_mismatch", "downstream_proof_mismatch"),
+    ("ambiguous_control", "downstream_incomplete"),
+])
+def test_downstream_guard_refuses_a_noncausal_or_wrong_continuation(tmp_path, case, status):
+    _, _, worker, base, receiver, failed, options = _downstream_fixture(tmp_path, case)
+    draft = propose_binding_program(worker, base, failed, **options)
+    assert draft.status == "opened"
+    raw = b"b,0,1,0.6" if case == "proof_mismatch" else b"b,0,1,0.9"
+    later = _write(worker, {"repair": b"c,0,1,0.8", "later": raw})
+    outcome = worker.finish_program_trial(draft.trial.trial_id, receiver=receiver)
+    assert outcome.status == status and outcome.published_revision is None
+    assert worker.snapshot().revision == later.revision
+    assert worker.snapshot().memory._certain._gates == base.memory._certain._gates
+    assert worker.finish_program_trial(draft.trial.trial_id) == outcome
+
+
+def test_downstream_guard_requires_a_remaining_step_at_registration(tmp_path):
+    _, _, worker, base, _, failed, options = _downstream_fixture(tmp_path, "uses_state", max_steps=2)
+    with pytest.raises(ValueError, match="a remaining feedback step"):
+        propose_binding_program(worker, base, failed, **options)
+    assert worker.pending_program_trials(limit=1) == ()
+
+
+def test_disjoint_downstream_target_must_extend_the_repaired_proof_group(tmp_path):
+    _, _, worker, base, _, failed, options = _downstream_fixture(tmp_path, "uses_state", disjoint=True)
+    target = options["downstream_target"]
+    options["downstream_target"] = replace(target, probe=CorpusProgramProbe((("p", 0), ("b", 1))))
+    with pytest.raises(ValueError, match="the next unexcluded certain read"):
+        propose_binding_program(worker, base, failed, **options)
+    assert worker.pending_program_trials(limit=1) == ()
+
+
+def test_downstream_guard_resolves_reads_before_the_next_state_update(tmp_path):
+    _, _, worker, base, receiver, failed, options = _downstream_fixture(
+        tmp_path, "uses_state", post_read_overflow=True,
+    )
+    draft = propose_binding_program(worker, base, failed, **options)
+    assert draft.status == "opened"
+    _write(worker, {"repair": b"c,0,1,0.8", "later": b"b,0,1,0.9"})
+    outcome = worker.finish_program_trial(draft.trial.trial_id, receiver=receiver)
+    assert outcome.status == "published"
+    state = receiver.start(failed.feedback.seed, worker.snapshot().memory)
+    repaired = receiver.step(receiver.step(state))
+    assert receiver._next_read(repaired).bounds == options["downstream_target"].expected
+    with pytest.raises(FloatingPointError):
+        receiver.step(repaired)
 
 
 def test_expansion_recovers_a_continuation_moved_outside_the_fixed_catalog(tmp_path):

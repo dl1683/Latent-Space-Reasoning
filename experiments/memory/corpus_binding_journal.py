@@ -366,11 +366,14 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             self._tip, self._digest = revised, digest
             return revised
 
-    def begin_program_trial(self, base, gates, *, targets, future_batches, work_limit, protected=(), replay=None):
+    def begin_program_trial(self, base, gates, *, targets, future_batches, work_limit, protected=(), replay=None,
+                            downstream=None):
         """Freeze a candidate and its checks before the next source batches arrive."""
         future_batches, work_limit = index(future_batches), _proof_work_limit(work_limit)
         if future_batches < 1:
             raise ValueError("a corpus program trial needs a positive source horizon")
+        if downstream is not None and replay is None:
+            raise ValueError("a downstream target needs a feedback replay")
         proposal = self.prepare_program(base, gates)
         if proposal.preview is base.memory:
             raise ValueError("a corpus program trial needs different wiring")
@@ -385,7 +388,10 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         spec = dict(version=1, targets=targets, protected=protected,
                     future_batches=future_batches, work_limit=work_limit)
         if replay is not None:
-            spec.update(version=2, replay=freeze_binding_replay(replay, base.memory, targets))
+            followup = None if downstream is None else _trial_expectation(proposal.preview, downstream, work_limit)
+            spec.update(version=2, replay=freeze_binding_replay(replay, base.memory, targets, followup))
+            if followup is not None:
+                spec.update(version=3, downstream=followup)
         frozen = _json(spec)
         with self._lock, closing(self._connect()) as db:
             db.execute("BEGIN IMMEDIATE")
@@ -471,7 +477,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         checked_digest = digest
         spec = json.loads(frozen)
         version = spec["version"]
-        if version not in (1, 2):
+        if version not in (1, 2, 3):
             raise ValueError("unknown corpus program trial version")
         steps = base.revision - opened
         proposal = None
@@ -482,19 +488,29 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         elif steps > spec["future_batches"]:
             status = "horizon_passed"
         else:
-            if version == 2:
+            if version >= 2:
                 if receiver is None:
                     return CorpusProgramTrialResult(trial_id, "receiver_required", base.revision)
                 require_replay_receiver(spec["replay"], receiver)
             proposal = self.prepare_program(base, _decode_program(program))
             status = _check_program_trial(base.memory, proposal.preview, spec)
-            if status == "published" and version == 2:
+            if status == "published" and version >= 2:
                 (raw_addresses, _), witness, upper = spec["targets"][0]
                 addresses = tuple(tuple(address) for address in raw_addresses)
-                status = check_binding_replay(
-                    spec["replay"], receiver, _cold_trial_memory(base.memory), _cold_trial_memory(proposal.preview),
-                    addresses, _expected_read(witness, upper),
-                )
+                prior, candidate = _cold_trial_memory(base.memory), _cold_trial_memory(proposal.preview)
+                downstream = None
+                if version == 3:
+                    probe, lower, possible = spec["downstream"]
+                    later_expected = _expected_read(lower, possible)
+                    try:
+                        if _probe_program(candidate, probe, spec["work_limit"]) != later_expected:
+                            status = "downstream_proof_mismatch"
+                    except BindingCapacityError:
+                        status = "downstream_incomplete"
+                    downstream = tuple(probe[0][-1]), later_expected
+                if status == "published":
+                    status = check_binding_replay(spec["replay"], receiver, prior, candidate, addresses,
+                                                  _expected_read(witness, upper), downstream=downstream)
 
         with self._lock, closing(self._connect()) as db:
             db.execute("BEGIN IMMEDIATE")

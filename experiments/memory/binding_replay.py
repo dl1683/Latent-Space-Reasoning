@@ -12,11 +12,12 @@ from experiments.memory.latent_feedback import FactoredValue
 _INCOMPLETE_REPLAY = frozenset({
     "ambiguous", "below_floor", "unavailable", "capacity", "expansion_capacity", "candidate_limit", "incomplete",
 })
+_REPLAY_ERRORS = dict(over="raise", invalid="raise", divide="raise", under="ignore")
 
 
 def _replay_step(receiver, state):
     # Workers must settle the same trial under the same error policy.
-    with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
+    with np.errstate(**_REPLAY_ERRORS):
         return receiver.step(state)
 
 
@@ -35,6 +36,13 @@ def failed_binding_prefix(trajectory, addresses):
     return earlier if addresses == expected else None
 
 
+def _matches_read(read, address, expected):
+    if read.status != "resolved" or read.address != address or read.bounds.certain is None:
+        return False
+    return expected is None or (read.bounds.certain.strength == expected.certain.strength
+                                and read.bounds.possible_strength == expected.possible_strength)
+
+
 def replay_binding_repair(trajectory, memory, address, *, expected=None):
     """Compare with an incumbent replay on the same source rows."""
     receiver = trajectory._receiver
@@ -45,23 +53,18 @@ def replay_binding_repair(trajectory, memory, address, *, expected=None):
             replay = _replay_step(receiver, replay)
             read = replay.reads[-1]
             if read.status in _INCOMPLETE_REPLAY:
-                return "replay_incomplete", step
+                return "replay_incomplete", step, None
             if step < steps and (read.status, read.address, read.bounds) != (
                 original.status, original.address, original.bounds
             ):
-                return "prefix_changed", step
+                return "prefix_changed", step, None
     except FloatingPointError:
-        return "replay_numerical", step
-    if read.status != "resolved" or read.address != address or read.bounds.certain is None:
-        return "target_unrepaired", steps
-    if expected is not None and (
-        read.bounds.certain.strength != expected.certain.strength
-        or read.bounds.possible_strength != expected.possible_strength
-    ):
-        return "target_unrepaired", steps
+        return "replay_numerical", step, None
+    if not _matches_read(read, address, expected):
+        return "target_unrepaired", steps, None
     if np.array_equal(replay.latest, trajectory.latest):
-        return "state_unchanged", steps
-    return "repaired", steps
+        return "state_unchanged", steps, None
+    return "repaired", steps, replay
 
 
 def _array_signature(array):
@@ -106,7 +109,7 @@ def _receiver_digest(receiver):
     return sha256(payload).hexdigest()
 
 
-def freeze_binding_replay(trajectory, memory, targets):
+def freeze_binding_replay(trajectory, memory, targets, downstream=None):
     if type(trajectory) is not BindingFeedbackState or trajectory.memory is not memory or not trajectory.reads:
         raise ValueError("feedback trials require a trajectory on the opening corpus pin")
     if len(targets) != 1:
@@ -117,6 +120,14 @@ def freeze_binding_replay(trajectory, memory, targets):
     prefix = failed_binding_prefix(trajectory, addresses)
     if prefix is None:
         raise ValueError("feedback trial target must identify the failed read in the opening trajectory")
+    if downstream is not None:
+        (later, excluded), witness, _ = downstream
+        receiver = trajectory._receiver
+        earlier = addresses if receiver._disjoint_reads else ()
+        if excluded or witness is None or later[:-1] != earlier:
+            raise ValueError("the downstream target must identify the next unexcluded certain read")
+        if len(trajectory.reads) >= receiver._kernel._max_steps:
+            raise ValueError("the downstream target needs a remaining feedback step")
     return dict(receiver=_receiver_digest(trajectory._receiver), seed=trajectory.feedback.seed.tolist(), prefix=prefix)
 
 
@@ -125,7 +136,29 @@ def require_replay_receiver(spec, receiver):
         raise ValueError("feedback trial receiver differs from the opening receiver")
 
 
-def check_binding_replay(spec, receiver, incumbent, candidate, addresses, expected):
+def _check_downstream(receiver, incumbent, repaired, address, expected):
+    try:
+        with np.errstate(**_REPLAY_ERRORS):
+            read = receiver._next_read(repaired)
+            if read.status in _INCOMPLETE_REPLAY:
+                return "downstream_incomplete"
+            if not _matches_read(read, address, expected):
+                return "downstream_mismatch"
+            prior = receiver._next_read(incumbent)
+            if prior.status in _INCOMPLETE_REPLAY:
+                return "downstream_incomplete"
+            if _matches_read(prior, address, expected):
+                return "downstream_incumbent_matches"
+            control = receiver._intervene_latest(repaired, incumbent.latest)
+            substitute = receiver._next_read(control)
+    except FloatingPointError:
+        return "downstream_numerical"
+    if substitute.status in _INCOMPLETE_REPLAY:
+        return "downstream_incomplete"
+    return "downstream_state_unused" if _matches_read(substitute, address, expected) else "published"
+
+
+def check_binding_replay(spec, receiver, incumbent, candidate, addresses, expected, *, downstream=None):
     """Require the same failed route and a causal repair on the checked future tip."""
     baseline = receiver.start(spec["seed"], incumbent)
     prefix = tuple(tuple(address) for address in spec["prefix"])
@@ -144,5 +177,9 @@ def check_binding_replay(spec, receiver, incumbent, candidate, addresses, expect
         return "replay_incomplete"
     if failed_binding_prefix(baseline, addresses) != prefix:
         return "replay_route_changed"
-    status, _ = replay_binding_repair(baseline, candidate, addresses[-1], expected=expected)
-    return "published" if status == "repaired" else status
+    status, _, repaired = replay_binding_repair(baseline, candidate, addresses[-1], expected=expected)
+    if status != "repaired":
+        return status
+    if downstream is None:
+        return "published"
+    return _check_downstream(receiver, baseline, repaired, *downstream)

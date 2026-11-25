@@ -45,7 +45,7 @@ def _allowed_replacements(substitutions, predicates):
 
 
 def propose_binding_program(workspace, base, trajectory, *, substitutions, future_target,
-                            future_batches, work_limit, max_candidates, protected=()):
+                            future_batches, work_limit, max_candidates, protected=(), downstream_target=None):
     """Replay authorized single-parent edits and register the first warranted future trial."""
     if type(workspace) is not JournaledCorpusWorkspace:
         raise ValueError("binding repair needs a shared corpus journal")
@@ -78,12 +78,12 @@ def propose_binding_program(workspace, base, trajectory, *, substitutions, futur
             parents = gate.parents[:slot] + (replacement,) + gate.parents[slot + 1:]
             gates[node] = BindingGate(gate.operation, parents)
             proposal = workspace.prepare_program(base, gates)
-            status, steps = replay_binding_repair(trajectory, proposal.preview, address)
+            status, steps, _ = replay_binding_repair(trajectory, proposal.preview, address)
             attempts.append(BindingRepairAttempt(slot, replacement, status, steps))
             if status == "repaired":
                 trial = workspace.begin_program_trial(
                     base, gates, targets=(expectation,), protected=(*_prefix_probes(trajectory, prefix), *protected),
-                    future_batches=future_batches, work_limit=work_limit, replay=trajectory,
+                    future_batches=future_batches, work_limit=work_limit, replay=trajectory, downstream=downstream_target,
                 )
                 return BindingRepairResult("opened", tuple(attempts), trial)
     statuses = {attempt.status for attempt in attempts}

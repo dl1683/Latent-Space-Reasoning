@@ -177,6 +177,10 @@ The guarded maintenance trial now refuses the same route drift. A separate contr
 
 **A stronger future proof can overflow the receiver, 25 November 2026.** With finite observation weights, a grade of 0.7 allowed rehearsal while 0.8 overflowed the same receiver on the future pin. The journal recorded a numerical refusal and a fresh worker recovered it. The same overflow during rehearsal refused the draft. A different review case exposed that worker-local underflow settings could alter the receipt. Replay now sets one policy for both workers and restores the ambient setting afterward. [Feedback controls](../experiments/memory/test_binding_feedback.py)
 
+**Later evidence can depend on rewiring without depending on the repaired state, 25 November 2026.** A candidate made the next proof available and changed its earlier hidden row. The incumbent missed the later proof, but restoring the incumbent row while keeping the candidate graph and proof trace still reached it. The downstream guard refused publication. For causal uptake, hold the program and source pin fixed and replace the generated row and both of its projections before taking the next step. [Feedback controls](../experiments/memory/test_binding_feedback.py)
+
+**A tied route leaves the intervention control incomplete, 25 November 2026.** Giving the two control routes equal scores left the expected read untested on those paths. The trial refused admission. A separate fixture resolved the expected later read and then overflowed the next hidden-state update. The read guard passed at its declared boundary. [Feedback controls](../experiments/memory/test_binding_feedback.py)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

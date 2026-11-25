@@ -143,8 +143,19 @@ class BindingFeedback:
             raise ValueError("memory belongs to a different binding frame")
         return BindingFeedbackState(self, self._kernel.start(seed), memory, _STATE_CREATION_KEY)
 
-    def step(self, state):
-        """Read the chosen bounds, then perform the same transition with or without memory."""
+    def _intervene_latest(self, state, hidden):
+        """Replace the generated row and its feedback projections, leaving the proof trace pinned."""
+        if type(state) is not BindingFeedbackState or state._receiver is not self or not state.reads:
+            raise ValueError("a binding intervention needs a generated state from this receiver")
+        self._kernel._require_state(state.feedback)
+        row = self._kernel._vector(hidden)
+        key, value = self._kernel._project_generated(row)
+        feedback = state.feedback
+        intervened = replace(feedback, _history=(*feedback._history[:-1], row),
+                             _keys=(*feedback._keys[:-1], key), _values=(*feedback._values[:-1], value))
+        return replace(state, _feedback=intervened, _creation_key=_STATE_CREATION_KEY)
+
+    def _next_read(self, state):
         if type(state) is not BindingFeedbackState or state._receiver is not self:
             raise ValueError("state belongs to a different binding receiver")
         self._kernel._require_state(state.feedback)
@@ -154,14 +165,16 @@ class BindingFeedback:
             prior = state.reads[-1]
             if prior.status == "resolved":
                 prefix = tuple(read.address for read in state.reads)
-                read = self._read(state.memory, state.latest, prefix=prefix,
+                return self._read(state.memory, state.latest, prefix=prefix,
                                   prefix_absent=prior.bounds.possible_strength is None)
-            elif prior.status == "catalog_absent":
-                read = BindingStepRead("catalog_absent", bounds=prior.bounds)
-            else:
-                read = BindingStepRead("incomplete")
-        else:
-            read = self._read(state.memory, state.latest)
+            if prior.status == "catalog_absent":
+                return BindingStepRead("catalog_absent", bounds=prior.bounds)
+            return BindingStepRead("incomplete")
+        return self._read(state.memory, state.latest)
+
+    def step(self, state):
+        """Read the chosen bounds, then perform the same transition with or without memory."""
+        read = self._next_read(state)
         extra = None
         if state.memory is not None:
             features = np.zeros(6)
