@@ -112,6 +112,8 @@ def _receiver_digest(receiver):
                 _value_signature(kernel._feedback_value),
                 tuple((*map(_array_signature, terms[:3]), terms[3]) for terms in kernel._conditional)),
     )
+    if receiver._coordinate_value is not None:
+        scope["coordinate_value"] = _array_signature(receiver._coordinate_value)
     # ASCII JSON aliases an astral code point with two explicit surrogate code units.
     payload = json.dumps(scope, sort_keys=True, separators=(",", ":"), allow_nan=False, ensure_ascii=False)
     payload = payload.encode("utf-8", errors="surrogatepass")

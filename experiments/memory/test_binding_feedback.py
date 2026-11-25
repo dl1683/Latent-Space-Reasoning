@@ -130,6 +130,174 @@ def _second_read(receiver, memory):
     return receiver.step(receiver.step(initial))
 
 
+def _continuation_fixture(*, work_limit=65536, tie=False):
+    frame = CorpusBindingMemory.prepare(
+        ("p", "q", "a", "b", "target"), np.eye(2), {}, {}, encode=_encode,
+        encoder_version="continuation-fixture", min_similarity=.6, gap=.05,
+    )
+    carry = np.zeros((4, 4))
+    carry[0, 1] = carry[1, 3] = 2
+    keys, zeros = np.zeros((4, 1)), np.zeros((4, 4))
+    kernel = FeedbackKernel(query=keys, carry=carry, observation_key=keys, observation_value=zeros,
+                            feedback_key=keys, feedback_value=zeros, max_steps=3)
+    observation = np.zeros((6, 4))
+    observation[1, 2], observation[5, 2] = -3, 4
+    query = [[2, 2 if tie else 1, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 1, -1, -1], [0, 0, 0, 0, .4]]
+    receiver = BindingFeedback(kernel, frame, tuple((node, 0) for node in ("p", "q", "a", "b", "target")),
+                               query=query, observation=observation, disjoint_reads=True, work_limit=work_limit)
+    memory = frame.revise({"first": b"p,1,0,0.9\ntarget,1,0,0.99", "other": b"q,1,0,0.65",
+                           "a": b"a,1,0,0.95", "b": b"b,1,0,0.8"})
+    return receiver, memory
+
+
+def test_continuation_search_forks_viable_prefixes_and_uses_their_hidden_states():
+    receiver, memory = _continuation_fixture()
+    seed, target = [1., 0., 0., 0.], ("target", 0)
+    start = receiver.start(seed, memory)
+    greedy = receiver.step(receiver.step(start))
+    assert tuple(read.address for read in greedy.reads) == (("p", 0), ("a", 0))
+    assert greedy.reads[-1].bounds.possible_strength == .9
+    assert receiver.step(greedy).reads[-1].address != target
+
+    result = receiver.search_to(start, target, steps=3, route_limit=5)
+    prefix, read = result.best.prefix, result.best.terminal
+    assert tuple(step.address for step in prefix.reads) == (("q", 0), ("b", 0))
+    assert prefix.memory is memory and np.shares_memory(prefix.feedback.seed, start.feedback.seed)
+    assert prefix.latest[2] < 0 < greedy.latest[2]
+    expected = CorpusBindingRead(BindingProof(.65, frozenset({"first", "other", "b"})), .65)
+    assert read.bounds == expected and read.address == target
+    assert memory.resolve_disjoint((("q", 0), ("b", 0), target)) == expected
+    assert memory.resolve_disjoint((("p", 0), ("a", 0), target)) == CorpusBindingRead(None, None)
+    control = receiver._intervene_latest(prefix, greedy.latest)
+    assert receiver.search_to(control, target, steps=1, route_limit=1).best is None
+    assert result.possible_strength == .65 and result.unresolved_strength is None
+    assert (result.attempted_routes, result.transition_attempts, result.ranked_states) == (5, 4, 5)
+    assert 0 < result.proof_work[0] <= receiver._work_limit
+
+    withdrawn = receiver.start(seed, memory.revise({"b": None}))
+    missing = receiver.search_to(withdrawn, target, steps=3, route_limit=5)
+    assert missing.best is None and missing.possible_strength is None and missing.unresolved_strength is None
+    assert receiver.search_to(start, target, steps=3, route_limit=5).best.terminal.bounds == expected
+
+
+@pytest.mark.parametrize("limit, upper", [(2, 1.), (4, .65)])
+def test_continuation_search_reports_unfinished_routes_with_their_prefix_bound(limit, upper):
+    receiver, memory = _continuation_fixture()
+    start = receiver.start([1., 0., 0., 0.], memory)
+    result = receiver.search_to(start, ("target", 0), steps=3, route_limit=limit)
+    assert result.best is None and result.attempted_routes == limit
+    assert result.possible_strength == result.unresolved_strength == upper
+
+
+def test_continuation_search_charges_a_global_proof_budget_for_all_prefixes():
+    receiver, memory = _continuation_fixture(work_limit=2)
+    start = receiver.start([1., 0., 0., 0.], memory)
+    result = receiver.search_to(start, ("target", 0), steps=3, route_limit=5)
+    assert result.best is None and result.possible_strength == result.unresolved_strength == 1.
+    assert result.attempted_routes >= 2 and result.proof_work == (2,)
+
+
+@pytest.mark.parametrize("terminal, certain", [(b"target,1,1,0.5", False), (b"target,1,0,0", True)])
+def test_continuation_search_distinguishes_modeled_uncertainty_and_a_certain_zero(terminal, certain):
+    receiver, memory = _continuation_fixture(tie=True)
+    memory = memory.revise({"first": b"p,1,0,0.9", "end": terminal})
+    start = receiver.start([1., 0., 0., 0.], memory)
+    assert receiver.step(start).reads[-1].status == "ambiguous"
+    result = receiver.search_to(start, ("target", 0), steps=3, route_limit=5)
+    assert result.unresolved_strength is None
+    if certain:
+        assert result.best.terminal.bounds.certain.strength == result.possible_strength == 0.
+        assert len(result.proof_work) == 1
+    else:
+        assert result.best is None and result.possible_strength == .5
+        assert len(result.proof_work) == 2
+
+
+def test_continuation_search_prunes_a_viable_branch_only_after_a_stronger_terminal_proof():
+    receiver, memory = _continuation_fixture()
+    receiver = receiver._with_route_column(4, [0., 1., 0., 0.])
+    memory = memory.revise({"first": b"p,1,0,0.9", "end": b"target,1,0,0.99"})
+    target = ("target", 0)
+    better = memory.resolve_disjoint((("p", 0), target))
+    weaker = memory.resolve_disjoint((("q", 0), target))
+    assert better.possible_strength == .9 and weaker.possible_strength == .65
+    start = receiver.start([1., 0., 0., 0.], memory)
+    result = receiver.search_to(start, target, steps=2, route_limit=3)
+    assert result.best.terminal.bounds == better
+    assert result.possible_strength == .9 and result.unresolved_strength is None
+    assert result.attempted_routes == 3 and result.transition_attempts == 1
+
+
+def test_continuation_search_does_not_resolve_a_numerical_route_failure_to_absence():
+    receiver, memory = _continuation_fixture()
+    start = receiver.start([np.finfo(float).max, 0., 0., 0.], memory)
+    result = receiver.search_to(start, ("target", 0), steps=3, route_limit=5)
+    assert result.best is None and result.possible_strength == result.unresolved_strength == 1.
+    assert result.ranked_states == 1 and result.attempted_routes == 0 and result.proof_work == (0,)
+
+
+def test_continuation_search_scores_only_the_terminal_address_on_the_last_step():
+    receiver, memory = _continuation_fixture()
+    start = receiver.start([np.finfo(float).max, 0., 0., 1.], memory)
+    result = receiver.search_to(start, ("target", 0), steps=1, route_limit=1)
+    assert result.best.terminal.bounds.certain.strength == result.possible_strength == .99
+    assert result.best.terminal.score == .4 and result.unresolved_strength is None
+    assert result.attempted_routes == result.ranked_states == 1 and result.transition_attempts == 0
+
+
+def test_continuation_search_does_not_score_the_terminal_address_too_early():
+    receiver, memory = _continuation_fixture()
+    receiver = receiver._with_route_column(4, [0., 1., 0., np.finfo(float).max])
+    start = receiver.start([1., 0., 0., 2.], memory)
+    result = receiver.search_to(start, ("target", 0), steps=2, route_limit=4)
+    assert result.best.prefix.reads[0].address == ("q", 0)
+    assert result.best.terminal.bounds.certain.strength == result.possible_strength == .65
+    assert result.unresolved_strength is None
+
+
+def test_equal_grade_reads_use_coordinates_to_reach_different_late_routes():
+    prototype, memory = _continuation_fixture()
+    memory = memory.revise({"first": b"p,1,0,0.65", "other": b"q,0,1,0.65",
+                           "a": b"a,1,0,0.8", "b": b"b,0,1,0.8", "end": b"target,1,0,0.99"})
+    p, q, a, b, target = addresses = (("p", 0), ("q", 1), ("a", 0), ("b", 1), ("target", 0))
+    options = dict(query=prototype._query, observation=np.zeros((6, 4)), disjoint_reads=True)
+    plain = BindingFeedback(prototype._kernel, memory, addresses, **options)
+    projection = [[0., 0., .9, 0.], [0., 0., -.9, 0.]]
+    receiver = BindingFeedback(prototype._kernel, memory, addresses, coordinate_value=projection, **options)
+    assert _receiver_digest(receiver) != _receiver_digest(plain)
+
+    # A target-first exact dispatcher admits both prefixes and both full paths.
+    for prefix in ((p,), (q,), (p, a), (q, b)):
+        proof = memory.resolve_disjoint((*prefix, target))
+        assert proof.certain.strength == proof.possible_strength == .65
+
+    seed = [1., 0., 0., 0.]
+    start = receiver.start(seed, memory)
+    greedy = receiver.step(receiver.step(start))
+    result = receiver.search_to(start, target, steps=3, route_limit=5)
+    branch = result.best.prefix
+    assert tuple(read.address for read in greedy.reads) == (p, a)
+    assert tuple(read.address for read in branch.reads) == (q, b)
+    assert branch.reads[0].bounds.possible_strength == greedy.reads[0].bounds.possible_strength == .65
+    assert branch.feedback.history[0][2] == -greedy.feedback.history[0][2]
+    assert result.best.terminal.bounds.certain.sources == {"other", "b", "end"}
+    controlled = receiver._intervene_latest(branch, greedy.latest)
+    assert receiver.search_to(controlled, target, steps=1, route_limit=1).possible_strength is None
+    baseline = plain.search_to(plain.start(seed, memory), target, steps=3, route_limit=5)
+    assert baseline.possible_strength is None and baseline.unresolved_strength is None
+
+    detached = receiver.step(receiver.start(seed)).latest
+    np.testing.assert_array_equal(detached, plain.step(plain.start(seed)).latest)
+    removed = memory.revise({"first": None})
+    absent = receiver.step(receiver.start(seed, removed))
+    assert absent.reads[0].bounds == CorpusBindingRead(None, None)
+    np.testing.assert_array_equal(absent.latest, plain.step(plain.start(seed, removed)).latest)
+
+
+def test_adding_optional_coordinate_feedback_keeps_the_legacy_receiver_fingerprint():
+    assert _receiver_digest(_receiver(_frame())) == "365facd647a9d176e9f5cca2109f441fe0d8d8339f1eb89589c69dee228bb8a0"
+
+
 def _repair_receiver(frame, *, trials=1, earlier="p", observe=True, proof_limit=65536, reuse_weighted_matching=False):
     observation = np.zeros((6, 4))
     observation[5, 3] = float(observe)

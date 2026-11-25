@@ -1,5 +1,6 @@
 """Optional pinned binding reads inside a continuous-feedback trajectory."""
 
+from collections import deque
 from copy import copy
 from dataclasses import InitVar, dataclass, replace
 from math import isfinite
@@ -7,7 +8,7 @@ from operator import index
 
 import numpy as np
 
-from experiments.memory.binding_memory import BindingCapacityError
+from experiments.memory.binding_memory import BindingCapacityError, _ProofWork
 from experiments.memory.corpus_bindings import CorpusBindingMemory, CorpusBindingRead, _DisjointBranchReads
 from experiments.memory.latent_feedback import FeedbackKernel, FeedbackState, _frozen, _real_array
 
@@ -84,13 +85,30 @@ def _frame_contract(memory):
     return memory.encoder_version, memory._certain._predicates, memory._min_similarity, memory._gap
 
 
+@dataclass(frozen=True)
+class BindingContinuation:
+    prefix: BindingFeedbackState
+    terminal: BindingStepRead
+
+
+@dataclass(frozen=True)
+class BindingSearchResult:
+    best: BindingContinuation | None
+    possible_strength: float | None
+    unresolved_strength: float | None
+    attempted_routes: int
+    transition_attempts: int
+    ranked_states: int
+    proof_work: tuple[int, ...]
+
+
 class BindingFeedback:
     """Commit at most one corpus address before generating the next hidden state."""
 
     def __init__(self, kernel, frame, addresses, *, query, observation,
                  route_floor=0.0, route_gap=0.0, work_limit=65536, disjoint_reads=False, route_trials=1,
                  reuse_matching_failures=False, reuse_prefix_matching=False, reuse_weighted_matching=False,
-                 expansion=None):
+                 expansion=None, coordinate_value=None):
         if type(kernel) is not FeedbackKernel or type(frame) is not CorpusBindingMemory:
             raise ValueError("binding feedback requires a dense feedback kernel and a corpus frame")
         addresses = tuple((node, index(binding)) for node, binding in addresses)
@@ -126,6 +144,8 @@ class BindingFeedback:
         self._contract, self._anchors = _frame_contract(frame), frame._anchors
         self._addresses = addresses
         self._query, self._observation = _frozen(query), _frozen(observation)
+        self._coordinate_value = (None if coordinate_value is None else
+                                  kernel._weight(coordinate_value, (frame._anchors.shape[1], kernel._width)))
         self._route_floor, self._route_gap, self._work_limit = route_floor, route_gap, work_limit
         self._disjoint_reads = disjoint_reads
         self._route_trials = route_trials
@@ -187,11 +207,14 @@ class BindingFeedback:
 
     def step(self, state):
         """Read the chosen bounds, then perform the same transition with or without memory."""
-        read = self._next_read(state)
+        return self._advance_read(state, self._next_read(state))
+
+    def _advance_read(self, state, read):
         extra = None
         if state.memory is not None:
             features = np.zeros(6)
             features[0] = 1.0
+            upper = None
             if read.bounds is not None:
                 lower, upper = read.bounds.certain, read.bounds.possible_strength
                 features[1] = 1.0
@@ -201,8 +224,102 @@ class BindingFeedback:
                     features[4:6] = 1.0, upper
             with np.errstate(over="raise", invalid="raise"):
                 extra = features @ self._observation
+                if self._coordinate_value is not None and read.status == "resolved" and upper is not None:
+                    extra += self._anchors[read.address[1]] @ self._coordinate_value
         feedback, _, _ = self._kernel._advance(state.feedback, observation_extra=extra)
         return BindingFeedbackState(self, feedback, state.memory, _STATE_CREATION_KEY, state.reads + (read,))
+
+    def search_to(self, state, target, *, steps, route_limit):
+        """Find a certain continuation to a fixed terminal address on this corpus pin."""
+        if type(state) is not BindingFeedbackState or state._receiver is not self:
+            raise ValueError("state belongs to a different binding receiver")
+        memory = state.memory
+        if memory is None or not self._disjoint_reads or self._expansion is not None:
+            raise ValueError("continuation search requires pinned disjoint reads and a fixed catalog")
+        steps, route_limit = index(steps), index(route_limit)
+        if not 1 <= steps <= self._kernel._max_steps - len(state.reads) or route_limit < 1:
+            raise ValueError("continuation search requires a positive route limit and steps within the horizon")
+        if any(read.status != "resolved" for read in state.reads):
+            raise ValueError("continuation search requires a resolved prefix")
+        node, coordinate = target
+        target = self._addresses.index((node, index(coordinate)))
+        bound = state.reads[-1].bounds.possible_strength if state.reads else 1.0
+        with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
+            return self._search_continuations(state, target, steps, route_limit, bound)
+
+    def _search_continuations(self, state, target, steps, route_limit, bound):
+        memory = state.memory
+        certain = _ProofWork(self._work_limit, reuse_rows=True)
+        shared_bank = memory._certain is memory._possible
+        possible = certain if shared_bank else _ProofWork(self._work_limit, reuse_rows=True)
+        best, best_grade, upper, unresolved = None, -1., -1., -1.
+        ranked, attempted, transitions = 0, 0, 0
+        stack = []
+
+        def push(prefix, remaining, grade):
+            nonlocal ranked, unresolved
+            # Another disjoint premise can only lower this prefix's possible grade.
+            if grade is None or grade <= best_grade:
+                return
+            ranked += 1
+            try:
+                choices = self._continuation_routes(prefix.latest, target, terminal=remaining == 1)
+            except FloatingPointError:
+                unresolved = max(unresolved, grade)
+                return
+            if choices:
+                stack.append((prefix, remaining, grade, choices))
+
+        push(state, steps, bound)
+        while stack:
+            prefix, remaining, grade, choices = stack[-1]
+            if grade <= best_grade or not choices:
+                stack.pop()
+                continue
+            if attempted == route_limit:
+                unresolved = max(unresolved, max(entry[2] for entry in stack if entry[3]))
+                break
+            address, score = choices.popleft()
+            attempted += 1
+            if address[0] not in memory._certain._dependents:
+                unresolved = max(unresolved, grade)
+                continue
+            try:
+                addresses = tuple(read.address for read in prefix.reads) + (address,)
+                roots = memory._certain._joint_keys(addresses, certain.limit)
+                bounds = memory._disjoint_bounds(roots, frozenset(), certain, possible)
+            except BindingCapacityError:
+                unresolved = max(unresolved, grade)
+                continue
+            if bounds.possible_strength is None:
+                continue
+            read = BindingStepRead("resolved", address, bounds, score=score)
+            if remaining == 1:
+                upper = max(upper, bounds.possible_strength)
+                if bounds.certain is not None and bounds.certain.strength > best_grade:
+                    best, best_grade = BindingContinuation(prefix, read), bounds.certain.strength
+            elif bounds.possible_strength > best_grade:
+                transitions += 1
+                try:
+                    child = self._advance_read(prefix, read)
+                except FloatingPointError:
+                    unresolved = max(unresolved, bounds.possible_strength)
+                    continue
+                push(child, remaining - 1, bounds.possible_strength)
+
+        upper = max(upper, unresolved)
+        work = (certain.used,) if shared_bank else (certain.used, possible.used)
+        return BindingSearchResult(best, upper if upper >= 0 else None, unresolved if unresolved >= 0 else None,
+                                   attempted, transitions, ranked, work)
+
+    def _continuation_routes(self, hidden, target, *, terminal):
+        if terminal:
+            score = float(hidden @ self._query[:, target])
+            return deque([(self._addresses[target], score)]) if score > self._route_floor else deque()
+        addresses = self._addresses[:target] + self._addresses[target + 1:]
+        scores = np.concatenate((hidden @ self._query[:, :target], hidden @ self._query[:, target + 1:]))
+        return deque((addresses[i], float(scores[i])) for i in np.argsort(-scores, kind="stable")
+                     if scores[i] > self._route_floor)
 
     def _read(self, memory, hidden, *, prefix=(), prefix_absent=False):
         if memory is None:

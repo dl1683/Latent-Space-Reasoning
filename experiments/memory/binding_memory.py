@@ -435,11 +435,13 @@ class BindingMemory:
                 key=lambda item: (item[0], tuple(sorted(item[1]))), default=(-np.inf, None),
             )
             return None if origins is None else BindingProof(strength, origins)
-        work_limit = _proof_work_limit(work_limit)
+        return self._resolve_factored(node, binding, excluded, _proof_work_limit(work_limit))
+
+    def _resolve_factored(self, node, binding, excluded, work):
         retained = self._retained.get((node, binding, excluded))
         if retained is not None and retained.exact:
             return retained.proof
-        search = _ProofSearch(self, node, excluded, work_limit)
+        search = _ProofSearch(self, node, excluded, work)
         return search.resolve(binding, retained)
 
     def resolve_disjoint(self, addresses, *, without_sources=(), work_limit=65536):
@@ -463,6 +465,8 @@ class BindingMemory:
 
     def _resolve_disjoint(self, roots, excluded, work_limit):
         if len(roots) == 1:
+            if isinstance(work_limit, _ProofWork) and not self.materialize:
+                return self._resolve_factored(*roots[0], excluded, work_limit)
             return self.resolve(*roots[0], without_sources=excluded, work_limit=work_limit)
         search = _ProofSearch(self, None, excluded, work_limit, addresses=roots)
         return search.resolve(None)
