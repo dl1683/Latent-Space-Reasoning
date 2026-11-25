@@ -1,31 +1,38 @@
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import closing
+import sqlite3
+import subprocess
+import sys
 from threading import Event
 
 import numpy as np
 import pytest
 
+from experiments.memory.feedback_journal import JournaledFeedbackWorkspace
 from experiments.memory.feedback_workspace import (
     FeedbackProbe,
     FeedbackProposal,
     FeedbackWorkspace,
     StaleFeedbackRevision,
 )
-from experiments.memory.latent_feedback import ConditionalTerm, FeedbackKernel
+from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, FeedbackKernel
 
 
-def _kernel():
+def _kernel(*, factored=False):
     zero, identity = np.zeros((2, 2)), np.eye(2)
     return FeedbackKernel(
         query=3 * identity, carry=zero,
-        observation_key=identity, observation_value=zero,
+        observation_key=identity, observation_value=FactoredValue(zero, identity) if factored else zero,
         feedback_key=zero, feedback_value=zero, max_steps=1,
     )
 
 
-def _workspace(second_target=(0, 0.5)):
+def _workspace(second_target=(0, 0.5), *, journal=None):
     probes = (FeedbackProbe((1, 0), 1, (0.4, 0)),
               FeedbackProbe((0, 1), 1, second_target))
-    return FeedbackWorkspace(_kernel(), np.eye(2), probes, max_update_norm=2)
+    if journal is None:
+        return FeedbackWorkspace(_kernel(), np.eye(2), probes, max_update_norm=2)
+    return JournaledFeedbackWorkspace(journal, _kernel(), np.eye(2), probes, max_update_norm=2)
 
 
 def test_competing_workers_must_rebase_and_preserve_an_accepted_operation():
@@ -195,3 +202,148 @@ def test_protected_prefix_anchor_does_not_move_after_each_accepted_edit():
     with pytest.raises(ValueError, match="protected trajectory prefix"):
         workspace.publish(FeedbackProposal(first, 2, term=second_term))
     assert workspace.snapshot() is first
+
+
+def test_journal_recovers_a_commit_interrupted_before_acknowledgment(tmp_path):
+    path = tmp_path / "workspace.sqlite"
+    reader = _workspace(journal=path)
+    base = reader.snapshot()
+    stale = reader.propose(base, 1)
+    code = """
+import os
+import sys
+from experiments.memory.test_feedback_workspace import _workspace
+
+workspace = _workspace(journal=sys.argv[1])
+proposal = workspace.propose(workspace.snapshot(), 0)
+connect = workspace._connect
+
+class ExitAfterAppend:
+    def __init__(self):
+        self.connection = connect()
+
+    def execute(self, sql, *args):
+        cursor = self.connection.execute(sql, *args)
+        if sql.lstrip().startswith("INSERT INTO feedback_events") and cursor.rowcount == 1:
+            os._exit(23)
+        return cursor
+
+    def close(self):
+        self.connection.close()
+
+workspace._connect = ExitAfterAppend
+workspace.publish(proposal)
+"""
+    result = subprocess.run([sys.executable, "-B", "-c", code, str(path)], timeout=30)
+    assert result.returncode == 23
+    with pytest.raises(StaleFeedbackRevision):
+        reader.publish(stale)
+    first = reader.snapshot()
+    second = reader.publish(reader.propose(first, 1))
+    recovered = _workspace(journal=path).snapshot()
+
+    assert base.errors == (0.4, 0.5)
+    assert first.errors[0] < 1e-12
+    assert recovered.number == second.number == 2
+    assert max(recovered.errors) < 1e-12
+    np.testing.assert_array_equal(
+        recovered.kernel.step(recovered.start([1, 0])).latest,
+        second.kernel.step(second.start([1, 0])).latest,
+    )
+
+
+def test_journal_compare_and_swap_catches_another_writers_commit(tmp_path, monkeypatch):
+    path = tmp_path / "workspace.sqlite"
+    first, second = _workspace(journal=path), _workspace(journal=path)
+    base = first.snapshot()
+    proposed = first.propose(base, 0)
+    replaying, resume = Event(), Event()
+    measure = first._measure
+
+    def interleave(kernel, memory):
+        if kernel is not base.kernel:
+            replaying.set()
+            assert resume.wait(5)
+        return measure(kernel, memory)
+
+    monkeypatch.setattr(first, "_measure", interleave)
+    with ThreadPoolExecutor(max_workers=1) as thread:
+        publication = thread.submit(first.publish, proposed)
+        try:
+            assert replaying.wait(5)
+            changed = second.replace_observations(second.snapshot(), [[-1, 0], [0, 1]])
+        finally:
+            resume.set()
+        with pytest.raises(StaleFeedbackRevision, match="journal changed before publication"):
+            publication.result(timeout=5)
+
+    current = first.snapshot()
+    assert current.number == changed.number == 1
+    assert current.errors == base.errors
+    np.testing.assert_array_equal(current.memory._observations, [[-1, 0], [0, 1]])
+    np.testing.assert_array_equal(base.memory._observations, np.eye(2))
+
+
+def test_journal_replays_conditional_growth_and_empty_observation_replacement(tmp_path):
+    path = tmp_path / "workspace.sqlite"
+    probes = (FeedbackProbe((1, 0), 1, (0, 0)), FeedbackProbe((0, 1), 1, (0.4, -0.2)))
+
+    def open_workspace(max_terms):
+        return JournaledFeedbackWorkspace(path, _kernel(factored=True), [[1, 0]], probes,
+                                           max_update_norm=1, max_terms=max_terms)
+
+    workspace = open_workspace(1)
+    grown = workspace.publish(workspace.propose(workspace.snapshot(), 1, conditional=True))
+    recovered = open_workspace(1)
+    replay = recovered.snapshot()
+    assert replay.errors == grown.errors
+    assert isinstance(replay.kernel._observation_value, FactoredValue)
+    assert replay.kernel.conditional_terms == 1
+    changed = recovered.replace_observations(replay, np.empty((0, 2)))
+    assert changed.errors[1] == pytest.approx(0.4)
+    current = open_workspace(1).snapshot()
+    assert current.errors == changed.errors
+    assert current.memory._observations.shape == (0, 2)
+    with pytest.raises(ValueError, match="initial workspace inputs disagree"):
+        open_workspace(2)
+
+
+def test_journal_refuses_to_recover_a_damaged_event(tmp_path):
+    path = tmp_path / "workspace.sqlite"
+    workspace = _workspace(journal=path)
+    workspace.publish(workspace.propose(workspace.snapshot(), 0))
+    with closing(sqlite3.connect(path)) as db, db:
+        db.execute("UPDATE feedback_events SET payload = zeroblob(length(payload)) WHERE number = 1")
+    with pytest.raises(ValueError, match="invalid feedback journal history"):
+        _workspace(journal=path)
+
+
+def test_journal_retains_the_selected_probe_that_determines_prefix_anchors(tmp_path):
+    kernel = FeedbackKernel(
+        query=[[0]], carry=None, observation_key=[[0]], observation_value=[[0]],
+        feedback_key=[[0]], feedback_value=[[0]], max_steps=2,
+    )
+    probes = (
+        FeedbackProbe((1,), 2, (0.101,)),
+        FeedbackProbe((2,), 2, (0.102,)),
+        FeedbackProbe((1,), 1, (0.1509,)),
+    )
+    first_term = ConditionalTerm((1,), (1,), (0.05,))
+    second_term = ConditionalTerm((1,), (1,), (0.001,))
+
+    def open_workspace(path):
+        return JournaledFeedbackWorkspace(path, kernel, [[1]], probes, max_update_norm=0.05,
+                                           max_terms=2, atol=0.1)
+
+    histories = []
+    for selected in (0, 1):
+        path = tmp_path / f"probe-{selected}.sqlite"
+        workspace = open_workspace(path)
+        workspace.publish(FeedbackProposal(workspace.snapshot(), selected, term=first_term))
+        histories.append(open_workspace(path))
+    first, second = histories
+    assert first.snapshot().errors == second.snapshot().errors
+    admitted = first.publish(FeedbackProposal(first.snapshot(), 2, term=second_term))
+    assert admitted.errors[2] <= 0.1
+    with pytest.raises(ValueError, match="protected trajectory prefix"):
+        second.publish(FeedbackProposal(second.snapshot(), 2, term=second_term))

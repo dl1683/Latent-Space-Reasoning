@@ -52,6 +52,7 @@ class FeedbackProposal:
     term: ConditionalTerm | None = None
 
     def __post_init__(self):
+        object.__setattr__(self, "probe", index(self.probe))
         if (self._weight is None) == (self.term is None):
             raise ValueError("proposal must contain one value map or one conditional term")
         if self.term is not None and type(self.term) is not ConditionalTerm:
@@ -95,11 +96,11 @@ class FeedbackWorkspace:
         if self.snapshot() is not base:
             raise StaleFeedbackRevision("feedback revision is no longer current")
 
-    def _commit(self, base, kernel, memory, errors, anchors):
+    def _commit(self, base, revised, *, proposal=None):
         with self._lock:
             if self._head is not base:
                 raise StaleFeedbackRevision("feedback revision changed before publication")
-            self._head = FeedbackRevision(base.number + 1, kernel, memory, errors, anchors)
+            self._head = revised
             return self._head
 
     @staticmethod
@@ -167,6 +168,10 @@ class FeedbackWorkspace:
         """Admit one newly satisfied probe with every other probe non-worsening."""
         base = proposal.base
         self._require_current(base)
+        return self._commit(base, self._prepare_operator_revision(proposal), proposal=proposal)
+
+    def _prepare_operator_revision(self, proposal):
+        base = proposal.base
         probe = self._open_probe(base, proposal.probe)
         if proposal.term is None:
             with np.errstate(over="raise", invalid="raise"):
@@ -191,11 +196,15 @@ class FeedbackWorkspace:
             if expected is not None and not np.allclose(actual, expected, atol=self._atol, rtol=0):
                 raise ValueError("proposed operator changes a protected trajectory prefix")
         anchors = self._anchors(errors, prefixes, tuple(anchors))
-        return self._commit(base, candidate, base.memory, errors, anchors)
+        return FeedbackRevision(base.number + 1, candidate, base.memory, errors, anchors)
 
     def replace_observations(self, base, observations):
         """Install a new observation bank and measure its outcomes with the current operator."""
         self._require_current(base)
+        return self._commit(base, self._prepare_observation_revision(base, observations))
+
+    def _prepare_observation_revision(self, base, observations):
         memory = base.kernel.prepare(observations)
         errors, prefixes = self._measure(base.kernel, memory)
-        return self._commit(base, base.kernel, memory, errors, self._anchors(errors, prefixes))
+        return FeedbackRevision(base.number + 1, base.kernel, memory, errors,
+                                self._anchors(errors, prefixes))
