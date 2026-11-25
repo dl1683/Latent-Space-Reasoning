@@ -175,15 +175,19 @@ class TreeFeedbackKernel(FeedbackKernel):
                 or memory._key_map is not self._observation_key):
             raise ValueError("memory belongs to a different tree feedback layout")
 
-    def with_frontier(self, max_frontier):
-        """Use a different query cap with the same weights and observation snapshots."""
+    def with_frontier(self, max_frontier, *, logit_tolerance=None):
+        """Change the resolution policy while sharing weights and observations."""
         max_frontier = index(max_frontier)
+        tolerance = self._logit_tolerance if logit_tolerance is None else float(logit_tolerance)
         if max_frontier < 1:
             raise ValueError("tree frontier cap must be positive")
-        if max_frontier == self._max_frontier:
+        if not isfinite(tolerance) or tolerance < 0:
+            raise ValueError("tree logit tolerance must be finite and nonnegative")
+        if (max_frontier, tolerance) == (self._max_frontier, self._logit_tolerance):
             return self
         kernel = copy(self)
         object.__setattr__(kernel, "_max_frontier", max_frontier)
+        object.__setattr__(kernel, "_logit_tolerance", tolerance)
         return kernel
 
     def revise(self, memory, changes):

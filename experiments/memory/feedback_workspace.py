@@ -71,12 +71,21 @@ class StaleFeedbackRevision(ValueError):
 
 
 @dataclass(frozen=True)
+class FeedbackFidelityAttempt:
+    resolution: str
+    frontier_cap: int
+    rejection_stage: str | None = None
+    rejection: str | None = None
+
+
+@dataclass(frozen=True)
 class FeedbackRepairAttempt:
     probe: int
     conditional: bool
     rejection: str | None = None
     rank: tuple[int, float, int] | None = None
     hinge: bool = False
+    fidelity_attempts: tuple[FeedbackFidelityAttempt, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -93,7 +102,16 @@ class FeedbackWorkspace:
     """A bounded in-process commit point. Numeric replays run outside its lock."""
 
     def __init__(self, kernel, observations, probes, *, max_update_norm, atol=1e-8,
-                 max_terms=0, guards=(), allow_hinge=False):
+                 max_terms=0, guards=(), allow_hinge=False, max_reference_frontier=None):
+        self._draft_tree_policy = None
+        if max_reference_frontier is not None:
+            if not isinstance(kernel, TreeFeedbackKernel):
+                raise ValueError("reference frontier requires a tree feedback kernel")
+            reference_cap = index(max_reference_frontier)
+            if reference_cap < kernel._max_frontier:
+                raise ValueError("reference frontier cannot be smaller than the draft frontier")
+            self._draft_tree_policy = kernel._max_frontier, kernel._logit_tolerance
+            kernel = kernel.with_frontier(reference_cap, logit_tolerance=0)
         self._probes = tuple(FeedbackProbe(p.seed, p.steps, p.target) for p in probes)
         self._guards = tuple(FeedbackProbe(p.seed, p.steps, p.target) for p in guards)
         self._atol = float(atol)
@@ -114,6 +132,7 @@ class FeedbackWorkspace:
         self._allow_hinge = allow_hinge
         self._lock = Lock()
         memory = kernel.prepare(observations)
+        self._check_reference_capacity(kernel, memory)
         errors, prefixes = self._measure(kernel, memory)
         guard_errors = self._measure_guards(kernel, memory)
         self._head = FeedbackRevision(0, kernel, memory, errors,
@@ -126,6 +145,10 @@ class FeedbackWorkspace:
     def _require_current(self, base):
         if self.snapshot() is not base:
             raise StaleFeedbackRevision("feedback revision is no longer current")
+
+    def _check_reference_capacity(self, kernel, memory):
+        if self._draft_tree_policy is not None and memory.count > kernel._max_frontier:
+            raise ValueError("observation bank exceeds the full-reference frontier")
 
     def _commit(self, base, revised, *, proposal=None):
         with self._lock:
@@ -185,10 +208,19 @@ class FeedbackWorkspace:
     def propose(self, base, probe, *, conditional=False, hinge=False):
         """Produce a candidate using the unresolved probe and satisfied runs."""
         self._require_current(base)
+        if self._draft_tree_policy is not None:
+            probe = self._open_probe(base, probe)
+            proposal, _, trials = self._assess_tree_repair(base, probe, conditional or hinge, hinge)
+            if proposal is None:
+                raise ValueError(trials[-1].rejection)
+            return proposal
         return self._propose(base, probe, conditional=conditional or hinge, hinge=hinge)
 
     def _propose(self, base, probe, *, conditional, hinge=False):
         probe = self._open_probe(base, probe)
+        return self._synthesize(base, base.kernel, probe, conditional=conditional, hinge=hinge)
+
+    def _synthesize(self, base, kernel, probe, *, conditional, hinge):
         goal = self._probes[probe]
         protected = (
             (check.seed, check.steps)
@@ -197,13 +229,13 @@ class FeedbackWorkspace:
         )
         if conditional:
             self._require_term_capacity(base, hinge=hinge)
-            _, _, term = base.kernel.program_conditional(
-                base.start(goal.seed), goal.steps, goal.target, protect=protected,
+            _, _, term = kernel.program_conditional(
+                kernel.start(goal.seed, base.memory), goal.steps, goal.target, protect=protected,
                 atol=self._atol, max_update_norm=self._max_update_norm, hinge=hinge,
             )
             return FeedbackProposal(base, probe, term=term)
-        _, _, edit = base.kernel.retarget(
-            base.start(goal.seed), goal.steps, goal.target, protect=protected,
+        _, _, edit = kernel.retarget(
+            kernel.start(goal.seed, base.memory), goal.steps, goal.target, protect=protected,
             atol=self._atol, max_update_norm=self._max_update_norm,
         )
         return FeedbackProposal(base, probe, edit.weight)
@@ -230,10 +262,42 @@ class FeedbackWorkspace:
         return (-sum(error <= self._atol for error in revision.errors),
                 sum(revision.errors), revision.kernel.conditional_terms)
 
+    def _assess_tree_repair(self, base, probe, conditional, hinge):
+        draft_cap, draft_tolerance = self._draft_tree_policy
+        draft = base.kernel.with_frontier(draft_cap, logit_tolerance=draft_tolerance)
+        resolutions = (("reference", base.kernel),)
+        if draft is not base.kernel:
+            resolutions = (("coarse", draft), *resolutions)
+        trials = []
+        for resolution, kernel in resolutions:
+            self._require_current(base)
+            stage = "synthesis"
+            try:
+                proposal = self._synthesize(base, kernel, probe, conditional=conditional, hinge=hinge)
+                self._require_current(base)
+                stage = "admission"
+                revised = self._prepare_operator_revision(proposal)
+            except StaleFeedbackRevision:
+                raise
+            except (ValueError, FloatingPointError, np.linalg.LinAlgError) as error:
+                trials.append(FeedbackFidelityAttempt(resolution, kernel._max_frontier, stage, str(error)))
+                continue
+            trials.append(FeedbackFidelityAttempt(resolution, kernel._max_frontier))
+            return proposal, revised, tuple(trials)
+        return None, None, tuple(trials)
+
     def _evaluate_candidate(self, base, ordinal, unresolved, modes):
         probe_offset, mode_offset = divmod(ordinal, len(modes))
         probe = unresolved[probe_offset]
         conditional, hinge = modes[mode_offset]
+        if self._draft_tree_policy is not None:
+            proposal, revised, trials = self._assess_tree_repair(base, probe, conditional, hinge)
+            attempt = FeedbackRepairAttempt(
+                probe, conditional, rejection=trials[-1].rejection,
+                rank=None if revised is None else self._repair_rank(revised),
+                hinge=hinge, fidelity_attempts=trials,
+            )
+            return attempt, proposal, revised
         try:
             proposal = self._propose(base, probe, conditional=conditional, hinge=hinge)
             revised = self._prepare_operator_revision(proposal)
@@ -266,6 +330,8 @@ class FeedbackWorkspace:
                     for ordinal in range(first, min(first + workers, stop))
                 ]
                 failures = [error for future in futures if (error := future.exception()) is not None]
+                unexpected = [error for error in failures if not isinstance(error, StaleFeedbackRevision)]
+                failures = unexpected or failures[:1]
                 if len(failures) == 1:
                     raise failures[0]
                 if failures:
@@ -371,6 +437,7 @@ class FeedbackWorkspace:
         return self._prepare_memory_revision(base, base.kernel.prepare(observations))
 
     def _prepare_memory_revision(self, base, memory):
+        self._check_reference_capacity(base.kernel, memory)
         errors, prefixes = self._measure(base.kernel, memory)
         guard_errors = self._measure_guards(base.kernel, memory)
         return FeedbackRevision(base.number + 1, base.kernel, memory, errors,
