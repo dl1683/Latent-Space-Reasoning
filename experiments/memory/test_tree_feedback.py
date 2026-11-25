@@ -6,7 +6,7 @@ import pytest
 
 from experiments.memory.feedback_journal import JournaledFeedbackWorkspace
 from experiments.memory.feedback_workspace import FeedbackProbe, FeedbackWorkspace, StaleFeedbackRevision
-from experiments.memory.latent_feedback import FeedbackKernel
+from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, FeedbackKernel
 from experiments.memory.tree_feedback import TreeFeedbackKernel
 
 
@@ -80,6 +80,109 @@ def test_scrambled_layout_exposes_approximation_then_full_refinement_recovers():
     assert exact.attention.joint_l1_bound == 0 and exact.attention.scored_nodes == 31
     np.testing.assert_allclose(exact_mix, want_mix, atol=1e-14, rtol=0)
     np.testing.assert_allclose(exact.latest, want.latest, atol=1e-14, rtol=0)
+
+
+def test_trajectory_bound_carries_earlier_tree_error_through_exact_late_attention():
+    key = np.array([[1.], [0.]])
+    weights = dict(query=key, carry=None, observation_key=key, observation_value=np.diag([0., .3]),
+                   feedback_key=key, feedback_value=np.diag([0., .75]), max_steps=2)
+    tree = TreeFeedbackKernel(depth=1, max_frontier=1, **weights)
+    dense = FeedbackKernel(**weights)
+    rows = [[1., 1.], [-1., -1.]]
+    seed = [1., 0.]
+    opening = tree.prepare(rows)
+    revised = tree.revise(opening, {0: [1., .5]})
+
+    answers = []
+    for bank, snapshot_rows in ((opening, rows), (revised, [[1., .5], rows[1]]), (opening, rows)):
+        bounded = tree.run_with_error_bounds(seed, bank, steps=2)
+        reference = dense.step(dense.step(dense.start(seed, dense.prepare(snapshot_rows))))
+        actual_error = np.max(np.abs(np.array(bounded.state.history) - np.array(reference.history)), axis=1)
+        assert bounded.state.attention.joint_l1_bound == 0.
+        assert actual_error[1] > .02
+        assert (actual_error <= bounded.error_bounds).all()
+        assert bounded.state._memory is bank
+        answers.append(bounded.state.latest[1])
+    assert answers[0] == answers[2] and answers[1] < answers[0]
+
+    empty = tree.run_with_error_bounds(seed, steps=2)
+    removed = tree.run_with_error_bounds(seed, tree.revise(opening, {0: None, 1: None}), steps=2)
+    assert empty.error_bounds == removed.error_bounds == (0., 0.)
+    np.testing.assert_array_equal(empty.state.history, removed.state.history)
+    assert tree.run_with_error_bounds(seed, opening, steps=0).error_bounds == ()
+    with pytest.raises(ValueError, match="feedback budget"):
+        tree.run_with_error_bounds(seed, opening, steps=3)
+
+
+def test_trajectory_bound_transports_error_through_the_separate_observation_query():
+    key = np.array([[1.], [0.]])
+    weights = dict(query=np.zeros_like(key), carry=None, observation_key=key, observation_value=np.diag([0., .3]),
+                   feedback_key=np.zeros_like(key), feedback_value=np.zeros((2, 2)), max_steps=2)
+    tree = TreeFeedbackKernel(depth=1, max_frontier=1, **weights)._with_observation_query([[1.], [1.]])
+    dense = FeedbackKernel(**weights)._with_observation_query([[1.], [1.]])
+    rows = [[1., 1.], [-1., -1.]]
+    seed = [1., 0.]
+    bounded = tree.run_with_error_bounds(seed, tree.prepare(rows), steps=2)
+    reference = dense.step(dense.step(dense.start(seed, dense.prepare(rows))))
+    assert bounded.state.attention.joint_l1_bound == 0.
+    assert bounded.state.latest[1] == 0.
+    assert .02 < reference.latest[1] <= bounded.error_bounds[-1]
+
+
+def test_trajectory_bound_admits_a_separated_readout_with_factored_and_conditional_maps():
+    key = np.array([[1.], [0.]])
+    weights = dict(query=[[.20], [.10]], carry=np.diag([.15, .10]), observation_key=key,
+                   observation_value=FactoredValue([[0.], [.5]], [[0., 1.]]),
+                   feedback_key=[[.2], [-.3]],
+                   feedback_value=FactoredValue([[.1], [.2]], [[.1, 1.]]), max_steps=4)
+    gated = ConditionalTerm((0., 1.), (0., 1.), (0., .15), threshold=.05)
+    signed = ConditionalTerm((1., 0.), (0., 1.), (.05, -.1))
+    tree = TreeFeedbackKernel(depth=2, max_frontier=1, **weights)
+    dense = FeedbackKernel(**weights)
+
+    def program(kernel):
+        return kernel._with_observation_query([[.5], [.2]])._with_conditional(gated)._with_conditional(signed)
+
+    tree, dense = program(tree), program(dense)
+    rows = [[.03, .8], [-.04, .7], [.04, .85], [-.02, -.1]]
+    seed = [.8, .25]
+    memory = tree.prepare(rows)
+    bounded = tree.run_with_error_bounds(seed, memory, steps=4)
+    refined = tree.with_frontier(4).run_with_error_bounds(seed, memory, steps=4)
+    reference = dense.start(seed, dense.prepare(rows))
+    for _ in range(4):
+        reference = dense.step(reference)
+    actual_error = np.max(np.abs(np.array(bounded.state.history) - np.array(reference.history)), axis=1)
+    assert (actual_error > 1e-5).all()
+    assert (actual_error <= bounded.error_bounds).all()
+    assert bounded.state.observation_scores == 4 and reference.observation_scores == 16
+    assert bounded.state.latest[1] - bounded.error_bounds[-1] > .1
+    assert reference.latest[1] > .1
+    assert refined.error_bounds == (0.,) * 4
+    np.testing.assert_allclose(refined.state.history, reference.history, atol=1e-14, rtol=0)
+
+
+def test_trajectory_bound_skips_unused_gains_that_would_overflow():
+    tree = TreeFeedbackKernel(depth=1, max_frontier=1, query=[[0.]], carry=None,
+                              observation_key=[[0.]], observation_value=FactoredValue([[1e200]], [[1e200]]),
+                              feedback_key=[[0.]], feedback_value=[[0.]], max_steps=2)
+    memory = tree.prepare([[0.]])
+    bounded = tree.run_with_error_bounds([0.], memory, steps=2)
+    assert bounded.error_bounds == (0., 0.)
+    np.testing.assert_array_equal(bounded.state.history, tree.step(tree.step(tree.start([0.], memory))).history)
+
+
+def test_trajectory_bound_refuses_custom_value_maps_with_an_unknown_gain():
+    class CustomValue(FactoredValue):
+        def apply(self, vector):
+            return super().apply(vector) * 10.
+
+    weights = _weights()
+    weights["feedback_value"] = CustomValue(np.eye(4), np.eye(4))
+    tree = TreeFeedbackKernel(depth=2, max_frontier=1, **weights)
+    assert len(tree.step(tree.start([1., 0., 0., 0.])).history) == 1
+    with pytest.raises(TypeError, match="standard value maps"):
+        tree.run_with_error_bounds([1., 0., 0., 0.], steps=1)
 
 
 def test_multiplicity_survives_a_huge_common_observation_and_history_logit():

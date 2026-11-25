@@ -7,7 +7,7 @@ from copy import copy
 from dataclasses import dataclass, replace
 from heapq import heappop, heappush
 from itertools import count
-from math import expm1, isfinite, log
+from math import expm1, isfinite, log, tanh
 from operator import index
 from types import MappingProxyType
 
@@ -84,6 +84,24 @@ class TreeAttention:
 class TreeFeedbackState(FeedbackState):
     _memory: TreeMemory
     attention: TreeAttention | None = None
+
+
+@dataclass(frozen=True, eq=False)
+class TreeFeedbackBoundedRun:
+    """Tree trajectory and per-step max-coordinate error models against dense replay."""
+
+    state: TreeFeedbackState
+    error_bounds: tuple[float, ...]
+
+
+def _column_l1(matrix):
+    return np.abs(matrix).sum(axis=0)
+
+
+def _value_linf(value):
+    if isinstance(value, FactoredValue):
+        return (_column_l1(value._left) @ np.abs(value._right)).max()
+    return _column_l1(value).max()
 
 
 @dataclass(frozen=True, eq=False)
@@ -256,6 +274,74 @@ class TreeFeedbackKernel(FeedbackKernel):
         memory = self._empty if memory is None else memory
         self._check_memory(memory)
         return TreeFeedbackState(self, memory, self._vector(seed))
+
+    def run_with_error_bounds(self, seed, memory=None, *, steps):
+        """Estimate exact-arithmetic error bounds without running the dense reference."""
+        if type(self) is not TreeFeedbackKernel or (memory is not None and type(memory) is not TreeMemory):
+            raise TypeError("error bounds require the standard tree feedback transition and memory")
+        if any(type(value) not in (np.ndarray, FactoredValue)
+               for value in (self._observation_value, self._feedback_value)):
+            raise TypeError("error bounds require standard value maps")
+        steps = index(steps)
+        if not 0 <= steps <= self._max_steps:
+            raise ValueError("bounded run steps exceed the feedback budget")
+        state = self.start(seed, memory)
+        root = state._memory._root
+        if not steps or root is None:
+            for _ in range(steps):
+                state = self.step(state)
+            return TreeFeedbackBoundedRun(state, (0.,) * steps)
+
+        with np.errstate(over="raise", invalid="raise", under="ignore"):
+            bounds = []
+            gains_ready = False
+            latest_error = history_error = 0.
+            for _ in range(steps):
+                previous = state
+                state = self.step(previous)
+                local_gap = state.attention.joint_l1_bound
+                if local_gap == latest_error == history_error == 0.:
+                    bounds.append(0.)
+                    continue
+
+                if not gains_ready:
+                    observation_query = self._query if self._observation_query is None else self._observation_query
+                    observation_keys = np.maximum(np.abs(root.lower_key), np.abs(root.upper_key))
+                    observation_logit_gain = observation_keys @ _column_l1(observation_query)
+                    observation_value_gain = _value_linf(self._observation_value)
+                    carry_gain = 0. if self._carry is None else _column_l1(self._carry).max()
+                    feedback_keys = _column_l1(self._feedback_key) if steps > 1 else None
+                    feedback_query_gain = 0. if feedback_keys is None else feedback_keys @ _column_l1(self._query)
+                    feedback_value_gain = 0. if feedback_keys is None else _value_linf(self._feedback_value)
+                    conditional = tuple(
+                        (axis, threshold, np.abs(observed).sum() * np.abs(output).max(), np.abs(axis).sum())
+                        for axis, observed, output, threshold in self._conditional
+                    )
+                    gains_ready = True
+
+                logit_gap = latest_error * observation_logit_gain
+                value_gain = observation_value_gain
+                value_drift = latest_error * carry_gain
+                if previous._history:
+                    query = previous.latest @ self._query
+                    feedback_logit_gap = latest_error * feedback_query_gain
+                    feedback_logit_gap += history_error * (feedback_keys @ np.abs(query))
+                    logit_gap = max(logit_gap, feedback_logit_gap)
+                    value_drift += history_error * feedback_value_gain
+                for axis, threshold, amplitude, slope in conditional:
+                    gate = previous.latest @ axis
+                    gate_size = abs(gate) if threshold is None else max(0., gate - threshold)
+                    value_gain += gate_size * amplitude
+                    value_drift += latest_error * slope * amplitude
+                if previous._history:
+                    value_gain = max(value_gain, feedback_value_gain)
+
+                probability_gap = min(2., local_gap + 2. * tanh(logit_gap / 2.))
+                preactivation_gap = probability_gap * value_gain + value_drift
+                latest_error = 2. * tanh(preactivation_gap / 2.)
+                history_error = max(history_error, latest_error)
+                bounds.append(latest_error)
+        return TreeFeedbackBoundedRun(state, tuple(bounds))
 
     def _advance(self, state, *, diagnostics=None):
         self._require_can_step(state)
