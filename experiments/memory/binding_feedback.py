@@ -213,11 +213,7 @@ class BindingFeedback:
         result = self._try_ranked(memory, session, self._addresses, scores, tried)
         expansion_work = 0
         if result is None and self._expansion is not None:
-            candidates, expanded_scores, expansion_work = self._expanded_scores(memory, hidden)
-            if candidates is None:
-                result = BindingStepRead("expansion_capacity")
-            else:
-                result = self._try_ranked(memory, session, candidates, expanded_scores, tried)
+            result, expansion_work = self._expand_branches(memory, session, tried, hidden)
         if result is None:
             result = (BindingStepRead("catalog_absent", bounds=tried[0].bounds) if tried
                       else BindingStepRead("below_floor"))
@@ -243,31 +239,52 @@ class BindingFeedback:
                 return attempt
         return None
 
-    def _expanded_scores(self, memory, hidden):
+    def _expand_branches(self, memory, session, tried, hidden):
         expansion = self._expansion
-        rows = memory._possible._rows
-        scanned = len(rows)
-        if scanned > expansion.work_limit:
-            return None, None, 0
-        active = sorted({coordinate for _, coordinate in rows})
-        if not active:
-            return (), np.empty(0), scanned
-        # Count row visits, scalar dot terms and node/anchor score combinations.
-        total = scanned + (hidden.size + len(active)) * (memory._anchors.shape[1] + len(expansion.nodes))
-        if total > expansion.work_limit:
-            return None, None, scanned
-        with np.errstate(over="raise", invalid="raise"):
-            anchor_scores = memory._anchors[active] @ (hidden @ expansion.anchor_query)
-            node_scores = hidden @ expansion.node_query
-            combined = node_scores[:, None] + anchor_scores
-        candidates, scores = [], []
-        for node, row in zip(expansion.nodes, combined, strict=True):
-            for coordinate, score in zip(active, row, strict=True):
+        spent = 0
+
+        def charge(amount):
+            nonlocal spent
+            if spent + amount > expansion.work_limit:
+                raise BindingCapacityError("route expansion work limit exceeded")
+            spent += amount
+
+        try:
+            charge(len(expansion.nodes))
+            if any(node not in memory._possible._dependents for node in expansion.nodes):
+                return BindingStepRead("unavailable"), spent
+            candidates, scores = self._expanded_scores(memory, hidden, charge)
+        except BindingCapacityError:
+            return BindingStepRead("expansion_capacity"), spent
+        return self._try_ranked(memory, session, candidates, scores, tried), spent
+
+    def _expanded_scores(self, memory, hidden, charge):
+        expansion = self._expansion
+        coordinates = memory._possible._possible_coordinates(expansion.nodes, charge)
+        active, positions, candidates = {}, [], []
+        for position, node in enumerate(expansion.nodes):
+            eligible = coordinates[node]
+            charge(len(eligible))
+            start = len(candidates)
+            for coordinate in sorted(eligible):
                 address = node, coordinate
                 if address not in self._fixed_addresses:
-                    candidates.append(address)
-                    scores.append(score)
-        return candidates, np.asarray(scores), total
+                    active.setdefault(coordinate, len(active))
+                    candidates.append((address, len(positions)))
+            if len(candidates) != start:
+                positions.append(position)
+        if not candidates:
+            return (), np.empty(0)
+        charge((hidden.size + len(active)) * memory._anchors.shape[1]
+               + hidden.size * len(positions) + len(candidates))
+        with np.errstate(over="raise", invalid="raise"):
+            anchor_scores = memory._anchors[list(active)] @ (hidden @ expansion.anchor_query)
+            node_scores = hidden @ expansion.node_query[:, positions]
+            addresses, scores = [], []
+            for address, position in candidates:
+                addresses.append(address)
+                scores.append(node_scores[position] + anchor_scores[active[address[1]]])
+        return addresses, np.asarray(scores)
 
     def _read_branch(self, memory, session, address):
         if address[0] not in memory._certain._dependents:

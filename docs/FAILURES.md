@@ -157,6 +157,10 @@ Proposals are not run authorization. Execution is paused as recorded in README a
 
 **A fixed catalog can lose a route after a source edit, 25 November 2026.** Moving the only compatible late source to a new anchor left the fixed catalog with a completed negative. The expanded tier recovered the still-encoded proof. An incomplete score scan cannot certify that broader tier's absence. Keep exhaustion visible and report the authorized scope and possible-only outputs. [Receiver controls](../experiments/memory/test_binding_feedback.py)
 
+**An unrelated predicate can exhaust a global expansion scan, 25 November 2026.** On a frame with one feasible late address, adding rows at 254 other coordinates made the global scan refuse before scoring. Restrict candidate discovery to the pinned possible rows that can feed each authorized node. Presence alone still admits overlaps that violate the origin rules. Unrelated ambiguity can also split the whole corpus into two proof banks even when both give the same local answer. The revised expansion charge was stable on this control, while proof work rose from one bank to two. Compare localized bank sharing before treating the change as an end-to-end cost gain. [Receiver controls](../experiments/memory/test_binding_feedback.py)
+
+**A broad ancestor can exhaust expansion before a narrow intersection, 25 November 2026.** Adding 254 coordinates to one branch of an OR exhausted a 64-unit allowance before the enclosing AND could intersect it with its other, singleton parent. The direct proof at the singleton still returned 0.8. Compare sparse-parent enumeration and pointwise membership, and compare maintained projections on repeated reads after edits. Preserve the same proof and score rules across arms.
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

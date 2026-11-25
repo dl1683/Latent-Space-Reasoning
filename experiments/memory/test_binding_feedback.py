@@ -132,7 +132,7 @@ def test_expansion_recovers_a_continuation_moved_outside_the_fixed_catalog(tmp_p
     moved = _write(journal, {"late": b"b,0,1,0.7"})
     removed = _write(journal, {"late": None})
     fixed = _coverage_receiver(frame)
-    expanded = _coverage_receiver(frame, expansion_limit=20)
+    expanded = _coverage_receiver(frame, expansion_limit=18)
 
     old = _second_read(expanded, original.memory).reads[-1]
     assert old.address == ("b", 0) and old.expansion_work == 0
@@ -144,8 +144,8 @@ def test_expansion_recovers_a_continuation_moved_outside_the_fixed_catalog(tmp_p
     assert [attempt.address for attempt in recovered.tried] == [("b", 0), ("b", 1)]
     assert recovered.tried[0].bounds == CorpusBindingRead(None, None)
     assert state.latest[3] == np.tanh(.7)
-    assert recovered.expansion_work == 20
-    only_expanded = _coverage_receiver(frame, expansion_limit=20, fixed_late=(0,))
+    assert recovered.expansion_work == 18
+    only_expanded = _coverage_receiver(frame, expansion_limit=18, fixed_late=(0,))
     assert _second_read(only_expanded, moved.memory).reads[-1].address == ("b", 1)
     unauthorized = moved.memory.revise({"other": b"c,0,1,1"})
     scoped = _second_read(_coverage_receiver(frame, expansion_limit=64), unauthorized).reads[-1]
@@ -162,8 +162,8 @@ def test_expansion_recovers_a_continuation_moved_outside_the_fixed_catalog(tmp_p
     assert _second_read(expanded, replay.memory).reads[-1] == vanished
 
 
-@pytest.mark.parametrize("limit,spent", [(1, 0), (2, 2), (19, 2)])
-def test_expansion_caps_row_scans_and_scoring_without_certifying_absence(limit, spent):
+@pytest.mark.parametrize("limit,spent", [(1, 1), (2, 2), (17, 3)])
+def test_expansion_caps_support_discovery_and_scoring_without_certifying_absence(limit, spent):
     frame = _matching_frame()
     memory = frame.revise({"early": b"p,1,0,1", "late": b"b,0,1,0.7"})
     decision = _second_read(_coverage_receiver(frame, expansion_limit=limit), memory).reads[-1]
@@ -190,7 +190,9 @@ def test_expansion_shares_trial_and_proof_limits_and_honors_rank_uncertainty():
     assert untried.expansion_work > 0
 
     tied = _coverage_receiver(frame, expansion_limit=64, nodes=("b", "c"))
-    ambiguous = _second_read(tied, memory).reads[-1]
+    assert _second_read(tied, memory).reads[-1].address == ("b", 1)
+    both_supported = memory.revise({"rival": b"c,0,1,0.5"})
+    ambiguous = _second_read(tied, both_supported).reads[-1]
     assert ambiguous.status == "ambiguous" and ambiguous.expansion_work > 0
     assert [attempt.address for attempt in ambiguous.tried] == [("b", 0)]
     tied_fixed = _coverage_receiver(frame, expansion_limit=64, fixed_late=(1, 1))
@@ -215,8 +217,63 @@ def test_expansion_uses_possible_rows_and_reports_a_removed_gate():
 
     unwired = _second_read(receiver, memory.reprogram({})).reads[-1]
     assert unwired.status == "unavailable" and unwired.bounds is None
-    assert unwired.address == choice.address and unwired.expansion_work > 0
+    assert unwired.address is None and unwired.expansion_work == 1
+    assert [attempt.address for attempt in unwired.tried] == [("b", 0)]
     assert _second_read(receiver, memory).reads[-1] == choice
+
+
+def test_unrelated_possible_rows_do_not_influence_route_admission():
+    frame = _matching_frame(anchors=np.vstack((np.eye(2), np.tile([-1, 0], (254, 1)))))
+    sparse = frame.revise({"early": b"p,1,0,1", "late": b"b,0,1,0.8"})
+    dense = sparse.revise({"irrelevant": b"c,-1,0,1"})
+    assert len(dense._possible._leaf_coordinates["c"]) == 254
+    assert dense._possible._leaf_coordinates["b"] is sparse._possible._leaf_coordinates["b"]
+    receiver = _coverage_receiver(frame, expansion_limit=18, nodes=("b",))
+    original = _second_read(receiver, sparse).reads[-1]
+    assert original.address == ("b", 1) and original.expansion_work == 18
+    assert original.bounds == CorpusBindingRead(BindingProof(.8, frozenset({"early", "late"})), .8)
+    crowded = _second_read(receiver, dense).reads[-1]
+    assert (crowded.status, crowded.address, crowded.bounds) == (original.status, original.address, original.bounds)
+    assert crowded.expansion_work == original.expansion_work
+    assert len(original.proof_work) == 1 and len(crowded.proof_work) == 2
+
+
+def test_gate_scope_is_only_a_necessary_filter_and_replays_across_rewiring(tmp_path):
+    parents = ("b", "c")
+    frame = _matching_frame(anchors=[[1, 0], [0, 1], [-1, 0]]).reprogram({
+        "either": BindingGate("or", parents),
+        "both": BindingGate("and", parents),
+        "joint": BindingGate("disjoint_and", parents),
+    })
+    path = tmp_path / "scoped-corpus.sqlite"
+    journal = JournaledCorpusWorkspace(path, frame, create=True)
+    overlap = _write(journal, {"early": b"p,1,0,1", "other_anchor": b"c,-1,0,1",
+                               "shared": b"b,1,0,1\nb,0,1,0.8\nc,0,1,0.9"})
+    projections = overlap.memory._possible._possible_coordinates(("either", "both", "joint"), lambda units: None)
+    assert projections["either"] == {0, 1, 2}
+    assert projections["both"] == projections["joint"] == {1}
+    receiver = _coverage_receiver(frame, expansion_limit=64, nodes=("joint",), fixed_late=(0,))
+    no_match = _second_read(receiver, overlap.memory).reads[-1]
+    assert no_match.status == "catalog_absent"
+    assert no_match.tried[-1].address == ("joint", 1)
+    assert no_match.tried[-1].bounds == CorpusBindingRead(None, None)
+
+    eligible = _write(journal, {"separate": b"c,0,1,0.7"})
+    assert eligible.memory._possible._leaf_coordinates is overlap.memory._possible._leaf_coordinates
+    found = _second_read(receiver, eligible.memory).reads[-1]
+    assert found.bounds == CorpusBindingRead(BindingProof(.7, frozenset({"early", "shared", "separate"})), .7)
+    program = {"joint": BindingGate("and", ("b", "b"))}
+    rewired = journal.publish_program(journal.prepare_program(eligible, program))
+    assert rewired.memory._possible._leaf_coordinates is eligible.memory._possible._leaf_coordinates
+    changed = _second_read(receiver, rewired.memory).reads[-1]
+    assert changed.bounds == CorpusBindingRead(BindingProof(.8, frozenset({"early", "shared"})), .8)
+
+    def no_encoder(_raw):
+        pytest.fail("replaying a source or gate change attempted encoding")
+
+    fresh = JournaledCorpusWorkspace(path, replace(frame, _encode=no_encoder)).snapshot()
+    assert _second_read(receiver, fresh.memory).reads[-1] == changed
+    assert _second_read(receiver, overlap.memory).reads[-1] == no_match
 
 
 def test_expanded_address_becomes_an_obligation_for_later_reads():

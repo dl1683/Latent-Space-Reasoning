@@ -150,6 +150,7 @@ class BindingMemory:
     _gate_index: Mapping[str, int]
     _sources: Mapping[str, Mapping[tuple[str, int], float]]
     _rows: Mapping[tuple[str, int], _Support]
+    _leaf_coordinates: Mapping[str, frozenset[int]]
     _retained: Mapping[tuple[str, int, frozenset[str]], _Retained]
     materialize: bool = True
     retained_limit: int = 64
@@ -186,7 +187,7 @@ class BindingMemory:
         dependents = MappingProxyType({node: tuple(users) for node, users in known.items()})
         positions = MappingProxyType({node: position for position, (node, _) in enumerate(ordered)})
         empty = cls(width, term_limit, pair_limit, frozenset(predicates), tuple(ordered), dependents,
-                    positions, _EMPTY, _EMPTY, _EMPTY, materialize, retained_limit)
+                    positions, _EMPTY, _EMPTY, _EMPTY, _EMPTY, materialize, retained_limit)
         return empty.revise(sources)
 
     def reprogram(self, gates):
@@ -204,7 +205,8 @@ class BindingMemory:
             if old_gates.get(name) == gate and unchanged.issuperset(gate.parents):
                 unchanged.add(name)
         retained = {key: bound for key, bound in self._retained.items() if key[0] in unchanged}
-        return replace(layout, _sources=self._sources, _rows=self._rows, _retained=MappingProxyType(retained))
+        return replace(layout, _sources=self._sources, _rows=self._rows,
+                       _leaf_coordinates=self._leaf_coordinates, _retained=MappingProxyType(retained))
 
     def revise(self, changes):
         """Replace all facts for each supplied source ID, or remove it with None."""
@@ -260,8 +262,26 @@ class BindingMemory:
                     heappush(pending, update)
                     scheduled.add(update)
 
+        changed_coordinates = {}
         for (node, binding), terms in inputs.items():
+            if ((node, binding) in self._rows) != bool(terms):
+                if node not in changed_coordinates:
+                    changed_coordinates[node] = set(self._leaf_coordinates.get(node, ()))
+                coordinates = changed_coordinates[node]
+                if terms:
+                    coordinates.add(binding)
+                else:
+                    coordinates.remove(binding)
             install(node, binding, terms)
+        postings = self._leaf_coordinates
+        if changed_coordinates:
+            updated = dict(postings)
+            for node, coordinates in changed_coordinates.items():
+                if coordinates:
+                    updated[node] = frozenset(coordinates)
+                else:
+                    del updated[node]
+            postings = MappingProxyType(updated)
         pairs_left = self.pair_limit
         while pending:
             position, binding = heappop(pending)
@@ -280,7 +300,48 @@ class BindingMemory:
                 changed |= advanced is not result
             if changed:
                 retained = MappingProxyType(surviving)
-        return replace(self, _sources=MappingProxyType(sources), _rows=MappingProxyType(rows), _retained=retained)
+        return replace(self, _sources=MappingProxyType(sources), _rows=MappingProxyType(rows),
+                       _leaf_coordinates=postings, _retained=retained)
+
+    def _possible_coordinates(self, nodes, charge):
+        """Return a necessary coordinate set for each declared node before checking origins."""
+        coordinates, positions, seen = {}, [], set()
+        pending = list(nodes)
+        while pending:
+            node = pending.pop()
+            if node in seen:
+                continue
+            charge(1)
+            seen.add(node)
+            position = self._gate_index.get(node)
+            if position is None:
+                coordinates[node] = self._leaf_coordinates.get(node, frozenset())
+            else:
+                _, gate = self._gates[position]
+                charge(len(gate.parents))
+                positions.append(position)
+                pending.extend(gate.parents)
+
+        for position in sorted(positions):
+            node, gate = self._gates[position]
+            parents = [coordinates[parent] for parent in gate.parents]
+            if len(parents) == 1:
+                result = parents[0]
+            elif gate.operation == "or":
+                result = set()
+                for parent in parents:
+                    charge(len(parent))
+                    result.update(parent)
+            else:
+                result = min(parents, key=len)
+                for parent in parents:
+                    if not result:
+                        break
+                    if parent is not result:
+                        charge(min(len(result), len(parent)))
+                        result = result.intersection(parent)
+            coordinates[node] = result
+        return coordinates
 
     def supports(self, node, binding):
         """Return the retained source sets and strengths for a specific binding."""
