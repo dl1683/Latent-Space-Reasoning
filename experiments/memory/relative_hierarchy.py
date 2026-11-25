@@ -66,6 +66,7 @@ def _write_coefficients(row, positions, observation):
 class _RegionFusion:
     children: tuple[_Region, _Region]
     bridges: Mapping[str, RelativeObservation]
+    lazy_readout: bool
 
 
 @dataclass(frozen=True, eq=False)
@@ -79,6 +80,14 @@ class _Region:
     factor: np.ndarray
     readout: np.ndarray
     fusion: _RegionFusion | None = None
+
+    @property
+    def interior_size(self):
+        return len(self.positions) - len(self.ports)
+
+    @property
+    def lazy_readout(self):
+        return self.fusion is not None and self.fusion.lazy_readout
 
 
 def _eliminate(matrix, split):
@@ -140,13 +149,50 @@ def _compact_region(region, active_ports):
         raise FloatingPointError("nonfinite compacted region read operator")
     readout = np.concatenate((readout, retired_readout), axis=0)
     ports = tuple(region.ports[column] for column in retained)
-    order = (*tuple(region.positions)[:len(region.readout)],
+    order = (*tuple(region.positions)[:region.interior_size],
              *(region.ports[column] for column in retired), *ports)
     positions = MappingProxyType({cell: column for column, cell in enumerate(order)})
     return replace(region, ports=ports, positions=positions, factor=_frozen(factor), readout=_frozen(readout))
 
 
-def _merged_region(regions, internalized, active_ports, *, retain_children=False):
+def _region_readout_row(region, cell):
+    path = []
+    while region.lazy_readout:
+        # Retired boundary rows form a suffix of the interior order.
+        if region.positions[cell] >= region.interior_size - len(region.readout):
+            break
+        path.append(region)
+        left, right = region.fusion.children
+        region = left if cell in left.positions else right
+
+    row = region.readout[region.positions[cell] - region.interior_size]
+    if not path:
+        return row
+    with np.errstate(over="raise", invalid="raise"):
+        for parent in reversed(path):
+            lifted = np.zeros(len(parent.ports) + 1)
+            lifted[-1] = row[-1]
+            for port, weight in zip(region.ports, row[:-1]):
+                if weight == 0:
+                    continue
+                column = parent.positions[port] - parent.interior_size
+                if column < 0:
+                    lifted += weight * parent.readout[column]
+                else:
+                    lifted[column] += weight
+            row, region = lifted, parent
+    return row
+
+
+def _full_region_readout(region):
+    if not region.lazy_readout:
+        return region.readout
+    cells = tuple(region.positions)[:region.interior_size]
+    rows = [_region_readout_row(region, cell) for cell in cells]
+    return np.asarray(rows).reshape(region.interior_size, len(region.ports) + 1)
+
+
+def _merged_region(regions, internalized, active_ports, *, retain_children=False, lazy_readout=False):
     old_ports = tuple(cell for region in regions for cell in region.ports)
     retired_ports = tuple(cell for cell in old_ports if cell not in active_ports)
     ports = tuple(sorted(active_ports))
@@ -164,11 +210,13 @@ def _merged_region(regions, internalized, active_ports, *, retain_children=False
         matrix[row, -1] = _weighted_value(source)
 
     factor, retired_readout = _eliminate(matrix, len(retired_ports))
-    transport = np.concatenate((retired_readout, np.eye(len(ports) + 1)), axis=0)
-    interior = tuple(cell for region in regions for cell in tuple(region.positions)[:len(region.readout)])
-    readouts = [region.readout @ transport[[*(columns[cell] for cell in region.ports), -1]]
-                for region in regions]
-    readout = np.concatenate((*readouts, retired_readout), axis=0)
+    readout = retired_readout
+    if not lazy_readout:
+        transport = np.concatenate((retired_readout, np.eye(len(ports) + 1)), axis=0)
+        readouts = [_full_region_readout(region) @ transport[[*(columns[cell] for cell in region.ports), -1]]
+                    for region in regions]
+        readout = np.concatenate((*readouts, retired_readout), axis=0)
+    interior = tuple(cell for region in regions for cell in tuple(region.positions)[:region.interior_size])
     if not np.isfinite(readout).all():
         raise FloatingPointError("nonfinite merged region read operator")
     cells = (*interior, *retired_ports, *ports)
@@ -198,7 +246,7 @@ def _merged_region(regions, internalized, active_ports, *, retain_children=False
         frozenset(components.root(cell) for cell in anchors),
         LocalSourcePaths(MappingProxyType(neighbors), MappingProxyType(anchors)),
         _frozen(factor), _frozen(readout),
-        _RegionFusion(regions, MappingProxyType(internalized)) if retain_children else None,
+        _RegionFusion(regions, MappingProxyType(internalized), lazy_readout) if retain_children else None,
     )
 
 
@@ -253,7 +301,9 @@ def _revise_region(region, edits, ports, ridge):
 
     for node, bridges, exposed in reversed(composites):
         children = tuple(completed[child] for child in node.fusion.children)
-        completed[node] = _merged_region(children, bridges, exposed, retain_children=True)
+        completed[node] = _merged_region(
+            children, bridges, exposed, retain_children=True, lazy_readout=node.lazy_readout,
+        )
     return completed[region]
 
 
@@ -443,7 +493,7 @@ def _sparse_coarse(ports, regions, bridges, rank, previous, rebuilt_regions, bri
 
 def _local_root(region, ridge, component):
     interior = tuple(node for node, position in region.positions.items()
-                     if position < len(region.readout) and region.components[node] == component)
+                     if position < region.interior_size and region.components[node] == component)
     positions = {node: column for column, node in enumerate(interior)}
     observations = [row for _, row in sorted(region._sources.items())
                     if any(node in positions for node in row._endpoints())]
@@ -465,7 +515,7 @@ def _port_weights(snapshot, cell):
         return {cell: 1.0}
     region = snapshot._regions[snapshot._owner._membership[cell]]
     component = region.components[cell]
-    weights = region.readout[region.positions[cell], :-1]
+    weights = _region_readout_row(region, cell)[:-1]
     return {port: weight for port, weight in zip(region.ports, weights)
             if weight and region.components[port] == component}
 
@@ -699,7 +749,7 @@ class RelativeHierarchySnapshot:
             return None
         if cell in self._port_positions:
             return (cell,), None
-        coeffs = region.readout[region.positions[cell]]
+        coeffs = _region_readout_row(region, cell)
         if self._elimination is None:
             return region.ports, coeffs
         needed = [column for column, port in enumerate(region.ports)
@@ -718,7 +768,11 @@ class RelativeHierarchySnapshot:
         return self._read_batch(cells)[0]
 
     def _read_batch(self, cells):
-        plans = tuple(self._readout(cell) for cell in cells)
+        plans, by_cell = [], {}
+        for cell in map(index, cells):
+            if cell not in by_cell:
+                by_cell[cell] = self._readout(cell)
+            plans.append(by_cell[cell])
         values = None
         if self._elimination is not None:
             requested = dict.fromkeys(port for plan in plans if plan is not None for port in plan[0])
@@ -885,10 +939,12 @@ class RelativeObservationHierarchy:
         return self._snapshot(MappingProxyType(sources), MappingProxyType(bridges), factors, rebuilt,
                               base=base, bridge_edits=bridge_edits, source_magnitude=magnitude)
 
-    def merge_regions(self, base, first, second, *, retain_children=False):
-        """Fuse two regions, optionally keeping child operators for edits and splits."""
-        if type(retain_children) is not bool:
-            raise ValueError("retain_children must be a boolean")
+    def merge_regions(self, base, first, second, *, retain_children=False, lazy_readout=False):
+        """Fuse two regions, optionally keeping child operators and deferring their readout."""
+        if type(retain_children) is not bool or type(lazy_readout) is not bool:
+            raise ValueError("retain_children and lazy_readout must be booleans")
+        if lazy_readout and not retain_children:
+            raise ValueError("lazy readout requires retained children")
         if base._owner is not self:
             raise ValueError("relative snapshot belongs to a different hierarchy")
         first, second = sorted((index(first), index(second)))
@@ -902,7 +958,7 @@ class RelativeObservationHierarchy:
         active_ports = {cell for name in left ^ right for cell in base._bridges[name]._endpoints()
                         if self._membership[cell] in (first, second)}
         merged = _merged_region((base._regions[first], base._regions[second]), internalized, active_ports,
-                                retain_children=retain_children)
+                                retain_children=retain_children, lazy_readout=lazy_readout)
         regions = list(base._regions)
         regions[first] = merged
         del regions[second]

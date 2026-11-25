@@ -1071,3 +1071,65 @@ def test_retained_fusion_reuses_children_and_routes_edits_across_nested_boundari
     _assert_direct(restored, expected)
     _assert_direct(nested, sources)
     _assert_direct(parent, sources)
+
+
+@pytest.mark.parametrize("order", [None, tuple(reversed(range(len(_MEMBERSHIP))))])
+def test_lazy_fusion_uses_requested_rows_for_reads_and_adjoint_after_edits(order, monkeypatch):
+    hierarchy = RelativeObservationHierarchy(_MEMBERSHIP, ridge=_RIDGE, elimination_order=order)
+    sources = _sources() | {"external": RelativeObservation(9, 0.35, source=0)}
+    parent = hierarchy.initialize(sources)
+    eager_child = hierarchy.merge_regions(parent, 0, 1, retain_children=True)
+    eager = eager_child._owner.merge_regions(eager_child, 0, 1, retain_children=True)
+    with pytest.raises(ValueError, match="requires retained children"):
+        hierarchy.merge_regions(parent, 0, 1, lazy_readout=True)
+    lazy_child = hierarchy.merge_regions(parent, 0, 1, retain_children=True, lazy_readout=True)
+    eager_over_lazy = lazy_child._owner.merge_regions(lazy_child, 0, 1, retain_children=True)
+    assert not eager_over_lazy._regions[0].lazy_readout
+    assert eager_over_lazy._regions[0].fusion.children[0] is lazy_child._regions[0]
+    _assert_direct(eager_over_lazy, sources)
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("lazy revision requested a complete child readout")
+
+    monkeypatch.setattr(relative_hierarchy, "_full_region_readout", unexpected)
+    lazy = lazy_child._owner.merge_regions(lazy_child, 0, 1, retain_children=True, lazy_readout=True)
+    region = lazy._regions[0]
+    assert region.ports == (0,) and region.interior_size == 9
+    assert region.readout.shape == (2, 2)
+    assert lazy_child._regions[0].readout.shape == (2, 3)
+    assert eager._regions[0].readout.shape == (9, 2)
+
+    calls = []
+    readout_row = relative_hierarchy._region_readout_row
+
+    def count(region, cell):
+        calls.append(cell)
+        return readout_row(region, cell)
+
+    requested = (8, 8, 4, 11, 0, 9)
+    expected = eager.read_many(requested)
+    with monkeypatch.context() as tracked:
+        tracked.setattr(relative_hierarchy, "_region_readout_row", count)
+        assert lazy.read_many(requested) == pytest.approx(expected, abs=1e-12, rel=0)
+        assert calls == [8, 4]
+    _assert_direct(lazy, sources)
+    assert lazy.support_witness(8) == eager.support_witness(8)
+
+    changed = {"bridge": RelativeObservation(3, -0.7, source=2, weight=1.8)}
+    assert dict(lazy.source_gains(8, tuple(sources))) == pytest.approx(
+        dict(eager.source_gains(8, tuple(sources))), abs=1e-12, rel=0,
+    )
+    assert lazy.predict_source_edits(8, changed) == pytest.approx(
+        eager.predict_source_edits(8, changed), abs=1e-12, rel=0,
+    )
+    revised = lazy._owner.revise(lazy, changed)
+    assert revised._regions[0].lazy_readout and revised._regions[0].readout.shape == (2, 2)
+    temporary = revised._owner.revise(revised, {"temporary": RelativeObservation(10, 0.6, source=8)})
+    removed = temporary._owner.revise(temporary, {"temporary": None})
+    compacted = removed._owner.compact(removed, max_regions=2, protected_cells=(4, 8, 11))
+    assert compacted._regions[0].readout.shape == (3, 2) and compacted._regions[0].lazy_readout
+    split = compacted._owner.split_region(compacted, 0)
+    assert split._regions[0].lazy_readout
+    for child in (revised, compacted, split):
+        _assert_direct(child, sources | changed)
+    _assert_direct(lazy, sources)

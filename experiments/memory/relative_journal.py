@@ -117,8 +117,10 @@ class JournaledRelativeHierarchyWorkspace:
             revised = owner.reorder(snapshot, data["order"])
         elif kind == "compact":
             revised = owner.compact(snapshot, max_regions=data)
-        elif kind in ("merge_regions", "merge_retained"):
-            revised = owner.merge_regions(snapshot, *data, retain_children=kind == "merge_retained")
+        elif kind in ("merge_regions", "merge_retained", "merge_lazy"):
+            revised = owner.merge_regions(
+                snapshot, *data, retain_children=kind != "merge_regions", lazy_readout=kind == "merge_lazy",
+            )
         elif kind == "split_region":
             revised = owner.split_region(snapshot, *data)
         elif kind == "repartition":
@@ -216,15 +218,18 @@ class JournaledRelativeHierarchyWorkspace:
                 raise ValueError("partition change altered a protected read")
         return self._commit(base, revised, kind, _json(data))
 
-    def merge_regions(self, base, first, second, *, retain_children=False, protected_cells=(), tolerance=1e-10):
+    def merge_regions(self, base, first, second, *, retain_children=False, lazy_readout=False,
+                      protected_cells=(), tolerance=1e-10):
         """Publish a fusion of retained operators on the selected tip."""
-        if type(retain_children) is not bool:
-            raise ValueError("retain_children must be a boolean")
+        if type(retain_children) is not bool or type(lazy_readout) is not bool:
+            raise ValueError("retain_children and lazy_readout must be booleans")
         regions = tuple(sorted((index(first), index(second))))
-        kind = "merge_retained" if retain_children else "merge_regions"
+        kind = "merge_regions"
+        if retain_children:
+            kind = "merge_lazy" if lazy_readout else "merge_retained"
         return self._publish_partition(
             base, kind, regions, base.snapshot._owner.merge_regions, protected_cells, tolerance,
-            retain_children=retain_children,
+            retain_children=retain_children, lazy_readout=lazy_readout,
         )
 
     def split_region(self, base, region, *, protected_cells=(), tolerance=1e-10):

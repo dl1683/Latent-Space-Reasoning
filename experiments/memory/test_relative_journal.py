@@ -245,3 +245,31 @@ journal.revise(head, _LATE)
     with pytest.raises(ValueError, match="with retained children"):
         journal.split_region(separated, 4)
     assert journal.snapshot() is separated
+
+
+def test_lazy_fusion_journal_recovers_after_source_revision_and_split(tmp_path):
+    path = tmp_path / "lazy-fusion.sqlite"
+    journal, observer = _open(path, create=True), _open(path)
+    _, sources = _root()
+    parent = journal.snapshot()
+    with pytest.raises(ValueError, match="requires retained children"):
+        journal.merge_regions(parent, 4, 5, lazy_readout=True)
+    fused = journal.merge_regions(parent, 4, 5, retain_children=True, lazy_readout=True, protected_cells=_ORDER)
+    assert fused.snapshot._regions[4].lazy_readout
+    assert observer.snapshot().snapshot._regions[4].lazy_readout
+    updated = observer.revise(observer.snapshot(), _LATE)
+    assert updated.snapshot._regions[4].lazy_readout
+    reopened = _open(path)
+    recovered = reopened.snapshot()
+    assert recovered.digest == updated.digest and recovered.snapshot._regions[4].lazy_readout
+    _assert_values(recovered, sources | _LATE)
+
+    split = reopened.split_region(recovered, 4, protected_cells=_ORDER)
+    assert not split.snapshot._regions[4].lazy_readout
+    assert journal.snapshot().digest == _open(path).snapshot().digest == split.digest
+    _assert_values(split, sources | _LATE)
+    _assert_values(fused, sources)
+    with closing(sqlite3.connect(path)) as db:
+        assert db.execute("SELECT kind FROM relative_events ORDER BY number").fetchall() == [
+            ("merge_lazy",), ("sources",), ("split_region",),
+        ]
