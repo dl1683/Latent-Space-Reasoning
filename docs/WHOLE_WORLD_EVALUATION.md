@@ -189,7 +189,11 @@ joint role-link invocation for its designated multi-stage obligation. Each
 invocation has one root and cannot batch independent needs; it counts against
 the same action and call budgets. The action receipt must expose the returned
 branch outcomes and versioned witness spans, and the planner must open and
-cite the relevant exact spans. Give each task at most seven 0.6B calls: one
+cite the relevant exact spans. Configure `EpisodeLimits.joint_roles=1` per task;
+cap its
+materialized candidate spans at 256, report examined spans and role-span pages
+separately, and charge each additional page against the search allowance.
+Give each task at most seven 0.6B calls: one
 initial plan, up to five evidence-action or retrieval rounds, and one final
 assessment, with 256 generated tokens and 8,192 total prompt tokens per task.
 Set `TaskBudget` to at most 24 actions, eight candidates per search, 8,192
@@ -276,19 +280,25 @@ of probe actions, source bytes, retained evidence bytes and prepared input
 tokens all need separate checks against the registered ceilings. The scripted
 fixture uses a byte-counting adapter with a larger input allowance. It supplies
 neither a model-adapter feasibility result nor a comparison with the staged
-index. Independent need IDs and need-linked action receipts remain required
-for a scored study, including evaluation of generic findings that bypass
-the declared proof contract.
-`run_episode` accepts JSON-state and text-notes policies, but its `needs` state
-is only checked as a dictionary; it is not a typed obligation validator. Its
-final findings have no stable need ID, and tool receipts do not identify which
-need they served. `EvidenceNeed` separately has optional typed fields for
-entity/event, relation, time/version scope, evidence sought, support/defeat
-requirements, alternatives and unresolved conditions. The model adapter must
-populate and preserve those fields, validate state revisions without losing
-need identity, link each tool receipt and finding to a stable need ID, and
-report unresolved conditions against that ID before need-level precision and
-recall can be scored. Legacy scripted callers may omit the typed fields.
+index. Typed need IDs and need-linked action receipts are now available but
+uncalibrated; a scored study must also evaluate generic findings that bypass
+the declared proof contract. `run_episode` retains JSON-state and text-notes
+policies and now has a `typed_needs` mode. Typed records check the target/event,
+relation, time/version, evidence-sought, support/defeat, alternative and
+unresolved-condition fields, stable need IDs, parent/discovery links, immutable
+need definitions, and persistence of IDs across state revisions. Each
+search/read/probe/reason/role-span receipt carries its motivating need ID;
+candidate reads cannot be reassigned to another need. A batched opening also
+uses one need ID for every candidate. A finding may cite any verified read,
+including one acquired for another need; the evaluator judges relevance. A
+citation-free unknown requires a same-need open-question entry, and every
+declared need must receive a finding. A joint `role_support` finding is checked
+against its receipt, seed citation, effective time, retained dependency
+manifest, and finding stance: supported/defeated, conflicted, or unknown must
+match the linked role status. These host checks make traces gradeable; they do not determine
+whether a need is material, whether an open question names a consequential
+premise, or whether cited prose supports the claim. The older `needs` state
+remains untyped, and legacy callers may omit these fields.
 
 `run_episode` parses output after generation; its prompt is not a constrained
 decoder. Three prompt-only 0.6B source-only canaries failed to establish
@@ -303,22 +313,36 @@ episode then read only the rule source, repeated that search twice, and
 submitted an unsupported positive finding from a rule that states
 prerequisites but does not show they were met. This unbound synthetic run
 shows schema-valid tool use is still vulnerable to need omission and false
-closure; it is not a test of latent-world quality. Freeze a complete typed
-need/finding adapter and pass an eight-task calibration set that measures
-both format and evidence sufficiency before opening held tasks. See the
-preserved ledgers and exact denominators in [RESULTS.md](RESULTS.md).
+closure; it is not a test of latent-world quality. Four typed-need canaries are
+now preserved in [RESULTS.md](RESULTS.md). One completed only after its runner
+fixed the query sequence and expected source IDs; the preceding attempts
+exposed state-schema, decoder, and input-budget failures. The completed trace
+still included an unsupported relation and date range and left its task
+question open beside positive findings. This adaptive sequence is not the
+eight-task calibration and supplies no independent semantic grade. Freeze a
+schema-constrained adapter and pass the eight-task calibration on both format
+and evidence sufficiency before opening held tasks.
 
 The query-blind bridge worker can now take a bounded batch from a revision-led
-agenda and publish its resulting operators. Late paths carry the actual
-publication digest for bridges installed by those worker batches. Historical replay can recover
-before and after pins under event and payload limits; historical verified opens
-still require the source bytes. The worker operates on a declared role pair,
-key predicate, threshold and transport. Source-context selection between
-competing operators, coverage-only publication dependencies, general gap
-discovery and typed need assignment remain open. Geometry-twin tasks will
-require a frozen method for choosing a transport or abstaining from the
-available context. Match that input and publication opportunity in the
-incremental join arm before a scored test.
+agenda and publish its resulting operators. Late bridge witnesses carry the
+publication event digest; a typed `role_support` finding can reference the
+joint receipt that contains it. This gives a provenance link to the published
+event, but not a model-level proposal that names a consequential gap and its
+predicted task effect. Historical replay can recover before and after pins
+under event and payload limits; historical verified opens still require the
+source bytes. The worker operates on a declared role pair, key predicate,
+threshold and transport, while the joint task action consumes caller-supplied
+outcomes and stages. It does not select an operator from source context.
+
+Source-context selection between competing operators, coverage-only
+publication dependencies, and general task-directed gap discovery remain
+open. The typed need interface now exists but has not passed its eight-task
+visible calibration, and independent semantic need grading remains required.
+Geometry-twin tasks will require a frozen method for choosing a transport or
+abstaining from available context. Match that input and publication
+opportunity in the incremental join arm before a scored test. The bounded
+`snapshot_at(revision)` replay API is available; task-time history still needs
+to be charged under the registered event and payload limits.
 
 Run in stages: first verify the blinded data boundary and causal interventions
 on a small CPU world; next qualify the 0.6B planner's typed action contract on

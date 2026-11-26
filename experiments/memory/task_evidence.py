@@ -112,10 +112,11 @@ class TaskBudget:
     role_work: int = 512
     role_branches: int = 4
     role_transitions: int = 16
+    role_candidate_spans: int = 256
 
     def __post_init__(self):
         for name in ("steps", "candidates_per_search", "evidence_bytes", "source_bytes", "role_work",
-                     "role_branches", "role_transitions"):
+                     "role_branches", "role_transitions", "role_candidate_spans"):
             value = index(getattr(self, name))
             if value < 1:
                 raise ValueError("task allowances must be positive")
@@ -340,19 +341,29 @@ class _Investigation:
     def _verify_role_support(self, support, stance, citations, need):
         if (type(support) is not RoleSupport or type(support.receipt) is not int
                 or not 0 <= support.receipt < len(self.role_evidence)
-                or type(support.outcome) is not str or not support.outcome
-                or stance not in ("supports", "defeats")):
-            raise ValueError("role support requires an existing receipt and a decisive outcome")
+                or type(support.outcome) is not str or not support.outcome):
+            raise ValueError("role support requires an existing receipt and outcome")
         role = self.role_evidence[support.receipt]
-        if role.request.need != need or role.read.answer != support.outcome:
-            raise ValueError("role support requires a closed receipt for this need and outcome")
+        if role.request.need != need:
+            raise ValueError("role support requires a receipt for this need")
+        status = role.read.status
+        if status == "supported":
+            if stance not in ("supports", "defeats") or role.read.answer != support.outcome:
+                raise ValueError("role support requires a closed receipt matching its finding and outcome")
+        elif status == "conflict":
+            if stance != "conflicted" or support.outcome != "conflict":
+                raise ValueError("conflicting role support must be reported as conflicted")
+        elif stance != "unknown" or support.outcome != status:
+            raise ValueError("an open role receipt must be reported as unknown with its exact status")
         if role.request.source_observation is None or role.request.source_observation[0] not in citations:
             raise ValueError("role support must cite the verified seed observation")
         terminal_reads = _role_terminal_reads(role.read)
-        if self.world.pin.as_of is not None and any(read.as_of != self.world.pin.as_of for read in terminal_reads):
+        role_links = None if self.world._memory is None else self.world._memory._role_links
+        has_time_rules = role_links is not None and role_links.validity is not None
+        if has_time_rules and any(read.as_of != self.world.pin.as_of for read in terminal_reads):
             raise ValueError("role support must match the effective-time pin")
-        if not terminal_reads or any(not read.dependency_witnesses for read in terminal_reads):
-            raise ValueError("role support requires a complete joint role dependency receipt")
+        if not terminal_reads and stance != "unknown":
+            raise ValueError("decisive and conflicting role support requires terminal reads")
 
         exact, whole = set(), set()
         for read in terminal_reads:
@@ -360,6 +371,12 @@ class _Investigation:
                 whole.update(witness.unscoped_sources)
                 exact.update(witness.source_spans)
                 exact.update(witness.validity_spans)
+        if status == "conflict":
+            witnessed = {witness.outcome for read in terminal_reads for witness in read.dependency_witnesses}
+            if len(witnessed) < 2:
+                raise ValueError("a conflicted role finding requires witnesses for distinct outcomes")
+        if stance in ("supports", "defeats") and any(not read.dependency_witnesses for read in terminal_reads):
+            raise ValueError("decisive role support requires dependencies for every terminal path")
         verified = tuple(self.reads[i] for i in citations)
         verified_whole = {read.span.source_id for read in verified
                           if read.span.start_byte == 0 and read.span.end_byte == read.source_bytes_read}

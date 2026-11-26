@@ -85,30 +85,39 @@ starts from one completely verified source observation and advances a bounded
 population through caller-selected ordinary or role-driven stages. The receiver
 and effective time are part of the task pin. Source versions identify the
 knowledge snapshot, which remains distinct from the effective time assigned
-to its claims. Both direct probes and joint paths use that same time view.
+to its claims. When the retained program has role-validity rules, direct
+probes and joint paths use that pinned time view; without those rules, the
+task's `as_of` value is recorded as context but does not filter role evidence.
 The operation exposes versioned witness and authority spans as candidates.
 Further pages use the pinned receipt and spend a search attempt each.
 A single batched read can reopen several of them, charging each opening
 against the ordinary read and byte allowances. The ledger preserves the full
 receipt while the policy sees a compact branch summary and candidate list.
+The whole-world study configures one joint call per task. `EpisodeLimits`
+otherwise lets joint calls share the probe allowance. `TaskBudget` caps
+materialized role candidates at 256, and receipts report candidate spans
+examined and additional pages separately from ordinary probes and lexical
+searches.
 
-A finding can declare `role_support` with a completed joint receipt and outcome.
-The host checks the seed citation, the outcome and time, and coverage of the
-retained role dependencies across all matched terminal paths. A representative
+A finding can declare `role_support` with a joint receipt and outcome. The
+host checks the seed citation, effective time, and cited dependencies across
+the matched terminal paths. A decisive finding must match a closed outcome; a
+conflict must cite witnesses for distinct outcomes; an unknown can name the
+exact open status and remains subject to evaluator review. A representative
 witness per outcome is available for display, while weaker agreeing paths
 contribute their citations as well. Scoped dependencies require the exact
 bytes, including when cited inside a larger verified passage. Unscoped
-dependencies require whole-source reads. The check covers the modeled role
-operation; the numerical ordinary-binding inputs and the meaning of prose
+dependencies require whole-source reads. This checks the modeled role
+operation; numerical ordinary-binding inputs and the meaning of prose
 findings require their own causal and grading checks. Generic findings remain
-available and are graded separately. Role enumeration and the number of hidden
-transitions have separate receipts and caps.
+available and are graded separately. Role enumeration, materialized
+candidates and hidden transitions have separate receipts and caps.
 
 The capability target is discovering consequential needs and resolving or bounding them through justified source chains. Improvement requires better held-task findings or justified unknowns under matched access and full costs against competent iterative text RAG and plain search. Equivalent task outcomes at the same total cost would leave the structured planner with an engineering result on that family. The current fixture drives the action loop with a scripted policy. It checks assembly, reads, revision and uncertainty. The comparison of task inference remains unrun. [Task evidence fixtures](../experiments/memory/test_task_evidence.py)
 
 #### Comparing task policies on one tool surface
 
-[SLICE] `run_episode` in [task_episode.py](../experiments/memory/task_episode.py) delivers the raw task, editable policy state and observed receipts through the same frame and tools. The caller chooses free-form text notes or a JSON state object. Both formats can issue fresh lexical searches, open returned candidates and, in a probe-enabled arm, use a verified source observation to query a retained computation. The probe supplies bounded candidate spans from its terminal witnesses through the pinned catalogue. Those candidates use the same read and byte allowances as lexical candidates. Both formats submit claims, stances, citations, reasons and open questions. The host checks citation membership. Judging support, justified uncertainty and coverage of consequential needs requires a separate evaluator.
+[SLICE] `run_episode` in [task_episode.py](../experiments/memory/task_episode.py) delivers the raw task, editable policy state and observed receipts through the same frame and tools. The caller chooses free-form text notes, an untyped JSON state, or the validated `typed_needs` state. In typed mode, needs carry stable IDs and structured target/scope/evidence fields; need definitions and their parent/discovery links are immutable, while a refined obligation gets a new ID. Each search/read/probe/reason/role-span receipt records the need that prompted it, and candidates can only be opened under a need for which they were returned. A finding can cite any verified read under its need ID, including a read acquired for another need; the evaluator decides whether that evidence is relevant. A citation-free unknown must include a same-need open-question entry, whose adequacy the evaluator judges. A declared joint `role_support` finding is also checked against its joint receipt and exact verified dependencies. These checks make planner need recall and action-to-evidence traces scorable; they do not decide whether a need is material or whether cited text supports the finding. All formats can issue fresh lexical searches and open returned candidates. In a probe-enabled arm, the one-hop probe and multi-stage reason action use a verified source observation to query retained computation, expose bounded versioned spans through the pinned catalogue, and charge additional role-span pages, batched reads, role work and hidden transitions against their respective limits. Judging support, justified uncertainty and coverage of consequential needs requires a separate evaluator.
 
 The caller declares the pinned model, decoding settings and tokenizer/template through the configuration IDs. The host meters calls, the full prepared input sequence at each dispatch and reserved output capacity. Enforcement of output limits depends on the adapter's reported token counts. The ledger records incomplete usage on adapter failure. Query, read and probe attempts have separate limits. Source setup bytes, rereads, delivered evidence and role work are visible separately. A new append-only ledger records the exact framed requests, responses, tool receipts, rejected actions and terminal status. Keep its final digest separately. `read_episode_pair` checks the declared match and keeps failed episodes visible. A probe contrast changes access at the same pin. A retained-state contrast allows different memory pins for the same policy and source catalogue. Match actual resource costs only where usage is complete and include separately measured backend and maintenance costs. The identified ledgers are for integrity and comparison checks. Blinded grading of separately frozen tasks is a separate pilot requirement.
 

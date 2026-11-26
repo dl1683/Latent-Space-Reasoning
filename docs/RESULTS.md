@@ -49,6 +49,18 @@ acquisition, causal use in an unconstrained task,
 autonomous maintenance, end-to-end costs and comparison with an equally
 informed incremental temporal join remain open.
 
+## Context-selected transport versus lazy join (NOT_RUN), 26 November 2026
+
+A standalone control now specifies a 128-region geometry-twin comparison in
+[`context_transport_join_control.js`](../experiments/memory/context_transport_join_control.js).
+It supplies exact integer observations, two candidate transports, and
+effective-time authority records; it compares eager maintenance with a lazy
+shared-subpath cache under identical revisions and reads. Its assertions and
+reported counts describe fixture outcomes and logical operations only. The
+script has not been run, contains no model calls, and does not measure elapsed
+time, memory, full lifecycle cost, learned transport selection, or task-level
+reasoning.
+
 ## Task-need planner pilot, 26 November 2026
 
 **Instrument failure; no planner quality result.** On the pinned 50-question,
@@ -98,9 +110,12 @@ These runs show that the current prompt-only `run_episode` adapter does not
 qualify the 0.6B receiver: the first action/final schema failed, a concrete
 example elicited imitation and early closure, and a schema-only prompt still
 failed to produce a valid action. They do not falsify the task-planning or
-latent-world hypothesis. The next adapter gate requires a frozen
-schema-constrained decoder and typed need/finding validation before any held
-panel. The three prompt-only runners and hash-chained ledgers are preserved in
+latent-world hypothesis. A `typed_needs` mode was added afterward to validate
+need records and link tool receipts, reads, findings and citations by stable
+need ID; these episodes used the older untyped interface, and the new mode has
+not been calibrated. The next adapter gate requires a frozen
+schema-constrained decoder and an eight-task calibration of the typed
+need/finding interface before any held panel. The three prompt-only runners and hash-chained ledgers are preserved in
 [`experiments/results/task_episode_calibration_2026-11-26`](../experiments/results/task_episode_calibration_2026-11-26/).
 
 ### Constrained-decoding follow-up
@@ -133,11 +148,41 @@ correctness ([project README](https://github.com/noamgat/lm-format-enforcer)).
 The staged run shows the useful boundary: schema-constrained decoding can
 make tool actions parse and source bytes verifiable, while the task evaluator
 must still check need coverage, support sufficiency, missing prerequisites,
-conflicts and unknowns. The runner therefore remains unqualified for the
-held whole-world panel until typed need/finding links and the independent
-evaluator are implemented. The no-op, forced-search and staged runners and
+conflicts and unknowns. Typed need/finding links are now implemented but remain
+uncalibrated. The runner remains unqualified for the held whole-world panel
+until the eight-task calibration passes and an independent evaluator is
+available. The no-op, forced-search and staged runners and
 hash-chained ledgers are preserved in
 [`experiments/results/task_episode_calibration_2026-11-26`](../experiments/results/task_episode_calibration_2026-11-26/); file hashes are listed in its `SHA256SUMS.txt`.
+
+### Typed-need contract canaries
+
+Four successive visible 0.6B canaries exercised the new `typed_needs` state
+and finding links through the same pinned synthetic task. These runs diagnose
+the adapter contract only. The first two schemas exposed decoder compatibility
+and state-validation failures; the third reached verified reads but exhausted
+the shared input budget before final submission; the final schema completed
+the two-source route. The earlier failures are retained rather than replaced
+by the successful trace:
+
+| Ledger | Observed result | What it establishes |
+| --- | --- | --- |
+| `typed_needs_episode.jsonl` | 7 calls; 3,297 input / 1,306 generated tokens; no tools. The first state used an invalid parent value and was rejected on all seven calls. | The initial field schema did not match the host's parent contract. |
+| `typed_needs_contract_episode.jsonl` | 7 calls; 5,470 input / 228 generated tokens; one search. A whole-object `const` used to freeze an existing need was unsupported by `lm-format-enforcer` 0.11.3; subsequent responses were rejected as truncated JSON. | Need immutability must be expressed with decoder features the pinned implementation supports. |
+| `typed_needs_field_const_episode.jsonl` | 6 calls; 7,247 input / 1,111 generated tokens; three searches and three verified reads, then `input_limit` before final assessment. | Field-level constraints fixed the prior schema issue, but the three-source path did not fit the 8,192-token shared input ceiling. The model also selected a prerequisite rule instead of the intended routing evidence and emitted an unsupported date range and the action word `search` as its relation. |
+| `typed_needs_two_source_episode.jsonl` | Completed in 5 calls; 5,996 input / 994 generated tokens; two searches, two verified reads and 106 evidence bytes. It cited the routing clause and Juniper log, but left the task question open alongside positive findings. Its need still used the unsupported date range and `search` relation. | The typed ledger can carry a completed, cited two-source trace within budget. It does not establish sound need semantics, uncertainty calibration, or correct autonomous source selection. |
+
+The last runner hard-coded the two search queries and filtered read candidates
+to the expected source IDs. This was deliberate to test typed state persistence,
+need-linked actions, verified reads, final citation membership and budget use;
+it removes query planning and source choice from the measured behavior. The
+fixture's expected route is known to the runner, but there is no independent
+blind task label or semantic grader in this canary. Do not count it as planner
+success, need-coverage evidence, or support-quality evidence. Taken together,
+the four adaptive canaries are one calibration sequence, not four independent
+tasks and not the preregistered eight-task gate. The runner versions and every
+hash-chained ledger are preserved beside the earlier traces; `SHA256SUMS.txt`
+records their file hashes.
 
 ## Latent revision software verification, 24–25 November 2026
 
