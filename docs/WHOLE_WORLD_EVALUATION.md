@@ -409,9 +409,26 @@ the same inputs and cache opportunities.
 Hold the readout fixed and withhold the raw constraint set from it. A
 backward-update ablation should remove the downstream consequence and
 restoring the correct recurrent state should recover it. Track justified
-abstention, source dependencies, and complete update and read costs. The
-current one-step enclosure has a CPU software control. This mechanism
-comparison and the learned version are unrun.
+abstention, source dependencies, and complete update and read costs.
+The enclosure and the bidirectional factor reference both have CPU
+software controls. The paired-chain comparison matches exact
+weighted contraction. A cycle gives a direct counterexample to claiming
+global support from settled local messages. A matched lifecycle
+comparison, learned version and recognized task evaluation remain unrun.
+
+Compare two ways out of that failure. A query-blind worker can compile
+a small cyclic region into a joint cluster and retain its separator.
+A second mechanism can condition a cycle cutset and retain separate
+latent hypotheses for the assignments it evaluates. Compare both
+against an incremental junction tree or variable elimination, with
+the same factor access, width limits and source invalidation rules.
+On wider regions, test whether learned proposals select useful
+hypotheses sooner than both a fixed schedule and local belief ordering.
+Count the work of rejected proposals, verification of unvisited
+alternatives, retained state and evidence delivery. The forward
+attention receiver remains a separate reasoning arm.
+[Incremental Compilation of Bayesian Networks](https://arxiv.org/abs/1212.2456)
+[Bounded Conditioning](https://ics.uci.edu/~dechter/publications/r130a.pdf)
 
 Run in stages: first verify the blinded data boundary and causal interventions
 on a small CPU world; next qualify the 0.6B planner's typed action contract on

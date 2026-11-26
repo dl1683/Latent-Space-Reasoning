@@ -4,6 +4,37 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Bidirectional latent factor field, 26 November 2026
+
+**Software verification, supplied likelihoods.** On paired equal and
+opposite three-slot chains, the opening unary marginals matched exactly.
+The two joint beliefs differed. A late likelihood then fixed the earlier
+slot in opposite directions with two message contractions in each arm.
+With contractions disabled, the earlier slot stayed at its opening
+distribution and the result recorded the work limit. Swapping in the
+other world's hidden messages reversed the finding on the unchanged
+readout and source pin. Restoring the messages recovered it. Replacing
+and clearing task evidence reversed and reopened the finding. The no-memory
+call carried only its local evidence.
+
+The receipt marked task premises separately from source provenance.
+A task drive could make a consistent source model conditionally
+inconsistent.
+
+The versioned source checks exercised removal, recompiled restoration,
+uncompiled replacement, split and joined components, and historical
+pins. The unchanged component retained its numerical message bank.
+Two independent source batches combined across an unrelated write.
+Reusing an old batch after its own source was withdrawn and restored
+was rejected, including when the bytes matched. A higher-order weighted check matched a separately ordered tensor
+contraction. An impossible cycle had uniform local beliefs, and a
+satisfiable soft cycle gave a different marginal from exact contraction.
+Both cyclic reads withheld support. A probability that rounded to zero
+did not remove that code from the finite log support. These results
+qualify a classical reference mechanism for latent joint revision.
+Learned acquisition, cyclic joint reasoning and lifecycle advantage
+remain open. [Factor-field checks](../experiments/memory/test_latent_factor_field.py)
+
 ## Bounded recurrent attention, 26 November 2026
 
 **Software verification, supplied directions.** A role-generated hidden

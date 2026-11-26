@@ -34,7 +34,9 @@ A [cross-source bridge worker](docs/ARCHITECTURE.md#matching-source-fragments-be
 
 [The final hidden step can now produce a range for readout](docs/ARCHITECTURE.md#carrying-completion-bounds-through-a-final-hidden-step). With an exact prior state, the receiver bounds the changing projection and the resulting hidden row. A scripted task reached a verified finding where the older invariance check had stopped. A case with the same midpoint and a wider range stayed open.
 
-The [recurrent bound](docs/ARCHITECTURE.md#carrying-a-bound-through-attention) can carry that range through one more ordinary attention step before readout. In a CPU fixture the narrower range still supported a finding. A wider range could reach a rival and a separate case crossed the ordinary router's score floor. Both stayed open. The next architecture comparison varies which joint states are possible while holding local observations fixed.
+The [recurrent bound](docs/ARCHITECTURE.md#carrying-a-bound-through-attention) can carry that range through one more ordinary attention step before readout. In a CPU fixture the narrower range still supported a finding. A wider range could reach a rival and a separate case crossed the ordinary router's score floor. Both stayed open.
+
+The [bidirectional factor field](docs/ARCHITECTURE.md#revising-joint-latent-states-bidirectionally) now provides a second reasoning mechanism on versioned corpus pins. Two supplied-coordinate worlds started with the same individual slot beliefs. The same late evidence then forced opposite earlier findings because the relations differed. Withdrawals invalidated the dependent finding and preserved historical pins. The implementation uses classical message passing. Learned factor construction and a matched comparison on cyclic worlds remain open.
 
 The [factored bridge index](docs/ARCHITECTURE.md#sharing-exact-key-comparisons-across-sources) shares geometry for byte-identical keys. The dense check retained the separate directions and sources of a 128-by-128 ambiguity while doing one key comparison.
 

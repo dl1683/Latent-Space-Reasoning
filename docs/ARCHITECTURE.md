@@ -1535,6 +1535,62 @@ The first scientific decision is whether latent updates improve a late consequen
 
 For the binding track, the [two-hop factors](#two-hop-propagation-with-distinct-origins) prepare the evidence before the endpoint is chosen and preserve alternatives when the hops reuse one origin. A shared recurrent receiver could apply these factors inside its transition and learn which longer compositions to retain. Compare with an incremental indexed join using the same source revisions and withheld endpoints. Use the exact proof reader as a verifier. Revoke each necessary origin and separately disable the operator on the same pin. The comparison should charge construction, refused proposals, maintenance and late reads together and track missed supported endpoints as well as false ones.
 
+#### Revising joint latent states bidirectionally
+
+[SLICE] A numerical factor field attaches source-scoped likelihood tensors
+to an immutable corpus revision. Each axis indexes the latent codes of a
+slot. An independent worker compiles one source batch at a time using
+retained mention ordinals and byte spans from its corpus pin. The field
+assembles batches only while each source's digest and generation match.
+An unrelated corpus edit leaves a batch eligible. Withdrawal and
+restoration require a fresh batch even when the source bytes match.
+This interface assumes a fixed compiler and source-local byte inputs.
+A learned relation using other sources or installed programs needs a
+separate dependency contract. The compiler is responsible for the factorization, including correlations
+between evidence from the same origin. An identical span and scope can
+supply one combined factor. Disjoint spans do not establish independence.
+An empty batch records a compiler assessment. Missing or changed source
+versions withhold support until their batches are assessed.
+
+For a factor with target slot j, the update contracts over its other
+axes. Multiply its likelihood with each other slot's local task drive
+and incoming messages, excluding the message from the selected factor.
+The result is a new message to j. The implementation adds log values
+for multiplication and reduces with log-sum-exp. It keeps exact zeros
+as negative infinity. A positive weight that underflows in the
+displayed distribution remains in the support mask. This is classical
+sum-product over the supplied model. [Factor Graphs and the Sum-Product Algorithm](https://www.isiweb.ee.ethz.ch/papers/arch/aloe-2001-1.pdf)
+
+The field prepares messages before seeing a question. Calling reason with
+a pin adds task drives and propagates changes along the dependencies.
+The same entry point also accepts no memory. Task revisions leave the
+shared pin intact. Unaffected components reuse immutable message banks
+on both task and source edits. A changed source drops stale factors,
+then schedules dependent messages. A change in a cyclic component resets
+its messages before reuse. A bounded pending computation can resume with
+the same evidence. An oversized contraction stays queued while work
+that fits the budget can proceed. Forest work takes priority over
+cyclic proposals. The numerical budget counts
+contractions and their input tensor cells. Gathering input messages
+can require additional work at high-degree slots. Graph rebuilding,
+component bookkeeping, source encoding, readout and snapshot retention
+are separate costs. Factor pins and their cached messages are currently
+kept in process.
+
+A read on a completed forest reports the possible latent codes and
+normalized masses within its connected component. A task-conditioned
+read lists the slots whose drives are part of the premise and labels
+its result as conditional. Empty support means the source factorization
+or its conjunction with those drives has no assignment. Multiple
+assignments remain open. The provenance is a conservative list of the
+component's source spans. It does not attribute every numerical influence or qualify
+the source interpretation. A cyclic component exposes local proposals
+with no support mask even when its messages settle. The paired-world
+control shows why recurrence changes an earlier decision. The impossible
+cycle shows why local convergence cannot close a joint claim.
+[Implementation](../experiments/memory/latent_factor_field.py)
+[Controls](../experiments/memory/test_latent_factor_field.py)
+
 ## Claims and evidence boundary (2026-10-15; not a new experiment)
 
 | Claim | Tag and current boundary | What is still required |

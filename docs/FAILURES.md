@@ -24,6 +24,14 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A stable local belief can mask a globally impossible world.**
+A cycle with two equality relations and one inequality reached a
+uniform message fixed point despite having no joint assignment. A soft,
+satisfiable cycle gave locally plausible marginals that differed from
+exact contraction. Keep cyclical local proposals open and judge global
+consequences under an independently checkable joint operation.
+[Factor-field checks](../experiments/memory/test_latent_factor_field.py)
+
 **A midpoint can choose the wrong next ordinary branch.** On one pin,
 legal hidden completions crossed the ordinary route floor. The same
 midpoint could also hide a late rival after recurrent attention. The
