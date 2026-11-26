@@ -8,7 +8,7 @@ import pytest
 from experiments.memory import tree_feedback
 from experiments.memory.feedback_journal import JournaledFeedbackWorkspace
 from experiments.memory.feedback_workspace import (
-    FeedbackProbe, FeedbackRoutingGoal, FeedbackWorkspace, StaleFeedbackRevision,
+    FeedbackProbe, FeedbackRoutingGoal, FeedbackSlotEvidence, FeedbackWorkspace, StaleFeedbackRevision,
 )
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, FeedbackKernel
 from experiments.memory.tree_feedback import (
@@ -1353,6 +1353,174 @@ def test_slot_maintenance_stale_after_validation_keeps_its_attempt_but_appends_n
     assert attempt.candidate == 0 and attempt.rejection is None and attempt.rank[0] == -1
     assert worker.snapshot().number == writer.snapshot().number == base.number + 1
     assert worker.snapshot().errors[0] > .3
+
+
+def test_slot_evidence_composes_two_necessary_corrections_for_a_late_read(tmp_path):
+    weights = _weights()
+    dense = FeedbackKernel(**weights)
+    tree = TreeFeedbackKernel(depth=2, max_frontier=4, **weights)
+    original = np.array([[1., 0., -1., 0.], [0., 1., 0., 0.], [-1., 0., .0625, 0.]])
+    corrected = original.copy()
+    corrected[0, 2] = corrected[1, 3] = 1.
+    seed, guard_seed = (1., 0., 0., 0.), (-1., 0., 0., 0.)
+
+    def run_dense(rows, run_seed, steps):
+        state = dense.start(run_seed, dense.prepare(rows))
+        for _ in range(steps):
+            state = dense.step(state)
+        return state
+
+    target = run_dense(corrected, seed, 2)
+    guards = (FeedbackProbe(guard_seed, 1, run_dense(original, guard_seed, 1).latest),)
+    args = (tmp_path / "evidence-tree.db", tree, original, [FeedbackProbe(seed, 2, target.latest)])
+    options = dict(guards=guards, max_update_norm=1.)
+    workspace = JournaledFeedbackWorkspace(*args, **options, create=True)
+    base = workspace.snapshot()
+    decoy = FeedbackSlotEvidence(2, original[2], (-1., 0., .0625, .4))
+    evidence = [FeedbackSlotEvidence(1, original[1], corrected[1]), decoy,
+                FeedbackSlotEvidence(0, original[0], corrected[0])]
+    caps = dict(repair_probe=0, max_evidence=3, max_candidates=6, max_validations=6)
+
+    for slot in (0, 1):
+        only_one = original.copy()
+        only_one[slot] = corrected[slot]
+        single = run_dense(only_one, seed, 2)
+        assert np.max(np.abs(single.latest - target.latest)) > .3
+        assert single.latest[3] < 1e-12
+        if slot == 0:
+            assert single.history[0][1] > .99
+        else:
+            assert single.history[0][1] < -.99
+    singles = workspace.maintain_from_slot_evidence(base, evidence, include_pairs=False, **caps)
+    assert singles.maintenance.status == "no_candidate" and singles.candidate_evidence == ((0,), (1,), (2,))
+    assert workspace.snapshot() is base
+    result = workspace.maintain_from_slot_evidence(base, evidence, **caps)
+    assert result.maintenance.status == "committed" and result.selected_evidence == (0, 2)
+    assert result.candidate_evidence == ((0,), (1,), (2,), (0, 1), (0, 2), (1, 2))
+    assert result.available_candidate_count == 6 and not result.search_truncated
+    assert result.rejected_evidence == result.capacity_rejected == ()
+
+    reopened = JournaledFeedbackWorkspace(*args, **options).snapshot()
+    assert reopened.number == base.number + 1 and reopened.guard_errors[0] < 1e-12
+    first = reopened.kernel.step(reopened.start(seed))
+    old_first = base.kernel.step(base.start(seed))
+    assert old_first.latest[1] < -.99 and first.latest[1] > .99 and first.latest[3] < 1e-12
+    actual = reopened.kernel.step(first)
+    np.testing.assert_allclose(actual.history, target.history, atol=2e-14, rtol=0)
+    assert actual.latest[3] > .75 and base.kernel.step(old_first).latest[3] < 1e-12
+    wrong_state = reopened.kernel.intervene(first, 0, old_first.latest)
+    assert reopened.kernel.step(wrong_state).latest[3] < 1e-12
+    late_seed = (2., 0., 0., 0.)
+    late = reopened.kernel.step(reopened.kernel.step(reopened.start(late_seed)))
+    np.testing.assert_allclose(late.latest, run_dense(corrected, late_seed, 2).latest, atol=2e-14, rtol=0)
+    assert late.latest[3] > .75
+
+
+def test_slot_evidence_compares_exact_rows_and_omits_conflicting_pairs():
+    tree, rows, _ = _slot_maintenance_inputs()
+    probe = FeedbackProbe((1.,), 1, (.9,))
+    workspace = FeedbackWorkspace(tree, rows, [probe], max_update_norm=1.)
+    base = workspace.snapshot()
+    corrections = [
+        FeedbackSlotEvidence(0, (-0.,), (.25,)),
+        FeedbackSlotEvidence(0, None, (.25,)),
+        FeedbackSlotEvidence(0, (0.,), (0.,)),
+        FeedbackSlotEvidence(0, (0.,), (.25,)),
+        FeedbackSlotEvidence(0, (0.,), (.25,)),
+        FeedbackSlotEvidence(0, (0.,), (.5,)),
+        FeedbackSlotEvidence(1, (0.,), None),
+    ]
+    result = workspace.maintain_from_slot_evidence(base, corrections, repair_probe=0, max_evidence=7,
+                                                    max_candidates=6, max_validations=6)
+    assert result.rejected_evidence == (
+        (0, "expected row mismatch"), (1, "expected row mismatch"),
+        (2, "unchanged row"), (4, "duplicate correction"),
+    )
+    assert result.candidate_evidence == ((3,), (5,), (6,), (3, 6), (5, 6))
+    assert result.available_candidate_count == 5
+    assert result.maintenance.status == "no_candidate" and workspace.snapshot() is base
+    malformed = FeedbackSlotEvidence(0, (0.,), (.25, .4))
+    with pytest.raises(ValueError, match="incorrect width"):
+        workspace.maintain_from_slot_evidence(base, (malformed,), repair_probe=0, max_evidence=1,
+                                               max_candidates=1, max_validations=1)
+    assert workspace.snapshot() is base
+
+
+def test_slot_evidence_separates_search_truncation_from_validation_exhaustion():
+    workspace = FeedbackWorkspace(*_slot_maintenance_inputs(), max_update_norm=1.)
+    base = workspace.snapshot()
+    evidence = [FeedbackSlotEvidence(i, (0.,), (float(np.arctanh(.4)),)) for i in range(2)]
+    result = workspace.maintain_from_slot_evidence(base, evidence, repair_probe=0, max_evidence=2,
+                                                    max_candidates=2, max_validations=2)
+    assert result.maintenance.status == "no_candidate" and result.maintenance.unvalidated_count == 0
+    assert result.search_truncated and result.available_candidate_count == 3
+    assert result.candidate_evidence == ((0,), (1,))
+    assert workspace.snapshot() is base
+    with pytest.raises(ValueError, match="input cap"):
+        workspace.maintain_from_slot_evidence(base, evidence, repair_probe=0, max_evidence=1,
+                                               max_candidates=2, max_validations=2)
+    assert workspace.snapshot() is base
+    complete = workspace.maintain_from_slot_evidence(base, evidence, repair_probe=0, max_evidence=2,
+                                                      max_candidates=3, max_validations=3)
+    assert complete.maintenance.status == "committed" and complete.selected_evidence == (0, 1)
+
+
+def test_slot_evidence_fences_a_concurrent_writer_during_discovery(tmp_path):
+    args = (tmp_path / "slot-evidence-race.db", *_slot_maintenance_inputs())
+    worker = JournaledFeedbackWorkspace(*args, max_update_norm=1., create=True)
+    writer = JournaledFeedbackWorkspace(*args, max_update_norm=1.)
+    base = worker.snapshot()
+
+    def corrections():
+        yield FeedbackSlotEvidence(0, (0.,), (2. * np.arctanh(.4),))
+        writer.revise_observation_slots(writer.snapshot(), {0: [.1]})
+
+    result = worker.maintain_from_slot_evidence(base, corrections(), repair_probe=0, max_evidence=1,
+                                                 max_candidates=1, max_validations=1)
+    assert result.maintenance.status == "stale" and result.selected_evidence is None
+    assert writer.snapshot().number == worker.snapshot().number == base.number + 1
+    assert worker.snapshot().errors[0] > .3
+
+
+def test_slot_evidence_keeps_a_feasible_pair_when_an_insertion_alone_exceeds_capacity():
+    tree = TreeFeedbackKernel(depth=2, max_frontier=1, query=[[0.]], carry=None,
+                              observation_key=[[0.]], observation_value=[[1.]],
+                              feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    probe = FeedbackProbe((1.,), 1, (.4,))
+    workspace = FeedbackWorkspace(tree, [[0.], [0.]], [probe], max_update_norm=1., max_reference_frontier=2)
+    evidence = (FeedbackSlotEvidence(2, None, (2. * np.arctanh(.4),)), FeedbackSlotEvidence(1, (0.,), None))
+    result = workspace.maintain_from_slot_evidence(workspace.snapshot(), evidence, repair_probe=0,
+                                                    max_evidence=2, max_candidates=3, max_validations=2)
+    assert result.maintenance.status == "committed" and result.selected_evidence == (0, 1)
+    assert result.capacity_rejected == ((0,),) and result.candidate_evidence == ((1,), (0, 1))
+    assert result.available_candidate_count == 3 and not result.search_truncated
+    revised = result.maintenance.revision
+    assert revised.memory.count == 2 and revised.errors[0] < 1e-12
+
+
+def test_slot_evidence_freezes_a_reused_row_and_checks_a_genuinely_empty_slot():
+    tree, _, probes = _slot_maintenance_inputs()
+    workspace = FeedbackWorkspace(tree, [[0.]], probes, max_update_norm=1.)
+    base = workspace.snapshot()
+    assert tree.observation_slot(base.memory, 1) is None
+    row = np.array([2. * np.arctanh(.4)])
+
+    def corrections():
+        yield FeedbackSlotEvidence(1, None, row)
+        row[0] = .1
+        yield FeedbackSlotEvidence(1, None, row)
+
+    result = workspace.maintain_from_slot_evidence(base, corrections(), repair_probe=0, max_evidence=2,
+                                                    max_candidates=3, max_validations=2)
+    assert result.maintenance.status == "committed" and result.selected_evidence == (0,)
+    assert result.candidate_evidence == ((0,), (1,)) and not result.search_truncated
+    revised = result.maintenance.revision
+    observed = tree.observation_slot(revised.memory, 1)
+    with pytest.raises(ValueError):
+        observed[0] = 0.
+    observed.shape = (1, 1)
+    assert tree.observation_slot(revised.memory, 1).shape == (1,)
+    assert revised.errors[0] < 1e-12
 
 
 def test_multiplicity_survives_a_huge_common_observation_and_history_logit():

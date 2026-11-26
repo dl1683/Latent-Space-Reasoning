@@ -583,6 +583,12 @@ class TreeFeedbackKernel(FeedbackKernel):
             raise ValueError("route programming requires a full-resolution tree")
         if not 0 <= slot < 1 << self._depth:
             raise ValueError("route programming requires occupied observation slots")
+        path = self._occupied_slot_path(memory, slot)
+        if not path and not missing_ok:
+            raise ValueError("route programming requires occupied observation slots")
+        return path
+
+    def _occupied_slot_path(self, memory, slot):
         path = []
         node = memory._root
         for bit in range(self._depth - 1, -1, -1):
@@ -591,10 +597,17 @@ class TreeFeedbackKernel(FeedbackKernel):
             path.append(node)
             node = node.right if slot & (1 << bit) else node.left
         if node is None:
-            if missing_ok:
-                return ()
-            raise ValueError("route programming requires occupied observation slots")
+            return ()
         return (*path, node)
+
+    def observation_slot(self, memory, slot):
+        """Read a slot's immutable observation row, or None when it is empty."""
+        self._check_memory(memory)
+        slot = index(slot)
+        if not 0 <= slot < 1 << self._depth:
+            raise ValueError("observation slot outside tree layout")
+        path = self._occupied_slot_path(memory, slot)
+        return path[-1].mean_row.view() if path else None
 
     def _route_program_keys(self, memory, slots):
         return tuple(self._route_program_path(memory, slot)[-1].lower_key for slot in slots)

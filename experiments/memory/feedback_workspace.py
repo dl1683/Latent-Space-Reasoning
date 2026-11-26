@@ -4,6 +4,7 @@ from collections.abc import Mapping
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing, nullcontext
 from dataclasses import dataclass, replace
+from itertools import chain, combinations, islice
 from math import hypot, isfinite, sqrt
 from operator import index
 from threading import Lock
@@ -196,6 +197,31 @@ class FeedbackSlotMaintenanceRound:
     @property
     def unvalidated_count(self):
         return self.candidate_count - len(self.attempts)
+
+
+@dataclass(frozen=True)
+class FeedbackSlotEvidence:
+    slot: int
+    expected: tuple[float, ...] | None
+    replacement: tuple[float, ...] | None
+
+
+@dataclass(frozen=True, eq=False)
+class FeedbackEvidenceRound:
+    maintenance: FeedbackSlotMaintenanceRound
+    candidate_evidence: tuple[tuple[int, ...], ...]
+    rejected_evidence: tuple[tuple[int, str], ...]
+    capacity_rejected: tuple[tuple[int, ...], ...]
+    available_candidate_count: int
+
+    @property
+    def search_truncated(self):
+        return len(self.candidate_evidence) + len(self.capacity_rejected) < self.available_candidate_count
+
+    @property
+    def selected_evidence(self):
+        winner = self.maintenance.selected_candidate
+        return None if winner is None else self.candidate_evidence[winner]
 
 
 class FeedbackWorkspace:
@@ -1120,6 +1146,82 @@ class FeedbackWorkspace:
             status = "stale"
         return FeedbackSlotMaintenanceRound(status, base, tuple(attempts), revised, selected, candidate_count,
                                             triage.replay_count, triage.trajectory_replay_count, triage_failure)
+
+    def maintain_from_slot_evidence(self, base, evidence, *, repair_probe, max_evidence, max_candidates,
+                                    max_validations, include_pairs=True, max_replays=0, use_triage=False):
+        """Compose caller-supplied corrections that match the pinned numerical bank."""
+        evidence_limit = index(max_evidence)
+        candidate_limit = index(max_candidates)
+        if evidence_limit < 1 or candidate_limit < 1 or type(include_pairs) is not bool:
+            raise ValueError("slot evidence needs positive caps and a boolean pair policy")
+        kernel = self._slot_preview_kernel(base, True)
+        eligible = []
+        rejected = []
+        by_slot = {}
+        seen = set()
+        for ordinal, change in enumerate(evidence):
+            if ordinal == evidence_limit:
+                raise ValueError("slot evidence exceeds the input cap")
+            if type(change) is not FeedbackSlotEvidence:
+                raise TypeError("slot evidence needs addressed corrections")
+            if isinstance(change.slot, (bool, np.bool_)):
+                raise ValueError("slot evidence requires an integer slot")
+            slot = index(change.slot)
+            current = kernel.observation_slot(base.memory, slot)
+            expected = self._evidence_row(kernel, change.expected)
+            replacement = self._evidence_row(kernel, change.replacement)
+            current_key = None if current is None else current.astype("<f8", copy=False).tobytes()
+            expected_key = None if expected is None else expected.tobytes()
+            replacement_key = None if replacement is None else replacement.tobytes()
+            key = slot, replacement_key
+            if current_key != expected_key:
+                rejected.append((ordinal, "expected row mismatch"))
+            elif replacement_key == current_key:
+                rejected.append((ordinal, "unchanged row"))
+            elif key in seen:
+                rejected.append((ordinal, "duplicate correction"))
+            else:
+                row_delta = int(replacement is not None) - int(current is not None)
+                entry = ordinal, slot, replacement, row_delta
+                seen.add(key)
+                eligible.append(entry)
+                by_slot.setdefault(slot, []).append(entry)
+
+        groups = ((entry,) for entry in eligible)
+        available = len(eligible)
+        if include_pairs:
+            pairs = ((first, second) for left, right in combinations(by_slot.values(), 2)
+                     for first in left for second in right)
+            groups = chain(groups, pairs)
+            available += (len(eligible) ** 2 - sum(len(entries) ** 2 for entries in by_slot.values())) // 2
+        row_limit = (kernel._max_frontier if self._draft_tree_policy is not None or self._has_routing
+                     else 1 << kernel._depth)
+        edits, candidate_evidence, capacity_rejected = [], [], []
+        for group in islice(groups, candidate_limit):
+            origins = tuple(sorted(item[0] for item in group))
+            if base.memory.count + sum(item[3] for item in group) > row_limit:
+                capacity_rejected.append(origins)
+                continue
+            edits.append({slot: row for _, slot, row, _ in group})
+            candidate_evidence.append(origins)
+        round_result = self.maintain_observation_slots(
+            base, edits,
+            repair_probe=repair_probe, max_candidates=candidate_limit, max_validations=max_validations,
+            max_replays=max_replays, use_triage=use_triage,
+        )
+        return FeedbackEvidenceRound(round_result, tuple(candidate_evidence), tuple(rejected),
+                                     tuple(capacity_rejected), available)
+
+    @staticmethod
+    def _evidence_row(kernel, row):
+        if row is None:
+            return None
+        row = _real_array(row)
+        if row.shape != (kernel._width,):
+            raise ValueError("observation row has incorrect width")
+        if np.any(np.abs(row) > 1):
+            raise ValueError("tree observation coordinates must be within [-1, 1]")
+        return _frozen(row.astype("<f8", copy=False))
 
     def _prepare_slot_revision(self, base, changes):
         if not isinstance(base.kernel, TreeFeedbackKernel):
