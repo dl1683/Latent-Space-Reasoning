@@ -1,0 +1,374 @@
+{
+  "classification": "visible calibration only; single semantic annotator; public gold, not held",
+  "source_repository": "python/peps",
+  "scope": "all regular blobs matching ^peps/pep-[0-9]{4}\\.rst$; no executable, ancillary or external sources",
+  "pins": [
+    {
+      "id": "p0",
+      "commit": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
+      "tree": "44c56698d5245df05e12f4c8a7843edb935e81fd",
+      "count": 655,
+      "source_bytes": 12061646
+    },
+    {
+      "id": "p1",
+      "commit": "55cf374db5e04bd85be36148ff6b604e1ddbb7df",
+      "tree": "d2448f84ece7f5cd6dead1207c4fb996562cdbc7",
+      "count": 655,
+      "source_bytes": 12062734
+    }
+  ],
+  "sequence": [
+    "p0",
+    "p1",
+    "p0"
+  ],
+  "changed_paths": [
+    "peps/pep-0749.rst"
+  ],
+  "stable_evidence_blobs": [
+    {
+      "path": "peps/pep-0649.rst",
+      "blob": "286d8ee6b8892b9798cf1cb791673af09a771e40"
+    },
+    {
+      "path": "peps/pep-0695.rst",
+      "blob": "e8b9a3650d648b0053016b245cf71639ca247a63"
+    },
+    {
+      "path": "peps/pep-0696.rst",
+      "blob": "79ccf5b663975c2496d0b2d4648513b717630807"
+    },
+    {
+      "path": "peps/pep-0654.rst",
+      "blob": "a7bb82a44a589a418257d928da061f9482b8da45"
+    }
+  ],
+  "evidence": {
+    "base": {
+      "path": "peps/pep-0649.rst",
+      "pin": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
+      "blob": "286d8ee6b8892b9798cf1cb791673af09a771e40",
+      "lines": [
+        13,
+        130
+      ],
+      "anchor": "inspect.SOURCE = 3"
+    },
+    "approx": {
+      "path": "peps/pep-0649.rst",
+      "pin": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
+      "blob": "286d8ee6b8892b9798cf1cb791673af09a771e40",
+      "lines": [
+        625,
+        630
+      ],
+      "anchor": "whitespace may be normalized"
+    },
+    "set649": {
+      "path": "peps/pep-0649.rst",
+      "pin": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
+      "blob": "286d8ee6b8892b9798cf1cb791673af09a771e40",
+      "lines": [
+        708,
+        709
+      ],
+      "anchor": "automatically sets"
+    },
+    "authority0": {
+      "path": "peps/pep-0749.rst",
+      "pin": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
+      "blob": "dfed42a5d2e792e628fda5a4b35da886950a0aa0",
+      "lines": [
+        16,
+        18
+      ],
+      "anchor": "supplements"
+    },
+    "authority1": {
+      "path": "peps/pep-0749.rst",
+      "pin": "55cf374db5e04bd85be36148ff6b604e1ddbb7df",
+      "blob": "5afd763a2d2f5d059a6855394c3dfa3dbb3739b6",
+      "lines": [
+        16,
+        18
+      ],
+      "anchor": "supplements"
+    },
+    "set0": {
+      "path": "peps/pep-0749.rst",
+      "pin": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
+      "blob": "dfed42a5d2e792e628fda5a4b35da886950a0aa0",
+      "lines": [
+        632,
+        654
+      ],
+      "anchor": "is not changed when"
+    },
+    "set1": {
+      "path": "peps/pep-0749.rst",
+      "pin": "55cf374db5e04bd85be36148ff6b604e1ddbb7df",
+      "blob": "5afd763a2d2f5d059a6855394c3dfa3dbb3739b6",
+      "lines": [
+        634,
+        650
+      ],
+      "anchor": "results in setting"
+    },
+    "name0": {
+      "path": "peps/pep-0749.rst",
+      "pin": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
+      "blob": "dfed42a5d2e792e628fda5a4b35da886950a0aa0",
+      "lines": [
+        232,
+        240
+      ],
+      "anchor": "annotations_to_source"
+    },
+    "name1": {
+      "path": "peps/pep-0749.rst",
+      "pin": "55cf374db5e04bd85be36148ff6b604e1ddbb7df",
+      "blob": "5afd763a2d2f5d059a6855394c3dfa3dbb3739b6",
+      "lines": [
+        729,
+        755
+      ],
+      "anchor": "format is renamed"
+    },
+    "stale1": {
+      "path": "peps/pep-0749.rst",
+      "pin": "55cf374db5e04bd85be36148ff6b604e1ddbb7df",
+      "blob": "5afd763a2d2f5d059a6855394c3dfa3dbb3739b6",
+      "lines": [
+        690,
+        695
+      ],
+      "anchor": "Format.SOURCE"
+    },
+    "eval0": {
+      "path": "peps/pep-0749.rst",
+      "pin": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
+      "blob": "dfed42a5d2e792e628fda5a4b35da886950a0aa0",
+      "lines": [
+        676,
+        696
+      ],
+      "anchor": "evaluate_default"
+    },
+    "eval1": {
+      "path": "peps/pep-0749.rst",
+      "pin": "55cf374db5e04bd85be36148ff6b604e1ddbb7df",
+      "blob": "5afd763a2d2f5d059a6855394c3dfa3dbb3739b6",
+      "lines": [
+        672,
+        692
+      ],
+      "anchor": "evaluate_default"
+    },
+    "lazy695": {
+      "path": "peps/pep-0695.rst",
+      "pin": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
+      "blob": "e8b9a3650d648b0053016b245cf71639ca247a63",
+      "lines": [
+        835,
+        859
+      ],
+      "anchor": "use lazy evaluation"
+    },
+    "lazy696": {
+      "path": "peps/pep-0696.rst",
+      "pin": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
+      "blob": "79ccf5b663975c2496d0b2d4648513b717630807",
+      "lines": [
+        513,
+        515
+      ],
+      "anchor": "defaults should be lazily evaluated"
+    },
+    "unknown0": {
+      "path": "peps/pep-0749.rst",
+      "pin": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
+      "blob": "dfed42a5d2e792e628fda5a4b35da886950a0aa0",
+      "lines": [
+        186,
+        189
+      ],
+      "anchor": "exact contents of the module are not yet specified"
+    },
+    "unknown1": {
+      "path": "peps/pep-0749.rst",
+      "pin": "55cf374db5e04bd85be36148ff6b604e1ddbb7df",
+      "blob": "5afd763a2d2f5d059a6855394c3dfa3dbb3739b6",
+      "lines": [
+        188,
+        191
+      ],
+      "anchor": "exact contents of the module are not yet specified"
+    },
+    "side": {
+      "path": "peps/pep-0654.rst",
+      "pin": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
+      "blob": "a7bb82a44a589a418257d928da061f9482b8da45",
+      "lines": [
+        1033,
+        1044
+      ],
+      "anchor": "SyntaxError"
+    }
+  },
+  "tasks": [
+    {
+      "id": "A",
+      "text": "A team is designing a documentation adapter for the Python 3.14 proposal under review. It replaces a function's annotation dictionary with a valid new dictionary, then wants to display the original annotation expression to a user. At the selected document revision, what should the team expect to happen to the deferred producer, what representation should its adapter request, and can it promise the exact original spelling and spacing? Explain any competing specification or example. Separately, can one try statement mix ordinary and group-aware exception handlers?",
+      "needs": [
+        {
+          "id": "A1",
+          "p0": {
+            "status": "supported",
+            "claim": "Under the draft supplement, assigning a legal value to __annotations__ leaves __annotate__ unchanged; this conflicts with the accepted base PEP 649, which clears it. The supplement explicitly proposes the change, not an implemented guarantee.",
+            "evidence": [
+              "authority0",
+              "set0",
+              "set649"
+            ]
+          },
+          "p1": {
+            "status": "supported",
+            "claim": "The draft no longer overrides assignment: its quoted base rule clears __annotate__ on legal assignment, and its new explicit rule also clears it on deletion for functions, modules and classes. Do not claim the old draft remains governing.",
+            "evidence": [
+              "authority1",
+              "set1",
+              "set649"
+            ]
+          }
+        },
+        {
+          "id": "A2",
+          "p0": {
+            "status": "supported",
+            "claim": "The source-like string representation is SOURCE under the opening proposal.",
+            "evidence": [
+              "base",
+              "name0"
+            ]
+          },
+          "p1": {
+            "status": "supported",
+            "claim": "The explicit rename says STRING, but legacy SOURCE examples remain in the same draft and base PEP. Recognize this discrepancy rather than counting the old spelling as a second supported format.",
+            "evidence": [
+              "name1",
+              "stale1",
+              "base",
+              "authority1"
+            ]
+          }
+        },
+        {
+          "id": "A3",
+          "p0": {
+            "status": "unresolved",
+            "claim": "Exact original spelling and spacing are not guaranteed; the proposal explicitly permits approximation and normalization. No particular exact output can be certified from the documents.",
+            "evidence": [
+              "approx"
+            ]
+          },
+          "p1": {
+            "status": "unresolved",
+            "claim": "Same lack of exact-output guarantee, reinforced by the rename rationale. Do not infer verbatim text or actual runtime output.",
+            "evidence": [
+              "approx",
+              "name1"
+            ]
+          }
+        },
+        {
+          "id": "A4",
+          "side": true,
+          "both": {
+            "status": "supported",
+            "claim": "No; mixing the two handler styles in the same try is a SyntaxError under PEP 654.",
+            "evidence": [
+              "side"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "text": "A library maintainer wants to inspect a not-yet-resolved generic bound, an alias's deferred value and a parameter default without requiring all referenced objects to exist now. Which earlier proposals introduced these deferred values, what interface does the current proposal offer for them, and which display spelling should a wrapper use? Can the team freeze a complete inventory of the proposed annotation library's API from this snapshot? Separately, can one try statement mix ordinary and group-aware exception handlers?",
+      "needs": [
+        {
+          "id": "B1",
+          "p0": {
+            "status": "supported",
+            "claim": "PEP 695 introduces lazy bounds/constraints and alias values; PEP 696 adds lazy defaults. The PEP 749 draft proposes evaluate_bound/evaluate_constraints/evaluate_value/evaluate_default as applicable, plus call_evaluate_function; distinguish callable single-value return from annotation dictionary.",
+            "evidence": [
+              "lazy695",
+              "lazy696",
+              "eval0",
+              "name0"
+            ]
+          },
+          "p1": {
+            "status": "supported",
+            "claim": "Same underlying scope and interface proposal; PEPs 695/696 remain unchanged.",
+            "evidence": [
+              "lazy695",
+              "lazy696",
+              "eval1"
+            ]
+          }
+        },
+        {
+          "id": "B2",
+          "p0": {
+            "status": "supported",
+            "claim": "FORWARDREF is relevant for unresolved references; SOURCE is the source-like display format, not a guarantee of verbatim text. PEP 749 shows the bound example using Format.SOURCE.",
+            "evidence": [
+              "base",
+              "eval0"
+            ]
+          },
+          "p1": {
+            "status": "supported",
+            "claim": "FORWARDREF remains, STRING is the governing proposed display spelling; the surviving Format.SOURCE example conflicts with the explicit rename and is stale relative to that change. No runtime success is established.",
+            "evidence": [
+              "name1",
+              "stale1",
+              "eval1"
+            ]
+          }
+        },
+        {
+          "id": "B3",
+          "p0": {
+            "status": "unresolved",
+            "claim": "The draft expressly leaves exact annotationlib contents unspecified; the listed functions are proposed, not a complete API inventory.",
+            "evidence": [
+              "unknown0"
+            ]
+          },
+          "p1": {
+            "status": "unresolved",
+            "claim": "Same explicit incompleteness; do not manufacture a complete inventory.",
+            "evidence": [
+              "unknown1"
+            ]
+          }
+        },
+        {
+          "id": "B4",
+          "side": true,
+          "both": {
+            "status": "supported",
+            "claim": "No; SyntaxError under PEP 654.",
+            "evidence": [
+              "side"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
