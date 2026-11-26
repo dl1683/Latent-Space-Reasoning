@@ -10,11 +10,12 @@ from types import MappingProxyType
 
 import numpy as np
 
-from experiments.memory.binding_links import BindingLinkCondition, BindingLinkRead, _RoleLinks, _role_hops
+from experiments.memory.binding_links import BindingLinkCondition, BindingLinkRead, BindingLinkStep, _RoleLinks, _role_hops
 from experiments.memory.binding_memory import (
     BindingCapacityError, BindingMemory, BindingProof, _exclusions, _ProofWork, _proof_work_limit,
 )
 from experiments.memory.latent_feedback import _frozen, _real_array
+from experiments.memory.verified_source_tool import SourceSpan
 
 
 @dataclass(frozen=True)
@@ -22,6 +23,7 @@ class BindingMention:
     predicate: str
     vector: np.ndarray
     strength: float
+    byte_span: tuple[int, int] | None = None
 
 
 @dataclass(frozen=True)
@@ -37,7 +39,8 @@ class CorpusBindingRead:
 
 
 _BindingRows = tuple[tuple[str, int, float], ...]
-_StoredMention = tuple[str, float, bytes, int]
+_MentionScope = tuple[int, int, str]
+_StoredMention = tuple[str, float, bytes, int, _MentionScope | None]
 _SOURCE_VECTOR_BYTES = 64 * 1024 * 1024
 
 
@@ -86,6 +89,7 @@ class CorpusBindingMemory:
     _possible: BindingMemory
     _mentions: Mapping[str, tuple[_StoredMention, ...]]
     _role_links: _RoleLinks | None = None
+    _scoped_sources: frozenset[str] = frozenset()
 
     @classmethod
     def prepare(cls, predicates, anchors, gates, sources, *, encode, encoder_version,
@@ -109,6 +113,7 @@ class CorpusBindingMemory:
 
     def _project(self, raw, remaining, vector_limit):
         certain, possible, mentions = [], [], []
+        scopes = {}
         outlier = False
         for mention in self._encode(raw):
             if not isinstance(mention, BindingMention):
@@ -136,7 +141,19 @@ class CorpusBindingMemory:
             possible.extend((predicate, int(coordinate), strength) for coordinate in choices)
             if len(mentions) >= vector_limit:
                 raise BindingCapacityError("source vector batch byte limit exceeded")
-            mentions.append((predicate, strength, np.asarray(unit, dtype="<f8").tobytes(), int(coordinates.size)))
+            span = mention.byte_span
+            scope = None
+            if span is not None:
+                if (type(span) is not tuple or len(span) != 2 or any(type(bound) is not int for bound in span)
+                        or not 0 <= span[0] < span[1] <= len(raw)):
+                    raise ValueError("binding mention requires a byte span inside its source")
+                if span not in scopes:
+                    piece = raw[span[0]:span[1]]
+                    piece.decode("utf8")
+                    scopes[span] = (*span, sha256(piece).hexdigest())
+                scope = scopes[span]
+            mentions.append((predicate, strength, np.asarray(unit, dtype="<f8").tobytes(),
+                             int(coordinates.size), scope))
         return tuple(certain), tuple(possible), outlier, tuple(mentions), remaining
 
     def revise(self, changes):
@@ -169,6 +186,7 @@ class CorpusBindingMemory:
             return self
         digests = dict(self.source_digests)
         mentions = dict(self._mentions)
+        scoped_sources = set(self._scoped_sources)
         outliers = set(self.outlier_sources)
         certain, possible = {}, {}
         for edit in staged:
@@ -182,6 +200,10 @@ class CorpusBindingMemory:
                 mentions.pop(source, None)
             else:
                 mentions[source] = edit.mentions
+            if any(mention[4] is not None for mention in edit.mentions or ()):
+                scoped_sources.add(source)
+            else:
+                scoped_sources.discard(source)
             if edit.outlier:
                 outliers.add(source)
             else:
@@ -192,7 +214,8 @@ class CorpusBindingMemory:
         if links is not None:
             links = links.revise((edit.source for edit in staged), digests, mentions)
         return replace(self, source_digests=MappingProxyType(digests), outlier_sources=frozenset(outliers),
-                       _certain=lower, _possible=upper, _mentions=MappingProxyType(mentions), _role_links=links)
+                       _certain=lower, _possible=upper, _mentions=MappingProxyType(mentions), _role_links=links,
+                       _scoped_sources=frozenset(scoped_sources))
 
     def _reprogram_role_links(self, roles, min_similarity, uncertainty, compile_work_limit, transport="fixed",
                               bridge_key=None, local_bridges=False, factored_bridges=False):
@@ -256,10 +279,28 @@ class CorpusBindingMemory:
                               or links.structural(label) for label in labels)
                 or len(set(labels)) != len(labels)):
             raise ValueError("role-link outcomes require distinct nonstructural predicates")
-        return links.read(direction, outcomes=frozenset(labels), mentions=self._mentions,
+        read = links.read(direction, outcomes=frozenset(labels), mentions=self._mentions,
                           limit=_proof_work_limit(work_limit), width=self._anchors.shape[1], hops=hops,
                           condition=condition, prior_steps=prior_steps, prior_strength=prior_strength,
-                          branch_limit=branch_limit)
+                          branch_limit=branch_limit, scoped_sources=self._scoped_sources)
+        if not self._scoped_sources:
+            return read
+        return replace(read, witnesses=tuple(self._witness_with_spans(witness) for witness in read.witnesses))
+
+    def _witness_with_spans(self, witness):
+        final = BindingLinkStep(witness.link_source, witness.entry_ordinal, witness.exit_ordinal,
+                                witness.exit_source, witness.key_ordinals)
+        positions = []
+        for step in (*witness.prefix, final):
+            target = step.exit_source if step.exit_source is not None else step.source
+            positions.extend(((step.source, step.entry_ordinal), (target, step.exit_ordinal)))
+            if step.key_ordinals is not None:
+                entry_key, exit_key = step.key_ordinals
+                positions.extend(((step.source, entry_key), (target, exit_key)))
+        positions.append((witness.terminal_source, witness.terminal_ordinal))
+        spans = dict.fromkeys(self.source_mention_span(source, ordinal) for source, ordinal in positions)
+        spans.pop(None, None)
+        return replace(witness, source_spans=tuple(spans)) if spans else witness
 
     def source_mentions(self, source):
         """Return a source's ordered normalized observations, or None for a legacy row-only source."""
@@ -268,8 +309,20 @@ class CorpusBindingMemory:
         mentions = self._mentions.get(source)
         if mentions is None:
             return None
-        return tuple(BindingMention(predicate, np.frombuffer(vector, dtype="<f8"), strength)
-                     for predicate, strength, vector, _ in mentions)
+        return tuple(BindingMention(predicate, np.frombuffer(vector, dtype="<f8"), strength,
+                                    None if scope is None else scope[:2])
+                     for predicate, strength, vector, _, scope in mentions)
+
+    def source_mention_span(self, source, ordinal):
+        """Return the exact verified-source pointer for one retained mention, when scoped."""
+        digest = self.source_digests[source]
+        mentions = self._mentions.get(source)
+        if mentions is None:
+            return None
+        if type(ordinal) is not int or not 0 <= ordinal < len(mentions):
+            raise IndexError("mention ordinal is outside the source")
+        scope = mentions[ordinal][4]
+        return None if scope is None else SourceSpan(source, digest, *scope)
 
     def _observation_rows(self, max_mentions):
         limit = _proof_work_limit(max_mentions)
@@ -285,7 +338,7 @@ class CorpusBindingMemory:
         rows = np.empty((count, self._anchors.shape[1]), dtype=np.float64)
         position = 0
         for source in sorted(self._mentions):
-            for _, _, vector, _ in self._mentions[source]:
+            for _, _, vector, _, _ in self._mentions[source]:
                 rows[position] = np.frombuffer(vector, dtype="<f8")
                 position += 1
         return rows

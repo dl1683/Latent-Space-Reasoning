@@ -9,6 +9,7 @@ import numpy as np
 
 from experiments.memory.binding_memory import BindingCapacityError
 from experiments.memory.latent_feedback import _real_array
+from experiments.memory.verified_source_tool import SourceSpan
 
 
 @dataclass(frozen=True)
@@ -36,6 +37,7 @@ class BindingLinkWitness:
     prefix: tuple[BindingLinkStep, ...] = ()
     exit_source: str | None = None
     key_ordinals: tuple[int, int] | None = None
+    source_spans: tuple[SourceSpan, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -80,6 +82,7 @@ class BindingLinkRead:
     condition_dots: int = 0
     inherited_open: bool = False
     bridge_pending: bool = False
+    dependent_outcomes: tuple[str, ...] = ()
 
     @property
     def answer(self):
@@ -154,15 +157,15 @@ class _BridgeFragment:
 
 def _bridge_fragment(records, roles, key):
     anchors, ends = [], []
-    for ordinal, (role, grade, raw, _) in enumerate(records):
+    for ordinal, (role, grade, raw, _, scope) in enumerate(records):
         if role == key:
-            anchors.append((ordinal, grade, raw))
+            anchors.append((ordinal, grade, raw, scope))
         elif role in roles:
-            ends.append((ordinal, role, grade, raw))
+            ends.append((ordinal, role, grade, raw, scope))
     fragment = None
-    if len(anchors) == len(ends) == 1:
-        ordinal, role, grade, raw = ends[0]
-        key_ordinal, key_grade, anchor = anchors[0]
+    if len(anchors) == len(ends) == 1 and anchors[0][-1] == ends[0][-1]:
+        ordinal, role, grade, raw, _ = ends[0]
+        key_ordinal, key_grade, anchor, _ = anchors[0]
         fragment = role, _BridgeFragment(ordinal, key_ordinal, min(grade, key_grade), raw, anchor)
     return bool(anchors), fragment
 
@@ -394,6 +397,7 @@ class _LinkReadWork:
         self.marginal = False
         self.bridge_open = set()
         self.bridge_stale = False
+        self.dependent_sources = set()
 
     def charge(self, amount=1):
         if self.work + amount > self.limit:
@@ -428,6 +432,8 @@ class _RoleLinks:
     local_bridges: bool = False
     bridge_index: _BridgeIndex | None = None
     factored_bridges: bool = False
+    scoped_pairs: Mapping[str, tuple[_RoleLink, ...]] = field(default_factory=lambda: MappingProxyType({}))
+    scoped_pair_count: int = 0
 
     @classmethod
     def prepare(cls, roles, floor, uncertainty, limit, transport, digests, mentions, bridge_key=None,
@@ -491,6 +497,8 @@ class _RoleLinks:
 
     def revise(self, changed, digests, mentions):
         pairs, unresolved = dict(self.pairs), set(self.unresolved)
+        scoped_pairs = dict(self.scoped_pairs)
+        scoped_pair_count = self.scoped_pair_count
         key_sources = set(self.key_sources)
         legacy_sources = set(self.legacy_sources)
         bridge_pending = self.bridge_pending
@@ -498,11 +506,12 @@ class _RoleLinks:
         entry_role, exit_role = self.roles
         for source in changed:
             pairs.pop(source, None)
+            scoped_pair_count -= len(scoped_pairs.pop(source, ()))
             unresolved.discard(source)
             legacy = source in digests and source not in mentions
             if self.bridge_key is not None:
                 old_key = source in key_sources
-                new_key = any(role == self.bridge_key for role, _, _, _ in mentions.get(source, ()))
+                new_key = any(mention[0] == self.bridge_key for mention in mentions.get(source, ()))
                 if old_key or new_key or source in legacy_sources or legacy:
                     bridge_pending = True
                     bridge_changes[source] = mentions.get(source, ())
@@ -516,20 +525,29 @@ class _RoleLinks:
                 unresolved.add(source)
             if source not in mentions:
                 continue
-            entries, exits = [], []
-            for ordinal, (predicate, strength, vector, _) in enumerate(mentions[source]):
-                if predicate == entry_role:
-                    entries.append((ordinal, vector, strength))
-                elif predicate == exit_role:
-                    exits.append((ordinal, vector, strength))
-            if len(entries) == len(exits) == 1:
+            groups = {}
+            for ordinal, (predicate, strength, vector, _, scope) in enumerate(mentions[source]):
+                if predicate in self.roles:
+                    groups.setdefault(scope, {}).setdefault(predicate, []).append((ordinal, vector, strength))
+            admitted = []
+            for scope, endpoints in groups.items():
+                entries, exits = endpoints.get(entry_role, ()), endpoints.get(exit_role, ())
+                if len(entries) != 1 or len(exits) != 1:
+                    unresolved.add(source)
+                    continue
                 left_id, left, left_strength = entries[0]
                 right_id, right, right_strength = exits[0]
-                pairs[source] = _RoleLink.from_ends(BindingLinkStep(source, left_id, right_id),
-                                                    left, right, min(left_strength, right_strength), self.transport)
-            elif entries or exits:
-                unresolved.add(source)
+                link = _RoleLink.from_ends(BindingLinkStep(source, left_id, right_id), left, right,
+                                           min(left_strength, right_strength), self.transport)
+                if scope is None:
+                    pairs[source] = link
+                else:
+                    admitted.append(link)
+            if admitted:
+                scoped_pairs[source] = tuple(admitted)
+                scoped_pair_count += len(admitted)
         revised = replace(self, pairs=MappingProxyType(pairs), unresolved=frozenset(unresolved),
+                          scoped_pairs=MappingProxyType(scoped_pairs), scoped_pair_count=scoped_pair_count,
                           key_sources=frozenset(key_sources), bridge_pending=bridge_pending,
                           legacy_sources=frozenset(legacy_sources))
         if self.bridge_index is not None:
@@ -578,11 +596,12 @@ class _RoleLinks:
             return _Path(direction, prior_steps, frozenset(source for step in prior_steps for source in step.sources),
                          prior_strength)
 
-    def _frontier(self, seed, *, hops, condition, width, effort, branch_limit=None):
+    def _frontier(self, seed, *, hops, condition, width, effort, branch_limit=None, scoped_sources=frozenset()):
         frontier = [seed]
-        if len(self.pairs) + len(self.bridges) > effort.limit:
+        if len(self.pairs) + len(self.bridges) + self.scoped_pair_count > effort.limit:
             raise BindingCapacityError("role-link catalog exceeds the read work limit")
         links = tuple(self.pairs[source] for source in sorted(self.pairs))
+        links += tuple(link for source in sorted(self.scoped_pairs) for link in self.scoped_pairs[source])
         links += tuple(self.bridges[pair] for pair in sorted(self.bridges))
         openings = () if self.bridge_index is None else self.bridge_index.openings(self.bridges)
         for _ in range(hops):
@@ -598,9 +617,16 @@ class _RoleLinks:
                 effort.charge(len(links))
                 for link in links:
                     sources = link.step.sources
-                    if not path.used.isdisjoint(sources) or not effort.qualifies(
-                        np.frombuffer(link.entry, dtype="<f8") @ path.direction
-                    ):
+                    if not path.used.isdisjoint(sources):
+                        dependent = path.used.intersection(sources, scoped_sources)
+                        if dependent and (
+                            np.frombuffer(link.entry, dtype="<f8") @ path.direction >= self.floor - self.uncertainty
+                        ):
+                            effort.charge(len(path.steps))
+                            if link.step not in path.steps:
+                                effort.dependent_sources.update(dependent)
+                        continue
+                    if not effort.qualifies(np.frombuffer(link.entry, dtype="<f8") @ path.direction):
                         continue
                     if self.transport == "rotation" and link.reflector is None:
                         effort.unavailable.update(sources)
@@ -647,7 +673,7 @@ class _RoleLinks:
         return frontier, groups
 
     def read(self, direction, *, outcomes, mentions, limit, width, hops, condition,
-             prior_steps=(), prior_strength=1., branch_limit=None):
+             prior_steps=(), prior_strength=1., branch_limit=None, scoped_sources=frozenset()):
         vocabulary = tuple(sorted(outcomes))
         seed = self._seed_path(direction, width, condition, prior_steps, prior_strength)
         if seed is None:
@@ -659,15 +685,17 @@ class _RoleLinks:
         terminal_dots = 0
         unmatched = set()
         outside = set()
+        dependent_outcomes = set()
         try:
             with np.errstate(over="raise", invalid="raise", under="ignore"):
                 frontier, groups = self._frontier(seed, hops=hops, condition=condition, width=width,
-                                                 effort=effort, branch_limit=branch_limit)
+                                                 effort=effort, branch_limit=branch_limit,
+                                                 scoped_sources=scoped_sources)
                 if frontier:
                     unmatched.update(range(len(frontier)))
                     effort.charge(len(mentions))
                     for terminal_source in sorted(mentions):
-                        for ordinal, (outcome, strength, raw_terminal, _) in enumerate(mentions[terminal_source]):
+                        for ordinal, (outcome, strength, raw_terminal, _, _) in enumerate(mentions[terminal_source]):
                             effort.charge()
                             if self.structural(outcome):
                                 continue
@@ -675,7 +703,8 @@ class _RoleLinks:
                             scores = {} if condition is not None else None
                             for position, path in enumerate(frontier):
                                 effort.charge()
-                                if terminal_source in path.used:
+                                dependent = terminal_source in path.used
+                                if dependent and terminal_source not in scoped_sources:
                                     continue
                                 if scores is None:
                                     terminal_dots += 1
@@ -688,6 +717,10 @@ class _RoleLinks:
                                         scores[group] = effort.qualifies(path.direction @ terminal)
                                     matches = scores[group]
                                 if not matches:
+                                    continue
+                                if dependent:
+                                    effort.dependent_sources.add(terminal_source)
+                                    dependent_outcomes.add(outcome)
                                     continue
                                 if outcome not in outcomes:
                                     outside.add(outcome)
@@ -706,11 +739,12 @@ class _RoleLinks:
         except BindingCapacityError as error:
             status = "branch_limit" if isinstance(error, _RoleBranchLimit) else "work_limit"
             return BindingLinkRead(status, work=effort.work,
-                                   open_sources=len(self.unresolved | effort.unavailable | effort.bridge_open),
+                                   open_sources=len(self.unresolved | effort.unavailable | effort.bridge_open
+                                                    | effort.dependent_sources),
                                    terminal_dots=terminal_dots, outcomes=vocabulary, hops=hops, transports=effort.transports,
                                    condition=condition, condition_dots=effort.condition_dots,
                                    bridge_pending=self.bridge_global_pending or effort.bridge_stale)
-        open_sources = len(self.unresolved | effort.unavailable | effort.bridge_open)
+        open_sources = len(self.unresolved | effort.unavailable | effort.bridge_open | effort.dependent_sources)
         pending = self.bridge_global_pending or effort.bridge_stale
         incomplete = open_sources or unmatched or effort.marginal or outside or pending
         status = ("conflict" if len(witnesses) > 1 else "unresolved" if incomplete
@@ -718,4 +752,4 @@ class _RoleLinks:
         return BindingLinkRead(status, tuple(witnesses[key] for key in sorted(witnesses)), effort.work,
                                open_sources, len(unmatched), effort.marginal, terminal_dots,
                                vocabulary, tuple(sorted(outside)), hops, effort.transports, condition, effort.condition_dots,
-                               bridge_pending=pending)
+                               bridge_pending=pending, dependent_outcomes=tuple(sorted(dependent_outcomes)))

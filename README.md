@@ -10,6 +10,8 @@ Execution is **PAUSED** after Rank 1 reached its three-round unsuccessful-repair
 
 The shared-world slice now journals continuous source directions with their compiled relations. A query-blind audit can flag unrepresented directions from a source revision, and the same recovered pin can feed the continuous channel and compiled proofs into one receiver. The verified control uses supplied coordinates. [Shared-world construction](docs/ARCHITECTURE.md#retaining-continuous-observations-with-compiled-evidence)
 
+[Scoped source observations](docs/ARCHITECTURE.md#keeping-acquired-relations-scoped-to-source-bytes) can preserve several separate clause relationships from one document while counting that document as one origin. With a bounded parser and supplied directions, a fixture swaps two associations, recovers the changed readouts after restart, and verifies the exact clauses against the right source versions. Learned discovery remains open.
+
 A worker can also [install continuous links directly from typed source observations](docs/ARCHITECTURE.md#installing-query-independent-source-links). A later feedback read can expose a weaker conflicting path after a correction that leaves the compiled relations unchanged. The result uses a declared relation grammar and supplied coordinates.
 
 A [state-dependent link program](docs/ARCHITECTURE.md#composing-state-dependent-source-transports) carries incoming distinctions across several source operations. A supplied-coordinate journal check adds a late conditional read and shares geometric comparisons across identical directions. Source histories still govern which independent witnesses survive corrections and reopen.

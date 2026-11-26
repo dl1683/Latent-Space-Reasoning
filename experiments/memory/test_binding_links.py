@@ -1,5 +1,7 @@
 from copy import copy
 from dataclasses import replace
+import json
+import re
 
 import numpy as np
 import pytest
@@ -13,6 +15,7 @@ from experiments.memory.binding_replay import replay_binding_repair
 from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
 from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemory, CorpusProgramProposal, StaleCorpusRevision
 from experiments.memory.latent_feedback import FeedbackKernel
+from experiments.memory.verified_source_tool import VerifiedSourceTool
 
 
 _ROLES = ("entry", "exit")
@@ -917,6 +920,181 @@ def test_joint_hidden_paths_revise_a_late_decision_without_text_replay(tmp_path)
     partial = receiver.reason_role_links(escaped, **(options | {"stages": options["stages"][1:]}))
     assert partial.status == "unresolved" and partial.terminal_reads[0].inherited_open
     assert partial.terminal_reads[0].witnesses[0].outcome == "accept"
+
+
+def test_worker_retains_several_prose_relations_with_exact_scopes(tmp_path):
+    axes = np.eye(4)
+    directions = dict(zip(("Cobalt", "Amber", "Juniper", "Maple"), axes))
+    route = re.compile(r"(?m)^([A-Z][a-z]+) is (not )?filed under ([A-Z][a-z]+)\.$")
+    ledger = re.compile(r"(?m)^The decision in ([A-Z][a-z]+) is (clearance|review)\.$")
+
+    def prose_encoder(raw):
+        text = raw.decode("utf8")
+
+        def offsets(match):
+            return tuple(len(text[:position].encode()) for position in match.span())
+
+        for match in route.finditer(text):
+            subject, negation, record = match.groups()
+            if negation is None:
+                yield BindingMention("entry", directions[subject], .9, offsets(match))
+                yield BindingMention("exit", directions[record], .9, offsets(match))
+        for match in ledger.finditer(text):
+            record, decision = match.groups()
+            outcome = "accept" if decision == "clearance" else "review"
+            yield BindingMention(outcome, directions[record], .8, offsets(match))
+
+    path = tmp_path / "prose.sqlite"
+    owner_frame = _transport_frame(prose_encoder, width=len(axes))
+    read_frame = _transport_frame(_no_encoding, width=len(axes))
+    owner = JournaledCorpusWorkspace(path, owner_frame, create=True)
+    start = "Résumé\nCobalt is filed under Juniper.\nAmber is filed under Maple."
+    changed = "Résumé\nCobalt is filed under Maple.\nAmber is filed under Juniper."
+    sources = {"routes": start.encode(), "juniper": b"The decision in Juniper is clearance.",
+               "maple": b"The decision in Maple is review."}
+    _write(owner, sources)
+    worker = JournaledCorpusWorkspace(path, read_frame)
+    worker.publish_program(_transport_program(worker, worker.snapshot(), "fixed"))
+    opening = owner.snapshot()
+
+    # Task identities, terminal outcomes, and the hidden schedule are supplied
+    # to the later reader. The source callback had only the changed bytes.
+    keys, empty = np.zeros((4, 1)), np.zeros((4, 4))
+    kernel = FeedbackKernel(query=keys, carry=axes * .5, observation_key=keys,
+                            observation_value=empty, feedback_key=keys, feedback_value=empty, max_steps=2)
+    receiver = BindingFeedback(kernel, owner_frame, (("accept", 0),), query=keys,
+                               observation=np.zeros((6, 4)))
+
+    def read(memory, subject, *, hops=1):
+        state = receiver.start(directions[subject], memory)
+        return receiver.reason_role_links(state, stages=(None,), outcomes=_OUTCOMES, work_limit=256,
+                                          branch_limit=4, terminal_hops=hops)
+
+    def first_witness(decision):
+        return decision.terminal_reads[0].witnesses[0]
+
+    old = read(opening.memory, "Cobalt")
+    assert (old.answer, read(opening.memory, "Amber").answer) == ("accept", "review")
+    program = opening.memory._role_links
+
+    class UnscannableScopes(dict):
+        def values(self):
+            raise AssertionError("over-budget read scanned the scope catalog")
+
+    guarded = replace(opening.memory, _role_links=replace(program, scoped_pairs=UnscannableScopes(program.scoped_pairs)))
+    refused = guarded.read_role_links(directions["Cobalt"], outcomes=_OUTCOMES, work_limit=1)
+    assert (program.scoped_pair_count, refused.status, refused.work) == (2, "work_limit", 0)
+    prior = first_witness(old)
+    assert prior.terminal_source == "juniper"
+    pointer = opening.memory.source_mention_span(prior.link_source, prior.entry_ordinal)
+    assert pointer == opening.memory.source_mention_span(prior.link_source, prior.exit_ordinal)
+    assert pointer.start_byte == len("Résumé\n".encode())
+    terminal = opening.memory.source_mention_span(prior.terminal_source, prior.terminal_ordinal)
+    assert terminal.start_byte == 0
+    assert prior.source_spans == (pointer, terminal)
+    leaves = tmp_path / "leaves"
+    leaves.mkdir()
+    for name, raw in sources.items():
+        (leaves / (opening.memory.source_digests[name] + ".txt")).write_bytes(raw)
+    verifier = VerifiedSourceTool(tmp_path, opening.memory.source_digests)
+    assert verifier.verify(pointer)["text"] == "Cobalt is filed under Juniper."
+    assert verifier.verify(terminal)["text"] == "The decision in Juniper is clearance."
+
+    corrected = _write(owner, {"routes": changed.encode()})
+    (leaves / (corrected.memory.source_digests["routes"] + ".txt")).write_bytes(changed.encode())
+    assert corrected.memory.source_digests["juniper"] == opening.memory.source_digests["juniper"]
+    assert corrected.memory.source_digests["maple"] == opening.memory.source_digests["maple"]
+    reopened = JournaledCorpusWorkspace(path, read_frame).snapshot()
+    revised = read(reopened.memory, "Cobalt")
+    assert (revised.answer, read(reopened.memory, "Amber").answer) == ("review", "accept")
+    witness = first_witness(revised)
+    actual = reopened.memory.source_mention_span(witness.link_source, witness.entry_ordinal)
+    assert witness.source_spans[0] == actual
+    current = VerifiedSourceTool(tmp_path, reopened.memory.source_digests)
+    assert current.verify(prior.source_spans[0])["status"] == "STALE"
+    assert current.verify(actual)["text"] == "Cobalt is filed under Maple."
+    assert read(opening.memory, "Cobalt") == old
+    off = owner.prepare_role_links(corrected, None).preview
+    assert read(off, "Cobalt").status == "no_role_program"
+    assert read(None, "Cobalt").status == "no_memory"
+
+    shared = _write(owner, {"routes": (start + "\nThe decision in Juniper is review.").encode()})
+    unresolved = read(shared.memory, "Cobalt")
+    assert unresolved.status == "unresolved" and unresolved.answer is None
+    assert first_witness(unresolved).terminal_source == "juniper"
+    assert unresolved.terminal_reads[0].dependent_outcomes == ("review",)
+    rejected = _write(owner, {"routes": changed.replace("Cobalt is filed", "Cobalt is not filed").encode()})
+    assert rejected.memory._role_links.scoped_pair_count == 1
+    assert read(rejected.memory, "Cobalt").status == "no_link"
+    assert read(rejected.memory, "Amber").answer == "accept"
+    chained = _write(owner, {"routes": b"Cobalt is filed under Juniper.\nJuniper is filed under Maple."})
+    dependent = read(chained.memory, "Cobalt", hops=2)
+    assert dependent.status == "unresolved" and not dependent.terminal_reads[0].witnesses
+    assert dependent.terminal_reads[0].open_sources == 1
+    state = receiver.start(directions["Cobalt"], chained.memory)
+    continuation = receiver.continue_role_links(state, hops=2, work_limit=128, branch_limit=2)
+    assert continuation.status == "unresolved" and not continuation.states
+    assert read(chained.memory, "Juniper").answer == "review"
+
+
+def test_scopes_refuse_crossed_roles_and_bad_byte_bounds(tmp_path):
+    axes = np.eye(6)
+
+    def encode(raw):
+        yield BindingMention("entry", axes[0], .9, (0, 2))
+        yield BindingMention("exit", axes[1], .9, (2, len(raw)))
+
+    frame = _transport_frame(encode)
+    owner = JournaledCorpusWorkspace(tmp_path / "crossed.sqlite", frame, create=True)
+    opening = _write(owner, {"routes": b"ABCD"})
+    installed = owner.publish_program(_transport_program(owner, opening, "fixed"))
+    refused = installed.memory.read_role_links(axes[0], outcomes=_OUTCOMES, work_limit=128)
+    assert refused.status == "unresolved" and refused.witnesses == ()
+    with pytest.raises(ValueError, match="span inside"):
+        owner.prepare_changes(installed, {"routes": b"AB"})
+    with pytest.raises(UnicodeDecodeError):
+        owner.prepare_changes(installed, {"routes": "AéC".encode()})
+    assert owner.snapshot() is installed
+    edits = installed.memory._prepare_changes({"another": b"ABCD"})
+    payload = json.loads(corpus_binding_journal._encode(edits))
+    first, second = payload[1][0][5]
+    second[4][:2] = first[4][:2]
+    with pytest.raises(ValueError, match="inconsistent digests"):
+        corpus_binding_journal._decode(corpus_binding_journal._json(payload), installed.memory)
+
+
+def test_scoped_bridge_requires_its_key_and_endpoint_to_share_a_span(tmp_path):
+    axes = np.eye(6)
+
+    def encode(raw):
+        label = "entry" if raw.startswith(b"A") else "exit"
+        yield BindingMention(label, axes[0 if label == "entry" else 1], .9, (0, 2))
+        scope = (2, 4) if raw.endswith(b"?") else (0, 2)
+        yield BindingMention("key", axes[4], .9, scope)
+
+    frame = _transport_frame(encode, extra_predicates=("key",))
+    owner = JournaledCorpusWorkspace(tmp_path / "scoped-bridge.sqlite", frame, create=True)
+    _write(owner, {"declaration": b"AB??", "registry": b"XY!!"})
+
+    def program():
+        pin = owner.snapshot()
+        return owner.publish_program(owner.prepare_role_links(
+            pin, _ROLES, min_similarity=.95, compile_work_limit=96, bridge_key="key",
+            factored_bridges=True,
+        ))
+
+    blocked = program()
+    assert blocked.memory._role_links.unresolved == {"declaration"}
+    assert not blocked.memory._role_links.bridges
+    read = blocked.memory.read_role_links(axes[0], outcomes=_OUTCOMES, work_limit=128)
+    assert read.status == "unresolved" and not read.witnesses
+    changed = _write(owner, {"declaration": b"AB!!"})
+    opened = program()
+    assert opened.memory.source_digests == changed.memory.source_digests
+    bridge, = opened.memory._role_links.bridges.values()
+    assert bridge.step.sources == ("declaration", "registry")
+    assert bridge.step.key_ordinals == (1, 1)
+    assert opened.memory.source_mention_span("declaration", 0) == opened.memory.source_mention_span("declaration", 1)
 
 
 def test_worker_matches_split_sources_before_reasoning_and_revokes_on_correction(tmp_path):

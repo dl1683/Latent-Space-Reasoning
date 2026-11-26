@@ -99,15 +99,23 @@ def _frame_digest(memory):
 def _encode(staged, *, vectors=True):
     _check_identifiers(edit.source for edit in staged)
     records = []
+    scoped = False
     for edit in staged:
         row = (edit.source, edit.digest, edit.outlier, edit.certain, edit.possible)
         if vectors:
-            mentions = (None if edit.mentions is None else
-                        [(predicate, strength, b64encode(vector).decode("ascii"), count)
-                         for predicate, strength, vector, count in edit.mentions])
+            mentions = None
+            if edit.mentions is not None:
+                mentions = []
+                for predicate, strength, vector, count, scope in edit.mentions:
+                    mention = (predicate, strength, b64encode(vector).decode("ascii"), count)
+                    if scope is not None:
+                        scoped = True
+                        mention = (*mention, scope)
+                    mentions.append(mention)
             row = (*row, mentions)
         records.append(row)
-    return _json(["source_vectors", records] if vectors else records)
+    tag = "scoped_source_vectors" if scoped else "source_vectors"
+    return _json([tag, records] if vectors else records)
 
 
 def _encode_role_links(links):
@@ -244,7 +252,7 @@ def _decode_rows(rows, width, predicates):
     return tuple(terms)
 
 
-def _decode_mentions(mentions, memory, certain, possible, outlier, remaining):
+def _decode_mentions(mentions, memory, certain, possible, outlier, remaining, *, scoped):
     if type(mentions) is not list or not len(certain) <= len(mentions) <= len(possible):
         raise ValueError("invalid encoded corpus mentions")
     if len(mentions) > remaining:
@@ -253,12 +261,23 @@ def _decode_mentions(mentions, memory, certain, possible, outlier, remaining):
     base64_width = 4 * ((byte_width + 2) // 3)
     width = memory._certain.width
     decoded, lower = [], []
+    scope_digests = {}
     offset = 0
     has_outlier = False
     for mention in mentions:
-        if type(mention) is not list or len(mention) != 4:
+        if type(mention) is not list or not (len(mention) == 4 or (scoped and len(mention) == 5)):
             raise ValueError("invalid encoded corpus mention")
-        predicate, strength, vector, count = mention
+        predicate, strength, vector, count = mention[:4]
+        scope = None
+        if len(mention) == 5:
+            value = mention[4]
+            if (type(value) is not list or len(value) != 3 or type(value[0]) is not int
+                    or type(value[1]) is not int or not 0 <= value[0] < value[1]
+                    or type(value[2]) is not str or re.fullmatch("[0-9a-f]{64}", value[2]) is None):
+                raise ValueError("invalid encoded corpus mention scope")
+            scope = tuple(value)
+            if scope_digests.setdefault(scope[:2], scope[2]) != scope[2]:
+                raise ValueError("one source span has inconsistent digests")
         if (type(predicate) is not str or predicate not in memory._certain._predicates
                 or type(strength) is not float or not 0 <= strength <= 1
                 or type(vector) is not str or len(vector) != base64_width
@@ -281,7 +300,7 @@ def _decode_mentions(mentions, memory, certain, possible, outlier, remaining):
         if (not np.isfinite(row).all() or np.max(np.abs(row)) > 1. + 1e-12
                 or abs(np.linalg.norm(row) - 1.) > 1e-12):
             raise ValueError("invalid encoded corpus unit vector")
-        decoded.append((predicate, strength, raw, count))
+        decoded.append((predicate, strength, raw, count, scope))
     if offset != len(possible) or tuple(lower) != certain or has_outlier != outlier:
         raise ValueError("encoded corpus mentions do not match their envelope")
     return tuple(decoded)
@@ -289,7 +308,8 @@ def _decode_mentions(mentions, memory, certain, possible, outlier, remaining):
 
 def _decode(payload, memory):
     records = json.loads(payload)
-    vectors = type(records) is list and len(records) == 2 and records[0] == "source_vectors"
+    vectors = type(records) is list and len(records) == 2 and records[0] in ("source_vectors", "scoped_source_vectors")
+    scoped = vectors and records[0] == "scoped_source_vectors"
     if vectors:
         records = records[1]
     if type(records) is not list or not records:
@@ -320,7 +340,7 @@ def _decode(payload, memory):
             if remaining < 0 or not set(certain).issubset(possible) or (outlier and not possible):
                 raise ValueError("invalid encoded corpus envelope")
             if vectors:
-                mentions = _decode_mentions(mentions, memory, certain, possible, outlier, vector_limit)
+                mentions = _decode_mentions(mentions, memory, certain, possible, outlier, vector_limit, scoped=scoped)
                 vector_limit -= len(mentions)
         staged.append(_EncodedChange(source, digest, certain, possible, outlier, mentions))
         previous = source

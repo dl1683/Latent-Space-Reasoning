@@ -282,12 +282,14 @@ class BindingFeedback:
         with np.errstate(over="raise", invalid="raise", under="ignore"):
             try:
                 paths, _ = links._frontier(seed, hops=hops, condition=condition, width=width, effort=effort,
-                                           branch_limit=branch_limit if joint else None)
+                                           branch_limit=branch_limit if joint else None,
+                                           scoped_sources=state.memory._scoped_sources)
             except BindingCapacityError as error:
                 status = "branch_limit" if isinstance(error, _RoleBranchLimit) else "work_limit"
             else:
                 open_coverage = bool(state._role_open or links.unresolved or links.bridge_global_pending
-                                     or effort.unavailable or effort.marginal or effort.bridge_open)
+                                     or effort.unavailable or effort.marginal or effort.bridge_open
+                                     or effort.dependent_sources)
                 status = "unresolved" if open_coverage else "no_link"
                 if len(paths) > branch_limit:
                     status = "branch_limit"
@@ -300,7 +302,8 @@ class BindingFeedback:
                 elif not open_coverage and not joint:
                     states = (self.step(state),)
         return BindingRoleContinuation(status, states, effort.work,
-                                       len(links.unresolved | effort.unavailable | effort.bridge_open),
+                                       len(links.unresolved | effort.unavailable | effort.bridge_open
+                                           | effort.dependent_sources),
                                        effort.marginal, condition, effort.condition_dots, state._role_open,
                                        links.bridge_global_pending or effort.bridge_stale)
 
