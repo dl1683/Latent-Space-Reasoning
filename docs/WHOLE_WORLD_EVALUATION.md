@@ -199,6 +199,14 @@ unresolved.
    `read_episode_pair(..., contrast="native_text")` also admits an active
    native episode against a text-backed episode when their
    task pin, policy, tokenizer, framing limits, and source setup agree.
+   The native reader now accepts an optional per-call next-token allowlist
+   over the exact prompt-plus-output prefix. `adapt_transformers_prefix_allowed_tokens_fn`
+   adapts the task harness's two-argument callback; the caller supplies a
+   declared decoder digest. This can enforce output shape; it cannot establish
+   valid need inference or evidence reasoning. The digest is not derived from
+   the callback, and `read_episode_pair(..., contrast="native_text")` cannot
+   verify that the text control used the same callback. The harness must pin
+   and check that match for a fair comparison.
 4. **Grade independently.** A blinded evaluator scores obligation coverage,
    evidence chains, final answers and errors from the frozen gold. A policy's
    statement that a need is supported or reconciled is not itself proof.

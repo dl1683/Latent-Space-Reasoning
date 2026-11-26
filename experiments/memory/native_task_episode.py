@@ -20,6 +20,22 @@ _READ_SCHEMA = "lsr-native-task-read-v1"
 _EMPTY_SPAN_ROOT = sha256(b"lsr-native-span-empty-v1")
 
 
+def adapt_transformers_prefix_allowed_tokens_fn(prefix_allowed_tokens_fn):
+    """Adapt Transformers' two-argument generation callback to the native prefix API."""
+    if not callable(prefix_allowed_tokens_fn):
+        raise TypeError("Transformers prefix callback must be callable")
+
+    def allowed_next_tokens(prefix):
+        if (type(prefix) not in (tuple, list) or not prefix
+                or any(type(token) is not int or token < 0 for token in prefix)):
+            raise ValueError("native prompt prefix must contain nonnegative token IDs")
+        import torch
+
+        return prefix_allowed_tokens_fn(0, torch.tensor(prefix, dtype=torch.long))
+
+    return allowed_next_tokens
+
+
 def _digest_record(value):
     return sha256(_packed(value).encode("utf8"))
 
@@ -113,7 +129,7 @@ class NativeTaskWorldPin:
 
     @classmethod
     def bind(cls, world, reader, memory, *, memory_view, latent_steps, expected_runtime_sha256,
-             max_source_verification_bytes):
+             output_constraint_sha256=None, max_source_verification_bytes):
         if type(world) is not TaskWorld or type(reader) is not NativeLatentModel:
             raise TypeError("a TaskWorld and native latent reader are required")
         if type(memory) is not NativeSourceMemory:
@@ -134,6 +150,8 @@ class NativeTaskWorldPin:
                        memory._reader_fingerprint_sha256):
             require_digest(digest)
         require_digest(expected_runtime_sha256)
+        if output_constraint_sha256 is not None:
+            require_digest(output_constraint_sha256)
         if memory._publication_runtime_sha256 != expected_runtime_sha256:
             raise ValueError("native publication runtime differs from the caller's expected runtime")
         if _reader_digest(reader) != memory._reader_fingerprint_sha256:
@@ -195,6 +213,7 @@ class NativeTaskWorldPin:
             "native_publication_seal": memory._publication_seal,
             "runtime_sha256": memory._publication_runtime_sha256,
             "reader_fingerprint_sha256": memory._reader_fingerprint_sha256,
+            "output_constraint_sha256": output_constraint_sha256,
             "memory_view": memory_view,
             "latent_steps": latent_steps,
             "stop_token_ids": sorted(reader._eos),
@@ -230,17 +249,26 @@ class NativeTaskEpisodeBackend:
     """Generate an episode reply from its exact PolicyCall token IDs and world pin."""
 
     def __init__(self, world, reader, memory, *, backend_id, tokenizer_id,
-                 expected_runtime_sha256, steps=None, memory_view="active"):
+                 expected_runtime_sha256, output_token_allowlist=None,
+                 output_constraint_sha256=None, steps=None, memory_view="active"):
         if type(backend_id) is not str or not backend_id.strip():
             raise ValueError("a stable native backend identifier is required")
         if type(tokenizer_id) is not str or not tokenizer_id.strip():
             raise ValueError("a stable native tokenizer identifier is required")
         if type(world) is not TaskWorld or type(reader) is not NativeLatentModel:
             raise TypeError("a TaskWorld and native latent reader are required")
+        if (output_token_allowlist is not None) != (output_constraint_sha256 is not None):
+            raise ValueError("token constraints require a paired stable decoder digest")
+        if output_token_allowlist is not None:
+            if not callable(output_token_allowlist):
+                raise TypeError("output token allowlist factory must be callable")
+            require_digest(output_constraint_sha256)
         self._world, self._reader = world, reader
         self._backend_id, self._tokenizer_id = backend_id, tokenizer_id
         self._steps = reader._step_budget(steps)
         self._expected_runtime_sha256 = expected_runtime_sha256
+        self._output_token_allowlist = output_token_allowlist
+        self._output_constraint_sha256 = output_constraint_sha256
         self._base_memory, self._memory_view = memory, memory_view
         self._pin = None
         self._opened = False
@@ -264,6 +292,7 @@ class NativeTaskEpisodeBackend:
             self._pin = NativeTaskWorldPin.bind(
                 world, self._reader, self._base_memory, memory_view=self._memory_view,
                 latent_steps=self._steps, expected_runtime_sha256=self._expected_runtime_sha256,
+                output_constraint_sha256=self._output_constraint_sha256,
                 max_source_verification_bytes=limits.access.source_bytes,
             )
             self._pin_memory_view()
@@ -288,9 +317,13 @@ class NativeTaskEpisodeBackend:
     def __call__(self, call):
         if type(call) is not PolicyCall or self._pin is None:
             raise TypeError("native episode backend requires a PolicyCall")
+        allowed_next_tokens = (None if self._output_token_allowlist is None
+                               else self._output_token_allowlist(call))
+        if self._output_token_allowlist is not None and not callable(allowed_next_tokens):
+            raise TypeError("output token allowlist factory must return a callable")
         read = self._reader.read_token_ids(
             call.input_ids, memory=self._memory, steps=self._steps,
-            max_new_tokens=call.max_new_tokens,
+            max_new_tokens=call.max_new_tokens, allowed_next_tokens=allowed_next_tokens,
         )
         receipt = {
             "schema": _READ_SCHEMA,
@@ -302,6 +335,7 @@ class NativeTaskEpisodeBackend:
             "output_tokens": len(read.token_ids),
             "terminated": read.terminated,
             "text_sha256": sha256(read.text.encode("utf8")),
+            "output_constraint_sha256": self._output_constraint_sha256,
             "source_seal": read.source_seal,
             "publication_seal": read.publication_seal,
             "latent_steps": read.latent_steps,
@@ -339,7 +373,9 @@ def _validate_pin(record):
         "memory_view", "latent_steps",
         "stop_token_ids", "pin_sha256",
     }
-    if type(record) is not dict or set(record) != expected or record["schema"] != _PIN_SCHEMA:
+    optional = {"output_constraint_sha256"}
+    if (type(record) is not dict or set(record) not in (expected, expected | optional)
+            or record["schema"] != _PIN_SCHEMA):
         raise ValueError("native task world pin has an invalid shape")
     body = {key: value for key, value in record.items() if key != "pin_sha256"}
     require_digest(record["pin_sha256"])
@@ -350,6 +386,9 @@ def _validate_pin(record):
                 "native_derived_span_catalogue_sha256", "runtime_sha256",
                 "reader_fingerprint_sha256"):
         require_digest(record[key])
+    constraint_digest = record.get("output_constraint_sha256")
+    if constraint_digest is not None:
+        require_digest(constraint_digest)
     if (type(record["source_verification_bytes"]) is not int or record["source_verification_bytes"] < 0
             or type(record["source_verification_byte_limit"]) is not int
             or record["source_verification_byte_limit"] < 1
@@ -556,8 +595,12 @@ def _validate_native_read(pin, request, response):
         "routed_memory_steps", "applied_memory_steps",
         "routed_derived_steps", "applied_derived_steps", "omitted_sources", "derived_omitted",
     }
-    if set(receipt) != expected or receipt["schema"] != _READ_SCHEMA:
+    optional = {"output_constraint_sha256"}
+    if (set(receipt) not in (expected, expected | optional)
+            or receipt["schema"] != _READ_SCHEMA):
         raise ValueError("native episode read receipt has an invalid schema")
+    if receipt.get("output_constraint_sha256") != pin.get("output_constraint_sha256"):
+        raise ValueError("native output token constraint differs from the opening pin")
     input_ids = request.get("input_ids")
     output_ids = receipt["output_token_ids"]
     if (type(input_ids) not in (list, tuple)

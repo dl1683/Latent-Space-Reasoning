@@ -655,11 +655,14 @@ class NativeLatentModel:
     def _read_ids(self, input_ids, memory, steps):
         return self._read_ids_with_limit(input_ids, memory, steps, self._output_tokens)
 
-    def read_token_ids(self, input_ids, *, memory=None, steps=None, max_new_tokens=None):
+    def read_token_ids(self, input_ids, *, memory=None, steps=None, max_new_tokens=None,
+                       allowed_next_tokens=None):
         """Read an exact, already-tokenized prompt with a caller-owned output cap.
 
         This is the episode adapter boundary: it consumes the exact prepared
         token sequence rather than decoding and retokenizing its chat frame.
+        An optional allowlist callback receives the full prompt-plus-generated
+        prefix and returns the vocabulary IDs permitted at the next step.
         """
         _require_cpu_eval(self._model)
         if memory is not None:
@@ -668,11 +671,14 @@ class NativeLatentModel:
         output_limit = self._output_tokens if max_new_tokens is None else max_new_tokens
         if type(output_limit) is not int or not 1 <= output_limit <= self._output_tokens:
             raise ValueError("output allowance exceeds the configured native bound")
+        if allowed_next_tokens is not None and not callable(allowed_next_tokens):
+            raise TypeError("next-token allowlist must be callable")
         input_ids = tuple(input_ids)
         self._check_input_ids(input_ids, self._context_tokens - steps - output_limit)
-        return self._read_ids_with_limit(input_ids, memory, steps, output_limit)
+        return self._read_ids_with_limit(input_ids, memory, steps, output_limit,
+                                         allowed_next_tokens=allowed_next_tokens)
 
-    def _read_ids_with_limit(self, input_ids, memory, steps, output_limit):
+    def _read_ids_with_limit(self, input_ids, memory, steps, output_limit, *, allowed_next_tokens=None):
         import torch
 
         with torch.inference_mode():
@@ -684,7 +690,24 @@ class NativeLatentModel:
                 logits = self._model.get_output_embeddings()(hidden)
                 if not torch.isfinite(logits).all():
                     raise FloatingPointError("nonfinite native vocabulary scores")
-                token = int(logits[0, -1].argmax())
+                scores = logits[0, -1]
+                if allowed_next_tokens is not None:
+                    allowed = allowed_next_tokens((*input_ids, *ids))
+                    if isinstance(allowed, (str, bytes)):
+                        raise TypeError("next-token allowlist must contain token IDs")
+                    try:
+                        allowed = tuple(allowed)
+                    except TypeError as error:
+                        raise TypeError("next-token allowlist must be iterable") from error
+                    if (not allowed or any(type(token) is not int or not 0 <= token < scores.shape[0]
+                                           for token in allowed)
+                            or len(set(allowed)) != len(allowed)):
+                        raise ValueError("next-token allowlist must contain unique in-vocabulary IDs")
+                    allowed = tuple(sorted(allowed))
+                    choices = torch.tensor(allowed, dtype=torch.long, device=scores.device)
+                    token = allowed[int(scores.index_select(0, choices).argmax())]
+                else:
+                    token = int(scores.argmax())
                 ids.append(token)
                 if token in self._eos or step + 1 == output_limit:
                     break
