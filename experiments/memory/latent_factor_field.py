@@ -5,7 +5,9 @@ cluster trees admit exact component reads. Raw loopy messages are proposals.
 """
 
 from collections import deque
-from dataclasses import dataclass, replace
+from dataclasses import asdict, dataclass, replace
+from hashlib import sha256
+import json
 from operator import index
 from types import MappingProxyType
 
@@ -129,6 +131,51 @@ class LatentFactorPin:
     def retained_cluster_cells(self):
         return sum(bank.plan.retained_cells for bank in self._clusters.values())
 
+    def fingerprint(self):
+        """Bind factors, topology and warm-start state to an episode's exact input."""
+        digest = sha256()
+        tensor_bytes = 0
+
+        def record(value):
+            digest.update(json.dumps(value, sort_keys=True, separators=(",", ":")).encode("ascii"))
+            digest.update(b"\\0")
+
+        def tensor(value):
+            nonlocal tensor_bytes
+            record(value.shape)
+            data = value.astype("<f8", copy=False).tobytes()
+            digest.update(data)
+            tensor_bytes += len(data)
+
+        graph = self._graph
+        record((1, self.corpus.journal_sha256, self._field._compiler_id, self._field._widths,
+                sorted(self._versions.items()),
+                sorted(self.uncompiled_sources), graph.adjacent, graph.components, sorted(graph.loopy),
+                list(graph.groups.items()), self._state.pending, sorted(self._state.pending_components)))
+        record(("factors", len(graph.factors)))
+        for key, factor in sorted(graph.factors.items()):
+            record((key, factor.axes, asdict(factor.source)))
+            tensor(factor.potential)
+        record(("raw", len(self._state.banks)))
+        for root, bank in sorted(self._state.banks.items()):
+            record((root, len(bank)))
+            for address, value in sorted(bank.items()):
+                record(address)
+                tensor(value)
+        # Bank traversal order affects which region receives a shared allowance.
+        record(("clusters", len(self._clusters)))
+        for root, bank in self._clusters.items():
+            plan = bank.plan
+            record((root, plan.signature, plan.bags, list(plan.owner.items()), list(plan.host.items()),
+                    plan.groups, plan.adjacent, list(plan.separators.items()), plan.schedule,
+                    len(bank.locals), len(bank.messages)))
+            for value in bank.locals:
+                tensor(value)
+            for address, value in sorted(bank.messages.items()):
+                record(address)
+                tensor(value)
+        return digest.hexdigest(), tensor_bytes
+
 
 @dataclass(frozen=True, eq=False)
 class LatentFactorRead:
@@ -210,7 +257,10 @@ class LatentFactorState:
 class LatentFactorField:
     """Retain task-blind messages on source pins and revise them in either direction."""
 
-    def __init__(self, widths):
+    def __init__(self, widths, *, compiler_id="supplied"):
+        if type(compiler_id) is not str or not compiler_id.strip():
+            raise ValueError("factor compiler identity must be nonempty text")
+        self._compiler_id = compiler_id
         self._widths = tuple(map(index, widths))
         if not self._widths or min(self._widths) < 1:
             raise ValueError("latent slots require positive widths")
@@ -344,13 +394,14 @@ class LatentFactorField:
         if pin is not None and (type(pin) is not LatentFactorPin or pin._field is not self):
             raise ValueError("factor pin belongs to a different field")
 
-    def reason(self, evidence, *, memory=None, max_updates=1024, max_tensor_cells=1_000_000):
-        """Condition numeric slots with or without a retained corpus pin."""
+    def reason(self, evidence, *, memory=None, max_updates=1024, max_tensor_cells=1_000_000, slot=None):
+        """Condition numeric slots, optionally spending work only in the requested component."""
         self._require_pin(memory)
         graph, state = (self._empty, self._no_messages) if memory is None else (memory._graph, memory._state)
         clusters = self._no_clusters if memory is None else memory._clusters
+        root = None if slot is None else graph.components[self._slot(slot)]
         return self._condition(memory, graph, state, clusters, self._no_evidence, evidence,
-                               _limits(max_updates, max_tensor_cells))
+                               _limits(max_updates, max_tensor_cells), target_root=root)
 
     def revise(self, state, evidence, *, max_updates=1024, max_tensor_cells=1_000_000):
         """Replace task evidence or clear it with None, leaving the shared pin intact."""
@@ -359,7 +410,7 @@ class LatentFactorField:
         return self._condition(state.pin, state._graph, state._state, state._clusters, state._drives, evidence,
                                _limits(max_updates, max_tensor_cells))
 
-    def _condition(self, pin, graph, state, clusters, drives, evidence, limits):
+    def _condition(self, pin, graph, state, clusters, drives, evidence, limits, *, target_root=None):
         revised, changed = dict(drives), set()
         for slot, values in dict(evidence).items():
             slot = self._slot(slot)
@@ -372,20 +423,22 @@ class LatentFactorField:
                     revised[slot] = new
                 changed.add(slot)
         revised = MappingProxyType(revised)
-        result, clusters, updates, cells = self._advance(graph, state, clusters, revised, changed, limits)
+        result, clusters, updates, cells = self._advance(graph, state, clusters, revised, changed, limits,
+                                                         target_root=target_root)
         return LatentFactorState(pin, self, graph, revised, result, clusters, updates, cells)
 
-    def _advance(self, graph, state, clusters, drives, changed, limits, *, prior_graph=None, changed_keys=()):
+    def _advance(self, graph, state, clusters, drives, changed, limits, *, prior_graph=None, changed_keys=(),
+                 target_root=None):
         raw = self._settle(graph, state, drives, changed, limits, prior_graph=prior_graph,
-                           changed_keys=changed_keys, skip_roots=clusters, defer_loopy=bool(clusters))
+                           changed_keys=changed_keys, skip_roots=clusters, defer_loopy=bool(clusters), target_root=target_root)
         if not clusters:
             return raw, clusters, 0, 0
         remaining = limits[0] - raw.updates, limits[1] - raw.tensor_cells
         drive_changes = changed if prior_graph is None else ()
-        clusters, updates, cells = _settle_clusters(clusters, drives, drive_changes, remaining)
+        clusters, updates, cells = _settle_clusters(clusters, drives, drive_changes, remaining, target_root=target_root)
         remaining = remaining[0] - updates, remaining[1] - cells
         if raw.pending_components & graph.loopy and min(remaining) > 0:
-            resumed = self._settle(graph, raw, drives, (), remaining, skip_roots=clusters)
+            resumed = self._settle(graph, raw, drives, (), remaining, skip_roots=clusters, target_root=target_root)
             raw = replace(resumed, updates=raw.updates + resumed.updates,
                           tensor_cells=raw.tensor_cells + resumed.tensor_cells)
         return raw, clusters, updates, cells
@@ -410,7 +463,7 @@ class LatentFactorField:
         return mass
 
     def _settle(self, graph, state, drives, changed_slots, limits, *, prior_graph=None, changed_keys=(),
-                skip_roots=(), defer_loopy=False):
+                skip_roots=(), defer_loopy=False, target_root=None):
         update_limit, cell_limit = limits
         excluded = frozenset(skip_roots)
         reset = ({graph.components[slot] for slot in changed_slots} & graph.loopy) - excluded
@@ -480,11 +533,11 @@ class LatentFactorField:
             key, target = address = (queues[0] or queues[1]).popleft()
             factor = graph.factors[key]
             size = factor.potential.size
-            if size > cell_limit - cells:
+            root = graph.components[target]
+            if (target_root is not None and root != target_root) or size > cell_limit - cells:
                 deferred.append(address)
                 continue
             del queued[address]
-            root = graph.components[target]
             if root not in mutable:
                 mutable[root] = dict(banks[root])
             messages = mutable[root]

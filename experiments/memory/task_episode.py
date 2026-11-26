@@ -1,6 +1,7 @@
 """Run auditable task policies through one bounded tool surface."""
 
 from dataclasses import asdict, dataclass
+from hashlib import sha256 as _sha256_stream
 from itertools import chain, islice
 import json
 from operator import index
@@ -11,7 +12,7 @@ from typing import Callable
 from experiments.memory.binding_links import CONTEXT_COMPLETION_VERSION, HIDDEN_BOUND_VERSION, RECURRENT_BOUND_VERSION
 from experiments.memory.task_evidence import (
     ExploreRolePaths, OpenEvidence, ProbeRoleLinks, RoleSupport, TaskBudget, TaskWorld, _Investigation,
-    _role_terminal_reads,
+    _JOINT_STANCES, _read_covers_span, _role_terminal_reads,
 )
 from experiments.memory.verified_reader_bridge import encode_messages, frame_evidence
 from experiments.memory.verified_source_tool import require_digest, sha256
@@ -47,6 +48,21 @@ _JOINT_ROLE_INSTRUCTIONS = (
     "also keep a nonempty open question for the unresolved branch or condition. For an open non-conflict result, "
     "use stance unknown, the exact status as outcome, and preserve its unresolved premise."
 )
+_JOINT_STATE_INSTRUCTIONS = (
+    ' When joint_state_enabled, use {"op":"joint_check","need_id":text,"read":integer,"ordinal":integer} '
+    "for unconditional compatibility of the seed's registered component. "
+    'Use {"op":"joint_state","need_id":text,"read":integer,"ordinal":integer,"axis":integer} for a selected axis. '
+    "Choose a factor observation covered by the verified read and use zero-based positions. "
+    'An optional "assume":{"axis":integer,"code":integer} clamps an axis in that same observation. '
+    "This is a hypothetical premise. Read the exact component candidates before submitting a conclusion. "
+    'If next_offset is present, use {"op":"joint_spans","need_id":text,"receipt":integer,"offset":integer}. '
+    'For a need using this result, include "joint_support":{"receipt":integer,"status":text,"code":integer_or_null}. '
+    "Copy the receipt status and code. Use conflicted for inconsistent, supports for compatible_in_registered_scope or supported, hypothetical "
+    "for conditional support or inconsistency, and unknown with a same-need open question for other statuses. "
+    "Always cite the verified seed. Decisive or hypothetical findings must cite reads covering all component spans. "
+    "If evidence is incomplete, use unknown and ask what is missing. Report every distinct joint query for the need."
+)
+
 _FINDING_FIELDS = {"claim", "stance", "citations", "reason"}
 _STANCES = {"supports", "defeats", "unknown", "conflicted", "hypothetical"}
 _TYPED_NEED_FIELDS = {
@@ -411,7 +427,10 @@ class _Tools:
     _field_sets = {"search": {"query"}, "read": {"candidate"},
                    "probe": {"read", "ordinal", "outcomes", "hops"},
                    "reason": {"read", "ordinal", "outcomes", "stages", "terminal_hops"},
-                   "role_spans": {"receipt", "offset"}}
+                   "role_spans": {"receipt", "offset"},
+                   "joint_check": {"read", "ordinal"},
+                   "joint_state": {"read", "ordinal", "axis"},
+                   "joint_spans": {"receipt", "offset"}}
 
     def __init__(self, task, world, limits, probes_enabled, typed_needs=False):
         self._session = _Investigation(task, world, limits.access)
@@ -419,6 +438,9 @@ class _Tools:
         self._joint_role_limit = limits.joint_roles
         self._enabled = probes_enabled
         self._typed_needs = typed_needs
+        self.joint_state_enabled = typed_needs and limits.access.joint_state is not None
+        if self.joint_state_enabled:
+            self._limits["joint_state"] = limits.access.joint_state.calls
         self.attempts = dict.fromkeys(self._limits, 0)
         self._pointers, self._candidate_ids = [], {}
         self._role_spans = {}
@@ -428,16 +450,24 @@ class _Tools:
         self.role_span_pages = 0
         self.role_candidate_spans_materialized = 0
         self.role_candidate_spans_examined = 0
+        self.joint_candidate_spans = 0
+        self._joint_offsets = {}
+        self._joint_spans = {}
         self.receipts = []
 
     def counters(self):
         session = self._session
-        return dict(attempts=dict(self.attempts), source_bytes=session.source_bytes,
+        counts = dict(attempts=dict(self.attempts), source_bytes=session.source_bytes,
                     evidence_bytes=session.evidence_bytes, role_work=session.role_work,
                     lexical_rows=session.lexical_rows, role_transitions=session.role_transitions,
                     joint_role_calls=self.joint_role_calls, role_span_pages=self.role_span_pages,
                     role_candidate_spans_materialized=self.role_candidate_spans_materialized,
                     role_candidate_spans_examined=self.role_candidate_spans_examined)
+        if self.joint_state_enabled:
+            counts.update(joint_updates=session.joint_updates, joint_tensor_cells=session.joint_tensor_cells,
+                          joint_projection_cells=session.joint_projection_cells,
+                          joint_candidate_spans=self.joint_candidate_spans)
+        return counts
 
     @staticmethod
     def _public(value):
@@ -449,9 +479,10 @@ class _Tools:
         if type(request) is not dict or type(request.get("op")) is not str:
             return {"status": "INVALID_TOOL"}
         op = request["op"]
-        if op not in self._field_sets:
+        if op not in self._field_sets or (op in ("joint_check", "joint_state", "joint_spans") and not self.joint_state_enabled):
             return {"status": "INVALID_TOOL"}
-        allowance = {"reason": "probe", "role_spans": "search"}.get(op, op)
+        allowance = {"reason": "probe", "role_spans": "search", "joint_spans": "search",
+                     "joint_check": "joint_state"}.get(op, op)
         self.attempts[allowance] += 1
         if op == "role_spans":
             self.role_span_pages += 1
@@ -466,17 +497,28 @@ class _Tools:
             return {"status": "TOOL_ATTEMPT_LIMIT"}
         ignored_fields = {"op", "need_id"} if self._typed_needs else {"op"}
         fields = request.keys() - ignored_fields
-        if fields != self._field_sets[op] and not (op == "probe" and fields == {"read", "ordinal", "outcomes"}):
+        permitted = self._field_sets[op]
+        if (fields != permitted and not (op == "probe" and fields == {"read", "ordinal", "outcomes"})
+                and not (op == "joint_state" and fields == permitted | {"assume"})):
             return {"status": "INVALID_TOOL_ARGUMENTS"}
         try:
             if op == "search":
                 return self._search(request, need_id)
             if op == "read":
-                if type(request["candidate"]) is list and self._session.world._receiver is not None:
+                if type(request["candidate"]) is list and (self._session.world._receiver is not None
+                                                           or self.joint_state_enabled):
                     return self._read_batch(request["candidate"], need_id)
                 return self._read(request, need_id)
             if op == "reason":
                 return self._reason(request, need_id)
+            if op in ("joint_check", "joint_state"):
+                if op == "joint_state" and request["axis"] is None:
+                    raise ValueError("joint state requires a local axis")
+                if "assume" in request and request["assume"] is None:
+                    raise ValueError("omit assume to request an observed result")
+                return self._joint_state(request, need_id)
+            if op == "joint_spans":
+                return self._joint_page(request["receipt"], request["offset"], need_id)
             if op == "role_spans":
                 return self._role_page(request["receipt"], request["offset"], need_id)
             return self._probe(request, need_id)
@@ -517,7 +559,29 @@ class _Tools:
         result = self._public(self._session.reads[-1])
         if not self._enabled:
             result.pop("observation_predicates")
+        if self.joint_state_enabled and result["status"] == "VERIFIED_SOURCE_BYTES":
+            rows, truncated = self._factor_observations(self._session.reads[-1])
+            result["factor_observations"] = rows
+            if truncated:
+                result["factor_observations_truncated"] = True
         return result
+
+    def _factor_observations(self, read):
+        pin = self._session.world._factor_pin
+        if pin is None:
+            return [], False
+        source = read.span.source_id
+        mentions = pin.corpus.memory._mentions.get(source, ())
+        raw = read.text.encode("utf8")
+        rows = []
+        limit = self._session.budget.candidates_per_search
+        for ordinal in range(len(mentions)):
+            factor = pin._graph.factors.get((source, ordinal))
+            if factor is not None and _read_covers_span(read, raw, factor.source):
+                if len(rows) == limit:
+                    return rows, True
+                rows.append({"ordinal": ordinal, "widths": [pin._field._widths[slot] for slot in factor.axes]})
+        return rows, False
 
     def _read_batch(self, candidates, need_id=None):
         if not candidates or any(type(candidate) is not int for candidate in candidates):
@@ -578,6 +642,50 @@ class _Tools:
                                   request["stages"], request["terminal_hops"])
         self._session._explore(action)
         return self._role_result("JOINT_ROLE_RESULT", need_id)
+
+    def _joint_state(self, request, need_id):
+        session = self._session
+        result = session._joint_state(need_id, request["read"], request["ordinal"],
+                                      request.get("axis"), request.get("assume"))
+        receipt = len(session.joint_evidence)
+        session.joint_evidence.append(result)
+        opened = {}
+        for read in session.reads:
+            if read.status == "VERIFIED_SOURCE_BYTES":
+                opened.setdefault(read.span.source_id, []).append((read, read.text.encode("utf8")))
+        self._joint_spans[receipt] = tuple(
+            span for span in result.sources
+            if not any(_read_covers_span(read, raw, span) for read, raw in opened.get(span.source_id, ()))
+        )
+        self._joint_offsets[receipt] = 0
+        page = self._joint_page(receipt, 0, need_id)
+        dependencies = _sha256_stream(b"[")
+        for i, span in enumerate(result.sources):
+            if i:
+                dependencies.update(b",")
+            dependencies.update(_packed(asdict(span)).encode("ascii"))
+        dependencies.update(b"]")
+        return {**page, "status": "JOINT_STATE_RESULT", "state_status": result.status, "code": result.code,
+                "dependency_sha256": dependencies.hexdigest()}
+
+    def _joint_page(self, receipt, offset, need_id):
+        session = self._session
+        if (type(receipt) is not int or type(offset) is not int or self._joint_offsets.get(receipt) != offset
+                or session.joint_evidence[receipt].need != need_id):
+            raise ValueError("joint candidates require the same need and the next offset of an existing receipt")
+        result = session.joint_evidence[receipt]
+        cap = session.budget.joint_state.candidate_spans - self.joint_candidate_spans
+        required = self._joint_spans[receipt]
+        spans = required[offset:offset + min(cap, session.budget.candidates_per_search)]
+        self.joint_candidate_spans += len(spans)
+        end = offset + len(spans)
+        page = {"status": "JOINT_SPANS", "receipt": receipt, "component_spans": len(result.sources),
+                "candidate_spans_truncated": end < len(required), "candidates": self._candidates(spans, need_id)}
+        self._joint_offsets[receipt] = None
+        if end < len(required) and cap > len(spans):
+            self._joint_offsets[receipt] = end
+            page["next_offset"] = end
+        return page
 
     def _role_result(self, status, need_id=None):
         session = self._session
@@ -673,9 +781,14 @@ class _Tools:
                 _nonempty(question["question"], "open question")
                 open_need_ids.add(question["need_id"])
             seen = set()
+            joint_queries = {(receipt.need, receipt.query) for receipt in self._session.joint_evidence}
+            closed_queries = {(receipt.need, receipt.query) for receipt in self._session.joint_evidence
+                              if receipt.status in _JOINT_STANCES}
+            adjudicated, closed_receipts = set(), set()
             required_fields = _FINDING_FIELDS | {"need_id"}
             for finding in report["findings"]:
-                allowed_fields = (required_fields, required_fields | {"role_support"})
+                allowed_fields = (required_fields, required_fields | {"role_support"},
+                                  required_fields | {"joint_support"})
                 if type(finding) is not dict or finding.keys() not in allowed_fields:
                     raise ValueError("invalid typed finding fields")
                 need_id = finding["need_id"]
@@ -694,9 +807,22 @@ class _Tools:
                 if (not citations and finding["stance"] != "hypothetical"
                         and not (finding["stance"] == "unknown" and need_id in open_need_ids)):
                     raise ValueError("observed findings require verified citations")
-                self._validate_role_support(finding, citations, need_id, open_need_ids)
+                if "joint_support" in finding:
+                    receipt = self._session._verify_joint_support(
+                        finding["joint_support"], finding["stance"], citations, need_id, open_need_ids,
+                    )
+                    query = (need_id, receipt.query)
+                    adjudicated.add(query)
+                    if receipt.status in _JOINT_STANCES:
+                        closed_receipts.add(query)
+                else:
+                    self._validate_role_support(finding, citations, need_id, open_need_ids)
             if seen != known:
                 raise ValueError("every declared need requires at least one finding")
+            if adjudicated != joint_queries:
+                raise ValueError("each distinct joint query requires a structured receipt finding")
+            if not closed_queries <= closed_receipts:
+                raise ValueError("an incomplete receipt cannot replace a completed receipt for the same query")
             return report
 
         for question in report["open_questions"]:
@@ -753,11 +879,13 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
     toolbox = _Tools(task, world, limits, policy.probes_enabled, linked_needs)
     system = (_COMPACT_SYSTEM if compact_needs else
               _TYPED_SYSTEM if typed_needs else _SYSTEM + " " + _STATE_INSTRUCTIONS[policy.state_kind])
-    if world._receiver is not None:
+    if world._receiver is not None or toolbox.joint_state_enabled:
         system += " Pass a list of candidate numbers to read to open those candidates together."
-        if policy.probes_enabled:
-            system += (_COMPACT_JOINT_ROLE_INSTRUCTIONS if compact_needs else
-                       _TYPED_JOINT_ROLE_INSTRUCTIONS if typed_needs else _JOINT_ROLE_INSTRUCTIONS)
+    if world._receiver is not None and policy.probes_enabled:
+        system += (_COMPACT_JOINT_ROLE_INSTRUCTIONS if compact_needs else
+                   _TYPED_JOINT_ROLE_INSTRUCTIONS if typed_needs else _JOINT_ROLE_INSTRUCTIONS)
+    if toolbox.joint_state_enabled:
+        system += _JOINT_STATE_INSTRUCTIONS
     state = ({"needs": [], "notes": ""} if typed_needs else
              {} if policy.state_kind == "needs" else "")
     state_type = type(state)
@@ -773,6 +901,15 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
         opening = {"version": 1, "task": task, "pin": asdict(world.pin),
                    "policy": asdict(policy), "limits": asdict(limits),
                    "setup_source_bytes": world.setup_source_bytes}
+        if world.pin.factor_sha256 is None:
+            del opening["pin"]["factor_sha256"]
+        else:
+            opening["setup_factor_bytes"] = world.setup_factor_bytes
+            opening["factor_compiler_id"] = world._factor_pin._field._compiler_id
+        if limits.access.joint_state is None:
+            del opening["limits"]["access"]["joint_state"]
+        if toolbox.joint_state_enabled:
+            opening["joint_state_version"] = 1
         if limits.access.bound_context:
             opening["context_completion_version"] = CONTEXT_COMPLETION_VERSION
         if limits.access.bound_hidden:
@@ -797,6 +934,8 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                 framed["as_of"] = world.pin.as_of
             if world._receiver is not None:
                 framed["joint_roles_enabled"] = policy.probes_enabled
+            if toolbox.joint_state_enabled:
+                framed["joint_state_enabled"] = True
             messages = frame_evidence(system, framed)
             try:
                 input_ids = tuple(encode_messages(tokenizer, messages))
@@ -956,6 +1095,8 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
         raise ValueError("episode hidden bound policy differs")
     if a.get("recurrent_bound_version") != b.get("recurrent_bound_version"):
         raise ValueError("episode recurrent bound policy differs")
+    if a.get("joint_state_version") != b.get("joint_state_version"):
+        raise ValueError("episode joint state policy differs")
     if contrast == "memory":
         source_fields = ("source_snapshot", "span_catalogue_sha256", "binding_source_revision")
         for field in source_fields:

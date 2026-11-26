@@ -14,6 +14,7 @@ from experiments.memory.binding_memory import BindingCapacityError
 from experiments.memory.binding_replay import _receiver_digest
 from experiments.memory.compressed_routing_map import BM25
 from experiments.memory.corpus_bindings import CorpusBindingMemory, CorpusRevision
+from experiments.memory.latent_factor_field import LatentFactorPin
 from experiments.memory.verified_source_tool import SourceSpan, VerifiedSourceTool, sha256
 
 
@@ -27,6 +28,7 @@ class TaskPin:
     binding_journal_sha256: str | None
     receiver_sha256: str | None = None
     as_of: int | None = None
+    factor_sha256: str | None = None
 
 
 @dataclass(frozen=True, slots=True, init=False)
@@ -39,10 +41,12 @@ class TaskWorld:
     _index: BM25 | None
     _memory: CorpusBindingMemory | None
     _receiver: BindingFeedback | None
+    _factor_pin: LatentFactorPin | None
     pin: TaskPin
     setup_source_bytes: int
+    setup_factor_bytes: int
 
-    def __init__(self, tool, spans, *, bindings=None, receiver=None, as_of=None):
+    def __init__(self, tool, spans, *, bindings=None, receiver=None, as_of=None, factor_pin=None):
         if type(tool) is not VerifiedSourceTool:
             raise TypeError("a verified source tool is required")
         if bindings is not None and (
@@ -67,6 +71,13 @@ class TaskWorld:
                 memory = memory.at_role_time(as_of)
             else:
                 as_of = validity.as_of
+        factor_sha, factor_bytes = None, 0
+        if factor_pin is not None:
+            if type(factor_pin) is not LatentFactorPin or factor_pin.corpus is not bindings:
+                raise ValueError("factor memory must use the exact journaled task revision")
+            if as_of is not None:
+                raise ValueError("factor memory does not implement effective-time views")
+            factor_sha, factor_bytes = factor_pin.fingerprint()
         tool = VerifiedSourceTool(tool.root, tool.versions)
         spans = tuple(spans)
         if any(type(span) is not SourceSpan for span in spans) or len(set(spans)) != len(spans):
@@ -84,15 +95,17 @@ class TaskWorld:
         pin = TaskPin(tool.snapshot_sha256, sha256(catalogue), None if bindings is None else bindings.revision,
                       None if bindings is None else bindings.source_revision,
                       None if bindings is None else bindings._program_revision,
-                      None if bindings is None else bindings.journal_sha256, receiver_sha, as_of)
+                      None if bindings is None else bindings.journal_sha256, receiver_sha, as_of, factor_sha)
         object.__setattr__(self, "_tool", tool)
         object.__setattr__(self, "_spans", spans)
         object.__setattr__(self, "_spans_by_source", MappingProxyType({key: tuple(rows) for key, rows in by_source.items()}))
         object.__setattr__(self, "_index", BM25(texts) if texts else None)
         object.__setattr__(self, "_memory", memory)
         object.__setattr__(self, "_receiver", receiver)
+        object.__setattr__(self, "_factor_pin", factor_pin)
         object.__setattr__(self, "pin", pin)
         object.__setattr__(self, "setup_source_bytes", setup_bytes)
+        object.__setattr__(self, "setup_factor_bytes", factor_bytes)
 
     def _search(self, query, limit):
         if self._index is None:
@@ -101,6 +114,20 @@ class TaskWorld:
         matching = [i for i, score in enumerate(scores) if score > 0]
         matching.sort(key=lambda i: (-scores[i], i))
         return tuple(self._spans[i] for i in matching[:limit]), len(matching)
+
+
+@dataclass(frozen=True, slots=True)
+class JointStateBudget:
+    calls: int = 2
+    updates: int = 64
+    tensor_cells: int = 8192
+    candidate_spans: int = 16
+
+    def __post_init__(self):
+        for name in ("calls", "updates", "tensor_cells", "candidate_spans"):
+            value = getattr(self, name)
+            if type(value) is not int or value < 0:
+                raise ValueError("joint state allowances must be nonnegative integers")
 
 
 @dataclass(frozen=True, slots=True)
@@ -116,8 +143,11 @@ class TaskBudget:
     bound_context: bool = False
     bound_hidden: bool = False
     bound_recurrent: bool = False
+    joint_state: JointStateBudget | None = None
 
     def __post_init__(self):
+        if self.joint_state is not None and type(self.joint_state) is not JointStateBudget:
+            raise TypeError("joint state budget must be a JointStateBudget")
         if type(self.bound_context) is not bool:
             raise ValueError("context completion policy must be boolean")
         if type(self.bound_hidden) is not bool or (self.bound_hidden and not self.bound_context):
@@ -235,6 +265,25 @@ class RoleEvidence:
 
 
 @dataclass(frozen=True, slots=True)
+class JointStateEvidence:
+    need: str
+    seed: int
+    query: tuple[str, int, int | None, tuple[int, int] | None]
+    status: str
+    code: int | None
+    sources: tuple[SourceSpan, ...]
+
+
+_JOINT_STANCES = {
+    "inconsistent": "conflicted",
+    "supported": "supports",
+    "compatible_in_registered_scope": "supports",
+    "conditional_inconsistent": "hypothetical",
+    "conditional_supported": "hypothetical",
+}
+
+
+@dataclass(frozen=True, slots=True)
 class RejectedAction:
     step: int
     action: str
@@ -335,6 +384,8 @@ class _Investigation:
         self.task, self.world, self.budget = task, world, budget
         self.needs, self.cases, self.children = {}, {}, {}
         self.searches, self.reads, self.role_evidence = [], [], []
+        self.joint_evidence = []
+        self.joint_updates = self.joint_tensor_cells = self.joint_projection_cells = 0
         self.rejected = []
         self.investigated, self.exhausted, self.unavailable = set(), set(), set()
         self.steps = self.source_bytes = self.evidence_bytes = self.role_work = 0
@@ -346,6 +397,96 @@ class _Investigation:
                 or self.reads[i].status != "VERIFIED_SOURCE_BYTES" for i in ids) or len(ids) != len(set(ids))):
             raise ValueError("citations must identify distinct verified reads from this investigation")
         return ids
+
+    def _joint_state(self, need, read_id, ordinal, axis, assume):
+        self._citations((read_id,))
+        seed = self.reads[read_id]
+        if seed.need != need:
+            raise ValueError("joint state source read belongs to another need")
+        if type(ordinal) is not int or ordinal < 0 or (axis is not None and (type(axis) is not int or axis < 0)):
+            raise ValueError("joint state requires a nonnegative mention ordinal and axis")
+        if assume is not None and (type(assume) is not dict or assume.keys() != {"axis", "code"}
+                                   or any(type(value) is not int or value < 0 for value in assume.values())):
+            raise ValueError("joint state premise requires a nonnegative axis and code")
+
+        premise_code = None if assume is None else (assume["axis"], assume["code"])
+        query = (seed.span.source_id, ordinal, axis, premise_code)
+        pin = self.world._factor_pin
+        if pin is None:
+            return JointStateEvidence(need, read_id, query, "no_factor_memory", None, ())
+        factor = pin._graph.factors.get((seed.span.source_id, ordinal))
+        if factor is None or not _read_covers_span(seed, seed.text.encode("utf8"), factor.source):
+            raise ValueError("joint state requires a scoped factor covered by the verified read")
+        if axis is not None and axis >= len(factor.axes):
+            raise ValueError("joint state axis is outside the factor scope")
+        # Feasibility projects any axis: an empty marginal means the whole
+        # component has no compatible assignment.
+        slot = factor.axes[0 if axis is None else axis]
+        graph, field = pin._graph, pin._field
+        root = graph.components[slot]
+        cluster = pin._clusters.get(root)
+        sources = graph.sources[root]
+        drives = {}
+        premise_width = 0
+        if assume is not None:
+            if assume["axis"] >= len(factor.axes):
+                raise ValueError("joint state premise axis is outside the factor scope")
+            premise = factor.axes[assume["axis"]]
+            premise_width = field._widths[premise]
+            if assume["code"] >= premise_width:
+                raise ValueError("joint state premise code is outside its axis")
+        if pin.uncompiled_sources:
+            return JointStateEvidence(need, read_id, query, "uncompiled", None, sources)
+        if cluster is None:
+            if root in graph.loopy:
+                return JointStateEvidence(need, read_id, query, "loopy", None, sources)
+            projection = field._widths[slot] * (2 + len(graph.adjacent[slot]))
+        else:
+            bag = cluster.plan.owner[slot]
+            projection = cluster.locals[bag].size * (2 + len(cluster.plan.adjacent[bag]) + int(assume is not None))
+
+        budget = self.budget.joint_state
+        cells = budget.tensor_cells - self.joint_tensor_cells - self.joint_projection_cells
+        reservation = int(projection) + premise_width
+        if reservation > cells:
+            return JointStateEvidence(need, read_id, query, "work_limit", None, sources)
+        self.joint_projection_cells += reservation
+        if assume is not None:
+            drives[premise] = [int(i == assume["code"]) for i in range(premise_width)]
+        state = field.reason(drives, memory=pin, slot=slot,
+                             max_updates=budget.updates - self.joint_updates,
+                             max_tensor_cells=cells - reservation)
+        self.joint_updates += state.updates
+        self.joint_tensor_cells += state.tensor_cells
+        result = state.read(slot)
+        code = (int(result.support.nonzero()[0][0])
+                if result.status in ("supported", "conditional_supported") else None)
+        status = result.status
+        if axis is None and status in ("supported", "alternatives"):
+            status, code = "compatible_in_registered_scope", None
+        if assume is not None and status in ("supported", "inconsistent", "alternatives"):
+            status = "conditional_" + status
+        return JointStateEvidence(need, read_id, query, status, code, sources)
+
+    def _verify_joint_support(self, support, stance, citations, need, open_need_ids):
+        if (type(support) is not dict or support.keys() != {"receipt", "status", "code"}
+                or type(support["receipt"]) is not int or not 0 <= support["receipt"] < len(self.joint_evidence)
+                or (support["code"] is not None and type(support["code"]) is not int)):
+            raise ValueError("joint support requires an existing receipt, status and code")
+        receipt = self.joint_evidence[support["receipt"]]
+        if (receipt.need != need or support["status"] != receipt.status or support["code"] != receipt.code):
+            raise ValueError("joint support must match the need, status and code")
+        expected = _JOINT_STANCES.get(receipt.status, "unknown")
+        if (stance != expected and stance != "unknown") or (stance == "unknown" and need not in open_need_ids):
+            raise ValueError("joint support requires the receipt's stance and a same-need question if open")
+        if receipt.seed not in citations:
+            raise ValueError("joint support must cite its verified seed")
+        if stance != "unknown":
+            texts = tuple((read, read.text.encode("utf8")) for read in (self.reads[i] for i in citations))
+            if any(not any(_read_covers_span(read, raw, pointer) for read, raw in texts)
+                   for pointer in receipt.sources):
+                raise ValueError("joint support must cite all exact component source spans")
+        return receipt
 
     def _verify_role_support(self, support, stance, citations, need, open_need_ids=None,
                              has_open_question=False):

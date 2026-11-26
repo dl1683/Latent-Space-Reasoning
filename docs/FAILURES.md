@@ -24,6 +24,15 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A computed conflict still needs its unopened source clauses.**
+In the scoped episode, the numerical result could identify a conflict
+before the task read its nonlexical dependencies. Omitting the receipt,
+changing its stance or citing only the seed all failed validation.
+A candidate limit could hide another clause without removing it from
+the receipt's obligations. The episode accepted an explicit unknown in
+that case. The supplied likelihoods remain a compiler assumption.
+[Verified joint-state episode](RESULTS.md#verified-joint-state-task-episode-26-november-2026)
+
 **Separator marginals can hide a joint contradiction.** In the supplied
 cluster fixture, two messages agreed on each unary marginal and
 disagreed on every compatible pair. The joint table is necessary for

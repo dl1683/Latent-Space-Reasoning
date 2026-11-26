@@ -571,3 +571,17 @@ def test_forest_work_precedes_cluster_refresh_under_a_shared_budget():
     assert all(target >= 3 for _, target in result._state.pending)
     resumed = field.revise(result, {})
     np.testing.assert_array_equal(resumed.read(0).support, [True, False])
+
+def test_scoped_recurrence_invalidates_changed_drives_in_other_clusters_without_spending_there():
+    owner = _workspace()
+    field = LatentFactorField((2,) * 6)
+    equal = np.eye(2)
+    scopes = ((0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3))
+    entries = {str(i): [(0, axes, equal)] for i, axes in enumerate(scopes)}
+    corpus = _publish(owner, {name: ("source " + name).encode() for name in entries})
+    pin = field.maintain_clusters(_prepare(field, corpus, entries), max_bag_cells=8, max_retained_cells=100)
+    focused = field.reason({5: [1., 0.]}, memory=pin, slot=0)
+    assert focused.updates == 0 and focused.read(0).status == "alternatives"
+    assert focused.read(3).status == "update_limit"
+    complete = field.revise(focused, {})
+    np.testing.assert_array_equal(complete.read(3).support, [True, False])

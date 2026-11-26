@@ -1628,6 +1628,37 @@ Cutset branches need retained mass offsets before they can be combined.
 [Implementation](../experiments/memory/_latent_factor_clusters.py)
 [Controls](../experiments/memory/test_latent_factor_field.py)
 
+#### Using maintained joint state in a task
+
+[SLICE] A typed or compact episode can attach a factor pin on the exact
+journaled corpus revision it already uses for verified reads. An opening
+hash binds its compiler identity, factors, scopes, layouts, numeric
+messages and pending work. The opening also counts the tensor bytes hashed at setup. The
+factor attachment currently uses the source revision directly. It has
+no effective-time interpretation or durable factor journal.
+
+A joint-state action starts from a verified same-need read whose bytes
+cover the retained factor's exact source span. An unconditional
+compatibility check chooses the component from the seed. A selected
+state read uses a zero-based axis local to that observation. It can
+clamp one axis of the same factor to a hypothetical code. The task charges the target component's recurrence
+and reserves work for a single-axis projection. The receipt reports
+status, a code when unique, and a bounded page of source candidates.
+Further pages are linked to the same receipt and need. The host ledger keeps a digest and count of the full component dependency
+list. Activation arrays and diagnostic probabilities do not enter the
+new tool's prompt receipts.
+
+Each distinct joint query needs a matching finding. A later work refusal
+cannot displace a completed receipt for the same query. The receipt binds
+its need, source observation, axis, optional premise, status and code
+on the episode pin. A decisive result must cite reopened bytes covering
+the seed and all exact component spans, including any beyond the first
+candidate list. A hypothetical result must use the hypothetical stance.
+The policy can keep an unknown when evidence is incomplete and name
+the remaining question. This authenticates source bytes and checks
+agreement with the numerical result. It leaves clause interpretation and
+the compiler's factor coverage open. [Task interface](CONTEXT_TOOL.md#checking-a-joint-state-in-a-task)
+
 ## Claims and evidence boundary (2026-10-15; not a new experiment)
 
 | Claim | Tag and current boundary | What is still required |

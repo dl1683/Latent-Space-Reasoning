@@ -208,12 +208,13 @@ def _refresh_clusters(clusters, graph, changed_keys):
     })
 
 
-def _settle_clusters(clusters, drives, changed, limits):
+def _settle_clusters(clusters, drives, changed, limits, *, target_root=None):
     remaining_updates, remaining_cells = limits
     updates = cells = 0
     banks = {}
     for root, bank in clusters.items():
-        current, used, scanned = bank.settle(drives, changed, (remaining_updates, remaining_cells))
+        available = (remaining_updates, remaining_cells) if target_root is None or root == target_root else (0, 0)
+        current, used, scanned = bank.settle(drives, changed, available)
         banks[root] = current
         remaining_updates -= used
         remaining_cells -= scanned

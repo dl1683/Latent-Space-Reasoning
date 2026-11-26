@@ -710,3 +710,35 @@ JSON file. Every supplied hash must match before a new inventory is written;
 omitting the option records an empty provenance list. This interface reads supplied
 historical records without rewriting them. Existing authenticated export locks and
 receipts remain unchanged and retain their original identities and hashes.
+
+
+## Checking a joint state in a task
+
+Use `run_episode` with a current `TaskWorld` whose `bindings` and
+`factor_pin.corpus` are the same journaled revision. Set
+`EpisodeLimits.access.joint_state` to a `JointStateBudget` and use
+`compact_needs` or `typed_needs` for the policy. The optional memory-off
+arm keeps the same opening action contract.
+
+After reading a verified factor clause, use its returned observation
+ordinal. To check compatibility of the registered component, use
+`joint_check` with the read and ordinal only. To inspect a selected
+slot, use `joint_state` with the additional local axis. Ordinals and axes
+are zero-based.
+
+```json
+{"op":"joint_state","need_id":"policy","read":0,"ordinal":0,"axis":1}
+```
+
+An optional `assume` object with integer `axis` and `code` defines a
+hypothetical premise from the same factor. The receipt supplies
+`state_status`, `code`, and candidates for reopening component evidence.
+Use `joint_spans` with the same receipt and its issued `next_offset` for
+subsequent pages. Paging uses the search attempt allowance and the
+joint state's total candidate allowance. After reopening those clauses, attach
+`joint_support` with the receipt number, its status and its code to the
+finding. Use `conflicted` for an observed inconsistent result,
+`supports` for `compatible_in_registered_scope` or a unique code, and
+`hypothetical` for a conditional
+conflict or unique code. Use `unknown` and a same-need open question when
+a proof or its bytes remain incomplete.

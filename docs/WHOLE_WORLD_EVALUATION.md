@@ -478,10 +478,14 @@ Count the work of rejected proposals, verification of unvisited
 alternatives, retained state and evidence delivery. The forward
 attention receiver remains a separate reasoning arm. Give repeated
 ladder endpoints the balanced transfer-tree comparator, and compare
-adaptive tree contraction for wider exact regions. The typed task
-harness still needs a path from a source-derived constraint to a
-verified joint finding. Use cyclic conflict and withdrawal as its first
-discriminating task family.
+adaptive tree contraction for wider exact regions. The typed harness now
+has a scripted joint route through conflict, withdrawal and restoration.
+The remaining test needs a query-blind source-to-factor compiler,
+independently selected late needs and semantic grading of the reopened
+evidence. Include a matched arm with the same join and the same source
+access through the compact action contract. Include a links-only arm
+with identical dependency candidates and no numerical verdict. A separate
+iterative text policy should get the same eligible evidence and a charged read budget.
 [Adaptive Inference on General Graphical Models](https://proceedings.mlr.press/r6/acar08a)
 [Incremental Compilation of Bayesian Networks](https://arxiv.org/abs/1212.2456)
 [Bounded Conditioning](https://ics.uci.edu/~dechter/publications/r130a.pdf)

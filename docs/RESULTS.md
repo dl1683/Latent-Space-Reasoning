@@ -4,6 +4,38 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Verified joint-state task episode, 26 November 2026
+
+**Scripted CPU software verification.** A compact episode searched for
+one commission rule and opened its bytes. The maintained cyclic state
+then surfaced two additional rules outside that search. Reopening all
+three exact clause spans admitted the joint conflict. The same host
+rejected a missing receipt, a mismatched stance and incomplete citations.
+Withdrawing one rule made the remaining registered constraints
+compatible. Clamping one remaining axis yielded a hypothetical unique
+code. Restoring the source required a
+fresh versioned batch and recovered the conflict. The historical pin
+retained its earlier result.
+
+With factor memory absent, the same opening prompt and action contract
+returned an explicit unknown. Coverage checks rejected a read of the
+seed's title without its clause, and rejected reuse under another need
+or source pin. An undersized candidate allowance did not reduce the
+citation obligation. The host still accepted a candid unknown. The
+fixture used caller-supplied likelihoods and a scripted policy.
+Model calibration, independent semantics and matched lifecycle advantage
+remain open. [Episode controls](../experiments/memory/test_task_episode.py)
+
+The collaborator's separately reproduced JavaScript canary exercised
+64 fixed-grammar worlds and 576 receipts. A direct bundle enumerator
+and exact cached bitsets matched the retained separator on all 448
+closed receipts. The eager separator and eager exact arms each prepared
+320 pairs. The lazy exact arm prepared 256. These are operation counts
+on a shared grammar and registered scope. This control uses version
+counters and string matching for custody. The Python episode uses
+journal identity and byte verification.
+[Standalone receipt control](../experiments/memory/joint_conflict_contract_control.js)
+
 ## Bounded cyclic-region compilation, 26 November 2026
 
 **Software verification, supplied likelihoods.** The worker compiled an
