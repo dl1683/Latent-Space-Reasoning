@@ -735,6 +735,16 @@ Triage uses expanded reference replay, and admission uses the installed policy, 
 
 This checks configured numerical reads over caller-supplied changes. Source authenticity, unseen answer quality, worker scheduling and whole-corpus behavior require separate evidence.
 
+#### Publishing source and operator repairs together
+
+[SLICE] Call `propose_slot_operator_repair(base, changes, probe, conditional=False, hinge=False)` to fit a compensating operator on a private tree bank containing the proposed slot changes. The selected probe must be unmet on that bank. A probe satisfied at opening can become eligible when the source change breaks its read. The draft binds the slot rows and operator recipe to the opening revision.
+
+`publish_slot_operator_repair(draft)` reconstructs the private bank and independently validates the operator under the staged bank's ordinary target, floor, endpoint, norm and prefix checks. It also protects opening working and guard endpoints and all floors met at opening. A source-only change can alter a prefix or temporarily break a configured endpoint inside the private bank. The completed pair must meet both sets of checks, retaining prefixes measured after the source change. An unchanged source bank is refused. The workspace publishes only the complete pair at the next revision.
+
+Create a tree journal with `allow_coupled_repairs=True` to record paired repairs. This policy is part of its root, so every opener must support and enable it. Existing journals retain their default root and event formats. The journal records a single `tree_slots_operator_v1` event. Its probe field identifies the target. The payload starts with a one-byte operator tag and an eight-byte little-endian length for the ordinary slot payload. The slot bytes follow, then the ordinary operator data. Publication and replay admit the same serialized pair without fitting again. The root, opening revision and tip digest fence the ordinary append.
+
+This admission compares the old and new computations on declared reads. Source truth and behavior on unseen reads require separate evidence. For useful compensation, compare the opening, source-only, operator-only and combined states using the same edit and the same operator recipe.
+
 #### Choosing a source repair within a validation budget
 
 [SLICE] Call `workspace.maintain_observation_slots(base, candidates, repair_probe=i, max_candidates=..., max_validations=..., max_replays=0)` to stage alternative slot edits against one revision. The workspace freezes each mapping and its row storage as it is yielded. A prepared bank and its journal payload come from the same frozen edits. A candidate past the input cap causes refusal before scoring or measurement.

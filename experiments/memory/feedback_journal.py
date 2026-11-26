@@ -23,6 +23,9 @@ from experiments.memory.tree_feedback import TreeFeedbackKernel
 
 
 _SLOT_HEADER = Struct("<QB")
+_COUPLED_HEADER = Struct("<BQ")
+_COUPLED_OPERATOR_KINDS = ("weight", "conditional", "hinge", "route", "joint")
+_COUPLED_EVENT = "tree_slots_operator_v1"
 
 
 def _encode(array):
@@ -139,7 +142,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
     def __init__(self, path, kernel, observations, probes, *, max_update_norm, atol=1e-8,
                  max_terms=0, source_ids=None, guards=(), allow_hinge=False, max_reference_frontier=None,
                  reuse_tree_routes=False, max_retained_tree_scores=0, create=False, allow_joint=False,
-                 joint_trials=1, separate_joint_trials=False, joint_refinements=0, reuse_joint_anchors=False):
+                 joint_trials=1, separate_joint_trials=False, joint_refinements=0, reuse_joint_anchors=False,
+                 allow_coupled_repairs=False):
         if type(create) is not bool:
             raise ValueError("journal creation flag must be a boolean")
         if type(reuse_joint_anchors) is not bool or (reuse_joint_anchors and not joint_refinements):
@@ -148,6 +152,9 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         self._tree_bound = isinstance(kernel, TreeFeedbackKernel)
         if self._tree_bound and type(kernel) is not TreeFeedbackKernel:
             raise ValueError("the feedback journal requires the standard tree kernel")
+        if type(allow_coupled_repairs) is not bool or (allow_coupled_repairs and not self._tree_bound):
+            raise ValueError("coupled repair journals require a boolean policy and a tree kernel")
+        self._allow_coupled_repairs = allow_coupled_repairs
         self._tree_error_policy = np.geterr() if self._tree_bound else None
         if self._tree_bound and any(mode in ("call", "log") for mode in self._tree_error_policy.values()):
             raise ValueError("tree feedback journals require a data-only NumPy error policy")
@@ -253,6 +260,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         kernel = head.kernel
         if self._tree_bound:
             digest = sha256(b"feedback workspace tree v1\n")
+            if self._allow_coupled_repairs:
+                digest.update(b"coupled slot operator events v1\n")
         else:
             digest = sha256(b"feedback workspace root v1\n" if initial_sources is None
                             else b"feedback workspace source moments v1\n")
@@ -378,6 +387,16 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             return self._prepare_observation_revision(base, values.reshape(-1, base.kernel._width))
         if kind == "tree_slots" and probe is None and self._tree_bound:
             return self._prepare_slot_revision(base, _decode_slots(payload, base.kernel._width))
+        if kind == _COUPLED_EVENT and probe is not None and self._allow_coupled_repairs:
+            if len(payload) < _COUPLED_HEADER.size:
+                raise ValueError("truncated coupled repair header")
+            tag, slot_bytes = _COUPLED_HEADER.unpack_from(payload)
+            split = _COUPLED_HEADER.size + slot_bytes
+            if tag >= len(_COUPLED_OPERATOR_KINDS) or not slot_bytes or split >= len(payload):
+                raise ValueError("invalid coupled repair payload")
+            changes = _decode_slots(payload[_COUPLED_HEADER.size:split], base.kernel._width)
+            proposal = self._decode_operator(base, _COUPLED_OPERATOR_KINDS[tag], probe, payload[split:])
+            return self._prepare_slot_operator_repair(proposal, changes)
         return self._prepare_operator_revision(self._decode_operator(base, kind, probe, payload))
 
     def _journal_tip(self, db):
@@ -775,6 +794,16 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
 
     def _commit_slot_update(self, base, revised, changes):
         return self._commit(base, revised, tree_event=("tree_slots", _encode_slots(changes)))
+
+    def _publish_slot_operator_repair(self, base, proposal, changes):
+        if not self._allow_coupled_repairs:
+            raise ValueError("tree journal does not allow coupled repairs")
+        kind, operator = self._encode_operator(proposal)
+        slots = _encode_slots(changes)
+        tag = _COUPLED_OPERATOR_KINDS.index(kind)
+        payload = _COUPLED_HEADER.pack(tag, len(slots)) + slots + operator
+        revised = self._replay(base, _COUPLED_EVENT, proposal.probe, payload)
+        return self._commit(base, revised, proposal=proposal, tree_event=(_COUPLED_EVENT, payload))
 
     def snapshot(self):
         """Replay unseen events and return the head of one consistent journal read."""

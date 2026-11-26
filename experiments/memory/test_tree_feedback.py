@@ -1,4 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import closing
 from dataclasses import replace
 from threading import Barrier, Event
 
@@ -8,7 +9,8 @@ import pytest
 from experiments.memory import tree_feedback
 from experiments.memory.feedback_journal import JournaledFeedbackWorkspace
 from experiments.memory.feedback_workspace import (
-    FeedbackProbe, FeedbackProposal, FeedbackRoutingGoal, FeedbackSlotEvidence, FeedbackWorkspace, StaleFeedbackRevision,
+    FeedbackProbe, FeedbackProposal, FeedbackRoutingGoal, FeedbackSlotEvidence, FeedbackSlotOperatorDraft,
+    FeedbackWorkspace, StaleFeedbackRevision,
 )
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, FeedbackKernel
 from experiments.memory.tree_feedback import (
@@ -1685,6 +1687,169 @@ def test_operator_trial_checks_payload_bytes_before_replaying_source_rows(tmp_pa
     assert result.status == "budget_exhausted" and not result.checked_revisions
     assert "payload" in result.reason and worker.snapshot().number == source.number
     assert worker.snapshot().kernel.conditional_terms == 0
+
+
+def _coupled_slot_inputs():
+    kernel = TreeFeedbackKernel(depth=1, max_frontier=2, query=[[0.]], carry=None,
+                                observation_key=[[0.]], observation_value=[[1.]],
+                                feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    probe = FeedbackProbe((1.,), 1, (float(np.tanh(.25)),))
+    return kernel, [[.25], [.25]], (probe,)
+
+
+@pytest.mark.parametrize("journaled", [False, True])
+def test_coupled_slot_operator_repair_publishes_no_intermediate_broken_revision(tmp_path, monkeypatch, journaled):
+    inputs = _coupled_slot_inputs()
+    options = dict(max_update_norm=1., guards=(FeedbackProbe((-1.,), 1, inputs[2][0].target),))
+    path = tmp_path / "coupled-slots.db"
+    if journaled:
+        options["allow_coupled_repairs"] = True
+        workspace = JournaledFeedbackWorkspace(path, *inputs, **options, create=True)
+        reader = JournaledFeedbackWorkspace(path, *inputs, **options)
+        commit = workspace._commit
+
+        def observe(base, revised, **kwargs):
+            assert reader.snapshot().number == base.number
+            assert reader.snapshot().errors == (0.,)
+            return commit(base, revised, **kwargs)
+
+        monkeypatch.setattr(workspace, "_commit", observe)
+    else:
+        workspace = FeedbackWorkspace(*inputs, **options)
+    base = workspace.snapshot()
+    row = np.array([.75])
+    draft = workspace.propose_slot_operator_repair(base, {0: row}, 0)
+    row[:] = 0.
+    assert workspace.snapshot() is base
+    assert draft.operator.base is base and draft.changes == ((0, (.75,)),)
+
+    source_only = workspace._prepare_slot_revision(base, {0: [.75]})
+    operator_only = base.kernel._with_observation_value(draft.operator._weight)
+    assert source_only.errors[0] > .2 and source_only.guard_errors[0] > .2
+    assert abs(operator_only.step(operator_only.start((1.,), base.memory)).latest[0] - np.tanh(.25)) > .1
+    with pytest.raises(ValueError, match="already satisfies"):
+        workspace.publish(draft.operator)
+    combined = workspace.publish_slot_operator_repair(draft)
+    assert combined.number == base.number + 1 and combined.errors[0] < 1e-12
+    assert combined.guard_errors[0] < 1e-12
+    assert combined.kernel.observation_slot(combined.memory, 0)[0] == .75
+
+    if journaled:
+        with closing(workspace._connect()) as db:
+            (number, kind, probe, payload), = db.execute(
+                "SELECT number, kind, probe, payload FROM feedback_events",
+            ).fetchall()
+        assert (number, kind, probe) == (base.number + 1, "tree_slots_operator_v1", 0)
+        for malformed in (payload[:8], b"\xff" + payload[1:], payload + b"\x00"):
+            with pytest.raises(ValueError):
+                workspace._replay(base, kind, probe, malformed)
+        with pytest.raises(ValueError, match="target probe"):
+            workspace._replay(base, kind, probe, payload[:-8] + bytes(8))
+        reopened = JournaledFeedbackWorkspace(path, *inputs, **options).snapshot()
+        assert reopened.number == combined.number and reopened.errors == combined.errors
+        assert reopened.kernel.observation_slot(reopened.memory, 0)[0] == .75
+        assert reader.snapshot().number == reopened.number
+
+
+def test_coupled_slot_operator_repair_protects_the_opening_guard(tmp_path):
+    inputs = _coupled_slot_inputs()
+    guard = FeedbackProbe((-1.,), 1, (float(np.tanh(.25)),))
+    options = dict(max_update_norm=1., max_terms=1, allow_hinge=True, guards=(guard,), allow_coupled_repairs=True)
+    path = tmp_path / "coupled-guard.db"
+    workspace = JournaledFeedbackWorkspace(path, *inputs, **options, create=True)
+    base = workspace.snapshot()
+    proposal = FeedbackProposal(base, 0, term=ConditionalTerm((1.,), (1.,), (-.5,), threshold=0.))
+    staged = workspace._coupled_slot_baseline(base, {0: [.75]})
+    staged_candidate = workspace._prepare_operator_revision(replace(proposal, base=staged))
+    assert staged_candidate.errors[0] < 1e-12 and staged_candidate.guard_errors[0] > .2
+    with pytest.raises(ValueError, match="workspace guard against the opening revision"):
+        workspace.publish_slot_operator_repair(FeedbackSlotOperatorDraft(proposal, ((0, (.75,)),)))
+    assert workspace.snapshot() is base and JournaledFeedbackWorkspace(path, *inputs, **options).snapshot().number == 0
+
+
+def test_coupled_slot_operator_repair_preserves_staged_prefix_after_source_changes_it():
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, query=[[0.], [0.]], carry=None,
+                              observation_key=[[0.], [0.]], observation_value=[[0., 1.], [0., 0.]],
+                              feedback_key=[[0.], [0.]], feedback_value=np.zeros((2, 2)), max_steps=2)
+    seed = (1., 0.)
+    original = [[.25, 0.], [.25, 0.]]
+    old_state = tree.step(tree.start(seed, tree.prepare(original)))
+    target = tree.step(old_state).latest
+    workspace = FeedbackWorkspace(tree, original, [FeedbackProbe(seed, 2, target)],
+                                  max_update_norm=2., max_terms=1)
+    base = workspace.snapshot()
+    term = ConditionalTerm((0., 1.), (1., 0.), (0., float(-.5 / np.tanh(.5))))
+    proposal = FeedbackProposal(base, 0, term=term)
+    revised = workspace.publish_slot_operator_repair(FeedbackSlotOperatorDraft(proposal, ((0, (.75, 0.)),)))
+    first = revised.kernel.step(revised.start(seed))
+    assert first.latest[1] > old_state.latest[1] + .2
+    np.testing.assert_array_equal(revised._anchors[0], (first.latest,))
+    np.testing.assert_allclose(revised.kernel.step(first).latest, target, atol=2e-14, rtol=0)
+    restored = revised.kernel.revise(revised.memory, {0: original[0]})
+    reverted_first = revised.kernel.step(revised.kernel.start(seed, restored))
+    assert abs(revised.kernel.step(reverted_first).latest[1] - target[1]) > .04
+
+
+def test_coupled_slot_operator_repair_refuses_unchanged_sources_and_a_stale_append(tmp_path, monkeypatch):
+    inputs = _coupled_slot_inputs()
+    path = tmp_path / "coupled-stale.db"
+    options = dict(max_update_norm=1., allow_coupled_repairs=True)
+    worker = JournaledFeedbackWorkspace(path, *inputs, **options, create=True)
+    writer = JournaledFeedbackWorkspace(path, *inputs, **options)
+    base = worker.snapshot()
+    with pytest.raises(ValueError, match="changed observation slot"):
+        worker.propose_slot_operator_repair(base, {0: [.25]}, 0)
+    draft = worker.propose_slot_operator_repair(base, {0: [.75]}, 0)
+    publish = worker._commit
+
+    def compete(opening, revised, **kwargs):
+        writer.revise_observation_slots(writer.snapshot(), {1: [.1]})
+        return publish(opening, revised, **kwargs)
+
+    monkeypatch.setattr(worker, "_commit", compete)
+    with pytest.raises(StaleFeedbackRevision):
+        worker.publish_slot_operator_repair(draft)
+    reopened = JournaledFeedbackWorkspace(path, *inputs, **options).snapshot()
+    assert reopened.number == writer.snapshot().number == base.number + 1
+    assert reopened.kernel.observation_slot(reopened.memory, 0)[0] == .25
+    assert reopened.kernel.observation_slot(reopened.memory, 1)[0] == .1
+
+
+def test_coupled_slot_operator_repair_policy_is_bound_to_the_journal_root(tmp_path):
+    inputs = _coupled_slot_inputs()
+    legacy = tmp_path / "legacy-slots.db"
+    worker = JournaledFeedbackWorkspace(legacy, *inputs, max_update_norm=1., create=True)
+    base = worker.snapshot()
+    draft = worker.propose_slot_operator_repair(base, {0: [.75]}, 0)
+    with pytest.raises(ValueError, match="does not allow coupled repairs"):
+        worker.publish_slot_operator_repair(draft)
+    assert worker.snapshot() is base
+    with pytest.raises(ValueError, match="initial workspace inputs disagree"):
+        JournaledFeedbackWorkspace(legacy, *inputs, max_update_norm=1., allow_coupled_repairs=True)
+
+    enabled = tmp_path / "coupled-slots-root.db"
+    JournaledFeedbackWorkspace(enabled, *inputs, max_update_norm=1., allow_coupled_repairs=True, create=True)
+    with pytest.raises(ValueError, match="initial workspace inputs disagree"):
+        JournaledFeedbackWorkspace(enabled, *inputs, max_update_norm=1.)
+
+
+def test_coupled_slot_operator_repair_recovers_a_routing_floor_on_the_edited_bank(tmp_path):
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, query=[[1.]], carry=None,
+                              observation_key=[[1.]], observation_value=[[0.]],
+                              feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    goal = FeedbackProbe((1.,), 1, (0.,), FeedbackRoutingGoal(0, .6))
+    args = (tmp_path / "coupled-routing.db", tree, [[1.], [0.]], [goal])
+    options = dict(max_update_norm=3., allow_coupled_repairs=True)
+    workspace = JournaledFeedbackWorkspace(*args, **options, create=True)
+    base = workspace.snapshot()
+    assert base.source_masses[0] > .7
+    source_only = workspace._prepare_slot_revision(base, {0: [-.5]})
+    proposal = FeedbackProposal(base, 0, _query=[[-2.]])
+    assert source_only.source_masses[0] < .4
+    combined = workspace.publish_slot_operator_repair(FeedbackSlotOperatorDraft(proposal, ((0, (-.5,)),)))
+    assert combined.source_masses == base.source_masses and combined.errors == (0.,)
+    reopened = JournaledFeedbackWorkspace(*args, **options).snapshot()
+    assert reopened.number == base.number + 1 and reopened.source_masses == combined.source_masses
 
 
 def test_multiplicity_survives_a_huge_common_observation_and_history_logit():

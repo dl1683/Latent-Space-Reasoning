@@ -30,6 +30,10 @@ def _interior_midpoint(left, right):
     return middle if left < middle < right else None
 
 
+def _slot_row_bytes(row):
+    return None if row is None else np.asarray(row, dtype="<f8").tobytes()
+
+
 @dataclass(frozen=True)
 class FeedbackRoutingGoal:
     slot: int
@@ -101,6 +105,12 @@ class FeedbackProposal:
         if self._query is not None:
             kernel = self.base.kernel
             object.__setattr__(self, "_query", kernel._weight(self._query, kernel._query.shape))
+
+
+@dataclass(frozen=True, eq=False)
+class FeedbackSlotOperatorDraft:
+    operator: FeedbackProposal
+    changes: tuple[tuple[int, tuple[float, ...] | None], ...]
 
 
 class StaleFeedbackRevision(ValueError):
@@ -856,6 +866,55 @@ class FeedbackWorkspace:
     def _commit_slot_update(self, base, revised, changes):
         return self._commit(base, revised)
 
+    def propose_slot_operator_repair(self, base, changes, probe, *, conditional=False, hinge=False):
+        """Fit a compensating operator on a private, revised tree bank."""
+        self._require_current(base)
+        changes = self._freeze_slot_changes(changes)
+        staged = self._coupled_slot_baseline(base, changes)
+        probe = self._open_slot_repair_probe(staged, probe)
+        proposal = self._synthesize(staged, staged.kernel, probe, conditional=conditional or hinge, hinge=hinge)
+        self._admit_coupled_operator(base, proposal)
+        self._require_current(base)
+        rows = tuple((slot, None if row is None else tuple(row)) for slot, row in changes.items())
+        return FeedbackSlotOperatorDraft(replace(proposal, base=base), rows)
+
+    def publish_slot_operator_repair(self, draft):
+        """Independently admit and publish the source and operator as one revision."""
+        if type(draft) is not FeedbackSlotOperatorDraft or type(draft.operator) is not FeedbackProposal:
+            raise TypeError("expected a tree slot and operator draft")
+        proposal = draft.operator
+        base = proposal.base
+        self._require_current(base)
+        changes = dict(draft.changes)
+        if len(changes) != len(draft.changes):
+            raise ValueError("duplicate tree slots in coupled repair")
+        changes = self._freeze_slot_changes(changes)
+        return self._publish_slot_operator_repair(base, proposal, changes)
+
+    def _publish_slot_operator_repair(self, base, proposal, changes):
+        revised = self._prepare_slot_operator_repair(proposal, changes)
+        return self._commit(base, revised, proposal=proposal)
+
+    def _coupled_slot_baseline(self, base, changes):
+        staged = self._prepare_slot_revision(base, changes)
+        if staged is base or all(
+                _slot_row_bytes(base.kernel.observation_slot(base.memory, slot)) == _slot_row_bytes(row)
+                for slot, row in changes.items()):
+            raise ValueError("coupled repair needs a changed observation slot")
+        # The private bank carries the old revision number so admission advances once.
+        return replace(staged, number=base.number)
+
+    def _prepare_slot_operator_repair(self, proposal, changes):
+        opening = proposal.base
+        staged = self._coupled_slot_baseline(opening, changes)
+        return self._admit_coupled_operator(opening, replace(proposal, base=staged))
+
+    def _admit_coupled_operator(self, opening, staged_proposal):
+        revised = self._prepare_operator_revision(staged_proposal)
+        if refusal := self._slot_repair_refusal(opening, revised, staged_proposal.probe):
+            raise ValueError(f"coupled repair {refusal} against the opening revision")
+        return revised
+
     @staticmethod
     def _freeze_slot_changes(changes):
         if not isinstance(changes, Mapping):
@@ -1170,9 +1229,9 @@ class FeedbackWorkspace:
             current = kernel.observation_slot(base.memory, slot)
             expected = self._evidence_row(kernel, change.expected)
             replacement = self._evidence_row(kernel, change.replacement)
-            current_key = None if current is None else current.astype("<f8", copy=False).tobytes()
-            expected_key = None if expected is None else expected.tobytes()
-            replacement_key = None if replacement is None else replacement.tobytes()
+            current_key = _slot_row_bytes(current)
+            expected_key = _slot_row_bytes(expected)
+            replacement_key = _slot_row_bytes(replacement)
             key = slot, replacement_key
             if current_key != expected_key:
                 rejected.append((ordinal, "expected row mismatch"))
