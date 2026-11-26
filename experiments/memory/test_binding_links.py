@@ -16,7 +16,7 @@ from experiments.memory.binding_memory import BindingCapacityError, BindingGate
 from experiments.memory.binding_replay import replay_binding_repair
 from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
 from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemory, CorpusProgramProposal, StaleCorpusRevision
-from experiments.memory.latent_feedback import FeedbackKernel
+from experiments.memory.latent_feedback import FactoredValue, FeedbackKernel
 from experiments.memory.role_validity import RoleSupersession
 from experiments.memory.task_episode import EpisodeLimits, EpisodePolicy, _Tools, read_episode, read_episode_pair, run_episode
 from experiments.memory.task_evidence import TaskBudget, TaskWorld
@@ -1278,7 +1278,7 @@ def test_role_supersession_follows_explicit_effective_time_and_source_versions(t
 
     world = TaskWorld(tool, (manual,), bindings=following, receiver=receiver, as_of=20)
     assert world.pin.as_of == 20 and world.pin.receiver_sha256
-    limits = EpisodeLimits(7, 2, 5, 2, 8192, 45000, 2048, 512,
+    limits = EpisodeLimits(7, 2, 5, 2, 9000, 45000, 2048, 512,
                            TaskBudget(role_transitions=2, candidates_per_search=2))
     policy = EpisodePolicy("role-fixture", "scripted", "byte-count", "notes", probes_enabled=True)
 
@@ -1552,6 +1552,159 @@ def test_bridge_waits_for_legacy_sources_to_stop_obscuring_competitors(tmp_path,
     assert updated.memory.read_role_links(e[0], outcomes=_OUTCOMES, work_limit=64).bridge_pending
     rebuilt = owner.publish_program(owner.prepare_role_links(updated, _ROLES, **policy))
     assert rebuilt.memory.read_role_links(e[0], outcomes=_OUTCOMES, work_limit=64).answer == "accept"
+
+
+@pytest.mark.parametrize("transport", ["fixed", "rotation"])
+def test_off_plane_completions_certify_only_invariant_routes_and_observations(tmp_path, transport):
+    axes = np.eye(8)
+
+    def encode(raw):
+        for mention in _transport_encoding(raw):
+            yield replace(mention, byte_span=(0, len(raw)))
+
+    def fragment(role, endpoint, tangent, key=7):
+        return _mentions((role, axes[endpoint], .9), ("key", axes[key], .9), ("context", axes[tangent], .88))
+
+    def route(left, right):
+        return _mentions(("entry", left, .9), ("exit", right, .9))
+
+    frame = _transport_frame(encode, width=8, extra_predicates=("key", "context", "late_seed"))
+    owner = JournaledCorpusWorkspace(tmp_path / "bounded-context.sqlite", frame, create=True)
+    root = axes[0] + .25 * axes[1] + .18 * axes[6]
+    root /= np.linalg.norm(root)
+    center = root[0] * axes[2] + root[1] * axes[3]
+    nominal = center / np.linalg.norm(center)
+    rival = .9 * nominal + np.sqrt(1 - .9 ** 2) * axes[6]
+    values = np.zeros((8, 8))
+    values[2, 5] = values[3, 6] = 1.
+    hidden = np.tanh(center @ values)
+    raw = {
+        "entry": fragment("entry", 0, 1), "exit": fragment("exit", 2, 3),
+        "plane-evidence": _mentions(("accept", nominal, .9)),
+        "checked-route": route(nominal, axes[4]),
+        "after-feedback": route(hidden, axes[4]),
+        "decision": _mentions(("accept", axes[4], .9)),
+    }
+    source = _write(owner, raw)
+    policy = dict(min_similarity=.93, compile_work_limit=512, bridge_key="key", bridge_context="context",
+                  local_bridges=True, transport=transport)
+    opening = owner.publish_program(owner.prepare_role_links(source, _ROLES, **policy))
+    first = owner.maintain_role_bridges(opening, max_entries=1)
+    pin = owner.snapshot()
+    read_options = dict(outcomes=_OUTCOMES, work_limit=4096)
+    strict = pin.memory.read_role_links(root, **read_options)
+    assert strict.status == "unresolved" and strict.context_domain_refusals == 1
+    bounded = pin.memory.read_role_links(root, bound_context=True, **read_options)
+    assert bounded.answer == "accept" and bounded.context_completions == 1
+    assert bounded.witnesses[0].publication_sha256 == first.publication_sha256
+    lower, upper = bounded.witnesses[0].completion_score_bounds
+    assert .93 < lower <= center @ nominal <= upper
+    assert pin.memory.read_role_links(root, hops=2, bound_context=True, **read_options).answer == "accept"
+    on_plane = BindingLinkCondition(axes[2], .95, .97)
+    off_plane = BindingLinkCondition(axes[6], -.05, .05)
+    assert pin.memory.read_role_links(root, condition=on_plane, bound_context=True, **read_options).answer == "accept"
+    ambiguous = pin.memory.read_role_links(root, condition=off_plane, bound_context=True, **read_options)
+    assert ambiguous.status == "unresolved" and ambiguous.marginal
+    refused = pin.memory.read_role_links(root, bound_context=True, **(read_options | {"work_limit": bounded.work - 1}))
+    assert refused.status == "work_limit" and not refused.witnesses
+
+    # The signed completions span the missing coordinates, including the
+    # two extrema for the possible rival terminal.
+    missing = root[6]
+    completion_axes = axes[[0, 1, 4, 5, 6, 7]]
+    completions = [center + sign * missing * axis for axis in completion_axes for sign in (-1, 1)]
+    np.testing.assert_allclose(np.linalg.norm(completions, axis=1), 1., atol=1e-12, rtol=0.)
+    assert min(row @ nominal for row in completions) > .93
+    assert any(row @ rival > .93 for row in completions) and any(row @ rival < .93 for row in completions)
+    for row in completions:
+        np.testing.assert_array_equal(row @ values, center @ values)
+
+    rival_pin = _write(owner, {"possible-rival": _mentions(("review", rival, .9))})
+    rival_result = rival_pin.memory.read_role_links(root, bound_context=True, **read_options)
+    assert rival_result.status == "unresolved" and rival_result.marginal and rival_result.answer is None
+    assert [witness.outcome for witness in rival_result.witnesses] == ["accept"]
+    alternative = _write(owner, {"possible-rival": None, "possible-entry": route(rival, axes[4])})
+    reachable = alternative.memory.read_role_links(root, hops=2, bound_context=True, **read_options)
+    assert reachable.status == "unresolved" and reachable.marginal and reachable.witnesses
+    _write(owner, {"possible-entry": None})
+    second_source = _write(owner, {"second-entry": fragment("entry", 2, 6, key=0),
+                                   "second-exit": fragment("exit", 4, 5, key=0)})
+    owner.maintain_role_bridges(second_source, max_entries=1)
+    overlapping = owner.snapshot().memory.read_role_links(root, hops=2, bound_context=True, **read_options)
+    assert overlapping.status == "unresolved" and overlapping.context_completions == 2
+    assert overlapping.marginal and overlapping.witnesses
+    removed = _write(owner, {"second-entry": None, "second-exit": None})
+    owner.maintain_role_bridges(removed, max_entries=1)
+
+    def receiver_for(observation):
+        keys = np.zeros((8, 1))
+        zeros = np.zeros_like(values)
+        kernel = FeedbackKernel(query=keys, carry=zeros, observation_key=keys, observation_value=observation,
+                                feedback_key=keys, feedback_value=zeros, max_steps=1)
+        return BindingFeedback(kernel, frame, (("accept", 0),), query=keys, observation=np.zeros((6, 8)))
+
+    receiver = receiver_for(values)
+    initial = receiver.start(root, pin.memory)
+    result = receiver.reason_role_links(initial, stages=(BindingRoleAdvance(),), branch_limit=2,
+                                        bound_context=True, **read_options)
+    assert result.answer == "accept" and result.transitions == 1 and result.context_completions == 1
+    continued, = receiver.continue_role_links(initial, work_limit=4096, branch_limit=2, bound_context=True).states
+    np.testing.assert_allclose(continued.latest, hidden, atol=1e-12, rtol=0.)
+    factored = receiver_for(FactoredValue(values[:, [5, 6]], axes[[5, 6]]))
+    projected, = factored.continue_role_links(factored.start(root, pin.memory), work_limit=4096,
+                                              branch_limit=2, bound_context=True).states
+    np.testing.assert_array_equal(projected.latest, continued.latest)
+    leaking = values.copy()
+    leaking[0, 6] = .5
+    unsafe = receiver_for(leaking)
+    leaking_result = unsafe.reason_role_links(unsafe.start(root, pin.memory), stages=(BindingRoleAdvance(),),
+                                              branch_limit=2, bound_context=True, **read_options)
+    assert leaking_result.status == "unresolved" and leaking_result.transitions == 0
+    assert leaking_result.context_projection_refusals == 1
+
+    raw["seed"] = _mentions(("late_seed", root, .9))
+    task_pin = _write(owner, {"seed": raw["seed"]})
+    leaves = tmp_path / "leaves"
+    leaves.mkdir()
+    for name, content in raw.items():
+        (leaves / (task_pin.memory.source_digests[name] + ".txt")).write_bytes(content)
+    tool = VerifiedSourceTool(tmp_path, task_pin.memory.source_digests)
+    span = SourceSpan.from_characters("seed", raw["seed"], 0, len(raw["seed"]))
+    world = TaskWorld(tool, (span,), bindings=task_pin, receiver=receiver)
+    limits = EpisodeLimits(6, 1, 5, 1, 16000, 65000, 4096, 1024,
+                           TaskBudget(role_work=4096, bound_context=True))
+    task_policy = EpisodePolicy("bounded-context", "scripted", "byte-count", "notes", probes_enabled=True)
+
+    def generate(call):
+        payload = json.loads(dict(call.messages)["user"])
+        receipts = payload["receipts"]
+        step = len(receipts)
+        latest = receipts[-1]["result"] if receipts else None
+        if step == 0:
+            request = {"op": "search", "query": "late_seed"}
+        elif step == 1:
+            request = {"op": "read", "candidate": latest["candidates"][0]["candidate"]}
+        elif step == 2:
+            request = {"op": "reason", "read": latest["id"], "ordinal": 0,
+                       "outcomes": list(_OUTCOMES), "stages": [1], "terminal_hops": 1}
+        elif step == 3:
+            assert latest["read"]["context_completions"] == 1
+            request = {"op": "read", "candidate": [row["candidate"] for row in latest["candidates"]]}
+        else:
+            return reply(finish={"findings": [{
+                "claim": "The source-backed action calls for acceptance.", "stance": "supports",
+                "citations": [0, *(row["id"] for row in latest["reads"])],
+                "reason": "The continuation and decision are supported by verified source reads.",
+                "role_support": {"receipt": receipts[2]["result"]["receipt"], "outcome": "accept"},
+            }], "open_questions": []})
+        return reply(state="Identify the supported decision.", tool=request)
+
+    artifact = run_episode("What decision follows?", world, task_policy, limits, Tokenizer(), generate,
+                           tmp_path / "bounded-context.jsonl")
+    entries = read_episode(artifact)
+    assert entries[-1]["data"]["status"] == "completed"
+    assert entries[0]["data"]["limits"]["access"]["bound_context"]
+    assert entries[0]["data"]["context_completion_version"] == 1
 
 
 def test_required_multi_hop_keeps_a_stopped_sibling_open(tmp_path):

@@ -8,6 +8,7 @@ from os import fsync
 from pathlib import Path
 from typing import Callable
 
+from experiments.memory.binding_links import CONTEXT_COMPLETION_VERSION
 from experiments.memory.task_evidence import (
     ExploreRolePaths, OpenEvidence, ProbeRoleLinks, RoleSupport, TaskBudget, TaskWorld, _Investigation,
     _role_terminal_reads,
@@ -534,8 +535,9 @@ class _Tools:
         if "next_offset" in result:
             public["next_offset"] = result["next_offset"]
         public["read"] = {key: read[key] for key in ("status", "open_coverage", "stage_no_links")}
-        if read["context_domain_refusals"]:
-            public["read"]["context_domain_refusals"] = read["context_domain_refusals"]
+        for key in ("context_domain_refusals", "context_completions", "context_projection_refusals"):
+            if read[key]:
+                public["read"][key] = read[key]
         public["read"]["terminal_reads"] = branches
         return {"request": receipt["request"], "result": public}
 
@@ -646,9 +648,12 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
     status = "call_limit"
     with path.open("xb") as handle:
         ledger = _Ledger(handle)
-        ledger.write("start", {"version": 1, "task": task, "pin": asdict(world.pin),
-                               "policy": asdict(policy), "limits": asdict(limits),
-                               "setup_source_bytes": world.setup_source_bytes})
+        opening = {"version": 1, "task": task, "pin": asdict(world.pin),
+                   "policy": asdict(policy), "limits": asdict(limits),
+                   "setup_source_bytes": world.setup_source_bytes}
+        if limits.access.bound_context:
+            opening["context_completion_version"] = CONTEXT_COMPLETION_VERSION
+        ledger.write("start", opening)
         for _ in range(limits.calls):
             reservation = min(limits.max_new_tokens, limits.output_tokens - output_tokens)
             if reservation == 0:
@@ -761,6 +766,8 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
     for field in ("version", "task", "limits"):
         if a[field] != b[field]:
             raise ValueError(f"episode {field} differs")
+    if a.get("context_completion_version") != b.get("context_completion_version"):
+        raise ValueError("episode context completion policy differs")
     if contrast == "memory":
         source_fields = ("source_snapshot", "span_catalogue_sha256", "binding_source_revision")
         for field in source_fields:

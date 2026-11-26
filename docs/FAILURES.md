@@ -24,6 +24,14 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A projected center can hide a viable rival.** With an unidentified
+off-plane component, a rival may score below the threshold at the
+center and above it under a legal completion. Routing and terminal
+tests use the completion range. A recurrent projection that varies
+over that range keeps the path open, even when a terminal axis can
+ignore the missing component.
+[Completion bounds](ARCHITECTURE.md#reasoning-over-unidentified-bridge-components)
+
 **A matched key cannot identify an off-axis action.** With the key and
 endpoints fixed, opposite scoped context can imply different supported
 movements. Fitting only the supported plane avoids choosing how to move

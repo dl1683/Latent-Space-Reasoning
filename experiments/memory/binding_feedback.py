@@ -14,7 +14,9 @@ from experiments.memory.binding_links import (
 )
 from experiments.memory.binding_memory import BindingCapacityError, _ProofWork, _proof_work_limit
 from experiments.memory.corpus_bindings import CorpusBindingMemory, CorpusBindingRead, _DisjointBranchReads
-from experiments.memory.latent_feedback import ConditionalTerm, FeedbackKernel, FeedbackState, _apply_value, _frozen, _real_array
+from experiments.memory.latent_feedback import (
+    ConditionalTerm, FactoredValue, FeedbackKernel, FeedbackState, _apply_value, _frozen, _real_array,
+)
 from experiments.memory.role_validity import RoleSupersession
 
 
@@ -111,6 +113,8 @@ class BindingRoleContinuation:
     validity_open: bool = False
     supersessions: tuple[RoleSupersession, ...] = ()
     context_domain_refusals: int = 0
+    context_completions: int = 0
+    context_projection_refusals: int = 0
 
 
 @dataclass(frozen=True)
@@ -136,6 +140,8 @@ class BindingRoleDecision:
     stage_no_links: tuple[int, ...] = ()
     supersessions: tuple[RoleSupersession, ...] = ()
     context_domain_refusals: int = 0
+    context_completions: int = 0
+    context_projection_refusals: int = 0
 
     @property
     def answer(self):
@@ -234,13 +240,13 @@ class BindingFeedback:
             observations = self._kernel.prepare(memory._observation_rows(self._source_observation_limit))
         return BindingFeedbackState(self, self._kernel.start(seed, observations), memory, _STATE_CREATION_KEY)
 
-    def read_role_links(self, state, *, outcomes, work_limit, hops=1, condition=None):
+    def read_role_links(self, state, *, outcomes, work_limit, hops=1, condition=None, bound_context=False):
         """Read late outcomes using the generated direction and the state's pinned role program."""
         return self._read_role_links(state, outcomes=outcomes, work_limit=work_limit, hops=hops,
-                                     condition=condition)
+                                     condition=condition, bound_context=bound_context)
 
     def _read_role_links(self, state, *, outcomes, work_limit, hops, condition, branch_limit=None,
-                         retain_dependencies=False):
+                         retain_dependencies=False, bound_context=False):
         if type(state) is not BindingFeedbackState or state._receiver is not self:
             raise ValueError("state belongs to a different binding receiver")
         if state.memory is None:
@@ -250,20 +256,22 @@ class BindingFeedback:
         read = state.memory._read_role_links(state.latest, outcomes=outcomes, work_limit=work_limit, hops=hops,
                                             condition=condition, prior_steps=state.role_steps,
                                             prior_strength=state.role_strength, branch_limit=branch_limit,
-                                            retain_dependencies=retain_dependencies)
+                                            retain_dependencies=retain_dependencies, bound_context=bound_context)
         if state._role_open:
             status = "unresolved" if read.status in ("supported", "no_link") else read.status
             return replace(read, status=status, inherited_open=True)
         return read
 
-    def continue_role_links(self, state, *, hops=1, condition=None, work_limit, branch_limit):
+    def continue_role_links(self, state, *, hops=1, condition=None, work_limit, branch_limit, bound_context=False):
         """Run one ordinary hidden transition per admitted latent direction."""
         return self._continue_role_links(state, hops=hops, condition=condition, work_limit=work_limit,
-                                         branch_limit=branch_limit, joint=False)
+                                         branch_limit=branch_limit, joint=False, bound_context=bound_context)
 
-    def _continue_role_links(self, state, *, hops, condition, work_limit, branch_limit, joint):
+    def _continue_role_links(self, state, *, hops, condition, work_limit, branch_limit, joint, bound_context=False):
         if type(state) is not BindingFeedbackState or state._receiver is not self:
             raise ValueError("state belongs to a different binding receiver")
+        if type(bound_context) is not bool:
+            raise ValueError("context completion policy must be boolean")
         self._kernel._require_state(state.feedback)
         if len(state.feedback._history) >= self._kernel._max_steps:
             raise RuntimeError("feedback step budget exhausted")
@@ -285,27 +293,35 @@ class BindingFeedback:
             states = () if joint else (self.step(state),)
             return BindingRoleContinuation("no_direction", states, condition=condition,
                                            inherited_open=state._role_open, bridge_pending=links.bridge_global_pending)
-        effort = _LinkReadWork(limit, links.floor, links.uncertainty)
+        effort = _LinkReadWork(limit, links.floor, links.uncertainty, bound_context=bound_context)
         states = ()
         with np.errstate(over="raise", invalid="raise", under="ignore"):
             try:
                 paths, _ = links._frontier(seed, hops=hops, condition=condition, width=width, effort=effort,
                                            branch_limit=branch_limit if joint else None,
                                            scoped_sources=state.memory._scoped_sources)
+                projected = []
+                if len(paths) <= branch_limit:
+                    for path in paths:
+                        if self._role_projection_invariant(path, effort):
+                            projected.append(path)
+                        else:
+                            effort.context_projection_refusals += 1
             except BindingCapacityError as error:
                 status = "branch_limit" if isinstance(error, _RoleBranchLimit) else "work_limit"
             else:
                 open_coverage = bool(state._role_open or links.unresolved or links.bridge_global_pending
                                      or effort.unavailable or effort.marginal or effort.bridge_open
                                      or effort.dependent_sources or effort.validity_open
+                                     or effort.context_projection_refusals
                                      or (paths and effort.incomplete_hops))
                 status = "unresolved" if open_coverage else "no_link"
                 if len(paths) > branch_limit:
                     status = "branch_limit"
-                elif paths:
+                elif projected:
                     read = self._next_read(state)
-                    branch_open = open_coverage or (not joint and len(paths) > 1)
-                    states = tuple(self._continue_role_path(state, read, path, branch_open) for path in paths)
+                    branch_open = open_coverage or (not joint and len(projected) > 1)
+                    states = tuple(self._continue_role_path(state, read, path, branch_open) for path in projected)
                     if status == "no_link":
                         status = "continued"
                 elif not open_coverage and not joint:
@@ -315,10 +331,11 @@ class BindingFeedback:
                                            | effort.dependent_sources),
                                        effort.marginal, condition, effort.condition_dots, state._role_open,
                                        links.bridge_global_pending or effort.bridge_stale, effort.validity_open,
-                                       tuple(effort.supersessions), effort.context_domain_refusals)
+                                       tuple(effort.supersessions), effort.context_domain_refusals,
+                                       effort.context_completions, effort.context_projection_refusals)
 
     def reason_role_links(self, state, *, stages, outcomes, work_limit, branch_limit,
-                          terminal_hops=1, terminal_condition=None, retain_dependencies=False):
+                          terminal_hops=1, terminal_condition=None, retain_dependencies=False, bound_context=False):
         """Run a bounded population of hidden paths and resolve their joint late read.
 
         A stage is either a BindingRoleAdvance or None for an ordinary step.
@@ -329,6 +346,8 @@ class BindingFeedback:
         """
         if type(state) is not BindingFeedbackState or state._receiver is not self:
             raise ValueError("state belongs to a different binding receiver")
+        if type(bound_context) is not bool:
+            raise ValueError("context completion policy must be boolean")
         self._kernel._require_state(state.feedback)
         remaining = self._kernel._max_steps - len(state.feedback._history)
         stages = tuple(islice(stages, remaining + 1))
@@ -350,6 +369,7 @@ class BindingFeedback:
 
         population, work, transitions = (state,), 0, 0
         context_domain_refusals = 0
+        context_completions = context_projection_refusals = 0
         stage_no_links = []
         supersessions = {}
         closed_reads = ("resolved", "detached", "below_floor", "catalog_absent")
@@ -366,20 +386,25 @@ class BindingFeedback:
                     available = branch_limit - len(next_population)
                     if not available:
                         return BindingRoleDecision("branch_limit", (), work, transitions, True,
-                                                   tuple(stage_no_links), tuple(supersessions), context_domain_refusals)
+                                                   tuple(stage_no_links), tuple(supersessions), context_domain_refusals,
+                                                   context_completions, context_projection_refusals)
                     if work == limit:
                         return BindingRoleDecision("work_limit", (), work, transitions, True,
-                                                   tuple(stage_no_links), tuple(supersessions), context_domain_refusals)
+                                                   tuple(stage_no_links), tuple(supersessions), context_domain_refusals,
+                                                   context_completions, context_projection_refusals)
                     continuation = self._continue_role_links(
                         parent, hops=stage.hops, condition=stage.condition, work_limit=limit - work,
-                        branch_limit=available, joint=True,
+                        branch_limit=available, joint=True, bound_context=bound_context,
                     )
                     work += continuation.work
                     context_domain_refusals += continuation.context_domain_refusals
+                    context_completions += continuation.context_completions
+                    context_projection_refusals += continuation.context_projection_refusals
                     supersessions.update(dict.fromkeys(continuation.supersessions))
                     if continuation.status in ("branch_limit", "work_limit"):
                         return BindingRoleDecision(continuation.status, (), work, transitions, True,
-                                                   tuple(stage_no_links), tuple(supersessions), context_domain_refusals)
+                                                   tuple(stage_no_links), tuple(supersessions), context_domain_refusals,
+                                                   context_completions, context_projection_refusals)
                     open_coverage |= continuation.status in ("unresolved", "no_direction")
                     stage_no_links[-1] += continuation.status == "no_link"
                     children = continuation.states
@@ -392,16 +417,19 @@ class BindingFeedback:
         for branch in population:
             if work == limit:
                 return BindingRoleDecision("work_limit", (), work, transitions, True,
-                                           tuple(stage_no_links), tuple(supersessions), context_domain_refusals)
+                                           tuple(stage_no_links), tuple(supersessions), context_domain_refusals,
+                                           context_completions, context_projection_refusals)
             read = self._read_role_links(branch, outcomes=outcomes, work_limit=limit - work,
                                          hops=terminal_hops, condition=terminal_condition, branch_limit=branch_limit,
-                                         retain_dependencies=retain_dependencies)
+                                         retain_dependencies=retain_dependencies, bound_context=bound_context)
             work += read.work
             context_domain_refusals += read.context_domain_refusals
+            context_completions += read.context_completions
             supersessions.update(dict.fromkeys(read.supersessions))
             if read.status in ("branch_limit", "work_limit"):
                 return BindingRoleDecision(read.status, (), work, transitions, True,
-                                           tuple(stage_no_links), tuple(supersessions), context_domain_refusals)
+                                           tuple(stage_no_links), tuple(supersessions), context_domain_refusals,
+                                           context_completions, context_projection_refusals)
             reads.append(read)
 
         statuses = {read.status for read in reads}
@@ -417,7 +445,23 @@ class BindingFeedback:
         else:
             status, = statuses or {"no_link"}
         return BindingRoleDecision(status, tuple(reads), work, transitions, open_coverage,
-                                   tuple(stage_no_links), tuple(supersessions), context_domain_refusals)
+                                   tuple(stage_no_links), tuple(supersessions), context_domain_refusals,
+                                   context_completions, context_projection_refusals)
+
+    def _role_projection_invariant(self, path, effort):
+        envelope = path.completion
+        if envelope is None:
+            return True
+        value = self._kernel._observation_value
+        rows = value._left if isinstance(value, FactoredValue) else value
+        effort.charge(rows.size)
+        if envelope.fresh_plane:
+            effort.charge(3 * rows.shape[0])
+            left, right = (np.frombuffer(raw, dtype="<f8") for raw in envelope.plane)
+            active = (left != 0) | (right != 0)
+            if np.count_nonzero(active) == 2:
+                return not np.any(rows[~active])
+        return not np.any(rows)
 
     def _continue_role_path(self, state, read, path, open_coverage):
         observation = _apply_value(self._kernel._observation_value, path.direction)

@@ -113,8 +113,11 @@ class TaskBudget:
     role_branches: int = 4
     role_transitions: int = 16
     role_candidate_spans: int = 256
+    bound_context: bool = False
 
     def __post_init__(self):
+        if type(self.bound_context) is not bool:
+            raise ValueError("context completion policy must be boolean")
         for name in ("steps", "candidates_per_search", "evidence_bytes", "source_bytes", "role_work",
                      "role_branches", "role_transitions", "role_candidate_spans"):
             value = index(getattr(self, name))
@@ -494,7 +497,8 @@ class _Investigation:
             read = BindingLinkRead("work_limit", outcomes=outcomes, hops=hops, condition=action.condition)
         else:
             read = memory.read_role_links(direction, outcomes=outcomes, hops=hops,
-                                          work_limit=remaining, condition=action.condition)
+                                          work_limit=remaining, condition=action.condition,
+                                          bound_context=self.budget.bound_context)
             self.role_work += read.work
         if read.status == "work_limit":
             self.exhausted.add(action.need)
@@ -546,6 +550,7 @@ class _Investigation:
                 result = receiver.reason_role_links(
                     state, stages=operations, outcomes=outcomes, work_limit=work,
                     branch_limit=branches, terminal_hops=action.terminal_hops, retain_dependencies=True,
+                    bound_context=self.budget.bound_context,
                 )
             except BindingCapacityError as error:
                 result = BindingRoleDecision(getattr(error, "status", "source_observation_limit"), (), 0, 0, True)

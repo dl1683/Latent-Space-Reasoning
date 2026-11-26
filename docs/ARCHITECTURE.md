@@ -656,6 +656,53 @@ comparison, and Geometric Latent Reasoning motivates testing learned
 transition displacements in a reused model.
 [Differential dataflow](https://www.microsoft.com/en-us/research/wp-content/uploads/2013/01/differentialdataflow.pdf) · [Geometric Latent Reasoning](https://arxiv.org/abs/2606.02248)
 
+#### Reasoning over unidentified bridge components
+
+[SLICE] `bound_context=True` opts a role read or joint receiver into
+completion bounds. A task enables it in its frozen `TaskBudget`. The
+episode records the policy version. Strict plane admission is the default.
+The worker still publishes the same fitted operator and source dependencies.
+
+In the real-arithmetic model, a normalized input decomposes into its
+coordinates in the fitted entry frame and an orthogonal residual of norm
+$r$. The published bridge identifies the image $c$ of the first part.
+Orthogonal extensions send the residual into the exit-frame complement
+with that same norm. The reader encloses the possible images in a ball
+of radius $r$ within that complement, centered at $c$. For a unit
+test axis $t$, the score range is centered at $c\cdot t$, with
+half-width $r\lVert t_\perp\rVert$. This uses the component of $t$
+orthogonal to the exit frame. The witness records the estimated range
+when a bounded terminal score is used.
+
+A route, terminal, or late condition can be definite only if its full
+range clears the applicable thresholds. Possible competitors, stale
+openings and authority dependencies keep coverage open. A known rotation
+or reflection carries the center and plane. A definitely reached fixed
+map gives one output, while earlier route and coverage obligations
+still apply. A second contextual map can move old uncertainty into its
+fitted plane, so the reader widens to an unrestricted ball before scoring
+it. Numerical results use Float64 with additive guards. The construction
+does not provide a platform-independent rounding certificate.
+
+A required latent transition passes to the ordinary recurrent kernel only
+if its role observation is invariant across the envelope. For a fresh
+completion whose exit frame spans a coordinate plane, the code checks
+that the observation matrix, or the first factor of a factored map, has
+zero rows outside that plane. An all-zero map also qualifies. These are
+sufficient structural checks. A path with a potentially changing
+projection stays open. Additional score, transport and projection work
+consume the role allowance. The receiver never advances an uncertain hidden
+row chosen from the envelope.
+
+The software fixture tests both fixed and rotational continuations.
+A later scripted task reaches a verified finding from an off-plane source
+observation. A possible rival, a condition intersecting the range, or a
+non-invariant projection can each keep a read open. The strongest comparison
+gives a lazy join the same geometric enclosure, authority and provenance,
+and permits it to cache both the composed transports and projection checks.
+Source acquisition, coverage on learned trajectories, and a full lifecycle
+comparison remain open. [Completion fixtures](../experiments/memory/test_binding_links.py)
+
 #### Rewiring the binding program
 
 [SLICE] `prepare_program(base, gates)` compiles an ordered acyclic graph over the same predicates and immutable encoded rows. The worker can test the whole candidate through `proposal.preview` before deciding whether to call `publish_program(proposal)`. A gate can be added, replaced or removed. Both banks use the same new graph. An output keeps its retained bounds only if its gate and every transitive dependency keep their definitions. A changed dependency invalidates cached downstream answers even when the query name and the source digests agree. Rollback installs the old graph on the current sources as a fresh revision. [Program controls](../experiments/memory/test_corpus_binding_journal.py)

@@ -288,14 +288,17 @@ class CorpusBindingMemory:
             raise ValueError("role time needs installed supersessions")
         return self._with_role_validity(links.validity.transitions, as_of)
 
-    def read_role_links(self, direction, *, outcomes, work_limit, hops=1, condition=None):
+    def read_role_links(self, direction, *, outcomes, work_limit, hops=1, condition=None, bound_context=False):
         """Apply installed directions and then compare against declared terminal predicates."""
         return self._read_role_links(direction, outcomes=outcomes, work_limit=work_limit,
-                                     hops=hops, condition=condition)
+                                     hops=hops, condition=condition, bound_context=bound_context)
 
     def _read_role_links(self, direction, *, outcomes, work_limit, hops, condition,
-                         prior_steps=(), prior_strength=1., branch_limit=None, retain_dependencies=False):
+                         prior_steps=(), prior_strength=1., branch_limit=None, retain_dependencies=False,
+                         bound_context=False):
         hops = _role_hops(hops)
+        if type(bound_context) is not bool:
+            raise ValueError("context completion policy must be boolean")
         if condition is not None and type(condition) is not BindingLinkCondition:
             raise TypeError("role-link condition must be a BindingLinkCondition")
         links = self._role_links
@@ -306,7 +309,7 @@ class CorpusBindingMemory:
                           limit=_proof_work_limit(work_limit), width=self._anchors.shape[1], hops=hops,
                           condition=condition, prior_steps=prior_steps, prior_strength=prior_strength,
                           branch_limit=branch_limit, scoped_sources=self._scoped_sources,
-                          retain_dependencies=retain_dependencies)
+                          retain_dependencies=retain_dependencies, bound_context=bound_context)
         if not self._scoped_sources and not retain_dependencies:
             return read
         return replace(read, witnesses=tuple(self._witness_with_spans(witness) for witness in read.witnesses),

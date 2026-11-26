@@ -17,6 +17,12 @@ from experiments.memory.verified_source_tool import SourceSpan
 _CONTEXT_MIN_RESIDUAL = 1e-4
 _CONTEXT_FRAME_TOLERANCE = 1e-8
 _CONTEXT_TRANSPORT_POLICY = (_CONTEXT_MIN_RESIDUAL, _CONTEXT_FRAME_TOLERANCE)
+CONTEXT_COMPLETION_VERSION = 1
+_COMPLETION_ROUNDING_UNIT = 32 * np.finfo(np.float64).eps
+
+
+def _completion_slack(width):
+    return 8 * _CONTEXT_FRAME_TOLERANCE + width * _COMPLETION_ROUNDING_UNIT
 
 
 @dataclass(frozen=True)
@@ -51,6 +57,7 @@ class BindingLinkWitness:
     unscoped_sources: tuple[str, ...] = ()
     publication_sha256: str | None = None
     context_ordinals: tuple[int, int] | None = None
+    completion_score_bounds: tuple[float, float] | None = None
 
 
 @dataclass(frozen=True)
@@ -102,6 +109,7 @@ class BindingLinkRead:
     dependency_witnesses: tuple[BindingLinkWitness, ...] = ()
     context_domain_refusals: int = 0
     incomplete_hops: bool = False
+    context_completions: int = 0
 
     @property
     def answer(self):
@@ -148,23 +156,60 @@ class _RoleLink:
 
     def advance(self, direction, transport):
         if self.context_axes is not None:
-            entry = np.frombuffer(self.entry, dtype="<f8")
-            exit = np.frombuffer(self.exit, dtype="<f8")
-            left, right = (np.frombuffer(raw, dtype="<f8") for raw in self.context_axes)
-            along, across = float(direction @ entry), float(direction @ left)
-            residual = direction - along * entry - across * left
-            if np.linalg.norm(residual) > _CONTEXT_FRAME_TOLERANCE:
+            center, radius = self.context_image(direction)
+            if radius > _CONTEXT_FRAME_TOLERANCE:
                 return None
-            return _unit_direction(along * exit + across * right)
+            return _unit_direction(center)
         if transport == "fixed":
             return np.frombuffer(self.exit, dtype="<f8")
+        if self.reflector is None:
+            return direction
+        return _unit_direction(self.orthogonal_image(direction, transport))
+
+    def context_image(self, direction):
+        entry, exit = (np.frombuffer(raw, dtype="<f8") for raw in (self.entry, self.exit))
+        left, right = (np.frombuffer(raw, dtype="<f8") for raw in self.context_axes)
+        along, across = float(direction @ entry), float(direction @ left)
+        residual = direction - along * entry - across * left
+        return along * exit + across * right, float(np.linalg.norm(residual))
+
+    def orthogonal_image(self, direction, transport):
         if self.reflector is None:
             return direction
         if transport == "rotation":
             entry = np.frombuffer(self.entry, dtype="<f8")
             direction = direction - 2. * (direction @ entry) * entry
         reflector = np.frombuffer(self.reflector, dtype="<f8")
-        return _unit_direction(direction - 2. * (direction @ reflector) * reflector)
+        return direction - 2. * (direction @ reflector) * reflector
+
+    def completion_image(self, path, transport):
+        envelope = path.completion
+        if self.context_axes is not None:
+            center, residual = self.context_image(path.direction)
+            if not residual and envelope is None:
+                return _unit_direction(center), None
+            guard = _completion_slack(center.size)
+            if envelope is None:
+                plane = (self.exit, self.context_axes[1])
+                return center, _CompletionEnvelope(residual + guard, plane, guard, True)
+            # An earlier uncertainty can now overlap the new fitted plane.
+            return center, _CompletionEnvelope(residual + envelope.radius + envelope.guard + guard)
+        if envelope is None or transport == "fixed":
+            return self.advance(path.direction, transport), None
+        center = self.orthogonal_image(path.direction, transport)
+        plane = envelope.plane
+        if plane is not None:
+            plane = tuple(np.asarray(self.orthogonal_image(np.frombuffer(raw, dtype="<f8"), transport),
+                                     dtype="<f8").tobytes() for raw in plane)
+        return center, _CompletionEnvelope(envelope.radius, plane, envelope.guard + _completion_slack(center.size))
+
+
+@dataclass(frozen=True, slots=True)
+class _CompletionEnvelope:
+    radius: float
+    plane: tuple[bytes, bytes] | None = None
+    guard: float = 0.
+    fresh_plane: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -174,6 +219,7 @@ class _Path:
     used: frozenset[str] = frozenset()
     strength: float = 1.
     authority_sources: frozenset[str] = frozenset()
+    completion: _CompletionEnvelope | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -467,10 +513,13 @@ class _FactoredBridgeIndex(_BridgeIndex):
 
 
 class _LinkReadWork:
-    def __init__(self, limit, floor, uncertainty):
+    def __init__(self, limit, floor, uncertainty, *, bound_context=False):
         self.limit, self.floor, self.uncertainty = limit, floor, uncertainty
         self.work = self.transports = self.condition_dots = 0
         self.context_domain_refusals = 0
+        self.context_completions = 0
+        self.context_projection_refusals = 0
+        self.bound_context = bound_context
         self.incomplete_hops = False
         self.unavailable = set()
         self.marginal = False
@@ -495,6 +544,31 @@ class _LinkReadWork:
             self.marginal = True
             return False
         return score >= self.floor
+
+    def scores(self, path, axis):
+        envelope = path.completion
+        if envelope is not None:
+            self.charge(axis.size * (8 if envelope.plane is not None else 3))
+        score = float(path.direction @ axis)
+        if envelope is None:
+            return score, score
+        normal = axis
+        if envelope.plane is not None:
+            left, right = (np.frombuffer(raw, dtype="<f8") for raw in envelope.plane)
+            normal = axis - (axis @ left) * left - (axis @ right) * right
+        deviation = envelope.radius * np.linalg.norm(normal) + envelope.guard + _completion_slack(axis.size)
+        return score - deviation, score + deviation
+
+    def matches(self, low, high):
+        if low == high:
+            return self.qualifies(low)
+        floor, band = self.floor, self.uncertainty
+        if high < floor - band:
+            return False
+        if low >= floor and (not band or low > floor + band):
+            return True
+        self.marginal = True
+        return False
 
 
 class _RoleBranchLimit(BindingCapacityError):
@@ -726,14 +800,16 @@ class _RoleLinks:
                 if validity is not None:
                     for entry, rules in validity.uncertain_entries.items():
                         effort.charge(width)
-                        if np.frombuffer(entry, dtype="<f8") @ path.direction >= self.floor - self.uncertainty:
+                        _, upper = effort.scores(path, np.frombuffer(entry, dtype="<f8"))
+                        if upper >= self.floor - self.uncertainty:
                             effort.validity_open = True
                             effort.note_supersessions(rules)
                 for source, raw, stale in openings:
                     effort.charge(width)
-                    if source not in path.used and np.frombuffer(raw, dtype="<f8") @ path.direction >= (
-                        self.floor - self.uncertainty
-                    ):
+                    if source in path.used:
+                        continue
+                    _, upper = effort.scores(path, np.frombuffer(raw, dtype="<f8"))
+                    if upper >= self.floor - self.uncertainty:
                         effort.bridge_open.add(source)
                         effort.bridge_stale |= stale
                 effort.charge(len(links))
@@ -743,28 +819,29 @@ class _RoleLinks:
                     if validity is not None:
                         rules = validity.by_step.get(address)
                         if rules is not None:
-                            score = np.frombuffer(link.entry, dtype="<f8") @ path.direction
-                            if score >= self.floor - self.uncertainty:
+                            score = effort.scores(path, np.frombuffer(link.entry, dtype="<f8"))
+                            if score[1] >= self.floor - self.uncertainty:
                                 effort.note_supersessions(rules)
                         if address in validity.withheld:
                             continue
                     sources = link.step.sources
                     if not path.used.isdisjoint(sources):
                         dependent = path.used.intersection(sources, scoped_sources)
-                        if dependent and (
-                            np.frombuffer(link.entry, dtype="<f8") @ path.direction >= self.floor - self.uncertainty
-                        ):
-                            effort.charge(len(path.steps))
-                            if link.step not in path.steps:
-                                effort.dependent_sources.update(dependent)
+                        if dependent:
+                            _, upper = effort.scores(path, np.frombuffer(link.entry, dtype="<f8"))
+                            if upper >= self.floor - self.uncertainty:
+                                effort.charge(len(path.steps))
+                                if link.step not in path.steps:
+                                    effort.dependent_sources.update(dependent)
                         continue
                     if not path.authority_sources.isdisjoint(sources):
-                        if np.frombuffer(link.entry, dtype="<f8") @ path.direction >= self.floor - self.uncertainty:
+                        _, upper = effort.scores(path, np.frombuffer(link.entry, dtype="<f8"))
+                        if upper >= self.floor - self.uncertainty:
                             effort.validity_open = True
                         continue
                     if score is None:
-                        score = np.frombuffer(link.entry, dtype="<f8") @ path.direction
-                    if not effort.qualifies(score):
+                        score = effort.scores(path, np.frombuffer(link.entry, dtype="<f8"))
+                    if not effort.matches(*score):
                         continue
                     if (link.context_axes is None and self.transport == "rotation" and link.reflector is None):
                         effort.unavailable.update(sources)
@@ -778,7 +855,7 @@ class _RoleLinks:
                                 effort.validity_open = True
                                 continue
                             authorities = authorities.union(origins)
-                    if link.context_axes is not None:
+                    if link.context_axes is not None and not effort.bound_context:
                         effort.charge(8 * width)
                         effort.transports += 1
                         direction = link.advance(path.direction, self.transport)
@@ -790,7 +867,18 @@ class _RoleLinks:
                         raise _RoleBranchLimit("role frontier exceeds the branch limit")
                     if path.steps:
                         effort.charge(2 * len(path.steps))
-                    if link.context_axes is None:
+                    completion = None
+                    if effort.bound_context:
+                        if link.context_axes is not None:
+                            effort.charge(8 * width)
+                            effort.transports += 1
+                        elif self.transport != "fixed":
+                            rows = 3 if path.completion is not None and path.completion.plane is not None else 1
+                            effort.charge(rows * width * (2 if self.transport == "rotation" else 1))
+                            effort.transports += 1
+                        direction, completion = link.completion_image(path, self.transport)
+                        effort.context_completions += completion is not None and link.context_axes is not None
+                    elif link.context_axes is None:
                         if self.transport != "fixed":
                             effort.charge(width * (2 if self.transport == "rotation" else 1))
                             effort.transports += 1
@@ -798,7 +886,7 @@ class _RoleLinks:
                     advanced.append(_Path(
                         direction,
                         (*path.steps, link.step), path.used.union(sources), min(path.strength, link.strength),
-                        authorities,
+                        authorities, completion,
                     ))
                 stopped += len(advanced) == opening_count
             effort.incomplete_hops |= bool(stopped and advanced)
@@ -812,17 +900,20 @@ class _RoleLinks:
             gate_results, retained, retained_groups = {}, [], []
             for path in frontier:
                 effort.charge(width)
-                key = np.asarray(path.direction, dtype="<f8").tobytes()
+                key = np.asarray(path.direction, dtype="<f8").tobytes(), path.completion
                 if key not in gate_results:
                     effort.charge(width)
                     effort.condition_dots += 1
-                    score = max(-1., min(1., axis @ path.direction))
-                    boundary = condition.uncertainty and (
-                        abs(score - condition.lower) <= condition.uncertainty
-                        or abs(score - condition.upper) <= condition.uncertainty
-                    )
-                    effort.marginal |= bool(boundary)
-                    accepted = not boundary and condition.lower <= score <= condition.upper
+                    low, high = effort.scores(path, axis)
+                    low, high = max(-1., min(1., low)), max(-1., min(1., high))
+                    band = condition.uncertainty
+                    if low == high and not band:
+                        accepted = condition.lower <= low <= condition.upper
+                    else:
+                        accepted = (condition.lower + band < low and high < condition.upper - band
+                                    if band else condition.lower <= low and high <= condition.upper)
+                        disjoint = high < condition.lower - band or low > condition.upper + band
+                        effort.marginal |= not accepted and not disjoint
                     gate_results[key] = effort.condition_dots if accepted else None
                 group = gate_results[key]
                 if group is not None:
@@ -834,7 +925,7 @@ class _RoleLinks:
 
     def read(self, direction, *, outcomes, mentions, limit, width, hops, condition,
              prior_steps=(), prior_strength=1., branch_limit=None, scoped_sources=frozenset(),
-             retain_dependencies=False):
+             retain_dependencies=False, bound_context=False):
         vocabulary = tuple(sorted(outcomes))
         as_of = None if self.validity is None else self.validity.as_of
         seed = self._seed_path(direction, width, condition, prior_steps, prior_strength)
@@ -842,7 +933,7 @@ class _RoleLinks:
             return BindingLinkRead("no_direction", outcomes=vocabulary, hops=hops, condition=condition,
                                    bridge_pending=self.bridge_global_pending, as_of=as_of)
 
-        effort = _LinkReadWork(limit, self.floor, self.uncertainty)
+        effort = _LinkReadWork(limit, self.floor, self.uncertainty, bound_context=bound_context)
         witnesses = {}
         dependencies = []
         terminal_dots = 0
@@ -872,14 +963,16 @@ class _RoleLinks:
                                     continue
                                 if scores is None:
                                     terminal_dots += 1
-                                    matches = effort.qualifies(path.direction @ terminal)
+                                    bounds = effort.scores(path, terminal)
+                                    matches = effort.matches(*bounds)
                                 else:
                                     group = groups[position]
                                     if group not in scores:
                                         effort.charge(width)
                                         terminal_dots += 1
-                                        scores[group] = effort.qualifies(path.direction @ terminal)
-                                    matches = scores[group]
+                                        bounds = effort.scores(path, terminal)
+                                        scores[group] = bounds, effort.matches(*bounds)
+                                    bounds, matches = scores[group]
                                 if not matches:
                                     continue
                                 if dependent or uses_authority:
@@ -902,6 +995,7 @@ class _RoleLinks:
                                         terminal_source, ordinal, grade, path.steps[:-1], step.exit_source,
                                         step.key_ordinals, publication_sha256=step.publication_sha256,
                                         context_ordinals=step.context_ordinals,
+                                        completion_score_bounds=bounds if path.completion is not None else None,
                                     )
                                     if preferred:
                                         witnesses[outcome] = witness
@@ -917,7 +1011,8 @@ class _RoleLinks:
                                    bridge_pending=self.bridge_global_pending or effort.bridge_stale,
                                    as_of=as_of, validity_open=effort.validity_open,
                                    supersessions=tuple(effort.supersessions),
-                                   context_domain_refusals=effort.context_domain_refusals)
+                                   context_domain_refusals=effort.context_domain_refusals,
+                                   context_completions=effort.context_completions)
         open_sources = len(self.unresolved | effort.unavailable | effort.bridge_open | effort.dependent_sources)
         pending = self.bridge_global_pending or effort.bridge_stale
         incomplete_hops = bool(frontier and effort.incomplete_hops)
@@ -931,4 +1026,5 @@ class _RoleLinks:
                                bridge_pending=pending, dependent_outcomes=tuple(sorted(dependent_outcomes)),
                                as_of=as_of, validity_open=effort.validity_open,
                                supersessions=tuple(effort.supersessions), dependency_witnesses=tuple(dependencies),
-                               context_domain_refusals=effort.context_domain_refusals, incomplete_hops=incomplete_hops)
+                               context_domain_refusals=effort.context_domain_refusals, incomplete_hops=incomplete_hops,
+                               context_completions=effort.context_completions)

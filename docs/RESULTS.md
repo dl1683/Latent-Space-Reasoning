@@ -4,6 +4,26 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Off-plane completion bounds, 26 November 2026
+
+**Software verification, supplied directions.** The role reader put a
+bound on the effect of an unknown off-plane component. The legacy
+strict read left the input unresolved. With bounds enabled, the same
+input supported a terminal whose score cleared the threshold across
+the modeled completions. A plausible rival or an intersecting condition
+kept the result open. Both a fixed and a rotational next role preserved
+the supported decision, while overlapping fitted frames could force a
+broader bound and an unresolved result.
+
+A recurrent fixture verified agreement across signed completion axes
+when the observation depended only on the fitted plane. Dense and
+factored projections then produced the same hidden row. Adding a
+possible off-plane contribution prevented that transition. The scripted
+task reopened and cited the governing source spans after the invariant
+transition. These numerical checks leave broader model coverage and full
+lifecycle costs unmeasured.
+[Completion fixture](../experiments/memory/test_binding_links.py)
+
 ## Context-fitted bridge actions, 26 November 2026
 
 **Software verification, supplied directions.** Both local and factored

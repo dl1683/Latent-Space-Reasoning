@@ -354,6 +354,15 @@ arm with the same source predicates, candidate rules, ancestry, cache
 opportunity and ability to reuse numeric products. Keep source authority
 and applicability the same across arms.
 
+For off-plane inputs, both arms should receive the same completion
+family and may use the same score bounds and invariant-projection
+checks. Score definite support and justified openness separately.
+Include cases where the center hides a rival, where a known next
+operator preserves the conclusion, and where the ordinary hidden
+transition would depend on the unidentified component. Charge interval
+work and proof handling in both arms. The existing typed task check
+uses supplied directions and a scripted reader.
+
 Run in stages: first verify the blinded data boundary and causal interventions
 on a small CPU world; next qualify the 0.6B planner's typed action contract on
 visible calibration tasks only; then run the frozen held panel with GPU/RAM
