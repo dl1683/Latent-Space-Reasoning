@@ -725,6 +725,16 @@ class FeedbackWorkspace:
             return FeedbackMaintenanceRound("budget_exhausted", base, tuple(attempts), next_candidate=stop)
         return FeedbackMaintenanceRound("no_candidate", base, tuple(attempts))
 
+    def _regresses_endpoints(self, old_errors, errors):
+        return any(new > max(old, self._atol) for old, new in zip(old_errors, errors, strict=True))
+
+    def _require_preserved_probes(self, base, errors, masses, *, subject):
+        for check, old_mass, mass in zip(self._probes, base.source_masses, masses, strict=True):
+            if check.routing is not None and old_mass >= check.routing.min_mass > mass:
+                raise ValueError(f"{subject} regresses a protected source mass floor")
+        if self._regresses_endpoints(base.errors, errors):
+            raise ValueError(f"{subject} regresses a workspace probe")
+
     def _prepare_operator_revision(self, proposal):
         base = proposal.base
         probe = self._open_probe(base, proposal.probe)
@@ -758,15 +768,9 @@ class FeedbackWorkspace:
             raise ValueError("proposed operator does not satisfy its target probe")
         if goal.routing is not None and masses[probe] < goal.routing.min_mass:
             raise ValueError("proposed operator does not meet the target source mass floor")
-        for check, old_mass, mass in zip(self._probes, base.source_masses, masses, strict=True):
-            if check.routing is not None and old_mass >= check.routing.min_mass > mass:
-                raise ValueError("proposed operator regresses a protected source mass floor")
-        if any(new > max(old, self._atol)
-               for old, new in zip(base.errors, errors, strict=True)):
-            raise ValueError("proposed operator regresses a workspace probe")
+        self._require_preserved_probes(base, errors, masses, subject="proposed operator")
         guard_errors, guard_routes = self._guard_results(candidate, base.memory, base._guard_routes)
-        if any(new > max(old, self._atol)
-               for old, new in zip(base.guard_errors, guard_errors, strict=True)):
+        if self._regresses_endpoints(base.guard_errors, guard_errors):
             raise ValueError("proposed operator regresses a workspace guard")
         anchors = list(base._anchors)
         if anchors[probe] is None:
@@ -786,10 +790,10 @@ class FeedbackWorkspace:
         self._require_current(base)
         return self._commit(base, self._prepare_observation_revision(base, observations))
 
-    def revise_observation_slots(self, base, changes):
-        """Revise slots in a tree bank and admit them against the current workspace tip."""
+    def revise_observation_slots(self, base, changes, *, repair_probe=None):
+        """Revise tree slots, optionally requiring a guarded repair of one working probe."""
         self._require_current(base)
-        revised = self._prepare_slot_revision(base, changes)
+        revised = self._prepare_slot_update(base, changes, repair_probe)
         return base if revised is base else self._commit(base, revised)
 
     def _slot_preview_kernel(self, base, published_opening):
@@ -987,6 +991,21 @@ class FeedbackWorkspace:
             raise ValueError("slot revisions require a tree feedback kernel")
         memory = base.kernel.revise(base.memory, changes)
         return base if memory is base.memory else self._prepare_memory_revision(base, memory)
+
+    def _prepare_slot_update(self, base, changes, repair_probe):
+        if repair_probe is None:
+            return self._prepare_slot_revision(base, changes)
+        if isinstance(repair_probe, (bool, np.bool_)):
+            raise ValueError("repair probe must be a working probe index")
+        probe = self._open_probe(base, repair_probe)
+        revised = self._prepare_slot_revision(base, changes)
+        self._require_current(base)
+        if not self._probe_satisfied(probe, revised.errors[probe], revised.source_masses[probe]):
+            raise ValueError("proposed slot repair does not satisfy its target probe")
+        self._require_preserved_probes(base, revised.errors, revised.source_masses, subject="proposed slot repair")
+        if self._regresses_endpoints(base.guard_errors, revised.guard_errors):
+            raise ValueError("proposed slot repair regresses a workspace guard")
+        return revised
 
     def _prepare_observation_revision(self, base, observations):
         return self._prepare_memory_revision(base, base.kernel.prepare(observations))

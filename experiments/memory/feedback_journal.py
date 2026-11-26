@@ -590,7 +590,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             return self._commit(base, revised, tree_event=("observations", _encode(rows)))
         return super().replace_observations(base, observations)
 
-    def revise_observation_slots(self, base, changes):
+    def revise_observation_slots(self, base, changes, *, repair_probe=None):
         if not self._tree_bound:
             raise ValueError("slot revisions require a tree feedback kernel")
         self._require_current(base)
@@ -602,7 +602,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             if slot in edits:
                 raise ValueError("duplicate normalized tree slot")
             edits[slot] = None if row is None else _frozen(_real_array(row))
-        revised = self._prepare_slot_revision(base, edits)
+        revised = self._prepare_slot_update(base, edits, repair_probe)
         if revised is base:
             return base
         return self._commit(base, revised, tree_event=("tree_slots", _encode_slots(edits)))

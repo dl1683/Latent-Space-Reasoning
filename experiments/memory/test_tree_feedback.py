@@ -1012,6 +1012,158 @@ def test_slot_triage_discards_stale_estimates_before_reference_replay(tmp_path, 
     assert workspace.snapshot().number == writer.snapshot().number == base.number + 1
 
 
+def test_guarded_slot_repair_changes_a_late_read_and_survives_reopening(tmp_path):
+    weights = _weights()
+    tree = TreeFeedbackKernel(depth=5, max_frontier=3, **weights)
+    dense = FeedbackKernel(**weights)
+    corrected = _structured_rows()
+    original = corrected.copy()
+    original[0, 2] = -1.
+    seed, guard_seed = (1., 0., 0., 0.), (0., 1., 0., 0.)
+    corrected_dense = dense.prepare(corrected)
+    expected = dense.step(dense.step(dense.start(seed, corrected_dense)))
+    guard_expected = dense.step(dense.start(guard_seed, corrected_dense)).latest
+    probes = (FeedbackProbe(seed, 2, expected.latest),)
+    guards = (FeedbackProbe(guard_seed, 1, guard_expected),)
+    args = (tmp_path / "guarded-tree.db", tree, original, probes)
+    options = dict(guards=guards, max_update_norm=1.)
+    reviewer = JournaledFeedbackWorkspace(*args, **options, create=True)
+    worker = JournaledFeedbackWorkspace(*args, **options)
+    historical = reviewer.snapshot()
+    base = worker.snapshot()
+    edited_row = corrected[0].copy()
+    edit = {0: edited_row}
+
+    triage = reviewer.triage_observation_slot_batch(historical, (edit,), max_candidates=1, max_replays=2)
+    assert reviewer.snapshot() is historical and worker.snapshot() is base
+    assert triage.alternatives[0].reads[0].replayed_satisfied is True
+    updated = worker.revise_observation_slots(base, edit, repair_probe=0)
+    edited_row[:] = 0.
+    assert updated.number == historical.number + 1 and updated.kernel is base.kernel
+    assert updated.guard_errors[0] <= historical.guard_errors[0] < 1e-12
+    assert historical.errors[0] > .75 and updated.errors[0] < 1e-12
+
+    reopened = JournaledFeedbackWorkspace(*args, **options).snapshot()
+    caught_up = reviewer.snapshot()
+    assert reopened.number == caught_up.number == updated.number
+    old_first = historical.kernel.step(historical.start(seed))
+    for revision in (reopened, caught_up, updated):
+        first = revision.kernel.step(revision.start(seed))
+        actual = revision.kernel.step(first)
+        np.testing.assert_allclose(actual.history, expected.history, atol=2e-14, rtol=0)
+        assert revision.errors == updated.errors and revision.guard_errors == updated.guard_errors
+        np.testing.assert_array_equal(revision._anchors[0], (first.latest,))
+        intervened = revision.kernel.intervene(first, 0, old_first.latest)
+        assert revision.kernel.step(intervened).latest[3] < 1e-12
+    assert historical.kernel.step(old_first).latest[3] < 1e-12
+
+
+@pytest.mark.parametrize("protected_as_guard", [False, True])
+def test_guarded_slot_repair_can_refuse_an_edit_that_fixes_the_target(tmp_path, protected_as_guard):
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, query=[[0.]], carry=None,
+                              observation_key=[[0.]], observation_value=[[1.]],
+                              feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    repair = FeedbackProbe((1.,), 1, (.4,))
+    protected = FeedbackProbe((0.,), 1, (0.,) if protected_as_guard else (-.1,))
+    probes, guards = ((repair,), (protected,)) if protected_as_guard else ((repair, protected), ())
+    args = (tmp_path / "protected-tree.db", tree, [[0.], [0.]], probes)
+    options = dict(guards=guards, max_update_norm=1., atol=1e-8)
+    workspace = JournaledFeedbackWorkspace(*args, **options, create=True)
+    base = workspace.snapshot()
+    edit = {0: [2. * np.arctanh(.4)]}
+
+    for option in (True, np.bool_(False)):
+        with pytest.raises(ValueError, match="working probe index"):
+            workspace.revise_observation_slots(base, edit, repair_probe=option)
+    with pytest.raises(ValueError, match="does not satisfy its target probe"):
+        workspace.revise_observation_slots(base, {}, repair_probe=0)
+    with pytest.raises(ValueError, match="regresses a workspace guard" if protected_as_guard
+                       else "regresses a workspace probe"):
+        workspace.revise_observation_slots(base, edit, repair_probe=0)
+    assert workspace.snapshot() is base
+    assert JournaledFeedbackWorkspace(*args, **options).snapshot().number == base.number
+    revised = workspace.revise_observation_slots(base, edit)
+    assert revised.number == base.number + 1 and revised.errors[0] < 1e-12
+    with pytest.raises(ValueError, match="already satisfies"):
+        workspace.revise_observation_slots(revised, edit, repair_probe=0)
+
+
+def test_guarded_slot_repair_protects_a_met_floor_when_its_target_is_already_failing():
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, query=[[0.]], carry=None,
+                              observation_key=[[0.]], observation_value=[[0.]],
+                              feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    repair = FeedbackProbe((1.,), 1, (0.,), FeedbackRoutingGoal(1, .75))
+    protected = FeedbackProbe((0.,), 1, (.4,), FeedbackRoutingGoal(0, .4))
+    workspace = FeedbackWorkspace(tree, [[0.], [1.]], [repair, protected], max_update_norm=1.)
+    base = workspace.snapshot()
+    assert base.errors == (0., .4) and base.source_masses == (.5, .5)
+    with pytest.raises(ValueError, match="does not satisfy its target probe"):
+        workspace.revise_observation_slots(base, {0: [.25]}, repair_probe=0)
+    with pytest.raises(ValueError, match="regresses a protected source mass floor"):
+        workspace.revise_observation_slots(base, {0: None}, repair_probe=0)
+    assert workspace.snapshot() is base
+
+    workspace = FeedbackWorkspace(tree, [[0.], [1.]], [repair], max_update_norm=1.)
+    repaired = workspace.revise_observation_slots(workspace.snapshot(), {0: None}, repair_probe=0)
+    assert repaired.errors == (0.,) and repaired.source_masses == (1.,)
+
+
+@pytest.mark.parametrize("expanded_target", [False, True])
+def test_guarded_slot_repair_measures_the_installed_policy_after_expanded_triage(expanded_target):
+    weights = dict(query=[[20.]], carry=None, observation_key=[[1.]], observation_value=[[1.]],
+                   feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    tree = TreeFeedbackKernel(depth=1, max_frontier=1, **weights)
+    oracle = FeedbackKernel(**weights) if expanded_target else tree
+    seed = (1.,)
+    target = oracle.step(oracle.start(seed, oracle.prepare([[.75], [0.]]))).latest
+    probe = FeedbackProbe(seed, 1, target)
+    workspace = FeedbackWorkspace(tree, [[1.], [0.]], [probe], max_update_norm=1.)
+    base = workspace.snapshot()
+    edit = {0: [.75]}
+    triage = workspace.triage_observation_slot_batch(base, (edit,), max_candidates=1, max_replays=1)
+    assert triage.alternatives[0].reads[0].replayed_satisfied is expanded_target
+    if expanded_target:
+        with pytest.raises(ValueError, match="does not satisfy its target probe"):
+            workspace.revise_observation_slots(base, edit, repair_probe=0)
+        assert workspace.snapshot() is base
+    else:
+        updated = workspace.revise_observation_slots(base, edit, repair_probe=0)
+        assert workspace.snapshot() is updated and updated.errors == (0.,)
+
+
+@pytest.mark.parametrize("operator_wins", [False, True])
+def test_guarded_slot_repair_loses_a_journal_race_after_validation(tmp_path, monkeypatch, operator_wins):
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, query=[[0.]], carry=None,
+                              observation_key=[[0.]], observation_value=[[1.]],
+                              feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    probe = FeedbackProbe((1.,), 1, (.4,))
+    args = (tmp_path / "guarded-tree-race.db", tree, [[.1], [0.]], [probe])
+    workspace = JournaledFeedbackWorkspace(*args, max_update_norm=12., create=True)
+    writer = JournaledFeedbackWorkspace(*args, max_update_norm=12.)
+    base = workspace.snapshot()
+    publish = workspace._commit
+
+    def competing_edit(opening, prepared, **kwargs):
+        assert prepared.errors[0] < 1e-12
+        if operator_wins:
+            writer.publish(writer.propose(writer.snapshot(), 0))
+        else:
+            writer.revise_observation_slots(writer.snapshot(), {1: [.1]})
+        return publish(opening, prepared, **kwargs)
+
+    monkeypatch.setattr(workspace, "_commit", competing_edit)
+    with pytest.raises(StaleFeedbackRevision):
+        workspace.revise_observation_slots(base, {0: [2. * np.arctanh(.4)]}, repair_probe=0)
+    tip = workspace.snapshot()
+    reopened = JournaledFeedbackWorkspace(*args, max_update_norm=12.).snapshot()
+    assert tip.number == reopened.number == base.number + 1
+    assert tip.errors == reopened.errors == writer.snapshot().errors
+    if operator_wins:
+        assert tip.errors[0] < 1e-12 and tip.kernel is not base.kernel
+    else:
+        assert tip.errors[0] > .3 and tip.kernel is base.kernel
+
+
 def test_multiplicity_survives_a_huge_common_observation_and_history_logit():
     key = np.array([[1.0], [0.0]])
     weights = dict(query=1e20 * key, carry=np.diag([40, 0]), observation_key=key,
