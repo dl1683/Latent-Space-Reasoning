@@ -778,3 +778,21 @@ to `prepare`. Use the returned field for the enlarged registry.
 The source versions and scopes stay fixed through the append. Each
 historical revision keeps its own ordered registry. The growth frame
 is a separate opt-in format for newly created journals.
+
+### Numerical reasoning with an optional source pin
+
+Construct `RecurrentWorld` with a `FeedbackKernel`, the corpus
+`encoder_version`, a `max_observations` allowance and the
+`feedback` flag. The flag chooses whether generated rows stay
+available to later steps. Call `prepare(revision, previous=old_bank)`
+before task time. This requires journaled observations with exact
+mention spans. Keep the returned snapshot for later calls. Its
+`projected_rows` and `packed_rows` record maintenance work.
+
+Call `reason(seed, steps=depth, memory=bank)` with an encoded
+question. Omit `memory` for the same transition with an empty
+observation bank. The result exposes the terminal `hidden` row,
+diagnostic history, the attached snapshot and attention score counts.
+The snapshot's `spans` are retained observation pointers. Use
+the source verifier to open evidence. A user-facing answer decoder
+and semantic citation checks remain separate work.

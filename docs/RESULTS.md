@@ -4,6 +4,38 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Journal-pinned latent recurrence and feedback, 26 November 2026
+
+**Scripted CPU software verification.** Both transition policies
+used the same source observation bank, supplied weights, question
+representation and readout coordinate. In each arm, two scoped
+observations jointly determined the sign of a late score. A source
+revision flipped the score, the corresponding revision of the other
+source flipped it back, and reversing the question reversed the answer
+in both attached worlds. A single step, omitted memory, or either
+missing premise left the score below the fixture threshold. Replacing
+the first hidden row with a donor from the other world reversed the
+late score on a fixed source pin. Keeping the original hidden row
+preserved it. A separate no-memory input retained its local transition.
+
+One correction projected one of three rows and repacked all three.
+Unchanged per-source banks were shared. Reconstructing the earlier pin
+after restart produced the same readout with the encoder disabled.
+Same-byte restoration was assigned a fresh source generation. The
+value-map edit reused the original key bank and preserved one tested
+unrelated read within 1e-8 with memory attached and exactly with memory
+omitted. At two steps each arm scored six source rows. Only the feedback
+arm scored a generated row.
+
+A separate three-step control enabled generated values. Changing the
+first retained row at the second checkpoint held the current row and
+source bank fixed and reversed the third score. With the same maps the
+single-row recurrence did not carry that earlier value to the third
+score. These are checks on supplied six-coordinate fixtures. Learned
+encoding, pretrained block competence, open-world coverage and fully
+loaded cost remain unmeasured.
+[Recurrent-world controls](../experiments/memory/test_recurrent_world.py)
+
 ## Identity growth over retained source clauses, 26 November 2026
 
 **Scripted CPU software verification.** A compact task reported an open

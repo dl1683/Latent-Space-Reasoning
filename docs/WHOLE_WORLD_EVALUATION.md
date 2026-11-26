@@ -297,6 +297,24 @@ this panel. A tie with the incremental join rejects a latent-specific gain,
 though it may establish persistence, provenance or revision engineering. A
 retrieval-recall win alone is not a pass.
 
+## Causal check inside the reasoning loop
+
+The numerical [recurrent world](ARCHITECTURE.md#running-a-latent-block-over-journaled-observations)
+gives both transition policies one journal, one input representation
+and one readout. Run an intervention twice: change only the source pin,
+then hold the pin fixed and replace the first hidden state before the
+second step. A fixed readout that answers correctly under only the
+intact conditions distinguishes the two inputs' contributions in the
+fixture. Reverse the question at the same pin and remove each premise
+separately to check for a precomputed answer. At a later checkpoint,
+keep the current hidden row fixed and replace only an earlier feedback
+row to isolate generated-history use. Charge source-local
+projection, dense packing and per-step attention separately. This
+software control supplies the observations and numerical weights.
+The later learned comparison must use a frozen encoder and decoder
+qualified on fresh visible tasks and must grade task semantics,
+calibrated uncertainty, provenance and complete costs.
+
 ## Executable gaps in the current branch
 
 `TaskWorld` pins a verified source catalogue to an optional journaled

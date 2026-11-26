@@ -24,6 +24,18 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A changed trajectory can inherit a host answer.** Injecting the
+verdict of an exact factor or proof solver can change a hidden vector
+without testing whether the receiving block can compose observations.
+The recurrent-world fixture keeps those verdicts out of the block and
+requires both a source intervention and first-row intervention at fixed
+weights. It uses supplied encodings and a programmed signed interaction.
+The exact factor reference also currently withholds a scoped read for
+a pending source elsewhere in the world. Preserving a cluster object
+therefore does not by itself preserve availability of its read.
+[Recurrent-world controls](RESULTS.md#journal-pinned-latent-recurrence-and-feedback-26-november-2026)
+[Identity growth controls](RESULTS.md#identity-growth-over-retained-source-clauses-26-november-2026)
+
 **Registering a name does not close a source.** A new name only resolves
 clauses whose full identity set is present. A malformed line, unknown
 authority or an exhausted installation allowance can still keep the

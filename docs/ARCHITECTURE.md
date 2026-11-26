@@ -1717,6 +1717,49 @@ The general factor carrier still needs a separate case for graded or
 higher-order constraints. [Linear-time Boolean inference](https://mathweb.ucsd.edu/~sbuss/CourseWeb/Math268_2007WS/2SAT.pdf)
 [Source compiler](../experiments/memory/registered_factor_compiler.py)
 
+#### Running a latent block over journaled observations
+
+[SLICE] The same numerical reasoning call takes an initial question
+vector and optionally a journaled observation bank. A query-blind
+preparation pass projects keys from persisted source mentions and
+retains their exact byte spans alongside the bank. A source-local bank
+can be reused when its digest and generation both match. A changed
+collection is packed into a dense bank before use. Preparation counts
+projections and packing separately. It can reconstruct a historical
+bank using the journal with source ingestion disabled.
+
+Both transition policies use the same attention query and value maps,
+nonlinearity, and observation rows. Tied-block recurrence updates a
+single current hidden row. Continuous feedback also projects generated
+rows into keys and values for later attention. The diagnostic trace
+retains hidden rows in either case. Each step can attend to all
+retained observations within the configured limit. With no memory the
+same block takes an empty bank. The transition receives observations
+and its own hidden state. Source pointers stay in the snapshot for
+evidence verification. The exact factor reference remains a separate
+answer path.
+
+The two-source fixture makes the late score depend on a signed
+interaction between the first generated row and a second observation.
+Changing either source, reversing the question, or replacing the first
+hidden row exercises distinct dependencies. A three-step feedback
+control intervenes on a retained earlier row while holding the
+current row fixed, then recomputes its effect. Editing the observation
+value map can reuse the same key bank and change a local hidden
+transition in this supplied-weight fixture. Compatibility
+here requires the exact key projection. A changed projection needs a
+new bank. The next construction should give the block a task-private
+workspace with joint slots it can revise, then check a proposed slot
+or operator update across later source revisions and questions.
+
+The snapshot is an inventory of retained scoped observations. It does
+not assert that the source encoder found every consequential premise or
+that every attention contribution supports the emitted answer. The
+current carrier makes a dense copy when the collection changes and
+scores it on each step. Retained size, copy work, causal provenance and
+cost against a matched text or exact model require separate evaluation.
+[Reasoning call](../experiments/memory/recurrent_world.py)
+
 ## Claims and evidence boundary (2026-10-15; not a new experiment)
 
 | Claim | Tag and current boundary | What is still required |
