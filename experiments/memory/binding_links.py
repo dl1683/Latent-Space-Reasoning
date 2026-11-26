@@ -9,6 +9,7 @@ import numpy as np
 
 from experiments.memory.binding_memory import BindingCapacityError
 from experiments.memory.latent_feedback import _real_array
+from experiments.memory.role_validity import RoleSupersession, _RoleValidity
 from experiments.memory.verified_source_tool import SourceSpan
 
 
@@ -38,6 +39,7 @@ class BindingLinkWitness:
     exit_source: str | None = None
     key_ordinals: tuple[int, int] | None = None
     source_spans: tuple[SourceSpan, ...] = ()
+    validity_spans: tuple[SourceSpan, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -83,6 +85,9 @@ class BindingLinkRead:
     inherited_open: bool = False
     bridge_pending: bool = False
     dependent_outcomes: tuple[str, ...] = ()
+    as_of: int | None = None
+    validity_open: bool = False
+    supersessions: tuple[RoleSupersession, ...] = ()
 
     @property
     def answer(self):
@@ -144,6 +149,7 @@ class _Path:
     steps: tuple[BindingLinkStep, ...] = ()
     used: frozenset[str] = frozenset()
     strength: float = 1.
+    authority_sources: frozenset[str] = frozenset()
 
 
 @dataclass(frozen=True, slots=True)
@@ -398,6 +404,13 @@ class _LinkReadWork:
         self.bridge_open = set()
         self.bridge_stale = False
         self.dependent_sources = set()
+        self.validity_open = False
+        self.supersessions = {}
+
+    def note_supersessions(self, rules):
+        self.charge(len(rules))
+        for rule in rules:
+            self.supersessions.setdefault(rule, None)
 
     def charge(self, amount=1):
         if self.work + amount > self.limit:
@@ -434,6 +447,7 @@ class _RoleLinks:
     factored_bridges: bool = False
     scoped_pairs: Mapping[str, tuple[_RoleLink, ...]] = field(default_factory=lambda: MappingProxyType({}))
     scoped_pair_count: int = 0
+    validity: _RoleValidity | None = None
 
     @classmethod
     def prepare(cls, roles, floor, uncertainty, limit, transport, digests, mentions, bridge_key=None,
@@ -496,6 +510,8 @@ class _RoleLinks:
         return replace(selected, bridges=MappingProxyType(bridges), unresolved=self.unresolved - resolved)
 
     def revise(self, changed, digests, mentions):
+        if self.validity is not None:
+            changed = tuple(changed)
         pairs, unresolved = dict(self.pairs), set(self.unresolved)
         scoped_pairs = dict(self.scoped_pairs)
         scoped_pair_count = self.scoped_pair_count
@@ -550,6 +566,8 @@ class _RoleLinks:
                           scoped_pairs=MappingProxyType(scoped_pairs), scoped_pair_count=scoped_pair_count,
                           key_sources=frozenset(key_sources), bridge_pending=bridge_pending,
                           legacy_sources=frozenset(legacy_sources))
+        if self.validity is not None and not self.validity.dependencies.isdisjoint(changed):
+            revised = replace(revised, validity=self.validity.revise(scoped_pairs, digests, mentions))
         if self.bridge_index is not None:
             return revised._revise_bridge_index(bridge_changes)
         return replace(revised, bridges=MappingProxyType({})) if bridge_pending else revised
@@ -597,9 +615,23 @@ class _RoleLinks:
                          prior_strength)
 
     def _frontier(self, seed, *, hops, condition, width, effort, branch_limit=None, scoped_sources=frozenset()):
-        frontier = [seed]
         if len(self.pairs) + len(self.bridges) + self.scoped_pair_count > effort.limit:
             raise BindingCapacityError("role-link catalog exceeds the read work limit")
+        validity = self.validity
+        if validity is not None and seed.steps:
+            authorities, premises = set(), set()
+            for step in seed.steps:
+                address = step.source, step.entry_ordinal
+                origins = validity.authority_sources.get(address, ())
+                effort.charge(1 + len(origins))
+                effort.note_supersessions(validity.by_step.get(address, ()))
+                if not authorities.isdisjoint(step.sources) or not premises.isdisjoint(origins):
+                    effort.validity_open = True
+                    return (), ()
+                authorities.update(origins)
+                premises.update(step.sources)
+            seed = replace(seed, authority_sources=frozenset(authorities))
+        frontier = [seed]
         links = tuple(self.pairs[source] for source in sorted(self.pairs))
         links += tuple(link for source in sorted(self.scoped_pairs) for link in self.scoped_pairs[source])
         links += tuple(self.bridges[pair] for pair in sorted(self.bridges))
@@ -607,6 +639,12 @@ class _RoleLinks:
         for _ in range(hops):
             advanced = []
             for path in frontier:
+                if validity is not None:
+                    for entry, rules in validity.uncertain_entries.items():
+                        effort.charge(width)
+                        if np.frombuffer(entry, dtype="<f8") @ path.direction >= self.floor - self.uncertainty:
+                            effort.validity_open = True
+                            effort.note_supersessions(rules)
                 for source, raw, stale in openings:
                     effort.charge(width)
                     if source not in path.used and np.frombuffer(raw, dtype="<f8") @ path.direction >= (
@@ -616,6 +654,16 @@ class _RoleLinks:
                         effort.bridge_stale |= stale
                 effort.charge(len(links))
                 for link in links:
+                    address = link.step.source, link.step.entry_ordinal
+                    score = None
+                    if validity is not None:
+                        rules = validity.by_step.get(address)
+                        if rules is not None:
+                            score = np.frombuffer(link.entry, dtype="<f8") @ path.direction
+                            if score >= self.floor - self.uncertainty:
+                                effort.note_supersessions(rules)
+                        if address in validity.withheld:
+                            continue
                     sources = link.step.sources
                     if not path.used.isdisjoint(sources):
                         dependent = path.used.intersection(sources, scoped_sources)
@@ -626,11 +674,26 @@ class _RoleLinks:
                             if link.step not in path.steps:
                                 effort.dependent_sources.update(dependent)
                         continue
-                    if not effort.qualifies(np.frombuffer(link.entry, dtype="<f8") @ path.direction):
+                    if not path.authority_sources.isdisjoint(sources):
+                        if np.frombuffer(link.entry, dtype="<f8") @ path.direction >= self.floor - self.uncertainty:
+                            effort.validity_open = True
+                        continue
+                    if score is None:
+                        score = np.frombuffer(link.entry, dtype="<f8") @ path.direction
+                    if not effort.qualifies(score):
                         continue
                     if self.transport == "rotation" and link.reflector is None:
                         effort.unavailable.update(sources)
                         continue
+                    authorities = path.authority_sources
+                    if validity is not None:
+                        origins = validity.authority_sources.get(address)
+                        if origins:
+                            effort.charge(len(authorities) + len(origins))
+                            if not path.used.isdisjoint(origins):
+                                effort.validity_open = True
+                                continue
+                            authorities = authorities.union(origins)
                     if branch_limit is not None and len(advanced) >= branch_limit:
                         raise _RoleBranchLimit("role frontier exceeds the branch limit")
                     if path.steps:
@@ -641,6 +704,7 @@ class _RoleLinks:
                     advanced.append(_Path(
                         link.advance(path.direction, self.transport),
                         (*path.steps, link.step), path.used.union(sources), min(path.strength, link.strength),
+                        authorities,
                     ))
             frontier = advanced
             if not frontier:
@@ -675,10 +739,11 @@ class _RoleLinks:
     def read(self, direction, *, outcomes, mentions, limit, width, hops, condition,
              prior_steps=(), prior_strength=1., branch_limit=None, scoped_sources=frozenset()):
         vocabulary = tuple(sorted(outcomes))
+        as_of = None if self.validity is None else self.validity.as_of
         seed = self._seed_path(direction, width, condition, prior_steps, prior_strength)
         if seed is None:
             return BindingLinkRead("no_direction", outcomes=vocabulary, hops=hops, condition=condition,
-                                   bridge_pending=self.bridge_global_pending)
+                                   bridge_pending=self.bridge_global_pending, as_of=as_of)
 
         effort = _LinkReadWork(limit, self.floor, self.uncertainty)
         witnesses = {}
@@ -703,8 +768,9 @@ class _RoleLinks:
                             scores = {} if condition is not None else None
                             for position, path in enumerate(frontier):
                                 effort.charge()
+                                uses_authority = terminal_source in path.authority_sources
                                 dependent = terminal_source in path.used
-                                if dependent and terminal_source not in scoped_sources:
+                                if dependent and not uses_authority and terminal_source not in scoped_sources:
                                     continue
                                 if scores is None:
                                     terminal_dots += 1
@@ -718,9 +784,10 @@ class _RoleLinks:
                                     matches = scores[group]
                                 if not matches:
                                     continue
-                                if dependent:
+                                if dependent or uses_authority:
                                     effort.dependent_sources.add(terminal_source)
                                     dependent_outcomes.add(outcome)
+                                    effort.validity_open |= uses_authority
                                     continue
                                 if outcome not in outcomes:
                                     outside.add(outcome)
@@ -743,13 +810,17 @@ class _RoleLinks:
                                                     | effort.dependent_sources),
                                    terminal_dots=terminal_dots, outcomes=vocabulary, hops=hops, transports=effort.transports,
                                    condition=condition, condition_dots=effort.condition_dots,
-                                   bridge_pending=self.bridge_global_pending or effort.bridge_stale)
+                                   bridge_pending=self.bridge_global_pending or effort.bridge_stale,
+                                   as_of=as_of, validity_open=effort.validity_open,
+                                   supersessions=tuple(effort.supersessions))
         open_sources = len(self.unresolved | effort.unavailable | effort.bridge_open | effort.dependent_sources)
         pending = self.bridge_global_pending or effort.bridge_stale
-        incomplete = open_sources or unmatched or effort.marginal or outside or pending
+        incomplete = open_sources or unmatched or effort.marginal or outside or pending or effort.validity_open
         status = ("conflict" if len(witnesses) > 1 else "unresolved" if incomplete
                   else "supported" if witnesses else "no_link")
         return BindingLinkRead(status, tuple(witnesses[key] for key in sorted(witnesses)), effort.work,
                                open_sources, len(unmatched), effort.marginal, terminal_dots,
                                vocabulary, tuple(sorted(outside)), hops, effort.transports, condition, effort.condition_dots,
-                               bridge_pending=pending, dependent_outcomes=tuple(sorted(dependent_outcomes)))
+                               bridge_pending=pending, dependent_outcomes=tuple(sorted(dependent_outcomes)),
+                               as_of=as_of, validity_open=effort.validity_open,
+                               supersessions=tuple(effort.supersessions))

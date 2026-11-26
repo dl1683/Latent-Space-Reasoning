@@ -25,6 +25,8 @@ from experiments.memory.corpus_bindings import (
     CorpusBindingRead, CorpusBindingWorkspace, StaleCorpusRevision, _EncodedChange, _source_vector_limit,
 )
 from experiments.memory.latent_feedback import ConditionalTerm
+from experiments.memory.role_validity import RoleSupersession
+from experiments.memory.verified_source_tool import SourceSpan
 
 
 _SURROGATE_PAIR = re.compile(r"[\ud800-\udbff][\udc00-\udfff]")
@@ -152,6 +154,41 @@ def _decode_role_links(payload, memory):
         revised = memory._reprogram_role_links(spec[:2], *spec[2:])
     if revised is memory or _encode_role_links(revised._role_links) != payload:
         raise ValueError("unchanged or noncanonical role-link program event")
+    return revised
+
+
+def _encode_role_validity(validity):
+    if validity is None:
+        return _json(["role_validity", 1, None, ()])
+    records = []
+    for rule in validity.transitions:
+        spans = (rule.previous, rule.replacement, rule.authority)
+        _check_identifiers(span.source_id for span in spans)
+        positions = [(span.source_id, span.version_sha256, span.start_byte, span.end_byte, span.span_sha256)
+                     for span in spans]
+        records.append((*positions, rule.effective_at, rule.previous_valid_from))
+    return _json(["role_validity", 1, validity.as_of, records])
+
+
+def _decode_role_validity(payload, memory):
+    event = json.loads(payload)
+    if (type(event) is not list or len(event) != 4 or event[0] != "role_validity"
+            or type(event[1]) is not int or event[1] != 1):
+        raise ValueError("invalid role validity event")
+    as_of, records = event[2:]
+    links = memory._role_links
+    if (links is None or type(records) is not list or len(records) > links.compile_limit
+            or (type(as_of) is not int if records else as_of is not None)):
+        raise ValueError("invalid role validity specification")
+    rules = []
+    for record in records:
+        if (type(record) is not list or len(record) != 5
+                or any(type(span) is not list or len(span) != 5 for span in record[:3])):
+            raise ValueError("invalid role supersession record")
+        rules.append(RoleSupersession(*(SourceSpan(*span) for span in record[:3]), *record[3:]))
+    revised = memory._with_role_validity(rules, 0 if as_of is None else as_of)
+    if revised is memory or _encode_role_validity(revised._role_links.validity) != payload:
+        raise ValueError("unchanged or noncanonical role validity event")
     return revised
 
 
@@ -549,6 +586,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 tip = self._install_program_revision(tip, tip.memory, patch)
             elif payload.startswith(b'["role_links",'):
                 tip = self._replace_program(tip, _decode_role_links(payload, tip.memory))
+            elif payload.startswith(b'["role_validity",'):
+                tip = self._replace_program(tip, _decode_role_validity(payload, tip.memory))
             elif payload.startswith(b'["program",'):
                 memory = tip.memory.reprogram(_decode_program(payload))
                 if memory is tip.memory:
@@ -608,9 +647,14 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             tip, digest = self._replay(self._read_suffix(db))
             revised = self._apply_program(tip, proposal)
             if revised is not tip:
-                payload = (_encode_role_links(revised.memory._role_links)
-                           if revised.memory._role_links is not tip.memory._role_links
-                           else _encode_program(revised.memory._certain._gates))
+                prior, current = tip.memory._role_links, revised.memory._role_links
+                if current is prior:
+                    payload = _encode_program(revised.memory._certain._gates)
+                else:
+                    payload = _encode_role_links(current)
+                    if (prior is not None and current is not None and payload == _encode_role_links(prior)
+                            and _encode_role_validity(current.validity) != _encode_role_validity(prior.validity)):
+                        payload = _encode_role_validity(current.validity)
                 digest = self._append(db, digest, revised.revision, payload)
             db.commit()
             return self._set_tip(revised, digest)

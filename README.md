@@ -12,6 +12,8 @@ The shared-world slice now journals continuous source directions with their comp
 
 [Scoped source observations](docs/ARCHITECTURE.md#keeping-acquired-relations-scoped-to-source-bytes) can preserve several separate clause relationships from one document while counting that document as one origin. With a bounded parser and supplied directions, a fixture swaps two associations, recovers the changed readouts after restart, and verifies the exact clauses against the right source versions. Learned discovery remains open.
 
+[Effective-time role selection](docs/ARCHITECTURE.md#following-declared-replacements-at-a-given-time) retains explicit cross-document replacement chains. The same source snapshot can produce different governing routes before and after a declared cutover. Scope and authority drift leave the affected decision open without reviving an earlier route. The software check uses supplied declarations and directions.
+
 A worker can also [install continuous links directly from typed source observations](docs/ARCHITECTURE.md#installing-query-independent-source-links). A later feedback read can expose a weaker conflicting path after a correction that leaves the compiled relations unchanged. The result uses a declared relation grammar and supplied coordinates.
 
 A [state-dependent link program](docs/ARCHITECTURE.md#composing-state-dependent-source-transports) carries incoming distinctions across several source operations. A supplied-coordinate journal check adds a late conditional read and shares geometric comparisons across identical directions. Source histories still govern which independent witnesses survive corrections and reopen.

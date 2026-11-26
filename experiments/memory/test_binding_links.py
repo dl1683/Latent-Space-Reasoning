@@ -15,7 +15,10 @@ from experiments.memory.binding_replay import replay_binding_repair
 from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
 from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemory, CorpusProgramProposal, StaleCorpusRevision
 from experiments.memory.latent_feedback import FeedbackKernel
-from experiments.memory.verified_source_tool import VerifiedSourceTool
+from experiments.memory.role_validity import RoleSupersession
+from experiments.memory.task_episode import EpisodeLimits, _Tools
+from experiments.memory.task_evidence import TaskWorld
+from experiments.memory.verified_source_tool import SourceSpan, VerifiedSourceTool
 
 
 _ROLES = ("entry", "exit")
@@ -1095,6 +1098,208 @@ def test_scoped_bridge_requires_its_key_and_endpoint_to_share_a_span(tmp_path):
     assert bridge.step.sources == ("declaration", "registry")
     assert bridge.step.key_ordinals == (1, 1)
     assert opened.memory.source_mention_span("declaration", 0) == opened.memory.source_mention_span("declaration", 1)
+
+
+def test_role_supersession_follows_explicit_effective_time_and_source_versions(tmp_path):
+    axes = np.eye(6)
+    directions = dict(zip(("Cobalt", "Amber", "Juniper", "Maple", "Alder"), axes))
+    pattern = re.compile(r"(?m)^([A-Z][a-z]+) is filed under ([A-Z][a-z]+)\.$")
+    terminal = re.compile(r"(?m)^The decision in ([A-Z][a-z]+) is (accept|review)\.$")
+
+    def encode(raw):
+        text = raw.decode("utf8")
+        if text.startswith("Bridge entry"):
+            yield BindingMention("entry", axes[5], .9)
+            yield BindingMention("key", axes[2], .9)
+        elif text.startswith("Bridge exit"):
+            yield BindingMention("exit", axes[4], .9)
+            yield BindingMention("key", axes[2], .9)
+        for match in pattern.finditer(text):
+            subject, record = match.groups()
+            yield BindingMention("entry", directions[subject], .9, match.span())
+            yield BindingMention("exit", directions[record], .9, match.span())
+        for match in terminal.finditer(text):
+            record, decision = match.groups()
+            yield BindingMention(decision, directions[record], .8, match.span())
+
+    path = tmp_path / "validity.sqlite"
+    frame = _transport_frame(encode, extra_predicates=("key",))
+    reader_frame = _transport_frame(_no_encoding, extra_predicates=("key",))
+    owner = JournaledCorpusWorkspace(path, frame, create=True)
+    raw = {
+        "manual": b"Cobalt is filed under Juniper.",
+        "replacement": b"Cobalt is filed under Maple.",
+        "second": b"Cobalt is filed under Alder.",
+        "authority": b"Cycle 20 resolution: Maple supersedes Juniper for Cobalt.",
+        "later": b"Cycle 30 resolution: Alder supersedes Maple for Cobalt.",
+        "juniper": b"The decision in Juniper is accept.",
+        "maple": b"The decision in Maple is review.",
+        "alder": b"The decision in Alder is accept.",
+        "unrelated": b"Amber is filed under Maple.",
+        "entry-fragment": b"Bridge entry.",
+        "exit-fragment": b"Bridge exit.",
+    }
+    entered = _write(owner, raw)
+
+    def compile_roles(pin, transport="fixed"):
+        return owner.publish_program(owner.prepare_role_links(
+            pin, _ROLES, min_similarity=.94, uncertainty=.005, compile_work_limit=128,
+            bridge_key="key", transport=transport,
+        ))
+
+    opening = compile_roles(entered)
+    leaves = tmp_path / "leaves"
+    leaves.mkdir()
+    for source, content in raw.items():
+        (leaves / (opening.memory.source_digests[source] + ".txt")).write_bytes(content)
+    tool = VerifiedSourceTool(tmp_path, opening.memory.source_digests)
+    authority = SourceSpan.from_characters("authority", raw["authority"], 0, len(raw["authority"]))
+    later = SourceSpan.from_characters("later", raw["later"], 0, len(raw["later"]))
+    manual, middle, newest = (opening.memory.source_mention_span(name, 0)
+                              for name in ("manual", "replacement", "second"))
+    first = RoleSupersession(manual, middle, authority, 20, previous_valid_from=10)
+    second = RoleSupersession(middle, newest, later, 30)
+
+    keys, zeros = np.zeros((6, 1)), np.zeros((6, 6))
+    kernel = FeedbackKernel(query=keys, carry=axes / 2, observation_key=keys, observation_value=zeros,
+                            feedback_key=keys, feedback_value=zeros, max_steps=2)
+    receiver = BindingFeedback(kernel, frame, (("accept", 0),), query=keys, observation=np.zeros((6, 6)))
+
+    relay_kernel = FeedbackKernel(query=keys, carry=zeros, observation_key=keys, observation_value=axes,
+                                  feedback_key=keys, feedback_value=zeros, max_steps=2)
+    relay = BindingFeedback(relay_kernel, frame, (("accept", 0),), query=keys, observation=np.zeros((6, 6)))
+
+    def decide(memory, query="Cobalt"):
+        state = receiver.start(directions[query], memory)
+        return receiver.reason_role_links(state, stages=(None,), outcomes=_OUTCOMES,
+                                          work_limit=256, branch_limit=4)
+
+    assert decide(opening.memory).status == "conflict"
+    with pytest.raises(ValueError, match="evidence span did not verify"):
+        wrong = replace(first, authority=replace(authority, span_sha256="0" * 64))
+        owner.prepare_role_validity(opening, (wrong, second), as_of=19, verifier=tool)
+    with pytest.raises(ValueError, match="times must increase"):
+        owner.prepare_role_validity(opening, (first, replace(second, effective_at=20)), as_of=19, verifier=tool)
+    with pytest.raises(ValueError, match="same entry"):
+        wrong = replace(first, replacement=opening.memory.source_mention_span("unrelated", 0))
+        owner.prepare_role_validity(opening, (wrong,), as_of=19, verifier=tool)
+
+    worker = JournaledCorpusWorkspace(path, reader_frame)
+    rules = (second, first)
+    early = worker.publish_program(worker.prepare_role_validity(worker.snapshot(), rules, as_of=19, verifier=tool))
+    cutover = worker.publish_program(worker.prepare_role_validity(early, rules, as_of=20))
+    following = worker.publish_program(worker.prepare_role_validity(cutover, rules, as_of=30))
+    for pin, when, expected, source, authority_name in (
+        (early, 19, "accept", "manual", "authority"),
+        (cutover, 20, "review", "replacement", "authority"),
+        (following, 30, "accept", "second", "later"),
+    ):
+        assert pin.source_revision == opening.source_revision
+        decision = decide(pin.memory)
+        read, = decision.terminal_reads
+        witness, = read.witnesses
+        assert decision.answer == expected and read.as_of == when and witness.link_source == source
+        assert decision.supersessions == read.supersessions == (first, second)
+        assert {span.source_id for span in witness.validity_spans} == {"authority", "later"}
+        proof = next(span for span in witness.validity_spans if span.source_id == authority_name)
+        assert tool.verify(proof)["status"] == "VERIFIED_SOURCE_BYTES"
+    assert decide(following.memory.at_role_time(19)) == decide(early.memory)
+    assert decide(following.memory.at_role_time(29)).answer == "review"
+    before_start = decide(following.memory.at_role_time(9))
+    assert before_start.status == "unresolved" and before_start.terminal_reads[0].validity_open
+    assert decide(following.memory, "Amber").supersessions == ()
+    assert worker.snapshot() is following
+    toolbox = _Tools("Which record governs Cobalt?", TaskWorld(tool, (manual,), bindings=following),
+                     EpisodeLimits(5, 1, 3, 1, 4096, 8192, 1024, 256), probes_enabled=True)
+    found = toolbox.call({"op": "search", "query": "Juniper"})
+    opened = toolbox.call({"op": "read", "candidate": found["candidates"][0]["candidate"]})
+    probed = toolbox.call({"op": "probe", "read": opened["id"], "ordinal": 0, "outcomes": list(_OUTCOMES)})
+    governing = next(row for row in probed["candidates"] if row["span"]["source_id"] == "later")
+    verified = toolbox.call({"op": "read", "candidate": governing["candidate"]})
+    assert verified["status"] == "VERIFIED_SOURCE_BYTES" and verified["text"] == raw["later"].decode()
+    state = receiver.start(directions["Cobalt"], following.memory)
+    full = decide(following.memory)
+    limited = receiver.reason_role_links(state, stages=(None,), outcomes=_OUTCOMES,
+                                        work_limit=full.work - 1, branch_limit=4)
+    assert limited.status == "work_limit" and not limited.terminal_reads
+    assert limited.supersessions == full.supersessions
+    with pytest.raises(ValueError, match="different role grammar"):
+        worker.prepare_role_links(following, tuple(reversed(_ROLES)), min_similarity=.94, compile_work_limit=64)
+    assert decide(None).status == "no_memory"
+    assert decide(worker.prepare_role_links(following, None).preview).status == "no_role_program"
+
+    stale = worker.prepare_role_validity(following, rules, as_of=29)
+    withdrawn = _write(owner, {"later": None})
+    corrupt = decide(withdrawn.memory)
+    assert corrupt.status == "unresolved" and corrupt.open_coverage
+    assert corrupt.terminal_reads[0].validity_open
+    assert {witness.link_source for witness in corrupt.terminal_reads[0].witnesses} == {"second"}
+    assert decide(withdrawn.memory, "Amber").answer == "review"
+    with pytest.raises(StaleCorpusRevision):
+        worker.publish_program(stale)
+    restored = _write(owner, {"later": raw["later"]})
+    reopened = JournaledCorpusWorkspace(path, reader_frame).snapshot()
+    assert restored.memory.source_digests == following.memory.source_digests
+    assert decide(reopened.memory) == decide(following.memory)
+    pending = _write(owner, {"entry-fragment": b"Bridge entry revised."})
+    assert pending.memory._role_links.bridge_pending
+    assert pending.memory._role_links.validity is restored.memory._role_links.validity
+    refreshed = compile_roles(pending)
+    cold = JournaledCorpusWorkspace(path, reader_frame).snapshot()
+    assert not cold.memory._role_links.bridge_pending
+    assert decide(cold.memory) == decide(refreshed.memory)
+    recompiled = compile_roles(refreshed, "reflection")
+    assert decide(JournaledCorpusWorkspace(path, reader_frame).snapshot().memory).answer == "accept"
+    assert decide(recompiled.memory.at_role_time(20)).answer == "review"
+
+    revised_authority = raw["later"].replace(b"30", b"35", 1)
+    changed = _write(owner, {"later": revised_authority})
+    (leaves / (changed.memory.source_digests["later"] + ".txt")).write_bytes(revised_authority)
+    new_later = SourceSpan.from_characters("later", revised_authority, 0, len(revised_authority))
+    assert decide(changed.memory).status == "unresolved"
+    corrected = owner.publish_program(owner.prepare_role_validity(
+        changed, (first, replace(second, authority=new_later, effective_at=35)), as_of=30,
+        verifier=VerifiedSourceTool(tmp_path, changed.memory.source_digests),
+    ))
+    assert corrected.source_revision == changed.source_revision
+    assert all(corrected.memory.source_digests[source] == following.memory.source_digests[source]
+               for source in ("manual", "replacement", "second", "juniper", "maple", "alder"))
+    assert decide(corrected.memory).answer == "review"
+    assert decide(corrected.memory.at_role_time(35)).answer == "accept"
+    for memory, expected in ((recompiled.memory, "Alder"), (corrected.memory, "Maple")):
+        branch, = relay.continue_role_links(relay.start(directions["Cobalt"], memory),
+                                            work_limit=256, branch_limit=4).states
+        np.testing.assert_allclose(branch.latest, np.tanh(directions[expected]), atol=1e-12, rtol=0.)
+    operator_off = owner.prepare_role_validity(corrected, (), as_of=30).preview
+    assert operator_off.source_digests == corrected.memory.source_digests
+    assert decide(operator_off).status == "conflict"
+
+    combined = raw["later"] + b"\nAmber is filed under Cobalt.\nThe decision in Alder is review."
+    introduced = _write(owner, {"combined": combined})
+    (leaves / (introduced.memory.source_digests["combined"] + ".txt")).write_bytes(combined)
+    combined_span = SourceSpan.from_characters("combined", combined, 0, len(raw["later"]))
+    verifier = VerifiedSourceTool(tmp_path, introduced.memory.source_digests)
+    installed = owner.publish_program(owner.prepare_role_validity(
+        introduced, (first, replace(second, authority=combined_span)), as_of=30, verifier=verifier,
+    ))
+    shared = decide(installed.memory)
+    assert shared.status == "unresolved" and shared.open_coverage
+    assert shared.terminal_reads[0].dependent_outcomes == ("review",)
+    assert shared.terminal_reads[0].witnesses[0].terminal_source == "alder"
+    double_use = installed.memory.read_role_links(directions["Amber"], outcomes=_OUTCOMES,
+                                                  work_limit=256, hops=2)
+    assert double_use.status == "unresolved" and double_use.validity_open and not double_use.witnesses
+    assert set(double_use.supersessions) == {first, replace(second, authority=combined_span)}
+    branches = relay.continue_role_links(relay.start(directions["Amber"], installed.memory),
+                                         work_limit=256, branch_limit=4)
+    prefix = next(state for state in branches.states if state.role_steps[-1].source == "combined")
+    continued = relay.read_role_links(prefix, outcomes=_OUTCOMES, work_limit=256)
+    assert continued.status == "unresolved" and continued.validity_open and not continued.witnesses
+    edited = _write(owner, {"second": b"Cobalt is filed under Juniper."})
+    broken = decide(edited.memory)
+    assert broken.open_coverage and broken.terminal_reads[0].validity_open
+    assert decide(early.memory).answer == "accept"
+    assert decide(cutover.memory).answer == "review"
 
 
 def test_worker_matches_split_sources_before_reasoning_and_revokes_on_correction(tmp_path):

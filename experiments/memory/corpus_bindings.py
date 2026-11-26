@@ -15,7 +15,8 @@ from experiments.memory.binding_memory import (
     BindingCapacityError, BindingMemory, BindingProof, _exclusions, _ProofWork, _proof_work_limit,
 )
 from experiments.memory.latent_feedback import _frozen, _real_array
-from experiments.memory.verified_source_tool import SourceSpan
+from experiments.memory.role_validity import _RoleValidity
+from experiments.memory.verified_source_tool import SourceSpan, VerifiedSourceTool
 
 
 @dataclass(frozen=True)
@@ -244,6 +245,8 @@ class CorpusBindingMemory:
             raise ValueError("role-link transport must be fixed, reflection or rotation")
         limit = _proof_work_limit(compile_work_limit)
         links = self._role_links
+        if links is not None and links.validity is not None and links.roles != roles:
+            raise ValueError("installed role validity belongs to a different role grammar")
         if links is not None and (
             links.roles, links.floor, links.uncertainty, links.compile_limit, links.transport,
             links.bridge_key, links.local_bridges, links.factored_bridges
@@ -254,10 +257,29 @@ class CorpusBindingMemory:
                 return self
             if links.bridge_index is not None:
                 return replace(self, _role_links=links.bridge_index.matches(links))
-        return replace(self, _role_links=_RoleLinks.prepare(
+        compiled = _RoleLinks.prepare(
             roles, floor, uncertainty, limit, transport, self.source_digests, self._mentions, bridge_key,
             local_bridges, factored_bridges,
-        ))
+        )
+        if links is not None and links.validity is not None:
+            validity = links.validity.revise(compiled.scoped_pairs, self.source_digests, self._mentions)
+            compiled = replace(compiled, validity=validity)
+        return replace(self, _role_links=compiled)
+
+    def _with_role_validity(self, transitions, as_of):
+        links = self._role_links
+        if links is None:
+            raise ValueError("role validity needs a compiled role program")
+        validity = _RoleValidity.prepare(as_of, transitions, links.scoped_pairs, self.source_digests,
+                                         self._mentions, links.compile_limit, links.validity)
+        return self if validity is links.validity else replace(self, _role_links=replace(links, validity=validity))
+
+    def at_role_time(self, as_of):
+        """Read the same source and authority snapshot at another effective time."""
+        links = self._role_links
+        if links is None or links.validity is None:
+            raise ValueError("role time needs installed supersessions")
+        return self._with_role_validity(links.validity.transitions, as_of)
 
     def read_role_links(self, direction, *, outcomes, work_limit, hops=1, condition=None):
         """Apply installed directions and then compare against declared terminal predicates."""
@@ -291,16 +313,21 @@ class CorpusBindingMemory:
         final = BindingLinkStep(witness.link_source, witness.entry_ordinal, witness.exit_ordinal,
                                 witness.exit_source, witness.key_ordinals)
         positions = []
+        authorities = {}
+        validity = self._role_links.validity
         for step in (*witness.prefix, final):
             target = step.exit_source if step.exit_source is not None else step.source
             positions.extend(((step.source, step.entry_ordinal), (target, step.exit_ordinal)))
             if step.key_ordinals is not None:
                 entry_key, exit_key = step.key_ordinals
                 positions.extend(((step.source, entry_key), (target, exit_key)))
+            if validity is not None:
+                for span in validity.authorities.get((step.source, step.entry_ordinal), ()):
+                    authorities[span] = None
         positions.append((witness.terminal_source, witness.terminal_ordinal))
         spans = dict.fromkeys(self.source_mention_span(source, ordinal) for source, ordinal in positions)
         spans.pop(None, None)
-        return replace(witness, source_spans=tuple(spans)) if spans else witness
+        return replace(witness, source_spans=tuple(spans), validity_spans=tuple(authorities)) if spans else witness
 
     def source_mentions(self, source):
         """Return a source's ordered normalized observations, or None for a legacy row-only source."""
@@ -536,6 +563,22 @@ class CorpusBindingWorkspace:
         self._check_owner(base)
         memory = base.memory._reprogram_role_links(roles, min_similarity, uncertainty, compile_work_limit, transport,
                                                    bridge_key, local_bridges, factored_bridges)
+        return CorpusProgramProposal(base, memory, base)
+
+    def prepare_role_validity(self, base, transitions, *, as_of, verifier=None):
+        """Prepare a horizon and explicit role replacements on one pinned source snapshot."""
+        self._check_owner(base)
+        memory = base.memory._with_role_validity(transitions, as_of)
+        prior, validity = base.memory._role_links.validity, memory._role_links.validity
+        known = frozenset() if prior is None else frozenset(prior.transitions)
+        new_rules = () if validity is None else tuple(rule for rule in validity.transitions if rule not in known)
+        if new_rules:
+            if type(verifier) is not VerifiedSourceTool:
+                raise ValueError("new role supersessions need a source verifier")
+            for pointer in dict.fromkeys(span for rule in new_rules
+                                         for span in (rule.previous, rule.replacement, rule.authority)):
+                if verifier.verify(pointer)["status"] != "VERIFIED_SOURCE_BYTES":
+                    raise ValueError("role supersession evidence span did not verify")
         return CorpusProgramProposal(base, memory, base)
 
     def publish_program(self, proposal):

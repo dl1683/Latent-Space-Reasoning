@@ -250,7 +250,8 @@ class _Tools:
         evidence = session.role_evidence[-1]
         sources = dict.fromkeys(witness.terminal_source for witness in evidence.read.witnesses)
         groups = [session.world._spans_by_source.get(source, ()) for source in sources]
-        exact = tuple(span for witness in evidence.read.witnesses for span in witness.source_spans)
+        exact = tuple(span for witness in evidence.read.witnesses
+                      for span in (*witness.source_spans, *witness.validity_spans))
         available = tuple(dict.fromkeys((*exact, *chain.from_iterable(groups))))
         spans = islice(available, session.budget.candidates_per_search)
         body = asdict(evidence)
