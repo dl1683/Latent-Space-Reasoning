@@ -4,7 +4,8 @@ from dataclasses import asdict, dataclass, replace
 import json
 from math import isfinite
 from operator import index
-from typing import Callable
+from types import MappingProxyType
+from typing import Callable, Mapping
 
 from experiments.memory.binding_links import BindingLinkCondition, BindingLinkRead
 from experiments.memory.compressed_routing_map import BM25
@@ -28,6 +29,7 @@ class TaskWorld:
 
     _tool: VerifiedSourceTool
     _spans: tuple[SourceSpan, ...]
+    _spans_by_source: Mapping[str, tuple[SourceSpan, ...]]
     _index: BM25 | None
     _bindings: CorpusRevision | None
     pin: TaskPin
@@ -47,12 +49,14 @@ class TaskWorld:
         if any(type(span) is not SourceSpan for span in spans) or len(set(spans)) != len(spans):
             raise ValueError("search catalogue requires distinct source spans")
         texts, setup_bytes = [], 0
+        by_source = {}
         for span in spans:
             opened = tool.verify(span)
             if opened["status"] != "VERIFIED_SOURCE_BYTES":
                 raise ValueError("search catalogue contains an unverifiable span")
             texts.append(opened["text"])
             setup_bytes += opened["source_bytes_read"]
+            by_source.setdefault(span.source_id, []).append(span)
         catalogue = json.dumps([asdict(span) for span in spans], sort_keys=True, separators=(",", ":")).encode()
         pin = TaskPin(tool.snapshot_sha256, sha256(catalogue), None if bindings is None else bindings.revision,
                       None if bindings is None else bindings.source_revision,
@@ -60,6 +64,7 @@ class TaskWorld:
                       None if bindings is None else bindings.journal_sha256)
         object.__setattr__(self, "_tool", tool)
         object.__setattr__(self, "_spans", spans)
+        object.__setattr__(self, "_spans_by_source", MappingProxyType({key: tuple(rows) for key, rows in by_source.items()}))
         object.__setattr__(self, "_index", BM25(texts) if texts else None)
         object.__setattr__(self, "_bindings", bindings)
         object.__setattr__(self, "pin", pin)
