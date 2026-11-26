@@ -64,14 +64,19 @@ _TYPED_SYSTEM = (
     '"needs" (an array) and "notes" (a string), with tool null or one tool object, or '
     '{"finish":{"findings":list,"open_questions":list}}. Every need object has exactly id, question, rationale, parent, '
     "discovered_from, target_or_event, relation, time_version_scope, evidence_sought, support_requirements, "
-    "defeat_requirements, alternatives, and unresolved_conditions. Use null for absent scalar fields and empty arrays "
-    "for absent list fields; list fields are sets and must not repeat values. A rationale explains why the task needs "
-    "the obligation; do not add corpus facts you have not read. Need definitions are immutable after declaration; "
+    "defeat_requirements, alternatives, and unresolved_conditions. Use null only for scalar fields that are truly "
+    "unspecified; use empty arrays only when a list field does not apply. List fields are sets and must not repeat "
+    "values. Infer material obligations from the task: name the target, relation, time or version scope, evidence "
+    "sought, what would support or defeat the claim, plausible alternatives, and conditions that would leave it "
+    "unresolved. Do not invent dates or other corpus facts; when a task says current revision without a date, use "
+    "the current pinned source revision. A rationale explains why the task needs the obligation; do not add corpus "
+    "facts you have not read. Need definitions are immutable after declaration; "
     "add a new id with a parent link for a refined or newly discovered obligation. Preserve each prior need record. "
-    "Tool objects include need_id and follow these shapes: "
-    '{"op":"search","need_id":"n1","query":"release"}, '
-    '{"op":"read","need_id":"n1","candidate":0}, or, when enabled, '
-    '{"op":"probe","need_id":"n1","read":0,"ordinal":0,"outcomes":["accept"],"hops":1}. '
+    "Tool objects include need_id and follow the declared schemas. For search, formulate a task-relevant query "
+    "from the current need; after zero matches, reformulate using another relevant entity, relation, or wording "
+    "rather than repeating the same query. For read, select only candidates returned in this episode. When enabled, "
+    "probe uses a verified read id, one of that read's observation ordinals, a nonempty set of possible outcomes, "
+    "and a positive hop count. "
     "When joint roles are enabled, use the bounded reason and role_spans actions exposed by the host. "
     "Use a candidate only after that need's search or role action returned it. "
     "A verified read may support more than one need: cite its read id under each relevant finding and let the evaluator "

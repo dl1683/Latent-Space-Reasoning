@@ -1,0 +1,391 @@
+{
+  "construction": {
+    "arithmetic_reference_status": {
+      "opening": "accept",
+      "revised": "review"
+    },
+    "changed_source_only": "src-42 context vector sign",
+    "expected_role_dependencies": [
+      "src-17",
+      "src-42",
+      "src-63",
+      "src-64",
+      "src-65"
+    ],
+    "model_visible_task": "Determine the operative status for the Cobalt urgent dispatch at this source revision. Use the current handoff route and state any unresolved alternative.",
+    "opening_repair": "27e365374673a185a3dcd66fd7c452e1c6e7d81c9612d284c0ed2d15ceabd1b0",
+    "opening_revision": 3,
+    "revised_repair": "bebe65d4c4f3375261d951ab598e13abbed9806666a9c6042d51e784fcb54963",
+    "revised_revision": 5,
+    "source_ids": [
+      "src-17",
+      "src-42",
+      "src-63",
+      "src-64",
+      "src-65",
+      "src-66"
+    ],
+    "unchanged_endpoint_and_key": true
+  },
+  "decoding": "greedy, no thinking, dynamic JSON schema",
+  "experiment": "visible two-pin geometry-twin typed-needs model pilot",
+  "generation_seconds": [
+    10.595204199897125,
+    8.577343399869278,
+    7.864970800001174,
+    5.148243099916726,
+    4.515888800146058,
+    4.255695600062609,
+    4.214631200069562,
+    10.028384399833158,
+    7.073003500001505,
+    7.184164999984205,
+    4.622536900220439,
+    5.01918280008249,
+    4.868029800010845,
+    4.763281899970025
+  ],
+  "git_head": "6efe8e147f2c6bfee14cfc62f9c6eddfbc3eed3b",
+  "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU, 6000 MiB, 32 %, 61",
+  "gpu_peak_allocated_bytes": 1539900416,
+  "gpu_telemetry_each_generation": [
+    "6338 MiB, 20 %, 61",
+    "6234 MiB, 9 %, 63",
+    "6122 MiB, 0 %, 63",
+    "6000 MiB, 32 %, 65",
+    "6000 MiB, 26 %, 65",
+    "6000 MiB, 22 %, 64",
+    "6000 MiB, 32 %, 65",
+    "6000 MiB, 0 %, 60",
+    "6000 MiB, 27 %, 64",
+    "6000 MiB, 0 %, 59",
+    "6000 MiB, 23 %, 62",
+    "6000 MiB, 21 %, 61",
+    "6000 MiB, 24 %, 60",
+    "6000 MiB, 32 %, 61"
+  ],
+  "limits": {
+    "aggregate_input_tokens": 8192,
+    "aggregate_output_tokens": 1792,
+    "calls": 7,
+    "context_tokens": 8192,
+    "individual_reads": 4,
+    "joint_calls": 1,
+    "per_call_output_tokens": 256,
+    "role_branches": 4,
+    "role_candidate_spans": 256,
+    "role_transitions": 16,
+    "role_work": 512,
+    "searches": 3
+  },
+  "lm_format_enforcer": "0.11.3",
+  "model_load_seconds": 0.9800634998828173,
+  "model_parameter_count": 596049920,
+  "model_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+  "preflight_free_ram_bytes": 42568744960,
+  "preflight_gpu": "NVIDIA GeForce RTX 5070 Laptop GPU, 7778 MiB, 8151 MiB, 0 %, 54",
+  "preflight_gpu_memory_bytes": {
+    "free": 7353663488,
+    "total": 8546484224
+  },
+  "preflight_temp_disk_free_bytes": 896015003648,
+  "qualification": "pilot only; not the frozen eight-task calibration or held panel",
+  "run_order": [
+    "opening",
+    "revised"
+  ],
+  "runner_sha256": "fc5cf1e4858de2b30abdf10c44f253c21c73b14620983cac3e74b93d54fae86b",
+  "runs": [
+    {
+      "artifact": "opening.jsonl",
+      "ledger_sha256": "c07d0a707296cb61c94a7b56b5d5d94bd3dfa23a5e909270a25e5a7170bdfdbf",
+      "need_registry": [
+        {
+          "alternatives": [],
+          "defeat_requirements": [],
+          "discovered_from": [],
+          "evidence_sought": [],
+          "id": "n1",
+          "parent": null,
+          "question": "Determine the operative status for the Cobalt urgent dispatch at this source revision. Use the current handoff route and state any unresolved alternative.",
+          "rationale": "This task requires identifying the current operative status of the Cobalt urgent dispatch and any unresolved alternatives. The current handoff route is specified, and unresolved alternatives need to be identified to provide a complete answer.",
+          "relation": "urgent",
+          "support_requirements": [],
+          "target_or_event": "Cobalt urgent dispatch",
+          "time_version_scope": "2023-04-01",
+          "unresolved_conditions": []
+        }
+      ],
+      "pin": "opening",
+      "rejections": [
+        {
+          "reason": "observed findings require verified citations"
+        },
+        {
+          "reason": "citations must identify distinct verified reads from this investigation"
+        },
+        {
+          "reason": "citations must identify distinct verified reads from this investigation"
+        },
+        {
+          "reason": "citations must identify distinct verified reads from this investigation"
+        }
+      ],
+      "status": "call_limit",
+      "submission": null,
+      "tool_receipts": [
+        {
+          "request": {
+            "need_id": "n1",
+            "op": "search",
+            "query": "release"
+          },
+          "result": {
+            "candidates": [],
+            "matched": 0,
+            "status": "SEARCHED"
+          },
+          "usage": {
+            "attempts": {
+              "probe": 0,
+              "read": 0,
+              "search": 1
+            },
+            "evidence_bytes": 0,
+            "joint_role_calls": 0,
+            "lexical_rows": 6,
+            "role_candidate_spans_examined": 0,
+            "role_candidate_spans_materialized": 0,
+            "role_span_pages": 0,
+            "role_transitions": 0,
+            "role_work": 0,
+            "source_bytes": 0
+          }
+        },
+        {
+          "request": {
+            "need_id": "n1",
+            "op": "search",
+            "query": "release"
+          },
+          "result": {
+            "candidates": [],
+            "matched": 0,
+            "status": "SEARCHED"
+          },
+          "usage": {
+            "attempts": {
+              "probe": 0,
+              "read": 0,
+              "search": 2
+            },
+            "evidence_bytes": 0,
+            "joint_role_calls": 0,
+            "lexical_rows": 12,
+            "role_candidate_spans_examined": 0,
+            "role_candidate_spans_materialized": 0,
+            "role_span_pages": 0,
+            "role_transitions": 0,
+            "role_work": 0,
+            "source_bytes": 0
+          }
+        },
+        {
+          "request": {
+            "need_id": "n1",
+            "op": "search",
+            "query": "release"
+          },
+          "result": {
+            "candidates": [],
+            "matched": 0,
+            "status": "SEARCHED"
+          },
+          "usage": {
+            "attempts": {
+              "probe": 0,
+              "read": 0,
+              "search": 3
+            },
+            "evidence_bytes": 0,
+            "joint_role_calls": 0,
+            "lexical_rows": 18,
+            "role_candidate_spans_examined": 0,
+            "role_candidate_spans_materialized": 0,
+            "role_span_pages": 0,
+            "role_transitions": 0,
+            "role_work": 0,
+            "source_bytes": 0
+          }
+        }
+      ],
+      "usage": {
+        "attempts": {
+          "probe": 0,
+          "read": 0,
+          "search": 3
+        },
+        "calls": 7,
+        "evidence_bytes": 0,
+        "input_tokens": 6550,
+        "joint_role_calls": 0,
+        "known_output_tokens": 974,
+        "lexical_rows": 18,
+        "output_usage_complete": true,
+        "role_candidate_spans_examined": 0,
+        "role_candidate_spans_materialized": 0,
+        "role_span_pages": 0,
+        "role_transitions": 0,
+        "role_work": 0,
+        "source_bytes": 0
+      }
+    },
+    {
+      "artifact": "revised.jsonl",
+      "ledger_sha256": "ecd57f573f4f0cb34fb06e7a60cf9b461abbc14c13e03c0b2e9e1670b3d2a208",
+      "need_registry": [
+        {
+          "alternatives": [],
+          "defeat_requirements": [],
+          "discovered_from": [],
+          "evidence_sought": [],
+          "id": "n1",
+          "parent": null,
+          "question": "Determine the operative status for the Cobalt urgent dispatch at this source revision. Use the current handoff route and state any unresolved alternative.",
+          "rationale": "This task requires identifying the current operative status of the Cobalt urgent dispatch and any unresolved alternatives. The current handoff route is specified, and unresolved alternatives need to be identified to provide a complete answer.",
+          "relation": "urgent",
+          "support_requirements": [],
+          "target_or_event": "Cobalt urgent dispatch",
+          "time_version_scope": "2023-04-01",
+          "unresolved_conditions": []
+        }
+      ],
+      "pin": "revised",
+      "rejections": [
+        {
+          "reason": "observed findings require verified citations"
+        },
+        {
+          "reason": "citations must identify distinct verified reads from this investigation"
+        },
+        {
+          "reason": "citations must identify distinct verified reads from this investigation"
+        },
+        {
+          "reason": "citations must identify distinct verified reads from this investigation"
+        }
+      ],
+      "status": "call_limit",
+      "submission": null,
+      "tool_receipts": [
+        {
+          "request": {
+            "need_id": "n1",
+            "op": "search",
+            "query": "release"
+          },
+          "result": {
+            "candidates": [],
+            "matched": 0,
+            "status": "SEARCHED"
+          },
+          "usage": {
+            "attempts": {
+              "probe": 0,
+              "read": 0,
+              "search": 1
+            },
+            "evidence_bytes": 0,
+            "joint_role_calls": 0,
+            "lexical_rows": 6,
+            "role_candidate_spans_examined": 0,
+            "role_candidate_spans_materialized": 0,
+            "role_span_pages": 0,
+            "role_transitions": 0,
+            "role_work": 0,
+            "source_bytes": 0
+          }
+        },
+        {
+          "request": {
+            "need_id": "n1",
+            "op": "search",
+            "query": "release"
+          },
+          "result": {
+            "candidates": [],
+            "matched": 0,
+            "status": "SEARCHED"
+          },
+          "usage": {
+            "attempts": {
+              "probe": 0,
+              "read": 0,
+              "search": 2
+            },
+            "evidence_bytes": 0,
+            "joint_role_calls": 0,
+            "lexical_rows": 12,
+            "role_candidate_spans_examined": 0,
+            "role_candidate_spans_materialized": 0,
+            "role_span_pages": 0,
+            "role_transitions": 0,
+            "role_work": 0,
+            "source_bytes": 0
+          }
+        },
+        {
+          "request": {
+            "need_id": "n1",
+            "op": "search",
+            "query": "release"
+          },
+          "result": {
+            "candidates": [],
+            "matched": 0,
+            "status": "SEARCHED"
+          },
+          "usage": {
+            "attempts": {
+              "probe": 0,
+              "read": 0,
+              "search": 3
+            },
+            "evidence_bytes": 0,
+            "joint_role_calls": 0,
+            "lexical_rows": 18,
+            "role_candidate_spans_examined": 0,
+            "role_candidate_spans_materialized": 0,
+            "role_span_pages": 0,
+            "role_transitions": 0,
+            "role_work": 0,
+            "source_bytes": 0
+          }
+        }
+      ],
+      "usage": {
+        "attempts": {
+          "probe": 0,
+          "read": 0,
+          "search": 3
+        },
+        "calls": 7,
+        "evidence_bytes": 0,
+        "input_tokens": 6550,
+        "joint_role_calls": 0,
+        "known_output_tokens": 974,
+        "lexical_rows": 18,
+        "output_usage_complete": true,
+        "role_candidate_spans_examined": 0,
+        "role_candidate_spans_materialized": 0,
+        "role_span_pages": 0,
+        "role_transitions": 0,
+        "role_work": 0,
+        "source_bytes": 0
+      }
+    }
+  ],
+  "token_tree_seconds": 2.3978987999726087,
+  "torch": "2.12.0+cu130",
+  "transformers": "5.12.1"
+}

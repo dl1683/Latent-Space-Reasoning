@@ -286,6 +286,65 @@ tasks and not the preregistered eight-task gate. The runner versions and every
 hash-chained ledger are preserved beside the earlier traces; `SHA256SUMS.txt`
 records their file hashes.
 
+### Visible revision-sensitive geometry pilot
+
+**The first two-pin run was an instrument failure, not a planning result.** It
+used the pinned Qwen3-0.6B snapshot, greedy no-thinking BF16 inference,
+schema-constrained `typed_needs`, and two source revisions of one synthetic
+world. The task asked for Cobalt's operative status from its current handoff
+route. A separate arithmetic construction and review derive `accept` at the
+opening pin and `review` after only `src-42`'s context sign changes. The
+relevant witness chain uses the task seed, keyed context bridge, one of two
+continuations, and terminal status evidence; `src-66` is an unrelated lane.
+
+Across the two pins, the model used 14/14 calls, 13,100 input tokens, and 1,948
+generated tokens. Both episodes exhausted their seven-call limits. Each made
+three searches, all repeating the literal query `release`; all six returned
+zero candidates. Across both pins: **0 verified reads, 0 evidence bytes, and 0
+joint-role calls**. Both typed need objects contained no evidence, support,
+defeat, alternative, or unresolved-condition requirements; they also invented
+the relation `urgent` and the date `2023-04-01`. No finding was accepted. The
+GPU peak allocation was 1,539,900,416 bytes; model generation took 88.73
+seconds total. The [raw ledgers and summary](../experiments/results/task_episode_calibration_2026-11-26/typed_geometry_world_pilot_2026-11-26/)
+record both pins, the 0.6B model revision, usage and hashes. The runner hash
+matches the preserved `typed_geometry_world_pilot_v1_snapshot.py`.
+
+Inspection found two instrument defects: the typed policy prompt gave literal
+examples for the query `release`, candidate 0, ordinal 0, and outcome `accept`,
+and the read schema hid candidates after the first four even when search had
+returned more. The exact examples were priming the choices the pilot meant to
+measure. The corrected v2 protocol removes those values, asks the planner to
+reformulate a zero-result search, requires nonempty evidence/support/defeat and
+alternative fields for this task, pins the version scope without inventing a
+date, exposes every returned candidate, and excludes seed/role metadata from
+outcome choices. The v2 source is [typed_geometry_world_pilot.py](../experiments/memory/typed_geometry_world_pilot.py).
+
+Before the corrected run, the question, decision rule, controls, and stop
+conditions are:
+
+- **Capability:** infer a revision-scoped status need, select evidence from a
+  multi-source world, use a maintained joint route, and report the pin-specific
+  outcome with verified provenance.
+- **Success signal:** both labels flip correctly; the need identifies the
+  Cobalt route and current pin without fabricated scope; the chosen seed,
+  complete alternative set, stage 1 route call, role-support receipt, and
+  supporting read citations agree with the independent construction.
+- **Control and limit:** this two-pin canary has no equal-information join or
+  iterative-RAG arm. It can qualify or falsify the model/tool interface only;
+  it cannot establish a latent-world advantage. The eight-task calibration and
+  matched controls in [the whole-world protocol](WHOLE_WORLD_EVALUATION.md)
+  remain required.
+- **Stop rule:** one corrected two-pin rerun at the same 0.6B model and budgets.
+  A repeated task-irrelevant query, malformed need, missing route call, wrong
+  revision result, unsupported closure, or citation error leaves the adapter
+  unqualified. No further prompt tuning on this pair and no held-panel run.
+
+V2 is **NOT_RUN** at this documentation revision. Its cap remains seven calls
+per pin, three searches, four source reads, one joint call, 8,192 input and
+1,792 generated tokens per pin, with at most 256 generated tokens per call.
+This visible pilot is one task family across two pins, not the frozen
+eight-task calibration or evidence for broad latent planning.
+
 ## Latent revision software verification, 24–25 November 2026
 
 The review branch's [latent field](../experiments/memory/latent_field.py) passed five focused CPU fixtures. An observation revision reached downstream states through a cycle and matched an independently assembled dense fixed-point reference within its declared residual bound. The fixtures also cover unrelated cells, earlier snapshots, restoration, aggregate contraction, inherited residuals and exhaustion without a write. The field initialized from supplied arrays and used no model weights.
