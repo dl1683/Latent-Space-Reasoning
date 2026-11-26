@@ -9,6 +9,7 @@ from experiments.memory.binding_feedback import BindingFeedback
 from experiments.memory.binding_links import BindingLinkCondition
 from experiments.memory.binding_maintenance import audit_source_observations
 from experiments.memory.binding_memory import BindingCapacityError
+from experiments.memory.binding_replay import replay_binding_repair
 from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
 from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemory, StaleCorpusRevision
 from experiments.memory.latent_feedback import FeedbackKernel
@@ -708,7 +709,10 @@ def test_conditioned_source_paths_feed_two_shared_hidden_transitions(tmp_path):
     observation_value[3, 5], observation_value[4, 5] = .9, -.3
     kernel = FeedbackKernel(query=keys, carry=carry, observation_key=keys, observation_value=observation_value,
                             feedback_key=keys, feedback_value=values, max_steps=3)
-    receiver = BindingFeedback(kernel, frame, (("accept", 5),), query=keys, observation=np.zeros((6, 7)))
+    route = e[0, :, None]
+    binding_values = np.zeros((6, 7))
+    binding_values[0, 0], binding_values[5, 1] = .07, .02
+    receiver = BindingFeedback(kernel, frame, (("accept", 5),), query=route, observation=binding_values)
     seed = .98 * e[0] + .2 * e[4]
     condition = BindingLinkCondition(e[4], .15, .25)
     options = dict(hops=3, work_limit=512, branch_limit=4)
@@ -730,8 +734,10 @@ def test_conditioned_source_paths_feed_two_shared_hidden_transitions(tmp_path):
 
     (direction, history, grade), = oracle.paths(earlier.latest, 3, (e[4], .15, .25))
     assert tuple(step.source for step in branch.role_steps) == tuple(step[0] for step in history)
-    expected_intermediate = np.tanh(earlier.latest @ carry + direction @ observation_value)
-    expected_late = np.tanh(expected_intermediate @ carry)
+    binding_extra = binding_values[0] + .8 * binding_values[5]
+    assert earlier.reads[-1].bounds.possible_strength == .8
+    expected_intermediate = np.tanh(earlier.latest @ carry + binding_extra + direction @ observation_value)
+    expected_late = np.tanh(expected_intermediate @ carry + binding_extra)
     np.testing.assert_allclose(branch.latest, expected_intermediate, atol=1e-12, rtol=0.)
     later = receiver.step(branch)
     np.testing.assert_allclose(later.latest, expected_late, atol=1e-12, rtol=0.)
@@ -740,25 +746,34 @@ def test_conditioned_source_paths_feed_two_shared_hidden_transitions(tmp_path):
     proof = receiver.read_role_links(later, outcomes=_OUTCOMES, work_limit=256)
     assert proof.answer == "accept" and proof.witnesses[0].terminal_source == "independent"
     assert proof.witnesses[0].strength == .7
+    assert replay_binding_repair(later, opening.memory, ("accept", 5)) == ("replay_incomplete", 0, None)
 
     ungated = continue_from(opening, None)
     assert len(ungated.states) == 2
     assert sorted(np.sign(receiver.step(state).latest[6]) for state in ungated.states) == [-1., 1.]
-    censored = continue_from(opening, BindingLinkCondition(e[4], .15, .97, uncertainty=.03))
+    for state in ungated.states:
+        split_read = receiver.read_role_links(receiver.step(state), outcomes=_OUTCOMES, work_limit=256)
+        assert split_read.status == "unresolved" and split_read.inherited_open
+    censored = continue_from(opening, BindingLinkCondition(e[4], .10, .97, uncertainty=.03))
     assert censored.status == "unresolved" and censored.marginal and len(censored.states) == 1
     censored_proof = receiver.read_role_links(receiver.step(censored.states[0]), outcomes=_OUTCOMES,
                                                work_limit=256)
-    assert censored_proof.status == "unresolved" and censored_proof.witnesses == proof.witnesses
+    assert censored_proof.status == "unresolved" and censored_proof.inherited_open
+    assert censored_proof.witnesses == proof.witnesses
     fallback = receiver.continue_role_links(prefix(None), condition=condition, **options)
     assert fallback.status == "no_memory" and len(fallback.states) == 1
     assert receiver.step(fallback.states[0]).latest[6] == 0.
     fixed = _transport_program(owner, opening, "fixed").preview
     fixed_run = receiver.continue_role_links(prefix(fixed), condition=condition, **options)
-    assert fixed_run.status == "no_link" and fixed_run.condition_dots == 2 and fixed_run.states == ()
+    assert fixed_run.status == "no_link" and fixed_run.condition_dots == 2
+    assert receiver.step(fixed_run.states[0]).latest[6] == 0.
     operator_off = owner.prepare_role_links(opening, None).preview
     absent = receiver.continue_role_links(prefix(operator_off), condition=condition, **options)
     assert absent.status == "no_role_program" and len(absent.states) == 1
     assert receiver.step(absent.states[0]).latest[6] == 0.
+    assert branch.reads == absent.states[0].reads
+    np.testing.assert_allclose(np.arctanh(branch.latest) - np.arctanh(absent.states[0].latest),
+                               direction @ observation_value, atol=1e-12, rtol=0.)
 
     limited = receiver.continue_role_links(earlier, condition=condition, hops=3, work_limit=1, branch_limit=4)
     assert limited.status == "work_limit" and limited.states == ()
@@ -769,7 +784,8 @@ def test_conditioned_source_paths_feed_two_shared_hidden_transitions(tmp_path):
     insufficient = receiver.read_role_links(only_shared, outcomes=_OUTCOMES, work_limit=256)
     assert insufficient.status == "unresolved" and insufficient.witnesses == ()
     withdrawn = _write(owner, {"bridge": None})
-    assert continue_from(withdrawn).status == "no_link"
+    withheld = continue_from(withdrawn)
+    assert withheld.status == "no_link" and receiver.step(withheld.states[0]).latest[6] == 0.
     _write(owner, {"bridge": bridge})
     recovered = JournaledCorpusWorkspace(filename, _transport_frame(_no_encoding, width=7)).snapshot()
     np.testing.assert_array_equal(receiver.step(continue_from(recovered).states[0]).latest, later.latest)

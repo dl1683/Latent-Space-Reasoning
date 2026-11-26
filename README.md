@@ -14,7 +14,7 @@ A worker can also [install continuous links directly from typed source observati
 
 A [state-dependent link program](docs/ARCHITECTURE.md#composing-state-dependent-source-transports) carries incoming distinctions across several source operations. A supplied-coordinate journal check adds a late conditional read and shares geometric comparisons across identical directions. Source histories still govern which independent witnesses survive corrections and reopen.
 
-A [conditioned latent continuation](docs/ARCHITECTURE.md#feeding-conditioned-paths-back-into-the-recurrent-core) feeds an admitted path into the next hidden transition of the same receiver. A subsequent application of the block uses that generated state. The supplied-coordinate check exercises same-pin operator removal, separate source withdrawal, restoration and restart.
+A [conditioned latent continuation](docs/ARCHITECTURE.md#feeding-conditioned-paths-back-into-the-recurrent-core) feeds an admitted path into the next hidden transition alongside the ordinary binding contribution. A subsequent application of the block uses that generated state. The supplied-coordinate check exercises same-pin operator removal, separate source withdrawal, restoration and restart. A branch keeps open coverage when it has live alternatives.
 
 The latest Rank 1 output had correct observed decisions in two worlds but failed the frozen terminal parser. Post-hoc rescoring is diagnostic only; **30/32 worlds and causal controls remain unrun**. Resuming requires explicit new finite authorization, frozen parser fixtures, fresh competence worlds, a passed operation-specific positive control and reconciled resources. Historical protocols do not authorize execution.
 

@@ -70,6 +70,7 @@ class BindingLinkRead:
     transports: int = 0
     condition: BindingLinkCondition | None = None
     condition_dots: int = 0
+    inherited_open: bool = False
 
     @property
     def answer(self):

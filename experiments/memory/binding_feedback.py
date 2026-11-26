@@ -102,6 +102,7 @@ class BindingRoleContinuation:
     marginal: bool = False
     condition: BindingLinkCondition | None = None
     condition_dots: int = 0
+    inherited_open: bool = False
 
 
 def _frame_contract(memory):
@@ -207,8 +208,9 @@ class BindingFeedback:
         read = state.memory._read_role_links(state.latest, outcomes=outcomes, work_limit=work_limit, hops=hops,
                                             condition=condition, prior_steps=state.role_steps,
                                             prior_strength=state.role_strength)
-        if state._role_open and read.status in ("supported", "no_link"):
-            return replace(read, status="unresolved")
+        if state._role_open:
+            status = "unresolved" if read.status in ("supported", "no_link") else read.status
+            return replace(read, status=status, inherited_open=True)
         return read
 
     def continue_role_links(self, state, *, hops=1, condition=None, work_limit, branch_limit):
@@ -233,7 +235,8 @@ class BindingFeedback:
             raise ValueError("role continuation requires matching source and hidden widths")
         seed = links._seed_path(state.latest, width, condition, state.role_steps, state.role_strength)
         if seed is None:
-            return BindingRoleContinuation("no_direction", condition=condition)
+            return BindingRoleContinuation("no_direction", (self.step(state),), condition=condition,
+                                           inherited_open=state._role_open)
         effort = _LinkReadWork(limit, links.floor, links.uncertainty)
         states = ()
         with np.errstate(over="raise", invalid="raise", under="ignore"):
@@ -247,17 +250,20 @@ class BindingFeedback:
                 if len(paths) > branch_limit:
                     status = "branch_limit"
                 elif paths:
-                    states = tuple(self._continue_role_path(state, path, open_coverage) for path in paths)
+                    read = self._next_read(state)
+                    branch_open = open_coverage or len(paths) > 1
+                    states = tuple(self._continue_role_path(state, read, path, branch_open) for path in paths)
                     if status == "no_link":
                         status = "continued"
+                elif not open_coverage:
+                    states = (self.step(state),)
         return BindingRoleContinuation(status, states, effort.work, len(links.unresolved) + len(effort.unavailable),
-                                       effort.marginal, condition, effort.condition_dots)
+                                       effort.marginal, condition, effort.condition_dots, state._role_open)
 
-    def _continue_role_path(self, state, path, open_coverage):
+    def _continue_role_path(self, state, read, path, open_coverage):
         observation = _apply_value(self._kernel._observation_value, path.direction)
-        feedback, _, _ = self._kernel._advance(state.feedback, observation_extra=observation)
-        return replace(state, _feedback=feedback, _creation_key=_STATE_CREATION_KEY,
-                       _reads=(*state.reads, BindingStepRead("role_continuation")),
+        advanced = self._advance_read(state, read, role_extra=observation)
+        return replace(advanced, _creation_key=_STATE_CREATION_KEY,
                        _role_steps=path.steps, _role_strength=path.strength, _role_open=open_coverage)
 
     def _intervene_latest(self, state, hidden):
@@ -335,7 +341,7 @@ class BindingFeedback:
         """Read the chosen bounds, then perform the same transition with or without memory."""
         return self._advance_read(state, self._next_read(state))
 
-    def _advance_read(self, state, read, *, diagnostics=None):
+    def _advance_read(self, state, read, *, diagnostics=None, role_extra=None):
         extra = None
         if state.memory is not None:
             features = np.zeros(6)
@@ -358,6 +364,8 @@ class BindingFeedback:
                         amount = max(0., float(state.latest @ state_axis) - threshold)
                         if amount:
                             extra += (amount * (anchor @ anchor_axis)) * output
+                if role_extra is not None:
+                    extra += role_extra
         feedback, _, _ = self._kernel._advance(state.feedback, observation_extra=extra, diagnostics=diagnostics)
         return replace(state, _feedback=feedback, _creation_key=_STATE_CREATION_KEY, _reads=(*state.reads, read))
 
@@ -371,6 +379,8 @@ class BindingFeedback:
         steps, route_limit = index(steps), index(route_limit)
         if not 1 <= steps <= self._kernel._max_steps - len(state.reads) or route_limit < 1:
             raise ValueError("continuation search requires a positive route limit and steps within the horizon")
+        if state.role_steps:
+            raise ValueError("binding continuation search requires a prefix without role continuations")
         if any(read.status != "resolved" for read in state.reads):
             raise ValueError("continuation search requires a resolved prefix")
         node, coordinate = target

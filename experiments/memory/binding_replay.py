@@ -34,6 +34,8 @@ def _replay_step(receiver, state):
 
 def failed_binding_prefix(trajectory, addresses):
     """Return the ordered route prefix only for a closed absence at the target."""
+    if trajectory.role_steps:
+        return None
     prefix, last = trajectory.reads[:-1], trajectory.reads[-1]
     if any(read.status != "resolved" or read.bounds.possible_strength is None for read in prefix):
         return None
@@ -56,6 +58,8 @@ def _matches_read(read, address, expected):
 
 def replay_binding_repair(trajectory, memory, address, *, expected=None, receiver=None):
     """Compare with an incumbent replay on the same source rows."""
+    if trajectory.role_steps:
+        return "replay_incomplete", 0, None
     if receiver is None:
         receiver = trajectory._receiver
     replay = receiver.start(trajectory.feedback.seed, memory)
@@ -276,6 +280,8 @@ def _same_binding_read(left, right):
 
 
 def _replay_coordinate_prefix(candidate, state, atol, *, memory=None):
+    if state.role_steps:
+        raise ValueError("guarded replay requires a trajectory without role continuations")
     replay = candidate.start(state.feedback.seed, state.memory if memory is None else memory)
     for read, hidden in zip(state.reads, state.feedback.history, strict=True):
         replay = candidate.step(replay)
