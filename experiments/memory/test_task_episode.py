@@ -9,7 +9,8 @@ from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemo
 from experiments.memory.latent_factor_field import LatentFactorField
 from experiments.memory.registered_factor_compiler import RegisteredFactorCompiler
 from experiments.memory.task_episode import (
-    EpisodeLimits, EpisodePolicy, PolicyReply, _Tools, read_episode, read_episode_pair, run_episode,
+    EpisodeArtifact, EpisodeLimits, EpisodePolicy, PolicyReply, _Ledger, _Tools,
+    read_episode, read_episode_pair, run_episode,
 )
 from experiments.memory.task_evidence import JointStateBudget, TaskWorld
 from experiments.memory.test_task_evidence import _source_tool, _write
@@ -170,6 +171,83 @@ def test_matched_policies_follow_indirect_sources_and_charge_repeated_context(tm
         read_episode_pair(left, corrected, contrast="memory")
 
 
+def test_compact_delivery_keeps_verified_paths_across_source_revisions(tmp_path):
+    full = replace(POLICY, state_kind="compact_needs", compact_delivery=False)
+    compact = replace(full, compact_delivery=True)
+    limits = replace(LIMITS, calls=9, context_tokens=10240)
+
+    def run(pinned, policy, name):
+        evaluate = investigate("notes")
+
+        def generate(call):
+            frame = json.loads(dict(call.messages)["user"])
+            phase = frame["planning_phase"]
+            system = dict(call.messages)["system"]
+            if phase == "declare":
+                if policy.compact_delivery:
+                    assert '"plan"' in system and '"finish"' not in system
+                if frame["last_rejection"] is None:
+                    return reply(plan=[])
+                assert "must declare at least one need" in frame["last_rejection"]
+                return reply(plan=[{
+                    "id": "release", "parent": None, "discovered_from": [],
+                    "target_or_event": "release", "relation": "authority and coverage",
+                    "time_version_scope": "current pin", "evidence_sought": ["release rule", "review log"],
+                    "support_requirements": ["verified approval"], "defeat_requirements": ["verified withholding"],
+                    "alternatives": ["duty assigned separately"], "unresolved_conditions": ["duty coverage"],
+                }])
+            if policy.compact_delivery and phase == "act_after_plan":
+                assert "first action must search" in system and '"finish"' not in system
+            if policy.compact_delivery and phase == "investigate":
+                assert '"op":"read","need_id":id,"candidate":integer' in system
+                assert '"op":"probe","need_id":id,"read":integer' in system
+                assert "Every unknown needs a same-need open question." in system
+            if policy.compact_delivery and frame["receipts"]:
+                first = frame["receipts"][0]["result"]["candidates"][0]["span"]
+                assert "version_sha256" not in first and "span_sha256" not in first
+                assert first["span_id"] == first["source_version"] == 0
+            decision = json.loads(evaluate(call).text)
+            if "finish" in decision:
+                for finding in decision["finish"]["findings"]:
+                    finding["need_id"] = "release"
+                decision["finish"]["open_questions"] = [
+                    {"need_id": "release", "question": text} for text in decision["finish"]["open_questions"]
+                ]
+            else:
+                decision["tool"]["need_id"] = "release"
+                decision["need_additions"] = []
+            return reply(**decision)
+
+        return run_episode(TASK, pinned, policy, limits, Tokenizer(), generate, tmp_path / name)
+
+    reports, artifacts = {}, {}
+    for version, stance in (("cleared", "supports"), ("withheld", "defeats")):
+        pinned = world(tmp_path, version)
+        artifacts[version] = run(pinned, compact, version + "-compact")
+        left, right = read_episode_pair(run(pinned, full, version + "-full"), artifacts[version])
+        source_steps = lambda records: [row["data"] for row in records if row["kind"] == "tool"]
+        assert source_steps(left) == source_steps(right)
+        a, b = left[-1]["data"], right[-1]["data"]
+        assert a["status"] == b["status"] == "completed"
+        assert a["submission"] == b["submission"]
+        assert b["submission"]["findings"][0]["stance"] == stance
+        assert b["submission"]["findings"][0]["citations"] == [0, 1, 2]
+        assert b["usage"]["input_tokens"] < a["usage"]["input_tokens"]
+        assert b["usage"]["calls"] == a["usage"]["calls"] == 9
+        assert sum(row["kind"] == "rejection" for row in right) == 1
+        reports[version] = right
+
+    with pytest.raises(ValueError, match="pin differs"):
+        read_episode_pair(artifacts["cleared"], artifacts["withheld"])
+    opening, corrected = reports["cleared"], reports["withheld"]
+    assert opening[0]["data"]["pin"] != corrected[0]["data"]["pin"]
+    reads = lambda rows: [row["data"]["result"] for row in rows
+                          if row["kind"] == "tool" and row["data"]["result"]["status"] == "VERIFIED_SOURCE_BYTES"]
+    old, new = reads(opening), reads(corrected)
+    assert old[0]["span"] == new[0]["span"]
+    assert old[-1]["span"]["version_sha256"] != new[-1]["span"]["version_sha256"]
+
+
 def test_attempt_limits_invalid_citations_and_probe_contrast_are_explicit(tmp_path):
     pinned = world(tmp_path)
 
@@ -310,8 +388,19 @@ def test_predispatch_refusal_and_backend_failure_are_durable(tmp_path):
         assert [row["kind"] for row in records] == ["start", "refusal", "finish"]
         assert records[-1]["data"]["status"] == name + "_limit"
         assert records[-1]["data"]["usage"]["input_tokens"] == 0
+        refusal = records[1]["data"]
+        assert len(refusal["input_ids"]) == refusal["input_tokens"] > 0
+        assert records[-1]["data"]["usage"]["calls"] == 0
         with pytest.raises(FileExistsError):
             run_episode(TASK, pinned, POLICY, limits, Tokenizer(), fail, path)
+    malformed = tmp_path / "malformed-refusal"
+    with malformed.open("wb") as handle:
+        ledger = _Ledger(handle)
+        ledger.write("start", records[0]["data"])
+        ledger.write("refusal", None)
+        ledger.write("finish", records[-1]["data"])
+    with pytest.raises(ValueError, match="refusal is malformed"):
+        read_episode(EpisodeArtifact(malformed, ledger.head))
     artifact = run_episode(TASK, pinned, POLICY, LIMITS, Tokenizer(), fail, tmp_path / "error")
     records = read_episode(artifact)
     assert records[-2]["data"] == {"error_type": "RuntimeError"}
@@ -324,6 +413,25 @@ def test_predispatch_refusal_and_backend_failure_are_durable(tmp_path):
     artifact.path.write_bytes(raw[:-1])
     with pytest.raises(ValueError, match="incomplete episode record"):
         read_episode(artifact)
+
+@pytest.mark.parametrize(("version", "native"), [(1, False), (1, True), (2, False)])
+def test_legacy_source_setup_requires_an_old_non_native_episode(tmp_path, version, native):
+    path = tmp_path / "accounting"
+    opening = {"version": version, "policy": {"state_kind": "notes", "compact_delivery": False},
+               "setup_source_bytes": 15}
+    if native:
+        opening["native_world_pin"] = {}
+    with path.open("wb") as handle:
+        ledger = _Ledger(handle)
+        ledger.write("start", opening)
+        ledger.write("finish", {"status": "input_limit"})
+    artifact = EpisodeArtifact(path, ledger.head)
+    if version == 1 and not native:
+        assert read_episode(artifact)[0]["data"] == opening
+    else:
+        with pytest.raises(ValueError, match="source setup accounting is malformed"):
+            read_episode(artifact)
+
 
 def _joint_world(tmp_path):
     def encode(raw):
@@ -423,10 +531,11 @@ def _compact_joint_policy(*, assume=None, rejected=False, query="commission"):
     return generate
 
 
-def test_compact_task_verifies_joint_conflict_withdrawal_and_restoration(tmp_path):
+@pytest.mark.parametrize("compact_delivery", [False, True])
+def test_compact_task_verifies_joint_conflict_withdrawal_and_restoration(tmp_path, compact_delivery):
     field, owner, records, entries, batches, raw, opening = _joint_world(tmp_path)
     initial_world = _joint_task_world(tmp_path, records, opening)
-    policy = replace(POLICY, state_kind="compact_needs")
+    policy = replace(POLICY, state_kind="compact_needs", compact_delivery=compact_delivery)
     limits = replace(LIMITS, calls=12, context_tokens=16000, input_tokens=160000, output_tokens=8192,
                      access=replace(LIMITS.access, joint_state=JointStateBudget()))
 

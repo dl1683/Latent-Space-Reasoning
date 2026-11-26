@@ -4,6 +4,47 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Compact task delivery and historical replay, 26 November 2026
+
+**Historical replay.** The reader reopened all 19 tracked version-1
+episode ledgers with their original chain heads. The five saved
+compact-planner ledgers and their summaries also matched their
+recorded file hashes. Each of those five records an input-limit stop
+on the same visible task.
+
+Of 36,857 logged input positions across 27 dispatched requests, 25,097
+matched the immediately preceding request's prefix. The longest earlier
+prefix added five positions. This is a theoretical prefill opportunity
+conditional on exact replay, with no reduction in logical input.
+Two runs repeated three rejected requests with identical input IDs and
+output reservations, accounting for 4,690 input positions. A different
+run reached relevant evidence and still ran out of input allowance.
+The old refusals recorded a token count without the unsubmitted IDs.
+
+**Formatting replay.** Replacing only span hashes with host handles on
+the original prompts, including the new handle instruction, changed the
+total system and user message content from 136,063 to 131,018 UTF-8
+bytes. In a separate comparison, re-rendering those 27 saved user states
+with both current contracts changed the full format's 121,073 bytes to
+71,442 with compact delivery, a 41.0% reduction. The archive predates
+the explicit phase field, so phase was reconstructed from the registry
+and prior tool receipts. Both current renders preserve the same source
+text. The old runner used different system instructions, hence the
+different comparison base. These are rendered message sizes. Production
+token counts, recall or fallback work, latency and whether a real model
+would finish were not measured.
+
+**Software control.** A
+scripted policy completed both delivery formats under the same task
+allowances, recovering after a deliberately rejected initial plan.
+Both formats produced identical verified tool receipts and findings on
+each of two source pins. The opening approval gave support. Changing
+the separate review log changed the finding to defeat while the older
+rule's verified span remained valid. A comparison across mismatched
+pins refused. The v2 ledger records the delivery choice and unsubmitted
+refusal IDs. Real-model calibration remains open.
+[Evaluation contract](WHOLE_WORLD_EVALUATION.md#blinded-revision-to-task-experiment)
+
 ## Qualifying a continuation before a late task, 26 November 2026
 
 **CPU software control.** A native worker drafted one pending

@@ -813,6 +813,21 @@ digest refuses the request. For a historical answer, use the custody
 object for its earlier epoch.
 [PEP controller](../experiments/memory/pep_relation_control.py)
 
+## Compact task-episode delivery
+
+Set `EpisodePolicy(..., state_kind="compact_needs", compact_delivery=True)`
+to use stage-specific instructions and episode-local span/version IDs.
+The model still receives the complete registry and verified evidence
+passages, and submits citations using the ordinary read IDs. The
+ledger retains the full source digests. Use the same setting for both
+arms of a native/text or memory ablation.
+
+New episodes use ledger version 2. An input or context refusal keeps
+the exact prepared, unsubmitted IDs without charging a dispatch.
+The reader still opens version-1 non-native episodes with the single
+source setup field. Version-2 and native records require the full
+source, native verification and combined byte totals.
+
 ## Checking a joint state in a task
 
 Use `run_episode` with a current `TaskWorld` whose `bindings` and

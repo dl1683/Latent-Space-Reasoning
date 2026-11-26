@@ -689,6 +689,16 @@ matrix above, independently grade need semantics, and keep all held labels
 sealed. Neither interface nor calibration alone establishes a latent-world
 advantage.
 
+For the next visible calibration, `compact_delivery=True` supplies the
+current phase's shorter instructions and episode-local source handles.
+It retains the need and evidence inventories and the ordinary source
+validation. Use the same choice, decoder identity and allowances
+across compared arms. In addition to grounded completion and actual
+input usage, report repeated rejected requests separately from tasks
+whose evidence grows. Run a paired full/compact control before using
+the shorter format in a memory comparison.
+[Offline framing and two-pin control](RESULTS.md#compact-task-delivery-and-historical-replay-26-november-2026)
+
 The query-blind bridge worker can now take a bounded batch from a revision-led
 agenda and publish its resulting operators. Late paths carry the publication
 digest for bridges installed by those batches. A typed `role_support`

@@ -32,6 +32,15 @@ controls, both an already-sufficient baseline and an expired forecast
 also failed to justify the extra operation.
 [Forecast control](RESULTS.md#qualifying-a-continuation-before-a-late-task-26-november-2026)
 
+**Identical rejected requests can exhaust an episode, 26 November 2026.**
+Three repeated input sequences and output reservations used 4,690
+logged input positions across two saved attempts. A different attempt
+had no rejection and still exhausted the budget after reading evidence.
+Separate ineffective retries from growing evidence delivery before
+changing the planner or allocating a new trial. Shorter messages alone
+do not repair a deterministic rejection loop.
+[Archive replay](RESULTS.md#compact-task-delivery-and-historical-replay-26-november-2026)
+
 **Packed query bytes require an explicit receipt encoding, 26 November 2026.**
 The task-episode integration added raw selection step queries to the
 in-process read. Before serialization, the fresh-process JSON path failed

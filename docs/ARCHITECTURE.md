@@ -452,6 +452,19 @@ Search uses the existing BM25 scorer as a candidate source, and records how many
 
 An observed support, defeat or documented unknown requires verified reads from the investigation. A later verified case can settle a need despite an earlier rejected opening. A role probe can take a direction from a retained observation of a completely verified source, or take an explicit vector. The dossier keeps the request and direction. An open joint or temporal receipt remains open until new admissible computation addresses its cause. Legacy probes outside a temporal view still permit a policy reconciliation recorded beside the original result. The dossier retains opposing cases, hypothetical cases, any unsatisfied child need and the record of failed attempts. Judging whether the answer follows from the cited material requires semantic evaluation.
 
+The compact needs policy has an opt-in compact delivery format. The
+host keeps the complete need registry, tool receipts and verified source
+bytes. It renders only the instructions for the current planning phase
+and presents source span hashes as stable episode-local identities, with
+source IDs and coordinates. Citation IDs still resolve to the original
+verified reads. No evidence passages are evicted. The episode charges
+each dispatched input token and keeps the exact IDs of an unsubmitted budget
+refusal separately. Compare the same delivery format across memory and
+native/text arms. Exact prefix caching is a separate conventional control
+for repeated prefill. It leaves the logical token allowance in place.
+[Compact delivery result](RESULTS.md#compact-task-delivery-and-historical-replay-26-november-2026)
+· [Automatic prefix caching](https://docs.vllm.ai/en/latest/features/automatic_prefix_caching/)
+
 In `run_episode`, a configured receiver enables the `reason` action, which
 starts from one completely verified source observation and advances a bounded
 population through caller-selected ordinary or role-driven stages. The receiver
