@@ -2039,6 +2039,41 @@ context discovery and a cost advantage remain open.
 [Source actions](../experiments/memory/source_constraints.py) ·
 [Upstream change](https://github.com/hgrecco/pint/pull/1920)
 
+#### Binding late unit hypotheses to a maintained catalog
+
+[SLICE] One registered context can designate a unit catalog for a
+fixed target unit. Maintenance pins the exact reduced factors,
+dimensions and source dependency graph from the registry and its
+imports. The context names no conversion pair. Version 3 binds
+the catalog's factors, dependency expressions and source spans to
+the publication digest. Earlier source constraint formats retain
+their existing wire layouts.
+The catalog charges for recorded definition terms and expanded
+dimensions and refuses publication when the bound is exhausted.
+
+At task time the caller supplies named unit hypotheses and a seed
+with the opening magnitude. The retained catalog provides each
+coefficient and proof without reacquiring the raw files. The
+numerical action still waits for the ordinary block to select the
+registered context. Names with identical actions and receipts
+share a branch, with all names kept as premises. Other actions run
+on separate branches. A supported outcome is conditional on the
+supplied hypotheses. A name outside the explicit grammar remains
+open. A branch with an unused or withheld action stays open for
+a named-hypothesis read. Two conflicting definitions under one name still yield a
+refusal, even when later evidence could distinguish them.
+
+Continuation retains these branches and their shared source pin.
+Repair on the same publication retains every original root.
+A new catalog publication requires a fresh task frontier.
+Compare a warm exact catalog with the same pin, hypotheses and
+provenance burden. A dependency solver that retains conditional
+interpretations under the same spelling is a stronger carrier
+for later narrowing. Another alternative propagates coefficient
+bounds and splits only when a downstream decision can differ.
+[Catalog implementation](../experiments/memory/source_constraints.py) ·
+[Joint read](../experiments/memory/recurrent_world.py)
+
 ## Claims and evidence boundary (2026-10-15; not a new experiment)
 
 | Claim | Tag and current boundary | What is still required |

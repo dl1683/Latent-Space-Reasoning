@@ -9,13 +9,15 @@ import re
 from types import MappingProxyType
 
 from experiments.memory.relational_feedback import Expression, _FLOAT_MAX, _rounded, combine
-from experiments.memory.unit_program import MAX_REGISTRY_BYTES, compile_units
+from experiments.memory.unit_program import MAX_REGISTRY_BYTES, UnitProgram, compile_units
 from experiments.memory.verified_source_tool import SourceSpan
 from experiments.memory.world_transport import WorldWitness, _source_ids
 
 
 MAX_CONSTRAINT_SOURCE_BYTES = 4096
 UNIT_ACTION_GRAMMAR = "multiplicative-units-v1"
+UNIT_CATALOG_GRAMMAR = "named-unit-factors-v1"
+_UNIT_CATALOG_TERMS = 65_536
 _MAX_AXES = 16
 _MAX_SOURCES = 32
 _RATIONAL = re.compile(r"-?[0-9]{1,7}(/[1-9][0-9]{0,6}|\.[0-9]{1,7})?")
@@ -34,6 +36,7 @@ class SourceConstraintPolicy:
     authorities: tuple[str, ...]
     contexts: tuple[str, ...]
     unit_registry: str | None = None
+    unit_catalog: bool = False
 
     def __post_init__(self):
         if (type(self.scope) is not tuple or len(self.scope) != 5
@@ -60,10 +63,14 @@ class SourceConstraintPolicy:
             or not self.scope[4].isidentifier()
         ):
             raise ValueError("a unit registry requires scalar channels and one named target unit")
+        if (type(self.unit_catalog) is not bool
+                or self.unit_catalog and (self.unit_registry is None or len(self.contexts) != 1)):
+            raise ValueError("a unit catalog requires one registered conversion context")
 
     def wire(self):
         linear = (self.scope, self.input_axes, self.output_axes, self.middle_width, self.authorities, self.contexts)
-        return linear if self.unit_registry is None else (*linear, self.unit_registry, UNIT_ACTION_GRAMMAR)
+        grammar = UNIT_CATALOG_GRAMMAR if self.unit_catalog else UNIT_ACTION_GRAMMAR
+        return linear if self.unit_registry is None else (*linear, self.unit_registry, grammar)
 
     def byte_limit(self, source):
         return (MAX_REGISTRY_BYTES if self.unit_registry is not None and source in self.authorities
@@ -87,6 +94,7 @@ class ConstraintUse:
     inconsistent_measurements: tuple[WorldWitness, ...] = ()
     unreconciled_scope: tuple[WorldWitness, ...] = ()
     withheld_conversion: tuple[str, tuple[WorldWitness, ...]] | None = None
+    source_units: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, eq=False)
@@ -122,9 +130,24 @@ class SourceConstraintPublication:
     kernel_sha256: str
     source_versions: tuple[tuple[str, str | None, int | None], ...]
     actions: MappingProxyType
+    catalog: UnitProgram | None = None
+    catalog_context: WorldWitness | None = None
+    publication_sha256: str = ""
 
     def active_on(self, pin):
         return self.source_versions == constraint_versions(pin, self.policy)
+
+    def unit_action(self, name):
+        if self.catalog is None or name is None:
+            return None
+        target = self.policy.scope[4]
+        result = self.catalog.convert(name, target)
+        if name not in self.catalog:
+            result = replace(result, status="outside_grammar")
+        elif target not in self.catalog:
+            result = replace(result, status="target_unit")
+        generations = {source: generation for source, _, generation in self.source_versions}
+        return _conversion_action(result, self.policy.output_axes[0], generations, self.publication_sha256)
 
 
 def constraint_versions(pin, policy):
@@ -161,6 +184,10 @@ def _declaration(raw, policy):
         return "unreconciled_scope", None, None
     kind, left, right = data[2:]
     if policy.unit_registry is not None:
+        if policy.unit_catalog:
+            if kind == "catalog" and left is None and right is None:
+                return kind, left, right
+            raise ValueError("unit catalog context must leave the source unit unspecified")
         if kind == "conversion" and all(type(unit) is str and unit.isidentifier() for unit in (left, right)):
             return kind, left, right
         raise ValueError("numeric context must declare a conversion between registry names")
@@ -261,17 +288,29 @@ def _linear_actions(pin, policy, records, publication_sha256):
     return {source: operation for source in sorted(contexts)}
 
 
+def _conversion_action(result, output, generations, publication_sha256):
+    evidence = tuple(WorldWitness(span, generations[span.source_id], 0) for span in result.spans)
+    if result.coefficient is None:
+        use = ConstraintUse(publication_sha256, (), (output,), withheld_conversion=(result.status, evidence))
+        return ConstraintAction((), use)
+    use = ConstraintUse(publication_sha256, ((output, evidence),), ())
+    return ConstraintAction(((output, (result.coefficient,), (Fraction(),)),), use)
+
+
 def _unit_actions(pin, policy, records, publication_sha256):
     authorities = {source: raw for source, raw, _ in records if source in policy.authorities}
     if set(authorities) != set(policy.authorities):
-        return {}
-    program = compile_units(policy.unit_registry, authorities)
+        return {}, None, None
+    program = compile_units(policy.unit_registry, authorities,
+                            max_terms=_UNIT_CATALOG_TERMS if policy.unit_catalog else None)
     output, = policy.output_axes
     actions = {}
     for source, raw, witness in records:
         if source not in policy.contexts or not _context_matches(pin, source, witness.span):
             continue
         declaration = _declaration(raw, policy)
+        if declaration is not None and declaration[0] == "catalog":
+            return {}, program, witness
         if declaration is None or declaration[0] != "conversion":
             continue
         if declaration[2] != policy.scope[4]:
@@ -279,21 +318,15 @@ def _unit_actions(pin, policy, records, publication_sha256):
             actions[source] = ConstraintAction((), use)
             continue
         result = program.convert(*declaration[1:])
-        evidence = tuple(WorldWitness(span, pin._source_revisions[span.source_id], 0) for span in result.spans)
-        if result.coefficient is None:
-            use = ConstraintUse(publication_sha256, (), (output,), withheld_conversion=(result.status, evidence))
-            actions[source] = ConstraintAction((), use)
-        else:
-            use = ConstraintUse(publication_sha256, ((output, evidence),), ())
-            actions[source] = ConstraintAction(((output, (result.coefficient,), (Fraction(),)),), use)
-    return actions
+        actions[source] = _conversion_action(result, output, pin._source_revisions, publication_sha256)
+    return actions, None, None
 
 
 def bind_constraint_publication(publication, digest):
     bound = {action: replace(action, use=replace(action.use, publication_sha256=digest))
              for action in dict.fromkeys(publication.actions.values())}
     actions = MappingProxyType({source: bound[action] for source, action in publication.actions.items()})
-    return replace(publication, actions=actions)
+    return replace(publication, actions=actions, publication_sha256=digest)
 
 
 def unit_action_digest(publication):
@@ -302,6 +335,8 @@ def unit_action_digest(publication):
                  w.span.span_sha256, w.generation) for w in witnesses]
 
     rows = []
+    if publication.policy.unit_catalog and publication.catalog is not None:
+        rows.append(("catalog", publication.catalog.fingerprint(), spans((publication.catalog_context,))))
     for source, action in sorted(publication.actions.items()):
         if action.use.withheld_conversion is None:
             axis, (coefficient,), _ = action.relations[0]
@@ -327,6 +362,10 @@ def compile_source_constraints(pin, policy, kernel_sha256, records, publication_
             raise ValueError("numeric declaration disagrees with its pinned source bytes")
         span = SourceSpan(source, digest, 0, len(raw), digest)
         verified.append((source, raw, WorldWitness(span, generation, 0)))
-    compiler = _linear_actions if policy.unit_registry is None else _unit_actions
-    actions = compiler(pin, policy, verified, publication_sha256)
-    return SourceConstraintPublication(policy, kernel_sha256, versions, MappingProxyType(actions))
+    catalog = context = None
+    if policy.unit_registry is None:
+        actions = _linear_actions(pin, policy, verified, publication_sha256)
+    else:
+        actions, catalog, context = _unit_actions(pin, policy, verified, publication_sha256)
+    return SourceConstraintPublication(policy, kernel_sha256, versions, MappingProxyType(actions),
+                                       catalog, context, publication_sha256)

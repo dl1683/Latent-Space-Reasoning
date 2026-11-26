@@ -24,6 +24,14 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Different definitions can share one spelling.**
+The catalog keeps inconsistent coefficients under one name open.
+Names supplied by the caller also leave semantic completeness open.
+For later narrowing, retain each definition's applicable scope
+and expressions, then let independently verified later evidence
+resolve which alternatives remain possible.
+[Catalog results](RESULTS.md#late-unit-hypotheses-on-a-maintained-catalog-26-november-2026)
+
 **A revision can introduce contradictory definitions.**
 Pint's changed registry includes two different expressions for
 `chain` and related unqualified units. Choosing the last loaded

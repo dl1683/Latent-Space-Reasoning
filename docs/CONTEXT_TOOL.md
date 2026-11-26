@@ -944,3 +944,20 @@ witness spans. Joint-specific refusals include `target_unit`,
 must have magnitude from the smallest normal Float64 value
 through half its maximum finite value.
 Observation keys and task encodings still come from the caller.
+
+Set `unit_catalog=True` for one registered conversion context
+whose last three JSON fields are `["catalog", null, null]`.
+Compile it through the same maintenance call. Provide
+`unit_candidates=("acre", "survey_acre")`, or any distinct
+explicit registry names within the hypothesis allowance, to
+`reason_joint`. Each name is limited to 128 characters.
+These names are task premises. Read
+`outcome.unit_premises` for the original list and
+`branch.unit_candidates` for the names on a trajectory.
+The receipt records the source dependencies of the conversion.
+`outside_grammar` means the explicit catalog could not name the
+proposed unit. It leaves prefix, plural, external and other
+interpretations open. Keep the same published catalog for
+`repair_joint`, or start a fresh read after it changes.
+The catalog compile cap is 65,536 counted definition and expansion
+terms. A capacity refusal leaves the journal tip unchanged.

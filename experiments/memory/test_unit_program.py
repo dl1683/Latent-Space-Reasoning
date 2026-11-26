@@ -22,7 +22,7 @@ foot = 0.3048 * metre
 legacy_foot = 1200 / 3937 * metre
 @group legacy
 chain = 66 * legacy_foot
-acre = 10 * chain ** 2
+acre = 10 * chain ** 2 = area_acre
 @end
 """
 _REVISED = b"""@import metric.txt
@@ -36,7 +36,7 @@ derived_area = 10 * chain ** 2
 @end
 @group international
 chain = 66 * foot
-acre = 43560 * foot ** 2
+acre = 43560 * foot ** 2 = area_acre
 @end
 """
 _METRIC = b"""metre = [length] = m
@@ -95,7 +95,7 @@ def test_canonical_conflict_receipt_survives_a_recursive_alias():
     assert program.convert("plain_loop", "metre").status == "open"
 
 
-def _unit_world(tmp_path, opening, *, next_context=None):
+def _unit_world(tmp_path, opening, *, next_context=None, catalog=False):
     axes = np.eye(7)
     scope = ("unit fixture", "opening magnitudes", "unit registry", "global definitions", "hectare")
 
@@ -109,6 +109,12 @@ def _unit_world(tmp_path, opening, *, next_context=None):
         "different-target": (context("chain", "metre"), 5),
         "confirmed": (b"The source-backed threshold was cleared.", 4),
     }
+    if catalog:
+        observations = {
+            "unit-context": (json.dumps(["lsr-linear-v1", scope, "catalog", None, None]).encode(), 0),
+            "confirmed": observations["confirmed"],
+            "archive": (b"Earlier catalog copy for historical comparison.", 2),
+        }
 
     def encoder(raw):
         for data, axis in observations.values():
@@ -132,8 +138,9 @@ def _unit_world(tmp_path, opening, *, next_context=None):
         carry[3] = axes[3]
     block = FeedbackKernel(query=30. * axes, carry=carry, observation_key=keys, observation_value=values,
                            feedback_key=axes, feedback_value=np.zeros_like(axes), max_steps=2)
-    policy = SourceConstraintPolicy(scope, (6,), (3,), 1, ("units.txt", "metric.txt"),
-                                    ("acre", "legacy", "chain", "different-target"), unit_registry="units.txt")
+    contexts = ("unit-context",) if catalog else ("acre", "legacy", "chain", "different-target")
+    policy = SourceConstraintPolicy(scope, (6,), (3,), 1, ("units.txt", "metric.txt"), contexts,
+                                    unit_registry="units.txt", unit_catalog=catalog)
     world = RecurrentWorld(block, encoder_version=frame.encoder_version, max_observations=5,
                            feedback=True, constraint_policy=policy)
     return journal, frame, base, world, sources, axes
@@ -146,11 +153,107 @@ def _install(world, journal, revision, sources):
     return world.maintain_constraints(journal, revision, records)
 
 
-def _read(world, revision, axes, context_axis=0, *, steps=2, magnitude=1., operators=True):
+def _read(world, revision, axes, context_axis=0, *, steps=2, magnitude=1., operators=True, candidates=None):
     threshold = 30. * tanh(.404686)
     seed = .8 * axes[context_axis] + magnitude * axes[6]
-    return world.reason_joint(seed, steps=steps, max_hypotheses=1, null_logit=threshold, margin=1.e-6,
-                              memory=world.prepare(revision, operators=operators))
+    capacity = 1 if candidates is None else len(candidates)
+    return world.reason_joint(seed, steps=steps, max_hypotheses=capacity, null_logit=threshold, margin=1.e-6,
+                              memory=world.prepare(revision, operators=operators), unit_candidates=candidates)
+
+
+def test_late_unit_candidates_use_one_source_backed_context_across_revisions(tmp_path, monkeypatch):
+    journal, frame, base, world, source, axes = _unit_world(tmp_path, _BASE, catalog=True)
+    old = _install(world, journal, base, source)
+    revised = _publish(journal, {"units.txt": _REVISED})
+    new = _install(world, journal, revised, {**source, "units.txt": _REVISED})
+    assert revised.changed_sources == ("units.txt",)
+    assert old.memory.source_digests["unit-context"] == new.memory.source_digests["unit-context"]
+
+    def no_compilation(*args):
+        pytest.fail("task path recompiled the registry")
+
+    with monkeypatch.context() as patch:
+        patch.setattr("experiments.memory.source_constraints.compile_units", no_compilation)
+        assert _read(world, old, axes, candidates=("acre",)).read(axes[5], floor=.8).status == "supported"
+        assert _read(world, new, axes, candidates=("acre",)).read(axes[5], floor=.8).status == "missing"
+        assert _read(world, new, axes, candidates=("legacy_acre",)).read(axes[5], floor=.8).status == "supported"
+        assert _read(world, new, axes, candidates=("legacy_acre",), operators=False).read(
+            axes[5], floor=.8,
+        ).status == "unresolved"
+        assert _read(world, new, axes).read(axes[5], floor=.8).status == "unresolved"
+        omitted = world.reason_joint(.8 * axes[0] + axes[6], steps=2, max_hypotheses=2,
+                                     null_logit=12., margin=.1, unit_candidates=("acre", "legacy_acre"))
+        assert len(omitted.branches) == 1
+        assert omitted.read(axes[5], floor=.8).status == "memory_omitted"
+        assert omitted.read(axes[5], floor=.8).unit_premises == ("acre", "legacy_acre")
+        receipt, = _read(world, old, axes, steps=1, candidates=("legacy_acre",)).branches[0].constraint_uses
+        assert receipt.withheld_conversion[0] == "outside_grammar"
+        unknown, = _read(world, new, axes, steps=1, candidates=("kilometre",)).branches[0].constraint_uses
+        assert unknown.withheld_conversion[0] == "outside_grammar"
+
+        single = _read(world, old, axes, candidates=("acre",))
+        aliases = _read(world, old, axes, candidates=("acre", "area_acre"))
+        assert aliases.block_evaluations == single.block_evaluations
+        assert aliases.branches[0].unit_candidates == ("acre", "area_acre")
+        assert aliases.branches[0].constraint_uses[0].source_units == ("acre", "area_acre")
+        absent = _read(world, new, axes, steps=1, candidates=("prefixed_unit", "pluralized_unit"))
+        assert len(absent.branches) == 1
+        assert absent.branches[0].constraint_uses[0].source_units == ("prefixed_unit", "pluralized_unit")
+        assert absent.read(axes[5], floor=.8).status == "unresolved"
+
+        both = _read(world, new, axes, candidates=("acre", "legacy_acre"))
+        assert {branch.unit_candidates for branch in both.branches} == {("acre",), ("legacy_acre",)}
+        outcome = both.read(axes[5], floor=.8)
+        assert outcome.status == "unresolved"
+        assert outcome.unit_premises == ("acre", "legacy_acre")
+        witness, = outcome.support
+        assert witness.constraint_uses[0].source_units == ("legacy_acre",)
+        assert witness.constraint_uses[0].publication_sha256 == new.journal_sha256
+
+        changed = _publish(journal, {"archive": None})
+        repaired = world.repair_joint(both, world.prepare(changed), max_hypotheses=2)
+        assert {branch.unit_candidates for branch in repaired.branches} == {("acre",), ("legacy_acre",)}
+        assert repaired.read(axes[5], floor=.8).status == "unresolved"
+
+    reopened = JournaledCorpusWorkspace(tmp_path / "units.sqlite", frame)
+    prior = reopened.snapshot_at(old.revision, max_events=10, max_payload_bytes=25_000)
+    assert _read(world, prior, axes, candidates=("acre",)).read(axes[5], floor=.8).status == "supported"
+
+
+def test_catalog_separates_an_unknown_name_from_an_unresolved_target(tmp_path):
+    journal, _, _, world, source, axes = _unit_world(tmp_path, _BASE, catalog=True)
+    broken_target = b"metre = [length] = m\nhectare = 10000 * unknown_area\n"
+    changed = _publish(journal, {"metric.txt": broken_target})
+    pin = _install(world, journal, changed, {**source, "metric.txt": broken_target})
+    result = _read(world, pin, axes, steps=1, candidates=("acre", "implicit_prefix"))
+    reasons = {branch.unit_candidates[0]: branch.constraint_uses[0].withheld_conversion[0]
+               for branch in result.branches}
+    assert reasons == {"acre": "open", "implicit_prefix": "outside_grammar"}
+
+    missing_target = b"metre = [length] = m\n"
+    changed = _publish(journal, {"metric.txt": missing_target})
+    pin = _install(world, journal, changed, {**source, "metric.txt": missing_target})
+    readout = _read(world, pin, axes, steps=1, candidates=("acre",))
+    assert readout.branches[0].constraint_uses[0].withheld_conversion[0] == "target_unit"
+
+
+def test_named_hypothesis_without_its_catalog_action_cannot_claim_a_finding(tmp_path):
+    journal, _, base, world, source, axes = _unit_world(tmp_path, _BASE, catalog=True)
+    pin = _install(world, journal, base, source)
+    options = dict(steps=1, max_hypotheses=1, null_logit=12., margin=.1, memory=world.prepare(pin))
+    assert world.reason_joint(axes[3], **options).read(axes[5], floor=.8).status == "supported"
+    result = world.reason_joint(axes[3], **options, unit_candidates=("acre",))
+    assert not result.branches[0].constraint_uses
+    assert result.read(axes[5], floor=.8).status == "unresolved"
+    assert not result.read(axes[5], floor=.8).support
+
+
+def test_catalog_work_cap_refuses_the_whole_publication(tmp_path, monkeypatch):
+    journal, _, base, world, source, _ = _unit_world(tmp_path, _BASE, catalog=True)
+    monkeypatch.setattr("experiments.memory.source_constraints._UNIT_CATALOG_TERMS", 32)
+    with pytest.raises(ValueError, match="exceeded its term budget"):
+        _install(world, journal, base, source)
+    assert journal.snapshot() is base
 
 
 def test_registered_unit_source_changes_the_actual_recurrent_choice(tmp_path):
@@ -196,8 +299,9 @@ def test_registered_unit_source_changes_the_actual_recurrent_choice(tmp_path):
     assert _read(world, reopened.snapshot(), axes).read(axes[5], floor=.8).status == "missing"
 
 
-def test_unit_event_rejects_changed_grammar_or_action_digest(tmp_path):
-    journal, _, base, world, source, _ = _unit_world(tmp_path, _BASE)
+@pytest.mark.parametrize("catalog", (False, True))
+def test_unit_event_rejects_changed_grammar_or_action_digest(tmp_path, catalog):
+    journal, _, base, world, source, _ = _unit_world(tmp_path, _BASE, catalog=catalog)
     pin = _install(world, journal, base, source)
     with sqlite3.connect(tmp_path / "units.sqlite") as db:
         payload, = db.execute("SELECT payload FROM corpus_events WHERE revision = ?", (pin.revision,)).fetchone()

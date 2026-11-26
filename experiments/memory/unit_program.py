@@ -5,6 +5,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from fractions import Fraction
 from hashlib import sha256
+import json
 import re
 from types import MappingProxyType
 
@@ -129,7 +130,7 @@ def _references(definition):
         yield from (symbol for symbol, _ in definition.expression.powers if not _DIMENSION.fullmatch(symbol))
 
 
-def _read_registry(source, raw, includes, definitions):
+def _read_registry(source, raw, includes, definitions, charge):
     if type(raw) is not bytes or not 0 < len(raw) <= MAX_REGISTRY_BYTES:
         raise ValueError("unit registry bytes exceed the supported range")
     digest, offset, block = sha256(raw).hexdigest(), 0, None
@@ -162,11 +163,13 @@ def _read_registry(source, raw, includes, definitions):
             product = _unit_expression(expression)
         except ValueError:
             product = None
+        charge(1 if product is None else 1 + len(product.powers))
         definition = _Definition(product, SourceSpan(source, digest, start, start + len(fragment),
                                                      sha256(fragment).hexdigest()))
         definitions.setdefault(name, []).append(definition)
         for alias in dict.fromkeys(aliases):
             if alias and alias not in ("_", name) and alias.isidentifier():
+                charge(2)
                 reference = _Product(Fraction(1), ((name, 1),))
                 definitions.setdefault(alias, []).append(_Definition(reference, definition.span))
     if block is not None:
@@ -183,6 +186,26 @@ class UnitProgram:
     @property
     def statuses(self):
         return MappingProxyType({name: result.status for name, result in self._values.items()})
+
+    def __contains__(self, name):
+        return name in self._values
+
+    def fingerprint(self):
+        """Bind the reduced factors and the source graph for deferred action receipts."""
+        def product(value):
+            return None if value is None else (str(value.scale), value.powers)
+
+        digest = sha256(b"unit-factors-v1\n")
+        for name in sorted(self._values):
+            value = self._values[name]
+            definitions = [
+                (product(item.expression), item.span.source_id, item.span.version_sha256,
+                 item.span.start_byte, item.span.end_byte, item.span.span_sha256)
+                for item in self._definitions[name]
+            ]
+            row = (name, value.status, product(value.value), definitions)
+            digest.update(json.dumps(row, separators=(",", ":")).encode("ascii") + b"\n")
+        return digest.hexdigest()
 
     def convert(self, source, target):
         left, right = (self._values.get(name, _Resolved("missing")) for name in (source, target))
@@ -224,16 +247,26 @@ def _propagate_conflicts(values, definitions):
                 pending.append(dependent)
 
 
-def compile_units(entry, records):
+def compile_units(entry, records, *, max_terms=None):
     """Compile exact dependencies within the supplied, closed import catalogue."""
+    if max_terms is not None and (type(max_terms) is not int or max_terms < 1):
+        raise ValueError("unit term budget must be positive")
+    remaining = max_terms
     definitions, read, importing = {}, set(), set()
+
+    def charge(terms):
+        nonlocal remaining
+        if remaining is not None:
+            remaining -= terms
+            if remaining < 0:
+                raise ValueError("unit catalog compilation exceeded its term budget")
 
     def include(source):
         if source in importing or source not in records:
             raise ValueError("unit registry import is missing or cyclic")
         if source not in read:
             importing.add(source)
-            _read_registry(source, records[source], include, definitions)
+            _read_registry(source, records[source], include, definitions, charge)
             importing.remove(source)
             read.add(source)
 
@@ -255,6 +288,7 @@ def compile_units(entry, records):
                     components.append((part.value, exponent))
         if statuses - {"resolved"}:
             return _Resolved("conflict" if "conflict" in statuses else "open")
+        charge(sum(1 + len(value.powers) for value, _ in components))
         scale = _Product(expression.scale)
         try:
             for value, exponent in components:

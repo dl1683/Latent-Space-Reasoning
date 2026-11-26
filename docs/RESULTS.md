@@ -4,6 +4,36 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Late unit hypotheses on a maintained catalog, 26 November 2026
+
+**Visible CPU software verification.** One generic context and
+one output unit served the pinned Pint registry and its import.
+The worker published both catalogs before the eight candidate
+names and four numerical inputs were supplied. The 64 late input
+and name combinations on the two pins agreed with a warm evaluation
+of the same exact catalog and receiving operation. An explicit
+context for an individual conversion was unnecessary.
+
+Changing only the upstream registry made `survey_acre` usable
+under the unchanged context. The `acre` and `survey_acre`
+hypotheses on the new pin reached different evidence outcomes and
+left the combined read open. The historical pin and same-source
+operator removal were checked. The two equivalent names `ha`
+and `hectare` retained both premise labels on one trajectory
+with three block evaluations. Two distinct acreage interpretations
+used six evaluations. The offline fixture also repairs multiple
+roots after an unrelated change and checks that task execution
+can proceed without recompiling the registry.
+Version 1 and version 2 journals created by the preceding commit
+reopened with their original publication digests and signed reads.
+
+The task hypotheses, coordinates and readout were supplied.
+This verifies deferred operator binding and shared execution for
+identical witnessed actions. End-to-end costs and learned task
+selection remain open.
+[Unit catalog fixtures](../experiments/memory/test_unit_program.py) ·
+[Source revision](https://github.com/hgrecco/pint/pull/1920)
+
 ## Source-derived actions on a Pint revision, 26 November 2026
 
 **Visible CPU software verification.** The worker read

@@ -10,7 +10,9 @@ import numpy as np
 from experiments.memory import relational_feedback as relations
 from experiments.memory.corpus_bindings import CorpusRevision
 from experiments.memory.latent_feedback import FeedbackKernel, ObservationMemory, _apply_value, _frozen, _real_array
-from experiments.memory.source_constraints import ConstraintUse, SourceConstraintPolicy, SourceConstraintPublication
+from experiments.memory.source_constraints import (
+    ConstraintAction, ConstraintUse, SourceConstraintPolicy, SourceConstraintPublication,
+)
 from experiments.memory.world_transport import (
     SourceTransportPolicy, SourceTransportPublication, SourceTransportUse, WorldWitness,
     coordinate_key, require_transport_scope, world_kernel_digest,
@@ -85,6 +87,9 @@ class JointWorldBranch:
     _constraint_use: ConstraintUse | None = None
     _constraint_input: MappingProxyType | None = None
     _unit_context: WorldWitness | None = None
+    _unit_candidates: tuple[str, ...] = ()
+    _catalog_action: ConstraintAction | None = None
+    _catalog_used: bool = False
 
     def _ancestry(self):
         node = self
@@ -119,12 +124,17 @@ class JointWorldBranch:
         return tuple(node._constraint_use for node in reversed(tuple(self._ancestry()))
                      if node._constraint_use is not None)
 
+    @property
+    def unit_candidates(self):
+        return self._unit_candidates
+
 
 @dataclass(frozen=True)
 class JointWorldOutcome:
     status: str
     support: tuple[JointWorldBranch, ...] = ()
     opposition: tuple[JointWorldBranch, ...] = ()
+    unit_premises: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, eq=False)
@@ -159,6 +169,7 @@ class JointWorldRead:
     block_evaluations: int = 0
     priority_scores: int = 0
     reused_writes: int = 0
+    unit_premises: tuple[str, ...] = ()
     _layers: tuple[tuple[_JointExpansion, ...], ...] = ()
 
     def read(self, direction, *, floor):
@@ -167,11 +178,13 @@ class JointWorldRead:
         if direction.shape != self.branches[0].hidden.shape or not isfinite(floor) or floor <= 0:
             raise ValueError("readout requires a matching direction and positive finite floor")
         if self.overflow:
-            return JointWorldOutcome("hypothesis_limit")
+            return JointWorldOutcome("hypothesis_limit", unit_premises=self.unit_premises)
         if self.memory is None:
-            return JointWorldOutcome("memory_omitted")
+            return JointWorldOutcome("memory_omitted", unit_premises=self.unit_premises)
 
-        complete = tuple(branch for branch in self.branches if branch._complete and branch._pending_destination is None)
+        complete = tuple(branch for branch in self.branches
+                         if branch._complete and branch._pending_destination is None
+                         and (not self.unit_premises or branch._catalog_used))
         support, opposition, open_readout = [], [], False
         with np.errstate(over="raise", invalid="raise"):
             for branch in complete:
@@ -185,7 +198,8 @@ class JointWorldRead:
                     opposition.append(branch)
                 elif high >= floor or low <= -floor:
                     open_readout = True
-        if (self.uncertain_routes or self.memory.unlocated_sources or open_readout
+        unused_premises = self.unit_premises and any(not branch._catalog_used for branch in self.branches)
+        if (self.uncertain_routes or self.memory.unlocated_sources or open_readout or unused_premises
                 or any(branch._pending_destination is not None for branch in self.branches)):
             status = "unresolved"
         elif not complete:
@@ -200,7 +214,7 @@ class JointWorldRead:
             status = "opposed"
         else:
             status = "undecided"
-        return JointWorldOutcome(status, tuple(support), tuple(opposition))
+        return JointWorldOutcome(status, tuple(support), tuple(opposition), self.unit_premises)
 
 
 class RecurrentWorld:
@@ -379,7 +393,7 @@ class RecurrentWorld:
             state = replace(state, _seed=hidden)
         return RecurrentWorldRead(memory, tuple(history), steps * len(state._memory._keys), 0, packed_rows)
 
-    def reason_joint(self, seed, *, steps, max_hypotheses, null_logit, margin, memory=None):
+    def reason_joint(self, seed, *, steps, max_hypotheses, null_logit, margin, memory=None, unit_candidates=None):
         """Advance locally distinct hypotheses instead of pooling their observations."""
         null_logit, margin = float(null_logit), float(margin)
         lower, upper = null_logit - margin, null_logit + margin
@@ -387,6 +401,14 @@ class RecurrentWorld:
             raise ValueError("joint reasoning requires a finite null score and positive margin")
         if memory is not None:
             self._require_memory(memory)
+        if unit_candidates is not None:
+            policy = self._constraint_policy
+            if (policy is None or not policy.unit_catalog or type(unit_candidates) is not tuple
+                    or not unit_candidates or len(unit_candidates) > index(max_hypotheses)
+                    or any(type(name) is not str or len(name) > 128 or not name.isidentifier()
+                           for name in unit_candidates)
+                    or len(unit_candidates) != len(set(unit_candidates))):
+                raise ValueError("unit candidates must be distinct registry names within the hypothesis limit")
         initial = self._kernel._vector(seed)
         publication = None if memory is None else memory._source_constraints
         additions = None
@@ -394,9 +416,29 @@ class RecurrentWorld:
             points = relations.point(initial)
             additions = MappingProxyType({action: action.project(publication.policy, points)
                                           for action in dict.fromkeys(publication.actions.values())})
-        opening = JointWorldBranch(initial, initial, _constraint_input=additions)
-        state = JointWorldRead(memory, (opening,), self, (lower, upper))
+        openings = []
+        for names, action in self._unit_hypotheses(publication, unit_candidates):
+            projected = (additions if action is None
+                         else MappingProxyType({action: action.project(publication.policy, points)}))
+            openings.append(JointWorldBranch(initial, initial, _constraint_input=projected,
+                                             _unit_candidates=names, _catalog_action=action))
+        state = JointWorldRead(memory, tuple(openings), self, (lower, upper), unit_premises=unit_candidates or ())
         return self.continue_joint(state, steps=steps, max_hypotheses=max_hypotheses)
+
+    @staticmethod
+    def _unit_hypotheses(publication, candidates):
+        if candidates is None:
+            return (((), None),)
+        if publication is None or publication.catalog is None:
+            return ((candidates, None),)
+        groups = {}
+        for name in candidates:
+            action = publication.unit_action(name)
+            key = action.relations, action.use
+            names, representative = groups.setdefault(key, ([], action))
+            names.append(name)
+        return tuple((tuple(names), replace(action, use=replace(action.use, source_units=tuple(names))))
+                     for names, action in groups.values())
 
     def continue_joint(self, state, *, steps, max_hypotheses):
         """Resume at a committed frontier on the same source and operator pin."""
@@ -427,7 +469,10 @@ class RecurrentWorld:
 
         changed = {source for source in previous._sources.keys() | memory._sources.keys()
                    if self._bank_version(previous, source) != self._bank_version(memory, source)}
-        opening = JointWorldRead(memory, (state._layers[0][0].parent,), self, state._thresholds)
+        roots = tuple(expansion.parent for expansion in state._layers[0])
+        if max_hypotheses < len(roots):
+            raise ValueError("repair requires capacity for the original hypotheses")
+        opening = JointWorldRead(memory, roots, self, state._thresholds, unit_premises=state.unit_premises)
         return self._expand_joint(opening, state.steps, max_hypotheses, prior_layers=state._layers, changed=changed)
 
     @staticmethod
@@ -559,7 +604,7 @@ class RecurrentWorld:
                                memory._sources[witness.span.source_id].observations._observations[witness.ordinal])
                 transport = self._selected_transport(memory, witness, observation)
                 policy = memory._transport_policy if memory is not None else None
-                constraint_policy, constraint = self._selected_constraint(memory, witness)
+                constraint_policy, constraint = self._selected_constraint(memory, witness, parent)
                 child, evaluations = self._advance_joint(
                     parent, observation, witness, feedback_value, transport, policy, constraint_policy, constraint,
                 )
@@ -579,7 +624,7 @@ class RecurrentWorld:
         return publication.operations.get(coordinate_key(observation))
 
     @staticmethod
-    def _selected_constraint(memory, witness):
+    def _selected_constraint(memory, witness, parent):
         if witness is None or memory._constraint_policy is None:
             return None, None
         policy = memory._constraint_policy
@@ -587,6 +632,8 @@ class RecurrentWorld:
         if source not in policy.contexts:
             return None, None
         publication = memory._source_constraints
+        if policy.unit_catalog:
+            return policy, parent._catalog_action if publication is not None and witness == publication.catalog_context else None
         return policy, None if publication is None else publication.actions.get(source)
 
     @staticmethod
@@ -684,8 +731,12 @@ class RecurrentWorld:
         if transport is not None and (source_extra is not None or task_extra is not None):
             use = replace(transport.use, source_row=source_extra is not None, task_row=task_extra is not None)
         destination = None if source_extra is None else transport.destination
+        catalog_used = (branch._catalog_used or
+                        bool(constraint_use and constraint_use.source_units and constraint_use.withheld_conversion is None))
         successor = JointWorldBranch(hidden, source_next, branch, witness, key, value, complete,
                                      _transport_use=use, _pending_destination=destination, _source_relations=source_rows,
                                      _constraint_use=constraint_use,
-                                     _constraint_input=branch._constraint_input, _unit_context=unit_context)
+                                     _constraint_input=branch._constraint_input, _unit_context=unit_context,
+                                     _unit_candidates=branch._unit_candidates, _catalog_action=branch._catalog_action,
+                                     _catalog_used=catalog_used)
         return successor, evaluations

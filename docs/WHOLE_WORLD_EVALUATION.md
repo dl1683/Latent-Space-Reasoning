@@ -411,6 +411,15 @@ task magnitudes and which late comparisons will be asked outside
 maintenance. The current typed contexts and compiler establish an
 exact reference and a receiving interface for this comparison.
 
+In the catalog slice, source maintenance knows neither the specific
+conversion pair nor the task magnitude. The late task still supplies
+names. A learned choice must infer those hypotheses from the task
+and retained evidence, including an open outcome when the scope
+remains ambiguous. Give the direct warm arm the same catalog and
+candidate or source access. Compare qualified definition
+alternatives, catalog-only exact computation, and memory-omitted
+operation under a fixed task and evidence budget.
+
 The contributor's visible prose amendments give a second case
 with a numerical bound arriving from an independent approval.
 Require a worker to propose the governing scope and variable
