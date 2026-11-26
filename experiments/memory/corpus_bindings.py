@@ -138,7 +138,7 @@ class CorpusBindingMemory:
     encoder_version: str
     source_digests: Mapping[str, str]
     outlier_sources: frozenset[str]
-    _encode: Callable[[bytes], Iterable[BindingMention]]
+    _encode: Callable[[bytes], Iterable[BindingMention]] | Callable[[str, bytes], Iterable[BindingMention]]
     _anchors: np.ndarray
     _min_similarity: float
     _gap: float
@@ -152,15 +152,18 @@ class CorpusBindingMemory:
         default_factory=lambda: MappingProxyType({}),
     )
     _factor_registry_seed: tuple[str, ...] | None = None
+    _source_aware: bool = False
 
     @classmethod
     def prepare(cls, predicates, anchors, gates, sources, *, encode, encoder_version,
-                min_similarity, gap, term_limit=64, retained_limit=64, expanded_limit=65536):
+                min_similarity, gap, term_limit=64, retained_limit=64, expanded_limit=65536, source_aware=False):
         anchors = _real_array(anchors)
         if anchors.ndim != 2 or not all(anchors.shape):
             raise ValueError("binding anchors must be a nonempty matrix")
         if not callable(encode) or type(encoder_version) is not str or not encoder_version:
             raise ValueError("a named encoder is required")
+        if type(source_aware) is not bool:
+            raise ValueError("source-aware encoding must be boolean")
         if not -1 <= min_similarity <= 1 or not 0 <= gap <= 2:
             raise ValueError("invalid cosine similarity policy")
         expanded_limit = index(expanded_limit)
@@ -170,15 +173,17 @@ class CorpusBindingMemory:
         bank = BindingMemory.prepare(predicates, len(anchors), gates, {}, materialize=False,
                                      term_limit=term_limit, retained_limit=retained_limit)
         empty = cls(encoder_version, MappingProxyType({}), frozenset(), encode, anchors,
-                    float(min_similarity), float(gap), expanded_limit, bank, bank, MappingProxyType({}))
+                    float(min_similarity), float(gap), expanded_limit, bank, bank, MappingProxyType({}),
+                    _source_aware=source_aware)
         return empty.revise(sources)
 
-    def _project(self, raw, remaining, vector_limit):
+    def _project(self, source, raw, remaining, vector_limit):
         certain, possible, mentions, factors = [], [], [], []
         scopes = {}
         outlier = False
         clause_type = BinaryFactorClause if self._factor_registry_seed is None else NamedBinaryFactorClause
-        for mention in self._encode(raw):
+        encoded = self._encode(source, raw) if self._source_aware else self._encode(raw)
+        for mention in encoded:
             if not isinstance(mention, BindingMention):
                 raise ValueError("the encoder must emit binding mentions")
             if mention.predicate not in self._certain._predicates:
@@ -244,7 +249,7 @@ class CorpusBindingMemory:
                 raise ValueError("source records must be bytes")
             digest = sha256(raw).hexdigest()
             if digest != previous:
-                certain, possible, outlier, mentions, clauses, remaining = self._project(raw, remaining, vector_limit)
+                certain, possible, outlier, mentions, clauses, remaining = self._project(source, raw, remaining, vector_limit)
                 vector_limit -= len(mentions)
                 staged.append(_EncodedChange(source, digest, certain, possible, outlier, mentions, clauses))
         return tuple(staged)

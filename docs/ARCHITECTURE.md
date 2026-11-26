@@ -1962,6 +1962,38 @@ checks. [Compiler](../experiments/memory/world_transport.py) ·
 [Revision fixture](../experiments/memory/test_world_transport.py) ·
 [Differential dataflow](https://www.microsoft.com/en-us/research/publication/differential-dataflow/)
 
+#### Discovering operations in mixed documents
+
+[SLICE] Opt-in `DiscoveredTransportPolicy(scoped_clauses=True)`
+uses a version 4 source transport event. It groups reserved rows by
+their exact byte span within a source generation. One scoped pair
+contributes one law. Rows from different spans never form a pair.
+A malformed clause with a grounded entry blocks that coordinate as
+either the opening or intermediate step. An orphan exit, missing
+scope or ungrounded entry can conceal a competitor anywhere and
+prevents publication. Multiple outgoing claims submitted as separate
+scoped observations remain open, including repeated claims. This worker compiles uniquely determined operations.
+
+Ordinary observations retain their original mention ordinals, while
+the dense bank holds only ordinary rows outside the authority spans.
+An ordinary relay must come from a different source from both laws.
+A context may share a source with the law on a disjoint span. The
+journal keeps its individual source and law receipts and does not
+multiply a document's origin by its count of scopes. The policy
+conservatively invalidates on any change to an authority-bearing
+document, including an edit outside its law span. Replaying the
+event checks the operations and witnesses on its exact parent.
+
+An opt-in source-aware corpus frame passes `(source_id, raw_bytes)`
+to the frozen encoder. Use a stable source identity when relative
+reference interpretation requires it. The mode participates in the
+frame digest. The byte-only encoding contract and earlier transport
+events keep their existing format. The visible repository control
+takes canonical module names from the pinned Git tree and appends
+coordinates from source declarations before task generation. It
+uses the Python AST and a fixed numeric transition. [Runner](../experiments/memory/repository_transport_control.py) ·
+[Results](RESULTS.md#acquiring-from-committed-mixed-sources-26-november-2026)
+
 #### Composing calibrated source spans
 
 [SLICE] An opt-in worker fits two maps from paired source directions.

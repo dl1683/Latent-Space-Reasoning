@@ -9,7 +9,7 @@ from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemo
 from experiments.memory.latent_feedback import FeedbackKernel
 from experiments.memory.recurrent_world import RecurrentWorld
 from experiments.memory.role_validity import RoleSupersession
-from experiments.memory.verified_source_tool import VerifiedSourceTool
+from experiments.memory.verified_source_tool import VerifiedSourceTool, sha256
 from experiments.memory.world_transport import (
     DiscoveredTransportPolicy, SourceTransportPolicy, TransportAlignment, transport_action_rows,
 )
@@ -301,6 +301,133 @@ def test_transport_discovers_across_opaque_source_ids_then_revises_without_a_tas
     assert repaired.read(axes[6], floor=.7).status == "supported"
     assert not repaired.uncertain_routes
     np.testing.assert_array_equal(repaired.branches[0].history, pending.branches[0].history)
+
+
+def test_scoped_discovery_reads_mixed_documents_by_original_ordinal(tmp_path):
+    axes = dict(zip("ABCDEFX", np.eye(7), strict=True))
+    sources = {
+        "A": b"law A B\ncontext self\nlaw D E\n",
+        "B": b"law B C\ncontext self\n",
+        "C": b"relay C\n",
+        "D": b"context self\n",
+        "E": b"law E F\n",
+        "F": b"relay F\n",
+        "X": b"context self\n",
+    }
+
+    def encode(source, raw):
+        offset = 0
+        for line in raw.splitlines(keepends=True):
+            role, *names = line.decode("ascii").split()
+            tags = {"law": ("transport_entry", "transport_exit"), "entry": ("transport_entry",),
+                    "exit": ("transport_exit",),
+                    "law-relay": ("transport_entry", "transport_exit", "relay"),
+                    "law-context": ("transport_entry", "transport_exit", "context")}.get(role, (role,))
+            if role in ("law-context", "law-relay"):
+                names.append(names[0] if role == "law-context" else names[-1])
+            end = offset + len(line.rstrip())
+            for tag, name in zip(tags, names, strict=True):
+                yield BindingMention(tag, axes[source if name == "self" else name], 1., (offset, end))
+            offset += len(line)
+
+    # The same bytes in two different path-addressed sources receive their own coordinates.
+    anchors = np.asarray(tuple(axes.values()))
+    frame = CorpusBindingMemory.prepare(("context", "relay", "transport_entry", "transport_exit"),
+                                        anchors, {}, {}, encode=encode, encoder_version="mixed-file-fixture",
+                                        min_similarity=1., gap=0., source_aware=True)
+    eye, zeros = np.eye(7), np.zeros((7, 7))
+    values = zeros.copy()
+    values[2], values[5] = 2. * axes["C"], 2. * axes["F"]
+    kernel = FeedbackKernel(query=30. * eye, carry=None, observation_key=eye, observation_value=values,
+                            feedback_key=eye, feedback_value=zeros, max_steps=2)
+    path = tmp_path / "scoped.sqlite"
+    owner = JournaledCorpusWorkspace(path, frame, create=True)
+    opening = _publish(owner, sources)
+    assert opening.memory.source_digests["D"] == opening.memory.source_digests["X"]
+    assert not np.array_equal(opening.memory.source_mentions("D")[0].vector,
+                              opening.memory.source_mentions("X")[0].vector)
+    plain = DiscoveredTransportPolicy("context", "relay", 2., 4, 10)
+    old = RecurrentWorld(kernel, encoder_version=frame.encoder_version, max_observations=8,
+                         feedback=True, transport_policy=plain)
+    assert old.maintain_transports(owner, opening) is opening
+
+    policy = replace(plain, scoped_clauses=True)
+    world = RecurrentWorld(kernel, encoder_version=frame.encoder_version, max_observations=8,
+                           feedback=True, transport_policy=policy)
+    published = world.maintain_transports(owner, opening)
+    bank = world.prepare(published, packed=False)
+    assert bank.projected_rows == 6 and bank.packed_rows == 0
+    # Keep the two authority clauses in A but only its ordinal 2 in the ordinary bank.
+    finding = _read(world, bank, axes["A"]).read(axes["C"], floor=.8)
+    assert finding.status == "supported"
+    branch, = finding.support
+    assert [(w.span.source_id, w.ordinal) for w in branch.witnesses] == [("A", 2), ("C", 0)]
+    use, = branch.transport_uses
+    assert [(w.span.source_id, w.ordinal) for w in use.evidence] == [("A", 0), ("A", 1), ("B", 0), ("B", 1)]
+    for witness in (*branch.witnesses, *use.evidence):
+        span = witness.span
+        assert span == published.memory.source_mention_span(span.source_id, witness.ordinal)
+        assert witness.generation == published._source_revisions[span.source_id]
+        assert span.span_sha256 == sha256(sources[span.source_id][span.start_byte:span.end_byte])
+    assert _read(world, bank, axes["D"]).read(axes["F"], floor=.8).status == "supported"
+    off = world.prepare(published, previous=bank, packed=False, operators=False)
+    assert off._sources is bank._sources and off.projected_rows == 0
+    assert _read(world, off, axes["A"]).read(axes["C"], floor=.8).status == "missing"
+
+    swapped = _publish(owner, {"A": b"law A E\ncontext self\nlaw D B\n"})
+    swapped = world.maintain_transports(owner, swapped)
+    swapped_bank = world.prepare(swapped, previous=bank)
+    assert _read(world, swapped_bank, axes["A"]).read(axes["F"], floor=.8).status == "supported"
+    assert _read(world, swapped_bank, axes["D"]).read(axes["C"], floor=.8).status == "supported"
+    _publish(owner, {"A": sources["A"]})
+
+    dependent = _publish(owner, {"B": sources["B"] + b"relay C\n", "C": None})
+    dependent = world.maintain_transports(owner, dependent)
+    result = _read(world, world.prepare(dependent), axes["A"])
+    assert result.branches[0].witnesses[-1].span.source_id == "B"
+    assert result.read(axes["C"], floor=.8).status == "missing"
+
+    shared_span = _publish(owner, {"B": b"law-relay B C\n"})
+    shared_span = world.maintain_transports(owner, shared_span)
+    shared_bank = world.prepare(shared_span)
+    assert "B" not in shared_bank._sources
+    assert _read(world, shared_bank, axes["A"]).read(axes["C"], floor=.8).status == "missing"
+
+    self_context = _publish(owner, {"A": b"law-context A B\nlaw D E\n",
+                                    "B": sources["B"], "C": sources["C"]})
+    self_context = world.maintain_transports(owner, self_context)
+    assert "A" not in world.prepare(self_context)._sources
+    _publish(owner, {"A": sources["A"]})
+
+    # A malformed, located clause competes with B's valid one without closing
+    # the entire publication. Unrelated D remains usable.
+    contested = _publish(owner, {"B": sources["B"] + b"entry B\n"})
+    pending = world.prepare(contested, previous=bank, packed=False)
+    assert pending._source_transports is None
+    corrected = world.maintain_transports(owner, contested)
+    revised = world.prepare(corrected, previous=pending, packed=False)
+    a = _read(world, revised, axes["A"])
+    assert a.read(axes["C"], floor=.8).status == "unresolved"
+    assert ("B", 3) in {(w.span.source_id, w.ordinal) for w in a.uncertain_routes}
+    assert _read(world, revised, axes["D"]).read(axes["F"], floor=.8).status == "supported"
+    assert revised._sources["D"] is bank._sources["D"]
+
+    # An exit scoped to a different line cannot be paired with the entry.
+    split = _publish(owner, {"B": b"entry B\nexit C\ncontext self\n"})
+    assert world.maintain_transports(owner, split) is split
+    assert _read(world, world.prepare(split), axes["D"]).read(axes["F"], floor=.8).status == "unresolved"
+    restored = world.maintain_transports(owner, _publish(owner, {"B": sources["B"]}))
+    assert _read(world, world.prepare(restored), axes["A"]).read(axes["C"], floor=.8).status == "supported"
+
+    def forbid_encoder(*_):
+        pytest.fail("historical replay reopened the encoder")
+
+    reopened = JournaledCorpusWorkspace(path, replace(frame, _encode=forbid_encoder))
+    archive = reopened.snapshot_at(published.revision, max_events=20, max_payload_bytes=200000)
+    replayed, = _read(world, world.prepare(archive), axes["A"]).branches
+    assert replayed.transport_uses == branch.transport_uses
+    np.testing.assert_array_equal(replayed.history, branch.history)
+    assert reopened.snapshot().journal_sha256 == restored.journal_sha256
 
 
 @pytest.mark.parametrize("route_changes", [True, False], ids=["changed-witness", "same-witness"])

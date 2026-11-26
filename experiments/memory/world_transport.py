@@ -1,5 +1,6 @@
 """Compile scoped latent transports from journaled source laws."""
 
+from bisect import bisect_left
 from collections import defaultdict
 from dataclasses import asdict, dataclass, replace
 from hashlib import sha256
@@ -103,6 +104,7 @@ class DiscoveredTransportPolicy:
     max_terms: int
     max_sources: int
     max_mentions: int = 65_536
+    scoped_clauses: bool = False
     alignment: ClassVar[None] = None
 
     def __post_init__(self):
@@ -113,6 +115,8 @@ class DiscoveredTransportPolicy:
         if (type(self.gain) not in (int, float) or not isfinite(self.gain) or self.gain <= 0
                 or any(type(cap) is not int or cap < 1 for cap in (self.max_terms, self.max_sources, self.max_mentions))):
             raise ValueError("discovery requires finite positive gain and work allowances")
+        if type(self.scoped_clauses) is not bool:
+            raise ValueError("scoped transport discovery must be boolean")
         object.__setattr__(self, "gain", float(self.gain))
 
     def wire(self):
@@ -190,6 +194,34 @@ def transport_authorities(pin, policy):
                         if any(row[0] in _TRANSPORT_ROLES for row in mentions[source])))
 
 
+def transport_observation_ordinals(rows):
+    # An ordinary row cannot reuse the bytes that assert a law.
+    authority = sorted(row[4][:2] for row in rows if row[0] in _TRANSPORT_ROLES and row[4] is not None)
+    starts, rightmost = [], []
+    for start, end in authority:
+        starts.append(start)
+        rightmost.append(max(rightmost[-1], end) if rightmost else end)
+
+    ordinary = []
+    for ordinal, (predicate, _, _, _, span) in enumerate(rows):
+        if predicate in _TRANSPORT_ROLES:
+            continue
+        if span is not None:
+            prior = bisect_left(starts, span[1]) - 1
+            if prior >= 0 and rightmost[prior] > span[0]:
+                continue
+        ordinary.append(ordinal)
+    return tuple(ordinary)
+
+
+def _authority_groups(rows, *, scoped):
+    groups = defaultdict(list)
+    for ordinal, row in enumerate(rows):
+        if row[0] in _TRANSPORT_ROLES:
+            groups[row[4] if scoped else None].append((ordinal, row))
+    return groups.values()
+
+
 def transport_accepts(pin, policy, witness, *, relay):
     source = witness.span.source_id
     if type(policy) is SourceTransportPolicy:
@@ -223,27 +255,26 @@ def transport_discovery_coverage(pin, policy, authorities):
     memory = pin.memory
     for source in authorities:
         generation = pin._source_revisions[source]
-        starts, exits, witnesses = [], [], []
-        unresolved_entry = False
-        for ordinal, (predicate, _, vector, grounded, _) in enumerate(memory._mentions[source]):
-            if predicate not in _TRANSPORT_ROLES:
-                continue
-            span = memory.source_mention_span(source, ordinal)
-            key = transport_coordinate_key(np.frombuffer(vector, dtype="<f8"), policy)
-            if span is not None:
-                witnesses.append(WorldWitness(span, generation, ordinal))
-            if predicate == "transport_exit":
-                exits.append(key)
-            elif grounded == 1:
-                starts.append(key)
-            else:
-                unresolved_entry = True
-        if not starts or unresolved_entry:
-            has_unlocated = True
-            unlocated.extend(witnesses)
-        record = tuple(dict.fromkeys(exits)), tuple(witnesses)
-        for key in dict.fromkeys(starts):
-            entries[key].append(record)
+        for group in _authority_groups(memory._mentions[source], scoped=policy.scoped_clauses):
+            starts, exits, witnesses = [], [], []
+            unresolved_entry = policy.scoped_clauses and group[0][1][4] is None
+            for ordinal, (predicate, _, vector, grounded, _) in group:
+                span = memory.source_mention_span(source, ordinal)
+                key = transport_coordinate_key(np.frombuffer(vector, dtype="<f8"), policy)
+                if span is not None:
+                    witnesses.append(WorldWitness(span, generation, ordinal))
+                if predicate == "transport_exit":
+                    exits.append(key)
+                elif grounded == 1:
+                    starts.append(key)
+                else:
+                    unresolved_entry = True
+            if not starts or unresolved_entry:
+                has_unlocated = True
+                unlocated.extend(witnesses)
+            record = tuple(dict.fromkeys(exits)), tuple(witnesses)
+            for key in dict.fromkeys(starts):
+                entries[key].append(record)
     return DiscoveryCoverage(MappingProxyType({key: tuple(rows) for key, rows in entries.items()}),
                              tuple(unlocated) if has_unlocated else None)
 
@@ -277,6 +308,28 @@ def _laws(pin, sources, policy):
     return laws
 
 
+def _scoped_laws(pin, authorities, policy):
+    laws, blocked = defaultdict(list), set()
+    memory = pin.memory
+    for source in authorities:
+        mentions = memory.source_mentions(source)
+        for group in _authority_groups(memory._mentions[source], scoped=True):
+            entries = [(ordinal, row) for ordinal, row in group if row[0] == "transport_entry"]
+            if (group[0][1][4] is None or not entries or any(row[3] != 1 for _, row in entries)):
+                return None, blocked
+            if len(group) != 2 or len(entries) != 1 or any(row[1] != 1. or row[3] != 1 for _, row in group):
+                blocked.update(transport_coordinate_key(mentions[ordinal].vector, policy) for ordinal, _ in entries)
+                continue
+            first, = (ordinal for ordinal, _ in entries)
+            second, = (ordinal for ordinal, row in group if row[0] == "transport_exit")
+            generation = pin._source_revisions[source]
+            witnesses = tuple(WorldWitness(memory.source_mention_span(source, ordinal), generation, ordinal)
+                              for ordinal in (first, second))
+            start, end = mentions[first].vector, mentions[second].vector
+            laws[transport_coordinate_key(start, policy)].append((start, end, witnesses))
+    return laws, blocked
+
+
 def require_transport_scope(pin, policy):
     links = pin.memory._role_links
     validity = None if links is None else links.validity
@@ -291,15 +344,15 @@ def require_transport_scope(pin, policy):
         raise ValueError("effective-time role rules overlap source transport scope")
 
 
-def _exact_operations(first, second, policy, publication_sha256):
+def _exact_operations(first, second, policy, publication_sha256, *, blocked=()):
     operations = {}
     for key, entries in first.items():
-        if len(entries) != 1:
+        if key in blocked or len(entries) != 1:
             continue
         source, middle, origin = entries[0]
         middle_key = transport_coordinate_key(middle, policy)
         exits = second.get(middle_key, ())
-        if len(exits) != 1:
+        if middle_key in blocked or len(exits) != 1:
             continue
         _, destination, exit_witnesses = exits[0]
         destination_key = transport_coordinate_key(destination, policy)
@@ -488,14 +541,19 @@ def compile_source_transports(pin, policy, kernel_sha256, publication_sha256):
     if (previous is not None and previous.policy == policy and previous.kernel_sha256 == kernel_sha256
             and previous.source_versions == versions):
         return None
+    blocked = ()
     if type(policy) is DiscoveredTransportPolicy:
-        first = second = _laws(pin, authorities, policy)
+        if policy.scoped_clauses:
+            first, blocked = _scoped_laws(pin, authorities, policy)
+            second = first
+        else:
+            first = second = _laws(pin, authorities, policy)
     else:
         first, second = _laws(pin, policy.first, policy), _laws(pin, policy.second, policy)
     if first is None or second is None:
         return None
     if policy.alignment is None:
-        operations = _exact_operations(first, second, policy, publication_sha256)
+        operations = _exact_operations(first, second, policy, publication_sha256, blocked=blocked)
     else:
         try:
             operations = _aligned_operations(pin, first, second, policy, publication_sha256)

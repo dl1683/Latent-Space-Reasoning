@@ -460,6 +460,16 @@ from independently prepared questions and proof obligations.
 
 ## Executable gaps in the current branch
 
+The [committed-source control](RESULTS.md#acquiring-from-committed-mixed-sources-26-november-2026)
+runs a visible precursor over the tracked Python package. The worker
+receives committed bytes and canonical paths, publishes before read
+tasks are generated, and revises the same attached world during
+growth and withdrawal. The exact reference gets the same syntactic
+scope. This checks real source lineage and same-pin operator removal.
+The source format and developmental task generator are public. Worker
+and task execution share one trusted process, so the independent
+information-boundary and learned-acquisition tests remain open.
+
 A separate [corpus-wide transport control](RESULTS.md#discovering-and-revising-a-transport-before-tasks-26-november-2026)
 lets a pre-task worker discover and revise an operation without enrolled
 source IDs, then tests its causal use inside the two-step recurrent core.

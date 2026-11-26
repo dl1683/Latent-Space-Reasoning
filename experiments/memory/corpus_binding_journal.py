@@ -123,6 +123,8 @@ def _frame_digest(memory):
     }
     if memory._factor_registry_seed is not None:
         declaration["factor_identity_seed"] = _factor_identities(memory._factor_registry_seed)
+    if memory._source_aware:
+        declaration["source_aware"] = True
     return sha256(_json(declaration)).digest()
 
 
@@ -486,7 +488,8 @@ def _transport_event(policy, kernel_sha256, actions=(), *, discovery_sha256=None
         if actions:
             raise ValueError("discovered exact events do not declare action vectors")
         require_digest(discovery_sha256)
-        return _json(["source_transport", 3, kernel_sha256, policy.wire(), discovery_sha256])
+        version = 4 if policy.scoped_clauses else 3
+        return _json(["source_transport", version, kernel_sha256, policy.wire(), discovery_sha256])
     if policy.alignment is None:
         if actions:
             raise ValueError("exact transport events do not declare action vectors")
@@ -506,10 +509,10 @@ def _replay_source_transport(payload, pin, publication_sha256):
     if (type(record) is not list or len(record) not in (4, 5) or record[0] != "source_transport"
             or type(record[1]) is not int or type(record[3]) is not list):
         raise ValueError("invalid source transport event")
-    if record[1] == 3:
+    if record[1] in (3, 4):
         if len(record) != 5 or len(record[3]) != 6:
             raise ValueError("invalid source transport discovery event")
-        policy = DiscoveredTransportPolicy(*record[3])
+        policy = DiscoveredTransportPolicy(*record[3], scoped_clauses=record[1] == 4)
         return _replay_transport_policy(payload, pin, publication_sha256, policy, record[2],
                                         discovery_sha256=record[4])
     if (record[1] != len(record) - 3 or len(record[3]) != len(record) + 2

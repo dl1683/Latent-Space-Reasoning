@@ -56,6 +56,8 @@ A [reachable-state intervention](docs/ARCHITECTURE.md#testing-a-reachable-joint-
 
 A [corpus-wide transport scan](docs/ARCHITECTURE.md#discovering-transports-across-a-pinned-corpus) removes named source enrollment from the worker policy. It finds and revises two-stage operations before tasks arrive. In a CPU fixture, adding a competing authority disabled an earlier answer, withdrawing the incumbent revealed the opposing answer, and restoring its source recovered the first answer. The check uses typed observations and supplied coordinates.
 
+A [mixed-document acquisition path](docs/ARCHITECTURE.md#discovering-operations-in-mixed-documents) now discovers two-step operations from scoped declarations while retaining ordinary observations from the same files. A visible control ran over up to 122 committed Python modules, found a new path when the package grew, and lost it when the source snapshot was rolled back. It uses syntactic imports and an exact reference.
+
 A [relational recurrent state](docs/ARCHITECTURE.md#carrying-shared-uncertainty-through-recurrence) preserves dependencies between unknown quantities. In a supplied-coordinate software check, two quantities stayed open individually while their cancellation admitted a later source. Changing a governing relation reopened that route and preserved an independent aggregate. The maintenance worker compiles declared numerical sources before questions arrive.
 
 A [visible prose revision control](docs/RESULTS.md#visible-source-revisions-and-nonlinear-admission-26-november-2026) tests how an independently versioned approval changes a positive relay margin. The contributor authored the prose, narrow parser and expected source meanings.

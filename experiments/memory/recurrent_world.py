@@ -14,7 +14,7 @@ from experiments.memory.source_constraints import ConstraintUse, SourceConstrain
 from experiments.memory.world_transport import (
     DiscoveredTransportPolicy, DiscoveryCoverage, SourceTransportPolicy, SourceTransportPublication,
     SourceTransportUse, WorldWitness, require_transport_scope, transport_accepts, transport_authorities,
-    transport_coordinate_key, transport_discovery_coverage, world_kernel_digest,
+    transport_coordinate_key, transport_discovery_coverage, transport_observation_ordinals, world_kernel_digest,
 )
 
 
@@ -32,6 +32,10 @@ class _SourceBank:
     observations: ObservationMemory
     witnesses: tuple[WorldWitness, ...]
     matches: tuple[int, ...]
+    indices: MappingProxyType | None
+
+    def row_index(self, witness):
+        return witness.ordinal if self.indices is None else self.indices[witness.ordinal]
 
 
 @dataclass(frozen=True, eq=False)
@@ -307,7 +311,8 @@ class RecurrentWorld:
             authorities = transport_authorities(corpus, policy)
         elif constraint_policy is not None:
             authorities = constraint_policy.authorities
-        sources_in_scope = memory.source_digests.keys() - authorities
+        scoped = type(policy) is DiscoveredTransportPolicy and policy.scoped_clauses
+        sources_in_scope = memory.source_digests.keys() if scoped else memory.source_digests.keys() - authorities
         coverage = (transport_discovery_coverage(corpus, policy, authorities)
                     if operators and type(policy) is DiscoveredTransportPolicy else None)
         transport = None
@@ -327,13 +332,19 @@ class RecurrentWorld:
                 raise ValueError("previous observations belong to a different journal handle")
         if not sources_in_scope <= memory._mentions.keys():
             raise ValueError("world observations are unavailable for legacy row-only sources")
-        if sum(len(memory._mentions[source]) for source in sources_in_scope) > self._max_observations:
+        selected = {}
+        for source in sources_in_scope:
+            mentions = memory._mentions[source]
+            indices = transport_observation_ordinals(mentions) if scoped else range(len(mentions))
+            if indices or not mentions:
+                selected[source] = indices
+        if sum(map(len, selected.values())) > self._max_observations:
             raise ValueError("world observation allowance exceeded")
 
         sources = {}
         projected = 0
         prior = {} if previous is None else previous._sources
-        for source in sorted(sources_in_scope):
+        for source, indices in sorted(selected.items()):
             if (policy is not None and policy.alignment is not None
                     and any(row[0] in ("transport_entry", "transport_exit") for row in memory._mentions[source])):
                 raise ValueError("aligned calibration predicates require a declared calibration source")
@@ -342,14 +353,15 @@ class RecurrentWorld:
             bank = prior.get(source)
             if bank is None or bank.version != version:
                 mentions = memory.source_mentions(source)
-                spans = tuple(memory.source_mention_span(source, n) for n in range(len(mentions)))
+                spans = tuple(memory.source_mention_span(source, n) for n in indices)
                 if any(span is None for span in spans):
                     raise ValueError("world observations require exact mention spans")
-                rows = np.asarray([mention.vector for mention in mentions]).reshape(-1, self._kernel._width)
-                witnesses = tuple(WorldWitness(span, version[1], n) for n, span in enumerate(spans))
-                matches = tuple(row[3] for row in memory._mentions[source])
-                bank = _SourceBank(version, self._kernel.prepare(rows), witnesses, matches)
-                projected += len(mentions)
+                rows = np.asarray([mentions[n].vector for n in indices]).reshape(-1, self._kernel._width)
+                witnesses = tuple(WorldWitness(span, version[1], n) for n, span in zip(indices, spans, strict=True))
+                matches = tuple(memory._mentions[source][n][3] for n in indices)
+                row_indices = (MappingProxyType({n: i for i, n in enumerate(indices)}) if scoped else None)
+                bank = _SourceBank(version, self._kernel.prepare(rows), witnesses, matches, row_indices)
+                projected += len(indices)
             sources[source] = bank
         if previous is not None and sources == prior and (not packed or previous._bank is not None):
             return replace(previous, corpus=corpus, _bank=previous._bank if packed else None,
@@ -709,8 +721,10 @@ class RecurrentWorld:
             if len(choices) > 1 and hidden is not parent._source_hidden:
                 with np.errstate(over="raise", invalid="raise"):
                     query = kernel._query_observations(hidden, hidden @ kernel._query)
-                    priority = [memory._sources[w.span.source_id].observations._keys[w.ordinal] @ query
-                                for w in choices]
+                    priority = []
+                    for witness in choices:
+                        bank = memory._sources[witness.span.source_id]
+                        priority.append(bank.observations._keys[bank.row_index(witness)] @ query)
                 choices = [choices[row] for row in np.argsort(-np.asarray(priority), kind="stable")]
                 priority_scores = len(choices)
             admitted = tuple(choices)
@@ -730,13 +744,12 @@ class RecurrentWorld:
         for witness in plan.choices:
             child = plan.previous.get(witness)
             if child is None:
-                observation = (null_row if witness is None else
-                               memory._sources[witness.span.source_id].observations._observations[witness.ordinal])
+                observation = null_row if witness is None else self._witness_observation(memory, witness)
                 transport = self._selected_transport(memory, witness, observation)
                 policy = memory._transport_policy if memory is not None else None
                 constraint_policy, constraint = self._selected_constraint(memory, witness, parent)
-                relay_allowed = bool(witness is not None and parent._pending_destination is not None
-                                     and transport_accepts(memory.corpus, policy, witness, relay=True))
+                relay_allowed = (witness is not None and parent._pending_destination is not None
+                                 and self._eligible_relay(memory, parent, witness, policy))
                 child, evaluations = self._advance_joint(
                     parent, observation, witness, feedback_value, transport, policy, constraint_policy, constraint,
                     relay_allowed=relay_allowed,
@@ -748,11 +761,24 @@ class RecurrentWorld:
         return expansion, written, evaluated, feedback_scores
 
     @staticmethod
+    def _eligible_relay(memory, parent, witness, policy):
+        if not transport_accepts(memory.corpus, policy, witness, relay=True):
+            return False
+        if type(policy) is DiscoveredTransportPolicy and policy.scoped_clauses:
+            return all(law.span.source_id != witness.span.source_id for law in parent._transport_use.evidence)
+        return True
+
+    @staticmethod
+    def _witness_observation(memory, witness):
+        bank = memory._sources[witness.span.source_id]
+        return bank.observations._observations[bank.row_index(witness)]
+
+    @staticmethod
     def _pending_discovery(memory, witness):
         policy = memory._transport_policy
         if witness is None or not transport_accepts(memory.corpus, policy, witness, relay=False):
             return ()
-        observation = memory._sources[witness.span.source_id].observations._observations[witness.ordinal]
+        observation = RecurrentWorld._witness_observation(memory, witness)
         key = transport_coordinate_key(observation, policy)
         if memory._source_transports is not None and key in memory._source_transports.operations:
             return ()

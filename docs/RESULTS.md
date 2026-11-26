@@ -4,6 +4,55 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Acquiring from committed mixed sources, 26 November 2026
+
+**Visible raw-source CPU software check.** The worker read tracked
+`.py` files from the Git object store instead of fixture text or
+task-specific paths. A source-aware AST encoder used canonical
+module identities, paired import clauses by original byte spans, and
+added one separately scoped module observation per document. The
+worker compiled and published functional paths before read tasks were
+generated. A cached exact adjacency reference used the same syntactic
+scope. Each of the two steps needs one distinct target in the AST
+projection, and the terminal must be tracked with no outgoing target
+in that projection. The extractor keeps the earliest span per target.
+It omits forms such as bare relative imports with no module field.
+
+| Source commit | Modules | Changed modules | Distinct blob bytes read by worker | Observation rows projected | Supported starts |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `0cfeae34` | 99 | 99 | 2,131,053 | 99 | 8 |
+| `c79f894e` | 99 | 2 | 62,988 | 2 | 8 |
+| `c393123f` | 122 | 33 | 1,237,865 | 33 | 9 |
+| `0cfeae34` restored | 99 | 35 | 450,793 | 12 | 8 |
+
+The signed support sets matched the exact reference across 419
+starting queries and 44,287 candidate readouts. The growth revision
+added a path from `_latent_factor_clusters` through `latent_feedback`
+to `weight_program`. Rolling the snapshot back withdrew that start.
+Each of the 33 supported reads lost support with its operation removed
+and its observation bank kept fixed. The 198 source witness checks
+matched stored scopes and current generations. Historical positive
+reads reopened with encoding disabled and the same name-to-coordinate
+map. The mixed-file fixture separately
+swaps two clauses within one file, refuses overlapping or same-source
+relays, and withholds a contested local path while keeping another one.
+
+The recurrent read scored 88,574 ordinary observations in the primary
+arm. The exact control can decide the scoped relation with at most
+three cached adjacency lookups per start. Those are different work
+counts, and lifecycle costs remain unmeasured. These are public
+development pins and test queries generated after publication in
+one trusted process. Named source coordinates and an explicit grammar
+supply the encoding. General language understanding, independently
+held task inference, and model-backed operation remain open.
+
+```powershell
+python -m experiments.memory.repository_transport_control 0cfeae34 c79f894e c393123f 0cfeae34
+```
+
+[Runner](../experiments/memory/repository_transport_control.py) ·
+[Mixed-document controls](../experiments/memory/test_world_transport.py)
+
 ## Testing reachable states in the maintained joint reasoner, 26 November 2026
 
 **Visible CPU software verification.** A source-only worker published a
