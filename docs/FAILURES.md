@@ -824,6 +824,15 @@ token preflight and qualify a task-directed episode against iterative text
 access and an equal-information exact control. Preserve the missing-need
 denominators and charge the complete episode budget.
 
+**Different read-call access can bias the whole-world comparison.**
+The plain text T8 episode could retrieve five candidate IDs but opened at
+most four passages with one search and four single reads. The role-backed
+path already offered same-need batching. Both paths can now use the same
+explicit batch setting and individually charged reads. A mixed-need batch
+is rejected before any candidate is opened. The scripted preflight covers
+the contract. Generated evidence selection and task quality remain open.
+[Results](RESULTS.md#giving-the-text-and-latent-arms-the-same-verified-read-access)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

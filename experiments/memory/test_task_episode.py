@@ -898,3 +898,62 @@ def test_compact_episode_reopens_grown_identity_world_without_reparsing(tmp_path
         finding, = final["submission"]["findings"]
         assert finding["joint_support"]["status"] == expected and len(finding["citations"]) == citations
         assert bool(final["submission"]["open_questions"]) == (expected == "uncompiled")
+
+
+def test_plain_compact_episode_batches_verified_reads_with_per_candidate_cost(tmp_path):
+    pinned = world(tmp_path)
+    limits = replace(LIMITS, calls=4, queries=1, reads=3, batch_reads=True)
+    policy = replace(POLICY, state_kind="compact_needs", compact_delivery=True)
+    need = {
+        "id": "release", "parent": None, "discovered_from": [], "target_or_event": "release",
+        "relation": "requirements", "time_version_scope": "current pin", "evidence_sought": ["release rule"],
+        "support_requirements": ["verified approval"], "defeat_requirements": ["verified withholding"],
+        "alternatives": ["assignment remains separate"], "unresolved_conditions": ["duty assignment"],
+    }
+
+    def generate(call):
+        frame = json.loads(dict(call.messages)["user"])
+        phase = frame["planning_phase"]
+        receipts = frame["receipts"]
+        if phase == "declare":
+            return reply(plan=[need])
+        if phase == "act_after_plan":
+            return reply(state="", need_additions=[],
+                         tool={"op": "search", "need_id": "release", "query": "release Cobalt Juniper"})
+        if len(receipts) == 1:
+            candidates = [row["candidate"] for row in receipts[0]["result"]["candidates"]]
+            assert len(candidates) == 3
+            assert "Every candidate in a read list counts" in dict(call.messages)["system"]
+            return reply(state="", need_additions=[],
+                         tool={"op": "read", "need_id": "release", "candidate": candidates})
+        batch = receipts[-1]["result"]
+        assert batch["status"] == "READ_BATCH"
+        assert all(row["status"] == "VERIFIED_SOURCE_BYTES" for row in batch["reads"])
+        assert all("span_id" in row["span"] for row in batch["reads"])
+        return reply(finish={"findings": [
+            {"need_id": "release", "claim": "Cobalt approval is recorded.", "stance": "supports",
+             "citations": [row["id"] for row in batch["reads"]], "reason": "The routing names the review log."}
+        ], "open_questions": []})
+
+    ledger = read_episode(run_episode(TASK, pinned, policy, limits, Tokenizer(), generate, tmp_path / "batched"))
+    assert ledger[0]["data"]["limits"]["batch_reads"] is True
+    finish = ledger[-1]["data"]
+    assert finish["status"] == "completed" and finish["usage"]["calls"] == 4
+    assert finish["usage"]["attempts"] == {"search": 1, "read": 3, "probe": 0}
+    batch, = [event["data"]["result"] for event in ledger
+              if event["kind"] == "tool" and event["data"]["result"]["status"] == "READ_BATCH"]
+    assert finish["usage"]["source_bytes"] == sum(row["source_bytes_read"] for row in batch["reads"])
+    assert finish["usage"]["evidence_bytes"] == sum(len(row["text"].encode()) for row in batch["reads"])
+
+    tools = _Tools(TASK, pinned, replace(limits, queries=2), probes_enabled=False, typed_needs=True)
+    need_ids = ("release", "assignment")
+    clearance = tools.call({"op": "search", "need_id": "release", "query": "cleared"}, need_ids)
+    assignment = tools.call({"op": "search", "need_id": "assignment", "query": "duty"}, need_ids)
+    first = clearance["candidates"][0]["candidate"]
+    other = assignment["candidates"][0]["candidate"]
+    assert first != other
+    mixed = tools.call({"op": "read", "need_id": "release", "candidate": [first, other]}, need_ids)
+    assert mixed["status"] == "INVALID_TOOL_ARGUMENTS"
+    assert tools.counters()["attempts"]["read"] == 2 and tools.counters()["source_bytes"] == 0
+    limited = tools.call({"op": "read", "need_id": "release", "candidate": [first, other]}, need_ids)
+    assert limited["status"] == "TOOL_ATTEMPT_LIMIT" and not tools._session.reads

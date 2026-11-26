@@ -943,6 +943,13 @@ The reader still opens version-1 non-native episodes with the single
 source setup field. Version-2 and native records require the full
 source, native verification and combined byte totals.
 
+Set `EpisodeLimits(batch_reads=True, ...)` to allow a plain text or native
+task episode to open a list of candidates in one tool call. The candidates
+must be distinct and come from the same need in a linked-needs policy.
+Each candidate uses one read attempt and its verified source and delivery
+bytes. Use the same setting and allowances for the text and latent arms.
+The episode opening records an explicitly enabled setting.
+
 ## Checking a joint state in a task
 
 Use `run_episode` with a current `TaskWorld` whose `bindings` and

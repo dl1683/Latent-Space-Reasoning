@@ -321,12 +321,20 @@ Give each task at most seven 0.6B calls: one
 initial plan, up to five evidence-action or retrieval rounds, and one final
 assessment, with a 512-token per-call generation cap, a 1,792-token aggregate
 generation ceiling, and 8,192 total prompt tokens per task. Apply the same
-per-call and aggregate ceilings to every compared task-time arm. A frozen
+per-call and aggregate ceilings to every compared task-time arm. Set
+`EpisodeLimits.batch_reads=True` for every arm when a task can need more
+verified passages than single-read calls allow. A read list uses one call
+and charges every candidate to the same read and byte limits. Only candidates
+already returned for the same need can be opened together. A frozen
 four-need calibration plan preflights at 314 tokens including EOS, above the
 former 256-token cap. The per-call increase redistributes the same episode
 budget; it does not increase aggregate output tokens. Pretokenize every legal
 plan, action and final for all eight visible tasks before inference, and revise
 the instrument if any output exceeds its reservation or episode ceiling.
+A [scripted envelope](RESULTS.md#giving-the-text-and-latent-arms-the-same-verified-read-access)
+fits the limits for one trace per visible source pin using pinned tokenization.
+Before model execution, verify the frozen runtime's own tokenizer and
+template. The model still has to choose and ground the actions.
 Set `TaskBudget` to at most 24 actions, eight candidates per search, 8,192
 returned evidence bytes, 2 MiB source bytes, and 512 aggregate role-work units
 across ordinary probes and joint role-link calls. A maintenance round gets at most two calls per

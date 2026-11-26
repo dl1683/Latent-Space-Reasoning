@@ -432,6 +432,7 @@ class EpisodeLimits:
     max_new_tokens: int
     access: TaskBudget = TaskBudget()
     joint_roles: int | None = None
+    batch_reads: bool = False
 
     def __post_init__(self):
         for name in ("calls", "queries", "reads", "probes", "context_tokens", "input_tokens",
@@ -444,6 +445,8 @@ class EpisodeLimits:
         if joint_roles < 0:
             raise ValueError("invalid joint role allowance")
         object.__setattr__(self, "joint_roles", joint_roles)
+        if type(self.batch_reads) is not bool:
+            raise ValueError("episode read batching must be boolean")
         if type(self.access) is not TaskBudget or self.max_new_tokens >= self.context_tokens:
             raise ValueError("episode requires tool allowances and room for framed input")
 
@@ -678,6 +681,7 @@ class _Tools:
         self._enabled = probes_enabled
         self._typed_needs = typed_needs
         self.joint_state_enabled = typed_needs and limits.access.joint_state is not None
+        self.batch_reads_enabled = limits.batch_reads or world._receiver is not None or self.joint_state_enabled
         if self.joint_state_enabled:
             self._limits["joint_state"] = limits.access.joint_state.calls
         self.attempts = dict.fromkeys(self._limits, 0)
@@ -759,8 +763,7 @@ class _Tools:
             if op == "search":
                 return self._search(request, need_id)
             if op == "read":
-                if type(request["candidate"]) is list and (self._session.world._receiver is not None
-                                                           or self.joint_state_enabled):
+                if type(request["candidate"]) is list and self.batch_reads_enabled:
                     return self._read_batch(request["candidate"], need_id)
                 return self._read(request, need_id)
             if op == "world_read":
@@ -850,6 +853,9 @@ class _Tools:
         if (len(set(candidates)) != len(candidates)
                 or any(not 0 <= candidate < len(self._pointers) for candidate in candidates)):
             raise ValueError("a read batch requires distinct candidates from this episode")
+        if self._typed_needs and any(need_id not in self._candidate_needs.get(candidate, ())
+                                     for candidate in candidates):
+            raise ValueError("a read batch requires candidates returned for the same need")
         reads = []
         for candidate in candidates:
             try:
@@ -1313,8 +1319,10 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
     system = (_COMPACT_SYSTEM if compact_needs else
               _TYPED_SYSTEM if typed_needs else _SYSTEM + " " + _STATE_INSTRUCTIONS[policy.state_kind])
     system_suffix = ""
-    if world._receiver is not None or toolbox.joint_state_enabled:
+    if toolbox.batch_reads_enabled:
         system_suffix += " Pass a list of candidate numbers to read to open those candidates together."
+    if limits.batch_reads:
+        system_suffix += " Every candidate in a read list counts against the read allowance."
     if world._receiver is not None and policy.probes_enabled:
         system_suffix += (_COMPACT_JOINT_ROLE_INSTRUCTIONS if compact_needs else
                           _TYPED_JOINT_ROLE_INSTRUCTIONS if typed_needs else _JOINT_ROLE_INSTRUCTIONS)
@@ -1340,6 +1348,8 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                    "setup_source_bytes": world.setup_source_bytes,
                    "setup_native_source_verification_bytes": native_source_bytes,
                    "setup_total_source_bytes": total_setup_source_bytes}
+        if not limits.batch_reads:
+            del opening["limits"]["batch_reads"]
         if world.source_seal is not None:
             opening["source_epoch_seal"] = world.source_seal
         if native_opening is not None:

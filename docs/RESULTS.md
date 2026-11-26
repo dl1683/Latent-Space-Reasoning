@@ -307,9 +307,11 @@ excluded after a prompt audit found that the literal `default` had been used
 as a one-token chat template. The corrected runner checks that the exact task
 survives tokenization.
 
-**Ordinary direct-text competence gate.** A separate run fed the same exact
-336-token task-plus-five-source prompt to ordinary Qwen3-0.6B causal
-generation, without the native reader or memory. Greedy output was `2`
+**Ordinary direct-text competence gate.** A separate run reconstructed the
+full task and five source bodies with the pinned tokenizer and template, then
+fed the resulting prompt to ordinary Qwen3-0.6B causal generation. Its 336-token
+length matches the native full-text receipt. The archive retains no native
+prefix IDs for a token-by-token comparison. Greedy output was `2`
 (Amber), followed by EOS; the answer scored **0/1** against gold `1` (Copper).
 It used the same tokenizer/template, label allowlist and two-token cap, with
 two backbone calls, 337 input positions and 3.04 seconds generation time on
@@ -360,6 +362,28 @@ show a latent-memory benefit. Do not tune or rerun T8. The evaluation contract
 still requires a full preflight of all eight legal plans, actions, and finals
 before the visible episode calibration; only a passing visible task gate would
 justify the next held comparison.
+
+## Giving the text and latent arms the same verified read access
+
+**CPU software and tokenizer preflight.** A scripted T8 episode searched all
+five source passages. With one candidate per read it verified four in seven
+calls and used 7,537 input tokens. Enabling the existing same-need read batch
+on the plain text world verified all five in four calls and used 3,593 input
+tokens. The batch charged five reads and all 473 source and evidence bytes.
+This measures scripted receipt delivery with different coverage. The raw
+one-shot T8 language result remains a separate failed canary.
+
+With the same option, the eight visible task scripts completed on all 11
+declared source pins, including T2's correction and T4's restoration. Each
+ran a plan, search, batched verified read and final. A previously verified
+[SmolLM2-360M-Instruct tokenizer and template](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct/tree/a10cc1512eabd3dde888204e902eca88bddb4951)
+counted 2,995–4,469 input tokens and 388–711 supplied output tokens per episode
+including EOS. The largest single supplied response used 396 tokens. The host
+validated the actions, verified every source body and accepted each final
+schema. Scripts used the public source packet and did not open the evaluator.
+No pretrained generation ran. A generated calibration still has to show that
+the planner discovers the needs and chooses useful evidence, under the exact
+runtime to be used in the comparison.
 
 ## Qualifying a continuation before a late task, 26 November 2026
 
