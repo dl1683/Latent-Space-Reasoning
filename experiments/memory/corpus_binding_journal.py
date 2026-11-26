@@ -23,7 +23,8 @@ from experiments.memory.binding_replay import (
     validate_route_program,
 )
 from experiments.memory.corpus_bindings import (
-    CorpusBindingRead, CorpusBindingWorkspace, StaleCorpusRevision, _EncodedChange, _source_vector_limit,
+    BinaryFactorClause, CorpusBindingRead, CorpusBindingWorkspace, StaleCorpusRevision,
+    _EncodedChange, _source_vector_limit,
 )
 from experiments.memory.latent_feedback import ConditionalTerm
 from experiments.memory.role_validity import RoleSupersession
@@ -116,6 +117,9 @@ def _encode(staged, *, vectors=True):
     _check_identifiers(edit.source for edit in staged)
     records = []
     scoped = False
+    factors = any(edit.factor_clauses is not None for edit in staged)
+    if factors and not vectors:
+        raise ValueError("factor clauses require their scoped source mentions")
     for edit in staged:
         row = (edit.source, edit.digest, edit.outlier, edit.certain, edit.possible)
         if vectors:
@@ -129,8 +133,13 @@ def _encode(staged, *, vectors=True):
                         mention = (*mention, scope)
                     mentions.append(mention)
             row = (*row, mentions)
+            if factors:
+                encoded = None if edit.factor_clauses is None else tuple(
+                    None if clause is None else (clause.axes, clause.allowed) for clause in edit.factor_clauses
+                )
+                row = (*row, encoded)
         records.append(row)
-    tag = "scoped_source_vectors" if scoped else "source_vectors"
+    tag = "factor_source_vectors" if factors else ("scoped_source_vectors" if scoped else "source_vectors")
     return _json([tag, records] if vectors else records)
 
 
@@ -363,10 +372,30 @@ def _decode_mentions(mentions, memory, certain, possible, outlier, remaining, *,
     return tuple(decoded)
 
 
+def _decode_factor_clauses(encoded, mentions):
+    if encoded is None:
+        return None
+    if type(encoded) is not list or len(encoded) != len(mentions):
+        raise ValueError("factor clauses must correspond to source mentions")
+    compiled = []
+    for data, mention in zip(encoded, mentions, strict=True):
+        if data is None:
+            compiled.append(None)
+        else:
+            if type(data) is not list or len(data) != 2 or type(data[0]) is not list or mention[4] is None:
+                raise ValueError("invalid scoped factor clause")
+            compiled.append(BinaryFactorClause(tuple(data[0]), data[1]))
+    if not any(clause is not None for clause in compiled):
+        raise ValueError("a retained factor batch must contain a clause")
+    return tuple(compiled)
+
+
 def _decode(payload, memory):
     records = json.loads(payload)
-    vectors = type(records) is list and len(records) == 2 and records[0] in ("source_vectors", "scoped_source_vectors")
-    scoped = vectors and records[0] == "scoped_source_vectors"
+    vectors = (type(records) is list and len(records) == 2
+               and records[0] in ("source_vectors", "scoped_source_vectors", "factor_source_vectors"))
+    factors = vectors and records[0] == "factor_source_vectors"
+    scoped = vectors and records[0] != "source_vectors"
     if vectors:
         records = records[1]
     if type(records) is not list or not records:
@@ -377,16 +406,18 @@ def _decode(payload, memory):
     vector_limit = _source_vector_limit(memory._anchors.shape[1])
     bank = memory._certain
     for record in records:
-        if type(record) is not list or len(record) != (6 if vectors else 5):
+        if type(record) is not list or len(record) != 5 + int(vectors) + int(factors):
             raise ValueError("invalid encoded corpus change")
         source, digest, outlier, certain, possible = record[:5]
         mentions = record[5] if vectors else None
+        encoded = record[6] if factors else None
+        clauses = None
         if type(source) is not str or source <= previous or type(outlier) is not bool:
             raise ValueError("noncanonical encoded corpus change")
         if digest == memory.source_digests.get(source):
             raise ValueError("unchanged source in encoded corpus event")
         if digest is None:
-            if certain is not None or possible is not None or mentions is not None or outlier:
+            if any(value is not None for value in (certain, possible, mentions, encoded)) or outlier:
                 raise ValueError("invalid encoded corpus deletion")
         else:
             if type(digest) is not str or len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
@@ -399,7 +430,8 @@ def _decode(payload, memory):
             if vectors:
                 mentions = _decode_mentions(mentions, memory, certain, possible, outlier, vector_limit, scoped=scoped)
                 vector_limit -= len(mentions)
-        staged.append(_EncodedChange(source, digest, certain, possible, outlier, mentions))
+                clauses = _decode_factor_clauses(encoded, mentions)
+        staged.append(_EncodedChange(source, digest, certain, possible, outlier, mentions, clauses))
         previous = source
     if _encode(staged, vectors=vectors) != payload:
         raise ValueError("noncanonical encoded corpus payload")
@@ -554,7 +586,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
 
     def __init__(self, path, empty, *, create=False):
         super().__init__(empty)
-        if (empty.source_digests or empty.outlier_sources or empty._mentions or empty._role_links is not None
+        if (empty.source_digests or empty.outlier_sources or empty._mentions or empty._factor_clauses
+                or empty._role_links is not None
                 or empty._certain._rows or empty._possible._rows
                 or empty._certain._retained or empty._possible._retained):
             raise ValueError("a corpus journal requires an empty frame")

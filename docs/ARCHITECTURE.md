@@ -1659,6 +1659,44 @@ the remaining question. This authenticates source bytes and checks
 agreement with the numerical result. It leaves clause interpretation and
 the compiler's factor coverage open. [Task interface](CONTEXT_TOOL.md#checking-a-joint-state-in-a-task)
 
+#### Replaying source-derived factor clauses
+
+[SLICE] A registered compiler freezes the slot order, binary code meanings,
+source authority and reference lists, and grammar version before tasks.
+Source ingestion processes each nonblank line of a controlled document.
+An accepted clause supplies one or two ordered axes and a mask of allowed
+assignments. Code zero means off and code one means on. On two axes,
+bit index `2*a+b` represents assignment `(a,b)`. Separate forms handle
+equality, difference, unary requirements and directed implications.
+Unknown names, qualified rules and unrecognized text remain unresolved.
+
+Each mask is kept at its source mention ordinal with an exact byte span.
+The corpus journal records both in the same source event. Legacy events
+keep their formats and cannot qualify as newly acquired clauses. Only
+an authority ID from the trusted configuration supplies hard factors.
+A reference-only source can receive an empty batch through that registry.
+An unsupported line blocks its whole authoritative batch. Replacing a
+source drops its earlier factors when the new generation cannot be
+installed. Unregistered active sources keep coverage open.
+
+On replay, the maintenance worker installs tensors from those recorded
+masks without opening source files or rerunning the parser. It uses the
+current source digest and generation, and preserves already installed
+batches where both match. A pin built from supplied tensors cannot
+enter the registered acquisition path as a prior. The factor and cluster
+messages are rebuilt in process after restart. Verified source delivery
+still reads bytes when the task opens a clause. The fingerprint binds the
+recorded-acquisition marker and numeric state. Build and replay costs
+remain separate from later query work.
+
+Hard unary and pair masks also admit exact Boolean implication-graph
+inference. Every forbidden assignment becomes a unary or two-literal
+clause. The 2-SAT control can close beyond the cluster width cap.
+Use it as the binary comparison with identical source masks and scope.
+The general factor carrier still needs a separate case for graded or
+higher-order constraints. [Linear-time Boolean inference](https://mathweb.ucsd.edu/~sbuss/CourseWeb/Math268_2007WS/2SAT.pdf)
+[Source compiler](../experiments/memory/registered_factor_compiler.py)
+
 ## Claims and evidence boundary (2026-10-15; not a new experiment)
 
 | Claim | Tag and current boundary | What is still required |

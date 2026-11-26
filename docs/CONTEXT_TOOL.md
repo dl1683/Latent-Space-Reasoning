@@ -742,3 +742,26 @@ finding. Use `conflicted` for an observed inconsistent result,
 `hypothetical` for a conditional
 conflict or unique code. Use `unknown` and a same-need open question when
 a proof or its bytes remain incomplete.
+
+
+## Preparing registered factor clauses
+
+Create a `RegisteredFactorCompiler` with ordered binary setting names
+and explicit authoritative and reference-only source IDs. Use its
+`frame()` to create or reopen the journal. The supported source
+format puts one controlled clause on each nonblank line. A setting
+state is off or on. For example
+
+```
+Settings AUDIT and RELEASE must agree.
+If setting AUDIT is enabled, setting ARCHIVE must be disabled.
+```
+
+Publish source bytes through the existing corpus workspace. Call
+`compiler.prepare(revision, previous=previous_pin)` to install the
+recorded clauses. Keep the returned `pin` and inspect `refused`
+for unsupported authority, clause text or acquisition limits.
+For cyclic components, run `compiler.field.maintain_clusters` with
+explicit bag and retained-cell allowances. The resulting pin can
+attach to the compact task interface above. Unknown clauses and
+unregistered active sources leave coverage open.

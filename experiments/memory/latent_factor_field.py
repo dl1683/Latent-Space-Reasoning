@@ -49,6 +49,7 @@ class LatentFactorBatch:
     _field: object
     _corpus: CorpusRevision
     _factors: MappingProxyType
+    _recorded: bool = False
 
 
 @dataclass(frozen=True, eq=False)
@@ -113,6 +114,7 @@ class LatentFactorPin:
     _clusters: MappingProxyType
     cluster_updates: int
     cluster_tensor_cells: int
+    _recorded_sources: frozenset[str] = frozenset()
 
     @property
     def updates(self):
@@ -148,8 +150,8 @@ class LatentFactorPin:
             tensor_bytes += len(data)
 
         graph = self._graph
-        record((1, self.corpus.journal_sha256, self._field._compiler_id, self._field._widths,
-                sorted(self._versions.items()),
+        record((2, self.corpus.journal_sha256, self._field._compiler_id, self._field._widths,
+                sorted(self._versions.items()), sorted(self._recorded_sources),
                 sorted(self.uncompiled_sources), graph.adjacent, graph.components, sorted(graph.loopy),
                 list(graph.groups.items()), self._state.pending, sorted(self._state.pending_components)))
         record(("factors", len(graph.factors)))
@@ -334,8 +336,13 @@ class LatentFactorField:
         }
         factors = {key: factor for key, factor in old_graph.factors.items()
                    if key[0] in versions and key[0] not in changes}
+        recorded_sources = set() if previous is None else set(previous._recorded_sources & versions.keys())
         for source, batch in changes.items():
             versions[source] = self._source_version(corpus, source)
+            if batch._recorded:
+                recorded_sources.add(source)
+            else:
+                recorded_sources.discard(source)
             for key, factor in batch._factors.items():
                 prior = old_graph.factors.get(key)
                 same = (prior is not None and factor.source == prior.source and factor.axes == prior.axes
@@ -357,7 +364,8 @@ class LatentFactorField:
             prior_graph=old_graph, changed_keys=changed_keys,
         )
         return LatentFactorPin(corpus, frozenset(corpus.memory.source_digests.keys() - versions.keys()), self,
-                               MappingProxyType(versions), graph, state, clusters, updates, cells)
+                               MappingProxyType(versions), graph, state, clusters, updates, cells,
+                               frozenset(recorded_sources))
 
     def maintain_clusters(self, pin, *, max_bag_cells, max_retained_cells, max_component_slots=256,
                           max_updates=1024, max_tensor_cells=1_000_000):

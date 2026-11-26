@@ -4,6 +4,30 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Journaled acquisition of registered source clauses, 26 November 2026
+
+**Scripted CPU software verification.** Source ingestion compiled a
+registered equality and difference grammar into exact masks with byte
+scopes. The same compact task policy used those recorded clauses to
+report conflict, compatibility of the remaining registered rules after
+withdrawal, and conflict after identical-byte restoration. Restart and
+historical reconstruction ran with a source encoder that would fail if
+called. The tested fresh reconstructions matched the initial numeric
+fingerprint. The episodes separately reopened verified source bytes.
+
+Qualified text, quoted notes, unknown names, a confusable identifier
+and invalid UTF-8 all blocked the affected authoritative source, including
+when a valid clause appeared in the same replacement. An asymmetric
+implication and a separate state requirement fixed an earlier slot.
+A reference-only statement did not become a premise. A hand-supplied
+prior could not be reused as recorded acquisition. The binary exact
+control rejected a 26-clause, 16-slot world that remained open under
+the eight-cell cluster cap. That result favors the specialized solver
+for this grammar. Learned acquisition, a durable message cache, broad
+source coverage and lifecycle advantage remain open.
+[Compiler controls](../experiments/memory/test_registered_factor_compiler.py)
+[Episode controls](../experiments/memory/test_task_episode.py)
+
 ## Verified joint-state task episode, 26 November 2026
 
 **Scripted CPU software verification.** A compact episode searched for

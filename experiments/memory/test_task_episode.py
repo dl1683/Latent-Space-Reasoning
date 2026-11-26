@@ -7,6 +7,7 @@ import pytest
 from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
 from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemory, StaleCorpusRevision
 from experiments.memory.latent_factor_field import LatentFactorField
+from experiments.memory.registered_factor_compiler import RegisteredFactorCompiler
 from experiments.memory.task_episode import (
     EpisodeLimits, EpisodePolicy, PolicyReply, _Tools, read_episode, read_episode_pair, run_episode,
 )
@@ -288,7 +289,7 @@ def _joint_task_world(tmp_path, records, pin, *, memory=True):
     return TaskWorld(tool, spans, bindings=pin.corpus, factor_pin=pin if memory else None)
 
 
-def _compact_joint_policy(*, assume=None, rejected=False):
+def _compact_joint_policy(*, assume=None, rejected=False, query="commission"):
     attempted = []
     states = {"inconsistent": "conflicted", "compatible_in_registered_scope": "supports",
               "conditional_supported": "hypothetical"}
@@ -312,7 +313,7 @@ def _compact_joint_policy(*, assume=None, rejected=False):
                          tool={"op": op, "need_id": "rule", **fields})
 
         if phase == "act_after_plan":
-            return act("search", query="commission")
+            return act("search", query=query)
         if len(receipts) == 1:
             found = receipts[-1]["result"]
             assert [row["span"]["source_id"] for row in found["candidates"]] == ["seed"]
@@ -561,3 +562,74 @@ def test_later_unfinished_joint_receipt_cannot_hide_a_completed_result(tmp_path)
                                "stance": "supports", "reason": "The opened rule names both.",
                                "citations": [seed]})
     assert host.submission(report, ("rule",)) == report
+
+def test_compact_episode_reads_recorded_clauses_after_restart_and_source_revisions(tmp_path):
+    compiler = RegisteredFactorCompiler(("ARCHIVE", "AUDIT", "RELEASE"),
+                                        authoritative_sources=("archive", "seed", "limit"),
+                                        reference_sources=("reference",))
+    frame = compiler.frame()
+    parsed = []
+
+    def track(raw):
+        parsed.append(raw)
+        return frame._encode(raw)
+
+    def fail_reparse(_):
+        pytest.fail("factor reconstruction re-entered the source encoder")
+
+    journal = tmp_path / "acquired.sqlite"
+    owner = JournaledCorpusWorkspace(journal, replace(frame, _encode=track), create=True)
+    records = {
+        "archive": "Setting ARCHIVE must be the same as setting AUDIT.",
+        "seed": "Settings AUDIT and RELEASE must agree.",
+        "limit": "Setting RELEASE must not match setting ARCHIVE.",
+        "reference": "Setting ARCHIVE must be off.",
+    }
+    opening = _write(owner, {name: value.encode() for name, value in records.items()})
+    assert len(parsed) == 4
+    first = compiler.prepare(opening)
+    assert first.installed_batches == 4 and first.installed_clauses == 3
+
+    def maintain(acquired):
+        return compiler.field.maintain_clusters(acquired.pin, max_bag_cells=8, max_retained_cells=100)
+
+    old_pin = maintain(first)
+    reopened = JournaledCorpusWorkspace(journal, replace(frame, _encode=fail_reparse))
+    restart = maintain(compiler.prepare(reopened.snapshot()))
+    assert restart.fingerprint() == old_pin.fingerprint()
+
+    policy = replace(POLICY, state_kind="compact_needs")
+    limits = replace(LIMITS, calls=8, context_tokens=16000, input_tokens=100000,
+                     access=replace(LIMITS.access, joint_state=JointStateBudget()))
+
+    def run(pin, text, name, expected):
+        world = _joint_task_world(tmp_path, text, pin)
+        artifact = run_episode("Can the current rules hold together?", world, policy, limits, Tokenizer(),
+                               _compact_joint_policy(query="agree"), tmp_path / name)
+        records = read_episode(artifact)
+        assert records[-1]["data"]["status"] == "completed"
+        assert records[-1]["data"]["submission"]["findings"][0]["joint_support"]["status"] == expected
+        result = next(row["data"]["result"] for row in records
+                      if row["kind"] == "tool" and row["data"]["request"]["op"] == "joint_check")
+        assert all(candidate["span"]["source_id"] != "reference" for candidate in result["candidates"])
+        return records
+
+    first_ledger = run(restart, records, "acquired-restart", "inconsistent")
+    withdrawn = _write(owner, {"limit": None})
+    remaining = {name: text for name, text in records.items() if name != "limit"}
+    revised = compiler.prepare(withdrawn, previous=old_pin)
+    assert revised.installed_batches == 0 and not revised.refused
+    run(maintain(revised), remaining, "acquired-withdrawn", "compatible_in_registered_scope")
+    restored = _write(owner, {"limit": records["limit"].encode()})
+    assert parsed.count(records["limit"].encode()) == 2 and len(parsed) == 5
+    fresh = compiler.prepare(restored, previous=revised.pin)
+    assert fresh.installed_clauses == fresh.installed_batches == 1
+    recovered = maintain(compiler.prepare(reopened.snapshot()))
+    final_ledger = run(recovered, records, "acquired-restored", "inconsistent")
+    assert final_ledger[0]["data"]["pin"]["factor_sha256"] != first_ledger[0]["data"]["pin"]["factor_sha256"]
+
+    history = reopened.snapshot_at(opening.revision, max_events=20, max_payload_bytes=100000)
+    historical = maintain(compiler.prepare(history))
+    assert historical.fingerprint() == restart.fingerprint()
+    run(historical, records, "acquired-historical", "inconsistent")
+    assert len(parsed) == 5

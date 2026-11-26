@@ -480,9 +480,12 @@ attention receiver remains a separate reasoning arm. Give repeated
 ladder endpoints the balanced transfer-tree comparator, and compare
 adaptive tree contraction for wider exact regions. The typed harness now
 has a scripted joint route through conflict, withdrawal and restoration.
-The remaining test needs a query-blind source-to-factor compiler,
-independently selected late needs and semantic grading of the reopened
-evidence. Include a matched arm with the same join and the same source
+A query-blind registered grammar now supplies the source-to-factor
+reference and replays from scoped journal records. The next comparison
+needs learned acquisition, independent late needs and semantic grading.
+The exact binary arm should receive those same compiled masks and
+source receipts. The recorded 2-SAT control closes a case the bounded
+cluster arm leaves open. Include a matched arm with the same join and the same source
 access through the compact action contract. Include a links-only arm
 with identical dependency candidates and no numerical verdict. A separate
 iterative text policy should get the same eligible evidence and a charged read budget.

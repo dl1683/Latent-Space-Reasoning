@@ -24,6 +24,14 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A partly parsed rule file can hide a contradiction.** A replacement
+may contain an accepted rule next to a qualifier or unresolved rule.
+The registered compiler withholds that source's entire batch and drops
+the old generation. A reference-only document gains no authority from
+its wording. A 2-SAT control also resolved a hard binary case beyond
+the cluster cap, so cold tensor contraction alone is too weak a binary
+comparison. [Acquisition controls](RESULTS.md#journaled-acquisition-of-registered-source-clauses-26-november-2026)
+
 **A computed conflict still needs its unopened source clauses.**
 In the scoped episode, the numerical result could identify a conflict
 before the task read its nonlexical dependencies. Omitting the receipt,

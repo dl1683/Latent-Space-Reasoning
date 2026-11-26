@@ -1,7 +1,7 @@
 """Project frozen source encodings into certain and possible binding banks."""
 
 from collections.abc import Callable, Iterable, Mapping
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from hashlib import sha256
 from numbers import Real
 from operator import index
@@ -19,12 +19,28 @@ from experiments.memory.role_validity import _RoleValidity
 from experiments.memory.verified_source_tool import SourceSpan, VerifiedSourceTool
 
 
+@dataclass(frozen=True, slots=True)
+class BinaryFactorClause:
+    """Hard support on one or two binary slots in declared axis order."""
+
+    axes: tuple[int, ...]
+    allowed: int
+
+    def __post_init__(self):
+        if (type(self.axes) is not tuple or not 1 <= len(self.axes) <= 2
+                or any(type(axis) is not int or not 0 <= axis < 2**31 for axis in self.axes)
+                or len(set(self.axes)) != len(self.axes)
+                or type(self.allowed) is not int or not 0 <= self.allowed < 1 << (1 << len(self.axes))):
+            raise ValueError("invalid binary factor clause")
+
+
 @dataclass(frozen=True)
 class BindingMention:
     predicate: str
     vector: np.ndarray
     strength: float
     byte_span: tuple[int, int] | None = None
+    factor_clause: BinaryFactorClause | None = None
 
 
 @dataclass(frozen=True)
@@ -57,6 +73,7 @@ class _EncodedChange:
     possible: _BindingRows | None
     outlier: bool
     mentions: tuple[_StoredMention, ...] | None = None
+    factor_clauses: tuple[BinaryFactorClause | None, ...] | None = None
 
 
 def _unit_rows(rows):
@@ -91,6 +108,9 @@ class CorpusBindingMemory:
     _mentions: Mapping[str, tuple[_StoredMention, ...]]
     _role_links: _RoleLinks | None = None
     _scoped_sources: frozenset[str] = frozenset()
+    _factor_clauses: Mapping[str, tuple[BinaryFactorClause | None, ...]] = field(
+        default_factory=lambda: MappingProxyType({}),
+    )
 
     @classmethod
     def prepare(cls, predicates, anchors, gates, sources, *, encode, encoder_version,
@@ -113,7 +133,7 @@ class CorpusBindingMemory:
         return empty.revise(sources)
 
     def _project(self, raw, remaining, vector_limit):
-        certain, possible, mentions = [], [], []
+        certain, possible, mentions, factors = [], [], [], []
         scopes = {}
         outlier = False
         for mention in self._encode(raw):
@@ -153,9 +173,14 @@ class CorpusBindingMemory:
                     piece.decode("utf8")
                     scopes[span] = (*span, sha256(piece).hexdigest())
                 scope = scopes[span]
+            fragment = mention.factor_clause
+            if fragment is not None and (type(fragment) is not BinaryFactorClause or scope is None):
+                raise ValueError("a factor clause must identify its exact source span")
+            factors.append(fragment)
             mentions.append((predicate, strength, np.asarray(unit, dtype="<f8").tobytes(),
                              int(coordinates.size), scope))
-        return tuple(certain), tuple(possible), outlier, tuple(mentions), remaining
+        clauses = tuple(factors) if any(fragment is not None for fragment in factors) else None
+        return tuple(certain), tuple(possible), outlier, tuple(mentions), clauses, remaining
 
     def revise(self, changes):
         """Encode changed byte records and publish both banks together."""
@@ -177,9 +202,9 @@ class CorpusBindingMemory:
                 raise ValueError("source records must be bytes")
             digest = sha256(raw).hexdigest()
             if digest != previous:
-                certain, possible, outlier, mentions, remaining = self._project(raw, remaining, vector_limit)
+                certain, possible, outlier, mentions, clauses, remaining = self._project(raw, remaining, vector_limit)
                 vector_limit -= len(mentions)
-                staged.append(_EncodedChange(source, digest, certain, possible, outlier, mentions))
+                staged.append(_EncodedChange(source, digest, certain, possible, outlier, mentions, clauses))
         return tuple(staged)
 
     def _apply_changes(self, staged):
@@ -187,6 +212,7 @@ class CorpusBindingMemory:
             return self
         digests = dict(self.source_digests)
         mentions = dict(self._mentions)
+        factors = dict(self._factor_clauses)
         scoped_sources = set(self._scoped_sources)
         outliers = set(self.outlier_sources)
         certain, possible = {}, {}
@@ -201,6 +227,10 @@ class CorpusBindingMemory:
                 mentions.pop(source, None)
             else:
                 mentions[source] = edit.mentions
+            if edit.factor_clauses is None:
+                factors.pop(source, None)
+            else:
+                factors[source] = edit.factor_clauses
             if any(mention[4] is not None for mention in edit.mentions or ()):
                 scoped_sources.add(source)
             else:
@@ -216,7 +246,7 @@ class CorpusBindingMemory:
             links = links.revise((edit.source for edit in staged), digests, mentions)
         return replace(self, source_digests=MappingProxyType(digests), outlier_sources=frozenset(outliers),
                        _certain=lower, _possible=upper, _mentions=MappingProxyType(mentions), _role_links=links,
-                       _scoped_sources=frozenset(scoped_sources))
+                       _scoped_sources=frozenset(scoped_sources), _factor_clauses=MappingProxyType(factors))
 
     def _reprogram_role_links(self, roles, min_similarity, uncertainty, compile_work_limit, transport="fixed",
                               bridge_key=None, local_bridges=False, factored_bridges=False, bridge_context=None):
@@ -363,9 +393,11 @@ class CorpusBindingMemory:
         mentions = self._mentions.get(source)
         if mentions is None:
             return None
+        factors = self._factor_clauses.get(source)
         return tuple(BindingMention(predicate, np.frombuffer(vector, dtype="<f8"), strength,
-                                    None if scope is None else scope[:2])
-                     for predicate, strength, vector, _, scope in mentions)
+                                    None if scope is None else scope[:2],
+                                    None if factors is None else factors[ordinal])
+                     for ordinal, (predicate, strength, vector, _, scope) in enumerate(mentions))
 
     def source_mention_span(self, source, ordinal):
         """Return the exact verified-source pointer for one retained mention, when scoped."""
