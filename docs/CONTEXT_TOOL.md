@@ -796,3 +796,20 @@ diagnostic history, the attached snapshot and attention score counts.
 The snapshot's `spans` are retained observation pointers. Use
 the source verifier to open evidence. A user-facing answer decoder
 and semantic citation checks remain separate work.
+
+The branch-preserving call is
+`reason_joint(seed, steps=depth, max_hypotheses=limit, null_logit=score, margin=band, memory=bank)`.
+It returns ordered branch histories and their step-by-step source
+witnesses. A null step carries no witness. Read a signed direction with
+`result.read(direction, floor=threshold)`. Interpret the outcome as
+a numerical result on the declared source scope. Reopen source spans
+and check their semantics before treating it as an answer.
+
+Use `continue_joint(result, steps=additional_depth, max_hypotheses=limit)`
+to continue a committed frontier or retry a refused expansion at a
+larger cap. The original reasoner, memory and route thresholds stay
+pinned. The result reports source scores, generated-history scores
+and transition writes across all attempts. It also counts block
+evaluations and any generated-state priority scores. A branch exposes
+both its task row and its source-only row. Signed evidence uses the
+source-only row. A changed source or model uses a fresh task state.

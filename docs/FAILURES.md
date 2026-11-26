@@ -24,6 +24,26 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Pooled signs can erase opposition or admit a decoy.** The two-relay
+fixture produced a near-zero pooled result when both relay reports
+were present. Removing both reports left an unrelated record that
+raised the pooled score above 0.5. Separate latent branches retained
+the two complete opposing routes and recorded two null steps after
+withdrawal. A generated thought also raised a null path's score above
+0.8. A null step must remain visible to any source-backed readout.
+The observed failure combines pooling and unchecked attention scope.
+A matched learned comparison must vary these separately.
+[Branch controls](RESULTS.md#branch-preserving-latent-workspace-26-november-2026)
+
+**Generated state can select a real but inapplicable source.** A
+source-only terminal gate can still admit the wrong relay if a
+generated intermediate state first decides eligibility. A three-step
+fixture changed the history-conditioned query and score while holding
+the source-only admission path fixed. History was allowed to reorder
+eligible candidates. Source-only routing still needs an independent
+scope check against the actual question.
+[Independent scoped control](../experiments/memory/scoped_history_rails_control.js)
+
 **A changed trajectory can inherit a host answer.** Injecting the
 verdict of an exact factor or proof solver can change a hidden vector
 without testing whether the receiving block can compose observations.

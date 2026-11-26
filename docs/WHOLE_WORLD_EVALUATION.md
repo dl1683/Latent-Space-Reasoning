@@ -315,6 +315,22 @@ The later learned comparison must use a frozen encoder and decoder
 qualified on fresh visible tasks and must grade task semantics,
 calibrated uncertainty, provenance and complete costs.
 
+The branching latent workspace provides a software control for
+pooling, physical absence and routed ambiguity. Give a matched pool
+exactly the same admitted source rows and a separately normalized
+history bank to isolate pooling from the null gate. Give the
+source-level reference the same source snapshots, acquisition inputs,
+and permission to cache a direct relation computation. Compare
+content-dependent relay selection, removal of each premise, copied
+origins, opaque encodings and revision recovery. Inject a generated
+route to an authoritative but inapplicable source. Require identical
+eligibility and signed source support under a history-only reorder.
+Keep opposed support and incomplete coverage independently observable.
+Count the source-only and history-conditioned block evaluations,
+priority scores and rescoring at refusal and restart. The supplied two-relay fixture verifies
+a numerical intervention and leaves semantic acquisition and
+calibration to the learned comparison.
+
 ## Executable gaps in the current branch
 
 `TaskWorld` pins a verified source catalogue to an optional journaled

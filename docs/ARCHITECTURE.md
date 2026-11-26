@@ -1760,6 +1760,51 @@ scores it on each step. Retained size, copy work, causal provenance and
 cost against a matched text or exact model require separate evaluation.
 [Reasoning call](../experiments/memory/recurrent_world.py)
 
+#### Preserving joint latent branches
+
+[SLICE] An optional journal bank supplies the same observation rows to
+a bounded task-private frontier. Each branch maintains a source-only
+row alongside its task row. The source-only row drives a new key
+scan. The declared margin above a null score admits each clear
+row with a unique ingestion match. The shared nonlinear block writes
+one separate successor per admitted row. If no row is admitted,
+the block can still advance through carry or feedback with a null
+source step. Generated history attends only within its branch and
+normalizes separately. The history-conditioned row can order the
+already admitted candidates. It cannot change membership or supply
+the signed evidence score. Both rows use the same nonlinear block.
+When they share the current state and have no history contribution,
+they share the block evaluation.
+
+Each successor retains the ordered observations used on its path,
+including their exact span, generation and mention ordinal. A
+routed ambiguous mention or a score in the null margin leaves the
+result open. An active source with zero observations or an outlier
+has no acquired location and also leaves it open. This scope rule
+uses supplied numerical routing and cannot establish semantic
+coverage. Distinct scores on complete source paths remain separate
+at readout and can coexist with an unresolved coverage flag. A path
+with a null step cannot supply a source-backed result even when its
+task-row score is large. The source-only row can still route badly
+under erroneous weights or inadequate observations. An independent
+scope and provenance check remains necessary for semantic claims.
+
+A task can continue from a committed frontier on the same reasoner,
+source pin and route thresholds. If an expansion exceeds the
+hypothesis budget, the frontier stays at its previous depth and the
+read withholds a verdict. Retrying counts the repeated key scans.
+Changing the source world or the kernel requires a fresh task state.
+The task's private trajectories carry no publication authority.
+
+The current operation appends and resumes joint trajectories. A
+later workspace should let late evidence write an earlier hypothesis
+and redirect its successors, and let query-blind workers install a
+reusable operation with source and operator dependencies. Compare
+the branching read with pooling over identical admitted rows and
+with the exact source-level reference. Full scans per hypothesis,
+branch storage and source-bank copies contribute to cost.
+[Joint workspace](../experiments/memory/recurrent_world.py)
+
 ## Claims and evidence boundary (2026-10-15; not a new experiment)
 
 | Claim | Tag and current boundary | What is still required |

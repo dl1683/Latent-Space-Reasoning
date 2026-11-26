@@ -4,6 +4,50 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Branch-preserving latent workspace, 26 November 2026
+
+**Scripted CPU software verification.** Two source observations set
+different next-step queries. The first path selected a releasing relay
+and the other selected a refusing relay. The joint read retained
+both signed outcomes and their exact versioned source spans at the
+same query and weights. The pooled numerical arm returned near zero
+on the conflicting world. With both relays withdrawn, the pooled
+arm moved above 0.5 from the unrelated decoy. The joint read instead
+recorded two missing source steps. With generated feedback enabled,
+a null path still reached a score above 0.8 but supplied no
+source-backed outcome.
+
+With one relay withdrawn the remaining signed route stayed available
+and the joint read stayed open. Restoring both relays reproduced the
+conflict at fresh source generations. Earlier replay recovered the
+original paths with ingestion disabled. A routed ambiguous observation,
+an empty encoding and an unlocated observation each withheld
+closure. An ambiguous observation below the active route margin
+did not block the tested unrelated route. Copying one origin added a
+branch without outvoting the opposite sign.
+
+An independent supplied control showed that a generated hint could
+select a real but inapplicable relay in 128 constructed worlds.
+The Python drift fixture exercised the same mechanism. Generated
+history favored the decoy at step three and reversed the task
+row's sign. The source-only row excluded that relay, preserved the
+positive source score and let history reorder two eligible relays.
+With both applicable relays withdrawn the result stayed missing.
+[Independent scoped control](../experiments/memory/scoped_history_rails_control.js)
+
+Two steps used 15 source scores and four transition writes in each
+schedule. The feedback variant scored two generated rows and used
+six evaluations of the block, compared with four without feedback.
+The three-step drift fixture used seven block evaluations with
+feedback and four without. Both admitted the same eligible relays. A
+one-slot limit withheld any partial first-step answer. Retrying used
+five additional source scores. Resuming a committed midpoint
+reproduced the complete trace's terminal rows without extra
+source scores. The encodings, maps, null score and readout are
+supplied. Calibrated semantic coverage, learned slot revision,
+query-blind operator publication and lifecycle advantage remain open.
+[Fixture and controls](../experiments/memory/test_recurrent_world.py)
+
 ## Journal-pinned latent recurrence and feedback, 26 November 2026
 
 **Scripted CPU software verification.** Both transition policies
