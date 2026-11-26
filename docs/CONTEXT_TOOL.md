@@ -728,18 +728,28 @@ binary membership. The digest stays the same, but the source generation
 and epoch seal advance; the source appears in `changes`. The native
 publisher uses that changed-source set to replace rows and check saved
 frontiers. A repeated update with identical bytes and identical type is
-still refused. Historical interpretation requires the pinned epoch, not
-just a byte digest. The feed regression covers both type-change directions
-and historical replay; the integrated native type-only revision test remains open.
+still refused. Use the pinned epoch to recover the historical
+interpretation associated with a byte digest. The feed and native
+regressions cover both type-change directions and historical replay.
 
 Configure the writer with `source_ingress(source_id, raw_bytes)` and
 `source_ingress_sha256`. The callable returns a hidden row for a
-supported binary format. Returning `None` refuses that source.
+supported binary format. Returning `None` aborts publication of the
+proposed epoch. An existing historical pin remains readable.
 The digest identifies the trusted decoder and coordinate map verified
 by the controller. On reopen, the reader needs the same digest and can
 omit the callable. The reader reports the entire original asset as a
 byte interval. The controller can check that asset against the digest
 at the declared source revision.
+
+For donor rows, `PairedNativeIngress(encoder, encoder_sha256, calibration)`
+wraps a fitted `PairedRoleCalibration`. Supply the wrapper as
+`source_ingress` and its `.sha256` as `source_ingress_sha256`.
+The wrapper copies and hashes the effective calibration matrices
+and limits. It rejects donor rows outside the calibrated span and
+projected coordinates outside the native bounds. The controller
+verifies the encoder identity and calibration provenance. The wrapper
+does not certify the semantics or range coverage of in-span rows.
 
 ## Reopening native candidate evidence
 

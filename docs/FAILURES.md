@@ -24,6 +24,14 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Aligned numeric rows can preserve the wrong operation, 26 November 2026.**
+A payload-swapped map passed the rank-three calibration and selected the
+same intermediate image as the intended map. At the corrected pin it
+returned `L11` while the intended map returned `L07`. Test learning and
+maintenance by the downstream consequences of independent address,
+payload and source interventions.
+[Paired ingress control](RESULTS.md#mapping-paired-media-rows-into-native-coordinates-26-november-2026)
+
 **UTF-8 validity cannot declare a source's modality, 26 November 2026.**
 A valid one-pixel blue image can contain only ASCII bytes. Routing it by
 UTF-8 decoding could send it to the text encoder and bind the wrong

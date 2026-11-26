@@ -416,6 +416,195 @@ def test_binary_media_supplies_a_necessary_bridge_to_the_same_reader(tmp_path):
     assert wrong("follow L00", memory=wrong.maintain(wrong_memory, max_seeds=4)).text == "L11"
 
 
+def test_same_byte_modality_revision_changes_a_native_continuation(tmp_path):
+    import numpy as np
+    from experiments.memory.native_isolated_stage import LABELS, _CausalControl, _reader as make_reader
+
+    cue, bridge, first_name, second_name = (letter * 32 for letter in "abcd")
+    raw_bridge = b"link L01 L02"
+    ingress_digest = sha256(b"interpret the same bridge bytes as L01 to L03")
+
+    def binary_bridge(source_id, raw):
+        if source_id != bridge or raw != raw_bridge:
+            return None
+        row = np.zeros(3 * len(LABELS) + 1)
+        row[1] = row[len(LABELS) + 3] = 0.8
+        return row
+
+    writer = make_reader(_CausalControl().eval(), source_ingress=binary_bridge,
+                         source_ingress_sha256=ingress_digest)
+    offline = make_reader(_CausalControl().eval(), source_ingress_sha256=ingress_digest)
+    source_dir = tmp_path / "text"
+    text_pin = write_source_delta(source_dir, {
+        cue: b"link L00 L01", bridge: raw_bridge,
+        first_name: b"name L02 L07", second_name: b"name L03 L11",
+    }, max_bytes=_LIMIT)
+    original = writer.maintain(writer.publish(source_dir, text_pin.seal, max_source_bytes=_LIMIT), max_seeds=4)
+    text_world = tmp_path / "text-world"
+    text_seal = write_native_publication(text_world, writer, original, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    original_read = _read(text_world, offline, text_seal, text_pin.seal)
+    prompt = "follow L00"
+    old_answer = offline(prompt, memory=original_read)
+    assert old_answer.text == "L07" and old_answer.applied_derived_steps == 1
+
+    binary_dir = tmp_path / "binary"
+    binary_pin = write_source_delta(binary_dir, {bridge: raw_bridge}, previous=text_pin,
+                                    binary_sources=(bridge,), max_bytes=_LIMIT)
+    revised = writer.publish(binary_dir, binary_pin.seal, previous=original, max_source_bytes=_LIMIT)
+    assert original.source_spans(bridge) == revised.source_spans(bridge)
+    assert revised.seal != original.seal
+    assert writer(prompt, memory=revised).text == ""
+    maintained = writer.maintain(revised, max_seeds=4)
+    binary_world = tmp_path / "binary-world"
+    binary_seal = write_native_publication(binary_world, writer, maintained, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    revised_read = _read(binary_world, offline, binary_seal, binary_pin.seal)
+    new_answer = offline(prompt, memory=revised_read)
+    assert new_answer.text == "L11" and new_answer.applied_derived_steps == 1
+    assert offline(prompt, memory=offline.without_derived(revised_read)).text == ""
+    assert set(revised_read.source_spans(bridge)).issubset(revised_read.evidence_spans(new_answer))
+
+    restored_dir = tmp_path / "restored"
+    restored_pin = write_source_delta(restored_dir, {bridge: raw_bridge}, previous=binary_pin, max_bytes=_LIMIT)
+    restored = writer.publish(restored_dir, restored_pin.seal, previous=maintained, max_source_bytes=_LIMIT)
+    assert writer(prompt, memory=restored).text == ""
+    assert writer(prompt, memory=writer.maintain(restored, max_seeds=4)).text == "L07"
+    assert offline(prompt, memory=original_read) == old_answer
+    assert offline(prompt, memory=revised_read) == new_answer
+
+
+def test_calibrated_binary_projection_changes_the_retained_read(tmp_path):
+    import numpy as np
+    from experiments.memory.native_isolated_stage import LABELS, _CausalControl, _reader as make_reader
+    from experiments.memory.paired_native_ingress import PairedNativeIngress
+    from experiments.memory.weight_program import PairedRoleCalibration
+
+    cue, other_cue, image, other_image, red_name, blue_name = (letter * 32 for letter in "abcdef")
+    p6 = b"P6\n2 1\n255\n"
+    n = 3 * len(LABELS) + 1
+    producer = sha256(b"two-pixel spatial feature control v1")
+
+    def donor_row(left, right, *, green=0):
+        row = np.zeros(n)
+        row[[0, 2, 3, 4]] = (0.2 * right / 255, -0.6 * left / 255, 0.4, green / 255)
+        return row
+
+    def extract(_source, raw):
+        if raw.startswith(p6) and len(raw) == len(p6) + 6:
+            left, green, _, right, _, _ = raw[len(p6):]
+            return donor_row(left, right, green=green)
+        return None
+
+    def target_row(left, right):
+        row = np.zeros(n)
+        row[[1, 5]] = (0.8 * left / 255, 0.8 * (255 - left) / 255)
+        row[len(LABELS) + 2:len(LABELS) + 4] = (0.7 * right / 255, 0.7 * (255 - right) / 255)
+        return row
+
+    fit = ((50, 177), (79, 42), (178, 200), (201, 23), (113, 112))
+    validation = ((200, 10), (8, 194), (110, 124), (125, 33))
+    first, mirrored, corrected_pixels = (255, 0), (0, 255), (255, 255)
+    assert not set(fit) & set(validation)
+    assert not {first, mirrored, corrected_pixels} & (set(fit) | set(validation))
+
+    def calibrate(targets):
+        source_fit = [donor_row(*pixel) for pixel in fit]
+        source_check = [donor_row(*pixel) for pixel in validation]
+        return PairedRoleCalibration.fit(
+            source_fit, [targets(*pixel) for pixel in fit],
+            source_check, [targets(*pixel) for pixel in validation],
+            rank=3, min_correlation=0.99, max_disagreement=1e-8,
+            max_span_error=1e-8, max_prediction_error=1e-8,
+        )
+
+    calibration = calibrate(target_row)
+    adapter = PairedNativeIngress(extract, producer, calibration)
+    assert PairedNativeIngress(extract, producer, calibration).sha256 == adapter.sha256
+    assert PairedNativeIngress(extract, "0" * 64, calibration).sha256 != adapter.sha256
+
+    def asset(layout, *, green=0):
+        left, right = layout
+        return p6 + bytes((left, green, 255 - left, right, 0, 255 - right))
+
+    # The assets have the same color counts and opposite spatial layouts.
+    assert asset(first)[len(p6):len(p6) + 3] == asset(mirrored)[-3:]
+    assert asset(first)[-3:] == asset(mirrored)[len(p6):len(p6) + 3]
+    directory = tmp_path / "media"
+    pinned = write_source_delta(directory, {
+        cue: b"link L00 L01", other_cue: b"link L04 L05",
+        image: asset(first), other_image: asset(mirrored),
+        red_name: b"name L02 L07", blue_name: b"name L03 L11",
+    }, binary_sources=(image, other_image), max_bytes=_LIMIT)
+    reader = make_reader(_CausalControl().eval(), source_ingress=adapter, source_ingress_sha256=adapter.sha256)
+    memory = reader.maintain(reader.publish(directory, pinned.seal, max_source_bytes=_LIMIT), max_seeds=4)
+    world = tmp_path / "world"
+    publication = write_native_publication(world, reader, memory, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    offline = make_reader(_CausalControl().eval(), source_ingress_sha256=adapter.sha256)
+    attached = _read(world, offline, publication, pinned.seal)
+    prompt = "follow L00"
+    read = offline(prompt, memory=attached)
+    assert read.text == "L11" and read.applied_derived_steps == 1
+    assert offline("follow L04", memory=attached).text == "L07"
+    assert offline(prompt, memory=offline.without_derived(attached)).text == ""
+    assert offline(prompt).text == ""
+    assert offline(prompt, memory=attached) == read
+
+    raw = make_reader(_CausalControl().eval(), source_ingress=extract, source_ingress_sha256=producer)
+    raw_memory = raw.maintain(raw.publish(directory, pinned.seal, max_source_bytes=_LIMIT), max_seeds=4)
+    assert raw("follow L04", memory=raw_memory).text == ""
+    raw_first = raw(prompt, memory=raw_memory)
+
+    corrected_dir = tmp_path / "corrected"
+    corrected = write_source_delta(corrected_dir, {image: asset(corrected_pixels)}, previous=pinned,
+                                   binary_sources=(image,), max_bytes=_LIMIT)
+    updated = reader.publish(corrected_dir, corrected.seal, previous=memory, max_source_bytes=_LIMIT)
+    updated = reader.maintain(updated, max_seeds=6)
+    corrected_world = tmp_path / "corrected-world"
+    corrected_publication = write_native_publication(corrected_world, reader, updated, runtime_sha256=_RUNTIME,
+                                                     max_bytes=_LIMIT)
+    reopened = _read(corrected_world, offline, corrected_publication, corrected.seal)
+    updated_answer = offline(prompt, memory=reopened)
+    assert updated_answer.text == "L07"
+    assert offline(prompt, memory=offline.without_derived(reopened)).text == ""
+    media_spans = {span.source_id for span in reopened.evidence_spans(updated_answer)} & {image, other_image}
+    assert media_spans == {image}
+    raw_updated = raw.publish(corrected_dir, corrected.seal, previous=raw_memory, max_source_bytes=_LIMIT)
+    raw_updated = raw.maintain(raw_updated, max_seeds=6)
+    assert raw_first.text != "L11" or raw(prompt, memory=raw_updated).text != "L07"
+    assert reader("follow L04", memory=updated).text == "L07"
+    assert offline(prompt, memory=attached) == read
+
+    outside_dir = tmp_path / "outside"
+    outside = write_source_delta(outside_dir, {image: asset(first, green=255)}, previous=pinned,
+                                 binary_sources=(image,), max_bytes=_LIMIT)
+    with pytest.raises(ValueError, match="outside the calibrated native span"):
+        reader.publish(outside_dir, outside.seal, previous=memory, max_source_bytes=_LIMIT)
+    assert reader(prompt, memory=memory).text == "L11"
+
+    shifted = PairedNativeIngress(extract, producer, calibrate(
+        lambda left, right: target_row(left, 255 - right),
+    ))
+    wrong = make_reader(_CausalControl().eval(), source_ingress=shifted, source_ingress_sha256=shifted.sha256)
+    with pytest.raises(ValueError, match="reader differs"):
+        _read(world, wrong, publication, pinned.seal)
+    wrong_memory = wrong.maintain(wrong.publish(directory, pinned.seal, max_source_bytes=_LIMIT), max_seeds=4)
+    wrong_updated = wrong.publish(corrected_dir, corrected.seal, previous=wrong_memory, max_source_bytes=_LIMIT)
+    wrong_updated = wrong.maintain(wrong_updated, max_seeds=6)
+    wrong_world = tmp_path / "wrong-world"
+    wrong_publication = write_native_publication(wrong_world, wrong, wrong_updated, runtime_sha256=_RUNTIME,
+                                                 max_bytes=_LIMIT)
+    wrong_reader = make_reader(_CausalControl().eval(), source_ingress_sha256=shifted.sha256)
+    wrong_reopened = _read(wrong_world, wrong_reader, wrong_publication, corrected.seal)
+    wrong_answer = wrong_reader(prompt, memory=wrong_reopened)
+    assert wrong_answer.text == "L11"
+    assert wrong_answer.source_seal == updated_answer.source_seal
+    assert wrong_answer.publication_seal != updated_answer.publication_seal
+    with pytest.raises(ValueError, match="matching reopened publication"):
+        reopened.evidence_spans(wrong_answer)
+    cue_span, = updated.source_spans(cue)
+    assert updated.continuation_reads(cue_span)[1].selected == wrong_updated.continuation_reads(cue_span)[1].selected
+    assert updated.continuation_reads(cue_span)[1].selected[0].span.source_id == image
+
+
 if __name__ == "__main__":
     run = {"publish": _publish_child, "read": _child}[sys.argv[1]]
     print(json.dumps(run(*sys.argv[2:])))

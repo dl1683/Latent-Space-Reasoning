@@ -189,9 +189,19 @@ text. The typed joint-state route remains a distinct comparison for
 working through conflicting media and text observations. Sangam
 exposes modality embeddings and source-linked sidecars. To use them
 here, validate an adapter on downstream decisions and compare with
-permuted or role-swapped coordinates. A projector of the right shape
-alone establishes an interface. The current positive uses a supplied
-pixel map.
+permuted or role-swapped coordinates. The paired ingress can project a
+donor row through a frozen role calibration. It binds the effective
+matrices and limits to the controller's encoder identity. Relative
+span checks and bounded native coordinates catch some invalid rows.
+A row can pass both and still extrapolate or carry the wrong payload.
+
+The mirrored two-pixel control separates relative layout from color
+counts. A payload swap changes the answer while keeping the selected
+media source fixed. Real donor-to-native calibration requires paired
+activations with traceable source revisions. Qualify native decisions on
+an independently graded task with a pinned pretrained receiver. Compare
+with the typed joint-state route on the same evidence and edits.
+[Paired ingress result](RESULTS.md#mapping-paired-media-rows-into-native-coordinates-26-november-2026)
 [Native publication interface](CONTEXT_TOOL.md#publishing-binary-native-sources)
 
 #### Qualifying the native reader before attaching memory

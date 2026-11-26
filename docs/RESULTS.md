@@ -4,6 +4,38 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Mapping paired media rows into native coordinates, 26 November 2026
+
+**CPU software control.** A rank-three calibration mapped a supplied
+donor into hand-authored native rows. Five numeric layouts fit the map,
+four separate layouts checked it, and three different layouts exercised
+the recurrent reader. Two opening PPM assets had the same color counts
+and different arrangement. The corresponding late reads returned
+`L11` and `L07`. Editing one asset changed its read to `L07` after
+maintenance. The other read stayed at `L07`. A reader configured with
+the ingress identity and no callable reopened both epochs. Disabling
+the acquired continuation at either tested pin removed the respective
+answer. The corrected read identified the edited asset. Raw donor
+coordinates failed the comparison. A payload-swapped map passed the
+same fit thresholds and selected the same intermediate asset, yet
+returned `L11` after the correction. The two reads shared a source
+epoch but carried different publication seals. Evidence reopening
+rejected the other publication's read. An out-of-span correction
+failed publication and the prior pin remained readable.
+
+**Type-only revision control.** The GitHub review identified a feed bug
+when identical bytes changed from text to binary or back. The fix treats
+the type change as a new epoch with the same content digest. The native
+test kept the bridge bytes and span identity fixed. Reclassifying the
+bridge removed its dependent continuation and maintenance changed the
+answer from `L07` to `L11`. Reclassifying it back recovered `L07`
+after maintenance. The two reopened historical publications retained
+their respective answers.
+
+The native controls use a deterministic backbone and supplied features.
+Real media alignment, independently graded answers, autonomous operator
+acquisition and total-cost comparison with a warm exact system remain open.
+
 ## Revising binary evidence in the native world, 26 November 2026
 
 **CPU software control.** The source feed advanced from a text-only
