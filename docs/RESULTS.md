@@ -4,6 +4,25 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Identity growth over retained source clauses, 26 November 2026
+
+**Scripted CPU software verification.** A compact task reported an open
+question while two retained rules referred to one missing identity.
+Appending that identity installed both rules without a source encoder
+call or a source generation change. The warm and restarted task reported
+the conflict after verifying all three clause spans. The pre-growth
+revision remained open on historical replay.
+
+A separate fixture retained the same unrelated cluster and raw message
+bank objects through the active append and an isolated append. It also
+rejected publication from a stale writer and kept batches open for a
+partly resolved identity set, an unsupported qualifier, unregistered
+authority and exhausted installation capacity. These checks establish
+the bounded lifecycle behavior. Learned identity discovery, autonomous
+maintenance and matched lifecycle costs are unmeasured.
+[Compiler controls](../experiments/memory/test_registered_factor_compiler.py)
+[Episode controls](../experiments/memory/test_task_episode.py)
+
 ## Journaled acquisition of registered source clauses, 26 November 2026
 
 **Scripted CPU software verification.** Source ingestion compiled a

@@ -761,7 +761,20 @@ Publish source bytes through the existing corpus workspace. Call
 `compiler.prepare(revision, previous=previous_pin)` to install the
 recorded clauses. Keep the returned `pin` and inspect `refused`
 for unsupported authority, clause text or acquisition limits.
-For cyclic components, run `compiler.field.maintain_clusters` with
-explicit bag and retained-cell allowances. The resulting pin can
-attach to the compact task interface above. Unknown clauses and
-unregistered active sources leave coverage open.
+For cyclic components, run `acquired.field.maintain_clusters` with
+explicit bag and retained-cell allowances, where `acquired` is the
+result of `prepare`. Attach the resulting pin to the compact task
+interface above. Unknown clauses and unregistered active sources leave
+coverage open.
+
+For a new journal accepting append-only names, create the compiler with
+`allow_identity_growth=True`. A grammar-valid clause with a
+missing registered identity is saved with its name, mask and span.
+`prepare` reports `identity_unregistered` for that source.
+A trusted writer can call
+`workspace.publish_factor_identities(revision, ("ARCHIVE",))` on
+the current pin. Pass the returned revision and the previous factor pin
+to `prepare`. Use the returned field for the enlarged registry.
+The source versions and scopes stay fixed through the append. Each
+historical revision keeps its own ordered registry. The growth frame
+is a separate opt-in format for newly created journals.

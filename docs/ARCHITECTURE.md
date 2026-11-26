@@ -1661,14 +1661,15 @@ the compiler's factor coverage open. [Task interface](CONTEXT_TOOL.md#checking-a
 
 #### Replaying source-derived factor clauses
 
-[SLICE] A registered compiler freezes the slot order, binary code meanings,
-source authority and reference lists, and grammar version before tasks.
+[SLICE] A registered compiler freezes the initial slot order, binary code
+meanings, source authority and reference lists, and grammar version before tasks.
 Source ingestion processes each nonblank line of a controlled document.
 An accepted clause supplies one or two ordered axes and a mask of allowed
 assignments. Code zero means off and code one means on. On two axes,
 bit index `2*a+b` represents assignment `(a,b)`. Separate forms handle
 equality, difference, unary requirements and directed implications.
-Unknown names, qualified rules and unrecognized text remain unresolved.
+Qualified rules and unrecognized text remain unresolved. The default fixed
+registry also treats unknown names as unresolved.
 
 Each mask is kept at its source mention ordinal with an exact byte span.
 The corpus journal records both in the same source event. Legacy events
@@ -1688,6 +1689,25 @@ messages are rebuilt in process after restart. Verified source delivery
 still reads bytes when the task opens a clause. The fingerprint binds the
 recorded-acquisition marker and numeric state. Build and replay costs
 remain separate from later query work.
+
+The opt-in growth frame records grammatical clauses by ordered ASCII names
+with their masks and original spans. A missing identity leaves the whole
+affected authority batch uncompiled. A trusted journal publication appends
+names at the exact current tip, giving them fresh slots after all existing
+ones. The publication revises the identity registry without advancing the
+source generations or reparsing the source. The acquisition worker can
+install newly resolvable batches from the recorded names and masks.
+Installed batches retain their exact source-version checks. Clusters and
+message banks outside affected regions can remain shared on the warm
+path. Historical replay resolves names using the registry of the requested
+revision. A restart reconstructs numerical state from the pinned journal.
+
+This is a lifecycle check for a world that grows between questions. The
+name and source authority decisions are supplied by the trusted caller.
+A learned maintenance proposal must establish native use of the retained
+state and survive provenance, withdrawal and restoration checks. Reused
+pretrained-block recurrence and continuous hidden-state feedback remain
+distinct reasoning mechanisms to compare against this shared state.
 
 Hard unary and pair masks also admit exact Boolean implication-graph
 inference. Every forbidden assignment becomes a unary or two-literal

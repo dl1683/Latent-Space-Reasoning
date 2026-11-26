@@ -24,6 +24,15 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Registering a name does not close a source.** A new name only resolves
+clauses whose full identity set is present. A malformed line, unknown
+authority or an exhausted installation allowance can still keep the
+whole batch open. Treating identical bytes as a fresh parse on each
+append would discard the benefit of retaining prior acquisition work.
+The opt-in journal holds grammatical names and masks with their original
+spans, and each historical pin resolves them against its own registry.
+[Identity growth controls](RESULTS.md#identity-growth-over-retained-source-clauses-26-november-2026)
+
 **A partly parsed rule file can hide a contradiction.** A replacement
 may contain an accepted rule next to a qualifier or unresolved rule.
 The registered compiler withholds that source's entire batch and drops

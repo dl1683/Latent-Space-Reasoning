@@ -5,6 +5,7 @@ from dataclasses import dataclass, field, replace
 from hashlib import sha256
 from numbers import Real
 from operator import index
+import re
 from threading import Lock
 from types import MappingProxyType
 
@@ -19,6 +20,25 @@ from experiments.memory.role_validity import _RoleValidity
 from experiments.memory.verified_source_tool import SourceSpan, VerifiedSourceTool
 
 
+_FACTOR_NAME = re.compile(r"[A-Z][A-Z0-9_]*", re.ASCII)
+
+
+def _factor_identities(names):
+    if isinstance(names, str):
+        raise ValueError("declare factor identities in their stable axis order")
+    names = tuple(names)
+    if (not names or any(type(name) is not str or _FACTOR_NAME.fullmatch(name) is None for name in names)
+            or len(set(names)) != len(names)):
+        raise ValueError("factor identities must be distinct uppercase ASCII identifiers")
+    return names
+
+
+def _binary_mask(axes, allowed):
+    if (type(axes) is not tuple or not 1 <= len(axes) <= 2
+            or type(allowed) is not int or not 0 <= allowed < 1 << (1 << len(axes))):
+        raise ValueError("invalid binary factor clause")
+
+
 @dataclass(frozen=True, slots=True)
 class BinaryFactorClause:
     """Hard support on one or two binary slots in declared axis order."""
@@ -27,11 +47,25 @@ class BinaryFactorClause:
     allowed: int
 
     def __post_init__(self):
-        if (type(self.axes) is not tuple or not 1 <= len(self.axes) <= 2
-                or any(type(axis) is not int or not 0 <= axis < 2**31 for axis in self.axes)
-                or len(set(self.axes)) != len(self.axes)
-                or type(self.allowed) is not int or not 0 <= self.allowed < 1 << (1 << len(self.axes))):
+        _binary_mask(self.axes, self.allowed)
+        if (any(type(axis) is not int or not 0 <= axis < 2**31 for axis in self.axes)
+                or len(set(self.axes)) != len(self.axes)):
             raise ValueError("invalid binary factor clause")
+
+
+@dataclass(frozen=True, slots=True)
+class NamedBinaryFactorClause:
+    """A parsed clause whose identity binding can be deferred."""
+
+    axes: tuple[str, ...]
+    allowed: int
+
+    def __post_init__(self):
+        _binary_mask(self.axes, self.allowed)
+        _factor_identities(self.axes)
+
+
+RecordedFactorClause = BinaryFactorClause | NamedBinaryFactorClause
 
 
 @dataclass(frozen=True)
@@ -40,7 +74,7 @@ class BindingMention:
     vector: np.ndarray
     strength: float
     byte_span: tuple[int, int] | None = None
-    factor_clause: BinaryFactorClause | None = None
+    factor_clause: RecordedFactorClause | None = None
 
 
 @dataclass(frozen=True)
@@ -73,7 +107,7 @@ class _EncodedChange:
     possible: _BindingRows | None
     outlier: bool
     mentions: tuple[_StoredMention, ...] | None = None
-    factor_clauses: tuple[BinaryFactorClause | None, ...] | None = None
+    factor_clauses: tuple[RecordedFactorClause | None, ...] | None = None
 
 
 def _unit_rows(rows):
@@ -108,9 +142,10 @@ class CorpusBindingMemory:
     _mentions: Mapping[str, tuple[_StoredMention, ...]]
     _role_links: _RoleLinks | None = None
     _scoped_sources: frozenset[str] = frozenset()
-    _factor_clauses: Mapping[str, tuple[BinaryFactorClause | None, ...]] = field(
+    _factor_clauses: Mapping[str, tuple[RecordedFactorClause | None, ...]] = field(
         default_factory=lambda: MappingProxyType({}),
     )
+    _factor_registry_seed: tuple[str, ...] | None = None
 
     @classmethod
     def prepare(cls, predicates, anchors, gates, sources, *, encode, encoder_version,
@@ -136,6 +171,7 @@ class CorpusBindingMemory:
         certain, possible, mentions, factors = [], [], [], []
         scopes = {}
         outlier = False
+        clause_type = BinaryFactorClause if self._factor_registry_seed is None else NamedBinaryFactorClause
         for mention in self._encode(raw):
             if not isinstance(mention, BindingMention):
                 raise ValueError("the encoder must emit binding mentions")
@@ -174,7 +210,7 @@ class CorpusBindingMemory:
                     scopes[span] = (*span, sha256(piece).hexdigest())
                 scope = scopes[span]
             fragment = mention.factor_clause
-            if fragment is not None and (type(fragment) is not BinaryFactorClause or scope is None):
+            if fragment is not None and (type(fragment) is not clause_type or scope is None):
                 raise ValueError("a factor clause must identify its exact source span")
             factors.append(fragment)
             mentions.append((predicate, strength, np.asarray(unit, dtype="<f8").tobytes(),
@@ -520,6 +556,7 @@ class CorpusRevision:
     source_revision: int = 0
     changed_sources: tuple[str, ...] = ()
     journal_sha256: str | None = None
+    factor_identities: tuple[str, ...] | None = None
 
 
 @dataclass(frozen=True, eq=False)
@@ -551,7 +588,8 @@ class CorpusBindingWorkspace:
             raise ValueError("expected a corpus binding snapshot")
         self._lock = Lock()
         self._owner = object()
-        self._tip = CorpusRevision(0, memory, MappingProxyType({}), self._owner)
+        self._tip = CorpusRevision(0, memory, MappingProxyType({}), self._owner,
+                                   factor_identities=memory._factor_registry_seed)
 
     def snapshot(self):
         """Pin the current revision for an independent read or preparation."""

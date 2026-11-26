@@ -6,7 +6,8 @@ import sqlite3
 import numpy as np
 import pytest
 
-from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace, _decode
+from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace, _decode, _replay_factor_identities
+from experiments.memory.corpus_bindings import StaleCorpusRevision
 from experiments.memory.registered_factor_compiler import RegisteredFactorCompiler
 
 
@@ -174,3 +175,98 @@ def test_factor_journal_rejects_unscoped_and_ordinal_mismatched_payloads(tmp_pat
     record[6].clear()
     with pytest.raises(ValueError, match="correspond to source mentions"):
         _decode(json.dumps(tagged).encode(), frame)
+
+
+def test_identity_publication_resolves_only_complete_sources_and_carries_independent_banks(tmp_path):
+    initial_names = ("U", "V", "W", "A", "B", "P")
+    compiler = RegisteredFactorCompiler(
+        initial_names, authoritative_sources=("cycle", "anchor", "pending", "partial", "qualified", "leaf"),
+        allow_identity_growth=True,
+    )
+    frame = compiler.frame()
+    path = tmp_path / "growth.sqlite"
+    owner = JournaledCorpusWorkspace(path, frame, create=True)
+    opening = _write(owner, {
+        "cycle": b"Settings U and V must agree.\nSettings V and W must agree.\nSettings U and W must agree.",
+        "anchor": b"Settings A and B must agree.",
+        "leaf": b"Setting P must be on.",
+        "pending": b"Setting B must match setting C.",
+        "partial": b"Setting C must match setting D.\nSetting D must be on.",
+        "qualified": b"Setting C must be off.\nSetting C must be on unless already off.",
+        "unknown": b"Setting C must be off.",
+    })
+    first = compiler.prepare(opening)
+    assert first.refused == {"pending": "identity_unregistered", "partial": "identity_unregistered",
+                             "qualified": "clause_unresolved", "unknown": "authority_unregistered"}
+    pin = first.field.maintain_clusters(first.pin, max_bag_cells=8, max_retained_cells=100)
+    assert pin.clustered_components == 1
+    cluster = pin._clusters[0]
+    leaf = pin._state.banks[5]
+    old_fingerprint = pin.fingerprint()
+    competing = JournaledCorpusWorkspace(path, frame)
+    competing_base = competing.snapshot()
+    span = opening.memory.source_mention_span("pending", 0)
+
+    grown = owner.publish_factor_identities(opening, ("C",))
+    with pytest.raises(StaleCorpusRevision):
+        competing.publish_factor_identities(competing_base, ("D",))
+    for invalid in ((), ("C",), ("X", "X"), ("c",), ("\u0421",)):
+        with pytest.raises(ValueError):
+            owner.publish_factor_identities(grown, invalid)
+    assert grown.revision == opening.revision + 1
+    assert grown.factor_identities == (*initial_names, "C")
+    assert grown.memory is opening.memory
+    assert grown.source_revision == opening.source_revision
+    assert grown._source_revisions == opening._source_revisions and not grown.changed_sources
+    assert grown.memory.source_mention_span("pending", 0) == span
+
+    result = compiler.prepare(grown, previous=pin)
+    assert result.refused == {"partial": "identity_unregistered", "qualified": "clause_unresolved",
+                              "unknown": "authority_unregistered"}
+    assert result.installed_batches == result.installed_clauses == 1
+    assert result.pin._graph.factors["pending", 0].source == span
+    assert result.pin._clusters[0] is cluster
+    assert result.pin._state.banks[5] is leaf
+    assert pin.fingerprint() == old_fingerprint
+
+    idle = owner.publish_factor_identities(grown, ("UNUSED",))
+    unchanged = compiler.prepare(idle, previous=result.pin)
+    assert unchanged.installed_batches == unchanged.installed_clauses == 0
+    assert unchanged.pin._graph.adjacent[-1] == () and unchanged.pin._graph.components[-1] == len(initial_names) + 1
+    assert unchanged.pin._clusters[0] is cluster and unchanged.pin._state.banks[5] is leaf
+    with pytest.raises(ValueError, match="prefix"):
+        compiler.prepare(opening, previous=result.pin)
+
+    final = owner.publish_factor_identities(idle, ("D",))
+    limited = compiler.prepare(final, previous=unchanged.pin, max_batches=0)
+    assert limited.refused["partial"] == "acquisition_limit"
+    assert all(source != "partial" for source, _ in limited.pin._graph.factors)
+    ready = compiler.prepare(final, previous=limited.pin)
+    assert ready.installed_batches == 1 and ready.installed_clauses == 2
+    assert ready.refused == {"qualified": "clause_unresolved", "unknown": "authority_unregistered"}
+    reduced = _write(owner, {"qualified": None, "unknown": None})
+    assert reduced.factor_identities == final.factor_identities
+    live = compiler.prepare(reduced, previous=ready.pin)
+    assert live.installed_batches == 0 and not live.refused
+    answer = live.field.reason({}, memory=live.pin).read(3)
+    assert answer.status == "supported"
+    np.testing.assert_array_equal(answer.support, [False, True])
+
+
+def test_identity_events_require_a_growth_frame_and_canonical_new_names(tmp_path):
+    fixed = RegisteredFactorCompiler(("A",), authoritative_sources=("source",))
+    legacy = JournaledCorpusWorkspace(tmp_path / "fixed.sqlite", fixed.frame(), create=True)
+    with pytest.raises(ValueError, match="does not register"):
+        legacy.publish_factor_identities(legacy.snapshot(), ("B",))
+
+    growth = RegisteredFactorCompiler(("A",), authoritative_sources=("source",), allow_identity_growth=True)
+    owner = JournaledCorpusWorkspace(tmp_path / "growth.sqlite", growth.frame(), create=True)
+    base = owner.snapshot()
+    for payload in (b'["factor_identities",["A"]]', b'["factor_identities",["b"]]',
+                    b'["factor_identities",[]]', b'["factor_identities", ["B"]]',
+                    b'["factor_identities","B"]'):
+        with pytest.raises(ValueError):
+            _replay_factor_identities(payload, base)
+    foreign = JournaledCorpusWorkspace(tmp_path / "foreign.sqlite", growth.frame(), create=True)
+    with pytest.raises(ValueError, match="another workspace"):
+        owner.publish_factor_identities(foreign.snapshot(), ("B",))

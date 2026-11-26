@@ -481,8 +481,23 @@ ladder endpoints the balanced transfer-tree comparator, and compare
 adaptive tree contraction for wider exact regions. The typed harness now
 has a scripted joint route through conflict, withdrawal and restoration.
 A query-blind registered grammar now supplies the source-to-factor
-reference and replays from scoped journal records. The next comparison
-needs learned acquisition, independent late needs and semantic grading.
+reference and replays from scoped journal records. An append-only identity
+event now activates retained rules after a missing name is admitted.
+The scripted read preserves the historical unknown and verifies the
+current conflict. A learned comparison needs independent late needs and
+semantic grading. Give recurrence over reused blocks and continuous
+hidden-state feedback the same revision stream and optional memory
+interface. Compare each mechanism on no-memory, correct-memory,
+wrong-revision and restored-memory trials. Include acquisition,
+maintenance, readout, source verification and fallback in lifecycle cost. Recurrent
+depth gives one architecture reference. Recurrent latent refinement
+with a frozen decoder gives a second reference under tighter
+training constraints. Intervene on the memory and the latent steps
+independently. A fluent answer from a wrong or shuffled pin would
+defeat the claim that the retained world is doing useful computation.
+[Recurrent depth](https://arxiv.org/abs/2502.05171)
+[Frozen-decoder latent refinement](https://aclanthology.org/2026.findings-emnlp.578/)
+[Causal interventions on continuous thoughts](https://aclanthology.org/2026.emnlp-main.186/)
 The exact binary arm should receive those same compiled masks and
 source receipts. The recorded 2-SAT control closes a case the bounded
 cluster arm leaves open. Include a matched arm with the same join and the same source

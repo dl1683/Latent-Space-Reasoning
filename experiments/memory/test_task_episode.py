@@ -633,3 +633,57 @@ def test_compact_episode_reads_recorded_clauses_after_restart_and_source_revisio
     assert historical.fingerprint() == restart.fingerprint()
     run(historical, records, "acquired-historical", "inconsistent")
     assert len(parsed) == 5
+
+
+def test_compact_episode_reopens_grown_identity_world_without_reparsing(tmp_path):
+    compiler = RegisteredFactorCompiler(("AUDIT", "RELEASE"), authoritative_sources=("archive", "seed", "limit"),
+                                        allow_identity_growth=True)
+    frame = compiler.frame()
+
+    def fail_reparse(_):
+        pytest.fail("identity growth re-entered the source encoder")
+
+    journal = tmp_path / "identity.sqlite"
+    owner = JournaledCorpusWorkspace(journal, frame, create=True)
+    records = {
+        "archive": "Setting ARCHIVE must be the same as setting AUDIT.",
+        "seed": "Settings AUDIT and RELEASE must agree.",
+        "limit": "Setting RELEASE must not match setting ARCHIVE.",
+    }
+    root = _write(owner, {name: value.encode() for name, value in records.items()})
+    reopened = JournaledCorpusWorkspace(journal, replace(frame, _encode=fail_reparse))
+    opening = reopened.snapshot()
+    before = compiler.prepare(opening)
+    assert before.installed_clauses == 1
+    assert before.refused == {"archive": "identity_unregistered", "limit": "identity_unregistered"}
+    grown = reopened.publish_factor_identities(opening, ("ARCHIVE",))
+    after = compiler.prepare(grown, previous=before.pin)
+    assert after.installed_clauses == 2 and not after.refused
+    warm = after.field.maintain_clusters(after.pin, max_bag_cells=8, max_retained_cells=100)
+    assert warm.clustered_components == 1
+
+    restarted = JournaledCorpusWorkspace(journal, replace(frame, _encode=fail_reparse))
+    cold = compiler.prepare(restarted.snapshot())
+    current = cold.field.maintain_clusters(cold.pin, max_bag_cells=8, max_retained_cells=100)
+    prior = restarted.snapshot_at(root.revision, max_events=10, max_payload_bytes=100000)
+    assert prior.factor_identities == ("AUDIT", "RELEASE")
+    assert current.corpus.factor_identities == ("AUDIT", "RELEASE", "ARCHIVE")
+    assert before.pin.fingerprint() == compiler.prepare(prior).pin.fingerprint()
+
+    policy = replace(POLICY, state_kind="compact_needs")
+    limits = replace(LIMITS, calls=8, context_tokens=16000, input_tokens=100000,
+                     access=replace(LIMITS.access, joint_state=JointStateBudget()))
+
+    for pin, name, expected, citations in (
+        (warm, "identity-warm", "inconsistent", 3),
+        (current, "identity-restart", "inconsistent", 3),
+        (compiler.prepare(prior).pin, "identity-historical", "uncompiled", 1),
+    ):
+        world = _joint_task_world(tmp_path, records, pin)
+        artifact = run_episode("Can the current rules hold together?", world, policy, limits, Tokenizer(),
+                               _compact_joint_policy(query="agree"), tmp_path / name)
+        final = read_episode(artifact)[-1]["data"]
+        assert final["status"] == "completed"
+        finding, = final["submission"]["findings"]
+        assert finding["joint_support"]["status"] == expected and len(finding["citations"]) == citations
+        assert bool(final["submission"]["open_questions"]) == (expected == "uncompiled")

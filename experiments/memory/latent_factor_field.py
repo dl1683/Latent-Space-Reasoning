@@ -272,6 +272,18 @@ class LatentFactorField:
         self._no_clusters = MappingProxyType({})
         self._no_messages = _Messages(MappingProxyType({}), (), frozenset(), 0, 0)
 
+    def _extend_binary_slots(self, pin, count, compiler_id):
+        """Carry an old pin into an append-only identity schema."""
+        self._require_pin(pin)
+        first = len(self._widths)
+        if count <= first:
+            raise ValueError("field growth must append slots")
+        extra = count - first
+        successor = LatentFactorField(self._widths + (2,) * extra, compiler_id=compiler_id)
+        graph = replace(pin._graph, adjacent=pin._graph.adjacent + ((),) * extra,
+                        components=(*pin._graph.components, *range(first, count)))
+        return successor, replace(pin, _field=successor, _graph=graph)
+
     def _slot(self, slot):
         slot = index(slot)
         if not 0 <= slot < len(self._widths):

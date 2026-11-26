@@ -23,8 +23,8 @@ from experiments.memory.binding_replay import (
     validate_route_program,
 )
 from experiments.memory.corpus_bindings import (
-    BinaryFactorClause, CorpusBindingRead, CorpusBindingWorkspace, StaleCorpusRevision,
-    _EncodedChange, _source_vector_limit,
+    BinaryFactorClause, CorpusBindingRead, CorpusBindingWorkspace, NamedBinaryFactorClause, StaleCorpusRevision,
+    _EncodedChange, _factor_identities, _source_vector_limit,
 )
 from experiments.memory.latent_feedback import ConditionalTerm
 from experiments.memory.role_validity import RoleSupersession
@@ -102,7 +102,7 @@ def _frame_digest(memory):
     bank = memory._certain
     _check_identifiers((memory.encoder_version, *bank._predicates))
     _check_identifiers(name for name, _ in bank._gates)
-    return sha256(_json({
+    declaration = {
         "schema": 1,
         "encoder": memory.encoder_version,
         "anchors": [anchors.shape, sha256(anchors.tobytes()).hexdigest()],
@@ -110,7 +110,10 @@ def _frame_digest(memory):
         "gates": [(name, gate.operation, gate.parents) for name, gate in bank._gates],
         "routing": [memory._min_similarity, memory._gap],
         "limits": [bank.term_limit, bank.pair_limit, bank.retained_limit, memory._expanded_limit],
-    })).digest()
+    }
+    if memory._factor_registry_seed is not None:
+        declaration["factor_identity_seed"] = _factor_identities(memory._factor_registry_seed)
+    return sha256(_json(declaration)).digest()
 
 
 def _encode(staged, *, vectors=True):
@@ -372,19 +375,20 @@ def _decode_mentions(mentions, memory, certain, possible, outlier, remaining, *,
     return tuple(decoded)
 
 
-def _decode_factor_clauses(encoded, mentions):
+def _decode_factor_clauses(encoded, mentions, *, named):
     if encoded is None:
         return None
     if type(encoded) is not list or len(encoded) != len(mentions):
         raise ValueError("factor clauses must correspond to source mentions")
     compiled = []
+    clause_type = NamedBinaryFactorClause if named else BinaryFactorClause
     for data, mention in zip(encoded, mentions, strict=True):
         if data is None:
             compiled.append(None)
         else:
             if type(data) is not list or len(data) != 2 or type(data[0]) is not list or mention[4] is None:
                 raise ValueError("invalid scoped factor clause")
-            compiled.append(BinaryFactorClause(tuple(data[0]), data[1]))
+            compiled.append(clause_type(tuple(data[0]), data[1]))
     if not any(clause is not None for clause in compiled):
         raise ValueError("a retained factor batch must contain a clause")
     return tuple(compiled)
@@ -430,12 +434,30 @@ def _decode(payload, memory):
             if vectors:
                 mentions = _decode_mentions(mentions, memory, certain, possible, outlier, vector_limit, scoped=scoped)
                 vector_limit -= len(mentions)
-                clauses = _decode_factor_clauses(encoded, mentions)
+                clauses = _decode_factor_clauses(encoded, mentions, named=memory._factor_registry_seed is not None)
         staged.append(_EncodedChange(source, digest, certain, possible, outlier, mentions, clauses))
         previous = source
     if _encode(staged, vectors=vectors) != payload:
         raise ValueError("noncanonical encoded corpus payload")
     return tuple(staged)
+
+
+def _append_factor_identities(pin, additions):
+    current = pin.factor_identities
+    if current is None:
+        raise ValueError("this journal does not register growing factor identities")
+    names = _factor_identities(additions)
+    if set(current).intersection(names) or len(current) + len(names) >= 2**31:
+        raise ValueError("factor identity publication must append new names")
+    return replace(pin, revision=pin.revision + 1, factor_identities=(*current, *names), changed_sources=())
+
+
+def _replay_factor_identities(payload, pin):
+    value = json.loads(payload)
+    if (type(value) is not list or len(value) != 2 or value[0] != "factor_identities"
+            or type(value[1]) is not list or _json(value) != payload):
+        raise ValueError("invalid factor identity event")
+    return _append_factor_identities(pin, value[1])
 
 
 def _event_digest(parent, revision, payload):
@@ -679,7 +701,9 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             if (number != tip.revision + 1 or parent != digest or type(payload) is not bytes
                     or _event_digest(digest, number, payload) != recorded):
                 raise ValueError("corpus journal event chain mismatch")
-            if payload.startswith(b'["route_program",'):
+            if payload.startswith(b'["factor_identities",'):
+                tip = _replay_factor_identities(payload, tip)
+            elif payload.startswith(b'["route_program",'):
                 gates, patch = _decode_route_event(payload)
                 tip = self._install_program_revision(tip, tip.memory.reprogram(gates), patch)
             elif payload.startswith((b'["coordinate_program",', b'["context_program",', b'["context_retirement",',
@@ -775,6 +799,18 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 digest = self._append(db, digest, tip.revision, _encode(staged))
             db.commit()
             return self._set_tip(tip, digest)
+
+    def publish_factor_identities(self, base, additions):
+        """Append trusted factor names without changing any source bytes."""
+        self._check_owner(base)
+        revised = _append_factor_identities(base, additions)
+        payload = _json(["factor_identities", revised.factor_identities[len(base.factor_identities):]])
+        with self._lock, closing(self._connect()) as db:
+            db.execute("BEGIN IMMEDIATE")
+            self._require_current_pin(db, base)
+            digest = self._append(db, self._digest, revised.revision, payload)
+            db.commit()
+            return self._set_tip(revised, digest)
 
     def publish_program(self, proposal):
         self._check_program(proposal)
