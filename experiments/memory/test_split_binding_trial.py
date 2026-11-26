@@ -5,8 +5,9 @@ import re
 import numpy as np
 import pytest
 
+from experiments.memory.latent_feedback import ConditionalTerm, FeedbackKernel
 from experiments.memory.split_binding_trial import (
-    AnswerChoice, IndexedSplitBinding, LearnedSplitBindingReceiver, ReadLimits, TextSource,
+    AnswerChoice, ContinuationLimits, IndexedSplitBinding, LearnedSplitBindingReceiver, ReadLimits, TextSource,
     build_split_binding_world, entity_prompt, fit_text_receiver, replay_native_world,
     revision_snapshots, RoleDecodeLimits, WorldAnswerCounts, count_world_answers, replay_competence_world,
     score_competence_world,
@@ -271,3 +272,286 @@ def test_competence_counts_keep_missed_and_false_supported_answers_separate():
     assert count_world_answers(exact, predicted) == WorldAnswerCounts(2, 1, 1, 1, 1)
     with pytest.raises(ValueError, match="fixed pairs"):
         count_world_answers(exact, predicted[:2])
+
+
+_CONTINUATIONS = ContinuationLimits(26., .6, .4, max_relays=2, max_paths=2)
+
+
+def _continuation_fixture(*, skew=0.):
+    rows = np.eye(8)
+    first, left, right, end_left, end_right, phantom = rows[:6]
+    middle = (left + right) / np.sqrt(2.)
+    edges = (
+        ("left", "The relay for E01 is E02.", 0, first, left),
+        ("right", "The relay for E01 is E03.", 0, first, right),
+        ("left_end", "The route served by E02 reaches E05.", 1, left, end_left),
+        ("right_end", "The route served by E03 reaches E06.", 1, right, end_right),
+        ("phantom", "The route served by E04 reaches E07.", 1, middle, phantom),
+        ("phantom_left", "The route served by E04 reaches E05.", 1, middle, end_left),
+        ("phantom_right", "The route served by E04 reaches E06.", 1, middle, end_right),
+        ("right_same", "The route served by E03 reaches E05.", 1, right, end_left),
+    )
+    records = {slot: text for slot, text, *_ in edges}
+    activations = dict(zip(records.values(), rows[:len(edges)], strict=True))
+    receiver = LearnedSplitBindingReceiver.fit(
+        list(activations.values()), [edge[3] for edge in edges], [edge[4] for edge in edges],
+        [edge[2] for edge in edges], ridge=1e-8, query_gain=18., state_scale=.8,
+        limits=ReadLimits(26., .1, .6, .4),
+    )
+    if skew:
+        kernel = receiver.kernel
+        keys = kernel._observation_key.copy()
+        keys[0, -2] += skew
+        receiver = replace(receiver, kernel=FeedbackKernel(
+            query=kernel._query, carry=None, observation_key=keys,
+            observation_value=kernel._observation_value, feedback_key=kernel._feedback_key,
+            feedback_value=kernel._feedback_value, max_steps=2,
+        ))
+
+    def encode(texts):
+        return np.array([activations[text] for text in texts])
+
+    return receiver, records, encode, (first, rows[3:6], ("E05", "E06", "E07"))
+
+
+def test_separate_continuations_follow_terminal_revisions_without_rewriting_the_relays():
+    receiver, records, encode, args = _continuation_fixture()
+    limits = _CONTINUATIONS
+    opening_sources = tuple(TextSource(slot, records[slot]) for slot in ("left", "right", "left_end"))
+    opening = receiver.prepare(opening_sources, encode=encode)
+    exact = IndexedSplitBinding.prepare(opening_sources)
+    assert receiver.read(*args, memory=opening).status == "ambiguous_route"
+    assert exact.read("E01") is None
+
+    changed = {"left_end": None, "right_end": records["right_end"]}
+    right = receiver.revise(opening, changed)
+    both = receiver.revise(right, {"left_end": records["left_end"]})
+    neither = receiver.revise(both, {"left_end": None, "right_end": None})
+    restored = receiver.revise(neither, {"left_end": records["left_end"]})
+    without_left = receiver.revise(opening, {"left": None})
+    for bank, index, endpoint, status, paths in (
+        (opening, exact, "E05", "answered", (("left", "left_end"),)),
+        (right, exact.revise(changed), "E06", "answered", (("right", "right_end"),)),
+        (both, exact.revise({"right_end": records["right_end"]}), None, "conflicting_paths",
+         (("left", "left_end"), ("right", "right_end"))),
+        (without_left, exact.revise({"left": None}),
+         None, "no_qualified_path", ()),
+        (neither, exact.revise({"left_end": None}), None, "no_qualified_path", ()),
+        (restored, exact, "E05", "answered", (("left", "left_end"),)),
+        (opening, exact, "E05", "answered", (("left", "left_end"),)),
+    ):
+        result = receiver.read_continuations(*args, memory=bank, limits=limits)
+        assert (result.answer, result.status) == (endpoint, status)
+        assert tuple((path.relay_slot, path.terminal_slot) for path in result.paths) == paths
+        assert {path.answer for path in result.paths} == index.continuation_answers("E01")
+        relay_count = 1 if bank is without_left else 2
+        assert (result.observation_scores, result.value_updates, result.answer_scores) == (
+            (1 + relay_count) * len(bank.sources), relay_count + len(paths), 3 * len(paths),
+        )
+
+
+def test_pooled_state_can_route_to_a_phantom_relay():
+    receiver, records, encode, args = _continuation_fixture(skew=.02)
+    limits = _CONTINUATIONS
+    opening_sources = tuple(TextSource(slot, records[slot]) for slot in ("left", "right", "left_end", "phantom"))
+    memory = receiver.prepare(opening_sources, encode=encode)
+    exact = IndexedSplitBinding.prepare(opening_sources)
+    pooled = receiver.read(*args, memory=memory)
+    separate = receiver.read_continuations(*args, memory=memory, limits=limits)
+    assert pooled.status == "answered" and pooled.answer == "E07"
+    assert separate.answer == "E05" and exact.continuation_answers("E01") == {"E05"}
+    assert len(separate.paths) == 1 and separate.paths[0].terminal_slot == "left_end"
+
+    # Compare with a pool restricted to exactly the same qualifying relay rows.
+    bank, kernel = memory._memory, receiver.kernel
+    seed = receiver.state_scale * np.r_[args[0], 1., 0.]
+    logits = bank._keys[:2] @ (seed @ kernel._query)
+    masses = np.exp(logits - logits.max())
+    masses /= masses.sum()
+    projected = bank._observations[:2] @ kernel._observation_value
+    pooled_hidden = np.tanh(masses @ projected)
+    terminal_keys = bank._keys[2:]
+    assert np.all((np.tanh(projected) @ kernel._query @ terminal_keys.T)[:, 1] < limits.min_logit)
+    mixed_scores = pooled_hidden @ kernel._query @ terminal_keys.T
+    assert mixed_scores[1] > limits.min_logit > mixed_scores[0]
+
+    reverse_bank = receiver.prepare(tuple(reversed(opening_sources)), encode=encode)
+    seed, choices, labels = args
+    reversed_read = receiver.read_continuations(
+        seed, choices[::-1], labels[::-1], memory=reverse_bank, limits=limits,
+    )
+    assert reversed_read == separate
+
+
+def test_continuation_agreement_covers_all_paths_or_refuses_without_an_answer():
+    receiver, records, encode, args = _continuation_fixture()
+    limits = _CONTINUATIONS
+    sources = tuple(TextSource(slot, records[slot]) for slot in ("left", "right", "left_end", "right_end"))
+    memory = receiver.prepare(sources, encode=encode)
+    result = receiver.read_continuations(*args, memory=memory, limits=replace(limits, max_relays=1))
+    assert (result.answer, result.status, result.paths) == (None, "relay_budget", ())
+    assert (result.observation_scores, result.value_updates, result.answer_scores) == (4, 0, 0)
+
+    result = receiver.read_continuations(*args, memory=memory, limits=replace(limits, max_paths=1))
+    assert result.status == "path_budget" and result.answer is None
+    assert tuple(path.answer for path in result.paths) == ("E05",)
+    assert (result.observation_scores, result.value_updates, result.answer_scores) == (12, 3, 3)
+
+    seed, choices, labels = args
+    tied = np.array([choices[0], choices[0], choices[1]])
+    result = receiver.read_continuations(seed, tied, labels, memory=memory, limits=limits)
+    assert result.status == "undecided_path" and result.answer is None
+    assert tuple(path.answer for path in result.paths) == (None, "E07")
+
+    memory = receiver.revise(memory, {"right_end": None, "duplicate": records["left_end"]})
+    result = receiver.read_continuations(*args, memory=memory, limits=limits)
+    assert result.status == "answered" and result.answer == "E05"
+    assert tuple(path.terminal_slot for path in result.paths) == ("duplicate", "left_end")
+    assert receiver.read_continuations(*args, limits=limits).status == "no_qualified_relay"
+    with pytest.raises(ValueError, match="positive integers"):
+        replace(limits, max_relays=True)
+
+
+def test_changing_only_a_relay_value_changes_the_selected_terminal_on_the_same_bank():
+    receiver, records, encode, args = _continuation_fixture()
+    limits = _CONTINUATIONS
+    sources = tuple(TextSource(slot, records[slot]) for slot in ("left", "right", "left_end"))
+    memory = receiver.prepare(sources, encode=encode)
+    weights = receiver.kernel._dense_observation_value().copy()
+    weights[0] = weights[1]
+    candidate, same_pin = receiver.candidate_value(memory, weights)
+    changed = candidate.read_continuations(*args, memory=same_pin, limits=limits)
+    assert changed.status == "no_qualified_path"
+    assert receiver.read_continuations(*args, memory=memory, limits=limits).answer == "E05"
+    weights[0] = 0.
+    candidate, same_pin = receiver.candidate_value(memory, weights)
+    invalid = candidate.read_continuations(*args, memory=same_pin, limits=limits)
+    assert invalid.status == "invalid_relay_phase" and invalid.answer is None
+
+
+
+def test_the_same_terminal_observation_can_produce_two_answers_with_state_carry():
+    receiver, records, encode, args = _continuation_fixture()
+    limits = replace(_CONTINUATIONS, min_logit=24.)
+    kernel = receiver.kernel
+    carry = np.zeros_like(kernel._query)
+    carry[1, 3] = carry[2, 4] = 1.5
+    values = kernel._dense_observation_value().copy()
+    values[4] = 0.
+    receiver = replace(
+        receiver,
+        kernel=FeedbackKernel(
+            query=kernel._query, carry=carry, observation_key=kernel._observation_key,
+            observation_value=values, feedback_key=kernel._feedback_key,
+            feedback_value=kernel._feedback_value, max_steps=2,
+        ),
+    )
+    sources = tuple(TextSource(slot, records[slot]) for slot in ("left", "right", "phantom"))
+    memory = receiver.prepare(sources, encode=encode)
+    result = receiver.read_continuations(*args, memory=memory, limits=limits)
+    assert (result.status, result.answer) == ("conflicting_paths", None)
+    assert {path.terminal_slot for path in result.paths} == {"phantom"}
+    assert tuple(path.answer for path in result.paths) == ("E05", "E06")
+
+    # Removing either predecessor on the same terminal observation selects its rival.
+    for slot, answer in (("left", "E06"), ("right", "E05")):
+        changed = receiver.revise(memory, {slot: None})
+        assert receiver.read_continuations(*args, memory=changed, limits=replace(limits, max_relays=1, max_paths=1)).answer == answer
+    changed = receiver.revise(memory, {"phantom": None})
+    assert receiver.read_continuations(*args, memory=changed, limits=limits).status == "no_qualified_path"
+
+
+
+def test_consensus_can_hide_a_conflicting_exact_path_below_the_route_floor():
+    receiver, records, encode, args = _continuation_fixture()
+    limits = _CONTINUATIONS
+    kernel = receiver.kernel
+    keys = kernel._observation_key.copy()
+    keys[3, -1] -= .3
+    receiver = replace(receiver, kernel=FeedbackKernel(
+        query=kernel._query, carry=None, observation_key=keys,
+        observation_value=kernel._observation_value, feedback_key=kernel._feedback_key,
+        feedback_value=kernel._feedback_value, max_steps=2,
+    ))
+    sources = tuple(TextSource(slot, records[slot]) for slot in ("left", "right", "left_end", "right_end"))
+    memory = receiver.prepare(sources, encode=encode)
+    result = receiver.read_continuations(*args, memory=memory, limits=limits)
+    assert (result.status, result.answer) == ("answered", "E05")
+    assert IndexedSplitBinding.prepare(sources).continuation_answers("E01") == {"E05", "E06"}
+    cautious = replace(limits, route_uncertainty=2.)
+    refused = receiver.read_continuations(*args, memory=memory, limits=cautious)
+    assert (refused.status, refused.answer) == ("marginal_route", None)
+    assert tuple(path.answer for path in refused.paths) == ("E05",)
+
+
+
+def test_route_matching_matters_with_the_same_available_terminal_values():
+    receiver, records, encode, args = _continuation_fixture()
+    first_sources = ("left", "right")
+    for supported, distractor, expected in (
+        ("left_end", "phantom_right", "E05"), ("right_end", "phantom_left", "E06"),
+    ):
+        sources = tuple(TextSource(slot, records[slot]) for slot in (*first_sources, supported, distractor))
+        memory = receiver.prepare(sources, encode=encode)
+        result = receiver.read_continuations(*args, memory=memory, limits=_CONTINUATIONS)
+        assert result.answer == expected
+        assert IndexedSplitBinding.prepare(sources).continuation_answers("E01") == {expected}
+        assert tuple(path.terminal_slot for path in result.paths) == (supported,)
+
+    sources = tuple(TextSource(slot, records[slot]) for slot in (*first_sources, "left_end", "right_same"))
+    memory = receiver.prepare(sources, encode=encode)
+    result = receiver.read_continuations(*args, memory=memory, limits=_CONTINUATIONS)
+    exact = IndexedSplitBinding.prepare(sources)
+    assert result.answer == "E05" and exact.continuation_answers("E01") == {"E05"}
+    assert exact.read("E01") is None
+    assert tuple(path.terminal_slot for path in result.paths) == ("left_end", "right_same")
+
+
+
+def test_continuation_refusals_are_repeatable_when_source_order_changes():
+    receiver, records, encode, args = _continuation_fixture()
+    sources = (
+        TextSource("left", records["left"]),
+        TextSource("right", records["right"]),
+        TextSource("left_end", records["left_end"]),
+        TextSource("duplicate", records["left_end"]),
+    )
+    weights = receiver.kernel._dense_observation_value().copy()
+    weights[1] = 0.
+    limits = replace(_CONTINUATIONS, max_paths=1)
+    reads = []
+    for ordering in (sources, tuple(reversed(sources))):
+        original = receiver.prepare(ordering, encode=encode)
+        candidate, same_pin = receiver.candidate_value(original, weights)
+        reads.append(candidate.read_continuations(*args, memory=same_pin, limits=limits))
+    assert reads[0] == reads[1]
+    assert (reads[0].status, reads[0].answer) == ("path_budget", None)
+
+
+def test_the_relay_and_terminal_content_interact_in_a_crossed_control():
+    receiver, records, encode, args = _continuation_fixture()
+    sources = tuple(TextSource(slot, records[slot])
+                    for slot in ("left", "right", "phantom_left", "phantom_right"))
+    memory = receiver.prepare(sources, encode=encode)
+    weights = receiver.kernel._dense_observation_value().copy()
+    weights[5:7] = 0.
+    candidate, same_pin = receiver.candidate_value(memory, weights)
+    axes = np.eye(receiver.width + 2)
+    term = ConditionalTerm(
+        (axes[1] - axes[2]) / np.sqrt(2.),
+        (axes[5] - axes[6]) / np.sqrt(2.),
+        4. * (axes[3] - axes[4]),
+    )
+    programmed = replace(candidate, kernel=candidate.kernel._with_conditional(term))
+    programmed_pin = replace(same_pin, _receiver=programmed)
+    limits = replace(_CONTINUATIONS, min_logit=24., max_paths=4)
+    plain = candidate.read_continuations(*args, memory=same_pin, limits=limits)
+    crossed = programmed.read_continuations(*args, memory=programmed_pin, limits=limits)
+    assert plain.status == "undecided_path"
+    assert crossed.status == "conflicting_paths" and crossed.answer is None
+    assert {(path.relay_slot, path.terminal_slot): path.answer for path in crossed.paths} == {
+        ("left", "phantom_left"): "E05",
+        ("left", "phantom_right"): "E06",
+        ("right", "phantom_left"): "E06",
+        ("right", "phantom_right"): "E05",
+    }

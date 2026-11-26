@@ -80,6 +80,43 @@ class SplitBindingRead:
     answer_gap: float | None
 
 
+@dataclass(frozen=True)
+class ContinuationLimits:
+    min_logit: float
+    min_answer_score: float
+    min_answer_gap: float
+    max_relays: int
+    max_paths: int
+    route_uncertainty: float = 0.
+
+    def __post_init__(self):
+        for floor in (self.min_logit, self.min_answer_score, self.min_answer_gap):
+            if not isfinite(floor) or floor <= 0:
+                raise ValueError("continuation floors must be positive and finite")
+        if not 0. <= self.route_uncertainty < self.min_logit:
+            raise ValueError("route uncertainty must be nonnegative and below the route floor")
+        for limit in (self.max_relays, self.max_paths):
+            if type(limit) is not int or limit <= 0:
+                raise ValueError("continuation budgets must be positive integers")
+
+
+@dataclass(frozen=True)
+class ContinuationPath:
+    relay_slot: str
+    terminal_slot: str
+    answer: str | None
+
+
+@dataclass(frozen=True)
+class ContinuationRead:
+    answer: str | None
+    status: str
+    paths: tuple[ContinuationPath, ...]
+    observation_scores: int
+    value_updates: int
+    answer_scores: int
+
+
 @dataclass(frozen=True, eq=False)
 class LearnedSplitBindingReceiver:
     """Fit one-hop maps, then compose by feeding back the first generated state."""
@@ -165,6 +202,82 @@ class LearnedSplitBindingReceiver:
     def read(self, seed, candidates, labels, *, memory=None, replace_first=None):
         return self._read(seed, candidates, labels, memory=memory, replace_first=replace_first, forced=False)
 
+    def read_continuations(self, seed, candidates, labels, *, limits, memory=None):
+        """Read through separate source-conditioned states, with consensus at the endpoint."""
+        if type(limits) is not ContinuationLimits:
+            raise ValueError("continuation limits must be declared separately")
+        seed, candidates, labels = self._read_inputs(seed, candidates, labels, memory)
+        if any(type(label) is not str or not label for label in labels):
+            raise ValueError("continuation answer labels must be nonempty strings")
+        paths = []
+        observation_scores = value_updates = answer_scores = 0
+
+        def result(status, answer=None):
+            return ContinuationRead(answer, status, tuple(paths), observation_scores, value_updates, answer_scores)
+
+        if memory is None or not memory._entries:
+            return result("no_qualified_relay")
+
+        kernel = self.kernel
+        bank = memory._memory
+        if bank._key_map is not kernel._observation_key:
+            raise ValueError("memory belongs to a different feedback kernel key map")
+        if bank._keys.shape != (len(memory._entries), self.width + 2):
+            raise ValueError("continuation keys must align with source slots and carry two phase coordinates")
+        slots = tuple(memory._entries)
+        phases = bank._keys[:, self.width:]
+        relay_keys = (phases[:, 0] > 0.) & (phases[:, 0] > phases[:, 1])
+        terminal_keys = (phases[:, 1] > 0.) & (phases[:, 1] > phases[:, 0])
+
+        def routes(hidden, eligible, allowance):
+            nonlocal observation_scores
+            query = kernel._query_observations(hidden, hidden @ kernel._query)
+            logits = bank._keys @ query
+            observation_scores += len(logits)
+            above = logits >= limits.min_logit
+            if limits.route_uncertainty:
+                near = logits >= limits.min_logit - limits.route_uncertainty
+                if np.any(eligible & near & ~above):
+                    return None, "marginal_route"
+            matching = eligible & above
+            if np.count_nonzero(matching) > allowance:
+                return None, "budget"
+            return sorted(np.flatnonzero(matching), key=slots.__getitem__), None
+
+        def advance(hidden, slot):
+            nonlocal value_updates
+            activation, _ = kernel._preactivation(hidden, bank._observations[slot], None, True)
+            value_updates += 1
+            return np.tanh(activation)
+
+        with np.errstate(over="raise", invalid="raise", under="ignore", divide="raise"):
+            relays, refusal = routes(seed, relay_keys, limits.max_relays)
+            if refusal:
+                return result("relay_budget" if refusal == "budget" else refusal)
+            if not relays:
+                return result("no_qualified_relay")
+            for relay in relays:
+                hidden = advance(seed, relay)
+                if hidden[-1] <= max(0., hidden[-2]):
+                    return result("invalid_relay_phase")
+                terminals, refusal = routes(hidden, terminal_keys, limits.max_paths - len(paths))
+                if refusal:
+                    return result("path_budget" if refusal == "budget" else refusal)
+                for terminal in terminals:
+                    endpoint = advance(hidden, terminal)
+                    index, _ = self._answer_index(endpoint, candidates, limits)
+                    answer = None if index is None else labels[index]
+                    answer_scores += len(labels)
+                    paths.append(ContinuationPath(slots[relay], slots[terminal], answer))
+        if not paths:
+            return result("no_qualified_path")
+        answers = {path.answer for path in paths}
+        if None in answers:
+            return result("undecided_path")
+        if len(answers) != 1:
+            return result("conflicting_paths")
+        return result("answered", next(iter(answers)))
+
     def generated_continuation(self, seed, candidates, labels, *, memory):
         """Diagnose the second hop while bypassing only the first route's refusal."""
         return self._read(seed, candidates, labels, memory=memory, replace_first=None, forced=True)
@@ -177,7 +290,7 @@ class LearnedSplitBindingReceiver:
         replacement = self.state_scale * np.r_[entity[0], 0., 1.]
         return self._read(seed, candidates, labels, memory=memory, replace_first=replacement, forced=True)
 
-    def _read(self, seed, candidates, labels, *, memory, replace_first, forced):
+    def _read_inputs(self, seed, candidates, labels, memory):
         seed = _unit_rows(np.asarray(seed)[None, :], "query activation")
         candidates = _unit_rows(candidates, "answer activations")
         labels = tuple(labels)
@@ -187,10 +300,14 @@ class LearnedSplitBindingReceiver:
             raise ValueError("the read requires at least two distinct answer choices")
         if memory is not None and memory._receiver is not self:
             raise ValueError("memory belongs to a different receiver")
+        return self.state_scale * np.r_[seed[0], 1., 0.], candidates, labels
+
+    def _read(self, seed, candidates, labels, *, memory, replace_first, forced):
+        seed, candidates, labels = self._read_inputs(seed, candidates, labels, memory)
         if memory is None or not memory._entries:
             return SplitBindingRead(None, "unsupported_route", (), (), None)
 
-        state = self.kernel.start(self.state_scale * np.r_[seed[0], 1., 0.], memory._memory)
+        state = self.kernel.start(seed, memory._memory)
         routes = []
         for hop in range(2):
             if hop == 0 and forced:
@@ -216,12 +333,18 @@ class LearnedSplitBindingReceiver:
             if hop == 0 and replace_first is not None:
                 state = self.kernel.intervene(state, 0, replace_first)
 
-        scores = candidates @ state.latest[:self.width]
+        index, gap = self._answer_index(state.latest, candidates, self.limits)
+        if index is None:
+            return SplitBindingRead(None, "undecided_answer", state.history, tuple(routes), gap)
+        return SplitBindingRead(labels[index], "answered", state.history, tuple(routes), gap)
+
+    def _answer_index(self, endpoint, candidates, limits):
+        scores = candidates @ endpoint[:self.width]
         order = np.argsort(scores)
         gap = float(scores[order[-1]] - scores[order[-2]])
-        if scores[order[-1]] < self.limits.min_answer_score or gap < self.limits.min_answer_gap:
-            return SplitBindingRead(None, "undecided_answer", state.history, tuple(routes), gap)
-        return SplitBindingRead(labels[order[-1]], "answered", state.history, tuple(routes), gap)
+        if scores[order[-1]] < limits.min_answer_score or gap < limits.min_answer_gap:
+            return None, gap
+        return order[-1], gap
 
 
 _TEXT_FORMATS = (
@@ -296,6 +419,14 @@ class IndexedSplitBinding:
         middle = self.relay(origin)
         second = self._postings.get((1, middle), {})
         return next(iter(second)) if len(second) == 1 else None
+
+    def continuation_answers(self, origin):
+        """Exact distinct endpoints of all complete two-hop paths."""
+        return frozenset(
+            endpoint
+            for relay in self._postings.get((0, origin), ())
+            for endpoint in self._postings.get((1, relay), ())
+        )
 
 
 _SPLITS = (
