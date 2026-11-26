@@ -319,6 +319,26 @@ alternative fields for this task, pins the version scope without inventing a
 date, exposes every returned candidate, and excludes seed/role metadata from
 outcome choices. The v2 source is [typed_geometry_world_pilot.py](../experiments/memory/typed_geometry_world_pilot.py).
 
+**The corrected v2 run also failed as an instrument.** On both pins the first
+policy call generated 256 tokens from an 838-token input, did not terminate,
+and stopped mid-need. The host registered no need and ran no tool. Across both
+pins this was **2 calls, 1,676 input tokens, 512 generated tokens, 0 searches,
+0 reads, 0 evidence bytes, and 0 joint-role calls**. The repeated rationale
+and full typed need consumed the call before its initial action could close;
+the task outcome and evidence use are therefore unscored. The run took 25.41
+seconds of generation and peaked at 1,475,739,136 allocated GPU bytes. Its
+runner hash matches the committed code at `81004c9`; see the [v2 raw ledgers
+and summary](../experiments/results/task_episode_calibration_2026-11-26/typed_geometry_world_pilot_2026-11-26_v2/).
+
+This locates the remaining failure at the task-planning interface: under the
+registered 256-token per-call ceiling, this receiver cannot finish a complete
+typed need plus its first action in one response. It does not show that the
+need was wrong, and it does not falsify the persistent-world mechanism. The
+pair's stop rule is now spent: no more model tuning on these two pins. A
+compact staged need declaration with a host-retained immutable registry is a
+new design hypothesis, not a result; the full evaluator-grade need fields
+must remain available for independent scoring.
+
 Before the corrected run, the question, decision rule, controls, and stop
 conditions are:
 
@@ -339,11 +359,12 @@ conditions are:
   revision result, unsupported closure, or citation error leaves the adapter
   unqualified. No further prompt tuning on this pair and no held-panel run.
 
-V2 is **NOT_RUN** at this documentation revision. Its cap remains seven calls
-per pin, three searches, four source reads, one joint call, 8,192 input and
-1,792 generated tokens per pin, with at most 256 generated tokens per call.
-This visible pilot is one task family across two pins, not the frozen
-eight-task calibration or evidence for broad latent planning.
+V2's **instrument failure** does not qualify the typed adapter. The protocol
+allowed seven calls per pin, three searches, four source reads, one joint
+call, 8,192 input and 1,792 generated tokens per pin, with at most 256
+generated tokens per call; the initial action failed before any of those tool
+budgets were used. This visible pilot is one task family across two pins, not
+the frozen eight-task calibration or evidence for broad latent planning.
 
 ## Latent revision software verification, 24–25 November 2026
 

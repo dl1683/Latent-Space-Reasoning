@@ -1,0 +1,3 @@
+4fed42f61bc36512431be09bf722a79690b80b5ec6f06642dcea245a6d5bfa58  opening.jsonl
+b2c80f9e8b06870df4cbea7a3f3a77cfbfddd65995df125cb2231d2d31551e11  revised.jsonl
+3cc69c0ee7e94c479f9336e93c6f6ff5ed809c5c25f38a0b53002f1fbd2ab89a  summary.json

@@ -327,6 +327,19 @@ eight-task calibration and supplies no independent semantic grade. Freeze a
 schema-constrained adapter and pass the eight-task calibration on both format
 and evidence sufficiency before opening held tasks.
 
+The visible two-pin typed geometry pilot has since exposed two additional
+adapter failures. Its first run copied the concrete `release` query embedded
+in the typed prompt and made no evidence reads. After removing that prompt
+example and candidate truncation, one corrected rerun hit 256 generated tokens
+per call before registering a need or running a tool. The current action shape
+requires an initial need plus tool call in one response and requires the full
+frozen need record to be returned again in later actions. The pilot therefore
+does not qualify model-directed planning or the maintained world. Its pair is
+closed to further model tuning. A compact, possibly staged need declaration
+with a host-retained immutable registry is a new hypothesis: it must keep all
+evaluator-grade need fields, fit the same call/token ceilings, and pass a new
+calibration set before any held panel.
+
 The query-blind bridge worker can now take a bounded batch from a revision-led
 agenda and publish its resulting operators. Late paths carry the publication
 digest for bridges installed by those batches. A typed `role_support`
