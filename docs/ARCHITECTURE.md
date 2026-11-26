@@ -36,6 +36,35 @@ These need causal task evidence and complete costs, not vector geometry alone.
 | Deep latent reasoning with optional memory | The [split-binding receiver](#fitting-and-checking-a-split-binding-receiver) runs two feedback steps and supports intervention on the generated row. The receiver and its separate-state variant have supplied-coordinate controls. | Establish competence and relevance beyond known bindings and keep both memory-attached and memory-omitted calls in the same reasoning model. Identify what certifies absence and what signals unresolved support. |
 | Useful operation on consumer hardware | Local numerical slices can reuse unchanged work and avoid source reopening during some reads. | Measure construction, memory, maintenance, decoding, fallback and repeated use at matched quality. A cheap retained read is one term in that comparison. |
 
+### Task planning and world maintenance are separate jobs
+
+A task-conditioned planner receives the task and a pinned world. Its output
+should be an evidence-need structure, not only a list of rewritten search
+queries. A need can specify a relevant entity or event, its role and time
+scope, a relation to establish, the kinds of direct and indirect evidence that
+would support or defeat it, plausible alternatives, and what remains unknown.
+Every need and eventual finding must retain source and revision provenance.
+The planner then directs exploration through the world and judges whether the
+available evidence closes each need or requires an explicit unresolved result.
+
+A query-blind maintenance worker has a different input contract: it receives
+source revisions and retained state, but no held question, target endpoint, or
+answer label. It maintains source-derived links, contradictions, weak bridges,
+coverage and invalidation dependencies that may help later tasks. It cannot
+claim that a connection is important to a particular task until a planner has
+tested it against task evidence needs. Both jobs share one versioned world and
+its ordinary evidence, but their information access and success measures must
+remain separately auditable.
+
+Test the task planner against strong text search and iterative RAG using the
+same sources, model, delivered-context limit and total inference budget. Score
+complete evidence-need coverage, correct and incorrect source use, conflicts,
+unsupported conclusions, unresolved cases and follow-up value. Keep the
+maintenance worker's held questions and labels hidden until publication. A
+gain in candidate recall or a larger set of generated queries is insufficient
+unless it improves supported task outcomes. The current 0.6B model scale is a
+pilot constraint, not a claim that this size can meet the full mission.
+
 ### A shared-world construction to test next
 
 Use one pinned revision stream for ingestion, maintenance and later reads. The retained state should carry encoded observations, provenance, uncertainty and installed computations. Freeze the corpus split, revision schedule and independent question-selection rule before the worker runs. Reveal the held questions only to the late reader and judge. On an admitted batch, give a worker access to retained activations and their dependencies. Ask it to find one useful weak bridge, conflict or unresolved connection that no caller supplied as a target. Its proposal must name the source pins, the operation it changes and the consequence it intends to make usable. Distinguish preserving an operation from changing its semantics or installing a new inference rule. Publication should leave a witness and an explicit invalidation condition. A later query should consume that same state and use the stored computation before any exact-source reopening. Include a no-memory call to the same receiver.

@@ -1,6 +1,6 @@
 # Latent Space Reasoning
 
-**Reason over everything you have; do not depend on finding it.** LSR investigates one multimodal model that encodes an entire corpus once into the latent space where it reasons, with memory optional in the same call. The goal is useful computation over retained information, with source provenance, revision, multiscale access and calibrated “not in memory” judgments. The reasoning mechanism is open: reused-block recurrence and continuous hidden-state feedback are distinct candidates. The program also includes high-dimensional mathematics, pretrained capability reuse and new models of computation.
+**Reason over everything you have; do not depend on finding it.** LSR aims to let an agent reason over a large, evolving knowledge repository by inferring what information and relationships matter to a task, connecting direct, indirect, or conflicting evidence, and exposing uncertainty with provenance. The current architectural bet is a persistent, revisable latent world in which maintenance and task-time reasoning share versioned evidence. Its success is judged by task-level evidence reasoning, revision behavior, and full costs—not by the representation alone. The reasoning mechanism remains open: reused-block recurrence and continuous hidden-state feedback are distinct candidates. See the [canonical goal and anti-drift rules](GOAL.md).
 
 ## Current status
 
