@@ -11,7 +11,7 @@ from threading import Lock
 import numpy as np
 
 from experiments.memory.latent_feedback import (
-    ConditionalTerm, FeedbackKernel, ObservationMemory, _real_array,
+    ConditionalTerm, FeedbackKernel, ObservationMemory, _frozen, _real_array,
 )
 from experiments.memory.linear_feedback import MomentMemory
 from experiments.memory.tree_feedback import TreeFeedbackKernel, TreeMemory, _TreeReplay
@@ -106,6 +106,10 @@ class StaleFeedbackRevision(ValueError):
     """The observations or operator have advanced since this work was based."""
 
 
+class _FeedbackNumericalError(ValueError):
+    """A measured read fell outside the numerical contract."""
+
+
 @dataclass(frozen=True)
 class FeedbackFidelityAttempt:
     resolution: str
@@ -167,6 +171,31 @@ class FeedbackSlotTriage:
     alternatives: tuple[FeedbackSlotAlternativeReview, ...]
     replay_count: int
     trajectory_replay_count: int = 0
+
+
+@dataclass(frozen=True)
+class FeedbackSlotRepairAttempt:
+    candidate: int
+    rejection: str | None = None
+    rank: tuple[int, float, int] | None = None
+    rejection_stage: str | None = None
+
+
+@dataclass(frozen=True, eq=False)
+class FeedbackSlotMaintenanceRound:
+    status: str
+    base: FeedbackRevision
+    attempts: tuple[FeedbackSlotRepairAttempt, ...]
+    revision: FeedbackRevision | None
+    selected_candidate: int | None
+    candidate_count: int
+    replay_count: int
+    trajectory_replay_count: int
+    triage_failure: str | None = None
+
+    @property
+    def unvalidated_count(self):
+        return self.candidate_count - len(self.attempts)
 
 
 class FeedbackWorkspace:
@@ -274,7 +303,7 @@ class FeedbackWorkspace:
     def _target_error(hidden, target):
         error = float(np.max(np.abs(hidden - target)))
         if not isfinite(error):
-            raise ValueError("probe error must be finite")
+            raise _FeedbackNumericalError("probe error must be finite")
         return error
 
     @staticmethod
@@ -304,7 +333,7 @@ class FeedbackWorkspace:
             if probe.routing is not None:
                 state, mass = self._run_routed(kernel, memory, probe)
                 if not 0.0 <= mass <= 1.0:
-                    raise ValueError("probe source mass must be a probability")
+                    raise _FeedbackNumericalError("probe source mass must be a probability")
             elif self._reuse_tree_routes:
                 state, replay = kernel._replay_routes(
                     probe.seed, memory, probe.steps, trace, retain_scores=self._max_retained_tree_scores,
@@ -728,12 +757,13 @@ class FeedbackWorkspace:
     def _regresses_endpoints(self, old_errors, errors):
         return any(new > max(old, self._atol) for old, new in zip(old_errors, errors, strict=True))
 
-    def _require_preserved_probes(self, base, errors, masses, *, subject):
+    def _probe_regression(self, base, errors, masses):
         for check, old_mass, mass in zip(self._probes, base.source_masses, masses, strict=True):
             if check.routing is not None and old_mass >= check.routing.min_mass > mass:
-                raise ValueError(f"{subject} regresses a protected source mass floor")
+                return "regresses a protected source mass floor"
         if self._regresses_endpoints(base.errors, errors):
-            raise ValueError(f"{subject} regresses a workspace probe")
+            return "regresses a workspace probe"
+        return None
 
     def _prepare_operator_revision(self, proposal):
         base = proposal.base
@@ -768,7 +798,8 @@ class FeedbackWorkspace:
             raise ValueError("proposed operator does not satisfy its target probe")
         if goal.routing is not None and masses[probe] < goal.routing.min_mass:
             raise ValueError("proposed operator does not meet the target source mass floor")
-        self._require_preserved_probes(base, errors, masses, subject="proposed operator")
+        if regression := self._probe_regression(base, errors, masses):
+            raise ValueError(f"proposed operator {regression}")
         guard_errors, guard_routes = self._guard_results(candidate, base.memory, base._guard_routes)
         if self._regresses_endpoints(base.guard_errors, guard_errors):
             raise ValueError("proposed operator regresses a workspace guard")
@@ -794,7 +825,22 @@ class FeedbackWorkspace:
         """Revise tree slots, optionally requiring a guarded repair of one working probe."""
         self._require_current(base)
         revised = self._prepare_slot_update(base, changes, repair_probe)
-        return base if revised is base else self._commit(base, revised)
+        return base if revised is base else self._commit_slot_update(base, revised, changes)
+
+    def _commit_slot_update(self, base, revised, changes):
+        return self._commit(base, revised)
+
+    @staticmethod
+    def _freeze_slot_changes(changes):
+        if not isinstance(changes, Mapping):
+            raise ValueError("tree slot changes require a mapping")
+        edits = {}
+        for supplied_slot, row in changes.items():
+            slot = index(supplied_slot)
+            if slot in edits:
+                raise ValueError("duplicate normalized tree slot")
+            edits[slot] = None if row is None else _frozen(_real_array(row))
+        return edits
 
     def _slot_preview_kernel(self, base, published_opening):
         self._require_current(base)
@@ -833,21 +879,28 @@ class FeedbackWorkspace:
         self._require_current(base)
         return preview
 
-    def _slot_batch_references(self, base, kernel, candidates, max_candidates):
+    @staticmethod
+    def _bounded_slot_candidates(candidates, max_candidates):
         limit = index(max_candidates)
         if limit < 1:
             raise ValueError("preview batch needs a positive candidate budget")
-        references = []
         for position, candidate in enumerate(candidates):
             if position == limit:
                 raise ValueError("preview batch exceeds the candidate budget")
             if not isinstance(candidate, Mapping):
                 raise TypeError("each preview candidate must be a slot-edit mapping")
-            reference = kernel.revise(base.memory, candidate)
-            self._check_reference_capacity(kernel, reference)
-            references.append(reference)
+            yield candidate
+
+    def _slot_batch_references(self, base, kernel, candidates, max_candidates):
+        references = tuple(self._slot_reference(base, kernel, candidate)
+                           for candidate in self._bounded_slot_candidates(candidates, max_candidates))
         self._require_current(base)
-        return tuple(references)
+        return references
+
+    def _slot_reference(self, base, kernel, changes):
+        reference = kernel.revise(base.memory, changes)
+        self._check_reference_capacity(kernel, reference)
+        return reference
 
     def preview_observation_slot_batch(self, base, candidates, *, seed, steps, max_candidates, published_opening=False):
         """Compare independent proposed edits with a single opening trajectory."""
@@ -864,6 +917,8 @@ class FeedbackWorkspace:
         endpoint = probe.steps - 1
         error = self._target_error(preview.state._history[endpoint], probe.target)
         radius = preview.error_bounds[endpoint]
+        if not isfinite(radius):
+            raise _FeedbackNumericalError("slot preview error bound must be finite")
         interval = max(0., error - radius), error + radius
         decision = None
         if interval[0] > self._atol:
@@ -880,7 +935,7 @@ class FeedbackWorkspace:
             return replace(review, replay_failure="probe source mass must be a probability")
         try:
             error = self._probe_error(state, probe)
-        except FloatingPointError as failure:
+        except (FloatingPointError, _FeedbackNumericalError) as failure:
             return replace(review, replay_failure=str(failure))
         satisfied = error <= self._atol and (probe.routing is None or mass >= probe.routing.min_mass)
         return replace(review, replayed_error=error, replayed_mass=mass, replayed_satisfied=satisfied)
@@ -932,6 +987,9 @@ class FeedbackWorkspace:
         if replay_budget < 0:
             raise ValueError("slot triage needs a nonnegative replay budget")
         references = self._slot_batch_references(base, kernel, candidates, max_candidates)
+        return self._triage_slot_references(base, kernel, references, replay_budget)
+
+    def _triage_slot_references(self, base, kernel, references, replay_budget):
         if not references:
             return FeedbackSlotTriage(base, (), 0)
 
@@ -986,6 +1044,83 @@ class FeedbackWorkspace:
                              for memory, entries in zip(references, reviews, strict=True))
         return FeedbackSlotTriage(base, alternatives, len(selected), len(replay_groups))
 
+    def _slot_repair_priority(self, alternative, probe):
+        target = alternative.reads[probe]
+        decision = target.replayed_satisfied
+        if decision is None:
+            decision = target.estimated_satisfied
+        losses = 0
+        for read in alternative.reads:
+            error = read.error_interval[0] if read.replayed_error is None else read.replayed_error
+            lost_floor = (read.source_floor is not None and read.replayed_mass is not None
+                          and read.opening_mass >= read.source_floor > read.replayed_mass)
+            if error > max(read.opening_error, self._atol) or lost_floor:
+                losses += 1
+        return decision is not True, decision is False, losses
+
+    def maintain_observation_slots(self, base, candidates, *, repair_probe, max_candidates,
+                                   max_validations, max_replays=0, use_triage=False):
+        """Validate source proposals in input or triage order and publish one guarded repair."""
+        validation_limit = index(max_validations)
+        replay_budget = index(max_replays)
+        if validation_limit < 1 or replay_budget < 0:
+            raise ValueError("slot maintenance needs a positive validation and nonnegative replay budget")
+        if type(use_triage) is not bool or (not use_triage and replay_budget):
+            raise ValueError("expanded replay requires enabled slot triage")
+        attempts = []
+        triage = FeedbackSlotTriage(base, (), 0)
+        triage_failure = None
+        candidate_count = 0
+        revised = None
+        selected = None
+        try:
+            kernel = self._slot_preview_kernel(base, True)
+            probe = self._open_slot_repair_probe(base, repair_probe)
+            prepared = []
+            for changes in self._bounded_slot_candidates(candidates, max_candidates):
+                edits = self._freeze_slot_changes(changes)
+                prepared.append((edits, self._slot_reference(base, kernel, edits)))
+            candidate_count = len(prepared)
+            self._require_current(base)
+            order = list(range(candidate_count))
+            if use_triage:
+                references = tuple(memory for _, memory in prepared)
+                try:
+                    triage = self._triage_slot_references(base, kernel, references, replay_budget)
+                except (FloatingPointError, _FeedbackNumericalError) as error:
+                    triage_failure = str(error)
+                else:
+                    order.sort(key=lambda position: self._slot_repair_priority(triage.alternatives[position], probe))
+            best = None
+            for position in order[:validation_limit]:
+                self._require_current(base)
+                _, memory = prepared[position]
+                try:
+                    candidate = base if memory is base.memory else self._prepare_memory_revision(base, memory)
+                except (FloatingPointError, _FeedbackNumericalError) as error:
+                    attempts.append(FeedbackSlotRepairAttempt(position, str(error), rejection_stage="measurement"))
+                    continue
+                rejection = self._slot_repair_refusal(base, candidate, probe)
+                if rejection is not None:
+                    attempts.append(FeedbackSlotRepairAttempt(position, rejection, rejection_stage="guard"))
+                    continue
+                rank = self._repair_rank(candidate)
+                attempts.append(FeedbackSlotRepairAttempt(position, rank=rank))
+                if best is None or (rank, position) < best[:2]:
+                    best = rank, position, candidate
+            self._require_current(base)
+            if best is not None:
+                _, winner, candidate = best
+                revised = self._commit_slot_update(base, candidate, prepared[winner][0])
+                selected = winner
+                status = "committed"
+            else:
+                status = "budget_exhausted" if len(order) > validation_limit else "no_candidate"
+        except StaleFeedbackRevision:
+            status = "stale"
+        return FeedbackSlotMaintenanceRound(status, base, tuple(attempts), revised, selected, candidate_count,
+                                            triage.replay_count, triage.trajectory_replay_count, triage_failure)
+
     def _prepare_slot_revision(self, base, changes):
         if not isinstance(base.kernel, TreeFeedbackKernel):
             raise ValueError("slot revisions require a tree feedback kernel")
@@ -995,17 +1130,26 @@ class FeedbackWorkspace:
     def _prepare_slot_update(self, base, changes, repair_probe):
         if repair_probe is None:
             return self._prepare_slot_revision(base, changes)
-        if isinstance(repair_probe, (bool, np.bool_)):
-            raise ValueError("repair probe must be a working probe index")
-        probe = self._open_probe(base, repair_probe)
+        probe = self._open_slot_repair_probe(base, repair_probe)
         revised = self._prepare_slot_revision(base, changes)
         self._require_current(base)
-        if not self._probe_satisfied(probe, revised.errors[probe], revised.source_masses[probe]):
-            raise ValueError("proposed slot repair does not satisfy its target probe")
-        self._require_preserved_probes(base, revised.errors, revised.source_masses, subject="proposed slot repair")
-        if self._regresses_endpoints(base.guard_errors, revised.guard_errors):
-            raise ValueError("proposed slot repair regresses a workspace guard")
+        if refusal := self._slot_repair_refusal(base, revised, probe):
+            raise ValueError(f"proposed slot repair {refusal}")
         return revised
+
+    def _open_slot_repair_probe(self, base, probe):
+        if probe is None or isinstance(probe, (bool, np.bool_)):
+            raise ValueError("repair probe must be a working probe index")
+        return self._open_probe(base, probe)
+
+    def _slot_repair_refusal(self, base, revised, probe):
+        if not self._probe_satisfied(probe, revised.errors[probe], revised.source_masses[probe]):
+            return "does not satisfy its target probe"
+        if regression := self._probe_regression(base, revised.errors, revised.source_masses):
+            return regression
+        if self._regresses_endpoints(base.guard_errors, revised.guard_errors):
+            return "regresses a workspace guard"
+        return None
 
     def _prepare_observation_revision(self, base, observations):
         return self._prepare_memory_revision(base, base.kernel.prepare(observations))

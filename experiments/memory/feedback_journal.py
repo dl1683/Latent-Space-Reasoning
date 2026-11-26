@@ -594,18 +594,12 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         if not self._tree_bound:
             raise ValueError("slot revisions require a tree feedback kernel")
         self._require_current(base)
-        if not isinstance(changes, Mapping):
-            raise ValueError("tree slot changes require a mapping")
-        edits = {}
-        for supplied_slot, row in changes.items():
-            slot = index(supplied_slot)
-            if slot in edits:
-                raise ValueError("duplicate normalized tree slot")
-            edits[slot] = None if row is None else _frozen(_real_array(row))
+        edits = self._freeze_slot_changes(changes)
         revised = self._prepare_slot_update(base, edits, repair_probe)
-        if revised is base:
-            return base
-        return self._commit(base, revised, tree_event=("tree_slots", _encode_slots(edits)))
+        return base if revised is base else self._commit_slot_update(base, revised, edits)
+
+    def _commit_slot_update(self, base, revised, changes):
+        return self._commit(base, revised, tree_event=("tree_slots", _encode_slots(changes)))
 
     def snapshot(self):
         """Replay unseen events and return the head of one consistent journal read."""

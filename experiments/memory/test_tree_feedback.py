@@ -1,4 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
 from threading import Barrier, Event
 
 import numpy as np
@@ -1162,6 +1163,196 @@ def test_guarded_slot_repair_loses_a_journal_race_after_validation(tmp_path, mon
         assert tip.errors[0] < 1e-12 and tip.kernel is not base.kernel
     else:
         assert tip.errors[0] > .3 and tip.kernel is base.kernel
+
+
+def _slot_maintenance_inputs():
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, query=[[0.]], carry=None,
+                              observation_key=[[0.]], observation_value=[[1.]],
+                              feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    return tree, [[0.], [0.]], [FeedbackProbe((1.,), 1, (.4,))]
+
+
+def test_slot_maintenance_prioritizes_the_repair_with_one_installed_validation(monkeypatch):
+    tree, rows, probes = _slot_maintenance_inputs()
+    workspace = FeedbackWorkspace(tree, rows, probes, max_update_norm=1.)
+    base = workspace.snapshot()
+    miss, hit = {0: [.1]}, {0: [2. * np.arctanh(.4)]}
+    baseline = workspace.maintain_observation_slots(base, (miss, hit), repair_probe=0,
+                                                    max_candidates=2, max_validations=1, use_triage=False)
+    assert baseline.status == "budget_exhausted" and workspace.snapshot() is base
+    assert baseline.attempts[0].candidate == 0 and baseline.attempts[0].rejection_stage == "guard"
+    measure = workspace._prepare_memory_revision
+    measured = []
+
+    def count(opening, memory):
+        measured.append(memory)
+        return measure(opening, memory)
+
+    monkeypatch.setattr(workspace, "_prepare_memory_revision", count)
+    run = workspace.maintain_observation_slots(base, (miss, hit), repair_probe=0,
+                                               max_candidates=2, max_validations=1, use_triage=True)
+    assert run.status == "committed" and run.selected_candidate == 1
+    assert run.candidate_count == 2 and run.unvalidated_count == 1 and run.replay_count == 0
+    attempt, = run.attempts
+    assert attempt.candidate == 1 and attempt.rejection is None and attempt.rank[0] == -1
+    assert measured == [run.revision.memory] and run.revision.errors[0] < 1e-12
+
+
+@pytest.mark.parametrize("expanded_target", [False, True])
+def test_slot_maintenance_leaves_expanded_decisions_advisory(expanded_target):
+    weights = dict(query=[[20.]], carry=None, observation_key=[[1.]], observation_value=[[1.]],
+                   feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    tree = TreeFeedbackKernel(depth=1, max_frontier=1, **weights)
+    seed = (1.,)
+    oracle = FeedbackKernel(**weights) if expanded_target else tree
+    goal = oracle.step(oracle.start(seed, oracle.prepare([[.75], [0.]]))).latest
+    workspace = FeedbackWorkspace(tree, [[1.], [0.]], [FeedbackProbe(seed, 1, goal)], max_update_norm=1.)
+    base = workspace.snapshot()
+    edit = {0: [.75]}
+    triage = workspace.triage_observation_slot_batch(base, (edit,), max_candidates=1, max_replays=1)
+    assert triage.alternatives[0].reads[0].replayed_satisfied is expanded_target
+    run = workspace.maintain_observation_slots(base, (edit,), repair_probe=0, max_candidates=1,
+                                               max_validations=1, max_replays=1, use_triage=True)
+    assert run.replay_count == run.trajectory_replay_count == 1
+    if expanded_target:
+        assert run.status == "no_candidate" and run.attempts[0].rejection_stage == "guard"
+        assert workspace.snapshot() is base
+    else:
+        assert run.status == "committed" and run.revision.errors == (0.,)
+
+
+def test_slot_maintenance_can_spend_its_budget_on_a_misleading_expanded_pass():
+    tree = TreeFeedbackKernel(depth=1, max_frontier=1, query=[[20.]], carry=None,
+                              observation_key=[[1.]], observation_value=[[1.]],
+                              feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    workspace = FeedbackWorkspace(tree, [[1.], [0.]], [FeedbackProbe((1.,), 1, (.4,))],
+                                  max_update_norm=1., atol=.001)
+    base = workspace.snapshot()
+    goal = np.arctanh(.4)
+    edits = ({0: [2. * goal]}, {0: [goal]})
+    triage = workspace.triage_observation_slot_batch(base, edits, max_candidates=2, max_replays=2)
+    assert [alt.reads[0].replayed_satisfied for alt in triage.alternatives] == [False, True]
+    ranked = workspace.maintain_observation_slots(base, edits, repair_probe=0, max_candidates=2,
+                                                  max_validations=1, max_replays=2, use_triage=True)
+    assert ranked.status == "budget_exhausted" and ranked.attempts[0].candidate == 1
+    assert workspace.snapshot() is base
+    direct = workspace.maintain_observation_slots(base, edits, repair_probe=0, max_candidates=2,
+                                                  max_validations=1)
+    assert direct.status == "committed" and direct.selected_candidate == 0
+
+
+def test_slot_maintenance_ranks_frozen_edits_and_reopens_the_exact_winner(tmp_path):
+    args = (tmp_path / "maintenance-tree.db", *_slot_maintenance_inputs())
+    options = dict(max_update_norm=1., atol=.05)
+    worker = JournaledFeedbackWorkspace(*args, **options, create=True)
+    base = worker.snapshot()
+    def proposals():
+        row = np.empty(1)
+        edits = {0: row}
+        for value in (.36, .4, .4):
+            row[0] = 2. * np.arctanh(value)
+            yield edits
+        edits.clear()
+
+    run = worker.maintain_observation_slots(base, proposals(), repair_probe=0, max_candidates=3,
+                                            max_validations=3, use_triage=True)
+    assert run.status == "committed" and run.selected_candidate == 1
+    direct = FeedbackWorkspace(*args[1:], **options)
+    reference = direct.maintain_observation_slots(direct.snapshot(), proposals(), repair_probe=0,
+                                                  max_candidates=3, max_validations=3, use_triage=False)
+    assert reference.selected_candidate == run.selected_candidate and reference.revision.errors == run.revision.errors
+    attempts = {attempt.candidate: attempt for attempt in run.attempts}
+    assert attempts[1].rank == attempts[2].rank < attempts[0].rank
+    assert run.revision.number == base.number + 1 and run.revision.errors[0] < 1e-12
+    reopened = JournaledFeedbackWorkspace(*args, **options).snapshot()
+    assert reopened.number == run.revision.number and reopened.errors == run.revision.errors
+    actual = reopened.kernel.step(reopened.start((1.,)))
+    assert actual.latest[0] == pytest.approx(.4)
+    assert base.kernel.step(base.start((1.,))).latest[0] == 0.
+
+
+def test_slot_maintenance_reports_exhausted_and_failed_rounds_and_respects_input_caps():
+    workspace = FeedbackWorkspace(*_slot_maintenance_inputs(), max_update_norm=1.)
+    base = workspace.snapshot()
+    misses = ({0: [.1]}, {0: [.2]})
+    with pytest.raises(ValueError, match="candidate budget"):
+        workspace.maintain_observation_slots(base, misses, repair_probe=0, max_candidates=1, max_validations=1)
+    with pytest.raises(ValueError, match="positive validation"):
+        workspace.maintain_observation_slots(base, misses, repair_probe=0, max_candidates=2, max_validations=0)
+    with pytest.raises(ValueError, match="requires enabled slot triage"):
+        workspace.maintain_observation_slots(base, misses, repair_probe=0, max_candidates=2,
+                                             max_validations=1, use_triage=False, max_replays=1)
+    limited = workspace.maintain_observation_slots(base, misses, repair_probe=0, max_candidates=2, max_validations=1)
+    full = workspace.maintain_observation_slots(base, misses, repair_probe=0, max_candidates=2, max_validations=2)
+    empty = workspace.maintain_observation_slots(base, (), repair_probe=0, max_candidates=2, max_validations=2)
+    assert limited.status == "budget_exhausted" and len(limited.attempts) == 1
+    assert full.status == empty.status == "no_candidate"
+    assert [attempt.candidate for attempt in full.attempts] == [0, 1]
+    assert all(attempt.rank is None and attempt.rejection == "does not satisfy its target probe"
+               for attempt in full.attempts)
+    assert not empty.attempts and empty.candidate_count == 0
+    assert workspace.snapshot() is base
+
+
+def test_slot_maintenance_falls_back_to_input_order_after_a_bound_failure(monkeypatch):
+    workspace = FeedbackWorkspace(*_slot_maintenance_inputs(), max_update_norm=1.)
+    base = workspace.snapshot()
+    edits = ({0: [.1]}, {0: [2. * np.arctanh(.4)]})
+
+    estimate = TreeFeedbackKernel._run_many_with_error_bounds
+
+    def bad_bound(kernel, *args, **kwargs):
+        previews = estimate(kernel, *args, **kwargs)
+        return tuple(replace(preview, error_bounds=(float("nan"),)) for preview in previews)
+
+    monkeypatch.setattr(TreeFeedbackKernel, "_run_many_with_error_bounds", bad_bound)
+    run = workspace.maintain_observation_slots(base, edits, repair_probe=0, max_candidates=2,
+                                               max_validations=2, use_triage=True)
+    assert run.triage_failure == "slot preview error bound must be finite"
+    assert [attempt.candidate for attempt in run.attempts] == [0, 1]
+    assert run.status == "committed" and run.selected_candidate == 1
+
+
+def test_slot_maintenance_charges_a_failed_installed_measurement_to_the_budget():
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, query=[[1e200], [0.]], carry=None,
+                              observation_key=[[1e200], [0.]], observation_value=[[0., 0.], [0., 1.]],
+                              feedback_key=[[0.], [0.]], feedback_value=np.zeros((2, 2)), max_steps=1)
+    goal = FeedbackProbe((1., 0.), 1, (0., float(np.tanh(.4))))
+    workspace = FeedbackWorkspace(tree, [[0., 0.], [0., 0.]], [goal], max_update_norm=1.)
+    base = workspace.snapshot()
+    edits = ({0: [1., 0.]}, {0: [0., .8]})
+    with np.errstate(all="warn"):
+        run = workspace.maintain_observation_slots(base, edits, repair_probe=0, max_candidates=2,
+                                                   max_validations=1)
+        assert workspace.snapshot() is base
+        complete = workspace.maintain_observation_slots(base, edits, repair_probe=0,
+                                                        max_candidates=2, max_validations=2)
+    assert run.status == "budget_exhausted" and run.unvalidated_count == 1
+    attempt, = run.attempts
+    assert attempt.rejection and attempt.rejection_stage == "measurement"
+    assert complete.attempts[0] == attempt
+    assert complete.status == "committed" and complete.selected_candidate == 1
+
+
+def test_slot_maintenance_stale_after_validation_keeps_its_attempt_but_appends_no_event(tmp_path, monkeypatch):
+    args = (tmp_path / "maintenance-tree-race.db", *_slot_maintenance_inputs())
+    worker = JournaledFeedbackWorkspace(*args, max_update_norm=1., create=True)
+    writer = JournaledFeedbackWorkspace(*args, max_update_norm=1.)
+    base = worker.snapshot()
+    publish = worker._commit_slot_update
+
+    def compete(opening, revised, edits):
+        writer.revise_observation_slots(writer.snapshot(), {1: [.1]})
+        return publish(opening, revised, edits)
+
+    monkeypatch.setattr(worker, "_commit_slot_update", compete)
+    run = worker.maintain_observation_slots(base, ({0: [2. * np.arctanh(.4)]},), repair_probe=0,
+                                            max_candidates=1, max_validations=1)
+    assert run.status == "stale" and run.revision is None and run.selected_candidate is None
+    attempt, = run.attempts
+    assert attempt.candidate == 0 and attempt.rejection is None and attempt.rank[0] == -1
+    assert worker.snapshot().number == writer.snapshot().number == base.number + 1
+    assert worker.snapshot().errors[0] > .3
 
 
 def test_multiplicity_survives_a_huge_common_observation_and_history_logit():
