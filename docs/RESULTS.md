@@ -168,6 +168,64 @@ pins refused. The v2 ledger records the delivery choice and unsubmitted
 refusal IDs. Real-model calibration remains open.
 [Evaluation contract](WHOLE_WORLD_EVALUATION.md#blinded-revision-to-task-experiment)
 
+**Fresh visible calibration packet and output preflight.** The source
+fixtures are in
+[`whole_world_calibration_visible.json`](../experiments/memory/whole_world_calibration_visible.json);
+their evaluator-only criteria are in
+[`whole_world_calibration_gold.json`](../experiments/memory/whole_world_calibration_gold.json).
+For T8, a concise object-shaped four-need plan serialized to 313 Qwen tokens
+plus EOS (314); a four-finding final used 207 plus EOS (208). This is static
+tokenization with the pinned Qwen3-0.6B tokenizer revision
+`c1899de289a04d12100db370d81485cdf75e47ca`, not generated model output.
+Both fit a 512-token per-call cap. Together they use 522 tokens from a
+1,792-token episode ceiling, leaving 1,270 tokens for up to five action
+outputs. All eight task plans, action schemas and finals still need complete
+token preflight before inference; this sample is not a full-episode guarantee.
+No model calibration has run on this packet.
+
+## Native-world task-addressing gate, 26 November 2026
+
+**Bounded pretrained pilot.** A source-only Qwen3-0.6B process published a
+five-source text world at opening p0, corrected p1, and restored p2 before a
+separate reader opened the task. Query-blind maintenance installed 1
+continuation at p0, 0 at p1, and 1 at p2. The single visible p2 task required
+the event-to-record, current record-to-sector, and sector-to-team links. It
+was tokenized to 63 tokens; the same task with all five source bodies was 336
+tokens. The pinned model ran on CPU with two latent steps and a 2-token output
+allowance.
+
+The visible gold answer was `1` (Copper). Active, derived-off and memory-
+omitted each returned `2` (Amber); the full-text arm returned `3`
+(unresolved). Each arm scored **0/1**. Active memory selected the event-to-
+record and sector-to-team spans, but missed the current record-to-sector
+mapping. Although p2 had one installed continuation, its derived-bank read
+was empty at both steps: **0 routed and 0 applied derived steps**. The
+full-text arm received all five bodies and all three critical source IDs, yet
+still failed the answer.
+
+The full-text arm uses the same native reader with source text appended. It is
+not ordinary direct-generation, iterative-RAG, or incremental-join control.
+Because that arm also failed, this run does not establish that latent memory
+helps or hurts relative to a competent text reasoner. It does identify a
+specific interface failure: the task-conditioned read did not address the
+retained continuation or deliver the complete chain. The first attempt was
+excluded after a prompt audit found that the literal `default` had been used
+as a one-token chat template. The corrected runner checks that the exact task
+survives tokenization.
+
+Publication used 28 backbone calls and 158 input positions; source encoding,
+maintenance and writing the three publications took 3.08, 0.58 and 1.19
+seconds. The p2 reader used 16 backbone calls and 537 input positions across
+four arms. The complete publications, source feeds, reads and scored record
+are retained in
+[`native_world_addressing_p2_2026-11-26`](../experiments/memory/results/native_world_addressing_p2_2026-11-26/README.md).
+This one visible synthetic relation family is an interface falsification
+only; the p2 source explicitly states that the correction was withdrawn.
+Before expanding the panel, qualify an ordinary full-context Qwen text answer
+under the same prompt and output cap. Then compare task-addressed memory with
+that text path and a same-information exact join, including same-pin removal
+and restoration. Do not interpret retrieval or a retained vector as reasoning.
+
 ## Qualifying a continuation before a late task, 26 November 2026
 
 **CPU software control.** A native worker drafted one pending

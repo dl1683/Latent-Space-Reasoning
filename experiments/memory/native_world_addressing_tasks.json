@@ -1,0 +1,20 @@
+{
+  "schema": "lsr-native-world-task-set-v1",
+  "tasks": [
+    {
+      "task_id": "glass-arch-p0",
+      "pin": "opening-p0",
+      "task": "At opening pin p0, which team is responsible for the Glass Arch service event? Follow the event's record ID to its current sector assignment. Choose 1 for Copper, 2 for Amber, or 3 if unresolved. Return only the digit."
+    },
+    {
+      "task_id": "glass-arch-p1",
+      "pin": "corrected-p1",
+      "task": "At corrected pin p1, which team is responsible for the Glass Arch service event? Follow the event's record ID to its current sector assignment. Choose 1 for Copper, 2 for Amber, or 3 if unresolved. Return only the digit."
+    },
+    {
+      "task_id": "glass-arch-p2",
+      "pin": "restored-p2",
+      "task": "At restored pin p2, which team is responsible for the Glass Arch service event? Follow the event's record ID to its current sector assignment. Choose 1 for Copper, 2 for Amber, or 3 if unresolved. Return only the digit."
+    }
+  ]
+}

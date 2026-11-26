@@ -1,0 +1,133 @@
+{
+  "schema": "lsr-whole-world-evaluator-gold-v1",
+  "visible_file": "whole_world_calibration_visible.json",
+  "cases": [
+    {
+      "task_id": "T1",
+      "expected_answer": "Box 91 is not eligible to transfer: its checksum passed and Archives signed, but an original independent Security signature is not established.",
+      "critical_needs": [
+        {"need_id": "T1-N1", "target_or_event": "Box 91 transfer rule", "relation": "required approvals and scan", "scope": "current packet", "source_ids": ["T1-S1"], "must_include": ["passed checksum", "original signed clearance from both Archives and Security", "a copied line is not an independent clearance"]},
+        {"need_id": "T1-N2", "target_or_event": "Box 91 checksum scan", "relation": "scan status", "scope": "2026-11-25", "source_ids": ["T1-S2"], "must_include": ["scan passed"]},
+        {"need_id": "T1-N3", "target_or_event": "Box 91 transfer approvals", "relation": "separate Archives and Security clearances", "scope": "current complete packet", "source_ids": ["T1-S3", "T1-M", "T1-S1"], "must_include": ["Archives signed", "Security signature absent from packet", "copied statement is not independent", "transfer blocked"]}
+      ],
+      "side_needs": [{"need_id": "T1-SIDE", "target_or_event": "Box 91", "relation": "weight", "source_ids": ["T1-S4"], "must_include": ["8 kg"]}],
+      "false_closure": "Do not count the copied Security line as a separate signed clearance."
+    },
+    {
+      "task_id": "T2",
+      "pin_outcomes": [
+        {
+          "pin": "opening-p0",
+          "expected_answer": "Copper owns the Glass Arch service event at opening pin p0.",
+          "critical_needs": [
+            {"need_id": "T2-P0-N1", "target_or_event": "Glass Arch service event", "relation": "filed record identity", "source_ids": ["T2-S2"], "must_include": ["event maps to X-41"]},
+            {"need_id": "T2-P0-N2", "target_or_event": "record X-41", "relation": "sector assignment", "scope": "opening pin p0", "source_ids": ["T2-CROSSWALK"], "must_include": ["X-41 maps to K17 at p0"]},
+            {"need_id": "T2-P0-N3", "target_or_event": "sector K17", "relation": "serving team", "source_ids": ["T2-S1"], "must_include": ["K17 Copper"]}
+          ],
+          "side_needs": [{"need_id": "T2-P0-SIDE", "target_or_event": "Glass Arch service event", "relation": "follow-up due date", "source_ids": ["T2-S2"], "must_include": ["2026-12-03"]}]
+        },
+        {
+          "pin": "corrected-p1",
+          "expected_answer": "Amber owns the Glass Arch service event at corrected pin p1.",
+          "critical_needs": [
+            {"need_id": "T2-P1-N1", "target_or_event": "Glass Arch service event", "relation": "filed record identity", "source_ids": ["T2-S2"], "must_include": ["event maps to X-41"]},
+            {"need_id": "T2-P1-N2", "target_or_event": "record X-41", "relation": "sector assignment", "scope": "corrected pin p1", "source_ids": ["T2-CROSSWALK"], "must_include": ["X-41 maps to K18 at p1", "p1 replaces the opening association"]},
+            {"need_id": "T2-P1-N3", "target_or_event": "sector K18", "relation": "serving team", "source_ids": ["T2-S1"], "must_include": ["K18 Amber"]}
+          ],
+          "side_needs": [{"need_id": "T2-P1-SIDE", "target_or_event": "Glass Arch service event", "relation": "follow-up due date", "source_ids": ["T2-S2"], "must_include": ["2026-12-03"]}]
+        }
+      ],
+      "comparison": "The team changes from Copper at p0 to Amber at p1.",
+      "false_closure": "Do not use X-42's clause for X-41 or report the opening mapping as current."
+    },
+    {
+      "task_id": "T3",
+      "expected_answer": "East Gate is closed at 07:45 local; the later-dated unsigned shift note conflicts but is advisory under the signed-order rule.",
+      "critical_needs": [
+        {"need_id": "T3-N1", "target_or_event": "East Gate status", "relation": "controlling authority", "source_ids": ["T3-S1"], "must_include": ["latest signed District Duty Officer order controls", "unsigned notes advisory"]},
+        {"need_id": "T3-N2", "target_or_event": "East Gate", "relation": "status at requested local time", "scope": "2026-11-27 07:45 local", "source_ids": ["T3-S2", "T3-M"], "must_include": ["D-9 is the latest signed order in the complete packet", "closed through 08:00", "closed at 07:45"]},
+        {"need_id": "T3-N3", "target_or_event": "East Gate shift note", "relation": "conflict and authority", "source_ids": ["T3-S3", "T3-S1", "T3-S2", "T3-M"], "must_include": ["note says open at 07:30", "no signature", "does not override D-9", "no later signed order in packet"]}
+      ],
+      "side_needs": [{"need_id": "T3-SIDE", "target_or_event": "gate-status review", "relation": "scheduled time", "source_ids": ["T3-S4"], "must_include": ["09:00 local"]}],
+      "false_closure": "Do not treat a later unsigned note as controlling."
+    },
+    {
+      "task_id": "T4",
+      "pin_outcomes": [
+        {
+          "pin": "opening-p0",
+          "expected_answer": "At opening pin p0, N-88 is active and expires 2026-12-31.",
+          "critical_needs": [
+            {"need_id": "T4-P0-N1", "target_or_event": "N-88", "relation": "status", "scope": "opening pin p0", "source_ids": ["T4-N88"], "must_include": ["active"]},
+            {"need_id": "T4-P0-N2", "target_or_event": "N-88", "relation": "expiry", "scope": "opening pin p0", "source_ids": ["T4-N88"], "must_include": ["2026-12-31"]}
+          ],
+          "side_needs": [{"need_id": "T4-P0-SIDE", "target_or_event": "N-88 record", "relation": "owner", "source_ids": ["T4-SIDE"], "must_include": ["J. Noor"]}]
+        },
+        {
+          "pin": "corrected-p1",
+          "expected_answer": "At corrected pin p1, N-88 is suspended effective 2026-11-15 and expires 2026-11-30.",
+          "critical_needs": [
+            {"need_id": "T4-P1-N1", "target_or_event": "N-88", "relation": "status and effective date", "scope": "corrected pin p1", "source_ids": ["T4-N88"], "must_include": ["suspended", "effective 2026-11-15"]},
+            {"need_id": "T4-P1-N2", "target_or_event": "N-88", "relation": "expiry", "scope": "corrected pin p1", "source_ids": ["T4-N88"], "must_include": ["2026-11-30"]}
+          ],
+          "side_needs": [{"need_id": "T4-P1-SIDE", "target_or_event": "N-88 record", "relation": "owner", "source_ids": ["T4-SIDE"], "must_include": ["J. Noor"]}]
+        },
+        {
+          "pin": "restored-p2",
+          "expected_answer": "At restored pin p2, N-88 is active and expires 2026-12-31.",
+          "critical_needs": [
+            {"need_id": "T4-P2-N1", "target_or_event": "N-88", "relation": "status and expiry", "scope": "restored pin p2", "source_ids": ["T4-N88"], "must_include": ["active", "2026-12-31"]},
+            {"need_id": "T4-P2-N2", "target_or_event": "p1 correction", "relation": "status at restored pin", "scope": "p2", "source_ids": ["T4-N88"], "must_include": ["withdrawn", "not active at p2"]}
+          ],
+          "side_needs": [{"need_id": "T4-P2-SIDE", "target_or_event": "N-88 record", "relation": "owner", "source_ids": ["T4-SIDE"], "must_include": ["J. Noor"]}]
+        }
+      ],
+      "comparison": "The same stable source changes at p1 and is restored at p2; p2 should match the observed p0 status and expiry.",
+      "false_closure": "Do not leak p1 status into the restored p2 answer or treat an old version as current."
+    },
+    {
+      "task_id": "T5",
+      "expected_answer": "Unknown from the received packet whether Vessel 61 passed its pressure test; the required third page is missing.",
+      "critical_needs": [
+        {"need_id": "T5-N1", "target_or_event": "Vessel 61 pressure test", "relation": "entity identity", "source_ids": ["T5-S1", "T5-S2"], "must_include": ["Vessel 62 is a different vessel", "Vessel 61 has no pressure-test result in the visual-inspection page"]},
+        {"need_id": "T5-N2", "target_or_event": "Vessel 61 test evidence", "relation": "visual inspection versus pressure test", "source_ids": ["T5-S2"], "must_include": ["visual inspection passed", "does not establish pressure test"]},
+        {"need_id": "T5-N3", "target_or_event": "Vessel 61 pressure-test packet", "relation": "coverage and unresolved result", "source_ids": ["T5-M"], "must_include": ["pages 1-2 received", "page 3 missing", "status unknown, not pass or fail"]}
+      ],
+      "side_needs": [{"need_id": "T5-SIDE", "target_or_event": "Vessel 61 gauge", "relation": "calibration date", "source_ids": ["T5-S3"], "must_include": ["2026-11-18"]}],
+      "false_closure": "Do not transfer Vessel 62's test result or the visual inspection to Vessel 61's pressure test."
+    },
+    {
+      "task_id": "T6",
+      "expected_answer": "P-31 authorizes the 18-ton Cedar Yard crossing on June 20; P-32's newer 10-ton limit applies only to Elm Yard.",
+      "critical_needs": [
+        {"need_id": "T6-N1", "target_or_event": "Permit P-31", "relation": "load, location and effective dates", "scope": "Cedar Yard, 2026-06-20", "source_ids": ["T6-S1"], "must_include": ["up to 20 tons", "Cedar Yard", "valid June 1-30"]},
+        {"need_id": "T6-N2", "target_or_event": "Order P-32", "relation": "newer limit and geographic scope", "source_ids": ["T6-S2"], "must_include": ["10-ton limit", "Elm Yard only", "does not alter Cedar Yard permit"]},
+        {"need_id": "T6-N3", "target_or_event": "planned Cedar Yard crossing", "relation": "authorization", "scope": "18 tons on 2026-06-20", "source_ids": ["T6-S1", "T6-S3"], "must_include": ["planned load is within permit limit", "listed permit authorizes crossing"]}
+      ],
+      "side_needs": [{"need_id": "T6-SIDE", "target_or_event": "Cedar Yard", "relation": "gate marshal", "source_ids": ["T6-S4"], "must_include": ["Lin Hale"]}],
+      "false_closure": "Do not apply P-32's Elm Yard restriction to Cedar Yard."
+    },
+    {
+      "task_id": "T7",
+      "expected_answer": "Under the hypothetical causeway closure, ferry timing meets the arrival time, but delivery cannot be confirmed because F-2's required in-trip state is unknown.",
+      "critical_needs": [
+        {"need_id": "T7-N1", "target_or_event": "causeway closure", "relation": "hypothetical premise", "scope": "if closure occurs at 16:00", "source_ids": [], "must_include": ["treat as hypothetical, not observed fact"]},
+        {"need_id": "T7-N2", "target_or_event": "East Ferry trip EF-2", "relation": "route and arrival time", "scope": "arrive by 18:00", "source_ids": ["T7-S1"], "must_include": ["departs 17:10", "arrives 17:35", "carries clinic van"]},
+        {"need_id": "T7-N3", "target_or_event": "chilled-medicine delivery", "relation": "required freezer condition", "scope": "during ferry trip", "source_ids": ["T7-S2", "T7-S3", "T7-S4"], "must_include": ["F-2 must be energized", "F-2 field blank and controller log absent", "generator self-test does not establish F-2", "cannot confirm delivery"]}
+      ],
+      "side_needs": [{"need_id": "T7-SIDE", "target_or_event": "Island Clinic generator", "relation": "morning self-test", "source_ids": ["T7-S4"], "must_include": ["passed at 09:00"]}],
+      "false_closure": "Do not infer F-2 status from the clinic generator or treat the task's hypothetical as observed."
+    },
+    {
+      "task_id": "T8",
+      "expected_answer": "The review team should verify whether E-22's signature token authenticates a valid electronic submission. The receipt is timely but its signature is pending; success is not established.",
+      "critical_needs": [
+        {"need_id": "T8-N1", "target_or_event": "Plan C rejection", "relation": "stated basis", "source_ids": ["T8-S2"], "must_include": ["denied solely because no office-arrival mark appeared"]},
+        {"need_id": "T8-N2", "target_or_event": "valid electronic submission", "relation": "alternative to office mark", "source_ids": ["T8-S1"], "must_include": ["electronic receipt can substitute", "signature token must verify"]},
+        {"need_id": "T8-N3", "target_or_event": "portal event E-22", "relation": "timeliness and authentication", "scope": "2026-08-13 versus 2026-08-14 17:00 deadline", "source_ids": ["T8-S3", "T8-S4", "T8-S1"], "must_include": ["receipt is timely", "signature pending verification", "recommend token verification", "appeal success unresolved"]}
+      ],
+      "side_needs": [{"need_id": "T8-SIDE", "target_or_event": "review desk", "relation": "assignment", "source_ids": ["T8-S5"], "must_include": ["North Borough, Room 4"]}],
+      "false_closure": "Do not equate recorded receipt with authenticated submission or claim appeal success."
+    }
+  ]
+}

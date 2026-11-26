@@ -1,6 +1,6 @@
 # Failure patterns retained
 
-This ledger summarizes historical evidence; compiling it did not run an experiment.
+This ledger summarizes historical evidence; compiling it did not run an experiment. A new bounded native-addressing diagnostic is recorded separately below.
 
 The fixed goal remains one multimodal model that encodes the whole corpus once into the space in which it reasons, with memory optional in the same call. The following failures constrain particular recipes and instruments; they do not close that goal. Reused-block recurrence and continuous hidden-state feedback remain distinct reasoning candidates. Neither has an admitted useful matched comparison.
 
@@ -760,6 +760,28 @@ The guarded maintenance trial now refuses the same route drift. A separate contr
 **A recovered proof can lose its gain inside the prospective restoration window, 25 November 2026.** A middle source batch improved the incumbent while the archived term's target proof stayed fixed. The restoration judge refused publication. A prior explicit guard on the target run also blocked a separate restoration at opening. Retain both the exact proof and its gain, and derive the archived term's insertion from the journal's birth order so that intervening updates keep their order. [Restoration controls](../experiments/memory/test_binding_feedback.py)
 
 **A distinct journal birth can duplicate a live context term, 25 November 2026.** An audit found a synthetic trajectory in which the duplicate doubles a contribution and switches the winning route. Reject identical live factors during search and replay. The audits also found that merging protected runs or comparing their serialized seeds can make an inherited target act as a permanent guard. Preserve explicit guard declarations and compare the target's validated seed coordinates numerically so either sign of zero identifies the same target run. [Restoration controls](../experiments/memory/test_binding_feedback.py)
+
+## New bounded native-addressing diagnostic, 26 November 2026
+
+**The late task did not address its retained continuation.** On one visible
+three-hop p2 task, maintenance had installed one continuation, but both
+task-conditioned derived reads were empty. The active reader selected two of
+the three critical sources, missed the current record-to-sector mapping, and
+answered Amber instead of Copper. Derived-off and memory-omitted also answered
+Amber. The full-text arm received all five sources, covered all three critical
+source IDs, and answered unresolved. All four arms were 0/1. This is a concrete
+failure of this task-to-world interface on this fixture, not evidence against
+the larger latent-world objective: the full-text arm used the same native
+reader and was not a competent direct-text baseline.
+
+An earlier attempt passed literal `default` as the chat template and generated
+from a one-token prompt; it was excluded. The runner now verifies that decoded
+input preserves the exact task. Do not scale the panel or tune the reader on
+this example. First run the ordinary Qwen full-text baseline with the same
+prompt and output cap; if it cannot solve the task, redesign the visible gate
+before comparing memory mechanisms. The corrected run and source publications
+are retained in
+[`native_world_addressing_p2_2026-11-26`](../experiments/memory/results/native_world_addressing_p2_2026-11-26/README.md).
 
 ## Recovery and interpretation
 

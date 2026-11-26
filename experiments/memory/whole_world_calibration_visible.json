@@ -1,0 +1,135 @@
+{
+  "schema": "lsr-whole-world-visible-calibration-v1",
+  "cases": [
+    {
+      "task_id": "T1",
+      "family": "independent approvals and source completeness",
+      "task": "May Box 91 be transferred to the scanning vendor today? State what is satisfied and any blocker.",
+      "sources": [
+        {"source_id": "T1-M", "text": "Complete current record packet for Box 91: all transfer approvals, scan results, and equipment records are listed here; no other current approval records are in scope."},
+        {"source_id": "T1-S1", "text": "Rule: A sealed record box may transfer only after a passed checksum scan and original signed clearances from both Archives and Security. A copied statement inside one memo does not count as a second clearance."},
+        {"source_id": "T1-S2", "text": "Box 91 checksum scan passed on 2026-11-25 after seal replacement."},
+        {"source_id": "T1-S3", "text": "Archives memo A-6 signs clearance for Box 91. An attached line says 'Security cleared,' but it is copied from A-6; no Security signature appears in this packet."},
+        {"source_id": "T1-S4", "text": "Box 91 weight: 8 kg."}
+      ]
+    },
+    {
+      "task_id": "T2",
+      "family": "cross-name bridge and revision-scoped swap",
+      "task": "At this pin, which team owns the Glass Arch service event?",
+      "worlds": [
+        {
+          "pin": "opening-p0",
+          "as_of": 0,
+          "task": "At opening pin p0, which team owns the Glass Arch service event?",
+          "sources": [
+            {"source_id": "T2-S1", "text": "Sector K17 is served by the Copper team. Sector K18 is served by the Amber team."},
+            {"source_id": "T2-S2", "text": "The service event at Glass Arch is filed as record X-41. Follow-up visit due 2026-12-03."},
+            {"source_id": "T2-CROSSWALK", "text": "Record X-41 points to sector K17. Record X-42 points to sector K18."}
+          ]
+        },
+        {
+          "pin": "corrected-p1",
+          "as_of": 1,
+          "task": "At corrected pin p1, which team owns the Glass Arch service event?",
+          "sources": [
+            {"source_id": "T2-S1", "text": "Sector K17 is served by the Copper team. Sector K18 is served by the Amber team."},
+            {"source_id": "T2-S2", "text": "The service event at Glass Arch is filed as record X-41. Follow-up visit due 2026-12-03."},
+            {"source_id": "T2-CROSSWALK", "text": "Record X-41 points to sector K18. Record X-42 points to sector K17. This correction replaces the opening associations."}
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "T3",
+      "family": "conflicting authority",
+      "task": "At 07:45 local on November 27, is East Gate open? Note the contrary record and which source controls.",
+      "sources": [
+        {"source_id": "T3-S1", "text": "Gate rule: the latest signed District Duty Officer order controls; unsigned shift notes are advisory."},
+        {"source_id": "T3-M", "text": "Complete gate-status packet as of 2026-11-27 07:45 local: it includes all signed District Duty Officer orders and shift notes for East Gate; no other later signed order is in this packet."},
+        {"source_id": "T3-S2", "text": "Signed order D-9, signed by Officer R. Imani on 2026-11-25: East Gate remains closed through 2026-11-27 08:00 local."},
+        {"source_id": "T3-S3", "text": "Shift note dated 2026-11-26: East Gate opens at 07:30 on 2026-11-27. No officer signature is present."},
+        {"source_id": "T3-S4", "text": "Next gate-status review is scheduled for 2026-11-27 09:00 local."}
+      ]
+    },
+    {
+      "task_id": "T4",
+      "family": "historical revision and restoration",
+      "task": "At this pin, what are N-88's status and expiry?",
+      "worlds": [
+        {
+          "pin": "opening-p0",
+          "as_of": 0,
+          "task": "At opening pin p0, report N-88's status and expiry. Also name the owner.",
+          "sources": [
+            {"source_id": "T4-N88", "text": "Permit N-88 for South Lab is active and expires 2026-12-31."},
+            {"source_id": "T4-SIDE", "text": "N-88 record owner: J. Noor."}
+          ]
+        },
+        {
+          "pin": "corrected-p1",
+          "as_of": 1,
+          "task": "At corrected pin p1, report N-88's status, the effective date of any suspension, and its expiry. Also name the owner.",
+          "sources": [
+            {"source_id": "T4-N88", "text": "Correction to N-88: status suspended effective 2026-11-15; expiry changed to 2026-11-30."},
+            {"source_id": "T4-SIDE", "text": "N-88 record owner: J. Noor."}
+          ]
+        },
+        {
+          "pin": "restored-p2",
+          "as_of": 2,
+          "task": "At restored pin p2, report N-88's status and expiry, and say whether the p1 correction remains active or was withdrawn. Also name the owner.",
+          "sources": [
+            {"source_id": "T4-N88", "text": "The p1 correction is withdrawn. At this restored pin, N-88 is active and expires 2026-12-31."},
+            {"source_id": "T4-SIDE", "text": "N-88 record owner: J. Noor."}
+          ]
+        }
+      ]
+    },
+    {
+      "task_id": "T5",
+      "family": "missing premise and near-miss entity",
+      "task": "Did Vessel 61 pass its pressure test? Do not use another vessel's result unless it applies.",
+      "sources": [
+        {"source_id": "T5-M", "text": "All received inspection pages are listed here. Vessel 61 pressure-test packet requires pages 1-3; pages 1-2 were received and page 3 was not received."},
+        {"source_id": "T5-S1", "text": "Vessel 62 passed its pressure test on 2026-11-20."},
+        {"source_id": "T5-S2", "text": "Vessel 61 passed a visual inspection on 2026-11-20. This page contains no pressure-test result."},
+        {"source_id": "T5-S3", "text": "Vessel 61 gauge calibration date: 2026-11-18."}
+      ]
+    },
+    {
+      "task_id": "T6",
+      "family": "effective time and scope",
+      "task": "Does the permit set authorize the planned 18-ton crossing at Cedar Yard on June 20, 2026? Does the newer order change that?",
+      "sources": [
+        {"source_id": "T6-S1", "text": "Permit P-31 authorizes loads up to 20 tons at Cedar Yard from 2026-06-01 through 2026-06-30."},
+        {"source_id": "T6-S2", "text": "Order P-32 limits loads to 10 tons at Elm Yard from 2026-06-15 through 2026-06-30. P-32 applies only to Elm Yard."},
+        {"source_id": "T6-S3", "text": "Planned crossing: 18 tons at Cedar Yard on 2026-06-20."},
+        {"source_id": "T6-S4", "text": "Cedar Yard gate marshal: Lin Hale."}
+      ]
+    },
+    {
+      "task_id": "T7",
+      "family": "counterfactual alternative and unresolved condition",
+      "task": "If the causeway closes at 16:00, can the chilled-medicine van reach Island Clinic by 18:00 using the ferry?",
+      "sources": [
+        {"source_id": "T7-S1", "text": "East Ferry trip EF-2 departs at 17:10, reaches Island Dock at 17:35, and carries the clinic van."},
+        {"source_id": "T7-S2", "text": "Chilled cargo may be delivered only if vessel freezer circuit F-2 is energized during the trip."},
+        {"source_id": "T7-S3", "text": "Today's dispatch sheet confirms EF-2 and vehicle space, but the F-2 field is blank. The vessel-controller log has not arrived."},
+        {"source_id": "T7-S4", "text": "Island Clinic generator passed its morning self-test at 09:00."}
+      ]
+    },
+    {
+      "task_id": "T8",
+      "family": "broad strategy and consequential unknown",
+      "task": "Before concluding the rejection was inevitable, what should the review team establish? Also name the assigned review desk.",
+      "sources": [
+        {"source_id": "T8-S1", "text": "A filing may be rejected for no office-arrival mark only if there is no valid electronic submission. An electronic receipt substitutes for the mark when its signature token verifies."},
+        {"source_id": "T8-S2", "text": "Plan C was denied solely because no office-arrival mark appeared in the archive."},
+        {"source_id": "T8-S3", "text": "Portal event E-22 records Plan C received on 2026-08-13 at 16:42; signature state is pending verification."},
+        {"source_id": "T8-S4", "text": "Filing deadline: 2026-08-14 at 17:00. Appeal due: 2026-08-21."},
+        {"source_id": "T8-S5", "text": "Assigned review desk: North Borough, Room 4."}
+      ]
+    }
+  ]
+}

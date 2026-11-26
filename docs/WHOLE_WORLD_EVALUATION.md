@@ -319,7 +319,14 @@ materialized candidate spans at 256, report every catalogue span visited
 separately, and charge each additional page against the search allowance.
 Give each task at most seven 0.6B calls: one
 initial plan, up to five evidence-action or retrieval rounds, and one final
-assessment, with 256 generated tokens and 8,192 total prompt tokens per task.
+assessment, with a 512-token per-call generation cap, a 1,792-token aggregate
+generation ceiling, and 8,192 total prompt tokens per task. Apply the same
+per-call and aggregate ceilings to every compared task-time arm. A frozen
+four-need calibration plan preflights at 314 tokens including EOS, above the
+former 256-token cap. The per-call increase redistributes the same episode
+budget; it does not increase aggregate output tokens. Pretokenize every legal
+plan, action and final for all eight visible tasks before inference, and revise
+the instrument if any output exceeds its reservation or episode ceiling.
 Set `TaskBudget` to at most 24 actions, eight candidates per search, 8,192
 returned evidence bytes, 2 MiB source bytes, and 512 aggregate role-work units
 across ordinary probes and joint role-link calls. A maintenance round gets at most two calls per
@@ -695,7 +702,8 @@ advantage.
 For the next visible calibration, `compact_delivery=True` supplies the
 current phase's shorter instructions and episode-local source handles.
 It retains the need and evidence inventories and the ordinary source
-validation. Use the same choice, decoder identity and allowances
+validation; free-text state stays empty because the host retains the needs
+and receipts. Use the same choice, decoder identity and allowances
 across compared arms. In addition to grounded completion and actual
 input usage, report repeated rejected requests separately from tasks
 whose evidence grows. Run a paired full/compact control before using

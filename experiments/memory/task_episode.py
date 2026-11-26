@@ -200,7 +200,7 @@ _RECURRENT_WORLD_INSTRUCTIONS = (
 
 _HANDLE_RECEIPT_INSTRUCTIONS = (
     " Source spans use host-assigned span_id and source_version references. "
-    "Cite normal verified read IDs."
+    "These are identities, not chronological ordering. Cite normal verified read IDs."
 )
 _COMPACT_NEED_CONTRACT = (
     " Need fields: id, parent, discovered_from, target_or_event, relation, time_version_scope, "
@@ -212,7 +212,8 @@ _COMPACT_NEED_CONTRACT = (
 )
 _COMPACT_ACTION_CONTRACT = (
     ' Action JSON has {"state":text,"need_additions":[need,...],"tool":tool}. Keep prior needs immutable. '
-    "Add only new needs. Every action uses a non-null tool linked by need_id to a registered need. "
+    "Keep state empty; the host retains needs and receipts. Add only new needs. "
+    "Every action uses a non-null tool linked by need_id to a registered need. "
     'Tools: {"op":"search","need_id":id,"query":text}; {"op":"read","need_id":id,"candidate":integer}; '
     '{"op":"probe","need_id":id,"read":integer,"ordinal":integer,"outcomes":[text,...]} when enabled '
     "(optional integer hops). Read only same-need candidates. A candidate list requires batching support. "
@@ -234,7 +235,8 @@ def _compact_delivery_system(phase):
         return scope + ' Return only {"plan":[need,...]} with at least one material need.' + _COMPACT_NEED_CONTRACT
     if phase == "act_after_plan":
         return (scope + " Your first action must search. "
-                'Return {"state":text,"need_additions":[need,...],"tool":{"op":"search","need_id":text,"query":text}}. '
+                'Return {"state":"","need_additions":[need,...],"tool":{"op":"search","need_id":text,"query":text}}. '
+                "The host retains needs and receipts; keep state empty. "
                 "Use a registered need and only add new needs." + _COMPACT_NEED_CONTRACT)
     if phase == "investigate":
         return (scope + _COMPACT_ACTION_CONTRACT + _COMPACT_NEED_CONTRACT + _COMPACT_FINISH_CONTRACT
@@ -1528,8 +1530,13 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                         action = {"plan": compact_plan}
                     else:
                         if (type(action) is not dict or action.keys() != {"state", "need_additions", "tool"}
-                                or type(action["state"]) is not str or action["tool"] is None):
-                            raise ValueError("compact actions require notes, need additions, and a non-null tool")
+                                or type(action["state"]) is not str
+                                or (policy.compact_delivery and action["state"] != "")
+                                or action["tool"] is None):
+                            raise ValueError(
+                                "compact actions require text state and need additions; compact delivery also requires "
+                                "empty state and a non-null tool"
+                            )
                         additions = _compact_need_additions(
                             action["need_additions"], need_registry, toolbox._session.reads,
                         )
