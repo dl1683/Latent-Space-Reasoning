@@ -172,6 +172,28 @@ unresolved.
    with the operator active, removed, and restored. This verifies the handoff
    and operator dependency for that route; it is not an independently authored
    task result and does not qualify the adapter.
+
+   `NativeTaskEpisodeBackend` now provides an unrun integration slice for the
+   native reader. It consumes the exact `PolicyCall.input_ids` and per-call
+   output cap produced by `run_episode`, and binds the task evidence catalogue
+   to the reopened native publication's source-feed seal, per-source
+   generations, runtime digest, and reader fingerprint. It reopens each full
+   source once, checks complete byte coverage and every native chunk hash, and
+   caps that verification at the episode's `access.source_bytes` allowance. It
+   records those bytes separately from TaskWorld setup in the episode opening
+   and usage. This UTF-8 TaskWorld path refuses feeds with typed binary sources;
+   binary evidence needs a matching modality-aware open and citation path. The runtime
+   digest remains a trusted controller-supplied publication expectation. The
+   opening and each successful response carry a hashed pin, exact token trace, and
+   ordered source/derived selection steps. Its active, derived-off, and
+   memory-omitted views share the same published source world; the episode-pair
+   reader permits only one same-pin contribution change. Native selected spans
+   remain leads; findings still need ordinary verified source reads and
+   citations. This is plumbing for the late-task comparison, not evidence of
+   planning quality or latent-world utility. The path has not been
+   runtime-qualified. `read_episode_pair(..., contrast="native_text")` also
+   admits an active native episode against a text-backed episode when their
+   task pin, policy, tokenizer, framing limits, and source setup agree.
 4. **Grade independently.** A blinded evaluator scores obligation coverage,
    evidence chains, final answers and errors from the frozen gold. A policy's
    statement that a need is supported or reconciled is not itself proof.

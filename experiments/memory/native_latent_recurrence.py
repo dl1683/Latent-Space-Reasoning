@@ -50,6 +50,7 @@ class _LatentRun:
     applied_derived: int = 0
     source_steps: tuple[SelectionStep, ...] = ()
     derived_reads: tuple[SelectionReceipt, ...] = ()
+    derived_steps: tuple[SelectionStep, ...] = ()
 
 
 @dataclass(frozen=True, slots=True, eq=False)
@@ -67,6 +68,8 @@ class NativeSourceMemory:
     _selective: _SelectiveWorld | None = None
     _publication_seal: str | None = None
     _derived_off: bool = False
+    _publication_runtime_sha256: str | None = None
+    _reader_fingerprint_sha256: str | None = None
 
     @property
     def seal(self):
@@ -143,6 +146,8 @@ class NativeLatentRead:
     applied_derived_steps: int = 0
     publication_seal: str | None = None
     derived_omitted: bool = False
+    source_steps: tuple[SelectionStep, ...] = ()
+    derived_steps: tuple[SelectionStep, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -423,7 +428,7 @@ class NativeLatentModel:
         import torch
 
         run = _LatentRun(hidden, cache)
-        source_steps, derived_reads = [], []
+        source_steps, derived_reads, derived_steps = [], [], []
         selective = None if memory is None else memory._selective
         shards = () if selective is None else tuple(selective.shards.values())
         for _ in range(steps):
@@ -445,22 +450,33 @@ class NativeLatentModel:
                     source_steps.append(replace(trace, receipt=receipt, applied=bool(torch.any(thought != relay))))
                 if memory._derived is not None:
                     association, mass = self._moments.read_associations(query, memory._derived)
-                elif selective is not None and selective.derived:
+                    derived_trace = None
+                elif selective is not None and not memory._derived_off:
                     association, mass, trace = self._selector.read(query, selective.derived)
-                    derived_reads.append(replace(trace.receipt, observed_source_seal=memory.seal))
+                    receipt = replace(trace.receipt, observed_source_seal=memory.seal)
+                    derived_reads.append(receipt)
+                    derived_trace = replace(trace, receipt=receipt)
                 else:
                     mass = 0
+                    derived_trace = None
                 if mass > 0:
                     previous = thought
                     thought = thought + self._memory_delta(hidden, association, mass, self._derived_gain)
                     run.derived += 1
-                    run.applied_derived += bool(torch.any(thought != previous))
+                    derived_applied = bool(torch.any(thought != previous))
+                    run.applied_derived += derived_applied
+                else:
+                    derived_applied = False
+                if derived_trace is not None:
+                    derived_steps.append(replace(derived_trace, applied=derived_applied))
                 run.applied += bool(torch.any(thought != relay))
             if not torch.isfinite(thought).all():
                 raise FloatingPointError("nonfinite continuous input")
             hidden, cache = self._backbone(thought, cache, retain_cache=True)
         run.hidden, run.cache = hidden, cache
-        run.source_steps, run.derived_reads = tuple(source_steps), tuple(derived_reads)
+        run.source_steps = tuple(source_steps)
+        run.derived_reads = tuple(derived_reads)
+        run.derived_steps = tuple(derived_steps)
         return run
 
     def _run_seed(self, item, memory, lookup):
@@ -579,6 +595,26 @@ class NativeLatentModel:
         return NativeGreedyControl(ids, self._read_ids(ids, None, 0), tuple(reference))
 
     def _read_ids(self, input_ids, memory, steps):
+        return self._read_ids_with_limit(input_ids, memory, steps, self._output_tokens)
+
+    def read_token_ids(self, input_ids, *, memory=None, steps=None, max_new_tokens=None):
+        """Read an exact, already-tokenized prompt with a caller-owned output cap.
+
+        This is the episode adapter boundary: it consumes the exact prepared
+        token sequence rather than decoding and retokenizing its chat frame.
+        """
+        _require_cpu_eval(self._model)
+        if memory is not None:
+            self._check_memory(memory)
+        steps = self._step_budget(steps)
+        output_limit = self._output_tokens if max_new_tokens is None else max_new_tokens
+        if type(output_limit) is not int or not 1 <= output_limit <= self._output_tokens:
+            raise ValueError("output allowance exceeds the configured native bound")
+        input_ids = tuple(input_ids)
+        self._check_input_ids(input_ids, self._context_tokens - steps - output_limit)
+        return self._read_ids_with_limit(input_ids, memory, steps, output_limit)
+
+    def _read_ids_with_limit(self, input_ids, memory, steps, output_limit):
         import torch
 
         with torch.inference_mode():
@@ -586,13 +622,13 @@ class NativeLatentModel:
             run = self._continue(hidden, cache, memory, steps)
             hidden, cache = run.hidden, run.cache
             ids = []
-            for step in range(self._output_tokens):
+            for step in range(output_limit):
                 logits = self._model.get_output_embeddings()(hidden)
                 if not torch.isfinite(logits).all():
                     raise FloatingPointError("nonfinite native vocabulary scores")
                 token = int(logits[0, -1].argmax())
                 ids.append(token)
-                if token in self._eos or step + 1 == self._output_tokens:
+                if token in self._eos or step + 1 == output_limit:
                     break
                 lookup = self._model.get_input_embeddings()
                 embedded = lookup(torch.tensor([[token]], dtype=torch.long, device=hidden.device))
@@ -603,4 +639,5 @@ class NativeLatentModel:
                                 frozenset() if memory is None else memory.omitted_sources,
                                 tuple(step.receipt for step in run.source_steps), run.derived_reads,
                                 run.applied_derived, None if memory is None else memory._publication_seal,
-                                False if memory is None else memory._derived_off)
+                                False if memory is None else memory._derived_off,
+                                run.source_steps, run.derived_steps)

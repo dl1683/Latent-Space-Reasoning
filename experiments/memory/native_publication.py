@@ -393,7 +393,9 @@ def _restore(header, reader, raw, seal, scope):
     selective = _SelectiveWorld(MappingProxyType(shards), MappingProxyType(acquired),
                                 MappingProxyType(attempted), pending, derived, MappingProxyType(parents))
     return NativeSourceMemory(reader._owner, scope, None, MappingProxyType(sources),
-                              derived_seeds=tuple(acquired), _selective=selective, _publication_seal=seal)
+                              derived_seeds=tuple(acquired), _selective=selective, _publication_seal=seal,
+                              _publication_runtime_sha256=header["runtime"],
+                              _reader_fingerprint_sha256=header["reader"])
 
 
 def read_native_publication(directory, reader, *, seal, source_seal, runtime_sha256, max_bytes):

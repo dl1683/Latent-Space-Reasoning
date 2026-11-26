@@ -24,7 +24,9 @@ _EPISODE_IMPLEMENTATION_FILES = (
     "recurrent_task_bridge.py",
     "recurrent_world.py", "source_constraints.py", "task_episode.py", "task_evidence.py",
     "repository_import_memory.py", "repository_transport_control.py", "verified_reader_bridge.py",
-    "verified_source_tool.py", "world_transport.py",
+    "verified_source_tool.py", "world_transport.py", "native_latent_recurrence.py",
+    "native_publication.py", "native_task_episode.py", "source_revision_feed.py",
+    "selective_continuations.py",
 )
 
 
@@ -396,6 +398,7 @@ class PolicyReply:
     text: str
     output_tokens: int | None
     terminated: bool
+    backend_receipt: dict | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -472,6 +475,28 @@ def read_episode(artifact):
                     or result.get("bridge_receipt_sha256") != bound[1]):
                 raise ValueError("recurrent-world page does not follow its bound receipt and offset")
             recurrent_offsets[receipt] = result.get("next_offset")
+    opening_data = records[0]["data"]
+    if type(opening_data) is not dict:
+        raise ValueError("episode opening record is malformed")
+    setup_fields = ("setup_source_bytes", "setup_native_source_verification_bytes", "setup_total_source_bytes")
+    if any(field in opening_data for field in setup_fields):
+        if any(type(opening_data.get(field)) is not int or opening_data[field] < 0 for field in setup_fields):
+            raise ValueError("episode source setup accounting is malformed")
+        if opening_data["setup_total_source_bytes"] != (
+                opening_data["setup_source_bytes"]
+                + opening_data["setup_native_source_verification_bytes"]):
+            raise ValueError("episode total source setup bytes do not add up")
+    native_pin = opening_data.get("native_world_pin")
+    if native_pin is not None:
+        from experiments.memory.native_task_episode import validate_native_episode_records
+
+        validate_native_episode_records(records)
+    else:
+        if opening_data.get("setup_native_source_verification_bytes", 0) != 0:
+            raise ValueError("native source setup cost has no opening native world pin")
+        if any(row["kind"] == "response" and type(row["data"]) is dict
+               and row["data"].get("backend_receipt") is not None for row in records[1:-1]):
+            raise ValueError("episode backend receipt has no opening world pin")
     return tuple(records)
 
 
@@ -1097,7 +1122,8 @@ class _Tools:
 
 def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: EpisodeLimits,
                 tokenizer, generate: Callable[[PolicyCall], PolicyReply], output_path: Path, *,
-                recurrent_bridge: RecurrentTaskBridge | None = None) -> EpisodeArtifact:
+                recurrent_bridge: RecurrentTaskBridge | None = None,
+                native_backend=None) -> EpisodeArtifact:
     """Run one policy on a frozen world, writing a new host-owned receipt ledger.
 
     The trusted caller supplies the frozen backend and tokenizer. Their IDs must
@@ -1114,6 +1140,16 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
         raise ValueError("the recurrent bridge must be bound to this exact TaskWorld")
     if not callable(generate):
         raise TypeError("a generation adapter is required")
+    native_opening = None
+    if native_backend is not None:
+        from experiments.memory.native_task_episode import NativeTaskEpisodeBackend
+
+        if type(native_backend) is not NativeTaskEpisodeBackend or generate is not native_backend:
+            raise ValueError("native backend must be the generation adapter and receipt validator")
+        native_opening = native_backend.opening_record(world, policy, limits, tokenizer)
+    native_source_bytes = (0 if native_opening is None
+                           else native_opening["source_verification_bytes"])
+    total_setup_source_bytes = world.setup_source_bytes + native_source_bytes
 
     path = Path(output_path)
     typed_needs = policy.state_kind == "typed_needs"
@@ -1149,7 +1185,11 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
         ledger = _Ledger(handle)
         opening = {"version": 1, "task": task, "pin": asdict(world.pin),
                    "policy": asdict(policy), "limits": asdict(limits),
-                   "setup_source_bytes": world.setup_source_bytes}
+                   "setup_source_bytes": world.setup_source_bytes,
+                   "setup_native_source_verification_bytes": native_source_bytes,
+                   "setup_total_source_bytes": total_setup_source_bytes}
+        if native_opening is not None:
+            opening["native_world_pin"] = native_opening
         if world.pin.factor_sha256 is None:
             del opening["pin"]["factor_sha256"]
         else:
@@ -1243,13 +1283,18 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                 ledger.write("refusal", {"reason": status, "error_type": type(error).__name__,
                                          "messages": messages})
                 break
-            if len(input_ids) + reservation > limits.context_tokens:
+            native_input_limit = (None if native_backend is None
+                                  else native_backend.max_input_tokens(reservation))
+            if (len(input_ids) + reservation > limits.context_tokens
+                    or (native_input_limit is not None and len(input_ids) > native_input_limit)):
                 status = "context_limit"
             elif input_tokens + len(input_ids) > limits.input_tokens:
                 status = "input_limit"
             if status in ("context_limit", "input_limit"):
                 ledger.write("refusal", {"reason": status, "input_tokens": len(input_ids),
-                                         "output_reservation": reservation})
+                                         "output_reservation": reservation,
+                                         **({} if native_input_limit is None else {
+                                             "native_input_limit": native_input_limit})})
                 break
 
             call = PolicyCall(tuple((row["role"], row["content"]) for row in messages), input_ids, reservation)
@@ -1265,11 +1310,26 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                 break
             if (type(reply) is not PolicyReply or type(reply.text) is not str
                     or type(reply.terminated) is not bool
-                    or (reply.output_tokens is not None and type(reply.output_tokens) is not int)):
+                    or (reply.output_tokens is not None and type(reply.output_tokens) is not int)
+                    or (reply.backend_receipt is not None and type(reply.backend_receipt) is not dict)):
                 status = "invalid_reply"
                 output_complete = False
                 ledger.write("response", {"error": status})
                 break
+            if native_backend is None and reply.backend_receipt is not None:
+                status = "invalid_reply"
+                output_complete = False
+                ledger.write("response", {"error": "unbound_backend_receipt"})
+                break
+            if native_backend is not None:
+                try:
+                    native_backend.validate_reply(call, reply)
+                except Exception as error:
+                    status = "invalid_reply"
+                    output_complete = False
+                    ledger.write("response", {"error": "invalid_native_backend_receipt",
+                                               "error_type": type(error).__name__})
+                    break
             ledger.write("response", asdict(reply))
             if reply.output_tokens is None:
                 status = "usage_unknown"
@@ -1369,6 +1429,9 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                                 "usage": {"calls": calls, "input_tokens": input_tokens,
                                           "known_output_tokens": output_tokens,
                                           "output_usage_complete": output_complete,
+                                          "setup_source_bytes": world.setup_source_bytes,
+                                          "setup_native_source_verification_bytes": native_source_bytes,
+                                          "setup_total_source_bytes": total_setup_source_bytes,
                                           **toolbox.counters()}})
         return EpisodeArtifact(path, ledger.head)
 
@@ -1379,7 +1442,7 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
     Matching declarations and valid terminal records do not establish a blind
     comparison or complete usage. Inspect both finish records before using costs.
     """
-    if contrast not in ("policy", "probes", "memory", "operator", "operator_restore"):
+    if contrast not in ("policy", "probes", "memory", "native_text", "operator", "operator_restore"):
         raise ValueError("unknown episode contrast")
     if left == right or left.sha256 == right.sha256:
         raise ValueError("compare separate episodes")
@@ -1398,7 +1461,33 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
         raise ValueError("episode joint state policy differs")
     if a.get("experiment_implementation") != b.get("experiment_implementation"):
         raise ValueError("episode implementation differs")
+    native_a, native_b = a.get("native_world_pin"), b.get("native_world_pin")
+    native_toggle = False
     bridge_a, bridge_b = a.get("recurrent_task_bridge"), b.get("recurrent_task_bridge")
+    if contrast == "memory":
+        if (native_a is None) != (native_b is None):
+            raise ValueError("memory comparison must pin the native world in both episodes")
+        if native_a is not None:
+            body_a = {key: value for key, value in native_a.items()
+                      if key not in ("pin_sha256", "memory_view")}
+            body_b = {key: value for key, value in native_b.items()
+                      if key not in ("pin_sha256", "memory_view")}
+            views = {native_a.get("memory_view"), native_b.get("memory_view")}
+            if (body_a != body_b or len(views) != 2
+                    or views not in ({"active", "derived_off"}, {"active", "memory_omitted"})
+                    or a["pin"] != b["pin"]):
+                raise ValueError("native memory comparison changes more than one same-pin contribution")
+            native_toggle = True
+            if bridge_a != bridge_b:
+                raise ValueError("native memory comparison also changes the recurrent task bridge")
+    elif contrast == "native_text":
+        if (native_a is None) == (native_b is None):
+            raise ValueError("native-text comparison needs one native episode and one text episode")
+        native_pin = native_a if native_a is not None else native_b
+        if native_pin.get("memory_view") != "active" or bridge_a is not None or bridge_b is not None:
+            raise ValueError("native-text comparison requires the active native view without a second bridge")
+    elif native_a != native_b:
+        raise ValueError("episode native world pin differs")
     if contrast == "memory":
         source_fields = ("source_snapshot", "span_catalogue_sha256", "binding_source_revision")
         for field in source_fields:
@@ -1408,12 +1497,18 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
                 raise ValueError("memory comparison requires the same source pin")
         if any(a["pin"].get(field) != b["pin"].get(field) for field in ("receiver_sha256", "as_of")):
             raise ValueError("memory comparison requires the same receiver and effective time")
-        same_pin_toggle = a["pin"] == b["pin"] and ((bridge_a is None) != (bridge_b is None))
+        bridge_toggle = (bridge_a is None) != (bridge_b is None)
+        if native_toggle and bridge_toggle:
+            raise ValueError("memory comparison changes two retained contributions")
+        same_pin_toggle = a["pin"] == b["pin"] and (bridge_toggle or native_toggle)
         if (a["pin"] == b["pin"] and not same_pin_toggle) or a["policy"] != b["policy"]:
             raise ValueError("memory comparison must change only the retained state")
     elif contrast in ("operator", "operator_restore"):
         if a["pin"] != b["pin"] or a["policy"] != b["policy"]:
             raise ValueError("operator comparisons require the exact same task pin and policy")
+    elif contrast == "native_text":
+        if a["pin"] != b["pin"]:
+            raise ValueError("native-text comparison requires the exact same source evidence pin")
     elif a["pin"] != b["pin"]:
         raise ValueError("episode pin differs")
     if contrast == "memory":
@@ -1462,8 +1557,19 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
         raise ValueError("episode recurrent task bridge differs")
     if a["setup_source_bytes"] != b["setup_source_bytes"]:
         raise ValueError("episode source setup cost differs")
+    total_setup_a = a.get("setup_total_source_bytes", a["setup_source_bytes"])
+    total_setup_b = b.get("setup_total_source_bytes", b["setup_source_bytes"])
+    if contrast != "native_text" and total_setup_a != total_setup_b:
+        raise ValueError("episode total source setup cost differs")
     a, b = a["policy"], b["policy"]
-    if any(a[field] != b[field] for field in ("backend_id", "tokenizer_id")):
+    if a["tokenizer_id"] != b["tokenizer_id"]:
+        raise ValueError("episode tokenizer differs")
+    if contrast == "native_text":
+        if any(a[field] != b[field] for field in ("policy_id", "state_kind", "probes_enabled")):
+            raise ValueError("native-text comparison changes the episode policy")
+        if a["backend_id"] == b["backend_id"]:
+            raise ValueError("native-text comparison requires distinct backend identities")
+    elif a["backend_id"] != b["backend_id"]:
         raise ValueError("episode backend or tokenizer differs")
     if contrast == "policy" and a["probes_enabled"] != b["probes_enabled"]:
         raise ValueError("policy comparison requires equal probe access")

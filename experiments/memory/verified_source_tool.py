@@ -142,6 +142,39 @@ class VerifiedSourceTool:
                     returned_utf8_bytes=len(fragment), role="EVIDENCE",
                     verification="BYTE_IDENTITY_ONLY")
 
+    def _verified_source_size(self, source_id):
+        expected = self.versions.get(source_id)
+        if expected is None:
+            raise ValueError("source is outside the verified snapshot")
+        path = self.root / "leaves" / (expected + ".txt")
+        if not path.resolve().is_relative_to(self.root):
+            raise ValueError("source path escapes the verified store")
+        return path.stat().st_size
+
+    def _read_verified_source(self, source_id, *, max_bytes=None):
+        """Read one complete pinned document for a trusted internal verifier."""
+        if max_bytes is not None and (type(max_bytes) is not int or max_bytes < 0):
+            raise ValueError("source verification needs a nonnegative byte allowance")
+        expected = self.versions.get(source_id)
+        if expected is None:
+            raise ValueError("source is outside the verified snapshot")
+        path = self.root / "leaves" / (expected + ".txt")
+        if not path.resolve().is_relative_to(self.root):
+            raise ValueError("source path escapes the verified store")
+        if max_bytes is None:
+            data = path.read_bytes()
+        else:
+            with path.open("rb") as handle:
+                if fstat(handle.fileno()).st_size > max_bytes:
+                    raise ValueError("source verification exceeds its byte allowance")
+                data = handle.read(max_bytes + 1)
+                if len(data) > max_bytes or fstat(handle.fileno()).st_size > max_bytes:
+                    raise ValueError("source verification exceeds its byte allowance")
+        if sha256(data) != expected:
+            raise ValueError("pinned source bytes changed")
+        data.decode("utf8")
+        return data
+
     def fetch(self, proposals):
         checks = [self.verify(pointer) for pointer in proposals]
         passages = [r for r in checks if r["status"] == "VERIFIED_SOURCE_BYTES"]
