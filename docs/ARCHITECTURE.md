@@ -1838,9 +1838,52 @@ transitions and block evaluations for the new pin. These counts omit
 source-bank enumeration, retained checkpoint bytes and per-source
 dispatch overhead. Compare complete lifecycle cost with a warm
 incremental solver. Historical source replay can reconstruct the
-inputs. Durable frontier storage and query-blind publication of a new
-operator remain separate work.
+inputs. Durable frontier storage remains separate work.
 [Repair runtime](../experiments/memory/recurrent_world.py)
+
+#### Publishing a latent transport before questions
+
+[SLICE] A bounded worker reads two declared sets of calibration
+sources at one corpus pin. Each active calibration source supplies a
+typed entry and exit vector from the same exact span, both with a
+unique ingestion match. The worker joins the persisted normalized
+exit of a first law to the identical entry of a second law. A
+competing continuation with the same entry withholds that operation.
+The worker receives no task seed, readout coordinate or answer.
+The compiled operation sends the positive projection of a hidden row
+along the first entry axis toward the composed destination. Its gain
+and capacity are fixed by the worker policy.
+
+The journal stores an opt-in event naming the exact base kernel
+fingerprint and the canonical source policy. Replay recompiles the
+operation from that event's source pin. Changing the digest or
+generation of a declared calibration or context source disables the
+published set, including when a previously absent authority appears.
+A later worker publication can rebuild it. Replaying a historical prefix
+preserves the earlier law. Declared calibration records stay outside the
+task's observation bank. Removing the operation leaves that bank and
+its source pin fixed.
+
+The ordinary joint block adds the operation as a source-scoped
+residual at a selected authorized context with the matching vector.
+A transported address is still open until the next step selects an
+authorized relay with the corresponding projected key. The relay
+witness records its current generation. Generated history can neither
+discharge that obligation nor provide the signed
+evidence. A branch carries the publication digest and the exact
+calibration spans and generations as well as its ordinary source
+witnesses. Its use records which row received the contribution.
+A change of effective operation requires a fresh frontier.
+Source-only repairs can reuse the current operation when its
+dependencies remain valid. This compiler has no effective-time
+role interpreter and refuses overlapping supersession scopes.
+
+The compiler's typed authority, exact coordinate matching and supplied
+gain restrict this slice. Learned authority and cross-modal acquisition,
+composition beyond exact supplied chains, and lifecycle savings remain
+open. A warm provenance-aware composition index should receive the
+same laws, eligibility, update and cache rights in a matched comparison.
+[Transport compiler](../experiments/memory/world_transport.py)
 
 ## Claims and evidence boundary (2026-10-15; not a new experiment)
 

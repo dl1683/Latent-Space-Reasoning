@@ -9,14 +9,10 @@ import numpy as np
 
 from experiments.memory.corpus_bindings import CorpusRevision
 from experiments.memory.latent_feedback import FeedbackKernel, ObservationMemory, _frozen, _real_array
-from experiments.memory.verified_source_tool import SourceSpan
-
-
-@dataclass(frozen=True)
-class WorldWitness:
-    span: SourceSpan
-    generation: int
-    ordinal: int
+from experiments.memory.world_transport import (
+    SourceTransportPolicy, SourceTransportPublication, SourceTransportUse, WorldWitness,
+    coordinate_key, require_transport_scope, world_kernel_digest,
+)
 
 
 @dataclass(frozen=True, eq=False)
@@ -39,6 +35,8 @@ class RecurrentWorldMemory:
     packed_rows: int
     _witnesses: tuple[WorldWitness, ...]
     unlocated_sources: tuple[str, ...]
+    _transport_policy: SourceTransportPolicy | None
+    _source_transports: SourceTransportPublication | None
 
     @property
     def spans(self):
@@ -69,6 +67,8 @@ class JointWorldBranch:
     _key: np.ndarray | None = None
     _value: np.ndarray | None = None
     _complete: bool = True
+    _transport_use: SourceTransportUse | None = None
+    _pending_destination: np.ndarray | None = None
 
     def _ancestry(self):
         node = self
@@ -91,6 +91,11 @@ class JointWorldBranch:
     @property
     def source_hidden(self):
         return self._source_hidden.view()
+
+    @property
+    def transport_uses(self):
+        return tuple(node._transport_use for node in reversed(tuple(self._ancestry()))
+                     if node._transport_use is not None)
 
 
 @dataclass(frozen=True)
@@ -144,12 +149,13 @@ class JointWorldRead:
         if self.memory is None:
             return JointWorldOutcome("memory_omitted")
 
-        complete = tuple(branch for branch in self.branches if branch._complete)
+        complete = tuple(branch for branch in self.branches if branch._complete and branch._pending_destination is None)
         with np.errstate(over="raise", invalid="raise"):
             scores = np.array([branch._source_hidden @ direction for branch in complete])
         support = tuple(branch for branch, score in zip(complete, scores, strict=True) if score >= floor)
         opposition = tuple(branch for branch, score in zip(complete, scores, strict=True) if score <= -floor)
-        if self.uncertain_routes or self.memory.unlocated_sources:
+        if (self.uncertain_routes or self.memory.unlocated_sources
+                or any(branch._pending_destination is not None for branch in self.branches)):
             status = "unresolved"
         elif not complete:
             status = "missing"
@@ -169,7 +175,7 @@ class JointWorldRead:
 class RecurrentWorld:
     """Reuse a fixed latent block or feed back a growing sequence of latent thoughts."""
 
-    def __init__(self, kernel, *, encoder_version, max_observations, feedback):
+    def __init__(self, kernel, *, encoder_version, max_observations, feedback, transport_policy=None):
         if type(kernel) is not FeedbackKernel or type(feedback) is not bool:
             raise ValueError("a world reasoner requires a feedback kernel and a transition choice")
         if type(encoder_version) is not str or not encoder_version:
@@ -181,29 +187,56 @@ class RecurrentWorld:
         self._encoder_version = encoder_version
         self._max_observations = max_observations
         self._feedback = feedback
+        if transport_policy is not None and type(transport_policy) is not SourceTransportPolicy:
+            raise ValueError("transport policy must declare scoped source roles")
+        self._transport_policy = transport_policy
+        self._kernel_sha256 = None if transport_policy is None else world_kernel_digest(kernel)
 
-    def prepare(self, corpus, *, previous=None, packed=True):
-        """Project changed source generations and optionally build a dense bank."""
-        if type(packed) is not bool:
-            raise ValueError("packed must be a boolean")
+    def _require_corpus(self, corpus):
         if type(corpus) is not CorpusRevision or corpus.journal_sha256 is None:
             raise ValueError("the observation world requires a journaled source revision")
         memory = corpus.memory
         if memory.encoder_version != self._encoder_version or memory._anchors.shape[1] != self._kernel._width:
             raise ValueError("corpus observations use a different encoder frame")
+
+    def maintain_transports(self, workspace, corpus):
+        """Publish scoped source-derived operators before any task is known."""
+        self._require_corpus(corpus)
+        if self._transport_policy is None:
+            raise ValueError("source transport maintenance requires a declared policy")
+        return workspace.maintain_source_transports(corpus, self._transport_policy,
+                                                    kernel_sha256=self._kernel_sha256)
+
+    def prepare(self, corpus, *, previous=None, packed=True, operators=True):
+        """Project changed source generations and load any applicable operator publication."""
+        if type(packed) is not bool or type(operators) is not bool:
+            raise ValueError("packed and operators must be boolean")
+        self._require_corpus(corpus)
+        memory = corpus.memory
+        policy = self._transport_policy
+        if policy is not None:
+            require_transport_scope(corpus, policy)
+        sources_in_scope = memory.source_digests.keys() - (() if policy is None else policy.authorities)
+        transport = None
+        publication = corpus._source_transports
+        if operators and policy is not None and publication is not None and publication.active_on(corpus):
+            if publication.policy != policy or publication.kernel_sha256 != self._kernel_sha256:
+                raise ValueError("active source transports require their exact policy and kernel")
+            transport = publication
         if previous is not None:
             self._require_memory(previous)
             if corpus._owner is not previous.corpus._owner:
                 raise ValueError("previous observations belong to a different journal handle")
-        if memory.source_digests.keys() != memory._mentions.keys():
+        if not sources_in_scope <= memory._mentions.keys():
             raise ValueError("world observations are unavailable for legacy row-only sources")
-        if sum(map(len, memory._mentions.values())) > self._max_observations:
+        if sum(len(memory._mentions[source]) for source in sources_in_scope) > self._max_observations:
             raise ValueError("world observation allowance exceeded")
 
         sources = {}
         projected = 0
         prior = {} if previous is None else previous._sources
-        for source, digest in sorted(memory.source_digests.items()):
+        for source in sorted(sources_in_scope):
+            digest = memory.source_digests[source]
             version = digest, corpus._source_revisions[source]
             bank = prior.get(source)
             if bank is None or bank.version != version:
@@ -219,13 +252,13 @@ class RecurrentWorld:
             sources[source] = bank
         if previous is not None and sources == prior and (not packed or previous._bank is not None):
             return replace(previous, corpus=corpus, _bank=previous._bank if packed else None,
-                           projected_rows=0, packed_rows=0)
+                           projected_rows=0, packed_rows=0, _source_transports=transport)
         dense = self._pack_sources(sources) if packed else None
         witnesses = tuple(witness for bank in sources.values() for witness in bank.witnesses)
         unlocated = tuple(source for source, bank in sources.items() if not bank.matches or 0 in bank.matches)
         packed_rows = len(witnesses) if packed else 0
         return RecurrentWorldMemory(corpus, dense, self._kernel._observation_key, MappingProxyType(sources),
-                                    projected, packed_rows, witnesses, unlocated)
+                                    projected, packed_rows, witnesses, unlocated, policy, transport)
 
     def _pack_sources(self, sources):
         if not sources:
@@ -241,6 +274,9 @@ class RecurrentWorld:
         if (type(memory) is not RecurrentWorldMemory
                 or memory._key_map is not self._kernel._observation_key
                 or memory.corpus.memory.encoder_version != self._encoder_version
+                or memory._transport_policy != self._transport_policy
+                or (memory._source_transports is not None
+                    and memory._source_transports.kernel_sha256 != self._kernel_sha256)
                 or len(memory._witnesses) > self._max_observations):
             raise ValueError("memory belongs to a different observation frame or exceeds the allowance")
 
@@ -253,6 +289,8 @@ class RecurrentWorld:
         packed_rows = 0
         if memory is not None:
             self._require_memory(memory)
+            if memory._source_transports is not None:
+                raise ValueError("active source transports require joint reasoning for scoped evidence")
             bank = memory._bank
             if bank is None:
                 bank = self._pack_sources(memory._sources)
@@ -309,6 +347,8 @@ class RecurrentWorld:
             raise ValueError("repair requires a complete attached frontier and positive capacity")
         self._require_memory(memory)
         previous = state.memory
+        if memory._source_transports is not previous._source_transports:
+            raise ValueError("changed source transport operators require a fresh frontier")
         if (memory.corpus._owner is not previous.corpus._owner
                 or memory.corpus.revision <= previous.corpus.revision):
             raise ValueError("repair requires a newer pin on the same journal handle")
@@ -436,12 +476,23 @@ class RecurrentWorld:
             if child is None:
                 observation = (null_row if witness is None else
                                memory._sources[witness.span.source_id].observations._observations[witness.ordinal])
-                child, evaluations = self._advance_joint(parent, observation, witness, feedback_value)
+                transport = self._selected_transport(memory, witness, observation)
+                policy = memory._transport_policy if memory is not None else None
+                child, evaluations = self._advance_joint(parent, observation, witness, feedback_value, transport, policy)
                 written += 1
                 evaluated += evaluations
             children.append(child)
         expansion = _JointExpansion(parent, plan.source_query, tuple(children), plan.withheld)
         return expansion, written, evaluated, feedback_scores
+
+    @staticmethod
+    def _selected_transport(memory, witness, observation):
+        if witness is None or memory._source_transports is None:
+            return None
+        publication = memory._source_transports
+        if witness.span.source_id not in publication.policy.contexts:
+            return None
+        return publication.operations.get(coordinate_key(observation))
 
     @staticmethod
     def _joint_feedback(branch, query):
@@ -452,19 +503,36 @@ class RecurrentWorld:
                 weights = np.exp(logits - logits.max())
             return (weights / weights.sum()) @ np.asarray([node._value for node in history]), len(history)
 
-    def _advance_joint(self, branch, observation, witness, feedback_value):
+    def _advance_joint(self, branch, observation, witness, feedback_value, transport, policy):
         kernel = self._kernel
         current, source = branch._hidden, branch._source_hidden
         observed = witness is not None
         with np.errstate(over="raise", invalid="raise"):
-            source_input, _ = kernel._preactivation(source, observation, None, observed)
+            source_extra = None if transport is None else transport.contribution(source)
+            source_input, _ = kernel._preactivation(source, observation, None, observed, observation_extra=source_extra)
             source_next = _frozen(np.tanh(source_input))
             hidden = source_next
+            task_extra = source_extra
             evaluations = 1
             if current is not source or feedback_value is not None:
-                task_input, _ = kernel._preactivation(current, observation, feedback_value, observed)
+                if transport is not None and current is not source:
+                    task_extra = transport.contribution(current)
+                task_input, _ = kernel._preactivation(current, observation, feedback_value, observed,
+                                                       observation_extra=task_extra)
                 hidden = _frozen(np.tanh(task_input))
                 evaluations = 2
         key, value = kernel._project_generated(hidden) if self._feedback else (None, None)
-        successor = JointWorldBranch(hidden, source_next, branch, witness, key, value, branch._complete and observed)
+        complete = branch._complete and observed
+        pending = branch._pending_destination
+        if complete and pending is not None:
+            with np.errstate(over="raise", invalid="raise"):
+                complete = (witness.span.source_id in policy.relays
+                            and np.array_equal(observation @ kernel._observation_key,
+                                               pending @ kernel._observation_key))
+        use = None
+        if source_extra is not None or task_extra is not None:
+            use = replace(transport.use, source_row=source_extra is not None, task_row=task_extra is not None)
+        destination = None if source_extra is None else transport.destination
+        successor = JointWorldBranch(hidden, source_next, branch, witness, key, value, complete,
+                                     _transport_use=use, _pending_destination=destination)
         return successor, evaluations

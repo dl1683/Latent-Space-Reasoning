@@ -826,3 +826,27 @@ queries and preserves unchanged successor objects. It uses the same
 reasoner, journal handle, seed, depth and route thresholds. A reopened
 journal can prepare a fresh bank and run a fresh frontier. The
 frontier itself remains process-local.
+
+### Source transport maintenance
+
+Supply a `SourceTransportPolicy` when constructing the reasoner.
+It declares two disjoint calibration sets, allowed context and relay
+sources, a positive gain and a term cap. Each active calibration
+source supplies a scoped `transport_entry` and `transport_exit`
+pair. The calibration sources stay out of the task observation bank.
+Call `world.maintain_transports(workspace, revision)` to compile one
+bounded batch against the exact tip. A no-work call returns the
+original pin. Pass the returned pin to `prepare`, then query through
+`reason_joint`. Branches report `transport_uses` with their
+publication, calibration evidence and source-row or task-row effects.
+A pooled read needs a bank without active transports because pooling
+lacks selected source scope.
+
+For a source-fixed control, call
+`prepare(revision, previous=bank, operators=False)`. A changed
+calibration or context generation disables an operation until it is
+published again. Reopening the corpus journal reconstructs published operations
+from retained observations. A source-only repair can continue to
+share an unchanged operation. A different effective operation
+requires a fresh task frontier. The supplied transport compiler
+refuses overlap with effective-time role supersessions.

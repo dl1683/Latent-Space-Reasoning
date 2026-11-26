@@ -342,6 +342,18 @@ projection, packing, per-source scoring, checkpoint retention,
 branch replay, verification and restart. Hold out the late
 readout targets when choosing any query-blind maintenance probes.
 
+The transport publication fixture isolates a worker's contribution.
+Keep source content, observation keys, task seed and readout fixed
+while removing only the operation. Require its later effect to pass
+through an applicable relay. Compare against both a transported
+address with no relay and an unauthorized equal-key relay. Test
+changed and restored calibration authority, unrelated effects and
+historical reconstruction. Choose late questions independently of
+the worker policy. Give a matched incremental composer all admitted
+source laws, authority labels, cache rights and evidence obligations.
+Charge compilation, storage, replay, invalidation, task computation
+and source reopens.
+
 ## Executable gaps in the current branch
 
 `TaskWorld` pins a verified source catalogue to an optional journaled

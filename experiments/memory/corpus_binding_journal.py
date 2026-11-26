@@ -29,6 +29,7 @@ from experiments.memory.corpus_bindings import (
 from experiments.memory.latent_feedback import ConditionalTerm
 from experiments.memory.role_validity import RoleSupersession
 from experiments.memory.verified_source_tool import SourceSpan
+from experiments.memory.world_transport import SourceTransportPolicy, compile_source_transports
 
 
 _SURROGATE_PAIR = re.compile(r"[\ud800-\udbff][\udc00-\udfff]")
@@ -460,6 +461,34 @@ def _replay_factor_identities(payload, pin):
     return _append_factor_identities(pin, value[1])
 
 
+def _transport_event(policy, kernel_sha256):
+    if (type(policy) is not SourceTransportPolicy or type(kernel_sha256) is not str
+            or re.fullmatch(r"[0-9a-f]{64}", kernel_sha256) is None):
+        raise ValueError("transport publication requires a policy and kernel fingerprint")
+    _check_identifiers((*policy.authorities, *policy.contexts, *policy.relays))
+    return _json(["source_transport", 1, kernel_sha256, policy.wire()])
+
+
+def _with_source_transport(pin, publication):
+    return replace(pin, revision=pin.revision + 1, changed_sources=(), _source_transports=publication)
+
+
+def _replay_source_transport(payload, pin, publication_sha256):
+    record = json.loads(payload)
+    if (type(record) is not list or len(record) != 4 or record[:2] != ["source_transport", 1]
+            or type(record[3]) is not list or len(record[3]) != 6
+            or any(type(group) is not list for group in record[3][:4])):
+        raise ValueError("invalid source transport event")
+    first, second, contexts, relays, gain, capacity = record[3]
+    policy = SourceTransportPolicy(tuple(first), tuple(second), tuple(contexts), tuple(relays), gain, capacity)
+    if _transport_event(policy, record[2]) != payload:
+        raise ValueError("noncanonical source transport event")
+    publication = compile_source_transports(pin, policy, record[2], publication_sha256)
+    if publication is None:
+        raise ValueError("source transport event does not compile from its source pin")
+    return _with_source_transport(pin, publication)
+
+
 def _event_digest(parent, revision, payload):
     return sha256(parent + str(revision).encode("ascii") + b"\x00" + payload).digest()
 
@@ -703,6 +732,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 raise ValueError("corpus journal event chain mismatch")
             if payload.startswith(b'["factor_identities",'):
                 tip = _replay_factor_identities(payload, tip)
+            elif payload.startswith(b'["source_transport",'):
+                tip = _replay_source_transport(payload, tip, recorded.hex())
             elif payload.startswith(b'["route_program",'):
                 gates, patch = _decode_route_event(payload)
                 tip = self._install_program_revision(tip, tip.memory.reprogram(gates), patch)
@@ -809,6 +840,24 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             db.execute("BEGIN IMMEDIATE")
             self._require_current_pin(db, base)
             digest = self._append(db, self._digest, revised.revision, payload)
+            db.commit()
+            return self._set_tip(revised, digest)
+
+    def maintain_source_transports(self, base, policy, *, kernel_sha256):
+        """Compile and publish one bounded interaction batch at the exact source tip."""
+        self._check_owner(base)
+        payload = _transport_event(policy, kernel_sha256)
+        parent = bytes.fromhex(base.journal_sha256)
+        publication_sha256 = _event_digest(parent, base.revision + 1, payload).hex()
+        publication = compile_source_transports(base, policy, kernel_sha256, publication_sha256)
+        with self._lock, closing(self._connect()) as db:
+            db.execute("BEGIN IMMEDIATE")
+            self._require_current_pin(db, base)
+            if publication is None:
+                db.commit()
+                return base
+            revised = _with_source_transport(base, publication)
+            digest = self._append(db, parent, revised.revision, payload)
             db.commit()
             return self._set_tip(revised, digest)
 

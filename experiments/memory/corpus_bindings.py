@@ -8,6 +8,7 @@ from operator import index
 import re
 from threading import Lock
 from types import MappingProxyType
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -18,6 +19,10 @@ from experiments.memory.binding_memory import (
 from experiments.memory.latent_feedback import _frozen, _real_array
 from experiments.memory.role_validity import _RoleValidity
 from experiments.memory.verified_source_tool import SourceSpan, VerifiedSourceTool
+
+
+if TYPE_CHECKING:
+    from experiments.memory.world_transport import SourceTransportPublication
 
 
 _FACTOR_NAME = re.compile(r"[A-Z][A-Z0-9_]*", re.ASCII)
@@ -557,6 +562,7 @@ class CorpusRevision:
     changed_sources: tuple[str, ...] = ()
     journal_sha256: str | None = None
     factor_identities: tuple[str, ...] | None = None
+    _source_transports: "SourceTransportPublication | None" = None
 
 
 @dataclass(frozen=True, eq=False)

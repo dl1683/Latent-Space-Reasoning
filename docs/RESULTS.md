@@ -4,6 +4,37 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Query-blind publication of a source transport, 26 November 2026
+
+**Scripted CPU software verification.** A worker composed two scoped
+calibration records and published the resulting transport in the
+corpus journal before a task seed or readout was supplied. A later
+deployment query followed the installed operation to a relay. The
+same path produced a release score and an opposing audit score.
+Removing the operation at the same pin with the same observation
+bank left the release result missing. The transported address alone
+stayed unresolved after one step. An unauthorized terminal source
+with an identical key produced a high score and left the result
+missing. A separate query retained its tested trajectory.
+
+Changing the actual relay changed the answer while keeping the
+publication and the unaffected transition. A competing calibration
+source disabled the published operation and prevented republication.
+Updating the governing law enabled a new publication to reach the
+opposite relay. Same-byte withdrawal and restoration required a fresh
+generation and publication. The tests rejected a stale worker and a
+mismatched kernel, and reconstructed the earlier operation after
+restart with ingestion disabled. A task-only contribution was
+recorded with its evidence and left the source read undecided. An
+overlapping effective-time cutover was refused on the current pin
+while the earlier pin remained readable.
+
+The authority, encodings, compilation rule and weights are supplied. The
+fixture establishes that a later task uses a durable source-derived
+operation. Learned discovery, autonomous maintenance and quality
+or lifecycle advantages over warm exact composition remain open.
+[Transport fixtures](../experiments/memory/test_world_transport.py)
+
 ## Differential repair of a retained latent frontier, 26 November 2026
 
 **Scripted CPU software verification.** Withdrawing the south relay

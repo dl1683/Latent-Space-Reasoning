@@ -24,6 +24,14 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A transported address can be mistaken for evidence.** A worker
+operation can make a hidden score large before the relevant terminal
+observation is read. A record with the same projected key can also
+come from an unauthorized source. The supplied control keeps an
+intermediate transport open and requires the next selected witness
+to be in the declared relay scope with the corresponding key.
+[Transport controls](RESULTS.md#query-blind-publication-of-a-source-transport-26-november-2026)
+
 **A source edit can create a dependency without touching an old witness.**
 With the south relay withdrawn, the saved route had a missing
 premise. An edit made a previously excluded record the applicable

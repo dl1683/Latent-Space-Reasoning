@@ -98,6 +98,14 @@ def _value_signature(value):
     return "dense", _array_signature(value)
 
 
+def _kernel_signature(kernel):
+    return (kernel._max_steps, _array_signature(kernel._query), _array_signature(kernel._carry),
+            _array_signature(kernel._observation_query), _array_signature(kernel._observation_key),
+            _value_signature(kernel._observation_value), _array_signature(kernel._feedback_key),
+            _value_signature(kernel._feedback_value),
+            tuple((*map(_array_signature, terms[:3]), terms[3]) for terms in kernel._conditional))
+
+
 def _receiver_digest(receiver):
     if type(receiver) is not BindingFeedback:
         raise ValueError("feedback trials require a binding feedback receiver")
@@ -113,11 +121,7 @@ def _receiver_digest(receiver):
             expansion.nodes, _array_signature(expansion.anchor_query), _array_signature(expansion.node_query),
             expansion.work_limit, expansion.projection,
         ),
-        kernel=(kernel._max_steps, _array_signature(kernel._query), _array_signature(kernel._carry),
-                _array_signature(kernel._observation_query), _array_signature(kernel._observation_key),
-                _value_signature(kernel._observation_value), _array_signature(kernel._feedback_key),
-                _value_signature(kernel._feedback_value),
-                tuple((*map(_array_signature, terms[:3]), terms[3]) for terms in kernel._conditional)),
+        kernel=_kernel_signature(kernel),
     )
     if receiver._source_observation_limit is not None:
         scope["source_observation_limit"] = receiver._source_observation_limit
