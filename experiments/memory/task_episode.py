@@ -1652,7 +1652,8 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
                       if key not in ("pin_sha256", "memory_view")}
             views = {native_a.get("memory_view"), native_b.get("memory_view")}
             if (body_a != body_b or len(views) != 2
-                    or views not in ({"active", "derived_off"}, {"active", "memory_omitted"})
+                    or views not in ({"active", "derived_off"}, {"active", "memory_omitted"},
+                                     {"active", "continuation_off"})
                     or a["pin"] != b["pin"]):
                 raise ValueError("native memory comparison changes more than one same-pin contribution")
             native_toggle = True

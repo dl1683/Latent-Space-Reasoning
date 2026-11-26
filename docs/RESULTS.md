@@ -385,6 +385,40 @@ No pretrained generation ran. A generated calibration still has to show that
 the planner discovers the needs and chooses useful evidence, under the exact
 runtime to be used in the comparison.
 
+## Isolating one retained computation across a source revision
+
+**CPU software control.** An episode attached a sealed, seven-source world
+with four stored continuations. The workers built the world before the
+controller opened the questions. With a common two-step read budget, two
+different entry paths used the same acquired continuation. Removing just
+that row left one answer unresolved. The other still reached the same
+answer through the retained parent. An unrelated path kept its own result.
+Restoring the original publication reproduced the active ledgers byte for
+byte. With memory omitted, the supplied reasoner left all three unresolved.
+
+A source correction replaced the endpoint. It withdrew three dependent
+continuations and preserved the unrelated one. Four one-seed worker passes
+rebuilt the shared computation and installed another continuation along the
+alias path. One current question became unresolved after that new
+continuation intercepted its route. At the corrected pin, withholding only
+the newly installed row recovered the corrected answer. The direct entry
+and unrelated answers stayed the same. Historical replay kept the opening
+answer. [Fixture](../experiments/memory/test_task_episode.py)
+
+A separate replay started from the affected stored source row without
+opening a task. At two steps the masked route reached the corrected
+endpoint and the active route stalled. At three steps both recovered it.
+The extra row steered the second-step address past a more useful retained
+continuation. This suggests testing maintenance proposals at the planned
+read horizons and reconsidering old rows when later work creates a better
+route. The replay qualifies a possible guard for this fixture.
+
+This identifies a failure of admission in the supplied recurrence: a
+continuation can pass its source-local admission check and still damage
+another route after publication. The result uses a deterministic backbone
+and supplied tasks. Learned coverage, generalization and a full-cost
+advantage remain open.
+
 ## Qualifying a continuation before a late task, 26 November 2026
 
 **CPU software control.** A native worker drafted one pending

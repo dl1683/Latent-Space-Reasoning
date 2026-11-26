@@ -957,3 +957,203 @@ def test_plain_compact_episode_batches_verified_reads_with_per_candidate_cost(tm
     assert tools.counters()["attempts"]["read"] == 2 and tools.counters()["source_bytes"] == 0
     limited = tools.call({"op": "read", "need_id": "release", "candidate": [first, other]}, need_ids)
     assert limited["status"] == "TOOL_ATTEMPT_LIMIT" and not tools._session.reads
+
+
+def test_native_episode_withholds_only_the_pinned_leaf(tmp_path):
+    from copy import deepcopy
+
+    from experiments.memory.native_isolated_stage import _CausalControl, _Tokenizer, _reader
+    from experiments.memory.native_latent_recurrence import NativeLatentModel
+    from experiments.memory.native_publication import read_native_publication, write_native_publication
+    from experiments.memory.native_task_episode import (
+        NativeTaskEpisodeBackend, NativeTaskWorldPin, _validate_native_read,
+    )
+    from experiments.memory.source_revision_feed import write_source_delta
+    from experiments.memory.verified_source_tool import sha256
+
+    class EpisodeTokenizer(_Tokenizer):
+        def apply_chat_template(self, messages, *, tokenize, add_generation_prompt, return_dict):
+            task = json.loads(messages[-1]["content"])["task"]
+            return self.encode(task, add_special_tokens=True, truncation=False)
+
+        def decode(self, ids, *, skip_special_tokens):
+            label = super().decode(ids, skip_special_tokens=skip_special_tokens)
+            return json.dumps({"finish": {"findings": [], "open_questions": [label or "unresolved"]}})
+
+    tokenizer = EpisodeTokenizer()
+
+    def make_reader():
+        model = _CausalControl().eval()
+        kernel = _reader(model)._moments
+        return NativeLatentModel(model, tokenizer, kernel, source_chars=32, context_tokens=12,
+                                 latent_steps=3, output_tokens=2, representation_scale=0.25,
+                                 memory_gain=1, null_weight=0.1, eos_ids=(0,), top_k=1)
+
+    parent_id, target_id, bridge, name, independent, independent_name, alias = (d * 32 for d in "1234567")
+    raw = {parent_id: b"link L02 L03", target_id: b"link L01 L02", bridge: b"link L03 L04",
+           name: b"name L04 L06", independent: b"link L07 L08", independent_name: b"name L08 L09",
+           alias: b"link L00 L01"}
+    directory = tmp_path / "sources"
+    source = write_source_delta(directory, raw)
+    writer = make_reader()
+    opening = writer.maintain(writer.publish(directory, source.seal), max_seeds=1, max_parent_scores=1)
+    composed = writer.maintain(opening, max_seeds=1, max_parent_scores=3)
+    developed = writer.maintain(composed, max_seeds=3)
+    target, = developed.source_spans(target_id)
+    parent, = developed.source_spans(parent_id)
+    other, = developed.source_spans(independent)
+    assert developed.continuation_parent(target) == parent
+    assert other in developed.derived_seeds
+    runtime = sha256(b"single continuation episode control")
+    publication = tmp_path / "publication"
+    budget = 64 * 1024
+    seal = write_native_publication(publication, writer, developed, runtime_sha256=runtime, max_bytes=budget)
+    reader = make_reader()
+    memory = read_native_publication(publication, reader, seal=seal, source_seal=source.seal,
+                                     runtime_sha256=runtime, max_bytes=budget)
+    pinned = TaskWorld.from_source_epoch(directory, source.seal, max_feed_bytes=budget,
+                                         max_source_bytes=budget, max_passages=16)
+    policy = EpisodePolicy("controller", "native-fixture", "native-fixture-tokenizer", "notes")
+    limits = EpisodeLimits(1, 1, 1, 0, 12, 12, 2, 2)
+    pin_options = dict(memory_view="continuation_off", latent_steps=2, expected_runtime_sha256=runtime,
+                       max_source_verification_bytes=budget)
+    with pytest.raises(ValueError, match="installed dependent"):
+        NativeTaskWorldPin.bind(pinned, reader, memory, intervention_seed=parent, **pin_options)
+    with pytest.raises(ValueError, match="pinned seed"):
+        NativeTaskWorldPin.bind(pinned, reader, memory, **pin_options)
+
+    def episode(task, name, view, seed=target, *, world=pinned, publication_memory=memory):
+        backend = NativeTaskEpisodeBackend(world, reader, publication_memory, backend_id=policy.backend_id,
+                                           tokenizer_id=policy.tokenizer_id, expected_runtime_sha256=runtime,
+                                           steps=2, memory_view=view, intervention_seed=seed)
+        artifact = run_episode(task, world, policy, limits, tokenizer, backend, tmp_path / name,
+                               native_backend=backend)
+        return artifact, backend
+
+    def response(ledger):
+        assert ledger[-1]["data"]["status"] == "completed"
+        return next(row["data"] for row in ledger if row["kind"] == "response")
+
+    for address, active_label, off_label in (("L00", "L06", "unresolved"), ("L01", "L06", "L06"),
+                                             ("L07", "L09", "L09")):
+        task = f"follow {address}"
+        active, _ = episode(task, address + "-active", "active")
+        masked, backend = episode(task, address + "-masked", "continuation_off")
+        restored, _ = episode(task, address + "-restored", "active")
+        omitted, _ = episode(task, address + "-omitted", "memory_omitted")
+        left, right = read_episode_pair(active, masked, contrast="memory")
+        read_episode_pair(active, omitted, contrast="memory")
+        assert active.sha256 == restored.sha256 and active.path.read_bytes() == restored.path.read_bytes()
+        for ledger, label in ((left, active_label), (right, off_label), (read_episode(omitted), "unresolved")):
+            response(ledger)
+            assert ledger[-1]["data"]["submission"]["open_questions"] == [label]
+        a, b = response(left)["backend_receipt"], response(right)["backend_receipt"]
+        original_bank, masked_bank = memory._selective.derived[0], backend._memory._selective.derived[0]
+        kept = [i for i, span in enumerate(original_bank.spans) if span != target]
+        assert masked_bank.spans == tuple(original_bank.spans[i] for i in kept)
+        np.testing.assert_array_equal(masked_bank.keys, original_bank.keys[kept])
+        np.testing.assert_array_equal(masked_bank.values, original_bank.values[kept])
+        assert memory._selective.shards is backend._memory._selective.shards
+        assert all(row["rows_scored"] == len(original_bank.spans) - 1 for row in b["derived_reads"])
+        selected = lambda receipt: {hit["span"]["source_id"] for step in receipt["derived_steps"]
+                                    if step["applied"] for hit in step["receipt"]["selected"]}
+        assert target_id not in selected(b)
+        assert (target_id in selected(a)) == (address in ("L00", "L01"))
+        if address == "L01":
+            assert parent_id in selected(b)
+        if address == "L07":
+            assert selected(a) == selected(b) == {independent}
+        if address != "L00":
+            continue
+
+        with pytest.raises(ValueError, match="read-only"):
+            reader.maintain(backend._memory, max_seeds=1)
+        with pytest.raises(ValueError, match="read-only"):
+            write_native_publication(tmp_path / "refused", reader, backend._memory,
+                                     runtime_sha256=runtime, max_bytes=budget)
+        different_target, _ = episode(task, "different-target", "continuation_off", seed=other)
+        with pytest.raises(ValueError, match="same-pin contribution"):
+            read_episode_pair(active, different_target, contrast="memory")
+        pin = right[0]["data"]["native_world_pin"]
+        request = next(row["data"] for row in right if row["kind"] == "request")
+        forged = deepcopy(response(left))
+        trace = forged["backend_receipt"]
+        trace["pin_sha256"] = pin["pin_sha256"]
+        for step, read in zip(trace["derived_steps"], trace["derived_reads"], strict=True):
+            step["receipt"]["rows_scored"] -= 1
+            read["rows_scored"] -= 1
+        with pytest.raises(ValueError, match="returned the disabled continuation"):
+            _validate_native_read(pin, request, forged)
+
+    # The correction withdraws the old answer dependencies. Query-blind work
+    # later installs a new leaf that intercepts the originally valid alias path.
+    correction_path = tmp_path / "correction"
+    correction = write_source_delta(correction_path, {name: b"name L04 L10"}, previous=source)
+    revised = writer.publish(correction_path, correction.seal, previous=developed)
+    assert revised.derived_seeds == (other,)
+    for _ in range(7):
+        if target in revised.derived_seeds:
+            break
+        revised = writer.maintain(revised, max_seeds=1, max_parent_scores=32)
+    alias_seed, = revised.source_spans(alias)
+    assert target in revised.derived_seeds and alias_seed in revised.derived_seeds
+    after_path = tmp_path / "corrected-publication"
+    after_seal = write_native_publication(after_path, writer, revised, runtime_sha256=runtime, max_bytes=budget)
+    after = read_native_publication(after_path, reader, seal=after_seal, source_seal=correction.seal,
+                                    runtime_sha256=runtime, max_bytes=budget)
+    world = TaskWorld.from_source_epoch(correction_path, correction.seal, previous=pinned, max_feed_bytes=budget,
+                                        max_source_bytes=budget, max_passages=16)
+    options = dict(seed=alias_seed, world=world, publication_memory=after)
+    for address, labels in (("L00", ("unresolved", "L10")), ("L01", ("L10", "L10")), ("L07", ("L09", "L09"))):
+        task = f"follow {address}"
+        active, _ = episode(task, address + "-corrected", "active", **options)
+        masked, backend = episode(task, address + "-corrected-masked", "continuation_off", **options)
+        ledgers = read_episode_pair(active, masked, contrast="memory")
+        for ledger, label in zip(ledgers, labels, strict=True):
+            response(ledger)
+            assert ledger[-1]["data"]["submission"]["open_questions"] == [label]
+        if address == "L00":
+            import torch
+
+            item, = after._sources[alias]
+            lookup = reader._model.get_input_embeddings().weight
+            encoded = torch.tensor(item.row, dtype=lookup.dtype, device=lookup.device)[None, None, :]
+            with torch.inference_mode():
+                for count, expected in ((2, ("unresolved", "L10")), (3, ("L10", "L10"))):
+                    labels = []
+                    for view in (after, backend._memory):
+                        hidden, cache = reader._backbone(encoded * reader._relay_gain, retain_cache=True)
+                        run = reader._continue(hidden, cache, view, count)
+                        token = int(reader._model.get_output_embeddings()(run.hidden)[0, -1].argmax())
+                        labels.append(json.loads(tokenizer.decode([token], skip_special_tokens=True))
+                                      ["finish"]["open_questions"][0])
+                    assert tuple(labels) == expected
+    historical, _ = episode("follow L00", "historical-replay", "active")
+    assert read_episode(historical)[-1]["data"]["submission"]["open_questions"] == ["L06"]
+
+    # The sealed journal can remember a parent's use by a failed attempt.
+    # That attempt is not a live dependency on the only installed operation.
+    attempt_directory = tmp_path / "failed-attempt-sources"
+    attempt_feed = write_source_delta(attempt_directory, {
+        parent_id: b"link L01 L02", target_id: b"link L00 L01", bridge: b"link L02 L03",
+        name: b"link L03 L04", independent: b"name L04 L06", independent_name: b"name L04 L07",
+    })
+    only_parent = writer.maintain(writer.publish(attempt_directory, attempt_feed.seal), max_seeds=1)
+    retained, = only_parent.derived_seeds
+    attempted = writer.maintain(only_parent, max_seeds=1, parent=retained)
+    rejected, = attempted.source_spans(target_id)
+    assert attempted.derived_seeds == (retained,)
+    assert attempted._selective.parents[rejected] == retained
+    assert attempted._selective.attempted[rejected][-1].receipt.status == "competing"
+    attempt_publication = tmp_path / "failed-attempt-publication"
+    attempt_seal = write_native_publication(attempt_publication, writer, attempted, runtime_sha256=runtime,
+                                            max_bytes=budget)
+    attempt_memory = read_native_publication(attempt_publication, reader, seal=attempt_seal,
+                                             source_seal=attempt_feed.seal, runtime_sha256=runtime, max_bytes=budget)
+    attempt_world = TaskWorld.from_source_epoch(attempt_directory, attempt_feed.seal, max_feed_bytes=budget,
+                                                max_source_bytes=budget, max_passages=16)
+    options = dict(seed=retained, world=attempt_world, publication_memory=attempt_memory)
+    control, _ = episode("follow L01", "failed-attempt-active", "active", **options)
+    without, _ = episode("follow L01", "failed-attempt-off", "continuation_off", **options)
+    _, off = read_episode_pair(control, without, contrast="memory")
+    assert all(row["rows_scored"] == 0 for row in response(off)["backend_receipt"]["derived_reads"])

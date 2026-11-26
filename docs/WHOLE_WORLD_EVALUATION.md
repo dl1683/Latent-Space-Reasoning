@@ -362,6 +362,16 @@ If individual withdrawal/restoration of multiple necessary sources is needed,
 define a separate, explicitly budgeted subpanel rather than hiding those runs
 outside this denominator.
 
+For native continuations, predeclare the intervention target before
+opening late tasks. A single-continuation contrast withholds an installed
+leaf while keeping its source and other computations readable. Report
+whether the target was actually applied, what routes replace it, and
+whether the answer and evidence recover after restoration. Include an
+unrelated leaf mask at the same pin and compare checkpoint progression
+with a frozen worker under the same acquisition and retention budgets.
+An access effect and maintenance quality require separate measurements.
+[Intervention control](RESULTS.md#isolating-one-retained-computation-across-a-source-revision)
+
 ## Costs and decision gates
 
 The lifecycle ledger includes corpus encoding/extraction; source, vector,

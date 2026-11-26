@@ -833,6 +833,22 @@ is rejected before any candidate is opened. The scripted preflight covers
 the contract. Generated evidence selection and task quality remain open.
 [Results](RESULTS.md#giving-the-text-and-latent-arms-the-same-verified-read-access)
 
+**New retained computations can interrupt an established route after a correction.**
+In the deterministic native episode, query-blind reacquisition restored a
+previous continuation and also installed a leaf that intercepted a separate
+entry path. The intercepted question became unresolved. Removing that leaf
+alone restored the corrected answer while another path stayed stable.
+Source-local acceptance therefore leaves a cross-route regression risk.
+A successor should test prospective, query-blind preservation of affected
+trajectories against a strong frozen-worker control. [Results](RESULTS.md#isolating-one-retained-computation-across-a-source-revision)
+
+**A rejected dependency attempt is not an installed dependent.**
+A worker reached a competing frontier after using an earlier computation.
+The sealed publication retained its attempted parent edge. An initial
+mask check refused that parent even though it was the only installed row.
+The check now uses only live edges. A reopened fixture can mask the row and
+records zero scored derived rows in the off arm.
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

@@ -555,6 +555,33 @@ modules and the stage bootstrap. The publication also binds its live reader
 fingerprint. The Python environment and system libraries remain trusted.
 [Linux control](../experiments/memory/native_isolated_trial.py)
 
+#### Withholding one retained continuation
+
+A task episode can remove one installed leaf from an intact sealed native
+publication. A leaf has no installed operation that uses it as a parent.
+The source shards and all other quantized rows stay fixed. The intervention
+bound to the opening pin keeps the full catalogue proof and records the
+number of rows actually scored at every step. A disabled row cannot appear
+among the returned selections. The masked view refuses maintenance and
+publication. Restoration starts another episode from the intact publication.
+
+This intervention can expose useful reuse or interference. A remaining
+continuation may answer through a different route. That fallback belongs to
+the effect of withholding access. Sealed membership and host traces do
+not establish semantic correctness or a counterfactual worker history.
+Compare with a matched unrelated removal and a frozen-worker control
+before claiming improvement over continued revisions.
+
+The archived p2 operator had a negative score on both late query steps
+despite positive scores on the worker trajectories. The corrected alias
+fixture shows the complementary hazard of an admitted row that routes and
+harms the answer. For a future held comparison, vary address construction
+while holding the acquired operation and verification opportunity fixed.
+A source-anchor key is a control for a learned task-compatible key. Judge
+both by task outcomes and rerouting side effects after edits. Retain current
+hidden-state addressing as the comparator.
+[Archived diagnosis](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md) · [Software control](RESULTS.md#isolating-one-retained-computation-across-a-source-revision)
+
 ### Warm exact control on a separate corpus
 
 [SLICE] The exact relation index stores immutable forward and reverse

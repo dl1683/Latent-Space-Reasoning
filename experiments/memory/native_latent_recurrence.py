@@ -112,6 +112,7 @@ class NativeSourceMemory:
     _derived_off: bool = False
     _publication_runtime_sha256: str | None = None
     _reader_fingerprint_sha256: str | None = None
+    _omitted_continuation: SourceSpan | None = None
 
     @property
     def seal(self):
@@ -162,7 +163,8 @@ class NativeSourceMemory:
         """Collect candidate source spans for an attached read of this publication."""
         if (not isinstance(read, NativeLatentRead) or self._publication_seal is None
                 or read.publication_seal != self._publication_seal or read.source_seal != self.seal
-                or read.derived_omitted != self._derived_off or read.omitted_sources != self.omitted_sources):
+                or read.derived_omitted != self._derived_off or read.omitted_sources != self.omitted_sources
+                or read.omitted_continuation != self._omitted_continuation):
             raise ValueError("evidence spans require a read from the matching reopened publication")
 
         def selected(receipts):
@@ -243,10 +245,14 @@ class NativeLatentRead:
     source_steps: tuple[SelectionStep, ...] = ()
     derived_steps: tuple[SelectionStep, ...] = ()
 
+    omitted_continuation: SourceSpan | None = None
+
     def json_record(self):
         """Serialize a read receipt, preserving packed queries as hexadecimal."""
         record = asdict(self)
         record["omitted_sources"] = sorted(self.omitted_sources)
+        if self.omitted_continuation is None:
+            del record["omitted_continuation"]
         for name in ("source_steps", "derived_steps"):
             for step in record[name]:
                 step["query"] = step["query"].hex()
@@ -431,9 +437,11 @@ class NativeLatentModel:
         with np.errstate(over="ignore"):
             return np.tanh(hidden[0, 0].double().numpy() / self._scale)
 
-    def _check_memory(self, memory):
+    def _check_memory(self, memory, *, for_read=False):
         if type(memory) is not NativeSourceMemory or memory._owner is not self._owner:
             raise ValueError("source memory belongs to a different native reader")
+        if memory._omitted_continuation is not None and not for_read:
+            raise ValueError("an intervention view is read-only")
 
     def publish(self, epoch_directory: Path, seal: str, *, previous=None, max_source_bytes=None):
         """Encode only changed sources from one verified, query-blind feed epoch."""
@@ -1072,7 +1080,7 @@ class NativeLatentModel:
         """Read raw task text through the same recurrent call with optional source memory."""
         _require_cpu_eval(self._model)
         if memory is not None:
-            self._check_memory(memory)
+            self._check_memory(memory, for_read=True)
         steps = self._step_budget(steps)
         return self._read_ids(self.task_token_ids(task, steps=steps), memory, steps)
 
@@ -1118,7 +1126,7 @@ class NativeLatentModel:
         """
         _require_cpu_eval(self._model)
         if memory is not None:
-            self._check_memory(memory)
+            self._check_memory(memory, for_read=True)
         steps = self._step_budget(steps)
         output_limit = self._output_tokens if max_new_tokens is None else max_new_tokens
         if type(output_limit) is not int or not 1 <= output_limit <= self._output_tokens:
@@ -1173,4 +1181,5 @@ class NativeLatentModel:
                                 tuple(step.receipt for step in run.source_steps), run.derived_reads,
                                 run.applied_derived, None if memory is None else memory._publication_seal,
                                 False if memory is None else memory._derived_off,
-                                run.source_steps, run.derived_steps)
+                                run.source_steps, run.derived_steps,
+                                None if memory is None else memory._omitted_continuation)

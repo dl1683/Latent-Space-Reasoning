@@ -1,10 +1,11 @@
 """Bind a sealed native world to exact task-episode calls and receipts."""
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from hashlib import sha256 as _hash_bytes
 import json
 from types import MappingProxyType
 
+from experiments.memory.latent_feedback import _frozen
 from experiments.memory.native_latent_recurrence import NativeLatentModel, NativeSourceMemory
 from experiments.memory.native_publication import _reader_digest
 from experiments.memory.source_revision_feed import (
@@ -12,11 +13,12 @@ from experiments.memory.source_revision_feed import (
 )
 from experiments.memory.task_episode import EpisodePolicy, PolicyCall, PolicyReply, _packed
 from experiments.memory.task_evidence import TaskWorld, _catalogue_digest
-from experiments.memory.verified_source_tool import require_digest, sha256
+from experiments.memory.verified_source_tool import SourceSpan, require_digest, sha256
 
 
 _PIN_SCHEMA = "lsr-native-task-world-pin-v1"
 _READ_SCHEMA = "lsr-native-task-read-v1"
+_MEMORY_VIEWS = {"active", "derived_off", "memory_omitted", "continuation_off"}
 _EMPTY_SPAN_ROOT = sha256(b"lsr-native-span-empty-v1")
 
 
@@ -62,6 +64,20 @@ def _span_merkle(spans):
             parents.append(_hash_bytes(b"\x01" + left + right).digest())
         levels.append(tuple(parents))
     return levels[-1][0].hex(), indices, tuple(levels)
+
+
+def _span_proof(span, indices, levels):
+    index = indices.get(span)
+    if index is None:
+        raise ValueError("native selection is outside the pinned span catalogue")
+    proof = []
+    for level in levels[:-1]:
+        sibling = index - 1 if index % 2 else index + 1
+        if sibling >= len(level):
+            sibling = index
+        proof.append({"side": "left" if index % 2 else "right", "sha256": level[sibling].hex()})
+        index //= 2
+    return {"index": indices[span], "siblings": proof}
 
 
 def _verify_span_proof(span, proof, root, count):
@@ -129,7 +145,7 @@ class NativeTaskWorldPin:
 
     @classmethod
     def bind(cls, world, reader, memory, *, memory_view, latent_steps, expected_runtime_sha256,
-             output_constraint_sha256=None, max_source_verification_bytes):
+             output_constraint_sha256=None, max_source_verification_bytes, intervention_seed=None):
         if type(world) is not TaskWorld or type(reader) is not NativeLatentModel:
             raise TypeError("a TaskWorld and native latent reader are required")
         if type(memory) is not NativeSourceMemory:
@@ -140,8 +156,17 @@ class NativeTaskWorldPin:
         if (memory._selective is None or memory.omitted_sources or memory._derived_off
                 or memory._publication_seal is None):
             raise ValueError("task episodes require an intact, sealed selective publication")
-        if memory_view not in {"active", "derived_off", "memory_omitted"}:
+        if memory_view not in _MEMORY_VIEWS:
             raise ValueError("unsupported native memory intervention")
+        if memory_view == "continuation_off" and intervention_seed is None:
+            raise ValueError("disabling a continuation requires a pinned seed")
+        if intervention_seed is not None:
+            if type(intervention_seed) is not SourceSpan or intervention_seed not in memory._selective.acquired:
+                raise ValueError("native intervention seed must be an installed continuation")
+            acquired = memory._selective.acquired
+            if any(child in acquired and parent == intervention_seed
+                   for child, parent in memory._selective.parents.items()):
+                raise ValueError("native intervention seed has an installed dependent")
         if type(latent_steps) is not int or not 0 <= latent_steps <= reader._steps:
             raise ValueError("native task latent-step budget is invalid")
         if type(max_source_verification_bytes) is not int or max_source_verification_bytes < 1:
@@ -218,6 +243,11 @@ class NativeTaskWorldPin:
             "latent_steps": latent_steps,
             "stop_token_ids": sorted(reader._eos),
         }
+        if intervention_seed is not None:
+            record["intervention_seed"] = {
+                "span": asdict(intervention_seed),
+                "span_proof": _span_proof(intervention_seed, derived_indices, derived_levels),
+            }
         record["pin_sha256"] = _digest_record(record)
         return cls(_packed(record), record["pin_sha256"], span_indices, merkle_levels,
                    derived_indices, derived_levels)
@@ -228,17 +258,7 @@ class NativeTaskWorldPin:
     def span_proof(self, span, *, derived=False):
         indices = self._derived_span_indices if derived else self._span_indices
         levels = self._derived_merkle_levels if derived else self._merkle_levels
-        index = indices.get(span)
-        if index is None:
-            raise ValueError("native selection is outside the pinned span catalogue")
-        proof = []
-        for level in levels[:-1]:
-            sibling = index - 1 if index % 2 else index + 1
-            if sibling >= len(level):
-                sibling = index
-            proof.append({"side": "left" if index % 2 else "right", "sha256": level[sibling].hex()})
-            index //= 2
-        return {"index": indices[span], "siblings": proof}
+        return _span_proof(span, indices, levels)
 
     @property
     def sha256(self):
@@ -250,7 +270,7 @@ class NativeTaskEpisodeBackend:
 
     def __init__(self, world, reader, memory, *, backend_id, tokenizer_id,
                  expected_runtime_sha256, output_token_allowlist=None,
-                 output_constraint_sha256=None, steps=None, memory_view="active"):
+                 output_constraint_sha256=None, steps=None, memory_view="active", intervention_seed=None):
         if type(backend_id) is not str or not backend_id.strip():
             raise ValueError("a stable native backend identifier is required")
         if type(tokenizer_id) is not str or not tokenizer_id.strip():
@@ -272,12 +292,8 @@ class NativeTaskEpisodeBackend:
         self._base_memory, self._memory_view = memory, memory_view
         self._pin = None
         self._opened = False
-        if memory_view == "active":
-            self._memory = memory
-        elif memory_view == "derived_off":
-            self._memory = reader.without_derived(memory)
-        elif memory_view == "memory_omitted":
-            self._memory = None
+        self._intervention_seed = intervention_seed
+        self._memory = None
 
     def opening_record(self, world, policy, limits, tokenizer):
         if self._opened:
@@ -290,13 +306,14 @@ class NativeTaskEpisodeBackend:
                 or limits.max_new_tokens > self._reader._output_tokens):
             raise ValueError("episode policy, output constraint or allowance differs from the native backend")
         if self._pin is None:
-            self._pin = NativeTaskWorldPin.bind(
+            pin = NativeTaskWorldPin.bind(
                 world, self._reader, self._base_memory, memory_view=self._memory_view,
                 latent_steps=self._steps, expected_runtime_sha256=self._expected_runtime_sha256,
                 output_constraint_sha256=self._output_constraint_sha256,
-                max_source_verification_bytes=limits.access.source_bytes,
+                max_source_verification_bytes=limits.access.source_bytes, intervention_seed=self._intervention_seed,
             )
             self._pin_memory_view()
+            self._pin = pin
         elif self._pin.to_record()["source_verification_byte_limit"] != limits.access.source_bytes:
             raise ValueError("native backend was already pinned under a different source byte budget")
         self._opened = True
@@ -307,6 +324,17 @@ class NativeTaskEpisodeBackend:
             self._memory = self._base_memory
         elif self._memory_view == "derived_off":
             self._memory = self._reader.without_derived(self._base_memory)
+        elif self._memory_view == "continuation_off":
+            # The sealed publication and provenance remain the same. Only this
+            # episode's scored bank changes, and the view stays in the reader.
+            selective = self._base_memory._selective
+            shard, = selective.derived
+            index = shard.spans.index(self._intervention_seed)
+            kept = [position for position in range(len(shard.spans)) if position != index]
+            bank = (replace(shard, spans=shard.spans[:index] + shard.spans[index + 1:],
+                            keys=_frozen(shard.keys[kept]), values=_frozen(shard.values[kept])),) if kept else ()
+            self._memory = replace(self._base_memory, _selective=replace(selective, derived=bank),
+                                   _omitted_continuation=self._intervention_seed)
         else:
             self._memory = None
 
@@ -326,6 +354,9 @@ class NativeTaskEpisodeBackend:
             call.input_ids, memory=self._memory, steps=self._steps,
             max_new_tokens=call.max_new_tokens, allowed_next_tokens=allowed_next_tokens,
         )
+        expected_omission = self._intervention_seed if self._memory_view == "continuation_off" else None
+        if read.omitted_continuation != expected_omission:
+            raise ValueError("native read differs from the pinned continuation intervention")
         receipt = {
             "schema": _READ_SCHEMA,
             "pin_sha256": self._pin.sha256,
@@ -374,8 +405,8 @@ def _validate_pin(record):
         "memory_view", "latent_steps",
         "stop_token_ids", "pin_sha256",
     }
-    optional = {"output_constraint_sha256"}
-    if (type(record) is not dict or set(record) not in (expected, expected | optional)
+    optional = {"output_constraint_sha256", "intervention_seed"}
+    if (type(record) is not dict or not expected <= record.keys() <= expected | optional
             or record["schema"] != _PIN_SCHEMA):
         raise ValueError("native task world pin has an invalid shape")
     body = {key: value for key, value in record.items() if key != "pin_sha256"}
@@ -400,7 +431,7 @@ def _validate_pin(record):
     if (type(stops) is not list or not stops or any(type(token) is not int or token < 0 for token in stops)
             or stops != sorted(set(stops))):
         raise ValueError("native episode stop-token pin is invalid")
-    if record["memory_view"] not in {"active", "derived_off", "memory_omitted"}:
+    if record["memory_view"] not in _MEMORY_VIEWS:
         raise ValueError("native memory intervention is invalid")
     task_pin = record["task_pin"]
     if (type(task_pin) is not dict or task_pin.get("source_snapshot") != record["source_snapshot_sha256"]
@@ -483,18 +514,41 @@ def _validate_pin(record):
             or type(record["selector_tie_limit"]) is not int or record["selector_tie_limit"] < 1):
         raise ValueError("native derived span catalogue or selector limit is invalid")
     versions = {source_id: pair[0] for source_id, pair in observed.items()}
+    if "intervention_seed" in record:
+        seed = record["intervention_seed"]
+        if type(seed) is not dict or set(seed) != {"span", "span_proof"}:
+            raise ValueError("native intervention seed receipt is malformed")
+        _validate_span_membership(seed["span"], seed["span_proof"], versions, source_lengths,
+                                  record["native_derived_span_catalogue_sha256"],
+                                  record["native_derived_span_count"])
+    elif record["memory_view"] == "continuation_off":
+        raise ValueError("native continuation intervention lacks a pinned seed")
     snapshot = sha256(json.dumps(versions, sort_keys=True, separators=(",", ":"),
                                 ensure_ascii=False).encode("utf8"))
     if snapshot != record["source_snapshot_sha256"]:
         raise ValueError("native source versions differ from the TaskWorld snapshot")
 
 
-def _validate_selection_reads(reads, source_versions, source_lengths, source_seal, span_root,
-                              span_count, scored_count, tie_limit):
-    if type(reads) is not list:
-        raise ValueError("native selection receipts must be a list")
+def _validate_span_membership(span, proof, source_versions, source_lengths, span_root, span_count):
     span_fields = {"source_id", "version_sha256", "start_byte", "end_byte", "span_sha256",
                    "start_character", "end_character"}
+    if (type(span) is not dict or set(span) != span_fields
+            or type(span["source_id"]) is not str
+            or source_versions.get(span["source_id"]) != span["version_sha256"]
+            or type(span["start_byte"]) is not int or type(span["end_byte"]) is not int
+            or not 0 <= span["start_byte"] < span["end_byte"] <= source_lengths[span["source_id"]]
+            or span["start_character"] is not None or span["end_character"] is not None):
+        raise ValueError("native selected span is outside the pinned source versions")
+    require_digest(span["version_sha256"])
+    require_digest(span["span_sha256"])
+    if not _verify_span_proof(span, proof, span_root, span_count):
+        raise ValueError("native selected span is outside the sealed native catalogue")
+
+
+def _validate_selection_reads(reads, source_versions, source_lengths, source_seal, span_root,
+                              span_count, scored_count, tie_limit, excluded_index=None):
+    if type(reads) is not list:
+        raise ValueError("native selection receipts must be a list")
     for receipt in reads:
         if (type(receipt) is not dict
                 or set(receipt) != {"status", "selected", "eligible", "rows_scored", "observed_source_seal"}
@@ -528,21 +582,13 @@ def _validate_selection_reads(reads, source_versions, source_lengths, source_sea
             proof = hit["span_proof"]
             if type(proof) is not dict or type(proof.get("index")) is not int:
                 raise ValueError("native selected span proof index is malformed")
+            if proof["index"] == excluded_index:
+                raise ValueError("native selector returned the disabled continuation")
             if proof["index"] in seen_indices:
                 raise ValueError("native selector returned a duplicate span")
             seen_indices.add(proof["index"])
-            span = hit["span"]
-            if (type(span) is not dict or set(span) != span_fields
-                    or type(span["source_id"]) is not str
-                    or source_versions.get(span["source_id"]) != span["version_sha256"]
-                    or type(span["start_byte"]) is not int or type(span["end_byte"]) is not int
-                    or not 0 <= span["start_byte"] < span["end_byte"] <= source_lengths[span["source_id"]]
-                    or span["start_character"] is not None or span["end_character"] is not None):
-                raise ValueError("native selected span is outside the pinned source versions")
-            require_digest(span["version_sha256"])
-            require_digest(span["span_sha256"])
-            if not _verify_span_proof(span, hit["span_proof"], span_root, span_count):
-                raise ValueError("native selected span is outside the sealed native catalogue")
+            _validate_span_membership(hit["span"], proof, source_versions, source_lengths,
+                                      span_root, span_count)
 
 
 def _selection_step(step, pin, *, derived=False):
@@ -559,7 +605,7 @@ def _selection_receipt(receipt, pin, *, derived=False):
 
 
 def _validate_selection_steps(steps, reads, *, source_versions, source_lengths, source_seal,
-                              span_root, span_count, scored_count, tie_limit):
+                              span_root, span_count, scored_count, tie_limit, excluded_index=None):
     if type(steps) is not list or len(steps) != len(reads):
         raise ValueError("native ordered selection steps differ from their receipts")
     for step, receipt in zip(steps, reads, strict=True):
@@ -576,7 +622,7 @@ def _validate_selection_steps(steps, reads, *, source_versions, source_lengths, 
         if query.hex() != step["query_hex"]:
             raise ValueError("native selection query is not canonical")
     _validate_selection_reads(reads, source_versions, source_lengths, source_seal,
-                              span_root, span_count, scored_count, tie_limit)
+                              span_root, span_count, scored_count, tie_limit, excluded_index)
     if any(hit["score"] < step["cutoff"]
            for step in steps for hit in step["receipt"]["selected"]):
         raise ValueError("native selected score is below its recorded cutoff")
@@ -683,13 +729,15 @@ def _validate_native_read(pin, request, response):
                                   span_count=pin["native_span_count"],
                                   scored_count=pin["native_span_count"],
                                   tie_limit=pin["selector_tie_limit"])
+        excluded_index = (pin["intervention_seed"]["span_proof"]["index"]
+                          if pin["memory_view"] == "continuation_off" else None)
         _validate_selection_steps(receipt["derived_steps"], receipt["derived_reads"],
                                   source_versions=versions, source_lengths=source_lengths,
                                   source_seal=pin["source_seal"],
                                   span_root=pin["native_derived_span_catalogue_sha256"],
                                   span_count=pin["native_derived_span_count"],
-                                  scored_count=pin["native_derived_span_count"],
-                                  tie_limit=pin["selector_tie_limit"])
+                                  scored_count=pin["native_derived_span_count"] - (excluded_index is not None),
+                                  tie_limit=pin["selector_tie_limit"], excluded_index=excluded_index)
     source_ready = sum(step["receipt"]["status"] == "ready" for step in receipt["source_steps"])
     derived_ready = sum(step["receipt"]["status"] == "ready" for step in receipt["derived_steps"])
     if (source_ready != receipt["routed_memory_steps"]

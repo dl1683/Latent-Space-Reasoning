@@ -928,6 +928,16 @@ digest refuses the request. For a historical answer, use the custody
 object for its earlier epoch.
 [PEP controller](../experiments/memory/pep_relation_control.py)
 
+For a single-operation episode comparison, choose an installed
+`SourceSpan` that has no installed dependent and pass it as
+`intervention_seed` to `NativeTaskEpisodeBackend` on both arms. Use
+`memory_view="active"` and `memory_view="continuation_off"` with
+`read_episode_pair(..., contrast="memory")`. The sealed publication,
+source epoch, policy and target must match. A fresh active episode using
+the original sealed publication tests restoration. Use
+`memory_view="memory_omitted"` with the same declaration for the
+optional-memory control.
+
 ## Compact task-episode delivery
 
 Set `EpisodePolicy(..., state_kind="compact_needs", compact_delivery=True)`
