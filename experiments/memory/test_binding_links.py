@@ -1554,6 +1554,304 @@ def test_bridge_waits_for_legacy_sources_to_stop_obscuring_competitors(tmp_path,
     assert rebuilt.memory.read_role_links(e[0], outcomes=_OUTCOMES, work_limit=64).answer == "accept"
 
 
+def test_required_multi_hop_keeps_a_stopped_sibling_open(tmp_path):
+    axes = np.eye(6)
+    frame = _transport_frame()
+    owner = JournaledCorpusWorkspace(tmp_path / "required-hops.sqlite", frame, create=True)
+
+    def link(start, end):
+        return _mentions(("entry", axes[start], .9), ("exit", axes[end], .9))
+
+    _write(owner, {"opening": link(0, 1), "dead-end": link(0, 2), "second": link(1, 3),
+                   "finish": link(3, 4), "direct": _mentions(("accept", axes[3], .8)),
+                   "late": _mentions(("accept", axes[4], .8))})
+    pin = owner.publish_program(_transport_program(owner, owner.snapshot(), "fixed"))
+    settings = dict(outcomes=_OUTCOMES, work_limit=512)
+    direct = pin.memory.read_role_links(axes[0], hops=2, **settings)
+    assert direct.status == "unresolved" and direct.incomplete_hops and direct.answer is None
+    assert [witness.outcome for witness in direct.witnesses] == ["accept"]
+    assert pin.memory.read_role_links(axes[0], hops=4, **settings).status == "no_link"
+    keys, zeros = np.zeros((6, 1)), np.zeros((6, 6))
+    kernel = FeedbackKernel(query=keys, carry=zeros, observation_key=keys, observation_value=axes,
+                            feedback_key=keys, feedback_value=zeros, max_steps=1)
+    receiver = BindingFeedback(kernel, frame, (("accept", 0),), query=keys, observation=zeros)
+    initial = receiver.start(axes[0], pin.memory)
+    joint = receiver.reason_role_links(initial, stages=(BindingRoleAdvance(2),), branch_limit=4, **settings)
+    assert joint.status == "unresolved" and joint.answer is None
+    assert joint.terminal_reads[0].inherited_open and joint.terminal_reads[0].witnesses[0].outcome == "accept"
+
+
+def test_rotated_context_boundaries_survive_journal_replay(tmp_path):
+    axes = np.eye(6)
+    entry, left = .8 * axes[0] + .6 * axes[1], -.6 * axes[0] + .8 * axes[1]
+    exit, right = .8 * axes[2] + .6 * axes[3], -.6 * axes[2] + .8 * axes[3]
+
+    def encode(raw):
+        for mention in _transport_encoding(raw):
+            yield replace(mention, byte_span=(0, len(raw)))
+
+    def fragment(role, endpoint, tangent, scale):
+        return _mentions((role, endpoint, .9), ("key", axes[5], .9), ("context", endpoint + scale * tangent, .9))
+
+    extra = ("key", "context")
+    path = tmp_path / "rotated-context.sqlite"
+    owner = JournaledCorpusWorkspace(path, _transport_frame(encode, extra_predicates=extra), create=True)
+    low, high = .99e-4, 1.01e-4
+    source = _write(owner, {"entry": fragment("entry", entry, left, low),
+                            "exit": fragment("exit", exit, right, low),
+                            "terminal": _mentions(("accept", exit, .9))})
+    owner.publish_program(owner.prepare_role_links(
+        source, _ROLES, min_similarity=.95, compile_work_limit=128, bridge_key="key",
+        bridge_context="context", local_bridges=True,
+    ))
+    low_result = owner.maintain_role_bridges(owner.snapshot(), max_entries=1)
+    assert low_result.context_unavailable == ("entry",)
+    _write(owner, {"entry": fragment("entry", entry, left, high), "exit": fragment("exit", exit, right, high)})
+    high_result = owner.maintain_role_bridges(owner.snapshot(), max_entries=1)
+    assert high_result.checked == (("entry", "exit"),)
+    worker = JournaledCorpusWorkspace(path, _transport_frame(_no_encoding, extra_predicates=extra))
+    settings = dict(outcomes=_OUTCOMES, work_limit=256)
+    fitting = worker.snapshot()
+    accepted = fitting.memory.read_role_links(entry + .01 * left + .99e-8 * axes[4], **settings)
+    refused = fitting.memory.read_role_links(entry + .01 * left + 1.01e-8 * axes[4], **settings)
+    assert accepted.answer == "accept"
+    assert refused.status == "unresolved" and refused.context_domain_refusals == 1
+    earlier = worker.snapshot_at(low_result.revision, max_events=low_result.revision, max_payload_bytes=32768)
+    assert earlier.memory.read_role_links(entry, **settings).status == "unresolved"
+
+
+@pytest.mark.parametrize("factored", [False, True])
+def test_source_context_fits_different_latent_actions_with_unchanged_keys(tmp_path, factored):
+    axes = np.eye(12)
+    separator = b"\n--\n"
+
+    def encode(raw):
+        start = 0
+        for clause in raw.split(separator):
+            end = start + len(clause)
+            for mention in _transport_encoding(clause):
+                yield replace(mention, byte_span=(start, end))
+            start = end + len(separator)
+
+    def fragment(role, endpoint, key, context):
+        records = [(role, endpoint, .91), ("key", key, .88)]
+        if context is not None:
+            records.append(("context", context, .86))
+        return _mentions(*records)
+
+    def bridge_frame(encoder):
+        return CorpusBindingMemory.prepare(
+            (*_ROLES, *_OUTCOMES, "key", "context", "task_seed"), axes,
+            {"observed_bridge": BindingGate("and", ("exit", "context"))}, {},
+            encode=encoder, encoder_version="context-transport-control", min_similarity=.7, gap=.05,
+        )
+
+    frame, empty = bridge_frame(encode), bridge_frame(_no_encoding)
+    path = tmp_path / "contextual.sqlite"
+    owner = JournaledCorpusWorkspace(path, frame, create=True)
+    roots = (axes[0] + .32 * axes[1], axes[0] - .29 * axes[1])
+    values = np.zeros((12, 12))
+    values[2, 4] = values[3, 5] = values[8, 8] = values[9, 9] = 1.
+    keys = np.zeros((12, 1))
+    kernel = FeedbackKernel(query=keys, carry=np.zeros_like(values), observation_key=keys,
+                            observation_value=values, feedback_key=keys, feedback_value=np.zeros_like(values),
+                            max_steps=1)
+    binding_values = np.zeros((6, 12))
+    binding_values[0, 4] = .01
+    receiver = BindingFeedback(kernel, frame, (("observed_bridge", 2),), query=(axes[0] + axes[6])[:, None],
+                               observation=binding_values)
+
+    def linked(left, right):
+        return _mentions(("entry", left, .91), ("exit", right, .91))
+
+    positive = axes[4] + .42 * axes[5]
+    negative = axes[4] - .42 * axes[5]
+    raw = {
+        "entry": fragment("entry", axes[0], axes[10], axes[0] + .25 * axes[1]),
+        "exit": fragment("exit", axes[2], axes[10], axes[2] + .25 * axes[3]),
+        "unchanged-entry": fragment("entry", axes[6], axes[11], axes[7]),
+        "unchanged-exit": fragment("exit", axes[8], axes[11], axes[9]),
+        "positive": linked(positive, axes[0]), "negative": linked(negative, axes[1]),
+        "unrelated": linked(axes[8], axes[1]),
+        "accept": _mentions(("accept", axes[0], .92)), "review": _mentions(("review", axes[1], .92)),
+    }
+    source_pin = _write(owner, raw)
+    policy = dict(min_similarity=.93, compile_work_limit=512, bridge_key="key", bridge_context="context",
+                  local_bridges=True, factored_bridges=factored)
+    prepared = owner.publish_program(owner.prepare_role_links(source_pin, _ROLES, **policy))
+    assert owner.prepare_role_links(prepared, _ROLES, **policy).preview is prepared.memory
+
+    def read(pin, direction):
+        state = receiver.start(direction, pin.memory)
+        return receiver.reason_role_links(state, stages=(BindingRoleAdvance(),), outcomes=_OUTCOMES,
+                                         branch_limit=4, work_limit=1024, retain_dependencies=True)
+
+    def proof(result):
+        row, = result.terminal_reads
+        witness, = row.dependency_witnesses
+        return witness
+
+    def indexed_reference(root, exit_context):
+        # The same typed sources let a conventional join reconstruct its
+        # frame on demand. Solve coordinates independently of the runtime.
+        basis = axes[[0, 1]].T
+        coefficients, *_ = np.linalg.lstsq(basis, root, rcond=None)
+        carried = np.stack((axes[2], exit_context)).T @ coefficients
+        arrived = np.tanh((carried / np.linalg.norm(carried)) @ values + binding_values[0])
+        routes = {"accept": positive / np.linalg.norm(positive), "review": negative / np.linalg.norm(negative)}
+        return {name for name, vector in routes.items() if arrived @ vector / np.linalg.norm(arrived) >= .93}
+
+    assert read(prepared, roots[0]).status == "unresolved"
+    worker = JournaledCorpusWorkspace(path, empty)
+    first = worker.maintain_role_bridges(worker.snapshot(), max_entries=2)
+    before = worker.snapshot()
+    assert first.checked == (("entry", "exit"), ("unchanged-entry", "unchanged-exit"))
+    for root, outcome in zip(roots, ("accept", "review")):
+        assert {read(before, root).answer} == indexed_reference(root, axes[3]) == {outcome}
+    earlier = proof(read(before, roots[0]))
+    assert earlier.prefix[0].context_ordinals == (2, 2)
+    assert earlier.prefix[0].publication_sha256 == first.publication_sha256
+    assert set(span.source_id for span in earlier.source_spans) == {"entry", "exit", "positive", "accept"}
+    assert earlier.strength == .86
+    outside = read(before, roots[0] + .1 * axes[7])
+    assert outside.status == "unresolved" and outside.context_domain_refusals == 1 and outside.transitions == 0
+    unrelated = proof(read(before, axes[6]))
+
+    raw["exit"] = fragment("exit", axes[2], axes[10], axes[2] - .25 * axes[3])
+    amended = _write(owner, {"exit": raw["exit"]})
+    assert read(amended, roots[1]).status == "unresolved"
+    second = worker.maintain_role_bridges(worker.snapshot(), max_entries=1)
+    after = worker.snapshot()
+    assert second.checked == (("entry", "exit"),)
+    opening_links = amended.memory._role_links
+    plan = opening_links.bridge_index.repairs(opening_links, 1)
+    checked, unavailable, fitted = corpus_binding_journal._bridge_repair_outcome(plan, opening_links)
+    source, ordinals, _ = fitted[0]
+    forged = corpus_binding_journal._bridge_repair_payload(1, checked, unavailable, ((source, ordinals, "0" * 64),))
+    with pytest.raises(ValueError, match="pending plan"):
+        corpus_binding_journal._replay_bridge_repairs(forged, amended.memory, second.publication_sha256)
+    assert before.memory._role_links.bridge_index.exits["exit"].key == after.memory._role_links.bridge_index.exits["exit"].key
+    assert (before.memory.source_mentions("exit")[0].vector == after.memory.source_mentions("exit")[0].vector).all()
+    for old_bank, current_bank in ((before.memory._certain, after.memory._certain),
+                                   (before.memory._possible, after.memory._possible)):
+        assert old_bank._sources["exit"] == current_bank._sources["exit"]
+    for root, outcome in zip(roots, ("review", "accept")):
+        assert {read(after, root).answer} == indexed_reference(root, -axes[3]) == {outcome}
+    corrected = proof(read(after, roots[0]))
+    assert corrected.prefix[0].publication_sha256 == second.publication_sha256
+    assert proof(read(after, axes[6])) == unrelated
+    assert read(before, roots[0]).answer == "accept"
+
+    def advance(pin, root):
+        initial = receiver.start(root, pin.memory)
+        advanced, = receiver.continue_role_links(initial, work_limit=512, branch_limit=2).states
+        return advanced
+
+    np.testing.assert_array_equal(advance(before, axes[0]).latest, advance(after, axes[0]).latest)
+    original, changed = (advance(pin, roots[0]) for pin in (before, after))
+    assert original.reads == changed.reads and original.reads[0].status == "resolved"
+    assert original.reads[0].bounds.certain.sources == frozenset(("exit",))
+    before_preactivation, after_preactivation = np.arctanh(original.latest), np.arctanh(changed.latest)
+    assert before_preactivation[4] > 1 / np.linalg.norm(roots[0])
+    expected_delta = -2 * roots[0][1] / np.linalg.norm(roots[0]) * axes[5]
+    np.testing.assert_allclose(after_preactivation - before_preactivation, expected_delta, atol=1e-12, rtol=0.)
+    seed_state = receiver.start(roots[0], after.memory)
+    ordinary = receiver.step(seed_state)
+    assert ordinary.reads == changed.reads
+    expected_action = (axes[2] - roots[0][1] * axes[3]) / np.linalg.norm(roots[0])
+    np.testing.assert_allclose(after_preactivation - np.arctanh(ordinary.latest),
+                               expected_action @ values, atol=1e-12, rtol=0.)
+
+    raw["late-observation"] = _mentions(("task_seed", roots[0], .9))
+    task_pin = _write(owner, {"late-observation": raw["late-observation"]})
+    leaves = tmp_path / "leaves"
+    leaves.mkdir()
+    for name, content in raw.items():
+        (leaves / (task_pin.memory.source_digests[name] + ".txt")).write_bytes(content)
+    tool = VerifiedSourceTool(tmp_path, task_pin.memory.source_digests)
+    seed = SourceSpan.from_characters("late-observation", raw["late-observation"], 0, len(raw["late-observation"]))
+    world = TaskWorld(tool, (seed,), bindings=task_pin, receiver=receiver)
+    limits = EpisodeLimits(6, 1, 5, 1, 16000, 65000, 4096, 1024, TaskBudget(role_work=1024))
+    typed = EpisodePolicy("context-task", "scripted", "byte-count", "typed_needs", probes_enabled=True)
+    need = "decision"
+
+    def generate(call):
+        frame = json.loads(dict(call.messages)["user"])
+        receipts, state = frame["receipts"], frame["state"]
+        if not receipts:
+            state = {"needs": [{"id": need, "question": "What action follows?",
+                                "rationale": "The user asked about the corrected source."}], "notes": ""}
+            request = {"op": "search", "query": "task_seed"}
+        else:
+            latest = receipts[-1]["result"]
+            if len(receipts) == 1:
+                request = {"op": "read", "candidate": latest["candidates"][0]["candidate"]}
+            elif len(receipts) == 2:
+                request = {"op": "reason", "read": latest["id"], "ordinal": 0,
+                           "outcomes": list(_OUTCOMES), "stages": [1], "terminal_hops": 1}
+            elif len(receipts) == 3:
+                assert latest["read"]["status"] == "supported"
+                request = {"op": "read", "candidate": [row["candidate"] for row in latest["candidates"]]}
+            else:
+                citations = {row["span"]["source_id"]: row["id"] for row in latest["reads"]}
+                assert set(citations) == {"entry", "exit", "negative", "review"}
+                if frame["last_rejection"] is None:
+                    del citations["exit"]
+                else:
+                    assert "premises, terminal and authority" in frame["last_rejection"]
+                return reply(finish={"findings": [{
+                    "need_id": need, "claim": "The corrected action calls for review.", "stance": "supports",
+                    "citations": [0, *citations.values()], "reason": "The new context changes the path.",
+                    "role_support": {"receipt": receipts[2]["result"]["receipt"], "outcome": "review"},
+                }], "open_questions": []})
+        return reply(state=state, tool={"need_id": need, **request})
+
+    artifact = run_episode("What does the corrected observation imply?", world, typed, limits,
+                           Tokenizer(), generate, tmp_path / "context-task.jsonl")
+    ledger = read_episode(artifact)
+    finish = ledger[-1]["data"]
+    assert finish["status"] == "completed"
+    assert sum(row["kind"] == "rejection" for row in ledger) == 1
+    assert finish["need_registry"][0]["id"] == need
+    assert finish["submission"]["findings"][0]["role_support"]["outcome"] == "review"
+
+    bare_exit = fragment("exit", axes[2], axes[10], None)
+    duplicated = bare_exit + b"\n" + _mentions(("context", axes[2] + .25 * axes[3], .9),
+                                                    ("context", axes[2] - .25 * axes[3], .9))
+    incompatible = fragment("exit", axes[2], axes[10], .2 * axes[2] - axes[3])
+    for unusable in (bare_exit, bare_exit + separator + _mentions(("context", axes[2] - .25 * axes[3], .9)),
+                     fragment("exit", axes[2], axes[10], axes[2]), duplicated, incompatible):
+        _write(owner, {"exit": unusable})
+        refused = worker.maintain_role_bridges(worker.snapshot(), max_entries=1)
+        assert refused.checked == (("entry", None),)
+        assert refused.context_unavailable == ("entry",)
+        assert read(worker.snapshot(), roots[0]).status == "unresolved"
+        assert proof(read(worker.snapshot(), axes[6])) == unrelated
+    # A competing key cannot be ignored merely because its context is missing.
+    _write(owner, {"exit": raw["exit"], "contextless-rival": bare_exit})
+    refused = worker.maintain_role_bridges(worker.snapshot(), max_entries=1)
+    assert refused.checked == (("entry", None),)
+    assert refused.context_unavailable == ()
+    assert read(worker.snapshot(), roots[0]).status == "unresolved"
+    _write(owner, {"contextless-rival": None})
+    restored = worker.maintain_role_bridges(worker.snapshot(), max_entries=1)
+    assert restored.checked == (("entry", "exit"),)
+    restored_read = read(worker.snapshot(), roots[0])
+    assert restored_read.answer == "review"
+    assert proof(restored_read).prefix[0].publication_sha256 == restored.publication_sha256
+    _write(owner, {"alternate-entry": fragment("entry", axes[0], axes[4], axes[7]),
+                   "alternate-exit": fragment("exit", axes[2], axes[4], axes[3])})
+    alternate = worker.maintain_role_bridges(worker.snapshot(), max_entries=1)
+    assert alternate.checked == (("alternate-entry", "alternate-exit"),)
+    partial = read(worker.snapshot(), roots[0])
+    assert partial.status == "unresolved" and partial.context_domain_refusals == 1
+    assert partial.answer is None and proof(partial).outcome == "review"
+    recovered = JournaledCorpusWorkspace(path, empty)
+    historical = recovered.snapshot_at(after.revision, max_events=after.revision, max_payload_bytes=65536)
+    assert read(historical, roots[0]) == read(after, roots[0])
+    assert historical.journal_sha256 == after.journal_sha256
+
+
 @pytest.mark.parametrize("factored", [False, True])
 def test_bounded_maintenance_leaves_live_agenda_and_late_task_provenance(tmp_path, factored, monkeypatch):
     path = tmp_path / "world.sqlite"

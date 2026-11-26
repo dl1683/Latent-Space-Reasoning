@@ -4,6 +4,40 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Context-fitted bridge actions, 26 November 2026
+
+**Software verification, supplied directions.** Both local and factored
+bridge indexes let a bounded worker fit a partial isometry from scoped
+context. A context-only amendment reversed the answer for two late
+inputs while the key, endpoints, terminal records and unrelated route
+stayed fixed. The endpoint input retained the same hidden state. With
+the source pin and ordinary read held fixed, the added hidden
+preactivation matched the fitted action. The ordinary read used the
+amended source and its binding projection stayed fixed. A least-squares
+arithmetic reference matched both input signs at both context versions.
+
+Missing, wrong-scope, duplicate, parallel or incompatible context left
+the affected path open.
+A contextless key competitor blocked admission. Rotated-frame checks
+straddled the context and domain thresholds and replayed the original
+decision. An off-plane input was refused at read time. Removing the competitor restored the affected
+route, and journal replay recovered the published context and proof
+lineage. A scripted `typed_needs` episode completed after the host rejected
+a role-backed finding missing the revised exit clause.
+The result verifies transport, revision and proof wiring. Learned source
+acquisition, useful-task advantage and full lifecycle costs remain open.
+[Context fixture](../experiments/memory/test_binding_links.py)
+
+**External control, reproduced.** The standalone integer comparison agreed
+with its closed-form oracle on 14,336 paired receipts across 128 regions.
+The sparse workload served 64 reads and counted 16 lazy versus 1,024
+eager context selections, with two shared compositions in each arm.
+This is a logical count on in-memory snapshots with supplied scope and
+temporary-order inputs. The lazy control receives the same evidence and
+can retain the same subpath products. Journal replay, full lifecycle cost
+and learned acquisition were outside that control.
+[Comparison source](../experiments/memory/context_transport_join_control.js)
+
 ## Revision-led bridge repair, 26 November 2026
 
 **Software verification, supplied directions.** The local and factored
@@ -48,18 +82,6 @@ no model-token interpretation. Learned
 acquisition, causal use in an unconstrained task,
 autonomous maintenance, end-to-end costs and comparison with an equally
 informed incremental temporal join remain open.
-
-## Context-selected transport versus lazy join (NOT_RUN), 26 November 2026
-
-A standalone control now specifies a 128-region geometry-twin comparison in
-[`context_transport_join_control.js`](../experiments/memory/context_transport_join_control.js).
-It supplies exact integer observations, two candidate transports, and
-effective-time authority records; it compares eager maintenance with a lazy
-shared-subpath cache under identical revisions and reads. Its assertions and
-reported counts describe fixture outcomes and logical operations only. The
-script has not been run, contains no model calls, and does not measure elapsed
-time, memory, full lifecycle cost, learned transport selection, or task-level
-reasoning.
 
 ## Task-need planner pilot, 26 November 2026
 

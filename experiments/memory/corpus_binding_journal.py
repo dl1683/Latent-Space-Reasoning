@@ -14,6 +14,7 @@ from uuid import uuid4
 
 import numpy as np
 
+from experiments.memory.binding_links import _CONTEXT_TRANSPORT_POLICY
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _exclusions, _proof_work_limit
 from experiments.memory.binding_replay import (
     _receiver_digest, _within_context_norm, apply_receiver_program, archived_context_terms, check_binding_replay,
@@ -82,6 +83,7 @@ class CorpusBridgeMaintenance:
     checked: tuple[tuple[str, str | None], ...] = ()
     remaining: int | None = None
     publication_sha256: str | None = None
+    context_unavailable: tuple[str, ...] = ()
 
 
 def _check_identifiers(names):
@@ -135,6 +137,9 @@ def _encode(staged, *, vectors=True):
 def _encode_role_links(links):
     spec = None if links is None else (*links.roles, links.floor, links.uncertainty, links.compile_limit)
     if links is not None and links.bridge_key is not None:
+        if links.bridge_context is not None:
+            return _json(["role_links", 6, (*spec, links.transport, links.bridge_key, True,
+                                           links.factored_bridges, links.bridge_context, _CONTEXT_TRANSPORT_POLICY)])
         if links.factored_bridges:
             return _json(["role_links", 5, (*spec, links.transport, links.bridge_key, True, True)])
         if links.local_bridges:
@@ -150,20 +155,23 @@ def _decode_role_links(payload, memory):
     if type(event) is not list or len(event) != 3 or event[0] != "role_links":
         raise ValueError("invalid role-link program event")
     version, spec = event[1:]
-    if type(version) is not int or version not in (1, 2, 3, 4, 5):
+    if type(version) is not int or version not in (1, 2, 3, 4, 5, 6):
         raise ValueError("unsupported role-link program version")
     if spec is None and version == 1:
         revised = memory._reprogram_role_links(None, None, None, None)
     else:
-        if (type(spec) is not list or len(spec) != 4 + version or type(spec[2]) is not float
+        expected_length = 11 if version == 6 else 4 + version
+        if (type(spec) is not list or len(spec) != expected_length or type(spec[2]) is not float
                 or type(spec[3]) is not float or type(spec[4]) is not int
                 or (version == 2 and spec[5] not in ("reflection", "rotation"))
                 or (version >= 3 and (spec[5] not in ("fixed", "reflection", "rotation")
                                       or type(spec[6]) is not str))
                 or (version >= 4 and spec[7] is not True)
-                or (version == 5 and spec[8] is not True)):
+                or (version == 5 and spec[8] is not True)
+                or (version == 6 and (type(spec[8]) is not bool or type(spec[9]) is not str
+                                      or spec[10] != list(_CONTEXT_TRANSPORT_POLICY)))):
             raise ValueError("invalid role-link program specification")
-        revised = memory._reprogram_role_links(spec[:2], *spec[2:])
+        revised = memory._reprogram_role_links(spec[:2], *spec[2:10])
     if revised is memory or _encode_role_links(revised._role_links) != payload:
         raise ValueError("unchanged or noncanonical role-link program event")
     return revised
@@ -409,19 +417,33 @@ def _apply_bridge_repairs(memory, plan, publication):
     ))
 
 
-def _bridge_repair_payload(limit, plan):
-    return _json(["bridge_repair", 1, limit, plan])
+def _bridge_repair_payload(limit, plan, context_unavailable=None, fitted_frames=None):
+    if context_unavailable is None:
+        return _json(["bridge_repair", 1, limit, plan])
+    return _json(["bridge_repair", 2, limit, plan, context_unavailable, fitted_frames])
+
+
+def _bridge_repair_outcome(plan, links):
+    checked = tuple((source, None if link is None else target) for source, target, link in plan)
+    if links.bridge_context is None:
+        return checked, None, None
+    unavailable = tuple(source for source, target, link in plan if target is not None and link is None)
+    fitted = tuple((source, link.step.context_ordinals, sha256(b"".join(
+        (link.entry, link.exit, *link.context_axes),
+    )).hexdigest()) for source, _, link in plan if link is not None)
+    return checked, unavailable, fitted
 
 
 def _replay_bridge_repairs(payload, memory, publication):
     event = json.loads(payload)
     links = memory._role_links
-    if (type(event) is not list or len(event) != 4 or event[:2] != ["bridge_repair", 1]
+    if (type(event) is not list or len(event) not in (4, 6) or event[0] != "bridge_repair"
+            or type(event[1]) is not int or event[1] not in (1, 2)
             or type(event[2]) is not int or event[2] < 1
             or links is None or links.bridge_index is None):
         raise ValueError("invalid bridge repair event")
-    plan = links.bridge_index.repairs(event[2])
-    if not plan or _bridge_repair_payload(event[2], plan) != payload:
+    plan = links.bridge_index.repairs(links, event[2])
+    if not plan or _bridge_repair_payload(event[2], *_bridge_repair_outcome(plan, links)) != payload:
         raise ValueError("bridge repair does not match the pending plan")
     return _apply_bridge_repairs(memory, plan, publication)
 
@@ -749,7 +771,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         if links is None or not links.local_bridges:
             raise ValueError("bridge maintenance needs an installed local bridge program")
         bridge_index = links.bridge_index
-        plan = () if bridge_index is None else bridge_index.repairs(max_entries)
+        plan = () if bridge_index is None else bridge_index.repairs(links, max_entries)
         if not plan:
             with self._lock, closing(self._connect()) as db:
                 db.execute("BEGIN")
@@ -758,7 +780,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             status, remaining = ("index_unavailable", None) if bridge_index is None else ("no_work", 0)
             return CorpusBridgeMaintenance(status, base.revision, base.source_revision, remaining=remaining)
 
-        payload = _bridge_repair_payload(max_entries, plan)
+        checked, unavailable, fitted = _bridge_repair_outcome(plan, links)
+        payload = _bridge_repair_payload(max_entries, checked, unavailable, fitted)
         parent = bytes.fromhex(base.journal_sha256)
         publication = _event_digest(parent, base.revision + 1, payload).hex()
         memory = _apply_bridge_repairs(base.memory, plan, publication)
@@ -769,8 +792,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             digest = self._append(db, parent, revised.revision, payload)
             db.commit()
             self._set_tip(revised, digest)
-        return CorpusBridgeMaintenance("published", revised.revision, revised.source_revision, plan,
-                                       len(memory._role_links.bridge_index.stale), publication)
+        return CorpusBridgeMaintenance("published", revised.revision, revised.source_revision, checked,
+                                       len(memory._role_links.bridge_index.stale), publication, unavailable or ())
 
     def begin_program_trial(self, base, gates, *, targets, future_batches, work_limit, protected=(), replay=None,
                             downstream=None, route_edit=None, route_update_limit=None):

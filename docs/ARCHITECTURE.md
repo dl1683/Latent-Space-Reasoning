@@ -521,6 +521,11 @@ The supporting test uses supplied carry, value and binding maps, two application
 
 The call shares one role work budget across all stages and terminal reads. The branch limit applies to the stage population and intermediate expansions. Each branch's terminal transport has the same expansion cap before witness comparison. At either limit the call withholds the verdict. The receipt reports per-branch terminal reads, closed empty frontiers by stage and total hidden transitions. The ordinary binding work and kernel costs use their existing limits and are separate from the role count. A memory-omitted call and a pin with the role program withdrawn use the ordinary kernel on the same entry point. All transitions use already encoded data. [Joint journal fixture](../experiments/memory/test_binding_links.py)
 
+The required-hop rule also applies inside a single multi-hop expansion.
+If one parent has no next hop while another reaches a supported terminal,
+the verdict stays open. If every parent stops and no other uncertainty
+applies, the result is a closed `no_link`.
+
 The target is reaching a late source-supported decision or keeping a consequential disagreement open through several computations on a maintained world. Compare useful held-task decisions and complete costs against a conventional incremental relation index with the same directions, source history and revision opportunities, plus competent text reasoning backed by that index. A shortcut that can make the decisions before the late transitions, or an equal-cost conventional system matching these results, would bound the significance of this mechanism. Reused-block recurrence remains a separate alternative. Explicit branch preservation is motivated by analysis that found implicit pruning and shortcuts in tested learned latent trajectories. Learned search, whole-corpus coverage and a useful language decoder remain untested by the supplied-role worker and scoped terminal read. [Latent reasoning analysis](https://arxiv.org/abs/2602.22441)
 
 #### Matching source fragments before inference
@@ -602,16 +607,53 @@ total lifecycle cost and supported findings. This
 fixture uses supplied typed observations and the same declared transport for
 all bridges. [Maintenance fixture](../experiments/memory/test_binding_links.py)
 
-The next operator-selection test should keep endpoint and key geometry
-identical across two regions while changing source-supported context that
-determines how an off-axis input should move. Fit or select a bounded
-transition before the late roots arrive. Withdraw only the disambiguating
-context and require abstention where both operators remain plausible.
-Compare persistent continuous transitions with a reused reasoning block
-and with an incremental join that can retain the same derived relations
-and nested computation across revisions. Differential dataflow provides
-the classical reuse comparison. Geometric Latent Reasoning motivates a
-separate test of trained transition displacements in a reused model.
+#### Fitting bridge actions from source context
+
+[SLICE] Setting `bridge_context` on a local or factored bridge policy lets
+the worker fit a partial linear movement from one additional observation
+in each endpoint and key clause. A bridge fragment still needs one
+endpoint and one key in its source. Unscoped, missing, duplicated, out-of-scope
+or degenerate context prevents installation but leaves that fragment in
+key competition. A contextual journal policy compiles the index and leaves
+installation to bounded worker batches. The configured `transport` still
+applies to same-source links.
+
+Let $u,v$ be unit endpoint directions. Let $a,b$ be the unit components
+of the context observations orthogonal to $u,v$, respectively. The
+worker retains the two added basis directions. For an input $x$ in the
+supported plane, the operator maps it to
+$ (x\cdot u)v + (x\cdot a)b $. The two fitted frames preserve length and
+angles on that plane in exact arithmetic. The versioned implementation
+uses Float64. It requires a context residual of at least $10^{-4}$ and
+checks frame orthogonality and agreement of endpoint-context dot products
+to $10^{-8}$. It refuses inputs with an
+out-of-plane residual above $10^{-8}$ after normalizing the input.
+The returned path direction is normalized. These are numerical admission
+rules over supplied coordinates, with no learned calibration.
+Higher-dimensional model activations can have substantial components
+outside that plane. Coverage on those inputs is still an open problem.
+
+Key competition is evaluated independently of the fit. A repair can record
+a mutually unique match with unusable context without installing a bridge.
+The reader separately records domain refusals at input time and leaves
+coverage open. The policy stores those thresholds. Replay recomputes each
+fit from the opening source pin and checks the recorded context ordinals
+and frame digest. Consumed steps and terminal witnesses carry the context
+ordinals, exact clause spans and publication digest. The witness grade
+includes both context observations.
+
+Changing only the scoped context in the fixture reversed the decisions for
+inputs on opposite sides of the endpoint. It preserved the endpoint
+behavior, the revised source's projected binding rows, an ordinary
+read that depended on that source, and an unrelated region's publication.
+A least-squares reconstruction checked the arithmetic with the same
+declared geometry. This
+covers the operation and its source lineage. The cost and useful-task
+comparison should give a lazy incremental join identical derived relations,
+geometry and caching opportunity. Keep reused-block recurrence as a
+separate candidate. Differential dataflow motivates a strong reuse
+comparison, and Geometric Latent Reasoning motivates testing learned
+transition displacements in a reused model.
 [Differential dataflow](https://www.microsoft.com/en-us/research/wp-content/uploads/2013/01/differentialdataflow.pdf) · [Geometric Latent Reasoning](https://arxiv.org/abs/2606.02248)
 
 #### Rewiring the binding program

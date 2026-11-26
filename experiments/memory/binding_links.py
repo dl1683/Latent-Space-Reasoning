@@ -14,6 +14,11 @@ from experiments.memory.role_validity import RoleSupersession, _RoleValidity
 from experiments.memory.verified_source_tool import SourceSpan
 
 
+_CONTEXT_MIN_RESIDUAL = 1e-4
+_CONTEXT_FRAME_TOLERANCE = 1e-8
+_CONTEXT_TRANSPORT_POLICY = (_CONTEXT_MIN_RESIDUAL, _CONTEXT_FRAME_TOLERANCE)
+
+
 @dataclass(frozen=True)
 class BindingLinkStep:
     source: str
@@ -22,6 +27,7 @@ class BindingLinkStep:
     exit_source: str | None = None
     key_ordinals: tuple[int, int] | None = None
     publication_sha256: str | None = None
+    context_ordinals: tuple[int, int] | None = None
 
     @property
     def sources(self):
@@ -44,6 +50,7 @@ class BindingLinkWitness:
     validity_spans: tuple[SourceSpan, ...] = ()
     unscoped_sources: tuple[str, ...] = ()
     publication_sha256: str | None = None
+    context_ordinals: tuple[int, int] | None = None
 
 
 @dataclass(frozen=True)
@@ -93,6 +100,8 @@ class BindingLinkRead:
     validity_open: bool = False
     supersessions: tuple[RoleSupersession, ...] = ()
     dependency_witnesses: tuple[BindingLinkWitness, ...] = ()
+    context_domain_refusals: int = 0
+    incomplete_hops: bool = False
 
     @property
     def answer(self):
@@ -122,6 +131,7 @@ class _RoleLink:
     exit: bytes
     strength: float
     reflector: bytes | None = None
+    context_axes: tuple[bytes, bytes] | None = None
 
     @classmethod
     def from_ends(cls, step, left, right, strength, transport):
@@ -137,6 +147,15 @@ class _RoleLink:
         return cls(step, left, right, strength, reflector)
 
     def advance(self, direction, transport):
+        if self.context_axes is not None:
+            entry = np.frombuffer(self.entry, dtype="<f8")
+            exit = np.frombuffer(self.exit, dtype="<f8")
+            left, right = (np.frombuffer(raw, dtype="<f8") for raw in self.context_axes)
+            along, across = float(direction @ entry), float(direction @ left)
+            residual = direction - along * entry - across * left
+            if np.linalg.norm(residual) > _CONTEXT_FRAME_TOLERANCE:
+                return None
+            return _unit_direction(along * exit + across * right)
         if transport == "fixed":
             return np.frombuffer(self.exit, dtype="<f8")
         if self.reflector is None:
@@ -164,20 +183,25 @@ class _BridgeFragment:
     strength: float
     direction: bytes
     key: bytes
+    context: tuple[int, bytes, float] | None = None
 
 
-def _bridge_fragment(records, roles, key):
-    anchors, ends = [], []
+def _bridge_fragment(records, roles, key, context_role=None):
+    anchors, ends, contexts = [], [], []
     for ordinal, (role, grade, raw, _, scope) in enumerate(records):
         if role == key:
             anchors.append((ordinal, grade, raw, scope))
         elif role in roles:
             ends.append((ordinal, role, grade, raw, scope))
+        elif role == context_role:
+            contexts.append((ordinal, raw, grade, scope))
     fragment = None
     if len(anchors) == len(ends) == 1 and anchors[0][-1] == ends[0][-1]:
-        ordinal, role, grade, raw, _ = ends[0]
+        ordinal, role, grade, raw, scope = ends[0]
         key_ordinal, key_grade, anchor, _ = anchors[0]
-        fragment = role, _BridgeFragment(ordinal, key_ordinal, min(grade, key_grade), raw, anchor)
+        scoped = [context[:3] for context in contexts if scope is not None and context[-1] == scope]
+        context = scoped[0] if len(scoped) == 1 else None
+        fragment = role, _BridgeFragment(ordinal, key_ordinal, min(grade, key_grade), raw, anchor, context)
     return bool(anchors), fragment
 
 
@@ -189,10 +213,36 @@ def _key_match(entry, exit, floor, uncertainty):
     return score >= floor and (not uncertainty or score > floor + uncertainty)
 
 
-def _cross_link(source, target, entry, exit, transport, *, publication_sha256=None):
-    step = BindingLinkStep(source, entry.ordinal, exit.ordinal, target, (entry.key_ordinal, exit.key_ordinal),
-                           publication_sha256)
-    return _RoleLink.from_ends(step, entry.direction, exit.direction, min(entry.strength, exit.strength), transport)
+def _context_axis(endpoint, context):
+    axis, hint = (np.frombuffer(raw, dtype="<f8") for raw in (endpoint, context))
+    alignment = float(hint @ axis)
+    tangent = hint - alignment * axis
+    if np.linalg.norm(tangent) < _CONTEXT_MIN_RESIDUAL:
+        return None
+    tangent = _unit_direction(tangent)
+    if abs(axis @ tangent) > _CONTEXT_FRAME_TOLERANCE:
+        return None
+    return alignment, np.asarray(tangent, dtype="<f8").tobytes()
+
+
+def _cross_link(source, target, entry, exit, transport, *, contextual=False):
+    step = BindingLinkStep(source, entry.ordinal, exit.ordinal, target, (entry.key_ordinal, exit.key_ordinal))
+    strength = min(entry.strength, exit.strength)
+    if not contextual:
+        return _RoleLink.from_ends(step, entry.direction, exit.direction, strength, transport)
+    if entry.context is None or exit.context is None:
+        return None
+    entry_ordinal, entry_context, entry_grade = entry.context
+    exit_ordinal, exit_context, exit_grade = exit.context
+    left = _context_axis(entry.direction, entry_context)
+    right = _context_axis(exit.direction, exit_context)
+    if left is None or right is None:
+        return None
+    if abs(left[0] - right[0]) > _CONTEXT_FRAME_TOLERANCE:
+        return None
+    step = replace(step, context_ordinals=(entry_ordinal, exit_ordinal))
+    return _RoleLink(step, entry.direction, exit.direction, min(strength, entry_grade, exit_grade),
+                     context_axes=(left[1], right[1]))
 
 
 def _update_candidates(rows, columns, edges, entries, exits, changed_entries, changed_exits, links, limit):
@@ -297,21 +347,28 @@ class _BridgeIndex:
             raise BindingCapacityError("retained bridge obligations limit exceeded")
         return _BridgeIndex(MappingProxyType(entries), MappingProxyType(exits), rows, columns, stale, edges)
 
-    def repairs(self, limit):
+    def repairs(self, links, limit):
         sources = islice(self.stale, min(limit, len(self.stale)))
-        return tuple((source, self.match_target(source)) for source in sources)
+        repairs = []
+        for source in sources:
+            target = self.match_target(source)
+            link = None if target is None else _cross_link(
+                source, target, self.entries[source], self.exits[target], links.transport,
+                contextual=links.bridge_context is not None,
+            )
+            repairs.append((source, target, link))
+        return tuple(repairs)
 
     def matches(self, links, repairs=None, *, publication_sha256=None):
         if repairs is None:
-            repairs = self.repairs(len(self.stale))
+            repairs = self.repairs(links, len(self.stale))
         bridges = dict(links.bridges)
         stale = dict(self.stale)
-        for source, target in repairs:
+        for source, target, link in repairs:
             del stale[source]
-            if target is not None:
-                bridges[source, target] = _cross_link(source, target, self.entries[source],
-                                                      self.exits[target], links.transport,
-                                                      publication_sha256=publication_sha256)
+            if link is not None:
+                step = replace(link.step, publication_sha256=publication_sha256)
+                bridges[source, target] = replace(link, step=step)
         return replace(links, bridges=MappingProxyType(bridges), bridge_pending=bool(stale),
                        bridge_index=replace(self, stale=MappingProxyType(stale)))
 
@@ -413,6 +470,8 @@ class _LinkReadWork:
     def __init__(self, limit, floor, uncertainty):
         self.limit, self.floor, self.uncertainty = limit, floor, uncertainty
         self.work = self.transports = self.condition_dots = 0
+        self.context_domain_refusals = 0
+        self.incomplete_hops = False
         self.unavailable = set()
         self.marginal = False
         self.bridge_open = set()
@@ -462,10 +521,11 @@ class _RoleLinks:
     scoped_pairs: Mapping[str, tuple[_RoleLink, ...]] = field(default_factory=lambda: MappingProxyType({}))
     scoped_pair_count: int = 0
     validity: _RoleValidity | None = None
+    bridge_context: str | None = None
 
     @classmethod
     def prepare(cls, roles, floor, uncertainty, limit, transport, digests, mentions, bridge_key=None,
-                local_bridges=False, factored_bridges=False):
+                local_bridges=False, factored_bridges=False, bridge_context=None):
         remaining = limit - len(digests)
         if remaining < 0:
             raise BindingCapacityError("role-link compilation work limit exceeded")
@@ -477,12 +537,14 @@ class _RoleLinks:
         if bridge_key is None:
             return local
         return replace(local, local_bridges=local_bridges,
-                       factored_bridges=factored_bridges)._find_bridges(bridge_key, mentions, remaining)
+                       factored_bridges=factored_bridges, bridge_context=bridge_context)._find_bridges(
+                           bridge_key, mentions, remaining,
+                       )
 
     def _find_bridges(self, key, mentions, remaining):
         enters, exits, key_sources = {}, {}, set()
         for source, records in mentions.items():
-            has_key, fragment = _bridge_fragment(records, self.roles, key)
+            has_key, fragment = _bridge_fragment(records, self.roles, key, self.bridge_context)
             if has_key:
                 key_sources.add(source)
             if fragment is not None:
@@ -495,14 +557,14 @@ class _RoleLinks:
 
         if self.factored_bridges:
             index = _FactoredBridgeIndex.build(enters, exits, self, remaining)
-            return index.matches(replace(selected, unresolved=self.unresolved - enters.keys() - exits.keys()))
+            return self._initialize_bridge_index(selected, index)
 
         width = len(next(iter(enters.values())).key) // 8 if enters else 0
         if len(enters) * len(exits) * width > remaining:
             raise BindingCapacityError("cross-source role matching work limit exceeded")
         if self.local_bridges:
             index = _BridgeIndex.build(enters, exits, self)
-            return index.matches(replace(selected, unresolved=self.unresolved - enters.keys() - exits.keys()))
+            return self._initialize_bridge_index(selected, index)
 
         entries, departures, pairs = {}, {}, {}
         for source, entry in enters.items():
@@ -522,6 +584,12 @@ class _RoleLinks:
             bridges[source, target] = _cross_link(source, target, enters[source], exits[target], self.transport)
             resolved.update((source, target))
         return replace(selected, bridges=MappingProxyType(bridges), unresolved=self.unresolved - resolved)
+
+    def _initialize_bridge_index(self, links, index):
+        links = replace(links, unresolved=self.unresolved - index.entries.keys() - index.exits.keys())
+        if self.bridge_context is not None:
+            return replace(links, bridge_index=index, bridge_pending=bool(index.stale))
+        return index.matches(links)
 
     def revise(self, changed, digests, mentions):
         if self.validity is not None:
@@ -593,7 +661,7 @@ class _RoleLinks:
         for source, records in changed.items():
             entries.pop(source, None)
             exits.pop(source, None)
-            _, fragment = _bridge_fragment(records, self.roles, self.bridge_key)
+            _, fragment = _bridge_fragment(records, self.roles, self.bridge_key, self.bridge_context)
             if fragment is not None:
                 role, value = fragment
                 table = entries if role == self.roles[0] else exits
@@ -615,7 +683,7 @@ class _RoleLinks:
         return self.bridge_pending and self.bridge_index is None
 
     def structural(self, role):
-        return role in self.roles or role == self.bridge_key
+        return role in self.roles or role == self.bridge_key or role == self.bridge_context
 
     def _seed_path(self, direction, width, condition, prior_steps=(), prior_strength=1.):
         direction = _real_array(direction)
@@ -652,7 +720,9 @@ class _RoleLinks:
         openings = () if self.bridge_index is None else self.bridge_index.openings(self.bridges)
         for _ in range(hops):
             advanced = []
+            stopped = 0
             for path in frontier:
+                opening_count = len(advanced)
                 if validity is not None:
                     for entry, rules in validity.uncertain_entries.items():
                         effort.charge(width)
@@ -696,7 +766,7 @@ class _RoleLinks:
                         score = np.frombuffer(link.entry, dtype="<f8") @ path.direction
                     if not effort.qualifies(score):
                         continue
-                    if self.transport == "rotation" and link.reflector is None:
+                    if (link.context_axes is None and self.transport == "rotation" and link.reflector is None):
                         effort.unavailable.update(sources)
                         continue
                     authorities = path.authority_sources
@@ -708,18 +778,30 @@ class _RoleLinks:
                                 effort.validity_open = True
                                 continue
                             authorities = authorities.union(origins)
+                    if link.context_axes is not None:
+                        effort.charge(8 * width)
+                        effort.transports += 1
+                        direction = link.advance(path.direction, self.transport)
+                        if direction is None:
+                            effort.context_domain_refusals += 1
+                            effort.unavailable.update(sources)
+                            continue
                     if branch_limit is not None and len(advanced) >= branch_limit:
                         raise _RoleBranchLimit("role frontier exceeds the branch limit")
                     if path.steps:
                         effort.charge(2 * len(path.steps))
-                    if self.transport != "fixed":
-                        effort.charge(width * (2 if self.transport == "rotation" else 1))
-                        effort.transports += 1
+                    if link.context_axes is None:
+                        if self.transport != "fixed":
+                            effort.charge(width * (2 if self.transport == "rotation" else 1))
+                            effort.transports += 1
+                        direction = link.advance(path.direction, self.transport)
                     advanced.append(_Path(
-                        link.advance(path.direction, self.transport),
+                        direction,
                         (*path.steps, link.step), path.used.union(sources), min(path.strength, link.strength),
                         authorities,
                     ))
+                stopped += len(advanced) == opening_count
+            effort.incomplete_hops |= bool(stopped and advanced)
             frontier = advanced
             if not frontier:
                 break
@@ -819,6 +901,7 @@ class _RoleLinks:
                                         outcome, step.source, step.entry_ordinal, step.exit_ordinal,
                                         terminal_source, ordinal, grade, path.steps[:-1], step.exit_source,
                                         step.key_ordinals, publication_sha256=step.publication_sha256,
+                                        context_ordinals=step.context_ordinals,
                                     )
                                     if preferred:
                                         witnesses[outcome] = witness
@@ -833,10 +916,13 @@ class _RoleLinks:
                                    condition=condition, condition_dots=effort.condition_dots,
                                    bridge_pending=self.bridge_global_pending or effort.bridge_stale,
                                    as_of=as_of, validity_open=effort.validity_open,
-                                   supersessions=tuple(effort.supersessions))
+                                   supersessions=tuple(effort.supersessions),
+                                   context_domain_refusals=effort.context_domain_refusals)
         open_sources = len(self.unresolved | effort.unavailable | effort.bridge_open | effort.dependent_sources)
         pending = self.bridge_global_pending or effort.bridge_stale
-        incomplete = open_sources or unmatched or effort.marginal or outside or pending or effort.validity_open
+        incomplete_hops = bool(frontier and effort.incomplete_hops)
+        incomplete = (open_sources or unmatched or effort.marginal or outside or pending
+                      or effort.validity_open or incomplete_hops)
         status = ("conflict" if len(witnesses) > 1 else "unresolved" if incomplete
                   else "supported" if witnesses else "no_link")
         return BindingLinkRead(status, tuple(witnesses[key] for key in sorted(witnesses)), effort.work,
@@ -844,4 +930,5 @@ class _RoleLinks:
                                vocabulary, tuple(sorted(outside)), hops, effort.transports, condition, effort.condition_dots,
                                bridge_pending=pending, dependent_outcomes=tuple(sorted(dependent_outcomes)),
                                as_of=as_of, validity_open=effort.validity_open,
-                               supersessions=tuple(effort.supersessions), dependency_witnesses=tuple(dependencies))
+                               supersessions=tuple(effort.supersessions), dependency_witnesses=tuple(dependencies),
+                               context_domain_refusals=effort.context_domain_refusals, incomplete_hops=incomplete_hops)

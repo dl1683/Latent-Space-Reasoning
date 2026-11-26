@@ -324,25 +324,31 @@ schema-constrained adapter and pass the eight-task calibration on both format
 and evidence sufficiency before opening held tasks.
 
 The query-blind bridge worker can now take a bounded batch from a revision-led
-agenda and publish its resulting operators. Late bridge witnesses carry the
-publication event digest; a typed `role_support` finding can reference the
-joint receipt that contains it. This gives a provenance link to the published
-event, but not a model-level proposal that names a consequential gap and its
-predicted task effect. Historical replay can recover before and after pins
-under event and payload limits; historical verified opens still require the
-source bytes. The worker operates on a declared role pair, key predicate,
-threshold and transport, while the joint task action consumes caller-supplied
-outcomes and stages. It does not select an operator from source context.
+agenda and publish its resulting operators. Late paths carry the publication
+digest for bridges installed by those batches. A typed `role_support`
+finding can reference the joint receipt. In contextual mode, the worker fits
+a rank-two partial isometry from two supplied scoped context directions.
+The geometry-twin fixture holds endpoints and keys fixed, changes one context
+observation, and checks two later inputs against an arithmetic reference.
+The joint action still consumes caller-supplied outcomes and stages.
 
-Source-context selection between competing operators, coverage-only
-publication dependencies, and general task-directed gap discovery remain
-open. The typed need interface now exists but has not passed its eight-task
-visible calibration, and independent semantic need grading remains required.
-Geometry-twin tasks will require a frozen method for choosing a transport or
-abstaining from available context. Match that input and publication
-opportunity in the incremental join arm before a scored test. The bounded
-`snapshot_at(revision)` replay API is available; task-time history still needs
-to be charged under the registered event and payload limits.
+Historical replay can recover before and after pins under event and payload
+limits. Include that work in task-time history costs. Verified historical
+opens require the corresponding source bytes. Coverage-only publication
+dependencies and model-level proposals that name a consequential gap and
+predict its task effect remain open. Scored geometry-twin tasks still need
+frozen source acquisition, separately selected late tasks and a persisted
+incremental join with matched information and costs. The typed need interface
+still requires its eight-task visible calibration and independent semantic
+need grading.
+
+The standalone [matching control](../experiments/memory/context_transport_join_control.js)
+includes the same scoped authority and half-open order inputs in both
+arms. Its lazy join performs fewer context selections in the sparse
+workload at exact receipt parity. Give the integrated comparison a lazy
+arm with the same source predicates, candidate rules, ancestry, cache
+opportunity and ability to reuse numeric products. Keep source authority
+and applicability the same across arms.
 
 Run in stages: first verify the blinded data boundary and causal interventions
 on a small CPU world; next qualify the 0.6B planner's typed action contract on

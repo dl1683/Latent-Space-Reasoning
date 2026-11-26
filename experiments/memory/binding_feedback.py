@@ -110,6 +110,7 @@ class BindingRoleContinuation:
     bridge_pending: bool = False
     validity_open: bool = False
     supersessions: tuple[RoleSupersession, ...] = ()
+    context_domain_refusals: int = 0
 
 
 @dataclass(frozen=True)
@@ -134,6 +135,7 @@ class BindingRoleDecision:
     open_coverage: bool
     stage_no_links: tuple[int, ...] = ()
     supersessions: tuple[RoleSupersession, ...] = ()
+    context_domain_refusals: int = 0
 
     @property
     def answer(self):
@@ -295,7 +297,8 @@ class BindingFeedback:
             else:
                 open_coverage = bool(state._role_open or links.unresolved or links.bridge_global_pending
                                      or effort.unavailable or effort.marginal or effort.bridge_open
-                                     or effort.dependent_sources or effort.validity_open)
+                                     or effort.dependent_sources or effort.validity_open
+                                     or (paths and effort.incomplete_hops))
                 status = "unresolved" if open_coverage else "no_link"
                 if len(paths) > branch_limit:
                     status = "branch_limit"
@@ -312,7 +315,7 @@ class BindingFeedback:
                                            | effort.dependent_sources),
                                        effort.marginal, condition, effort.condition_dots, state._role_open,
                                        links.bridge_global_pending or effort.bridge_stale, effort.validity_open,
-                                       tuple(effort.supersessions))
+                                       tuple(effort.supersessions), effort.context_domain_refusals)
 
     def reason_role_links(self, state, *, stages, outcomes, work_limit, branch_limit,
                           terminal_hops=1, terminal_condition=None, retain_dependencies=False):
@@ -346,6 +349,7 @@ class BindingFeedback:
             outcomes = state.memory._role_outcomes(outcomes)
 
         population, work, transitions = (state,), 0, 0
+        context_domain_refusals = 0
         stage_no_links = []
         supersessions = {}
         closed_reads = ("resolved", "detached", "below_floor", "catalog_absent")
@@ -362,19 +366,20 @@ class BindingFeedback:
                     available = branch_limit - len(next_population)
                     if not available:
                         return BindingRoleDecision("branch_limit", (), work, transitions, True,
-                                                   tuple(stage_no_links), tuple(supersessions))
+                                                   tuple(stage_no_links), tuple(supersessions), context_domain_refusals)
                     if work == limit:
                         return BindingRoleDecision("work_limit", (), work, transitions, True,
-                                                   tuple(stage_no_links), tuple(supersessions))
+                                                   tuple(stage_no_links), tuple(supersessions), context_domain_refusals)
                     continuation = self._continue_role_links(
                         parent, hops=stage.hops, condition=stage.condition, work_limit=limit - work,
                         branch_limit=available, joint=True,
                     )
                     work += continuation.work
+                    context_domain_refusals += continuation.context_domain_refusals
                     supersessions.update(dict.fromkeys(continuation.supersessions))
                     if continuation.status in ("branch_limit", "work_limit"):
                         return BindingRoleDecision(continuation.status, (), work, transitions, True,
-                                                   tuple(stage_no_links), tuple(supersessions))
+                                                   tuple(stage_no_links), tuple(supersessions), context_domain_refusals)
                     open_coverage |= continuation.status in ("unresolved", "no_direction")
                     stage_no_links[-1] += continuation.status == "no_link"
                     children = continuation.states
@@ -387,15 +392,16 @@ class BindingFeedback:
         for branch in population:
             if work == limit:
                 return BindingRoleDecision("work_limit", (), work, transitions, True,
-                                           tuple(stage_no_links), tuple(supersessions))
+                                           tuple(stage_no_links), tuple(supersessions), context_domain_refusals)
             read = self._read_role_links(branch, outcomes=outcomes, work_limit=limit - work,
                                          hops=terminal_hops, condition=terminal_condition, branch_limit=branch_limit,
                                          retain_dependencies=retain_dependencies)
             work += read.work
+            context_domain_refusals += read.context_domain_refusals
             supersessions.update(dict.fromkeys(read.supersessions))
             if read.status in ("branch_limit", "work_limit"):
                 return BindingRoleDecision(read.status, (), work, transitions, True,
-                                           tuple(stage_no_links), tuple(supersessions))
+                                           tuple(stage_no_links), tuple(supersessions), context_domain_refusals)
             reads.append(read)
 
         statuses = {read.status for read in reads}
@@ -411,7 +417,7 @@ class BindingFeedback:
         else:
             status, = statuses or {"no_link"}
         return BindingRoleDecision(status, tuple(reads), work, transitions, open_coverage,
-                                   tuple(stage_no_links), tuple(supersessions))
+                                   tuple(stage_no_links), tuple(supersessions), context_domain_refusals)
 
     def _continue_role_path(self, state, read, path, open_coverage):
         observation = _apply_value(self._kernel._observation_value, path.direction)

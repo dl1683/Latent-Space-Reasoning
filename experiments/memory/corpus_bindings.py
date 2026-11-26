@@ -219,12 +219,15 @@ class CorpusBindingMemory:
                        _scoped_sources=frozenset(scoped_sources))
 
     def _reprogram_role_links(self, roles, min_similarity, uncertainty, compile_work_limit, transport="fixed",
-                              bridge_key=None, local_bridges=False, factored_bridges=False):
+                              bridge_key=None, local_bridges=False, factored_bridges=False, bridge_context=None):
         if type(local_bridges) is not bool or type(factored_bridges) is not bool:
             raise ValueError("bridge maintenance options must be boolean")
         local_bridges = local_bridges or factored_bridges
         if local_bridges and bridge_key is None:
             raise ValueError("local bridge maintenance requires a bridge key")
+        if bridge_context is not None and (not local_bridges or type(bridge_context) is not str
+                                            or bridge_context not in self._certain._predicates):
+            raise ValueError("contextual bridges require a declared predicate and a local bridge index")
         if roles is None:
             if bridge_key is not None:
                 raise ValueError("bridge matching requires a compiled role program")
@@ -238,6 +241,8 @@ class CorpusBindingMemory:
         if bridge_key is not None and (type(bridge_key) is not str or bridge_key in roles
                                        or bridge_key not in self._certain._predicates):
             raise ValueError("bridge matching requires a separate declared key predicate")
+        if bridge_context is not None and (bridge_context in roles or bridge_context == bridge_key):
+            raise ValueError("bridge context must be distinct from endpoint and key predicates")
         floor, uncertainty = float(min_similarity), float(uncertainty)
         if not 0. < floor <= 1. or not 0. <= uncertainty <= min(floor, 1. - floor):
             raise ValueError("invalid role-link similarity threshold or uncertainty band")
@@ -249,17 +254,19 @@ class CorpusBindingMemory:
             raise ValueError("installed role validity belongs to a different role grammar")
         if links is not None and (
             links.roles, links.floor, links.uncertainty, links.compile_limit, links.transport,
-            links.bridge_key, links.local_bridges, links.factored_bridges
+            links.bridge_key, links.local_bridges, links.factored_bridges, links.bridge_context
         ) == (
-            roles, floor, uncertainty, limit, transport, bridge_key, local_bridges, factored_bridges,
+            roles, floor, uncertainty, limit, transport, bridge_key, local_bridges, factored_bridges, bridge_context,
         ):
             if not links.bridge_pending:
                 return self
             if links.bridge_index is not None:
+                if bridge_context is not None:
+                    return self
                 return replace(self, _role_links=links.bridge_index.matches(links))
         compiled = _RoleLinks.prepare(
             roles, floor, uncertainty, limit, transport, self.source_digests, self._mentions, bridge_key,
-            local_bridges, factored_bridges,
+            local_bridges, factored_bridges, bridge_context,
         )
         if links is not None and links.validity is not None:
             validity = links.validity.revise(compiled.scoped_pairs, self.source_digests, self._mentions)
@@ -318,7 +325,8 @@ class CorpusBindingMemory:
 
     def _witness_with_spans(self, witness):
         final = BindingLinkStep(witness.link_source, witness.entry_ordinal, witness.exit_ordinal,
-                                witness.exit_source, witness.key_ordinals, witness.publication_sha256)
+                                witness.exit_source, witness.key_ordinals, witness.publication_sha256,
+                                witness.context_ordinals)
         positions = []
         authorities = {}
         validity = self._role_links.validity
@@ -328,6 +336,9 @@ class CorpusBindingMemory:
             if step.key_ordinals is not None:
                 entry_key, exit_key = step.key_ordinals
                 positions.extend(((step.source, entry_key), (target, exit_key)))
+            if step.context_ordinals is not None:
+                entry_context, exit_context = step.context_ordinals
+                positions.extend(((step.source, entry_context), (target, exit_context)))
             if validity is not None:
                 for span in validity.authorities.get((step.source, step.entry_ordinal), ()):
                     authorities[span] = None
@@ -572,11 +583,12 @@ class CorpusBindingWorkspace:
         return CorpusProgramProposal(base, base.memory.reprogram(gates), base)
 
     def prepare_role_links(self, base, roles, *, min_similarity=None, uncertainty=0., compile_work_limit=None,
-                           transport="fixed", bridge_key=None, local_bridges=False, factored_bridges=False):
+                           transport="fixed", bridge_key=None, local_bridges=False, factored_bridges=False,
+                           bridge_context=None):
         """Compile declared roles and optionally match fragments across sources on this pin."""
         self._check_owner(base)
         memory = base.memory._reprogram_role_links(roles, min_similarity, uncertainty, compile_work_limit, transport,
-                                                   bridge_key, local_bridges, factored_bridges)
+                                                   bridge_key, local_bridges, factored_bridges, bridge_context)
         return CorpusProgramProposal(base, memory, base)
 
     def prepare_role_validity(self, base, transitions, *, as_of, verifier=None):

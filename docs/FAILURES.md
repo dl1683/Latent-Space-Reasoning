@@ -24,6 +24,21 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A matched key cannot identify an off-axis action.** With the key and
+endpoints fixed, opposite scoped context can imply different supported
+movements. Fitting only the supported plane avoids choosing how to move
+an unobserved component. Missing context must also stay visible in key
+competition. An incomplete competing fragment can invalidate another
+match even when the worker cannot fit an operator for it.
+[Context-fitted bridge actions](RESULTS.md#context-fitted-bridge-actions-26-november-2026)
+
+**One multi-hop expansion could drop a required sibling.** A surviving
+path could reach a supported terminal after another had no admissible next
+hop. The reader now retains that opening inside one expansion, just as it
+does across separate required stages. A fixture keeps the surviving
+witness visible while withholding a singleton verdict.
+[Required-hop fixture](../experiments/memory/test_binding_links.py)
+
 **Publication cannot turn an ambiguous match into a closed gap, 26 November
 2026.** A bounded worker may finish checking its current candidate row
 without admitting a bridge. The reader still sees the current unmatched

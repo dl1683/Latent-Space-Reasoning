@@ -529,6 +529,8 @@ class _Tools:
         if "next_offset" in result:
             public["next_offset"] = result["next_offset"]
         public["read"] = {key: read[key] for key in ("status", "open_coverage", "stage_no_links")}
+        if read["context_domain_refusals"]:
+            public["read"]["context_domain_refusals"] = read["context_domain_refusals"]
         public["read"]["terminal_reads"] = branches
         return {"request": receipt["request"], "result": public}
 
