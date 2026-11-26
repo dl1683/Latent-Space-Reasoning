@@ -6,7 +6,9 @@ import pytest
 
 from experiments.memory import tree_feedback
 from experiments.memory.feedback_journal import JournaledFeedbackWorkspace
-from experiments.memory.feedback_workspace import FeedbackProbe, FeedbackWorkspace, StaleFeedbackRevision
+from experiments.memory.feedback_workspace import (
+    FeedbackProbe, FeedbackRoutingGoal, FeedbackWorkspace, StaleFeedbackRevision,
+)
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, FeedbackKernel
 from experiments.memory.tree_feedback import (
     TreeFeedbackKernel, _revision_attention_change, _revision_groups, _revision_mass_gap,
@@ -701,6 +703,152 @@ def test_empty_reference_does_not_evaluate_an_unused_overflowing_query_gain():
     empty = tree.revise(opening, {0: None})
     preview = tree.run_with_error_bounds([0., 0.], opening, steps=1, reference_memory=empty)
     assert 0. < preview.state.latest[1] <= preview.error_bounds[0]
+
+
+def test_slot_triage_reserves_replay_for_unresolved_reads_and_checks_preserved_guards_first(monkeypatch):
+    tree = TreeFeedbackKernel(depth=1, max_frontier=1, query=[[5.]], carry=None,
+                              observation_key=[[1.]], observation_value=[[.7]],
+                              feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    within = FeedbackProbe((1.,), 1, (0.,))
+    outside = FeedbackProbe((1.,), 1, (.9,))
+    workspace = FeedbackWorkspace(tree, [[0.], [0.]], [within, outside], guards=[within],
+                                  max_update_norm=1., atol=.4)
+    base = workspace.snapshot()
+    edits = ({0: [.05]}, {0: [1.]}, {0: [1.]})
+    direct = FeedbackWorkspace._run
+    passes = []
+
+    def record(reference, memory, probe):
+        passes.append(reference._max_frontier)
+        return direct(reference, memory, probe)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(FeedbackWorkspace, "_run", staticmethod(record))
+        result = workspace.triage_observation_slot_batch(base, edits, max_candidates=3, max_replays=1)
+    assert passes == [2] and result.replay_count == 1
+    assert result.base is workspace.snapshot() is base
+    first, second, third = result.alternatives
+    assert [item.estimated_satisfied for item in first.reads] == [True, False, True]
+    assert [item.opening_satisfied for item in first.reads] == [True, False, True]
+    assert all(item.replayed_satisfied is None for item in first.reads)
+    protected = second.reads[2]
+    assert protected.is_guard and protected.read_index == 0 and protected.estimated_satisfied is None
+    assert protected.replayed_satisfied is False
+    assert protected.replayed_error == pytest.approx(np.tanh(.7 / (1. + np.exp(-5.))))
+    coarse_error = tree.step(tree.start(within.seed, second.reference_memory)).latest[0]
+    assert coarse_error < .4 < protected.replayed_error
+    assert second.reads[0].replayed_satisfied is None and third.reads[2].replayed_satisfied is None
+
+
+def test_slot_triage_does_not_infer_source_mass_or_resolve_a_tolerance_boundary():
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, query=[[0.]], carry=None,
+                              observation_key=[[0.]], observation_value=[[0.]],
+                              feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    routed = FeedbackProbe((1.,), 1, (0.,), FeedbackRoutingGoal(0, .4))
+    boundary = FeedbackProbe((1.,), 1, (.25,))
+    workspace = FeedbackWorkspace(tree, [[0.], [1.]], [routed, boundary], max_update_norm=1., atol=.25)
+    base = workspace.snapshot()
+    only_estimates = workspace.triage_observation_slot_batch(base, ({0: None},), max_candidates=1)
+    source, edge = only_estimates.alternatives[0].reads
+    assert only_estimates.replay_count == 0
+    assert source.opening_satisfied and source.error_interval == (0., 0.)
+    assert edge.opening_satisfied and edge.error_interval == (.25, .25)
+    assert source.estimated_satisfied is edge.estimated_satisfied is None
+
+    checked = workspace.triage_observation_slot_batch(base, ({0: None},), max_candidates=1, max_replays=2)
+    source, edge = checked.alternatives[0].reads
+    assert checked.replay_count == 2
+    assert source.replayed_error == source.replayed_mass == 0. and source.replayed_satisfied is False
+    assert edge.replayed_error == .25 and edge.replayed_mass is None and edge.replayed_satisfied is True
+    assert workspace.snapshot() is base
+
+
+def test_slot_triage_prioritizes_a_routed_probe_with_only_one_opening_criterion_met(monkeypatch):
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, query=[[0.]], carry=None,
+                              observation_key=[[0.]], observation_value=[[0.]],
+                              feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    routed = FeedbackProbe((1.,), 1, (0.,), FeedbackRoutingGoal(0, .75))
+    boundary = FeedbackProbe((1.,), 1, (.25,))
+    workspace = FeedbackWorkspace(tree, [[0.], [1.]], [routed, boundary], max_update_norm=1., atol=.25)
+    base = workspace.snapshot()
+    reviewed = workspace.triage_observation_slot_batch(base, ({1: None},), max_candidates=1, max_replays=1)
+    source, edge = reviewed.alternatives[0].reads
+    assert not source.opening_satisfied and source.opening_error == 0.
+    assert source.opening_mass == .5 and source.source_floor == .75
+    assert source.replayed_mass == 1. and source.replayed_satisfied is True
+    assert edge.opening_satisfied and edge.replayed_satisfied is None
+
+    def impossible(*args, **kwargs):
+        raise FloatingPointError("test reference replay ran outside Float64 range")
+
+    monkeypatch.setattr(FeedbackWorkspace, "_run_routed", staticmethod(impossible))
+    reviewed = workspace.triage_observation_slot_batch(base, ({1: None},), max_candidates=1, max_replays=2)
+    source, edge = reviewed.alternatives[0].reads
+    assert reviewed.replay_count == 2
+    assert source.replay_failure == "test reference replay ran outside Float64 range"
+    assert source.estimated_satisfied is None and source.replayed_satisfied is None
+    assert edge.replayed_satisfied is True and workspace.snapshot() is base
+
+
+def test_slot_triage_checks_a_previously_met_source_floor_despite_a_definite_target_failure():
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, query=[[0.]], carry=None,
+                              observation_key=[[0.]], observation_value=[[0.]],
+                              feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    routed = FeedbackProbe((1.,), 1, (.5,), FeedbackRoutingGoal(0, .4))
+    workspace = FeedbackWorkspace(tree, [[0.], [1.]], [routed], max_update_norm=1., atol=.25)
+    base = workspace.snapshot()
+    result = workspace.triage_observation_slot_batch(base, ({0: None},), max_candidates=1, max_replays=1)
+    read, = result.alternatives[0].reads
+    assert not read.opening_satisfied and read.opening_mass == .5
+    assert read.error_interval == (.5, .5) and read.estimated_satisfied is False
+    assert result.replay_count == 1 and read.replayed_mass == 0.
+    assert read.replayed_error == .5 and read.replayed_satisfied is False
+    assert workspace.snapshot() is base
+
+
+def test_slot_triage_distinguishes_the_measured_opening_policy_from_reference_replay():
+    tree = TreeFeedbackKernel(depth=1, max_frontier=1, query=[[5.]], carry=None,
+                              observation_key=[[1.]], observation_value=[[.7]],
+                              feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
+    probe = FeedbackProbe((1.,), 1, (0.,))
+    workspace = FeedbackWorkspace(tree, [[1.], [0.]], [probe], max_update_norm=1., atol=.4)
+    base = workspace.snapshot()
+    result = workspace.triage_observation_slot_batch(base, ({},), max_candidates=1, max_replays=1)
+    assert result.alternatives[0].reference_memory is base.memory
+    read, = result.alternatives[0].reads
+    assert read.opening_satisfied and read.replayed_satisfied is False
+
+
+def test_slot_triage_discards_stale_estimates_before_reference_replay(tmp_path, monkeypatch):
+    tree = _repair_tree()
+    probe = FeedbackProbe((1.,), 1, (0.,))
+    args = (tmp_path / "triage.db", tree, [[0.], [.5]], [probe])
+    workspace = JournaledFeedbackWorkspace(*args, create=True, max_update_norm=1.)
+    writer = JournaledFeedbackWorkspace(*args, max_update_norm=1.)
+    base = workspace.snapshot()
+    assert workspace.triage_observation_slot_batch(base, (), max_candidates=1).alternatives == ()
+    with pytest.raises(ValueError, match="nonnegative replay budget"):
+        workspace.triage_observation_slot_batch(base, (), max_candidates=1, max_replays=-1)
+    run = TreeFeedbackKernel._run_many_with_error_bounds
+
+    direct = FeedbackWorkspace._run
+
+    def publish_during_estimation(kernel, *args, **kwargs):
+        writer.revise_observation_slots(writer.snapshot(), {0: [.25]})
+        reference = kwargs["references"][0]
+
+        def watch(kernel, memory, probe):
+            if memory is reference:
+                pytest.fail("stale triage reached reference replay")
+            return direct(kernel, memory, probe)
+
+        monkeypatch.setattr(FeedbackWorkspace, "_run", staticmethod(watch))
+        return run(kernel, *args, **kwargs)
+
+    monkeypatch.setattr(TreeFeedbackKernel, "_run_many_with_error_bounds", publish_during_estimation)
+    with pytest.raises(StaleFeedbackRevision):
+        workspace.triage_observation_slot_batch(base, ({1: [.25]},), max_candidates=1, max_replays=1)
+    assert workspace.snapshot().number == writer.snapshot().number == base.number + 1
 
 
 def test_multiplicity_survives_a_huge_common_observation_and_history_logit():

@@ -3,7 +3,7 @@
 from collections.abc import Mapping
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing, nullcontext
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from math import hypot, isfinite, sqrt
 from operator import index
 from threading import Lock
@@ -135,6 +135,37 @@ class FeedbackMaintenanceRound:
     revision: FeedbackRevision | None = None
     selected_attempt: int | None = None
     next_candidate: int | None = None
+
+
+@dataclass(frozen=True)
+class FeedbackSlotReadReview:
+    """Estimated and optionally replayed outcome for one configured read."""
+
+    read_index: int
+    is_guard: bool
+    opening_error: float
+    opening_mass: float | None
+    source_floor: float | None
+    opening_satisfied: bool
+    error_interval: tuple[float, float]
+    estimated_satisfied: bool | None
+    replayed_error: float | None = None
+    replayed_mass: float | None = None
+    replayed_satisfied: bool | None = None
+    replay_failure: str | None = None
+
+
+@dataclass(frozen=True, eq=False)
+class FeedbackSlotAlternativeReview:
+    reference_memory: TreeMemory
+    reads: tuple[FeedbackSlotReadReview, ...]
+
+
+@dataclass(frozen=True, eq=False)
+class FeedbackSlotTriage:
+    base: FeedbackRevision
+    alternatives: tuple[FeedbackSlotAlternativeReview, ...]
+    replay_count: int
 
 
 class FeedbackWorkspace:
@@ -793,9 +824,7 @@ class FeedbackWorkspace:
         self._require_current(base)
         return preview
 
-    def preview_observation_slot_batch(self, base, candidates, *, seed, steps, max_candidates, published_opening=False):
-        """Compare independent proposed edits with a single opening trajectory."""
-        kernel = self._slot_preview_kernel(base, published_opening)
+    def _slot_batch_references(self, base, kernel, candidates, max_candidates):
         limit = index(max_candidates)
         if limit < 1:
             raise ValueError("preview batch needs a positive candidate budget")
@@ -809,12 +838,94 @@ class FeedbackWorkspace:
             self._check_reference_capacity(kernel, reference)
             references.append(reference)
         self._require_current(base)
+        return tuple(references)
+
+    def preview_observation_slot_batch(self, base, candidates, *, seed, steps, max_candidates, published_opening=False):
+        """Compare independent proposed edits with a single opening trajectory."""
+        kernel = self._slot_preview_kernel(base, published_opening)
+        references = self._slot_batch_references(base, kernel, candidates, max_candidates)
         kernel, seed, steps, opening = self._slot_preview_opening(base, kernel, seed, steps, published_opening)
         previews = kernel._run_many_with_error_bounds(
-            seed, base.memory, steps=steps, references=tuple(references), opening=opening,
+            seed, base.memory, steps=steps, references=references, opening=opening,
         )
         self._require_current(base)
         return previews
+
+    def _estimate_slot_read(self, preview, probe, read_index, is_guard, opening_error, opening_mass):
+        error = self._probe_error(preview.state, probe)
+        radius = preview.error_bounds[-1]
+        interval = max(0., error - radius), error + radius
+        decision = None
+        if interval[0] > self._atol:
+            decision = False
+        elif interval[1] < self._atol and probe.routing is None:
+            decision = True
+        floor = None if probe.routing is None else probe.routing.min_mass
+        opening_satisfied = opening_error <= self._atol and (floor is None or opening_mass >= floor)
+        return FeedbackSlotReadReview(read_index, is_guard, opening_error, opening_mass, floor,
+                                      opening_satisfied, interval, decision)
+
+    def triage_observation_slot_batch(self, base, candidates, *, max_candidates, max_replays=0):
+        """Review proposed edits against configured reads while bounding reference replay work."""
+        kernel = self._slot_preview_kernel(base, True)
+        replay_budget = index(max_replays)
+        if replay_budget < 0:
+            raise ValueError("slot triage needs a nonnegative replay budget")
+        references = self._slot_batch_references(base, kernel, candidates, max_candidates)
+        if not references:
+            return FeedbackSlotTriage(base, (), 0)
+
+        configured = [(probe, i, False, base.errors[i], base.source_masses[i])
+                      for i, probe in enumerate(self._probes)]
+        configured.extend((guard, i, True, base.guard_errors[i], None)
+                          for i, guard in enumerate(self._guards))
+        reviews = [[] for _ in references]
+        for probe, read_index, is_guard, opening_error, opening_mass in configured:
+            _, seed, steps, opening = self._slot_preview_opening(base, kernel, probe.seed, probe.steps, True)
+            previews = kernel._run_many_with_error_bounds(
+                seed, base.memory, steps=steps, references=references, opening=opening,
+            )
+            for entries, preview in zip(reviews, previews, strict=True):
+                entries.append(self._estimate_slot_read(preview, probe, read_index, is_guard,
+                                                        opening_error, opening_mass))
+
+        pending = []
+        for alternative, entries in enumerate(reviews):
+            for position, review in enumerate(entries):
+                opening_floor_met = review.source_floor is not None and review.opening_mass >= review.source_floor
+                if review.estimated_satisfied is None or opening_floor_met:
+                    opened_within = review.opening_error <= self._atol
+                    pending.append((not (opened_within or opening_floor_met), not review.is_guard,
+                                    alternative, position))
+        pending.sort()
+        selected = pending[:replay_budget]
+        for _, _, alternative, position in selected:
+            self._require_current(base)
+            probe = configured[position][0]
+            memory = references[alternative]
+            reference = kernel.with_frontier(max(kernel._max_frontier, memory.count), logit_tolerance=0.)
+            review = reviews[alternative][position]
+            try:
+                mass = None
+                if probe.routing is None:
+                    state = self._run(reference, memory, probe)
+                else:
+                    state, mass = self._run_routed(reference, memory, probe)
+                    if not 0. <= mass <= 1.:
+                        raise FloatingPointError("probe source mass must be a probability")
+                error = self._probe_error(state, probe)
+            except FloatingPointError as failure:
+                reviews[alternative][position] = replace(review, replay_failure=str(failure))
+                continue
+            satisfied = error <= self._atol and (probe.routing is None or mass >= probe.routing.min_mass)
+            reviews[alternative][position] = replace(
+                review, replayed_error=error, replayed_mass=mass, replayed_satisfied=satisfied,
+            )
+
+        self._require_current(base)
+        alternatives = tuple(FeedbackSlotAlternativeReview(memory, tuple(entries))
+                             for memory, entries in zip(references, reviews, strict=True))
+        return FeedbackSlotTriage(base, alternatives, len(selected))
 
     def _prepare_slot_revision(self, base, changes):
         if not isinstance(base.kernel, TreeFeedbackKernel):
