@@ -22,6 +22,7 @@ class SelectionReceipt:
     selected: tuple[SelectedSpan, ...]
     eligible: int
     rows_scored: int
+    observed_source_seal: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -37,6 +38,11 @@ class RowShard:
     spans: tuple[SourceSpan, ...]
     keys: np.ndarray
     values: np.ndarray
+
+
+def competing_values(selected, values, margin):
+    return any(a.score - b.score <= margin and not np.array_equal(left, right)
+               for a, b, left, right in zip(selected[:-1], selected[1:], values[:-1], values[1:], strict=True))
 
 
 class RetainedSelector:
@@ -94,8 +100,7 @@ class RetainedSelector:
         status = "ready"
         if eligible > self._tie_limit:
             status = "overflow"
-        elif any(a.score - b.score <= self._margin and not np.array_equal(left, right)
-                 for a, b, left, right in zip(selected[:-1], selected[1:], values[:-1], values[1:], strict=True)):
+        elif competing_values(selected, values, self._margin):
             status = "competing"
         receipt = SelectionReceipt(status, tuple(selected), eligible, len(scores))
         trace = SelectionStep(receipt, packed_query, cutoff)

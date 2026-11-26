@@ -24,6 +24,15 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A source seal alone cannot identify the computation used in a read,
+26 November 2026.** Two arms can share the same source descriptor while
+one has an acquired continuation disabled. Record the numeric publication
+digest and intervention in the reader's output. Recover the original
+source descriptor from sealed bytes and require an independent comparison
+to the expected source pin. Keep file and tensor checks distinct from
+verification of source support.
+[Native publication](ARCHITECTURE.md#sealing-the-native-world-for-a-late-reader)
+
 **A selected-source list misses new competitors, 26 November 2026.**
 A source revision kept every original selected span and introduced
 a tied alternative. Reusing on selected IDs alone would retain the

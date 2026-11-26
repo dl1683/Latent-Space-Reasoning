@@ -1,3 +1,4 @@
+from dataclasses import replace
 from types import SimpleNamespace
 
 import numpy as np
@@ -39,7 +40,7 @@ class _StandIn(torch.nn.Module):
 
     def __init__(self, *, clear_previous=False):
         super().__init__()
-        self.config = SimpleNamespace(max_position_embeddings=16)
+        self.config = SimpleNamespace(max_position_embeddings=16, clear_previous=clear_previous)
         rows = torch.zeros((10, 6))
         rows[1, 0] = rows[2, 2] = 1
         rows[3, 0] = rows[3, 3] = 1
@@ -48,7 +49,6 @@ class _StandIn(torch.nn.Module):
         rows[6, 2] = rows[6, 5] = 1
         self._lookup = torch.nn.Embedding.from_pretrained(rows)
         self.calls = []
-        self._clear_previous = clear_previous
 
     def get_input_embeddings(self):
         return self._lookup
@@ -64,7 +64,7 @@ class _StandIn(torch.nn.Module):
         if past_key_values is not None:
             prefix = past_key_values.get_seq_length()
             hidden[..., 0] = 0
-            if self._clear_previous:
+            if self.config.clear_previous:
                 hidden[..., 1] = torch.where(hidden[..., 2] != 0, 0, hidden[..., 1])
         cache = _Cache(prefix + hidden.shape[1]) if use_cache else None
         return SimpleNamespace(last_hidden_state=hidden, past_key_values=cache)
@@ -87,9 +87,10 @@ def _kernel(*, terminal_axis=4):
                                 feedback_key=query, feedback_value=np.zeros((6, 6)), max_steps=2)
 
 
-def _reader(backbone, *, terminal_axis=4, latent_steps=2, top_k=None):
+def _reader(backbone, *, terminal_axis=4, latent_steps=2, top_k=None, tie_limit=16):
     return NativeLatentModel(backbone, _Tokenizer(), _kernel(terminal_axis=terminal_axis),
                              source_chars=4, context_tokens=12, latent_steps=latent_steps, top_k=top_k,
+                             tie_limit=tie_limit,
                              output_tokens=2, representation_scale=0.25, memory_gain=1, null_weight=0.1,
                              eos_ids=(0,))
 
@@ -161,7 +162,7 @@ def test_source_only_maintenance_installs_a_useful_continuation_at_fixed_pin(tmp
     removed = reader(question, memory=reader.without_derived(maintained))
     assert enabled.source_seal == removed.source_seal == opening.seal
     assert enabled.text == "side" and enabled.routed_derived_steps == 1
-    assert removed == reader(question, memory=opening)
+    assert removed.derived_omitted and replace(removed, derived_omitted=False) == reader(question, memory=opening)
     assert removed.text == "" and removed.routed_derived_steps == 0
     assert reader(question, memory=maintained) == enabled
     assert reader("What else?", memory=maintained).text == reader("What else?", memory=opening).text == "side"
@@ -313,3 +314,13 @@ def test_transformers_llama_backbone_accepts_continuous_cached_inputs(tmp_path, 
     for result in (with_memory, no_memory):
         assert 1 <= len(result.token_ids) <= 2
         assert result.terminated or len(result.token_ids) == 2
+    if top_k is not None:
+        from experiments.memory.native_publication import read_native_publication, write_native_publication
+
+        directory = tmp_path / "publication"
+        runtime = sha256(b"random Llama software interface fixture")
+        seal = write_native_publication(directory, reader, memory, runtime_sha256=runtime, max_bytes=65_536)
+        fresh = _reader(backbone, top_k=top_k)
+        reopened = read_native_publication(directory, fresh, seal=seal, source_seal=feed.seal,
+                                           runtime_sha256=runtime, max_bytes=65_536)
+        assert fresh("What follows?", memory=reopened) == replace(with_memory, publication_seal=seal)

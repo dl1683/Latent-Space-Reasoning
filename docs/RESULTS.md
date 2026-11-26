@@ -4,6 +4,36 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Reopening a native latent publication, 26 November 2026
+
+**CPU software control.** The selective fixture sealed five source
+documents, one of them empty, with four encoded rows, one acquired
+continuation and three pending seeds. The artifact used 1,971 manifest
+bytes and 300 numeric bytes. Opening and saving it again produced the
+same seal. A fresh process attached it with zero backbone calls before
+reading the late task file. A separate source-only publisher had
+reproduced the seal and exited before that file was created. The fresh
+reader's full, derived-off and memory-omitted
+receipts matched the in-process results. The two attached arms carried
+the same publication digest. Removing the acquired continuation
+removed the fixture outcome at the same source pin.
+
+A fresh reader advanced the recovered worker state through an unrelated
+revision. It re-encoded the one edited chunk, preserved the continuation
+and advanced the recovered queue. Checks reject a wrong source seal,
+runtime digest, changed backbone tensor or configuration, damaged numeric payload,
+mismatched original source descriptor and a direct attempt to publish
+an ablation view. A randomly initialized Llama exercises the same
+attachment interface. The task fixture shares executable test code and
+runs in separate processes. OS-enforced task and source boundaries,
+pretrained semantic utility and full lifecycle cost remain open.
+
+```powershell
+python -m pytest -q experiments/memory/test_native_publication.py experiments/memory/test_native_latent_recurrence.py
+```
+
+[Mechanism](ARCHITECTURE.md#sealing-the-native-world-for-a-late-reader)
+
 ## Selective continuations and local reuse, 26 November 2026
 
 **CPU software controls.** In a fixed synthetic 24,000-row bank of

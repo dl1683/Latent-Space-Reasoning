@@ -66,9 +66,9 @@ contributions back as one continuous input, with a configurable relay
 gain. The native cache retains the earlier prefix and generated hidden
 steps. The vocabulary projection first runs after the configured latent
 steps. Both attached and omitted calls use this transition and readout.
-The in-process handle assumes fixed weights, tokenizer and maps across
-a publication. It carries no portable model seal, learned calibration
-or worker queue.
+The reader assumes fixed weights, tokenizer and maps during construction.
+The selective arm can transfer its retained state and worker queue to
+a fresh reader as a sealed [publication](#sealing-the-native-world-for-a-late-reader).
 
 The first rival uses an intermediate residual layer as both the read
 and write coordinate system, with a fitted relay into the reused block.
@@ -131,6 +131,44 @@ semantic relevance or calibrated absence. Compare single-state and
 separate-state continuations and retain the same-layer pretrained
 relay as a separate architecture. [Selector](../experiments/memory/selective_continuations.py)
 · [Memorizing Transformers](https://arxiv.org/abs/2203.08913)
+
+#### Sealing the native world for a late reader
+
+The selective publisher writes a canonical JSON manifest and fixed-layout
+little-endian numeric bytes into a new directory. The manifest binds the
+original source-epoch descriptor, source spans, worker queue, original
+frontier receipts, numerical row bytes and live reader fingerprint.
+Keep its digest, the expected source seal and the runtime artifact
+digest with the controller. The runtime digest names the externally
+verified implementation, tokenizer, behavior-affecting construction
+settings and hooks. The built-in fingerprint covers
+the live CPU parameters and buffers, effective numeric policy, backbone
+configuration and selected execution settings. It also hashes a fast
+tokenizer's serialized backend when available. The controller is
+responsible for verifying behavior outside those fields and keeping
+the live reader fixed while building and using a publication.
+
+A fresh reader verifies the bounded files, the source descriptor and
+its fingerprint, then rebinds the recovered state to its own handle.
+Packed source keys are retained. The reader reconstructs source payloads
+and projects the derived keys from their saved addresses. It checks each
+stored witness score, selection cutoff and complete competition decision.
+The source
+text and task file are separate inputs from the controller. Attach
+either the recovered world or a derived-off view. Read receipts carry
+the same publication digest and record the intervention. The writer
+refuses direct ablation views. A worker can resume revisions and
+pending seeds from the intact publication.
+
+The seal proves byte identity for a required expected digest. The trusted
+publisher supplies encoded rows, their projected source keys, whole-scope
+coverage and history.
+The format checks span layout and selected scores. Corpus semantics,
+all-row frontier rescoring and isolation of the runtime itself need
+separate verification. A full save rewrites the retained payload and
+opening reads and hashes it. Both boundaries hash live tensors. Charge
+that work and retained buffers alongside encoding, maintenance and
+inference. [Publication interface](../experiments/memory/native_publication.py)
 
 ### Warm exact control on a separate corpus
 

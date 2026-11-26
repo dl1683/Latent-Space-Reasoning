@@ -64,6 +64,8 @@ class NativeSourceMemory:
     _seed_limit: int = 0
     derived_seeds: tuple[SourceSpan, ...] = ()
     _selective: _SelectiveWorld | None = None
+    _publication_seal: str | None = None
+    _derived_off: bool = False
 
     @property
     def seal(self):
@@ -110,6 +112,8 @@ class NativeLatentRead:
     source_reads: tuple[SelectionReceipt, ...] = ()
     derived_reads: tuple[SelectionReceipt, ...] = ()
     applied_derived_steps: int = 0
+    publication_seal: str | None = None
+    derived_omitted: bool = False
 
 
 def _require_cpu_eval(model):
@@ -212,7 +216,7 @@ class NativeLatentModel:
         _require_cpu_eval(self._model)
         if previous is not None:
             self._check_memory(previous)
-            if previous.omitted_sources:
+            if previous.omitted_sources or previous._derived_off:
                 raise ValueError("an ablated contribution view cannot publish a new epoch")
         delta = read_source_delta(epoch_directory, seal, previous=None if previous is None else previous._scope)
         sources = {} if previous is None else dict(previous._sources)
@@ -300,7 +304,8 @@ class NativeLatentModel:
         if selective is not None:
             selective = replace(selective, acquired=MappingProxyType({}), attempted=MappingProxyType({}),
                                 priority=tuple(sorted(selective.shards)), derived=())
-        return replace(memory, _derived=None, _seed_limit=0, derived_seeds=(), _selective=selective)
+        return replace(memory, _derived=None, _seed_limit=0, derived_seeds=(),
+                       _selective=selective, _derived_off=True)
 
     def _memory_delta(self, hidden, value, mass, gain):
         import torch
@@ -331,12 +336,13 @@ class NativeLatentModel:
                     thought = thought + self._memory_delta(hidden, value, mass, self._memory_gain)
                     run.routed += 1
                 if selective is not None:
-                    source_steps.append(replace(trace, applied=bool(torch.any(thought != relay))))
+                    receipt = replace(trace.receipt, observed_source_seal=memory.seal)
+                    source_steps.append(replace(trace, receipt=receipt, applied=bool(torch.any(thought != relay))))
                 if memory._derived is not None:
                     association, mass = self._moments.read_associations(query, memory._derived)
                 elif selective is not None and selective.derived:
                     association, mass, trace = self._selector.read(query, selective.derived)
-                    derived_reads.append(trace.receipt)
+                    derived_reads.append(replace(trace.receipt, observed_source_seal=memory.seal))
                 else:
                     mass = 0
                 if mass > 0:
@@ -385,7 +391,8 @@ class NativeLatentModel:
                 addresses.append(address)
                 values.append(self._encode_hidden(run.hidden))
         bank = self._moments.prepare_associations(addresses, values) if seeds else None
-        return replace(source_only, _derived=bank, _seed_limit=max_seeds, derived_seeds=tuple(seeds))
+        return replace(source_only, _derived=bank, _seed_limit=max_seeds, derived_seeds=tuple(seeds),
+                       _derived_off=False, _publication_seal=None)
 
     def _maintain_selection(self, memory, max_seeds):
         import torch
@@ -404,7 +411,7 @@ class NativeLatentModel:
             for item in batch:
                 address, run = self._run_seed(item, source_only, lookup)
                 attempted[item.span] = run.source_steps
-                if self._cross_source(run, item.span.source_id):
+                if self._cross_source_steps(run.source_steps, item.span.source_id):
                     acquired[item.span] = _Continuation(_frozen(address), _frozen(self._encode_hidden(run.hidden)))
         derived = selective.derived if len(acquired) == len(selective.acquired) else self._derived_rows(acquired)
         worked = {item.span.source_id for item in batch}
@@ -412,13 +419,14 @@ class NativeLatentModel:
         priority = self._pending_groups(order, memory._sources, attempted)
         selective = replace(selective, acquired=MappingProxyType(acquired), derived=derived,
                             attempted=MappingProxyType(attempted), priority=priority)
-        return replace(memory, _selective=selective, derived_seeds=tuple(acquired))
+        return replace(memory, _selective=selective, derived_seeds=tuple(acquired),
+                       _derived_off=False, _publication_seal=None)
 
     @staticmethod
-    def _cross_source(run, seed_source):
-        if any(step.receipt.status not in ("ready", "empty") for step in run.source_steps):
+    def _cross_source_steps(steps, seed_source):
+        if any(step.receipt.status not in ("ready", "empty") for step in steps):
             return False
-        return any(hit.span.source_id != seed_source for step in run.source_steps
+        return any(hit.span.source_id != seed_source for step in steps
                    if step.applied for hit in step.receipt.selected)
 
     def __call__(self, task: str, *, memory=None, steps=None):
@@ -455,4 +463,5 @@ class NativeLatentModel:
                                 None if memory is None else memory.seal,
                                 frozenset() if memory is None else memory.omitted_sources,
                                 tuple(step.receipt for step in run.source_steps), run.derived_reads,
-                                run.applied_derived)
+                                run.applied_derived, None if memory is None else memory._publication_seal,
+                                False if memory is None else memory._derived_off)

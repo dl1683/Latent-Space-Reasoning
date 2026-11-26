@@ -29,6 +29,7 @@ class SourceDelta:
     epoch: int
     manifest: MappingProxyType
     changes: MappingProxyType
+    descriptor: bytes | None = None
 
 
 def _advance(previous, changes):
@@ -72,7 +73,7 @@ def write_source_delta(directory, changes, *, previous=None):
     pending = root / "manifest.pending"
     pending.write_bytes(descriptor)
     pending.rename(root / "manifest.json")
-    return SourceDelta(sha256(descriptor), epoch, scope, MappingProxyType(changes))
+    return SourceDelta(sha256(descriptor), epoch, scope, MappingProxyType(changes), descriptor)
 
 
 def read_source_delta(directory, seal, *, previous=None):
@@ -95,4 +96,4 @@ def read_source_delta(directory, seal, *, previous=None):
     expected = _manifest_record(previous, epoch, manifest, updates)
     if _encode(expected) != descriptor or _encode(decoded) != updates:
         raise ValueError("source projection does not match the retained scope and parent")
-    return SourceDelta(seal, epoch, MappingProxyType(manifest), MappingProxyType(changes))
+    return SourceDelta(seal, epoch, MappingProxyType(manifest), MappingProxyType(changes), descriptor)
