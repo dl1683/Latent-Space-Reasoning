@@ -51,6 +51,44 @@ false-closure rate, and unsupported-claim rate. The evaluator—not the planner'
 own `NeedFinding.status`—determines these outcomes. Passage recall is a
 diagnostic for candidate acquisition, not the primary score.
 
+## Fresh visible calibration matrix
+
+The next planner calibration must use a new task set. The closed two-pin
+geometry pilot cannot be reused for prompt or schema tuning. Freeze eight
+model-visible task instances before calling the model; each has two to four
+core obligations and one disconnected side obligation. Prepare the acceptable
+need decompositions and source-level verdicts independently, and keep those
+gold records out of the planner process. The matrix below defines coverage,
+not a frozen dataset or an experimental result:
+
+| Task family | Why resolution is nontrivial | Primary error to score |
+| --- | --- | --- |
+| Release readiness | A governing rule, approval, and test record are distributed across sources; one prerequisite may be proposed or missing. | Omitted prerequisite or false closure. |
+| Cross-name identity | A directory links the task name to a record name, while a similar record refers to another program. | Wrong entity or skipped bridge. |
+| Conflicting authority | A current signed review conflicts with an older operational note, and a rule states which source governs. | Wrong authority, missed conflict, or unsupported synthesis. |
+| Historical revision | A permit changes across revisions and is later restored; the task asks about current and prior audit status. | Stale evidence or version leakage. |
+| Incomplete evidence | An inspection is present, but coverage of the eligible source set is incomplete and a similar sample exists. | Misidentification or treating missing evidence as a settled negative. |
+| Effective time and scope | A permit covers one site and dates around the requested day; a newer override applies only to another site. | Time, entity, or scope error. |
+| Counterfactual alternative | Withdrawing an endorsement leaves another route that requires an unverified certificate. | Mixing hypothetical and observed status or hiding the unresolved premise. |
+| Broad strategy question | The stated outcome appears adverse, while distributed records suggest a possible exception whose required receipt is absent from the complete packet. Task wording avoids the exception's source terminology. | Keyword-only need inference, unsupported strategy, or missing decisive evidence gap. |
+
+For every instance, also check the disconnected side obligation for correct
+resolution and invariance under the task-relevant source revision. Across the
+set, include at least one scoped within-document association swap, one
+same-origin alternative that must not count as independent corroboration, and
+one nonlexical cross-source bridge. Randomize source and entity IDs after
+authoring the gold and paraphrase the surface text without changing the
+adjudicated relations.
+
+This calibration qualifies only the task planner's compact obligation and
+tool contract. Require all eight plans and episodes to terminate and parse,
+then independently grade critical-need coverage, overreach, source relevance,
+revision and scope, citation validity, justified unknowns, and false closure.
+A missing critical need, wrong-pin claim, unsupported conclusion, or exhausted
+output contract fails instrument qualification. A pass does not establish a
+latent-world advantage; that requires the held comparison and matched costs
+below.
+
 ## Blinded revision-to-task experiment
 
 Use a frozen corpus and source-revision stream with several small regions. Each
@@ -327,18 +365,29 @@ eight-task calibration and supplies no independent semantic grade. Freeze a
 schema-constrained adapter and pass the eight-task calibration on both format
 and evidence sufficiency before opening held tasks.
 
-The visible two-pin typed geometry pilot has since exposed two additional
-adapter failures. Its first run copied the concrete `release` query embedded
-in the typed prompt and made no evidence reads. After removing that prompt
-example and candidate truncation, one corrected rerun hit 256 generated tokens
-per call before registering a need or running a tool. The current action shape
-requires an initial need plus tool call in one response and requires the full
-frozen need record to be returned again in later actions. The pilot therefore
-does not qualify model-directed planning or the maintained world. Its pair is
-closed to further model tuning. A compact, possibly staged need declaration
-with a host-retained immutable registry is a new hypothesis: it must keep all
-evaluator-grade need fields, fit the same call/token ceilings, and pass a new
-calibration set before any held panel.
+The visible two-pin typed geometry pilot exposed two adapter failures. Its
+first run copied the concrete `release` query embedded in the typed prompt
+and made no evidence reads. After removing that prompt example and candidate
+truncation, one corrected rerun hit 256 generated tokens per call before
+registering a need or running a tool. The pair is closed to further model
+tuning and does not qualify planning or the maintained world.
+
+The new `compact_needs` mode in
+[`task_episode.py`](../experiments/memory/task_episode.py) implements the next
+interface hypothesis. Its first call declares a plan without a simultaneous
+tool action; later calls carry only notes, new need declarations, and one
+need-linked tool action. The host keeps the full immutable need registry and
+includes it in later model inputs. It preserves target, relation, scope,
+evidence, support and defeat criteria, alternatives, unresolved conditions,
+parent links, and verified discovery links, while removing redundant question
+and rationale text. The first action after planning must search, and later
+actions cannot replan or issue a no-op. Existing `typed_needs` callers are
+unchanged. This reduces repeated generated need records, not the input cost of
+showing the registry. Decoder adapters still need schemas for both plan and
+action phases. The mode has not been model-calibrated; use the fresh visible
+matrix above, independently grade need semantics, and keep all held labels
+sealed. Neither interface nor calibration alone establishes a latent-world
+advantage.
 
 The query-blind bridge worker can now take a bounded batch from a revision-led
 agenda and publish its resulting operators. Late paths carry the publication
@@ -355,9 +404,9 @@ opens require the corresponding source bytes. Coverage-only publication
 dependencies and model-level proposals that name a consequential gap and
 predict its task effect remain open. Scored geometry-twin tasks still need
 frozen source acquisition, separately selected late tasks and a persisted
-incremental join with matched information and costs. The typed need interface
-still requires its eight-task visible calibration and independent semantic
-need grading.
+incremental join with matched information and costs. The new `compact_needs`
+interface still requires its eight-task visible calibration and independent
+semantic need grading.
 
 The standalone [matching control](../experiments/memory/context_transport_join_control.js)
 includes the same scoped authority and half-open order inputs in both
