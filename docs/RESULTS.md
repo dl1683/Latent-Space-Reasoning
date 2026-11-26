@@ -4,6 +4,38 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Discovering and revising a transport before tasks, 26 November 2026
+
+**Visible CPU software verification.** A worker scanned one supplied
+encoded corpus without a source allowlist and found a two-law
+composition as the second law arrived. The same two-step joint
+reasoner used it on a later input. With the observations fixed, removing
+only the operation removed that answer. Omitting the memory on the
+same call returned \`memory_omitted\`. Switching an ordinary source to
+a competing law invalidated the publication. Withdrawing the original
+second law let the worker publish a different operation and produced
+the opposing answer. Restoring the source lineage recovered the first
+outcome. A new eligible case record then used that publication
+without recompiling it.
+
+A changed relay with an identical projected key and a different
+coordinate could not complete the branch. An exact coordinate tagged
+with the wrong role was also withheld. An incomplete candidate authority
+kept the read open. At the contested pin, the operator-enabled and
+operator-off histories were numerically identical under a fallback
+kernel. Only the enabled read disclosed the competing witnesses and
+stayed unresolved without returning its fallback as signed evidence.
+Withdrawing the remaining law let a repair clear that obligation
+while reusing the two numerical writes. The replay check rejected a substituted discovery fingerprint.
+Exact law and ordinary witnesses retained their source spans and
+generations. Recovery reproduced the historical
+hidden trajectory and publication receipt without re-encoding.
+The fixture supplies all observations, the source text and kernel,
+and the task's numerical input and readout. It checks query-independent
+operation discovery and causal use in the same software path.
+Learned acquisition, natural-language task inference and lifecycle
+advantage remain open. [Revision fixture](../experiments/memory/test_world_transport.py)
+
 ## Choosing a late scope for the same unit name, 26 November 2026
 
 **Visible CPU software verification.** The worker compiled two

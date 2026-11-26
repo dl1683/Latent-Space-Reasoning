@@ -10,7 +10,9 @@ from experiments.memory.latent_feedback import FeedbackKernel
 from experiments.memory.recurrent_world import RecurrentWorld
 from experiments.memory.role_validity import RoleSupersession
 from experiments.memory.verified_source_tool import VerifiedSourceTool
-from experiments.memory.world_transport import SourceTransportPolicy, TransportAlignment, transport_action_rows
+from experiments.memory.world_transport import (
+    DiscoveredTransportPolicy, SourceTransportPolicy, TransportAlignment, transport_action_rows,
+)
 
 
 def _publish(workspace, changes):
@@ -137,6 +139,168 @@ def test_query_blind_transport_is_published_before_late_readouts_and_survives_re
     np.testing.assert_array_equal(replay.branches[0].history, branch.history)
     assert replay.branches[0].transport_uses == (used,)
     assert len(calls) == 8
+
+
+def test_transport_discovers_across_opaque_source_ids_then_revises_without_a_task(tmp_path):
+    _, scoped_frame, _, fixed, records, _, axes = _transport_world(tmp_path)
+    wrong_role = b"The rollout profile is named in an unrelated directory."
+    new_context = b"Review the local release profile for the newly filed case."
+
+    def encode(raw):
+        if raw == wrong_role:
+            return (BindingMention("record", axes[2], 1., (0, len(raw))),)
+        if raw == new_context:
+            return (BindingMention("context", axes[0], 1., (0, len(raw))),)
+        mentions = scoped_frame._encode(raw)
+        if raw == records["entry"]:
+            return (replace(mentions[0], predicate="context"),)
+        if raw in (records["rollout"], records["quarantine"], records["changed-rollout"]):
+            return (replace(mentions[0], predicate="relay"),)
+        if raw == records["calibration-b"]:
+            direction = mentions[0].vector.copy()
+            direction[0] = -0.
+            return replace(mentions[0], vector=direction), mentions[1]
+        return mentions
+
+    frame = CorpusBindingMemory.prepare(("record", "context", "relay", "transport_entry", "transport_exit"),
+                                        axes, {}, {}, encode=encode, encoder_version="transport-discovery-fixture",
+                                        min_similarity=1., gap=0.)
+    path = tmp_path / "discovered.sqlite"
+    owner = JournaledCorpusWorkspace(path, frame, create=True)
+    policy = DiscoveredTransportPolicy("context", "relay", gain=2., max_terms=4, max_sources=20)
+    world = RecurrentWorld(fixed._kernel, encoder_version=frame.encoder_version,
+                           max_observations=8, feedback=True, transport_policy=policy)
+    opening = _publish(owner, {"61b": records["entry"], "03a": records["calibration-a"],
+                              "994": records["rollout"], "ea1": records["quarantine"],
+                              "567": records["local"], "10d": records["other-law"],
+                              "f39": records["midpoint"]})
+    assert world.maintain_transports(owner, opening) is opening
+    second = _publish(owner, {"2eb": records["calibration-b"]})
+    first_publication = world.maintain_transports(owner, second)
+    assert first_publication.source_revision == second.source_revision
+    assert first_publication.journal_sha256 != second.journal_sha256
+    assert world.maintain_transports(owner, first_publication) is first_publication
+
+    # These ordinary records share a projected key, but the new observation
+    # has a different coordinate and cannot discharge the transported relay.
+    false_relay = _publish(owner, {"994": records["changed-rollout"]})
+    assert world.maintain_transports(owner, false_relay) is false_relay
+    ineligible_relay = _publish(owner, {"994": wrong_role})
+    assert world.maintain_transports(owner, ineligible_relay) is ineligible_relay
+    corrected_relay = _publish(owner, {"994": records["rollout"]})
+    assert world.maintain_transports(owner, corrected_relay) is corrected_relay
+
+    # A newly eligible source competes at the intermediate direction. A
+    # retained earlier publication cannot be used on the edited pin.
+    rival = _publish(owner, {"f39": records["correction"]})
+    with pytest.raises(StaleCorpusRevision):
+        world.maintain_transports(owner, first_publication)
+    assert world.maintain_transports(owner, rival) is rival
+    revised = _publish(owner, {"2eb": None})
+    second_publication = world.maintain_transports(owner, revised)
+    assert second_publication.journal_sha256 != revised.journal_sha256
+    invalid = _publish(owner, {"101": records["incomplete"]})
+    assert world.maintain_transports(owner, invalid) is invalid
+    restored = _publish(owner, {"101": None, "2eb": records["calibration-b"], "f39": None})
+    final = world.maintain_transports(owner, restored)
+    benign = _publish(owner, {"61b": None, "303": new_context, "5ac": records["midpoint"]})
+    assert world.maintain_transports(owner, benign) is benign
+
+    # Neither the task encoding nor its readout direction was passed to
+    # maintenance. Use the same computation and input for each intervention.
+    seed, target = .8 * axes[0] + .1 * axes[5], axes[4]
+    enabled = world.prepare(first_publication, packed=False)
+    ablated = world.prepare(first_publication, previous=enabled, packed=False, operators=False)
+    assert enabled._sources is ablated._sources
+    results = (opening, second, false_relay, ineligible_relay, corrected_relay, rival, second_publication, invalid,
+               final, benign)
+    expected = ("unresolved", "unresolved", "missing", "missing", "supported", "unresolved", "opposed", "unresolved",
+                "supported", "supported")
+    for pin, status in zip(results, expected, strict=True):
+        assert _read(world, world.prepare(pin, packed=False), seed).read(target, floor=.8).status == status
+    wrong = _read(world, world.prepare(false_relay, packed=False), seed).branches[0]
+    assert wrong.witnesses[-1].span.source_id == "994"
+    assert wrong.transport_uses[0].publication_sha256 == first_publication.journal_sha256
+    outcome = _read(world, enabled, seed)
+    assert outcome.read(target, floor=.8).status == "supported"
+    assert _read(world, ablated, seed).read(target, floor=.8).status == "missing"
+    omitted = _read(world, None, seed)
+    assert omitted.read(target, floor=.8).status == "memory_omitted"
+    np.testing.assert_array_equal(omitted.branches[0].hidden, np.zeros(len(seed)))
+    assert not omitted.branches[0].transport_uses
+    assert _read(world, enabled, seed).read(target, floor=.8).status == "supported"
+    for pin, publication, context, authority, terminal in (
+        (first_publication, first_publication, "61b", "2eb", "994"),
+        (second_publication, second_publication, "61b", "f39", "ea1"),
+        (benign, final, "303", "2eb", "994"),
+    ):
+        branch, = _read(world, world.prepare(pin, packed=False), seed).branches
+        use, = branch.transport_uses
+        assert use.publication_sha256 == publication.journal_sha256
+        assert [w.span.source_id for w in branch.witnesses] == [context, terminal]
+        assert [w.span.source_id for w in use.evidence] == ["03a", "03a", authority, authority]
+        for witness in (*branch.witnesses, *use.evidence):
+            source = witness.span.source_id
+            assert witness.span == pin.memory.source_mention_span(source, witness.ordinal)
+            assert witness.generation == pin._source_revisions[source]
+
+    # An ordinary fallback at a contested pin still has a complete numerical
+    # read. The enabled arm must disclose the dispute on that same path.
+    values = fixed._kernel._observation_value.copy()
+    values[0] = 2. * axes[6]
+    kernel = FeedbackKernel(query=30. * axes, carry=fixed._kernel._carry,
+                            observation_key=fixed._kernel._observation_key, observation_value=values,
+                            feedback_key=axes, feedback_value=np.zeros_like(axes), max_steps=2)
+    fallback = RecurrentWorld(kernel, encoder_version=frame.encoder_version,
+                              max_observations=8, feedback=True, transport_policy=policy)
+    disputed = _read(fallback, fallback.prepare(rival), seed)
+    held = disputed.read(axes[6], floor=.7)
+    assert held.status == "unresolved" and not held.support and not held.opposition
+    assert {w.span.source_id for w in disputed.uncertain_routes} == {"61b", "03a", "2eb", "f39"}
+    no_operator = _read(fallback, fallback.prepare(rival, operators=False), seed)
+    assert no_operator.read(axes[6], floor=.7).status == "supported"
+    np.testing.assert_array_equal(disputed.branches[0].history, no_operator.branches[0].history)
+
+    tampered = _transport_event(policy, world._kernel_sha256, discovery_sha256="a" * 64)
+    with pytest.raises(ValueError, match="fingerprint does not match replay"):
+        _replay_source_transport(tampered, second, first_publication.journal_sha256)
+
+    def forbid_encoder(_):
+        pytest.fail("recovery re-encoded a source")
+
+    reopened = JournaledCorpusWorkspace(path, replace(frame, _encode=forbid_encoder))
+    history = reopened.snapshot_at(first_publication.revision, max_events=20, max_payload_bytes=100000)
+    recovered = _read(world, world.prepare(history, packed=False), seed)
+    assert recovered.branches[0].transport_uses == outcome.branches[0].transport_uses
+    np.testing.assert_array_equal(recovered.branches[0].history, outcome.branches[0].history)
+    assert _read(world, world.prepare(reopened.snapshot()), seed).read(target, floor=.8).status == "supported"
+
+    bounded = replace(policy, max_mentions=2)
+    with pytest.raises(ValueError, match="mention allowance"):
+        owner.maintain_source_transports(benign, bounded, kernel_sha256=world._kernel_sha256)
+    assert owner.snapshot() is benign
+
+    # An old publication's smaller capacity cannot prevent a valid current
+    # policy from examining a newer pin and exposing the unresolved law.
+    tight = replace(policy, max_sources=len(benign.memory.source_digests))
+    tight_world = RecurrentWorld(world._kernel, encoder_version=frame.encoder_version,
+                                 max_observations=16, feedback=True, transport_policy=tight)
+    small = tight_world.maintain_transports(owner, benign)
+    assert small is not benign
+    larger = _publish(owner, {"2eb": None, "767": records["midpoint"], "768": records["midpoint"]})
+    assert not small._source_transports.active_on(larger)
+    assert _read(world, world.prepare(larger), seed).read(target, floor=.8).status == "unresolved"
+
+    pending_bank = fallback.prepare(larger, packed=False)
+    pending = _read(fallback, pending_bank, seed)
+    assert pending.read(axes[6], floor=.7).status == "unresolved"
+    retired = _publish(owner, {"03a": None})
+    repaired_bank = fallback.prepare(retired, previous=pending_bank, packed=False)
+    repaired = fallback.repair_joint(pending, repaired_bank, max_hypotheses=1)
+    assert repaired.reused_writes == 2 and repaired.observation_scores == 0
+    assert repaired.read(axes[6], floor=.7).status == "supported"
+    assert not repaired.uncertain_routes
+    np.testing.assert_array_equal(repaired.branches[0].history, pending.branches[0].history)
 
 
 def test_transport_invalidates_on_authority_changes_and_requires_republication(tmp_path):

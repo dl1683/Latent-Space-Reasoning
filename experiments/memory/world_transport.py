@@ -1,11 +1,12 @@
 """Compile scoped latent transports from journaled source laws."""
 
 from collections import defaultdict
-from dataclasses import dataclass, replace
+from dataclasses import asdict, dataclass, replace
 from hashlib import sha256
 import json
 from math import isfinite
 from types import MappingProxyType
+from typing import ClassVar
 
 import numpy as np
 
@@ -89,6 +90,36 @@ class SourceTransportPolicy:
         return exact if self.alignment is None else (*exact, self.alignment.wire())
 
 
+_TRANSPORT_ROLES = ("transport_entry", "transport_exit")
+
+
+@dataclass(frozen=True)
+class DiscoveredTransportPolicy:
+    """Discover exact two-stage operators from typed observations across a pin."""
+
+    context_predicate: str
+    relay_predicate: str
+    gain: float
+    max_terms: int
+    max_sources: int
+    max_mentions: int = 65_536
+    alignment: ClassVar[None] = None
+
+    def __post_init__(self):
+        if (self.context_predicate == self.relay_predicate
+                or any(type(role) is not str or not role or role in _TRANSPORT_ROLES
+                       for role in (self.context_predicate, self.relay_predicate))):
+            raise ValueError("discovery requires distinct ordinary context and relay predicates")
+        if (type(self.gain) not in (int, float) or not isfinite(self.gain) or self.gain <= 0
+                or any(type(cap) is not int or cap < 1 for cap in (self.max_terms, self.max_sources, self.max_mentions))):
+            raise ValueError("discovery requires finite positive gain and work allowances")
+        object.__setattr__(self, "gain", float(self.gain))
+
+    def wire(self):
+        return (self.context_predicate, self.relay_predicate, self.gain, self.max_terms,
+                self.max_sources, self.max_mentions)
+
+
 @dataclass(frozen=True)
 class SourceTransportUse:
     publication_sha256: str
@@ -113,12 +144,15 @@ class _Transport:
 @dataclass(frozen=True, eq=False)
 class SourceTransportPublication:
     kernel_sha256: str
-    policy: SourceTransportPolicy
+    policy: SourceTransportPolicy | DiscoveredTransportPolicy
     source_versions: tuple[tuple[str, str | None, int | None], ...]
     operations: MappingProxyType
 
     def active_on(self, pin):
-        return _versions(pin, self.policy) == self.source_versions
+        try:
+            return _versions(pin, self.policy) == self.source_versions
+        except _TransportDiscoveryUnavailable:
+            return False
 
 
 def world_kernel_digest(kernel):
@@ -131,12 +165,98 @@ def coordinate_key(vector):
     return np.asarray(vector, dtype="<f8").tobytes()
 
 
-def _versions(pin, policy):
+def transport_coordinate_key(vector, policy):
+    if type(policy) is DiscoveredTransportPolicy:
+        vector = np.where(vector == 0., 0., vector)
+    return coordinate_key(vector)
+
+
+class _TransportDiscoveryUnavailable(ValueError):
+    pass
+
+
+def transport_authorities(pin, policy):
+    if type(policy) is SourceTransportPolicy:
+        return policy.authorities
+    memory = pin.memory
+    if len(memory.source_digests) > policy.max_sources:
+        raise _TransportDiscoveryUnavailable("transport discovery source allowance exceeded")
+    if not memory.source_digests.keys() <= memory._mentions.keys():
+        raise _TransportDiscoveryUnavailable("transport discovery requires encoded observations for every source")
+    mentions = memory._mentions
+    if sum(len(mentions[source]) for source in memory.source_digests) > policy.max_mentions:
+        raise _TransportDiscoveryUnavailable("transport discovery mention allowance exceeded")
+    return tuple(sorted(source for source in memory.source_digests
+                        if any(row[0] in _TRANSPORT_ROLES for row in mentions[source])))
+
+
+def transport_accepts(pin, policy, witness, *, relay):
+    source = witness.span.source_id
+    if type(policy) is SourceTransportPolicy:
+        return source in (policy.relays if relay else policy.contexts)
+    predicate = policy.relay_predicate if relay else policy.context_predicate
+    return pin.memory._mentions[source][witness.ordinal][0] == predicate
+
+
+@dataclass(frozen=True)
+class DiscoveryCoverage:
+    entries: MappingProxyType
+    unlocated: tuple[WorldWitness, ...] | None
+
+    def pending(self, key):
+        candidates = self.entries.get(key, ())
+        if not candidates and self.unlocated is None:
+            return None
+        neighbors = dict.fromkeys(exit_key for exits, _ in candidates for exit_key in exits)
+        evidence = dict.fromkeys(self.unlocated or ())
+        for _, witnesses in candidates:
+            evidence.update(dict.fromkeys(witnesses))
+        for exit_key in neighbors:
+            for _, witnesses in self.entries.get(exit_key, ()):
+                evidence.update(dict.fromkeys(witnesses))
+        return tuple(evidence)
+
+
+def transport_discovery_coverage(pin, policy, authorities):
+    entries = defaultdict(list)
+    unlocated, has_unlocated = [], False
+    memory = pin.memory
+    for source in authorities:
+        generation = pin._source_revisions[source]
+        starts, exits, witnesses = [], [], []
+        unresolved_entry = False
+        for ordinal, (predicate, _, vector, grounded, _) in enumerate(memory._mentions[source]):
+            if predicate not in _TRANSPORT_ROLES:
+                continue
+            span = memory.source_mention_span(source, ordinal)
+            key = transport_coordinate_key(np.frombuffer(vector, dtype="<f8"), policy)
+            if span is not None:
+                witnesses.append(WorldWitness(span, generation, ordinal))
+            if predicate == "transport_exit":
+                exits.append(key)
+            elif grounded == 1:
+                starts.append(key)
+            else:
+                unresolved_entry = True
+        if not starts or unresolved_entry:
+            has_unlocated = True
+            unlocated.extend(witnesses)
+        record = tuple(dict.fromkeys(exits)), tuple(witnesses)
+        for key in dict.fromkeys(starts):
+            entries[key].append(record)
+    return DiscoveryCoverage(MappingProxyType({key: tuple(rows) for key, rows in entries.items()}),
+                             tuple(unlocated) if has_unlocated else None)
+
+
+def _versions(pin, policy, authorities=None):
+    if authorities is None:
+        authorities = transport_authorities(pin, policy)
+    sources = (*authorities, *policy.contexts) if type(policy) is SourceTransportPolicy else authorities
     return tuple((source, pin.memory.source_digests.get(source), pin._source_revisions.get(source))
-                 for source in (*policy.authorities, *policy.contexts))
+                 for source in sources)
 
 
-def _laws(pin, sources):
+def _laws(pin, sources, policy):
     laws = defaultdict(list)
     memory = pin.memory
     for source in sources:
@@ -144,7 +264,7 @@ def _laws(pin, sources):
             continue
         mentions = memory.source_mentions(source)
         if (mentions is None or len(mentions) != 2
-                or tuple(mention.predicate for mention in mentions) != ("transport_entry", "transport_exit")
+                or tuple(mention.predicate for mention in mentions) != _TRANSPORT_ROLES
                 or any(mention.strength != 1. for mention in mentions)
                 or any(row[3] != 1 for row in memory._mentions[source])):
             return None
@@ -153,16 +273,21 @@ def _laws(pin, sources):
         if spans[0] is None or spans[0] != spans[1]:
             return None
         witnesses = tuple(WorldWitness(span, pin._source_revisions[source], i) for i, span in enumerate(spans))
-        laws[coordinate_key(first.vector)].append((first.vector, second.vector, witnesses))
+        laws[transport_coordinate_key(first.vector, policy)].append((first.vector, second.vector, witnesses))
     return laws
 
 
 def require_transport_scope(pin, policy):
     links = pin.memory._role_links
     validity = None if links is None else links.validity
-    if validity is not None and not validity.dependencies.isdisjoint(
-        (*policy.authorities, *policy.contexts, *policy.relays),
-    ):
+    if type(policy) is DiscoveredTransportPolicy:
+        predicates = (*_TRANSPORT_ROLES, policy.context_predicate, policy.relay_predicate)
+        if not pin.memory._certain._predicates.issuperset(predicates):
+            raise ValueError("transport discovery predicates must exist in the encoder frame")
+        scope = pin.memory.source_digests
+    else:
+        scope = (*policy.authorities, *policy.contexts, *policy.relays)
+    if validity is not None and not validity.dependencies.isdisjoint(scope):
         raise ValueError("effective-time role rules overlap source transport scope")
 
 
@@ -172,11 +297,14 @@ def _exact_operations(first, second, policy, publication_sha256):
         if len(entries) != 1:
             continue
         source, middle, origin = entries[0]
-        exits = second.get(coordinate_key(middle), ())
+        middle_key = transport_coordinate_key(middle, policy)
+        exits = second.get(middle_key, ())
         if len(exits) != 1:
             continue
         _, destination, exit_witnesses = exits[0]
-        if coordinate_key(destination) == key:
+        destination_key = transport_coordinate_key(destination, policy)
+        if destination_key == key or (type(policy) is DiscoveredTransportPolicy
+                                      and middle_key in (key, destination_key)):
             continue
         use = SourceTransportUse(publication_sha256, (*origin, *exit_witnesses))
         operations[key] = _Transport(source, destination, _frozen(policy.gain * destination), use)
@@ -243,9 +371,9 @@ def _aligned_operations(pin, first, second, policy, publication_sha256):
     alignment = policy.alignment
     first = _complete_laws(first, policy.first)
     second = _complete_laws(second, policy.second)
-    first_checks = _complete_laws(_laws(pin, alignment.first_checks), alignment.first_checks)
-    second_checks = _complete_laws(_laws(pin, alignment.second_checks), alignment.second_checks)
-    chain_checks = _complete_laws(_laws(pin, alignment.chain_checks), alignment.chain_checks)
+    first_checks = _complete_laws(_laws(pin, alignment.first_checks, policy), alignment.first_checks)
+    second_checks = _complete_laws(_laws(pin, alignment.second_checks, policy), alignment.second_checks)
+    chain_checks = _complete_laws(_laws(pin, alignment.chain_checks, policy), alignment.chain_checks)
     if any(group is None for group in (first, second, first_checks, second_checks, chain_checks)):
         return None
     if min(len(first), len(second)) < 2:
@@ -297,6 +425,16 @@ def transport_action_rows(publication):
                  for key, operation in sorted(publication.operations.items()))
 
 
+def transport_discovery_digest(publication):
+    evidence = tuple(
+        (key.hex(), tuple(asdict(witness) for witness in operation.use.evidence))
+        for key, operation in sorted(publication.operations.items())
+    )
+    packet = (publication.source_versions, transport_action_rows(publication), evidence)
+    encoded = json.dumps(packet, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
+    return sha256(encoded).hexdigest()
+
+
 def transport_action_digest(rows):
     digest = sha256(b"source_transport_action_v1")
     for row in rows:
@@ -344,11 +482,16 @@ def bind_transport_digest(publication, digest):
 def compile_source_transports(pin, policy, kernel_sha256, publication_sha256):
     """Compile scoped two-stage source operations without task inputs."""
     require_transport_scope(pin, policy)
+    authorities = transport_authorities(pin, policy)
+    versions = _versions(pin, policy, authorities)
     previous = pin._source_transports
     if (previous is not None and previous.policy == policy and previous.kernel_sha256 == kernel_sha256
-            and previous.active_on(pin)):
+            and previous.source_versions == versions):
         return None
-    first, second = _laws(pin, policy.first), _laws(pin, policy.second)
+    if type(policy) is DiscoveredTransportPolicy:
+        first = second = _laws(pin, authorities, policy)
+    else:
+        first, second = _laws(pin, policy.first, policy), _laws(pin, policy.second, policy)
     if first is None or second is None:
         return None
     if policy.alignment is None:
@@ -360,4 +503,4 @@ def compile_source_transports(pin, policy, kernel_sha256, publication_sha256):
             return None
     if not operations:
         return None
-    return SourceTransportPublication(kernel_sha256, policy, _versions(pin, policy), MappingProxyType(operations))
+    return SourceTransportPublication(kernel_sha256, policy, versions, MappingProxyType(operations))

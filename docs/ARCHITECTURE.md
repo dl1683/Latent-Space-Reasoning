@@ -1885,6 +1885,53 @@ open. A warm provenance-aware composition index should receive the
 same laws, eligibility, update and cache rights in a matched comparison.
 [Transport compiler](../experiments/memory/world_transport.py)
 
+#### Discovering transports across a pinned corpus
+
+[SLICE] An opt-in \`DiscoveredTransportPolicy\` takes context and relay
+predicates, gain, and limits on sources, mention rows, and compiled
+terms. It takes no source IDs or task inputs. The worker scans the
+encoded observations on the pin. Any source with either reserved
+transport predicate is a candidate authority and stays out of the
+ordinary observation bank. A candidate must have a uniquely grounded
+entry and exit in the same exact span. A malformed candidate withholds
+the publication. Under the exact rule, a chain needs three distinct
+coordinates and exactly one outgoing authority at each of the first
+two. The scan counts competitors before filtering for usable chains.
+
+The version 3 event records the policy, kernel and a fingerprint of
+the discovered operations, authority versions and witnesses. Replay
+re-derives and checks these against its journal parent. Adding,
+withdrawing or editing a candidate authority invalidates the prior
+publication. The worker scans for newly eligible authorities even
+when their source IDs were previously ordinary. Ordinary context and
+relay revisions can reuse the published law, and each read checks the
+current witnesses. A projected key can admit a relay candidate. To
+discharge the transported obligation, the selected observation must
+also have the declared relay predicate and the exact destination
+coordinate. Coordinate equality treats positive and negative zero as
+equal. A reached context with a plausible law but no eligible
+operation leaves the result unresolved, even when ordinary evidence
+could otherwise support a result. The read retains available spans
+for the competing or incomplete law. A candidate source without a
+grounded entry can leave any reached context open. The observation
+scan is bounded and rejects over-budget pins. Each authority is one
+scoped two-row record in this version, and duplicate outgoing
+authorities are withheld.
+
+Use \`RecurrentWorld.maintain_transports(workspace, corpus)\` to publish
+at the current journal tip and \`prepare(pin)\` to attach that result
+through the ordinary \`reason_joint\` call. \`prepare(pin, operators=False)\`
+removes the publication while retaining the observations, and
+\`reason_joint(..., memory=None)\` omits the observations as well.
+These operations are software controls. The encoder still supplies
+predicates and geometry, and the scan does not establish semantic
+completeness. A matched incremental join can maintain the same
+unique-outgoing rule under insertions and retractions. The real
+comparison must charge typed acquisition, discovery and all later
+checks. [Compiler](../experiments/memory/world_transport.py) ·
+[Revision fixture](../experiments/memory/test_world_transport.py) ·
+[Differential dataflow](https://www.microsoft.com/en-us/research/publication/differential-dataflow/)
+
 #### Composing calibrated source spans
 
 [SLICE] An opt-in worker fits two maps from paired source directions.

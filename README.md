@@ -52,6 +52,8 @@ The [branching latent workspace](docs/ARCHITECTURE.md#preserving-joint-latent-br
 
 A [source transport worker](docs/ARCHITECTURE.md#publishing-a-latent-transport-before-questions) composes scoped observations into a numerical operation and publishes it before tasks arrive. The CPU fixture tests later use, source-fixed removal, generation invalidation and restart. Its optional [paired alignment](docs/ARCHITECTURE.md#composing-calibrated-source-spans) reaches later source evidence from held directions that an exact coordinate join leaves open.
 
+A [corpus-wide transport scan](docs/ARCHITECTURE.md#discovering-transports-across-a-pinned-corpus) removes named source enrollment from the worker policy. It finds and revises two-stage operations before tasks arrive. In a CPU fixture, adding a competing authority disabled an earlier answer, withdrawing the incumbent revealed the opposing answer, and restoring its source recovered the first answer. The check uses typed observations and supplied coordinates.
+
 A [relational recurrent state](docs/ARCHITECTURE.md#carrying-shared-uncertainty-through-recurrence) preserves dependencies between unknown quantities. In a supplied-coordinate software check, two quantities stayed open individually while their cancellation admitted a later source. Changing a governing relation reopened that route and preserved an independent aggregate. The maintenance worker compiles declared numerical sources before questions arrive.
 
 A [visible prose revision control](docs/RESULTS.md#visible-source-revisions-and-nonlinear-admission-26-november-2026) tests how an independently versioned approval changes a positive relay margin. The contributor authored the prose, narrow parser and expected source meanings.

@@ -12,8 +12,9 @@ from experiments.memory.corpus_bindings import CorpusRevision
 from experiments.memory.latent_feedback import FeedbackKernel, ObservationMemory, _apply_value, _frozen, _real_array
 from experiments.memory.source_constraints import ConstraintUse, SourceConstraintPolicy, SourceConstraintPublication
 from experiments.memory.world_transport import (
-    SourceTransportPolicy, SourceTransportPublication, SourceTransportUse, WorldWitness,
-    coordinate_key, require_transport_scope, world_kernel_digest,
+    DiscoveredTransportPolicy, DiscoveryCoverage, SourceTransportPolicy, SourceTransportPublication,
+    SourceTransportUse, WorldWitness, require_transport_scope, transport_accepts, transport_authorities,
+    transport_coordinate_key, transport_discovery_coverage, world_kernel_digest,
 )
 
 
@@ -45,10 +46,11 @@ class RecurrentWorldMemory:
     packed_rows: int
     _witnesses: tuple[WorldWitness, ...]
     unlocated_sources: tuple[str, ...]
-    _transport_policy: SourceTransportPolicy | None
+    _transport_policy: SourceTransportPolicy | DiscoveredTransportPolicy | None
     _source_transports: SourceTransportPublication | None
     _constraint_policy: SourceConstraintPolicy | None
     _source_constraints: SourceConstraintPublication | None
+    _transport_coverage: DiscoveryCoverage | None
 
     @property
     def spans(self):
@@ -169,6 +171,7 @@ class JointWorldRead:
     reused_writes: int = 0
     unit_premises: tuple[str, ...] = ()
     _layers: tuple[tuple[_JointExpansion, ...], ...] = ()
+    _transport_withheld_contexts: frozenset[WorldWitness] = frozenset()
 
     def read(self, direction, *, floor):
         """Report signed branch observations within the configured numerical scope."""
@@ -182,7 +185,9 @@ class JointWorldRead:
 
         complete = tuple(branch for branch in self.branches
                          if branch._complete and branch._pending_destination is None
-                         and (not self.unit_premises or branch._catalog_used))
+                         and (not self.unit_premises or branch._catalog_used)
+                         and (not self._transport_withheld_contexts
+                              or self._transport_withheld_contexts.isdisjoint(branch.witnesses)))
         support, opposition, open_readout = [], [], False
         with np.errstate(over="raise", invalid="raise"):
             for branch in complete:
@@ -231,7 +236,7 @@ class RecurrentWorld:
         self._encoder_version = encoder_version
         self._max_observations = max_observations
         self._feedback = feedback
-        if transport_policy is not None and type(transport_policy) is not SourceTransportPolicy:
+        if transport_policy is not None and type(transport_policy) not in (SourceTransportPolicy, DiscoveredTransportPolicy):
             raise ValueError("transport policy must declare scoped source roles")
         if constraint_policy is not None and (type(constraint_policy) is not SourceConstraintPolicy
                                                or transport_policy is not None):
@@ -276,8 +281,14 @@ class RecurrentWorld:
             require_transport_scope(corpus, policy)
         if constraint_policy is not None:
             constraint_policy.require_frame(corpus)
-        source_policy = policy if policy is not None else constraint_policy
-        sources_in_scope = memory.source_digests.keys() - (() if source_policy is None else source_policy.authorities)
+        authorities = ()
+        if policy is not None:
+            authorities = transport_authorities(corpus, policy)
+        elif constraint_policy is not None:
+            authorities = constraint_policy.authorities
+        sources_in_scope = memory.source_digests.keys() - authorities
+        coverage = (transport_discovery_coverage(corpus, policy, authorities)
+                    if operators and type(policy) is DiscoveredTransportPolicy else None)
         transport = None
         publication = corpus._source_transports
         if operators and policy is not None and publication is not None and publication.active_on(corpus):
@@ -322,14 +333,14 @@ class RecurrentWorld:
         if previous is not None and sources == prior and (not packed or previous._bank is not None):
             return replace(previous, corpus=corpus, _bank=previous._bank if packed else None,
                            projected_rows=0, packed_rows=0, _source_transports=transport,
-                           _source_constraints=constraint)
+                           _source_constraints=constraint, _transport_coverage=coverage)
         dense = self._pack_sources(sources) if packed else None
         witnesses = tuple(witness for bank in sources.values() for witness in bank.witnesses)
         unlocated = tuple(source for source, bank in sources.items() if not bank.matches or 0 in bank.matches)
         packed_rows = len(witnesses) if packed else 0
         return RecurrentWorldMemory(corpus, dense, self._kernel._observation_key, MappingProxyType(sources),
                                     projected, packed_rows, witnesses, unlocated, policy, transport,
-                                    constraint_policy, constraint)
+                                    constraint_policy, constraint, coverage)
 
     def _pack_sources(self, sources):
         if not sources:
@@ -363,8 +374,8 @@ class RecurrentWorld:
         packed_rows = 0
         if memory is not None:
             self._require_memory(memory)
-            if memory._source_transports is not None:
-                raise ValueError("active source transports require joint reasoning for scoped evidence")
+            if memory._source_transports is not None or memory._transport_coverage is not None:
+                raise ValueError("source transports require joint reasoning for scoped evidence")
             if memory._constraint_policy is not None:
                 raise ValueError("source constraints require joint reasoning for relational evidence")
             bank = memory._bank
@@ -489,6 +500,7 @@ class RecurrentWorld:
         branches = state.branches
         layers = list(state._layers)
         uncertain = dict.fromkeys(state.uncertain_routes)
+        blocked_contexts = set(state._transport_withheld_contexts)
         scanned = state.observation_scores
         feedback = state.feedback_scores
         written = state.transition_writes
@@ -501,7 +513,8 @@ class RecurrentWorld:
             return replace(state, branches=branches, uncertain_routes=tuple(uncertain), steps=len(layers),
                            overflow=overflow, observation_scores=scanned, feedback_scores=feedback,
                            transition_writes=written, block_evaluations=evaluated,
-                           priority_scores=ranked, reused_writes=reused, _layers=tuple(layers))
+                           priority_scores=ranked, reused_writes=reused, _layers=tuple(layers),
+                           _transport_withheld_contexts=frozenset(blocked_contexts))
 
         for depth in range(state.steps, last):
             prior = ({item.parent: item for item in prior_layers[depth]} if depth < len(prior_layers) else {})
@@ -529,6 +542,12 @@ class RecurrentWorld:
                 evaluated += evaluations
                 feedback += feedback_scores
                 uncertain.update(dict.fromkeys(expansion.withheld))
+                if memory is not None and memory._transport_coverage is not None:
+                    for child in expansion.children:
+                        pending = self._pending_discovery(memory, child._witness)
+                        if pending:
+                            blocked_contexts.add(child._witness)
+                            uncertain.update(dict.fromkeys(pending))
             layers.append(tuple(layer))
             branches = tuple(child for expansion in layer for child in expansion.children)
         return checkpoint(False)
@@ -606,8 +625,11 @@ class RecurrentWorld:
                 transport = self._selected_transport(memory, witness, observation)
                 policy = memory._transport_policy if memory is not None else None
                 constraint_policy, constraint = self._selected_constraint(memory, witness, parent)
+                relay_allowed = bool(witness is not None and parent._pending_destination is not None
+                                     and transport_accepts(memory.corpus, policy, witness, relay=True))
                 child, evaluations = self._advance_joint(
                     parent, observation, witness, feedback_value, transport, policy, constraint_policy, constraint,
+                    relay_allowed=relay_allowed,
                 )
                 written += 1
                 evaluated += evaluations
@@ -616,13 +638,25 @@ class RecurrentWorld:
         return expansion, written, evaluated, feedback_scores
 
     @staticmethod
+    def _pending_discovery(memory, witness):
+        policy = memory._transport_policy
+        if witness is None or not transport_accepts(memory.corpus, policy, witness, relay=False):
+            return ()
+        observation = memory._sources[witness.span.source_id].observations._observations[witness.ordinal]
+        key = transport_coordinate_key(observation, policy)
+        if memory._source_transports is not None and key in memory._source_transports.operations:
+            return ()
+        pending = memory._transport_coverage.pending(key)
+        return () if pending is None else (witness, *pending)
+
+    @staticmethod
     def _selected_transport(memory, witness, observation):
         if witness is None or memory._source_transports is None:
             return None
         publication = memory._source_transports
-        if witness.span.source_id not in publication.policy.contexts:
+        if not transport_accepts(memory.corpus, publication.policy, witness, relay=False):
             return None
-        return publication.operations.get(coordinate_key(observation))
+        return publication.operations.get(transport_coordinate_key(observation, publication.policy))
 
     @staticmethod
     def _selected_constraint(memory, witness, parent):
@@ -650,6 +684,8 @@ class RecurrentWorld:
             return (weights / weights.sum()) @ np.asarray([node._value for node in history]), len(history)
 
     def _relay_key_matches(self, observation, expected, policy):
+        if type(policy) is DiscoveredTransportPolicy:
+            return transport_coordinate_key(observation, policy) == transport_coordinate_key(expected, policy)
         keys = self._kernel._observation_key
         actual_key, expected_key = observation @ keys, expected @ keys
         if policy.alignment is None:
@@ -680,7 +716,7 @@ class RecurrentWorld:
                      else relations.Expression() for axis in range(len(rows)))
 
     def _advance_joint(self, branch, observation, witness, feedback_value, transport, policy,
-                       constraint_policy, constraint):
+                       constraint_policy, constraint, *, relay_allowed):
         kernel = self._kernel
         current, source = branch._hidden, branch._source_hidden
         observed = witness is not None
@@ -731,8 +767,7 @@ class RecurrentWorld:
         pending = branch._pending_destination
         if complete and pending is not None:
             with np.errstate(over="raise", invalid="raise"):
-                complete = (witness.span.source_id in policy.relays
-                            and self._relay_key_matches(observation, pending, policy))
+                complete = relay_allowed and self._relay_key_matches(observation, pending, policy)
         use = None
         if transport is not None and (source_extra is not None or task_extra is not None):
             use = replace(transport.use, source_row=source_extra is not None, task_row=task_extra is not None)

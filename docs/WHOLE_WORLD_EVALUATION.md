@@ -172,6 +172,19 @@ unresolved.
    paths disappear and return where expected, while unrelated and historical
    outcomes remain stable.
 
+The [information-boundary canary](WHOLE_LOOP_BOUNDARY_CONTROL.md)
+showed that an off-and-restore result can also come from a supplied route,
+task-visible publication, or an answer-filling verifier. Before model
+calibration, exercise the fitted harness with these negative arms and
+keep a source-only materialized answer table eligible as an exact
+comparator. Isolate worker and evaluator file access, freeze the encoder
+before independent task selection, and record the proposed finding
+before the checker can reject it. For a claimed hidden transition,
+intervene with a reachable same-pin, same-depth donor state whose later
+consequence is independently known. Keep the task and route metadata
+fixed. A worker-off result still needs the separate control that preserves
+ordinary observations on the same pin.
+
 Tasks and source labels must be held out at the worker-policy boundary, not
 merely hidden from the language model after a target has already been selected.
 Keep the gold need and verdict files in an evaluator-only process. Systems
@@ -440,6 +453,19 @@ from independently prepared questions and proof obligations.
 [Visible prose revision control](../experiments/memory/visible_order_revision_control.js)
 
 ## Executable gaps in the current branch
+
+A separate [corpus-wide transport control](RESULTS.md#discovering-and-revising-a-transport-before-tasks-26-november-2026)
+lets a pre-task worker discover and revise an operation without enrolled
+source IDs, then tests its causal use inside the two-step recurrent core.
+It supplies the encoded observations and task readout. The next whole-loop
+test must acquire candidate relations from the original corpus, then use
+them through the same task-facing read without supplying a seed route.
+Give the matching incremental join the same candidates, uncertainty and
+invalidation duties. For a model-backed recurrence comparison, a damped
+reuse of a pretrained middle block is a candidate to compare against the
+unmodified block at matched inference work. A joint-state revision model
+is a separate mechanism to compare. This is a design option for a future
+authorized run. [Training-Free Looped Transformers](https://arxiv.org/abs/2605.23872)
 
 `TaskWorld` pins a verified source catalogue to an optional journaled
 `CorpusRevision`. The new `run_episode` tool surface provides bounded search,

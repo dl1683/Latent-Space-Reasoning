@@ -35,8 +35,9 @@ from experiments.memory.source_constraints import (
 )
 from experiments.memory.verified_source_tool import SourceSpan, require_digest
 from experiments.memory.world_transport import (
-    SourceTransportPolicy, TransportAlignment, bind_transport_digest, compile_source_transports,
-    restore_transport_actions, transport_action_digest, transport_action_rows,
+    DiscoveredTransportPolicy, SourceTransportPolicy, TransportAlignment, bind_transport_digest,
+    compile_source_transports, restore_transport_actions, transport_action_digest, transport_action_rows,
+    transport_discovery_digest,
 )
 
 
@@ -470,14 +471,22 @@ def _replay_factor_identities(payload, pin):
 
 
 def _check_transport_spec(policy, kernel_sha256):
-    if (type(policy) is not SourceTransportPolicy or type(kernel_sha256) is not str
+    if (type(policy) not in (SourceTransportPolicy, DiscoveredTransportPolicy) or type(kernel_sha256) is not str
             or re.fullmatch(r"[0-9a-f]{64}", kernel_sha256) is None):
         raise ValueError("transport publication requires a policy and kernel fingerprint")
-    _check_identifiers((*policy.authorities, *policy.contexts, *policy.relays))
+    if type(policy) is DiscoveredTransportPolicy:
+        _check_identifiers((policy.context_predicate, policy.relay_predicate))
+    else:
+        _check_identifiers((*policy.authorities, *policy.contexts, *policy.relays))
 
 
-def _transport_event(policy, kernel_sha256, actions=()):
+def _transport_event(policy, kernel_sha256, actions=(), *, discovery_sha256=None):
     _check_transport_spec(policy, kernel_sha256)
+    if type(policy) is DiscoveredTransportPolicy:
+        if actions:
+            raise ValueError("discovered exact events do not declare action vectors")
+        require_digest(discovery_sha256)
+        return _json(["source_transport", 3, kernel_sha256, policy.wire(), discovery_sha256])
     if policy.alignment is None:
         if actions:
             raise ValueError("exact transport events do not declare action vectors")
@@ -495,10 +504,17 @@ def _with_source_transport(pin, publication):
 def _replay_source_transport(payload, pin, publication_sha256):
     record = json.loads(payload)
     if (type(record) is not list or len(record) not in (4, 5) or record[0] != "source_transport"
-            or type(record[1]) is not int or record[1] != len(record) - 3
-            or type(record[3]) is not list or len(record[3]) != len(record) + 2
-            or any(type(group) is not list for group in record[3][:4])):
+            or type(record[1]) is not int or type(record[3]) is not list):
         raise ValueError("invalid source transport event")
+    if record[1] == 3:
+        if len(record) != 5 or len(record[3]) != 6:
+            raise ValueError("invalid source transport discovery event")
+        policy = DiscoveredTransportPolicy(*record[3])
+        return _replay_transport_policy(payload, pin, publication_sha256, policy, record[2],
+                                        discovery_sha256=record[4])
+    if (record[1] != len(record) - 3 or len(record[3]) != len(record) + 2
+            or any(type(group) is not list for group in record[3][:4])):
+        raise ValueError("invalid legacy source transport event")
     first, second, contexts, relays, gain, capacity = record[3][:6]
     alignment = None
     actions = ()
@@ -517,13 +533,20 @@ def _replay_source_transport(payload, pin, publication_sha256):
             raise ValueError("source transport action fingerprint does not match stored bytes")
     policy = SourceTransportPolicy(tuple(first), tuple(second), tuple(contexts), tuple(relays), gain, capacity,
                                    alignment=alignment)
-    if _transport_event(policy, record[2], actions) != payload:
+    return _replay_transport_policy(payload, pin, publication_sha256, policy, record[2], actions)
+
+
+def _replay_transport_policy(payload, pin, publication_sha256, policy, kernel_sha256, actions=(),
+                             *, discovery_sha256=None):
+    if _transport_event(policy, kernel_sha256, actions, discovery_sha256=discovery_sha256) != payload:
         raise ValueError("noncanonical source transport event")
-    publication = compile_source_transports(pin, policy, record[2], publication_sha256)
+    publication = compile_source_transports(pin, policy, kernel_sha256, publication_sha256)
     if publication is None:
         raise ValueError("source transport event does not compile from its source pin")
-    if alignment is not None:
+    if policy.alignment is not None:
         publication = restore_transport_actions(publication, actions)
+    if discovery_sha256 is not None and transport_discovery_digest(publication) != discovery_sha256:
+        raise ValueError("source transport discovery fingerprint does not match replay")
     return _with_source_transport(pin, publication)
 
 
@@ -942,7 +965,9 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
         publication = compile_source_transports(base, policy, kernel_sha256, "")
         if publication is not None:
             actions = () if policy.alignment is None else transport_action_rows(publication)
-            payload = _transport_event(policy, kernel_sha256, actions)
+            discovery_sha = (transport_discovery_digest(publication)
+                             if type(policy) is DiscoveredTransportPolicy else None)
+            payload = _transport_event(policy, kernel_sha256, actions, discovery_sha256=discovery_sha)
             publication_sha256 = _event_digest(parent, base.revision + 1, payload).hex()
             publication = bind_transport_digest(publication, publication_sha256)
         with self._lock, closing(self._connect()) as db:
