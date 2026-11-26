@@ -6,9 +6,10 @@ import numpy as np
 import pytest
 
 from experiments.memory.split_binding_trial import (
-    IndexedSplitBinding, LearnedSplitBindingReceiver, ReadLimits, TextSource,
+    AnswerChoice, IndexedSplitBinding, LearnedSplitBindingReceiver, ReadLimits, TextSource,
     build_split_binding_world, entity_prompt, fit_text_receiver, replay_native_world,
-    revision_snapshots,
+    revision_snapshots, RoleDecodeLimits, WorldAnswerCounts, count_world_answers, replay_competence_world,
+    score_competence_world,
 )
 
 
@@ -115,6 +116,11 @@ def test_worlds_hold_out_names_wording_and_training_supervision():
     fit = build_split_binding_world("receiver-fit", 19)
     held = build_split_binding_world("software-control", 19)
     assert set(fit.origins).isdisjoint(held.origins)
+    development = build_split_binding_world("native-development", 19)
+    competence = build_split_binding_world("native-competence", 19)
+    assert {item.label for item in development.entity_catalog}.isdisjoint(
+        item.label for item in competence.entity_catalog
+    )
     assert len(fit.training_edges) == len(fit.sources)
     assert not held.training_edges
     assert all(record.text.startswith("The ") for record in fit.sources)
@@ -182,3 +188,86 @@ def test_compositional_encoder_fit_replays_a_held_world_with_new_names_and_wordi
     for before, after in zip(result.reads[0], result.historical, strict=True):
         assert before.answer == after.answer
         np.testing.assert_array_equal(before.history, after.history)
+    distractor = AnswerChoice("EFFFFF0", entity_prompt("EFFFFF0"))
+    arms = replay_competence_world(receiver, public_replay, encode=encode,
+                                   role_limits=_DECODE_LIMITS, catalog_extras=(distractor,))
+    assert arms.decoded_index == (*held.expected, held.expected[0])
+    scores = score_competence_world(held, arms)
+    assert scores.teacher_forced == WorldAnswerCounts(12, 0, 0, 0, 1, 1)
+
+_DECODE_LIMITS = RoleDecodeLimits(.5, .5, .4)
+
+
+def _answers(reads):
+    return tuple(tuple(read.answer for read in pair) for pair in reads)
+
+
+def test_competence_arms_share_encoded_sources_and_keep_the_fixed_denominator():
+    world = build_split_binding_world("software-control", 17)
+    receiver, encode, calls = _supplied_receiver(world)
+    replay = replay_competence_world(
+        receiver, replace(world, expected=()), encode=encode, role_limits=_DECODE_LIMITS,
+    )
+    expected = (*world.expected, world.expected[0])
+    assert replay.decoded_index == expected
+    assert all(check.predicted.edge == check.exact for check in replay.source_roles)
+    assert len(replay.source_roles) == 7
+    native = (*replay.native.reads, replay.native.historical)
+    assert count_world_answers(expected, _answers(native)) == WorldAnswerCounts(12, 0, 0, 0, 2)
+    assert replay.teacher_forced[2][0] is None
+    assert replay.teacher_forced[3][0].status == "unsupported_route"
+    scores = score_competence_world(world, replay)
+    assert scores.native == scores.decoded_index == WorldAnswerCounts(12, 0, 0, 0, 2)
+    assert scores.teacher_forced == WorldAnswerCounts(12, 0, 0, 0, 1, 1)
+    assert len(replay.teacher_forced[0][0].routes) == 1
+    assert list(map(len, calls)) == [6, 8, 1, 1, 1]
+
+
+def test_exact_relay_rescues_the_second_hop_without_rescuing_the_native_first_gate():
+    world = build_split_binding_world("software-control", 21)
+    receiver, encode, _ = _supplied_receiver(world)
+    query = 18. * np.eye(receiver.width + 2)
+    query[-2, -2] = 0.
+    weakened = replace(receiver, kernel=receiver.kernel._with_observation_query(query))
+    replay = replay_competence_world(weakened, world, encode=encode, role_limits=_DECODE_LIMITS)
+    assert replay.native.reads[1][0].status == "unsupported_route"
+    assert replay.generated_continuation[1][0].answer is None
+    assert replay.teacher_forced[1][0].answer == world.expected[1][0]
+    assert replay.decoded_index[1][0] == world.expected[1][0]
+
+    query[-2, -2] = 9.
+    gated = replace(receiver, kernel=receiver.kernel._with_observation_query(query),
+                    limits=replace(receiver.limits, min_logit=23.))
+    replay = replay_competence_world(gated, world, encode=encode, role_limits=_DECODE_LIMITS)
+    assert replay.native.reads[1][0].status == "unsupported_route"
+    assert len(replay.native.reads[1][0].routes) == 1
+    assert replay.generated_continuation[1][0].answer == world.expected[1][0]
+
+
+def test_restored_text_with_changed_encoding_is_not_decoded_from_a_stale_cache():
+    world = build_split_binding_world("software-control", 17)
+    receiver, encode, _ = _supplied_receiver(world)
+    corrected = world.revisions[0].changes[0][1]
+    relay = world.revisions[3].changes[0][1]
+    repeated_correction = 0
+
+    def changed_encoder(texts):
+        nonlocal repeated_correction
+        if texts == (corrected,):
+            repeated_correction += 1
+            if repeated_correction == 2:
+                return encode((relay,))
+        return encode(texts)
+
+    replay = replay_competence_world(receiver, world, encode=changed_encoder, role_limits=_DECODE_LIMITS)
+    assert replay.decoded_index[1][0] == world.expected[1][0]
+    assert replay.decoded_index[5][0] is None
+    assert len(replay.source_roles) == 8
+
+
+def test_competence_counts_keep_missed_and_false_supported_answers_separate():
+    exact = (("one", None), ("two", "three"), ("four", None))
+    predicted = (("one", None), ("unexpected", None), ("four", "false-claim"))
+    assert count_world_answers(exact, predicted) == WorldAnswerCounts(2, 1, 1, 1, 1)
+    with pytest.raises(ValueError, match="fixed pairs"):
+        count_world_answers(exact, predicted[:2])

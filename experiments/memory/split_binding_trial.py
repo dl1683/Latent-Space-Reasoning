@@ -163,6 +163,21 @@ class LearnedSplitBindingReceiver:
         return receiver, replace(memory, _receiver=receiver)
 
     def read(self, seed, candidates, labels, *, memory=None, replace_first=None):
+        return self._read(seed, candidates, labels, memory=memory, replace_first=replace_first, forced=False)
+
+    def generated_continuation(self, seed, candidates, labels, *, memory):
+        """Diagnose the second hop while bypassing only the first route's refusal."""
+        return self._read(seed, candidates, labels, memory=memory, replace_first=None, forced=True)
+
+    def teacher_forced_read(self, seed, intermediate, candidates, labels, *, memory):
+        """Evaluate hop two with an externally supplied relay, even if hop one would refuse."""
+        entity = _unit_rows(np.asarray(intermediate)[None, :], "teacher relay activation")
+        if entity.shape[1] != self.width:
+            raise ValueError("teacher relay activation must match the receiver width")
+        replacement = self.state_scale * np.r_[entity[0], 0., 1.]
+        return self._read(seed, candidates, labels, memory=memory, replace_first=replacement, forced=True)
+
+    def _read(self, seed, candidates, labels, *, memory, replace_first, forced):
         seed = _unit_rows(np.asarray(seed)[None, :], "query activation")
         candidates = _unit_rows(candidates, "answer activations")
         labels = tuple(labels)
@@ -178,6 +193,11 @@ class LearnedSplitBindingReceiver:
         state = self.kernel.start(self.state_scale * np.r_[seed[0], 1., 0.], memory._memory)
         routes = []
         for hop in range(2):
+            if hop == 0 and forced:
+                state = self.kernel.step(state)
+                if replace_first is not None:
+                    state = self.kernel.intervene(state, 0, replace_first)
+                continue
             diagnostics = {}
             next_state, _, _ = self.kernel._advance(state, diagnostics=diagnostics)
             logits = diagnostics["logits"][:len(memory._entries)]
@@ -234,16 +254,21 @@ class IndexedSplitBinding:
         sources = tuple(sources)
         if len({source.slot for source in sources}) != len(sources):
             raise ValueError("source slots must be distinct")
-        return cls(MappingProxyType({}), MappingProxyType({})).revise(
-            {source.slot: source.text for source in sources}
-        )
+        return cls._empty().revise({source.slot: source.text for source in sources})
+
+    @classmethod
+    def _empty(cls):
+        return cls(MappingProxyType({}), MappingProxyType({}))
 
     def revise(self, changes):
+        return self._revise_edges({slot: None if text is None else _parse_source(text)
+                                   for slot, text in changes.items()})
+
+    def _revise_edges(self, changes):
         rows = dict(self._source_rows)
         postings = dict(self._postings)
-        for slot, text in changes.items():
+        for slot, current in changes.items():
             previous = rows.pop(slot, None)
-            current = None if text is None else _parse_source(text)
             for direction, edge in ((-1, previous), (1, current)):
                 if edge is None:
                     continue
@@ -263,17 +288,19 @@ class IndexedSplitBinding:
                 rows[slot] = current
         return IndexedSplitBinding(MappingProxyType(rows), MappingProxyType(postings))
 
-    def read(self, origin):
+    def relay(self, origin):
         first = self._postings.get((0, origin), {})
-        if len(first) != 1:
-            return None
-        second = self._postings.get((1, next(iter(first))), {})
+        return next(iter(first)) if len(first) == 1 else None
+
+    def read(self, origin):
+        middle = self.relay(origin)
+        second = self._postings.get((1, middle), {})
         return next(iter(second)) if len(second) == 1 else None
 
 
 _SPLITS = (
     "receiver-fit", "native-competence", "calibration-fit", "calibration-validation",
-    "source-repair", "edit-guard", "destination-revisions", "software-control",
+    "source-repair", "edit-guard", "destination-revisions", "software-control", "native-development",
 )
 
 
@@ -294,6 +321,7 @@ class SplitBindingWorld:
     sources: tuple[TextSource, ...]
     origins: tuple[str, str]
     choices: tuple[AnswerChoice, ...]
+    entity_catalog: tuple[AnswerChoice, ...]
     training_edges: tuple[tuple[int, str, str], ...]
     revisions: tuple[RevisionPlan, ...]
     expected: tuple[tuple[str | None, str | None], ...]
@@ -319,6 +347,8 @@ def build_split_binding_world(split, number):
     random.shuffle(facts)
     choices = [AnswerChoice(label, entity_prompt(label)) for label in (stale, updated, unrelated, decoy, shared, other)]
     random.shuffle(choices)
+    catalog = choices + [AnswerChoice(label, entity_prompt(label)) for label in (a, b)]
+    random.shuffle(catalog)
     sources, edges = zip(*facts, strict=True)
     revisions = (
         RevisionPlan("correct", ((slots[1], corrected),)),
@@ -329,7 +359,8 @@ def build_split_binding_world(split, number):
     expected = ((stale, unrelated), (updated, unrelated), (None, unrelated), (None, unrelated),
                 (updated, unrelated), (updated, unrelated))
     training = edges if split == "receiver-fit" else ()
-    return SplitBindingWorld(split, number, sources, (a, b), tuple(choices), training, revisions, expected)
+    return SplitBindingWorld(split, number, sources, (a, b), tuple(choices), tuple(catalog),
+                             training, revisions, expected)
 
 
 def fit_text_receiver(worlds, *, encode, ridge, query_gain, state_scale, limits):
@@ -368,14 +399,22 @@ def replay_native_world(receiver, world, *, encode):
     """Prepare before querying and replay both arms without using the truth record."""
     opening = receiver.prepare(world.sources, encode=encode)
     indexed_opening = IndexedSplitBinding.prepare(world.sources)
+    seeds, candidates, labels = _world_questions(receiver, world, encode)
+    replay, _, _ = _replay_world(receiver, world, opening, indexed_opening, seeds, candidates, labels)
+    return replay
+
+
+def _world_questions(receiver, world, encode):
     labels = tuple(choice.label for choice in world.choices)
     queries = tuple(map(entity_prompt, world.origins))
     answer_texts = tuple(choice.text for choice in world.choices)
     encoded = _matrix(encode(queries + answer_texts), "encoded queries and choices")
     if encoded.shape != (len(queries) + len(labels), receiver.width):
         raise ValueError("encoder output does not match the queries and answer choices")
-    seeds, candidates = encoded[:len(queries)], encoded[len(queries):]
+    return encoded[:len(queries)], encoded[len(queries):], labels
 
+
+def _replay_world(receiver, world, opening, indexed_opening, seeds, candidates, labels):
     def read(bank):
         return tuple(receiver.read(seed, candidates, labels, memory=bank) for seed in seeds)
 
@@ -385,6 +424,189 @@ def replay_native_world(receiver, world, *, encode):
     first_read, first_exact = read(opening), exact(indexed_opening)
     snapshots = revision_snapshots(opening, world, revise=receiver.revise)
     indexes = revision_snapshots(indexed_opening, world, revise=IndexedSplitBinding.revise)
-    return NativeWorldReplay((first_read, *map(read, snapshots[1:])),
-                             (first_exact, *map(exact, indexes[1:])),
-                             read(opening), exact(indexed_opening))
+    replay = NativeWorldReplay((first_read, *map(read, snapshots[1:])),
+                               (first_exact, *map(exact, indexes[1:])),
+                               read(opening), exact(indexed_opening))
+    return replay, snapshots, indexes
+
+
+@dataclass(frozen=True)
+class RoleDecodeLimits:
+    min_phase_gap: float
+    min_entity_score: float
+    min_entity_gap: float
+
+    def __post_init__(self):
+        values = (self.min_phase_gap, self.min_entity_score, self.min_entity_gap)
+        if not all(isfinite(value) and value > 0 for value in values):
+            raise ValueError("role decoding requires positive, finite score and gap floors")
+
+
+@dataclass(frozen=True)
+class SourceRoleRead:
+    phase: int | None
+    start: str | None
+    successor: str | None
+
+    @property
+    def edge(self):
+        if None in (self.phase, self.start, self.successor):
+            return None
+        return self.phase, self.start, self.successor
+
+
+@dataclass(frozen=True)
+class SourceRoleCheck:
+    slot: str
+    predicted: SourceRoleRead
+    exact: tuple[int, str, str]
+
+
+@dataclass(frozen=True)
+class WorldAnswerCounts:
+    correct_supported: int
+    wrong_supported: int
+    missed_supported: int
+    false_supported: int
+    abstained_unsupported: int
+    ineligible: int = 0
+
+
+def count_world_answers(expected, predicted):
+    expected = tuple(tuple(pair) for pair in expected)
+    predicted = tuple(tuple(pair) for pair in predicted)
+    if not expected or len(expected) != len(predicted) or any(len(a) != 2 or len(b) != 2
+                                                               for a, b in zip(expected, predicted)):
+        raise ValueError("prediction and truth must cover the same fixed pairs of world reads")
+    return _count_answers((target, answer) for reference, answers in zip(expected, predicted, strict=True)
+                          for target, answer in zip(reference, answers, strict=True))
+
+
+def _count_answers(pairs, *, ineligible=0):
+    correct = wrong = missed = false_supported = abstained = 0
+    for target, answer in pairs:
+        if target is None:
+            if answer is None:
+                abstained += 1
+            else:
+                false_supported += 1
+        elif answer is None:
+            missed += 1
+        elif target == answer:
+            correct += 1
+        else:
+            wrong += 1
+    return WorldAnswerCounts(correct, wrong, missed, false_supported, abstained, ineligible)
+
+
+@dataclass(frozen=True, eq=False)
+class CompetenceWorldReplay:
+    native: NativeWorldReplay
+    decoded_index: tuple[tuple[str | None, str | None], ...]
+    generated_continuation: tuple[tuple[SplitBindingRead, SplitBindingRead], ...]
+    teacher_forced: tuple[tuple[SplitBindingRead | None, SplitBindingRead | None], ...]
+    source_roles: tuple[SourceRoleCheck, ...]
+
+
+@dataclass(frozen=True)
+class CompetenceWorldScores:
+    native: WorldAnswerCounts
+    decoded_index: WorldAnswerCounts
+    generated_continuation: WorldAnswerCounts
+    teacher_forced: WorldAnswerCounts
+
+
+def score_competence_world(world, replay):
+    expected = world.expected
+    if len(expected) != 6 or any(len(pair) != 2 for pair in expected):
+        raise ValueError("competence scoring requires the six fixed truth pairs")
+    reference = (*expected, expected[0])
+    native = (*replay.native.reads, replay.native.historical)
+    if len(replay.teacher_forced) != len(reference) or any(len(pair) != 2 for pair in replay.teacher_forced):
+        raise ValueError("teacher diagnostic must retain all scheduled cells")
+    teacher_pairs = [(target, read.answer)
+                     for pair, reads in zip(reference, replay.teacher_forced, strict=True)
+                     for target, read in zip(pair, reads, strict=True) if read is not None]
+    ineligible = 2 * len(reference) - len(teacher_pairs)
+    return CompetenceWorldScores(
+        count_world_answers(reference, ((read.answer for read in pair) for pair in native)),
+        count_world_answers(reference, replay.decoded_index),
+        count_world_answers(reference, ((read.answer for read in pair) for pair in replay.generated_continuation)),
+        _count_answers(teacher_pairs, ineligible=ineligible),
+    )
+
+
+def _decoded_entity(scores, labels, limits):
+    best = int(np.argmax(scores))
+    gap = scores[best] - np.partition(scores, -2)[-2]
+    if scores[best] < limits.min_entity_score or gap < limits.min_entity_gap:
+        return None
+    return labels[best]
+
+
+def _probe_snapshot(receiver, memory, inventory, labels, limits, cache):
+    keys = [(source, row.tobytes()) for source, row in memory._entries.values()]
+    pending = [(position, key) for position, key in enumerate(keys) if key not in cache]
+    if pending:
+        positions, new_keys = zip(*pending, strict=True)
+        rows = np.asarray(positions)
+        width = receiver.width
+        projected = memory._memory._keys[rows]
+        with np.errstate(over="raise", invalid="raise"):
+            values = np.tanh(memory._memory._observations[rows] @ receiver.kernel._dense_observation_value())
+            start_scores = projected[:, :width] @ inventory.T
+            successor_scores = (values[:, :width] / receiver.state_scale) @ inventory.T
+        for key, phase, starts, ends in zip(new_keys, projected[:, width:], start_scores, successor_scores,
+                                            strict=True):
+            route = int(np.argmax(phase)) if abs(phase[0] - phase[1]) >= limits.min_phase_gap else None
+            cache[key] = SourceRoleRead(route, _decoded_entity(starts, labels, limits),
+                                       _decoded_entity(ends, labels, limits))
+    inferred = {key[0].slot: cache[key].edge for key in keys}
+    return IndexedSplitBinding._empty()._revise_edges(inferred)
+
+
+def replay_competence_world(receiver, world, *, encode, role_limits, catalog_extras=()):
+    """Compare native feedback, inferred-role indexing and a teacher-forced diagnostic."""
+    if type(role_limits) is not RoleDecodeLimits:
+        raise ValueError("provide independently fixed role decoding limits")
+    opening = receiver.prepare(world.sources, encode=encode)
+    exact_opening = IndexedSplitBinding.prepare(world.sources)
+    catalog = (*world.entity_catalog, *catalog_extras)
+    inventory_labels = tuple(item.label for item in catalog)
+    if len(inventory_labels) < 2 or len(set(inventory_labels)) != len(inventory_labels):
+        raise ValueError("role probing requires a unique advertised entity inventory")
+    inventory = _unit_rows(encode(tuple(item.text for item in catalog)), "role probe inventory")
+    if inventory.shape != (len(catalog), receiver.width):
+        raise ValueError("encoder output does not match the advertised inventory")
+    entities = dict(zip(inventory_labels, inventory, strict=True))
+    cached_roles = {}
+    root_index = _probe_snapshot(receiver, opening, inventory, inventory_labels, role_limits, cached_roles)
+    origins = world.origins
+    labels = tuple(choice.label for choice in world.choices)
+    if not all(label in entities for label in (*origins, *labels)):
+        raise ValueError("queries and answer choices must be present in the advertised inventory")
+    seeds = np.stack([entities[label] for label in origins])
+    candidates = np.stack([entities[label] for label in labels])
+    native, snapshots, exact_indexes = _replay_world(
+        receiver, world, opening, exact_opening, seeds, candidates, labels,
+    )
+    decoded, generated, teacher = [], [], []
+    for snapshot, exact in zip((*snapshots, opening), (*exact_indexes, exact_opening), strict=True):
+        index = root_index if snapshot is opening else _probe_snapshot(
+            receiver, snapshot, inventory, inventory_labels, role_limits, cached_roles,
+        )
+        outputs = tuple(index.read(origin) for origin in origins)
+        decoded.append(outputs)
+        generated.append(tuple(receiver.generated_continuation(seed, candidates, labels, memory=snapshot)
+                               for seed in seeds))
+
+        forced = []
+        for origin, seed in zip(origins, seeds, strict=True):
+            relay = exact.relay(origin)
+            forced.append(receiver.teacher_forced_read(seed, entities[relay], candidates, labels, memory=snapshot)
+                          if relay is not None and relay in entities else None)
+        teacher.append(tuple(forced))
+
+    checked = tuple(SourceRoleCheck(source.slot, prediction, _parse_source(source.text))
+                    for (source, _), prediction in cached_roles.items())
+    return CompetenceWorldReplay(native, tuple(decoded), tuple(generated), tuple(teacher), checked)
