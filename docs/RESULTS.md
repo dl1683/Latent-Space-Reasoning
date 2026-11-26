@@ -4,6 +4,96 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Task-need planner pilot, 26 November 2026
+
+**Instrument failure; no planner quality result.** On the pinned 50-question,
+5,090-passage NanoHotpotQA split, the original Qwen3-0.6B protocol completed
+100 calls (50 per generated arm). All 100 outputs hit the 128-token cap, none
+terminated, and none parsed as complete JSON. The nominal 90/100 qrel passages
+and 40/50 complete sets in every arm were inherited from the same BM25
+fallback; these numbers are unusable as evidence about planning or query
+expansion. A later two-call canary with thinking disabled also failed 2/2 at
+128 tokens. In the 256-token canary, the planner terminated after 79 tokens
+with an unclosed JSON object (1/1 invalid), while the query expander returned
+valid JSON and three queries (1/1). Both canary calls used the same task and
+visible passages; neither read qrels. The full 256-token cohort was not run.
+This is a model-output protocol failure, not evidence that need planning is
+impossible. The exact local run paths and script hashes are recorded in the
+[pilot protocol](TASK_NEED_PLANNER_PILOT.md).
+
+This pilot is a supporting evidence-candidate retrieval proxy. Even a valid
+positive result cannot show that a planner inferred a complete task ontology,
+resolved source conflicts, updated a persistent world, or improved a final
+answer. Those are separate gates in the whole-corpus goal.
+
+## Task-episode policy calibration, 26 November 2026
+
+**Instrument failure; no task-planning or latent-world result.** Three greedy,
+no-thinking Qwen3-0.6B episodes used BF16, Transformers SDPA, and the pinned
+`c1899de289a04d12100db370d81485cdf75e47ca` snapshot on the RTX 5070 Laptop
+GPU. All used the same source-only synthetic `TaskWorld` fixture, with no
+`CorpusRevision`, no binding revision, and probes disabled. No independent
+need labels were prepared.
+
+- With the original prompt and task `Can we proceed this evening?`, the
+  episode reached its 7-call limit (2,147 input and 499 generated tokens).
+  It made one literal BM25 search, got zero candidates after scoring the
+  fixture's three rows, opened no source bytes, and submitted no answer. The
+  model then repeated malformed finish actions after parser rejection.
+- With a concrete action/final example in the prompt and task `Can we proceed
+  with the release?`, the model returned the example's exact clarification
+  question in one call (348 input, 20 generated tokens) and made no tool call.
+  This is prompt copying, not successful evidence seeking.
+- With examples removed and the output shapes stated explicitly, task `Does
+  the release satisfy its stated conditions?` reached the 7-call limit (2,597
+  input, 782 generated tokens). It repeated a fenced response that combined
+  action and finish keys, so no action parsed and no tool ran.
+
+These runs show that the current prompt-only `run_episode` adapter does not
+qualify the 0.6B receiver: the first action/final schema failed, a concrete
+example elicited imitation and early closure, and a schema-only prompt still
+failed to produce a valid action. They do not falsify the task-planning or
+latent-world hypothesis. The next adapter gate requires a frozen
+schema-constrained decoder and typed need/finding validation before any held
+panel. The three prompt-only runners and hash-chained ledgers are preserved in
+[`experiments/results/task_episode_calibration_2026-11-26`](../experiments/results/task_episode_calibration_2026-11-26/).
+
+### Constrained-decoding follow-up
+
+The source-only fixture was then run with `lm-format-enforcer` 0.11.3 and
+Transformers 5.12.1. Because the library imports `PreTrainedTokenizerBase`
+from a module path that changed in the installed Transformers version, the
+calibration runner used a temporary compatibility alias. The experiment did
+not add this dependency to the project. The library can constrain JSON shape;
+its own documentation warns that format validity does not establish semantic
+correctness ([project README](https://github.com/noamgat/lm-format-enforcer)).
+
+- An initial schema that allowed a null tool produced seven valid JSON no-op
+  actions (2,513 input, 98 generated tokens; zero tool attempts). This exposed
+  a schema-design error, not a model-format failure.
+- With the first action constrained to a search, the model emitted the valid
+  query `release`; the runner found the `rules` source (one call, 359 input,
+  29 generated tokens). This was a one-call action-format canary, not a
+  completed task episode.
+- In a staged seven-call episode, the model searched `release`, read the
+  verified 65-byte rules source, repeated the same search twice, and submitted
+  a completed answer after five calls (3,705 input, 248 generated tokens).
+  It claimed the release satisfied its conditions, citing only a source that
+  says approval and duty assignment are required. No approval or assignment
+  record was read. The host accepted the citation shape, but the claim is a
+  false closure. This is one synthetic task-level error with no independent
+  need labels, no binding revision, and no latent probe; it does not measure
+  or falsify the maintained-world mechanism.
+
+The staged run shows the useful boundary: schema-constrained decoding can
+make tool actions parse and source bytes verifiable, while the task evaluator
+must still check need coverage, support sufficiency, missing prerequisites,
+conflicts and unknowns. The runner therefore remains unqualified for the
+held whole-world panel until typed need/finding links and the independent
+evaluator are implemented. The no-op, forced-search and staged runners and
+hash-chained ledgers are preserved in
+[`experiments/results/task_episode_calibration_2026-11-26`](../experiments/results/task_episode_calibration_2026-11-26/); file hashes are listed in its `SHA256SUMS.txt`.
+
 ## Latent revision software verification, 24–25 November 2026
 
 The review branch's [latent field](../experiments/memory/latent_field.py) passed five focused CPU fixtures. An observation revision reached downstream states through a cycle and matched an independently assembled dense fixed-point reference within its declared residual bound. The fixtures also cover unrelated cells, earlier snapshots, restoration, aggregate contraction, inherited residuals and exhaustion without a write. The field initialized from supplied arrays and used no model weights.

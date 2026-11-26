@@ -69,6 +69,13 @@ pilot constraint, not a claim that this size can meet the full mission.
 
 [SLICE] `TaskInvestigator(advance, budget=...).plan(task, world)` runs a configured policy on a task string and a `TaskWorld`. The world associates a verified source catalogue with an optional journaled binding revision only when the exact source identities and digests agree. Its task receipt records the source-version hash, the ordered search-span catalogue hash and the attached binding revisions and journal event digest. The digest identifies the durable stream prefix across reopen. The policy receives the task and the dossier built so far. It can introduce a need, search, open a span, probe the attached role program, or record an evidence case. A need inferred from the task can remain without source citations. A need introduced after reading can name the exact verified reads that prompted it.
 
+`EvidenceNeed` also accepts optional structured fields for target/event,
+relation, time/version scope, evidence sought, support and defeat requirements,
+alternatives, and unresolved conditions. Existing scripted callers may omit
+them. The fields preserve a richer planner output in the dossier; they do not
+validate that a need is complete or true, and no model policy has yet been
+evaluated against independent need labels.
+
 Search uses the existing BM25 scorer as a candidate source, and records how many candidates matched before the delivery limit. Opening a span verifies it against the pinned bytes. The byte allowances separately limit complete source rereads and the evidence returned. The policy has a fixed step allowance and shares one work allowance across role probes. A rejected action spends a step and leaves a receipt. The dossier records the allowances, candidate lists, rejected openings, actual source and returned bytes, lexical rows scored, role work and the stop reason. Building the lexical catalogue has a separate source-byte receipt. Model inputs and outputs are outside these software receipts.
 
 An observed support, defeat or documented unknown requires verified reads from the investigation. A later verified case can settle a need despite an earlier rejected opening. A role probe can take a direction from a retained observation of a completely verified source, or take an explicit vector. The receipt includes the request and direction used. A conflicting or unresolved probe keeps the need open until a policy assessment reconciles it with verified text. The original result remains in the dossier alongside the reconciliation. A probe alone supplies no semantic verification or source citation. The dossier retains opposing cases, hypothetical cases, any unsatisfied child need and the record of failed attempts. Each stated case is a policy assessment of the cited material. The process provides no corpus-absence or semantic-completeness certificate.
@@ -84,6 +91,11 @@ The caller declares the pinned model, decoding settings and tokenizer/template t
 Compare consequential need inference and findings supported by indirect evidence against iterative text retrieval with the same access. Score false closure, change under source revision and useful open questions on independently selected tasks. Equal or worse supported task outcomes at equal or higher total cost, or gains limited to passage retrieval, give no evidence for the proposed task reasoning advantage. Separately test a later reader against a prior query-blind worker's installed operation and its removal with source content fixed. The shared harness and scripted fixtures exercise these interfaces. A learned planner, independent relation discovery, optional memory within the same multimodal model, and a meaningful task-level comparison remain open.
 
 ### A shared-world construction to test next
+
+The decision-changing experiment, need-level error definitions, held-task
+boundary, matched controls and scale gates are specified in
+[Whole-world task evaluation](WHOLE_WORLD_EVALUATION.md). This is the next
+research target; a query-recall pilot is only a supporting gate.
 
 Use one pinned revision stream for ingestion, maintenance and later reads. The retained state should carry encoded observations, provenance, uncertainty and installed computations. Freeze the corpus split, revision schedule and independent question-selection rule before the worker runs. Reveal the held questions only to the late reader and judge. On an admitted batch, give a worker access to retained activations and their dependencies. Ask it to find one useful weak bridge, conflict or unresolved connection that no caller supplied as a target. Its proposal must name the source pins, the operation it changes and the consequence it intends to make usable. Distinguish preserving an operation from changing its semantics or installing a new inference rule. Publication should leave a witness and an explicit invalidation condition. A later query should consume that same state and use the stored computation before any exact-source reopening. Include a no-memory call to the same receiver.
 

@@ -102,6 +102,14 @@ class EvidenceNeed:
     rationale: str
     parent: str | None = None
     discovered_from: tuple[int, ...] = ()
+    target_or_event: str | None = None
+    relation: str | None = None
+    time_version_scope: str | None = None
+    evidence_sought: tuple[str, ...] = ()
+    support_requirements: tuple[str, ...] = ()
+    defeat_requirements: tuple[str, ...] = ()
+    alternatives: tuple[str, ...] = ()
+    unresolved_conditions: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -212,6 +220,23 @@ def _text(value, label):
         raise ValueError(f"{label} must be nonempty text")
 
 
+def _optional_text(value, label):
+    if value is not None:
+        _text(value, label)
+    return value
+
+
+def _text_items(values, label):
+    if values is None:
+        return ()
+    if isinstance(values, str) or not isinstance(values, (tuple, list)):
+        raise ValueError(f"{label} must be a list or tuple of nonempty text")
+    frozen = tuple(values)
+    for value in frozen:
+        _text(value, label)
+    return frozen
+
+
 class TaskInvestigator:
     """Run a configured policy that sees task text and bounded tool results."""
 
@@ -283,7 +308,18 @@ class _Investigation:
         _text(need.rationale, "need rationale")
         if need.id in self.needs or (need.parent is not None and need.parent not in self.needs):
             raise ValueError("need must be new and its parent must exist")
-        self.needs[need.id] = replace(need, discovered_from=self._citations(need.discovered_from))
+        self.needs[need.id] = replace(
+            need,
+            discovered_from=self._citations(need.discovered_from),
+            target_or_event=_optional_text(need.target_or_event, "target or event"),
+            relation=_optional_text(need.relation, "relation"),
+            time_version_scope=_optional_text(need.time_version_scope, "time/version scope"),
+            evidence_sought=_text_items(need.evidence_sought, "evidence sought"),
+            support_requirements=_text_items(need.support_requirements, "support requirements"),
+            defeat_requirements=_text_items(need.defeat_requirements, "defeat requirements"),
+            alternatives=_text_items(need.alternatives, "alternatives"),
+            unresolved_conditions=_text_items(need.unresolved_conditions, "unresolved conditions"),
+        )
         self.cases[need.id], self.children[need.id] = [], []
         if need.parent is not None:
             self.children[need.parent].append(need.id)
