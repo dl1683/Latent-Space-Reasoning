@@ -4,6 +4,65 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Source-derived actions on a Pint revision, 26 November 2026
+
+**Visible CPU software verification.** The worker read
+`pint/default_en.txt` from the exact parent and merged commit
+of Pint PR #1920, plus the unchanged imported `constants_en.txt`.
+The parent and merged registry Git blobs were
+`dec48b62a7a126b785505357fc34454bb792dc3c` and
+`7e540f6e2dd6cccfbbab5ce3259dff92407b91d9`.
+The constants blob was `a7c179dc8e3abc3ef179f73d078bcdc921185bcd`.
+[Parent registry](https://github.com/hgrecco/pint/blob/ccf655a20d0b4a90faf76a35b55f49509e19ce4a/pint/default_en.txt) ·
+[Merged registry](https://github.com/hgrecco/pint/blob/e29ea5aad7762fcf7b097d47759ea5a442da440f/pint/default_en.txt)
+
+The compiled coefficient from acre to hectare changed from
+`6272640/15499969` to `158080329/390625000`.
+The new `survey_acre` recovered the old coefficient, and
+the old `section` alias was absent from the merged registry.
+`chain` and `furlong` had competing definitions in the merged
+files. `survey_chain` had an exact conversion. Pint 0.26.1
+with Fraction magnitudes and `on_redefinition="ignore"` agreed
+on the listed unambiguous coefficients and used the survey
+definitions for the two competing names. In strict mode it
+refused to load the merged registry at a duplicate `fathom`.
+The source worker retains disagreement per name under its own
+agreement policy.
+
+The journal worker compiled and published six context conversions
+across two target-unit policies with the same kernel
+before testing four magnitudes on each of the two source pins.
+All 48 one-step results matched the compiler's exact coefficient
+or explicit refusal, with the supporting spans verified against
+the original file bytes. At the chosen threshold of 0.404686
+hectare, one acre admitted a downstream source in the earlier
+pin and did not admit it in the later pin. Operator removal and
+a changed source awaiting publication left the earlier evidence
+path unresolved. Reopening the journal reproduced both historical
+outcomes.
+
+The scope, context pairs, receiver and threshold were supplied.
+The exact conversion came from production source data.
+The comparison checks conversion semantics on selected inputs.
+It includes neither complete lifecycle timing nor learned
+acquisition or task selection.
+[Offline software fixtures](../experiments/memory/test_unit_program.py)
+
+## Visible source revisions and nonlinear admission, 26 November 2026
+
+**Reproduced contributor control.** The standalone prose fixture
+ran nine revisions and 45 late commands. It matched the separately
+coded analytic range calculation and the warm arm. There were
+24 margin decisions and eight determinate individual-channel
+decisions. It also checked 45 operator-off cases, nine historical
+reads, and 790 sampled completions. The dense eager and lazy arms
+each made nine preparations. The sparse lazy arm made two.
+These are logical counts from a visible scripted comparison.
+The same contributor wrote the prose, grammar and adjudicated
+inputs. The control uses neither the actual recurrent receiver
+nor a learned source reader.
+[Contributor control](../experiments/memory/visible_order_revision_control.js)
+
 ## Relational recurrence with incomplete source measurements, 26 November 2026
 
 **Scripted CPU software verification.** A worker used declared,
@@ -31,7 +90,12 @@ The receiver conservatively withheld a second kind of coupled
 consequence. With $z_A+z_B=x$ and positive $x$, monotonicity and
 oddness give $\tanh(z_A)+\tanh(z_B)>0$. The two transformed
 expressions did not share an atom and their bounds could not admit
-the relay. This is a loss of a determined consequence. A separate
+the relay. The independent aggregate already exceeds the relay
+floor in that fixture. The positive sum alone has no uniform
+positive margin with unbounded individual inputs, and the
+contributor control reproduces an exact zero after Float64
+saturation. This distinguishes the reported loss from a
+general positive-margin claim. A separate
 control checked the ordinary Float64 addition order on a large
 cancellation and exercised two activations of the same context.
 A delayed context still used the opening input after an intervening

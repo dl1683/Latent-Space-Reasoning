@@ -29,7 +29,8 @@ from experiments.memory.corpus_bindings import (
 from experiments.memory.latent_feedback import ConditionalTerm
 from experiments.memory.role_validity import RoleSupersession
 from experiments.memory.source_constraints import (
-    MAX_CONSTRAINT_SOURCE_BYTES, SourceConstraintPolicy, compile_source_constraints, constraint_versions,
+    UNIT_ACTION_GRAMMAR, SourceConstraintPolicy, bind_constraint_publication, compile_source_constraints,
+    constraint_versions, unit_action_digest,
 )
 from experiments.memory.verified_source_tool import SourceSpan, require_digest
 from experiments.memory.world_transport import (
@@ -529,11 +530,15 @@ def _event_digest(parent, revision, payload):
     return sha256(parent + str(revision).encode("ascii") + b"\x00" + payload).digest()
 
 
-def _constraint_event(policy, kernel_sha256, records):
+def _constraint_event(policy, kernel_sha256, records, publication):
     require_digest(kernel_sha256)
     _check_identifiers((*policy.authorities, *policy.contexts))
-    return _json(["source_constraint", 1, kernel_sha256, policy.wire(),
-                  [(source, raw.hex()) for source, raw in records]])
+    if any(type(raw) is not bytes or not 0 < len(raw) <= policy.byte_limit(source) for source, raw in records):
+        raise ValueError("numeric declaration exceeds its byte allowance")
+    encoded = [(source, raw.hex()) for source, raw in records]
+    if policy.unit_registry is None:
+        return _json(["source_constraint", 1, kernel_sha256, policy.wire(), encoded])
+    return _json(["source_constraint", 2, kernel_sha256, policy.wire(), encoded, unit_action_digest(publication)])
 
 
 def _with_source_constraints(pin, publication):
@@ -545,22 +550,31 @@ def _with_source_constraints(pin, publication):
 
 def _replay_source_constraints(payload, pin, publication_sha256):
     event = json.loads(payload)
-    if (type(event) is not list or len(event) != 5 or event[:2] != ["source_constraint", 1]
-            or type(event[1]) is not int or type(event[3]) is not list or len(event[3]) != 6
-            or any(type(group) is not list for group in (*event[3][:3], *event[3][4:]))
+    if (type(event) is not list or len(event) not in (5, 6) or event[0] != "source_constraint"
+            or type(event[1]) is not int or event[1] not in (1, 2)
+            or len(event) != 4 + event[1] or type(event[3]) is not list or len(event[3]) != 4 + 2 * event[1]
+            or any(type(group) is not list for group in (*event[3][:3], *event[3][4:6]))
             or type(event[4]) is not list):
         raise ValueError("invalid source constraint event")
-    _, _, kernel_sha256, spec, encoded = event
-    policy = SourceConstraintPolicy(*(tuple(group) for group in spec[:3]), spec[3], tuple(spec[4]), tuple(spec[5]))
+    _, version, kernel_sha256, spec, encoded = event[:5]
+    require_digest(kernel_sha256)
+    if version == 2:
+        if type(spec[6]) is not str or spec[7] != UNIT_ACTION_GRAMMAR:
+            raise ValueError("unknown unit action grammar")
+        require_digest(event[5])
+    policy = SourceConstraintPolicy(*(tuple(group) for group in spec[:3]), spec[3], tuple(spec[4]), tuple(spec[5]),
+                                    *spec[6:7])
     if len(encoded) > len(policy.authorities) + len(policy.contexts) or any(
         type(row) is not list or len(row) != 2 or type(row[0]) is not str or type(row[1]) is not str
-        or len(row[1]) > 2 * MAX_CONSTRAINT_SOURCE_BYTES for row in encoded
+        or len(row[1]) > 2 * policy.byte_limit(row[0]) for row in encoded
     ):
         raise ValueError("invalid constraint source records")
     records = tuple((source, bytes.fromhex(raw)) for source, raw in encoded)
-    if _constraint_event(policy, kernel_sha256, records) != payload:
-        raise ValueError("noncanonical source constraint event")
     publication = compile_source_constraints(pin, policy, kernel_sha256, records, publication_sha256)
+    if version == 2 and unit_action_digest(publication) != event[5]:
+        raise ValueError("unit actions disagree with their retained digest")
+    if _constraint_event(policy, kernel_sha256, records, publication) != payload:
+        raise ValueError("noncanonical source constraint event")
     return _with_source_constraints(pin, publication)
 
 
@@ -954,9 +968,9 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             records = tuple((source, source_records[source]) for source in authorities)
             parent = bytes.fromhex(base.journal_sha256)
             publication = compile_source_constraints(base, policy, kernel_sha256, records, "")
-            payload = _constraint_event(policy, kernel_sha256, records)
+            payload = _constraint_event(policy, kernel_sha256, records, publication)
             digest_hex = _event_digest(parent, base.revision + 1, payload).hex()
-            publication = replace(publication, use=replace(publication.use, publication_sha256=digest_hex))
+            publication = bind_constraint_publication(publication, digest_hex)
         with self._lock, closing(self._connect()) as db:
             db.execute("BEGIN IMMEDIATE")
             self._require_current_pin(db, base)

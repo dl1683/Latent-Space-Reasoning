@@ -1994,6 +1994,51 @@ lazy solver, particularly when most regions go unread.
 [Affine arithmetic](https://ic.unicamp.br/~stolfi/EXPORT/projects/affine-arith/Welcome.html) ·
 [DeepPoly](https://files.sri.inf.ethz.ch/website/papers/DeepPoly.pdf)
 
+#### Compiling context actions from revised unit sources
+
+[SLICE] The unit source worker compiles a supplied import graph of
+raw text before any task magnitude is supplied. It reduces explicit
+multiplicative definitions to exact rational scales and dimensions.
+Each definition, alias and dependency contributes its pinned byte
+span. Candidate definitions with different results keep the symbol
+and its aliases and dependents open. Candidate definitions that agree keep all
+their witnesses. The scope applies to the provided registry graph
+with agreement required across its admitted definitions.
+The compiler propagates proved conflicts through recursive aliases.
+The receipt walks the source dependency graph to retain all reachable
+candidate spans. An unresolved equation cycle by itself stays open.
+
+The same publication can carry different actions to one declared
+target unit. A context declares the source unit and the target unit.
+The worker obtains the coefficient from the registry, installs it
+on the existing input and output channels and records a refusal
+for target-unit disagreement or an open conversion. A later task's opening
+magnitude determines the contribution to preactivation. The ordinary
+joint block then scores later evidence from that state. No-memory,
+operator removal and historical reads use the same entry point.
+Repeating a selected context uses the ordinary carry without
+reinjection. Selecting a second conversion context makes the
+numeric channel open for that branch. The journal records the
+grammar identifier and an action digest over exact coefficients,
+statuses and witness spans. Replay checks the recomputed digest.
+
+This parser covers explicit unit names, aliases and a bounded
+multiplicative grammar. Prefix expansion, context-dependent unit
+systems, affine offsets and other unsupported forms remain outside
+the executable subset. Exact coefficients carry their precision to
+the Float64 receiving boundary. The receiving path keeps a roundoff
+allowance for the converted product. A nonzero value outside its
+supported range leaves the channel open with its source witnesses.
+The signed joint read measures a
+latent consequence, while exact converted values are available
+through the compiler. A raw authority generation change invalidates
+the whole registered batch. Separate target publications each
+carry their authority records. Dependency-local invalidation, learned
+context discovery and a cost advantage remain open.
+[Unit compiler](../experiments/memory/unit_program.py) ·
+[Source actions](../experiments/memory/source_constraints.py) ·
+[Upstream change](https://github.com/hgrecco/pint/pull/1920)
+
 ## Claims and evidence boundary (2026-10-15; not a new experiment)
 
 | Claim | Tag and current boundary | What is still required |

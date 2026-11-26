@@ -1,22 +1,26 @@
 """Compile exact, scoped linear consequences before a task enters the latent world."""
 
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from fractions import Fraction
 from hashlib import sha256
 import json
 import re
+from types import MappingProxyType
 
-from experiments.memory.relational_feedback import Expression, combine
+from experiments.memory.relational_feedback import Expression, _FLOAT_MAX, _rounded, combine
+from experiments.memory.unit_program import MAX_REGISTRY_BYTES, compile_units
 from experiments.memory.verified_source_tool import SourceSpan
 from experiments.memory.world_transport import WorldWitness, _source_ids
 
 
 MAX_CONSTRAINT_SOURCE_BYTES = 4096
+UNIT_ACTION_GRAMMAR = "multiplicative-units-v1"
 _MAX_AXES = 16
 _MAX_SOURCES = 32
 _RATIONAL = re.compile(r"-?[0-9]{1,7}(/[1-9][0-9]{0,6}|\.[0-9]{1,7})?")
 _SURROGATE = re.compile(r"[\ud800-\udfff]")
+_NORMAL_MIN = Fraction(1, 2**1022)
 
 
 @dataclass(frozen=True)
@@ -29,6 +33,7 @@ class SourceConstraintPolicy:
     middle_width: int
     authorities: tuple[str, ...]
     contexts: tuple[str, ...]
+    unit_registry: str | None = None
 
     def __post_init__(self):
         if (type(self.scope) is not tuple or len(self.scope) != 5
@@ -49,9 +54,20 @@ class SourceConstraintPolicy:
             object.__setattr__(self, name, group)
         if not set(self.authorities).isdisjoint(self.contexts):
             raise ValueError("constraint authorities and activating contexts must be disjoint")
+        if self.unit_registry is not None and (
+            type(self.unit_registry) is not str or self.unit_registry not in self.authorities
+            or len(self.input_axes) != 1 or len(self.output_axes) != 1 or self.middle_width != 1
+            or not self.scope[4].isidentifier()
+        ):
+            raise ValueError("a unit registry requires scalar channels and one named target unit")
 
     def wire(self):
-        return (self.scope, self.input_axes, self.output_axes, self.middle_width, self.authorities, self.contexts)
+        linear = (self.scope, self.input_axes, self.output_axes, self.middle_width, self.authorities, self.contexts)
+        return linear if self.unit_registry is None else (*linear, self.unit_registry, UNIT_ACTION_GRAMMAR)
+
+    def byte_limit(self, source):
+        return (MAX_REGISTRY_BYTES if self.unit_registry is not None and source in self.authorities
+                else MAX_CONSTRAINT_SOURCE_BYTES)
 
     def require_frame(self, pin):
         if max(*self.input_axes, *self.output_axes) >= pin.memory._anchors.shape[1]:
@@ -70,6 +86,34 @@ class ConstraintUse:
     open_axes: tuple[int, ...]
     inconsistent_measurements: tuple[WorldWitness, ...] = ()
     unreconciled_scope: tuple[WorldWitness, ...] = ()
+    withheld_conversion: tuple[str, tuple[WorldWitness, ...]] | None = None
+
+
+@dataclass(frozen=True, eq=False)
+class ConstraintAction:
+    # Input coefficients and shared nuisance coefficients, in exact arithmetic.
+    relations: tuple[tuple[int, tuple[Fraction, ...], tuple[Fraction, ...]], ...]
+    use: ConstraintUse
+
+    def project(self, policy, rows):
+        inputs = tuple(rows[axis] for axis in policy.input_axes)
+        nuisance = tuple(Expression.unknown() for _ in range(policy.middle_width))
+        additions = {axis: combine((*inputs, *nuisance), (*weights, *remainder))
+                     for axis, weights, remainder in self.relations}
+        use = self.use
+        if policy.unit_registry is not None and additions:
+            output, = policy.output_axes
+            exact = additions[output].constant
+            if exact and not _NORMAL_MIN <= abs(exact) <= _FLOAT_MAX / 2:
+                _, witnesses = use.evidence[0]
+                use = replace(use, evidence=(), open_axes=(output,), withheld_conversion=("numeric_range", witnesses))
+                additions.clear()
+            elif exact:
+                additions[output] = _rounded(additions[output], abs(exact), 1)
+        projected = tuple(additions[axis] if axis in additions else
+                          Expression.unknown() if axis in policy.output_axes else Expression()
+                          for axis in range(len(rows)))
+        return projected, use
 
 
 @dataclass(frozen=True, eq=False)
@@ -77,22 +121,10 @@ class SourceConstraintPublication:
     policy: SourceConstraintPolicy
     kernel_sha256: str
     source_versions: tuple[tuple[str, str | None, int | None], ...]
-    # Input coefficients and shared nuisance coefficients, in exact arithmetic.
-    relations: tuple[tuple[int, tuple[Fraction, ...], tuple[Fraction, ...]], ...]
-    contexts: frozenset[str]
-    use: ConstraintUse
+    actions: MappingProxyType
 
     def active_on(self, pin):
         return self.source_versions == constraint_versions(pin, self.policy)
-
-    def additions(self, rows):
-        inputs = tuple(rows[axis] for axis in self.policy.input_axes)
-        nuisance = tuple(Expression.unknown() for _ in range(self.policy.middle_width))
-        additions = {axis: combine((*inputs, *nuisance), (*weights, *remainder))
-                     for axis, weights, remainder in self.relations}
-        return tuple(additions[axis] if axis in additions else
-                     Expression.unknown() if axis in self.policy.output_axes else Expression()
-                     for axis in range(len(rows)))
 
 
 def constraint_versions(pin, policy):
@@ -128,6 +160,10 @@ def _declaration(raw, policy):
     if tuple(data[1]) != policy.scope:
         return "unreconciled_scope", None, None
     kind, left, right = data[2:]
+    if policy.unit_registry is not None:
+        if kind == "conversion" and all(type(unit) is str and unit.isidentifier() for unit in (left, right)):
+            return kind, left, right
+        raise ValueError("numeric context must declare a conversion between registry names")
     if kind == "measurement":
         p = _rational_row(left, policy.middle_width)
         if not any(p):
@@ -174,28 +210,20 @@ def _reduce_law(law, basis, input_width, measurements):
     return weights, tuple(residual[:width]), witnesses
 
 
-def compile_source_constraints(pin, policy, kernel_sha256, records, publication_sha256):
-    """Validate a complete registered authority snapshot and compile its observable rows."""
-    policy.require_frame(pin)
-    versions = constraint_versions(pin, policy)
-    active = tuple((source, digest, generation) for source, digest, generation in versions if digest is not None)
-    if tuple(source for source, _ in records) != tuple(source for source, _, _ in active):
-        raise ValueError("constraint records must cover every current registered source")
+def _context_matches(pin, source, span):
+    mentions = pin.memory._mentions.get(source, ())
+    return len(mentions) == 1 and mentions[0][3] == 1 and pin.memory.source_mention_span(source, 0) == span
 
+
+def _linear_actions(pin, policy, records, publication_sha256):
     measurements, laws = [], defaultdict(list)
     contexts = set()
     unreconciled = []
-    for (source, raw), (_, digest, generation) in zip(records, active, strict=True):
-        if type(raw) is not bytes or not 0 < len(raw) <= MAX_CONSTRAINT_SOURCE_BYTES:
-            raise ValueError("numeric declaration exceeds its byte allowance")
-        if sha256(raw).hexdigest() != digest:
-            raise ValueError("numeric declaration disagrees with its pinned source bytes")
+    for source, raw, witness in records:
         declaration = _declaration(raw, policy)
         if declaration is None:
             continue
         kind, left, right = declaration
-        span = SourceSpan(source, digest, 0, len(raw), digest)
-        witness = WorldWitness(span, generation, 0)
         if kind == "unreconciled_scope":
             if source in policy.authorities:
                 unreconciled.append(witness)
@@ -203,8 +231,7 @@ def compile_source_constraints(pin, policy, kernel_sha256, records, publication_
         if (kind == "context") != (source in policy.contexts):
             raise ValueError("numeric declaration disagrees with its registered source role")
         if kind == "context":
-            mentions = pin.memory._mentions.get(source, ())
-            if len(mentions) == 1 and mentions[0][3] == 1 and pin.memory.source_mention_span(source, 0) == span:
+            if _context_matches(pin, source, witness.span):
                 contexts.add(source)
             continue
         if kind == "measurement":
@@ -230,4 +257,76 @@ def compile_source_constraints(pin, policy, kernel_sha256, records, publication_
 
     open_axes = tuple(axis for axis in policy.output_axes if axis not in exact_axes)
     use = ConstraintUse(publication_sha256, tuple(evidence), open_axes, conflicts, tuple(unreconciled))
-    return SourceConstraintPublication(policy, kernel_sha256, versions, tuple(relations), frozenset(contexts), use)
+    operation = ConstraintAction(tuple(relations), use)
+    return {source: operation for source in sorted(contexts)}
+
+
+def _unit_actions(pin, policy, records, publication_sha256):
+    authorities = {source: raw for source, raw, _ in records if source in policy.authorities}
+    if set(authorities) != set(policy.authorities):
+        return {}
+    program = compile_units(policy.unit_registry, authorities)
+    output, = policy.output_axes
+    actions = {}
+    for source, raw, witness in records:
+        if source not in policy.contexts or not _context_matches(pin, source, witness.span):
+            continue
+        declaration = _declaration(raw, policy)
+        if declaration is None or declaration[0] != "conversion":
+            continue
+        if declaration[2] != policy.scope[4]:
+            use = ConstraintUse(publication_sha256, (), (output,), withheld_conversion=("target_unit", (witness,)))
+            actions[source] = ConstraintAction((), use)
+            continue
+        result = program.convert(*declaration[1:])
+        evidence = tuple(WorldWitness(span, pin._source_revisions[span.source_id], 0) for span in result.spans)
+        if result.coefficient is None:
+            use = ConstraintUse(publication_sha256, (), (output,), withheld_conversion=(result.status, evidence))
+            actions[source] = ConstraintAction((), use)
+        else:
+            use = ConstraintUse(publication_sha256, ((output, evidence),), ())
+            actions[source] = ConstraintAction(((output, (result.coefficient,), (Fraction(),)),), use)
+    return actions
+
+
+def bind_constraint_publication(publication, digest):
+    bound = {action: replace(action, use=replace(action.use, publication_sha256=digest))
+             for action in dict.fromkeys(publication.actions.values())}
+    actions = MappingProxyType({source: bound[action] for source, action in publication.actions.items()})
+    return replace(publication, actions=actions)
+
+
+def unit_action_digest(publication):
+    def spans(witnesses):
+        return [(w.span.source_id, w.span.version_sha256, w.span.start_byte, w.span.end_byte,
+                 w.span.span_sha256, w.generation) for w in witnesses]
+
+    rows = []
+    for source, action in sorted(publication.actions.items()):
+        if action.use.withheld_conversion is None:
+            axis, (coefficient,), _ = action.relations[0]
+            rows.append((source, "resolved", axis, str(coefficient), spans(action.use.evidence[0][1])))
+        else:
+            reason, evidence = action.use.withheld_conversion
+            rows.append((source, reason, spans(evidence)))
+    return sha256(json.dumps(rows, separators=(",", ":")).encode("ascii")).hexdigest()
+
+
+def compile_source_constraints(pin, policy, kernel_sha256, records, publication_sha256):
+    """Validate a complete registered authority snapshot and compile context actions."""
+    policy.require_frame(pin)
+    versions = constraint_versions(pin, policy)
+    active = tuple((source, digest, generation) for source, digest, generation in versions if digest is not None)
+    if tuple(source for source, _ in records) != tuple(source for source, _, _ in active):
+        raise ValueError("constraint records must cover every current registered source")
+    verified = []
+    for (source, raw), (_, digest, generation) in zip(records, active, strict=True):
+        if type(raw) is not bytes or not 0 < len(raw) <= policy.byte_limit(source):
+            raise ValueError("numeric declaration exceeds its byte allowance")
+        if sha256(raw).hexdigest() != digest:
+            raise ValueError("numeric declaration disagrees with its pinned source bytes")
+        span = SourceSpan(source, digest, 0, len(raw), digest)
+        verified.append((source, raw, WorldWitness(span, generation, 0)))
+    compiler = _linear_actions if policy.unit_registry is None else _unit_actions
+    actions = compiler(pin, policy, verified, publication_sha256)
+    return SourceConstraintPublication(policy, kernel_sha256, versions, MappingProxyType(actions))

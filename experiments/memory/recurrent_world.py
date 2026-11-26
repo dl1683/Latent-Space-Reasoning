@@ -83,7 +83,8 @@ class JointWorldBranch:
     _pending_destination: np.ndarray | None = None
     _source_relations: tuple[relations.Expression, ...] | None = None
     _constraint_use: ConstraintUse | None = None
-    _constraint_input: tuple[relations.Expression, ...] | None = None
+    _constraint_input: MappingProxyType | None = None
+    _unit_context: WorldWitness | None = None
 
     def _ancestry(self):
         node = self
@@ -388,7 +389,11 @@ class RecurrentWorld:
             self._require_memory(memory)
         initial = self._kernel._vector(seed)
         publication = None if memory is None else memory._source_constraints
-        additions = None if publication is None else publication.additions(relations.point(initial))
+        additions = None
+        if publication is not None:
+            points = relations.point(initial)
+            additions = MappingProxyType({action: action.project(publication.policy, points)
+                                          for action in dict.fromkeys(publication.actions.values())})
         opening = JointWorldBranch(initial, initial, _constraint_input=additions)
         state = JointWorldRead(memory, (opening,), self, (lower, upper))
         return self.continue_joint(state, steps=steps, max_hypotheses=max_hypotheses)
@@ -582,7 +587,7 @@ class RecurrentWorld:
         if source not in policy.contexts:
             return None, None
         publication = memory._source_constraints
-        return policy, publication if publication is not None and source in publication.contexts else None
+        return policy, None if publication is None else publication.actions.get(source)
 
     @staticmethod
     def _joint_feedback(branch, query):
@@ -628,6 +633,20 @@ class RecurrentWorld:
         kernel = self._kernel
         current, source = branch._hidden, branch._source_hidden
         observed = witness is not None
+        earlier_unit = branch._unit_context
+        unit_context = earlier_unit
+        installed_additions, constraint_use = ((None, None) if constraint is None
+                                               else branch._constraint_input[constraint])
+        if constraint_policy is not None and constraint_policy.unit_registry is not None:
+            if earlier_unit is None:
+                unit_context = witness
+            elif earlier_unit.span.source_id == witness.span.source_id:
+                constraint_policy, constraint, constraint_use = None, None, None
+            else:
+                constraint = None
+                if constraint_use is not None:
+                    constraint_use = replace(constraint_use, evidence=(), open_axes=constraint_policy.output_axes,
+                                             withheld_conversion=("multiple_conversions", (earlier_unit, witness)))
         with np.errstate(over="raise", invalid="raise"):
             source_extra = None if transport is None else transport.contribution(source)
             source_rows = branch._source_relations
@@ -638,7 +657,7 @@ class RecurrentWorld:
             else:
                 if source_rows is None:
                     source_rows = relations.point(source)
-                additions = (branch._constraint_input if constraint is not None
+                additions = (installed_additions if constraint is not None
                              else self._open_constraint_additions(source_rows, constraint_policy))
                 source_rows = self._advance_relational_source(source_rows, observation, observed, additions)
                 source_next = _frozen(relations.representatives(source_rows))
@@ -649,7 +668,7 @@ class RecurrentWorld:
                 if transport is not None and current is not source:
                     task_extra = transport.contribution(current)
                 if constraint is not None:
-                    task_extra = relations.representatives(branch._constraint_input)
+                    task_extra = relations.representatives(installed_additions)
                 task_input, _ = kernel._preactivation(current, observation, feedback_value, observed,
                                                        observation_extra=task_extra)
                 hidden = _frozen(np.tanh(task_input))
@@ -667,6 +686,6 @@ class RecurrentWorld:
         destination = None if source_extra is None else transport.destination
         successor = JointWorldBranch(hidden, source_next, branch, witness, key, value, complete,
                                      _transport_use=use, _pending_destination=destination, _source_relations=source_rows,
-                                     _constraint_use=None if constraint is None else constraint.use,
-                                     _constraint_input=branch._constraint_input)
+                                     _constraint_use=constraint_use,
+                                     _constraint_input=branch._constraint_input, _unit_context=unit_context)
         return successor, evaluations

@@ -920,3 +920,27 @@ same pin. The declared channels then contribute independent
 unknowns. A stale or unavailable publication likewise leaves the
 affected channels open until the worker can publish from current
 sources.
+
+For raw unit sources, set `unit_registry` to the root authority's
+source ID. Declare one input and one output axis and an intermediate
+width of one. The last scope field is the output unit's exact
+registry name. Register all imported file names as authorities.
+An authority record can contain up to 65,536 bytes in this mode.
+Use a full-span context declaration whose last three JSON fields
+are `["conversion", source_unit_name, target_unit_name]`.
+The worker compiles the supplied files as one import graph and
+publishes the context-specific actions in one journal event.
+The same joint call consumes those actions.
+
+Use `compile_units(entry, source_records).convert(source, target)`
+for the exact, untasked reference view. A resolved conversion
+returns a `Fraction` coefficient and its source spans.
+Refusals distinguish `missing`, `open`, `conflict` and
+`incompatible`. Here `missing` refers to explicit names
+in the supported registry grammar. The joint branch's
+`withheld_conversion` retains that status and relevant versioned
+witness spans. Joint-specific refusals include `target_unit`,
+`multiple_conversions` and `numeric_range`. Nonzero late products
+must have magnitude from the smallest normal Float64 value
+through half its maximum finite value.
+Observation keys and task encodings still come from the caller.

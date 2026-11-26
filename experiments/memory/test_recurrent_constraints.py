@@ -231,7 +231,7 @@ def test_relation_lane_preserves_receiver_rounding_and_repeated_activation(tmp_p
 
     later = world.continue_joint(first, steps=1, max_hypotheses=2)
     repeated = next(branch for branch in later.branches if branch.witnesses[-1].span.source_id == "context")
-    assert repeated.constraint_uses == (world.prepare(installed)._source_constraints.use,) * 2
+    assert repeated.constraint_uses == (world.prepare(installed)._source_constraints.actions["context"].use,) * 2
     assert not repeated.transport_uses
 
     scope = ("\ud83d\ude00", *world._constraint_policy.scope[1:])
@@ -263,7 +263,7 @@ def test_late_context_uses_the_opening_frame_and_publications_coexist(tmp_path):
     world = RecurrentWorld(kernel, encoder_version=frame.encoder_version, max_observations=5,
                            feedback=True, constraint_policy=original._constraint_policy)
     installed = world.maintain_constraints(owner, earlier, _source_bytes(world, earlier, raw))
-    assert original.prepare(installed)._source_constraints.use.publication_sha256 == earlier.journal_sha256
+    assert original.prepare(installed)._source_constraints.actions["context"].use.publication_sha256 == earlier.journal_sha256
     seed = .8 * axes[0]
     first = _read(world, installed, seed, steps=1)
     assert first.branches[0].source_hidden[0] < 0.
@@ -274,5 +274,6 @@ def test_late_context_uses_the_opening_frame_and_publications_coexist(tmp_path):
     assert branch.constraint_uses[0].publication_sha256 == installed.journal_sha256
 
     reopened = JournaledCorpusWorkspace(tmp_path / "constraints.sqlite", frame)
-    assert original.prepare(reopened.snapshot())._source_constraints.use.publication_sha256 == earlier.journal_sha256
+    replayed = original.prepare(reopened.snapshot())
+    assert replayed._source_constraints.actions["context"].use.publication_sha256 == earlier.journal_sha256
     assert _read(world, reopened.snapshot(), seed).read(axes[3], floor=.9).status == "supported"

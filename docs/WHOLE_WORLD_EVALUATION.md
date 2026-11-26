@@ -400,6 +400,27 @@ solver. Require competent memory-omitted and attached calls before
 attributing a difference to the carrier.
 [BDH-CQ study](https://arxiv.org/html/2608.09888v1)
 
+The Pint case supplies a visible upstream revision for separating
+source acquisition from arithmetic. A model should propose the unit
+pair, scope or operation from independently authored descriptions
+and source revisions. Score accepted proposals using the same pinned
+bytes and exact verifier available to the warm conventional arm.
+Test ambiguous units with and without explicit precedence,
+newly eligible names and stable-reference conversions. Keep the
+task magnitudes and which late comparisons will be asked outside
+maintenance. The current typed contexts and compiler establish an
+exact reference and a receiving interface for this comparison.
+
+The contributor's visible prose amendments give a second case
+with a numerical bound arriving from an independent approval.
+Require a worker to propose the governing scope and variable
+constraint before late commands. Compare sign-only, positive
+margin and individual-channel outcomes on the same source pins.
+Identify the bounded numerical contract and check saturation on
+the actual backend. Separate visible author-adjudicated inputs
+from independently prepared questions and proof obligations.
+[Visible prose revision control](../experiments/memory/visible_order_revision_control.js)
+
 ## Executable gaps in the current branch
 
 `TaskWorld` pins a verified source catalogue to an optional journaled

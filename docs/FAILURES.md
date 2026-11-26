@@ -24,6 +24,17 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A revision can introduce contradictory definitions.**
+Pint's changed registry includes two different expressions for
+`chain` and related unqualified units. Choosing the last loaded
+row yields a deterministic answer under Pint's configured
+precedence. A source-proof scope with no such precedence must
+retain both definitions and keep dependent computations open.
+Checking only a ratio between two units that shift together
+can also miss a revision. Use a stable target unit and compare
+agreed and conflicting interpretations separately.
+[Pinned upstream control](RESULTS.md#source-derived-actions-on-a-pint-revision-26-november-2026)
+
 **Independent bounds can discard a determined consequence.**
 Two unknowns related by $z_A=-z_B$ remain exact opposites after
 tanh. The same coordinate marginals admit completions that
@@ -33,6 +44,15 @@ breaks that dependence and must reopen the route even though
 the aggregate remains determined. Equivalent nonlinear forms
 beyond exact signed matches can still be lost.
 [Relational recurrence controls](RESULTS.md#relational-recurrence-with-incomplete-source-measurements-26-november-2026)
+
+**A sign theorem can leave a positive admission margin open.**
+For a fixed positive sum of two preactivations, their tanh values
+sum to a positive number in real arithmetic with infimum zero.
+Saturation can also produce zero in Float64. The contributor
+fixture bounds individual values through an independently
+versioned approval. Keep both the dependency and its admissible
+domain, and check the receiving backend before using a
+positive margin. [Visible order control](../experiments/memory/visible_order_revision_control.js)
 
 **Preserved geometry can conceal a wrong correspondence.** Swapping
 exit partners left the fit Gram unchanged and failed disjoint
