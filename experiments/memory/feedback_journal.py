@@ -15,7 +15,7 @@ import numpy as np
 
 from experiments.memory.feedback_workspace import (
     FeedbackMaintenanceRound, FeedbackProposal, FeedbackRepairAttempt, FeedbackRevision, FeedbackWorkspace,
-    StaleFeedbackRevision, _split_candidate_kind,
+    StaleFeedbackRevision, _CoupledRepairOrigin, _split_candidate_kind,
 )
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, _frozen, _real_array
 from experiments.memory.linear_feedback import LinearFeedbackKernel
@@ -26,6 +26,8 @@ _SLOT_HEADER = Struct("<QB")
 _COUPLED_HEADER = Struct("<BQ")
 _COUPLED_OPERATOR_KINDS = ("weight", "conditional", "hinge", "route", "joint")
 _COUPLED_EVENT = "tree_slots_operator_v1"
+_COUPLED_WITHDRAWAL_EVENT = "tree_slots_operator_withdraw_v1"
+_COUPLED_WITHDRAWAL_ID = Struct("<Q")
 
 
 def _encode(array):
@@ -143,7 +145,7 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
                  max_terms=0, source_ids=None, guards=(), allow_hinge=False, max_reference_frontier=None,
                  reuse_tree_routes=False, max_retained_tree_scores=0, create=False, allow_joint=False,
                  joint_trials=1, separate_joint_trials=False, joint_refinements=0, reuse_joint_anchors=False,
-                 allow_coupled_repairs=False):
+                 allow_coupled_repairs=False, allow_coupled_withdrawals=False):
         if type(create) is not bool:
             raise ValueError("journal creation flag must be a boolean")
         if type(reuse_joint_anchors) is not bool or (reuse_joint_anchors and not joint_refinements):
@@ -155,6 +157,9 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         if type(allow_coupled_repairs) is not bool or (allow_coupled_repairs and not self._tree_bound):
             raise ValueError("coupled repair journals require a boolean policy and a tree kernel")
         self._allow_coupled_repairs = allow_coupled_repairs
+        if type(allow_coupled_withdrawals) is not bool or (allow_coupled_withdrawals and not allow_coupled_repairs):
+            raise ValueError("coupled withdrawals require an enabled coupled repair journal")
+        self._allow_coupled_withdrawals = allow_coupled_withdrawals
         self._tree_error_policy = np.geterr() if self._tree_bound else None
         if self._tree_bound and any(mode in ("call", "log") for mode in self._tree_error_policy.values()):
             raise ValueError("tree feedback journals require a data-only NumPy error policy")
@@ -262,6 +267,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             digest = sha256(b"feedback workspace tree v1\n")
             if self._allow_coupled_repairs:
                 digest.update(b"coupled slot operator events v1\n")
+            if self._allow_coupled_withdrawals:
+                digest.update(b"coupled slot operator withdrawal v1\n")
         else:
             digest = sha256(b"feedback workspace root v1\n" if initial_sources is None
                             else b"feedback workspace source moments v1\n")
@@ -386,7 +393,9 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
             values = np.frombuffer(payload, dtype="<f8")
             return self._prepare_observation_revision(base, values.reshape(-1, base.kernel._width))
         if kind == "tree_slots" and probe is None and self._tree_bound:
-            return self._prepare_slot_revision(base, _decode_slots(payload, base.kernel._width))
+            changes = _decode_slots(payload, base.kernel._width)
+            revised = self._prepare_slot_revision(base, changes)
+            return self._carry_coupled_origin(base, revised, changes)
         if kind == _COUPLED_EVENT and probe is not None and self._allow_coupled_repairs:
             if len(payload) < _COUPLED_HEADER.size:
                 raise ValueError("truncated coupled repair header")
@@ -396,7 +405,21 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
                 raise ValueError("invalid coupled repair payload")
             changes = _decode_slots(payload[_COUPLED_HEADER.size:split], base.kernel._width)
             proposal = self._decode_operator(base, _COUPLED_OPERATOR_KINDS[tag], probe, payload[split:])
-            return self._prepare_slot_operator_repair(proposal, changes)
+            revised = self._prepare_slot_operator_repair(proposal, changes)
+            if self._allow_coupled_withdrawals:
+                before = []
+                for slot in changes:
+                    row = base.kernel.observation_slot(base.memory, slot)
+                    before.append((slot, None if row is None else tuple(row)))
+                revised = replace(revised, _coupled_origin=_CoupledRepairOrigin(
+                    revised.number, base.kernel, tuple(before),
+                ))
+            return revised
+        if kind == _COUPLED_WITHDRAWAL_EVENT and probe is None and self._allow_coupled_withdrawals:
+            if len(payload) != _COUPLED_WITHDRAWAL_ID.size:
+                raise ValueError("invalid coupled withdrawal payload")
+            origin_number, = _COUPLED_WITHDRAWAL_ID.unpack(payload)
+            return self._prepare_coupled_withdrawal(base, origin_number)
         return self._prepare_operator_revision(self._decode_operator(base, kind, probe, payload))
 
     def _journal_tip(self, db):
@@ -793,7 +816,15 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         return base if revised is base else self._commit_slot_update(base, revised, edits)
 
     def _commit_slot_update(self, base, revised, changes):
+        revised = self._carry_coupled_origin(base, revised, changes)
         return self._commit(base, revised, tree_event=("tree_slots", _encode_slots(changes)))
+
+    @staticmethod
+    def _carry_coupled_origin(base, revised, changes):
+        origin = base._coupled_origin
+        if origin is not None and all(slot not in changes for slot, _ in origin.before):
+            return replace(revised, _coupled_origin=origin)
+        return revised
 
     def _publish_slot_operator_repair(self, base, proposal, changes):
         if not self._allow_coupled_repairs:
@@ -804,6 +835,32 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         payload = _COUPLED_HEADER.pack(tag, len(slots)) + slots + operator
         revised = self._replay(base, _COUPLED_EVENT, proposal.probe, payload)
         return self._commit(base, revised, proposal=proposal, tree_event=(_COUPLED_EVENT, payload))
+
+    def withdraw_coupled_repair(self, base, coupled_revision):
+        """Withdraw the retained pair while preserving disjoint later source edits."""
+        if not self._allow_coupled_withdrawals:
+            raise ValueError("tree journal does not allow coupled withdrawals")
+        if isinstance(coupled_revision, (bool, np.bool_)):
+            raise ValueError("coupled withdrawal needs an integer revision")
+        origin_number = index(coupled_revision)
+        if not 0 < origin_number < 1 << 63:
+            raise ValueError("coupled withdrawal revision is out of range")
+        self._require_current(base)
+        payload = _COUPLED_WITHDRAWAL_ID.pack(origin_number)
+        revised = self._replay(base, _COUPLED_WITHDRAWAL_EVENT, None, payload)
+        return self._commit(base, revised, tree_event=(_COUPLED_WITHDRAWAL_EVENT, payload))
+
+    def _prepare_coupled_withdrawal(self, base, origin_number):
+        origin = base._coupled_origin
+        if origin is None or origin.number != origin_number:
+            raise ValueError("coupled repair is not retained on this revision")
+        memory = origin.kernel.revise(base.memory, dict(origin.before))
+        revised = self._measure_bank(base.number + 1, origin.kernel, memory)
+        if regression := self._probe_regression(base, revised.errors, revised.source_masses):
+            raise ValueError(f"coupled withdrawal {regression}")
+        if self._regresses_endpoints(base.guard_errors, revised.guard_errors):
+            raise ValueError("coupled withdrawal regresses a workspace guard")
+        return revised
 
     def snapshot(self):
         """Replay unseen events and return the head of one consistent journal read."""

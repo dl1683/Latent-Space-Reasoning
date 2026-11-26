@@ -745,6 +745,16 @@ Create a tree journal with `allow_coupled_repairs=True` to record paired repairs
 
 This admission compares the old and new computations on declared reads. Source truth and behavior on unseen reads require separate evidence. For useful compensation, compare the opening, source-only, operator-only and combined states using the same edit and the same operator recipe.
 
+#### Withdrawing a coupled repair
+
+[SLICE] A coupled tree journal created with `allow_coupled_withdrawals=True` retains one origin for withdrawal. Each coupled publication records the preceding kernel and exact before rows of touched slots in its resulting revision. The origin keeps the prior representation, including factored maps, without retaining the preceding bank. Reopening reconstructs it from ordinary replay. Withdrawing requires the same root policy in every opener.
+
+Later slot events carry the origin when their written slots are disjoint. An overlap clears it even if a later write restores the same bytes. Whole-bank replacements and operator changes clear it. A newer coupled repair replaces it. The revision's `retained_coupled_revision` identifies the tracked origin for a caller.
+
+`withdraw_coupled_repair(base, coupled_revision)` restores the origin's slots and predecessor kernel on the current bank. The preparation checks capacity and measures fresh anchors. It protects the current working and guard endpoints and every currently attained source floor. A retained origin can therefore refuse on changed read requirements or exhausted capacity. Immediate withdrawal can also reopen a read that the pair newly satisfied, so that attempt is refused. This call reverses the one retained operator change, whose size was checked at its original admission. A successful withdrawal clears the origin.
+
+The journal appends one versioned event with the eight-byte little-endian origin revision. The writer and reopener use the same replay check. A competing append requires a fresh current revision before retry. Withdrawal retains history and preserves surviving disjoint edits where they pass admission. Source authenticity and usefulness on unseen reads remain separate claims.
+
 #### Choosing a source repair within a validation budget
 
 [SLICE] Call `workspace.maintain_observation_slots(base, candidates, repair_probe=i, max_candidates=..., max_validations=..., max_replays=0)` to stage alternative slot edits against one revision. The workspace freezes each mapping and its row storage as it is yielded. A prepared bank and its journal payload come from the same frozen edits. A candidate past the input cap causes refusal before scoring or measurement.

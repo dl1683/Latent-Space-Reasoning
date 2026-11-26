@@ -70,6 +70,13 @@ class FeedbackProbe:
 
 
 @dataclass(frozen=True, eq=False)
+class _CoupledRepairOrigin:
+    number: int
+    kernel: TreeFeedbackKernel
+    before: tuple[tuple[int, tuple[float, ...] | None], ...]
+
+
+@dataclass(frozen=True, eq=False)
 class FeedbackRevision:
     number: int
     kernel: FeedbackKernel
@@ -80,6 +87,13 @@ class FeedbackRevision:
     _probe_routes: tuple[_TreeReplay | None, ...] = ()
     _guard_routes: tuple[_TreeReplay, ...] = ()
     source_masses: tuple[float | None, ...] = ()
+    _coupled_origin: _CoupledRepairOrigin | None = None
+
+    @property
+    def retained_coupled_revision(self) -> int | None:
+        """Return the tracked origin before any withdrawal admissibility check."""
+        origin = self._coupled_origin
+        return None if origin is None else origin.number
 
     def start(self, seed):
         return self.kernel.start(seed, self.memory)

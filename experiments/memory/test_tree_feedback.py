@@ -1852,6 +1852,202 @@ def test_coupled_slot_operator_repair_recovers_a_routing_floor_on_the_edited_ban
     assert reopened.number == base.number + 1 and reopened.source_masses == combined.source_masses
 
 
+def _coupled_withdrawal_inputs(path):
+    value = FactoredValue([[1.], [0.]], [[1., 0.]])
+    tree = TreeFeedbackKernel(depth=2, max_frontier=4, query=[[0.], [0.]], carry=None,
+                              observation_key=[[0.], [0.]], observation_value=value,
+                              feedback_key=[[0.], [0.]], feedback_value=np.zeros((2, 2)), max_steps=1)
+    rows = [[.25, 0.], [.25, 0.]]
+    probe = FeedbackProbe((1., 0.), 1, (float(np.tanh(.25)), 0.))
+    options = dict(max_update_norm=1., allow_coupled_repairs=True, allow_coupled_withdrawals=True)
+    return (path, tree, rows, [probe]), options
+
+
+@pytest.mark.parametrize("slot", [0, 2])
+def test_coupled_withdrawal_restores_the_predecessor_and_preserves_disjoint_edits(tmp_path, slot):
+    args, options = _coupled_withdrawal_inputs(tmp_path / "withdraw-pair.db")
+    writer = JournaledFeedbackWorkspace(*args, **options, create=True)
+    opening = writer.snapshot()
+    pair = writer.publish_slot_operator_repair(writer.propose_slot_operator_repair(opening, {slot: [.75, 0.]}, 0))
+    assert pair.retained_coupled_revision == pair.number
+    changed = writer.revise_observation_slots(pair, {1: [.25, .5]})
+    assert changed.retained_coupled_revision == pair.number
+    reader = JournaledFeedbackWorkspace(*args, **options)
+    current = reader.snapshot()
+    assert current.retained_coupled_revision == pair.number
+    with pytest.raises(ValueError, match="invalid coupled withdrawal payload"):
+        reader._replay(current, "tree_slots_operator_withdraw_v1", None, bytes(9))
+    with pytest.raises(ValueError, match="not retained"):
+        reader._replay(current, "tree_slots_operator_withdraw_v1", None, current.number.to_bytes(8, "little"))
+    reverted = reader.withdraw_coupled_repair(current, current.retained_coupled_revision)
+    assert reverted.number == changed.number + 1 and reverted.retained_coupled_revision is None
+    assert reverted.errors[0] < 1e-12 and isinstance(reverted.kernel._observation_value, FactoredValue)
+    np.testing.assert_array_equal(reverted.kernel.observation_slot(reverted.memory, 1), [.25, .5])
+    if slot == 0:
+        np.testing.assert_array_equal(reverted.kernel.observation_slot(reverted.memory, 0), [.25, 0.])
+    else:
+        assert reverted.kernel.observation_slot(reverted.memory, 2) is None
+    np.testing.assert_array_equal(pair.kernel.observation_slot(pair.memory, slot), [.75, 0.])
+
+    with closing(reader._connect()) as db:
+        assert db.execute("SELECT kind FROM feedback_events ORDER BY number").fetchall() == [
+            ("tree_slots_operator_v1",), ("tree_slots",), ("tree_slots_operator_withdraw_v1",),
+        ]
+    reopened = JournaledFeedbackWorkspace(*args, **options).snapshot()
+    assert reopened.number == reverted.number and reopened.errors == reverted.errors
+    assert reopened.retained_coupled_revision is None
+    np.testing.assert_array_equal(reopened.kernel.observation_slot(reopened.memory, 1), [.25, .5])
+
+
+@pytest.mark.parametrize("intervening", ["overlap", "whole_bank", "operator", "new_pair"])
+def test_coupled_withdrawal_cannot_overwrite_intervening_dependencies(tmp_path, intervening):
+    args, options = _coupled_withdrawal_inputs(tmp_path / "withdraw-superseded.db")
+    workspace = JournaledFeedbackWorkspace(*args, **options, create=True)
+    pair = workspace.publish_slot_operator_repair(
+        workspace.propose_slot_operator_repair(workspace.snapshot(), {0: [.75, 0.]}, 0),
+    )
+    if intervening == "overlap":
+        touched = workspace.revise_observation_slots(pair, {0: [.5, 0.]})
+        current = workspace.revise_observation_slots(touched, {0: [.75, 0.]})
+    elif intervening == "whole_bank":
+        current = workspace.replace_observations(pair, [[.75, 0.], [.25, 0.]])
+    elif intervening == "operator":
+        changed = workspace.revise_observation_slots(pair, {1: [.5, 0.]})
+        assert changed.retained_coupled_revision == pair.number
+        current = workspace.publish(workspace.propose(changed, 0))
+    else:
+        current = workspace.publish_slot_operator_repair(
+            workspace.propose_slot_operator_repair(pair, {0: [.9, 0.]}, 0),
+        )
+    expected_origin = current.number if intervening == "new_pair" else None
+    assert current.retained_coupled_revision == expected_origin
+    with pytest.raises(ValueError, match="not retained"):
+        workspace.withdraw_coupled_repair(current, pair.number)
+    recovered = JournaledFeedbackWorkspace(*args, **options).snapshot()
+    assert recovered.retained_coupled_revision == expected_origin
+    assert workspace.snapshot() is current
+    if intervening == "new_pair":
+        withdrawal = workspace.withdraw_coupled_repair(current, current.number)
+        assert withdrawal.retained_coupled_revision is None
+        np.testing.assert_array_equal(withdrawal.kernel.observation_slot(withdrawal.memory, 0), [.75, 0.])
+
+
+def test_coupled_withdrawal_rechecks_current_reads_after_disjoint_changes(tmp_path):
+    args, options = _coupled_withdrawal_inputs(tmp_path / "withdraw-protected.db")
+    workspace = JournaledFeedbackWorkspace(*args, **options, create=True)
+    pair = workspace.publish_slot_operator_repair(
+        workspace.propose_slot_operator_repair(workspace.snapshot(), {0: [.75, 0.]}, 0),
+    )
+    current = workspace.revise_observation_slots(pair, {1: [.5, 0.]})
+    assert current.retained_coupled_revision == pair.number
+    with pytest.raises(ValueError, match="regresses a workspace probe"):
+        workspace.withdraw_coupled_repair(current, pair.number)
+    assert workspace.snapshot() is current and current.errors[0] < .06
+    reopened = JournaledFeedbackWorkspace(*args, **options).snapshot()
+    assert reopened.number == current.number and reopened.retained_coupled_revision == pair.number
+
+
+def test_coupled_withdrawal_is_opt_in_and_loses_a_competing_append(tmp_path, monkeypatch):
+    args, options = _coupled_withdrawal_inputs(tmp_path / "withdraw-race.db")
+    worker = JournaledFeedbackWorkspace(*args, **options, create=True)
+    with pytest.raises(ValueError, match="initial workspace inputs disagree"):
+        JournaledFeedbackWorkspace(*args, **(options | {"allow_coupled_withdrawals": False}))
+    writer = JournaledFeedbackWorkspace(*args, **options)
+    pair = worker.publish_slot_operator_repair(worker.propose_slot_operator_repair(worker.snapshot(), {0: [.75, 0.]}, 0))
+    commit = worker._commit
+
+    def compete(opening, candidate, **kwargs):
+        writer.revise_observation_slots(writer.snapshot(), {1: [.25, .6]})
+        return commit(opening, candidate, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(worker, "_commit", compete)
+        with pytest.raises(StaleFeedbackRevision):
+            worker.withdraw_coupled_repair(pair, pair.number)
+    current = worker.snapshot()
+    assert current.number == pair.number + 1 and current.retained_coupled_revision == pair.number
+    reverted = worker.withdraw_coupled_repair(current, pair.number)
+    assert reverted.number == current.number + 1
+    np.testing.assert_array_equal(reverted.kernel.observation_slot(reverted.memory, 1), [.25, .6])
+
+
+def test_coupled_withdrawal_restores_deleted_rows_only_when_capacity_allows(tmp_path):
+    (path, tree, _, probes), options = _coupled_withdrawal_inputs(tmp_path / "withdraw-capacity.db")
+    args = (path, tree.with_frontier(1), [[.125, 0.], [.375, 0.]], probes)
+    workspace = JournaledFeedbackWorkspace(*args, **options, max_reference_frontier=2, create=True)
+    pair = workspace.publish_slot_operator_repair(
+        workspace.propose_slot_operator_repair(workspace.snapshot(), {0: None}, 0),
+    )
+    full = workspace.revise_observation_slots(pair, {2: [.375, 0.]})
+    assert full.retained_coupled_revision == pair.number and full.memory.count == 2
+    with pytest.raises(ValueError, match="exceeds the full-reference frontier"):
+        workspace.withdraw_coupled_repair(full, pair.number)
+    assert workspace.snapshot() is full
+    freed = workspace.revise_observation_slots(full, {2: None})
+    revised = workspace.withdraw_coupled_repair(freed, pair.number)
+    np.testing.assert_array_equal(revised.kernel.observation_slot(revised.memory, 0), [.125, 0.])
+    assert revised.memory.count == 2 and revised.errors[0] < 1e-12
+
+
+def test_coupled_withdrawal_protects_an_attained_floor_when_the_current_target_fails(tmp_path):
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, query=[[1.], [0.]], carry=None,
+                              observation_key=[[1.], [0.]], observation_value=[[0., 0.], [0., 1.]],
+                              feedback_key=[[0.], [0.]], feedback_value=np.zeros((2, 2)), max_steps=1)
+    goal = FeedbackProbe((1., 0.), 1, (0., 0.), FeedbackRoutingGoal(0, .7))
+    workspace = JournaledFeedbackWorkspace(tmp_path / "withdraw-floor.db", tree, [[1., 0.], [0., 0.]], [goal],
+                                             max_update_norm=3., allow_coupled_repairs=True,
+                                             allow_coupled_withdrawals=True, create=True)
+    proposal = FeedbackProposal(workspace.snapshot(), 0, _query=[[-2.], [0.]])
+    pair = workspace.publish_slot_operator_repair(FeedbackSlotOperatorDraft(proposal, ((0, (-.5, 0.)),)))
+    current = workspace.revise_observation_slots(pair, {1: [.25, .3]})
+    assert current.retained_coupled_revision == pair.number
+    assert current.errors[0] > .05 and current.source_masses[0] > .8
+    with pytest.raises(ValueError, match="regresses a protected source mass floor"):
+        workspace.withdraw_coupled_repair(current, pair.number)
+    assert workspace.snapshot() is current
+
+
+@pytest.mark.parametrize("from_evidence", [False, True])
+def test_coupled_withdrawal_origin_survives_disjoint_slot_maintenance(tmp_path, from_evidence):
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, query=[[40.], [0.]], carry=None,
+                              observation_key=[[1.], [0.]], observation_value=[[0., 0.], [0., 1.]],
+                              feedback_key=[[0.], [0.]], feedback_value=np.zeros((2, 2)), max_steps=1)
+    target = (0., float(np.tanh(.25)))
+    probes = (FeedbackProbe((1., 0.), 1, target), FeedbackProbe((-1., 0.), 1, target))
+    args = (tmp_path / "maintained-withdrawal.db", tree, [[1., .25], [-1., 0.]], probes)
+    options = dict(max_update_norm=1., allow_coupled_repairs=True, allow_coupled_withdrawals=True)
+    worker = JournaledFeedbackWorkspace(*args, **options, create=True)
+    pair = worker.publish_slot_operator_repair(worker.propose_slot_operator_repair(worker.snapshot(), {0: [1., .5]}, 0))
+    value = pair.kernel._observation_value
+    replacement = (-1., float((.25 + value[0, 1]) / value[1, 1]))
+    if from_evidence:
+        run = worker.maintain_from_slot_evidence(pair, (FeedbackSlotEvidence(1, (-1., 0.), replacement),),
+                                                 repair_probe=1, max_evidence=1, max_candidates=1,
+                                                 max_validations=1)
+        result = run.maintenance
+    else:
+        result = worker.maintain_observation_slots(pair, ({1: replacement},), repair_probe=1,
+                                                   max_candidates=1, max_validations=1)
+    assert result.status == "committed"
+    assert result.revision.retained_coupled_revision == pair.number
+    cold = JournaledFeedbackWorkspace(*args, **options, max_retained_tree_scores=4).snapshot()
+    assert cold.retained_coupled_revision == pair.number and cold.errors == result.revision.errors
+
+
+def test_coupled_withdrawal_can_refuse_immediate_reversal_of_a_new_capability(tmp_path):
+    (path, tree, rows, probes), options = _coupled_withdrawal_inputs(tmp_path / "withdraw-reopens-read.db")
+    kernel = tree._with_observation_value(np.zeros((2, 2)))
+    workspace = JournaledFeedbackWorkspace(path, kernel, rows, probes, **options, create=True)
+    base = workspace.snapshot()
+    assert base.errors[0] > .24
+    draft = workspace.propose_slot_operator_repair(base, {0: [.75, 0.]}, 0)
+    pair = workspace.publish_slot_operator_repair(draft)
+    assert pair.errors[0] < 1e-12
+    with pytest.raises(ValueError, match="regresses a workspace probe"):
+        workspace.withdraw_coupled_repair(pair, pair.number)
+    assert workspace.snapshot() is pair and pair.retained_coupled_revision == pair.number
+
+
 def test_multiplicity_survives_a_huge_common_observation_and_history_logit():
     key = np.array([[1.0], [0.0]])
     weights = dict(query=1e20 * key, carry=np.diag([40, 0]), observation_key=key,
