@@ -24,6 +24,16 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**An aggregate moment read can hide a needed source, 26 November
+2026.** With a single shared feature, a target payload contributes
+one part in the count of aligned rows. High total mass can then accompany
+a negligible target effect. The native recurrence slice limits weak
+absolute alignment but still has this dilution problem. A routed step
+can also have zero realized effect after the model's dtype conversion.
+Count actual changes separately. Test selective retained rows and
+same-layer relay fitting before treating this bank as a general-purpose
+source selector. [Native recurrence](ARCHITECTURE.md#reusing-one-backbone-for-source-maintenance-and-reasoning)
+
 **Five compact-planner attempts failed on one visible task, 26 November 2026.**
 All five repeated the `counterfactual-alternative` item; this is one task,
 not a calibration denominator. Run 02 duplicated a search and omitted an ask

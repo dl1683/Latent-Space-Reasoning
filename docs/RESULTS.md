@@ -4,6 +4,40 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Native recurrence with source-only maintenance, 26 November 2026
+
+**CPU software controls.** A supplied-coordinate backbone encodes
+sources and follows two continuous steps before its first vocabulary
+projection. With one active source changed from `blue` to `gold`, the
+late result changes from `blue` to `gold`; rollback restores `blue`.
+The correction and rollback each re-encode one chunk and retain the
+unchanged UTF-8 byte spans. A withdrawal suppresses the route and the
+unrelated route stays available.
+
+A separate supplied three-hop fixture runs a source-only maintenance
+worker before the task. The new association lets the reader reach the
+terminal in two query steps. Removing just the derived bank preserves the
+source seal and leaves the same reader with an empty result. Reattaching
+the original bank reproduces the terminal. A downstream correction
+invalidates the derived bank, and rebuilding it keeps the old answer
+from surviving on the revised pin. The old pin still returns its
+original result. Both source and derived decisions in these fixtures
+depend on supplied embeddings and fixed value maps.
+
+A CPU check with a randomly initialized one-layer Transformers Llama
+backbone verifies its causal cache grows through two continuous inputs
+with source memory attached and omitted. It uses no pretrained weights
+and measures only interface compatibility. No PEP task was graded and
+no answer quality, complete evidence recall, multimodal performance or
+lifecycle savings were measured.
+
+```powershell
+python -m pytest -q experiments/memory/test_native_latent_recurrence.py experiments/memory/test_linear_feedback.py
+```
+
+[Fixtures](../experiments/memory/test_native_latent_recurrence.py) ·
+[Mechanism](ARCHITECTURE.md#reusing-one-backbone-for-source-maintenance-and-reasoning)
+
 ## Warm exact relations on the PEP corpus, 26 November 2026
 
 **Visible CPU software verification.** The exact control covered 655

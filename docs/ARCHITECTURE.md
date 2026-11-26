@@ -36,6 +36,54 @@ These need causal task evidence and complete costs, not vector geometry alone.
 | Deep latent reasoning with optional memory | The [split-binding receiver](#fitting-and-checking-a-split-binding-receiver) runs two feedback steps and supports intervention on the generated row. The receiver and its separate-state variant have supplied-coordinate controls. | Establish competence and relevance beyond known bindings and keep both memory-attached and memory-omitted calls in the same reasoning model. Identify what certifies absence and what signals unresolved support. |
 | Useful operation on consumer hardware | Local numerical slices can reuse unchanged work and avoid source reopening during some reads. | Measure construction, memory, maintenance, decoding, fallback and repeated use at matched quality. A cheap retained read is one term in that comparison. |
 
+### Reusing one backbone for source maintenance and reasoning
+
+[SLICE] `NativeLatentModel` attaches optional retained source memory to
+a borrowed causal backbone. The source worker takes a sealed
+`SourceDelta`, encodes each changed UTF-8 chunk with that backbone and
+retains its byte span and bounded hidden row. Source withdrawal
+retracts the retained rows. The observation moments reuse the existing
+linear feedback kernel. They store feature mass and weighted values,
+and read them using the same bounded hidden coordinates for sources
+and queries. A fixed null weight attenuates the numerical contribution
+when absolute routed mass is small.
+
+For maintenance, a source-only worker chooses up to a declared number
+of spans in opaque-ID order. It seeds the same continuous transition from
+each retained row, uses the source bank, and records the resulting
+state as a separate address/value association if the bank changed
+an input in the backbone's dtype. A later reader combines the source
+and derived banks using separate gains and normalizers. Removing the
+derived bank keeps the exact same source seal and observation moments.
+The derived bank currently depends on the entire source pin. Each new
+epoch clears it and leaves historical snapshots available. The address
+span identifies the seed. It does not enumerate contributing sources
+or prove an answer.
+
+A raw task enters through the backbone's ordinary token embeddings.
+Each latent step feeds the latest hidden state and optional retained
+contributions back as one continuous input, with a configurable relay
+gain. The native cache retains the earlier prefix and generated hidden
+steps. The vocabulary projection first runs after the configured latent
+steps. Both attached and omitted calls use this transition and readout.
+The in-process handle assumes fixed weights, tokenizer and maps across
+a publication. It carries no portable model seal, learned calibration
+or worker queue.
+
+The first rival uses an intermediate residual layer as both the read
+and write coordinate system, with a fitted relay into the reused block.
+The second lets a selective continuation operate on retained rows
+while fixed moments supply aggregate evidence. Both should be compared
+over identical scope against source-only recurrence, warm indexed
+relations and a warm text reader. Layer transfer, source dilution and
+binding collisions can each break the current construction. Test a
+wrong epoch, shuffled bindings and removal of an equal-mass distractor,
+alongside same-pin acquired-operator removal. Include encoding,
+maintenance, state retention, inference and exact evidence reopening in
+the comparison. [Implementation](../experiments/memory/native_latent_recurrence.py)
+· [Continuous thought feedback](https://arxiv.org/abs/2412.06769)
+· [Retrofitted recurrence](https://arxiv.org/abs/2511.07384)
+
 ### Warm exact control on a separate corpus
 
 [SLICE] The exact relation index stores immutable forward and reverse

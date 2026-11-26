@@ -5,6 +5,30 @@ from experiments.memory.feedback_workspace import FeedbackProbe, FeedbackWorkspa
 from experiments.memory.linear_feedback import LinearFeedbackKernel
 
 
+def test_association_values_cannot_be_retracted_as_source_addresses():
+    class LegacyKernel(LinearFeedbackKernel):
+        def _summarize(self, rows, key_map, *, observation=False):
+            return super()._summarize(rows, key_map, observation=observation)
+
+    kernel = LegacyKernel(query=[[1]], carry=None, observation_key=[[1]], observation_value=[[2]],
+                          feedback_key=[[0]], feedback_value=[[0]], max_steps=2)
+    addresses, payloads = [[1], [-1]], [[-1], [-1]]
+    source = kernel.prepare([[-1]])
+    association = kernel.prepare_associations(addresses, payloads)
+    for address in addresses:
+        value, mass = kernel.read_associations(address, association)
+        np.testing.assert_array_equal(value, [-1])
+        assert mass == 1
+    with pytest.raises(ValueError, match="different linear feedback key map"):
+        kernel.revise(association, remove=[[-1]])
+    with pytest.raises(ValueError, match="different linear feedback key map"):
+        kernel.start([-1], association)
+    with pytest.raises(ValueError, match="different linear feedback key map"):
+        kernel.read_observations([-1], association)
+    with pytest.raises(ValueError, match="expected an association bank"):
+        kernel.read_associations([-1], source)
+
+
 def _key(row, weight):
     key = []
     for column in weight.T:

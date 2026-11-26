@@ -34,6 +34,12 @@ class MomentMemory:
 
 
 @dataclass(frozen=True, eq=False)
+class AssociationMemory:
+    _key_map: np.ndarray
+    _moments: np.ndarray
+
+
+@dataclass(frozen=True, eq=False)
 class MomentState(FeedbackState):
     _memory: MomentMemory
     _history_moments: np.ndarray | None = None
@@ -96,12 +102,15 @@ class LinearFeedbackKernel(FeedbackKernel):
 
     def _summarize(self, rows, key_map, *, observation=False):
         payload = _quantize(rows)
-        projected = payload @ key_map
+        return self._summarize_quantized(payload, payload, key_map, observation=observation)
+
+    def _summarize_quantized(self, payload, addresses, key_map, *, observation):
+        projected = addresses @ key_map
         magnitude = (np.abs(projected) + _LEVELS // 2) // _LEVELS
         keys = np.sign(projected) * np.minimum(magnitude, _LEVELS)
         features = self._add_pairs(_sign_features(keys), _LEVELS)
         # Column zero carries the unnormalized mass for each feature.
-        base = np.column_stack((np.ones(len(rows), dtype=np.int64), payload))
+        base = np.column_stack((np.ones(len(payload), dtype=np.int64), payload))
         columns = [base]
         if observation:
             if self._disagreement_axes:
@@ -120,16 +129,29 @@ class LinearFeedbackKernel(FeedbackKernel):
 
     def prepare(self, observations):
         """Compile a bank into a feature mass and weighted coordinate summary."""
-        rows = _real_array(observations)
-        if rows.ndim != 2 or rows.shape[1] != self._width:
-            raise ValueError("observation matrix has incorrect width")
-        if max(rows.shape) > _MAX_ROWS or np.any(np.abs(rows) > 1):
-            raise ValueError("observations exceed the row or [-1, 1] coordinate bound")
+        rows = self._bounded_rows(observations)
         return MomentMemory(
             self._observation_key,
             _frozen(self._summarize(rows, self._integer_observation_key, observation=True)),
             len(rows),
         )
+
+    def _bounded_rows(self, observations):
+        rows = _real_array(observations)
+        if rows.ndim != 2 or rows.shape[1] != self._width:
+            raise ValueError("observation matrix has incorrect width")
+        if max(rows.shape) > _MAX_ROWS or np.any(np.abs(rows) > 1):
+            raise ValueError("observations exceed the row or [-1, 1] coordinate bound")
+        return rows
+
+    def prepare_associations(self, addresses, values):
+        """Compile separately encoded addresses and values for later association reads."""
+        addresses, values = map(self._bounded_rows, (addresses, values))
+        if addresses.shape != values.shape:
+            raise ValueError("association addresses and values must have the same shape")
+        moments = self._summarize_quantized(_quantize(values), _quantize(addresses),
+                                           self._integer_observation_key, observation=False)
+        return AssociationMemory(self._observation_key, _frozen(moments))
 
     def _check_memory(self, memory):
         if not isinstance(memory, MomentMemory) or memory._key_map is not self._observation_key:
@@ -232,6 +254,42 @@ class LinearFeedbackKernel(FeedbackKernel):
             return partition
         return (1 - strength) * base + strength * partition
 
+    def _observation_mixture(self, hidden, query, moments, routed_mass):
+        return (query @ self._selected_payloads(hidden, moments)) / (routed_mass * _LEVELS)
+
+    def read_observations(self, hidden, memory):
+        """Return the retained value and its unscaled routing mass in unit-row weights."""
+        self._check_memory(memory)
+        return self._read_bank(hidden, memory, projected=True)
+
+    def read_associations(self, hidden, memory):
+        """Read already projected values without applying the source value map again."""
+        if type(memory) is not AssociationMemory or memory._key_map is not self._observation_key:
+            raise ValueError("expected an association bank from the same linear key map")
+        return self._read_bank(hidden, memory, projected=False)
+
+    def _read_bank(self, hidden, memory, *, projected):
+        hidden = self._vector(hidden)
+        moments = memory._moments
+        with np.errstate(over="raise", invalid="raise", divide="raise"):
+            features = self._query_features(hidden)
+            scale = _LEVELS ** (2 if len(self._pair_left) else 1)
+            support = float(features @ moments[:, 0]) / scale
+            query = self._scaled_query(features, moments[:, 0])
+            mass = float(query @ moments[:, 0])
+            if not mass:
+                return _frozen(np.zeros(self._width)), support
+            if projected:
+                mixture = self._observation_mixture(hidden, query, moments, mass)
+                value = _apply_value(self._observation_value, mixture)
+                if self._disagreement_value is not None:
+                    value = value + self._read_disagreement(query, moments) @ self._disagreement_value
+            else:
+                value = (query @ moments[:, 1:1 + self._width]) / (mass * _LEVELS)
+        if not np.isfinite(value).all():
+            raise FloatingPointError("nonfinite observation read")
+        return _frozen(value), support
+
     def _advance(self, state, *, diagnostics=None):
         self._require_state(state)
         if len(state._history) >= min(self._max_steps, _MAX_ROWS):
@@ -247,8 +305,7 @@ class LinearFeedbackKernel(FeedbackKernel):
             history_value = None
             routed_mass = float(query @ mass)
             if routed_mass > 0:
-                payloads = self._selected_payloads(hidden, obs)
-                mixture = (query @ payloads) / (routed_mass * _LEVELS)
+                mixture = self._observation_mixture(hidden, query, obs, routed_mass)
                 if generated is not None:
                     history_mix = (query @ generated[:, 1:]) / (routed_mass * _LEVELS)
                     history_value = _apply_value(self._feedback_value, history_mix)
