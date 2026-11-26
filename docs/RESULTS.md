@@ -4,6 +4,51 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Relational recurrence with incomplete source measurements, 26 November 2026
+
+**Scripted CPU software verification.** A worker used declared,
+hash-bound numerical sources to install an operation before the
+input arrived. In the supplied two-step feeder fixture, two
+quantities stayed individually open. The exact negative relation
+between them survived tanh and canceled in the next source query.
+The independent aggregate then admitted a relay. A direct lazy
+calculation agreed on that admission. Coordinate marginals alone
+could have withheld the relay. At the same source pin, removing the
+operation withheld the relay and left the late consequence open.
+An unrelated trajectory was unchanged and the same core ran with
+memory omitted.
+
+Changing a measurement broke the cancellation without changing the
+determined aggregate after recompilation. A newly eligible
+measurement restored the route. An equal-geometry measurement
+from a different feeder stayed out of scope. A contradictory
+measurement withheld the aggregate and named the conflicting
+sources. A negative aggregate produced opposition. Replay
+recovered the historical source path and receipts, with
+same-byte restoration bound to a new generation.
+
+The receiver conservatively withheld a second kind of coupled
+consequence. With $z_A+z_B=x$ and positive $x$, monotonicity and
+oddness give $\tanh(z_A)+\tanh(z_B)>0$. The two transformed
+expressions did not share an atom and their bounds could not admit
+the relay. This is a loss of a determined consequence. A separate
+control checked the ordinary Float64 addition order on a large
+cancellation and exercised two activations of the same context.
+A delayed context still used the opening input after an intervening
+transition flipped its numerical coordinate. Two kernel-specific
+publications survived on the same journal. An unreconciled unit
+for the same identity left the result open and preserved its source.
+
+In a separate manual call through the joint API, the two
+individual reads were unresolved and the aggregate was supported.
+The installed operation reached the context and relay, while its
+same-pin ablation and the changed source relation withheld the
+relay. The scope, numerical laws, latent coordinates and task
+vectors are supplied. This verifies causal use of a shared
+dependence in source admission. A matched warm implementation,
+learned acquisition and full lifecycle cost remain unmeasured.
+[Relational recurrence fixtures](../experiments/memory/test_recurrent_constraints.py)
+
 ## Composed source alignment on held directions, 26 November 2026
 
 **Scripted CPU software verification.** Two separately calibrated

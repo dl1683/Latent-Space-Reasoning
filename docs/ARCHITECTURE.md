@@ -1930,6 +1930,70 @@ caches the same maps under identical authority, limits and source
 revisions.
 [Transport compiler](../experiments/memory/world_transport.py)
 
+#### Carrying shared uncertainty through recurrence
+
+[SLICE] A query-blind worker installs a versioned, partially specified
+operation in the joint reasoner. For a latent input $x$, the supplied
+measurement rows define $Pz=Kx$ for intermediate quantities $z$.
+Separate source laws inject $g_i z$ into designated preactivation
+coordinates. Exact rational reduction gives each law a known input
+term and a remainder over shared free coordinates. A zero remainder
+identifies that channel for every input. A nonzero remainder can
+still cancel against another channel. An unavailable or competing law
+introduces an independent unknown. Inconsistent measurements leave all
+declared outputs open and retain witnesses to the inconsistency.
+
+The source path uses the block's original carry, conditional terms,
+value map, query maps and tanh. It keeps scalar expressions through
+the linear maps and gives identical or opposite preactivations a
+shared tanh value with the appropriate sign. Other nonlinear
+expressions use separate bounded terms. For example, if $z_A=-z_B$,
+both individual loads are open while $\tanh(z_A)+\tanh(z_B)=0$.
+A later query can use their sum together with a known aggregate
+before choosing its next source. A source is admitted only if the
+score's lower bound clears the admission threshold. A possible
+contender stays visible when its upper bound reaches the lower
+threshold. Signed readout uses the same bounded source path.
+Generated feedback uses a representative completion for its task
+state and cannot harden source admission. No-memory calls still
+use the same joint entry point.
+
+The publication is bound to the kernel, exact journal tip and
+registered numerical sources and contexts, including inactive IDs.
+Each declaration carries an explicit identity, input frame,
+intermediate frame, mode and unit. Registration and scope are
+supplied. Whole declaration bytes are retained in the private journal
+and checked against pinned source digests before compilation and replay.
+The journal stores independent publications by policy and kernel.
+The joint call projects the declared input axes at its opening seed
+and reuses the resulting expressions when a context is selected.
+Separate task activations establish separate nuisance variables.
+An authority for the same identity with unreconciled frame, mode or
+unit leaves the numerical channels open and remains visible in the
+receipt.
+Changing a registered generation disables that publication until a
+worker publishes from the new tip. Each use retains its law and
+measurement byte spans and generation. Effective-time overlap is
+refused under this policy. Changing the active publication requires a
+fresh frontier.
+
+This receiver extracts source dependencies in exact rationals and
+preserves the block's Float64 operation order. It uses outward
+roundoff allowances on uncertain linear operations and padded
+platform tanh bounds. It shares dependence inside one activation and where the
+carried expressions match. Nonidentical nonlinear forms and fresh
+unknowns across separate tasks can lose a true cancellation.
+Formal floating-point certification and general nonlinear
+identifiability remain open. Precision-bearing declarations are
+separate from the normalized observation vectors. Affine arithmetic
+and abstract interpretation supply alternative dependence carriers.
+Compare their precision and complete costs against an equal-information
+lazy solver, particularly when most regions go unread.
+[Compiler](../experiments/memory/source_constraints.py) ·
+[Relational transition](../experiments/memory/relational_feedback.py) ·
+[Affine arithmetic](https://ic.unicamp.br/~stolfi/EXPORT/projects/affine-arith/Welcome.html) ·
+[DeepPoly](https://files.sri.inf.ethz.ch/website/papers/DeepPoly.pdf)
+
 ## Claims and evidence boundary (2026-10-15; not a new experiment)
 
 | Claim | Tag and current boundary | What is still required |

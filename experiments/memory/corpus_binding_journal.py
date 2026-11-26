@@ -28,7 +28,10 @@ from experiments.memory.corpus_bindings import (
 )
 from experiments.memory.latent_feedback import ConditionalTerm
 from experiments.memory.role_validity import RoleSupersession
-from experiments.memory.verified_source_tool import SourceSpan
+from experiments.memory.source_constraints import (
+    MAX_CONSTRAINT_SOURCE_BYTES, SourceConstraintPolicy, compile_source_constraints, constraint_versions,
+)
+from experiments.memory.verified_source_tool import SourceSpan, require_digest
 from experiments.memory.world_transport import (
     SourceTransportPolicy, TransportAlignment, bind_transport_digest, compile_source_transports,
     restore_transport_actions, transport_action_digest, transport_action_rows,
@@ -526,6 +529,41 @@ def _event_digest(parent, revision, payload):
     return sha256(parent + str(revision).encode("ascii") + b"\x00" + payload).digest()
 
 
+def _constraint_event(policy, kernel_sha256, records):
+    require_digest(kernel_sha256)
+    _check_identifiers((*policy.authorities, *policy.contexts))
+    return _json(["source_constraint", 1, kernel_sha256, policy.wire(),
+                  [(source, raw.hex()) for source, raw in records]])
+
+
+def _with_source_constraints(pin, publication):
+    publications = dict(pin._source_constraints)
+    publications[publication.policy, publication.kernel_sha256] = publication
+    return replace(pin, revision=pin.revision + 1, changed_sources=(),
+                   _source_constraints=MappingProxyType(publications))
+
+
+def _replay_source_constraints(payload, pin, publication_sha256):
+    event = json.loads(payload)
+    if (type(event) is not list or len(event) != 5 or event[:2] != ["source_constraint", 1]
+            or type(event[1]) is not int or type(event[3]) is not list or len(event[3]) != 6
+            or any(type(group) is not list for group in (*event[3][:3], *event[3][4:]))
+            or type(event[4]) is not list):
+        raise ValueError("invalid source constraint event")
+    _, _, kernel_sha256, spec, encoded = event
+    policy = SourceConstraintPolicy(*(tuple(group) for group in spec[:3]), spec[3], tuple(spec[4]), tuple(spec[5]))
+    if len(encoded) > len(policy.authorities) + len(policy.contexts) or any(
+        type(row) is not list or len(row) != 2 or type(row[0]) is not str or type(row[1]) is not str
+        or len(row[1]) > 2 * MAX_CONSTRAINT_SOURCE_BYTES for row in encoded
+    ):
+        raise ValueError("invalid constraint source records")
+    records = tuple((source, bytes.fromhex(raw)) for source, raw in encoded)
+    if _constraint_event(policy, kernel_sha256, records) != payload:
+        raise ValueError("noncanonical source constraint event")
+    publication = compile_source_constraints(pin, policy, kernel_sha256, records, publication_sha256)
+    return _with_source_constraints(pin, publication)
+
+
 def _apply_bridge_repairs(memory, plan, publication):
     links = memory._role_links
     return replace(memory, _role_links=links.bridge_index.matches(
@@ -767,6 +805,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 tip = _replay_factor_identities(payload, tip)
             elif payload.startswith(b'["source_transport",'):
                 tip = _replay_source_transport(payload, tip, recorded.hex())
+            elif payload.startswith(b'["source_constraint",'):
+                tip = _replay_source_constraints(payload, tip, recorded.hex())
             elif payload.startswith(b'["route_program",'):
                 gates, patch = _decode_route_event(payload)
                 tip = self._install_program_revision(tip, tip.memory.reprogram(gates), patch)
@@ -894,6 +934,36 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 db.commit()
                 return base
             revised = _with_source_transport(base, publication)
+            digest = self._append(db, parent, revised.revision, payload)
+            db.commit()
+            return self._set_tip(revised, digest)
+
+    def maintain_source_constraints(self, base, policy, source_records, *, kernel_sha256):
+        """Compile a source-only batch and fence it against the exact journal tip."""
+        self._check_owner(base)
+        if type(policy) is not SourceConstraintPolicy:
+            raise ValueError("constraint publication requires a registered source policy")
+        require_digest(kernel_sha256)
+        policy.require_frame(base)
+        previous = base._source_constraints.get((policy, kernel_sha256))
+        unchanged = previous is not None and previous.active_on(base)
+        if not unchanged:
+            authorities = tuple(source for source, digest, _ in constraint_versions(base, policy) if digest is not None)
+            if set(source_records) != set(authorities):
+                raise ValueError("constraint publication needs all current registered source bytes")
+            records = tuple((source, source_records[source]) for source in authorities)
+            parent = bytes.fromhex(base.journal_sha256)
+            publication = compile_source_constraints(base, policy, kernel_sha256, records, "")
+            payload = _constraint_event(policy, kernel_sha256, records)
+            digest_hex = _event_digest(parent, base.revision + 1, payload).hex()
+            publication = replace(publication, use=replace(publication.use, publication_sha256=digest_hex))
+        with self._lock, closing(self._connect()) as db:
+            db.execute("BEGIN IMMEDIATE")
+            self._require_current_pin(db, base)
+            if unchanged:
+                db.commit()
+                return base
+            revised = _with_source_constraints(base, publication)
             digest = self._append(db, parent, revised.revision, payload)
             db.commit()
             return self._set_tip(revised, digest)

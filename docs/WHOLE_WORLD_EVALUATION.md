@@ -377,6 +377,29 @@ latency conclusion. Keep uncertainty per consequence and test a
 wrong-scope observation with the same numerical geometry.
 [Partial-composition control](../experiments/memory/partial_transport_composition_control.js)
 
+The relational receiver applies the shared uncertainty to ordinary
+source scoring after a nonlinear step. A later query can use a sum
+whose terms are individually unresolved. Compare the carrier with
+independent marginal bounds, an exact lazy interpreter with the
+same sources and receiver operation, and operation removal at
+fixed memory. Hold back the late linear combinations. Include
+a correction that breaks one dependency, newly eligible and
+wrong-unit sources, unread regions and an independently preserved
+aggregate. Charge exact setup, repeated reads, numerical projection,
+intermediate state, necessary fallbacks and restart.
+
+For the learned comparison, keep a reused pretrained block with
+continuous feedback and a recurrent associative state as competing
+carriers. BDH-CQ provides a relevant example of demonstrations
+updating recurrent memory before latent computation on a later input.
+Here we would require separately authored revisions or demonstrations
+to induce a useful operation without handing the worker the law,
+answer or latent coordinate labels. Match both carriers on source
+and revision information and compare with a warm conventional
+solver. Require competent memory-omitted and attached calls before
+attributing a difference to the carrier.
+[BDH-CQ study](https://arxiv.org/html/2608.09888v1)
+
 ## Executable gaps in the current branch
 
 `TaskWorld` pins a verified source catalogue to an optional journaled

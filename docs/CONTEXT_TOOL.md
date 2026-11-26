@@ -868,3 +868,55 @@ Use the same worker and joint call. The branch's
 An aligned journal event stores and checks its action vectors at
 replay. It uses the stored vectors after a compatible recomputation
 and refuses a discrepancy beyond replay tolerance.
+
+### Relational source reasoning
+
+Construct the joint reasoner with
+`constraint_policy=SourceConstraintPolicy(scope, input_axes, output_axes, middle_width, authorities, contexts)`.
+Use this policy in its own reasoner, with the same kernel and encoder
+frame for publication and reading. The five ordered scope strings
+are identity, input frame, intermediate frame, mode and unit.
+The policy accepts up to 16 input axes, output axes and intermediate
+dimensions each, and up to 32 source IDs in each of the authority
+and context groups. Include inactive candidate IDs so their addition
+invalidates a prior publication.
+
+A whole numerical declaration is a UTF-8 JSON array of at most
+4,096 bytes. Its first two fields are `"lsr-linear-v1"` and the
+ordered scope. The other fields are one of these triples.
+
+- `["measurement", P_row, K_row]` gives a row of `P z = K x`.
+- `["consequence", output_axis, g_row]` adds `g z` to a declared preactivation coordinate.
+- `["context", null, null]` identifies an eligible activating context source.
+
+Use integer coefficients or rational and decimal strings in the
+bounded grammar. A registered source with a different declared scope
+identity is excluded from the numerical model. An unreconciled
+frame, mode or unit for the same identity leaves that scope open.
+Malformed declarations in
+scope refuse the publication. Each activating context also needs
+one unambiguous observation that spans the full declaration in
+the usual journaled corpus bank.
+
+Call `world.maintain_constraints(workspace, revision, source_records)`
+before asking a task. The mapping supplies current declaration bytes
+for every present ID in the two groups. On an unchanged current
+publication, the call can return the same pin without rereading
+those bytes. The journal binds records by digest and persists them
+for replay. Pass the returned revision to `prepare` and
+`reason_joint`. An omitted memory uses the same joint call. Pooled
+reads require a bank without the constraint policy.
+The encoded seed supplies the policy's input frame for the entire
+task. The policy selects a publication by its exact kernel and
+scope, so other compiled publications can coexist on the journal.
+
+Inspect `branch.constraint_uses` for modeled channels, open
+axes, governing law and measurement spans, and any inconsistent
+measurement or unreconciled scope witnesses. The branch's `source_hidden` is a
+representative completion in this mode. Signed evidence comes from
+`result.read`, which uses the relational source path. Use
+`operators=False` to withhold the published computation at the
+same pin. The declared channels then contribute independent
+unknowns. A stale or unavailable publication likewise leaves the
+affected channels open until the worker can publish from current
+sources.

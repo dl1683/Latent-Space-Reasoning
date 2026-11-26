@@ -22,6 +22,7 @@ from experiments.memory.verified_source_tool import SourceSpan, VerifiedSourceTo
 
 
 if TYPE_CHECKING:
+    from experiments.memory.source_constraints import SourceConstraintPublication
     from experiments.memory.world_transport import SourceTransportPublication
 
 
@@ -563,6 +564,9 @@ class CorpusRevision:
     journal_sha256: str | None = None
     factor_identities: tuple[str, ...] | None = None
     _source_transports: "SourceTransportPublication | None" = None
+    _source_constraints: "Mapping[tuple, SourceConstraintPublication]" = field(
+        default_factory=lambda: MappingProxyType({}),
+    )
 
 
 @dataclass(frozen=True, eq=False)

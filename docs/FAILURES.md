@@ -24,6 +24,16 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Independent bounds can discard a determined consequence.**
+Two unknowns related by $z_A=-z_B$ remain exact opposites after
+tanh. The same coordinate marginals admit completions that
+would prevent the later relay. Carry the shared dependence and
+test actual admission in the next block. The correction fixture
+breaks that dependence and must reopen the route even though
+the aggregate remains determined. Equivalent nonlinear forms
+beyond exact signed matches can still be lost.
+[Relational recurrence controls](RESULTS.md#relational-recurrence-with-incomplete-source-measurements-26-november-2026)
+
 **Preserved geometry can conceal a wrong correspondence.** Swapping
 exit partners left the fit Gram unchanged and failed disjoint
 held checks. A separate pair of valid stage fits also failed to
