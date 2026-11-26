@@ -4,6 +4,29 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Revision-led bridge repair, 26 November 2026
+
+**Software verification, supplied directions.** The local and factored
+indexes passed the same scripted scenario. Two independently opened workers
+prepared the same repair concurrently. One published and the other refused
+its stale pin without loading the newer journal suffix. A source edit
+prepared before publication could still apply afterward. In a matched pair
+of task episodes on identical source versions, the prepublication task left
+an open question and the later task
+reached a verified finding whose hidden path cites the repair event. Two
+additional off-axis inputs traversed that same published rotation and
+retained opposite signed hidden components. The first region's missing
+exit arrived through a source event. Repeated edits while its entry was
+pending kept its place. After publication, a new edit went behind an older
+pending region. A later ambiguous repair left
+its region unresolved and preserved the unaffected region's earlier
+operator and publication identity. Restart and historical replay recovered
+the expected receipts. [Bridge maintenance fixture](../experiments/memory/test_binding_links.py)
+
+The test exercises a shared worker-to-reader loop in a fixed operator family.
+It supplies no estimate of total savings, learned source-context selection,
+continuous service throughput or independence of model-inferred needs.
+
 ## Joint task reasoning on a maintained pin, 26 November 2026
 
 **Software verification, supplied directions.** A scripted task used the

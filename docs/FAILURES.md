@@ -24,6 +24,16 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Publication cannot turn an ambiguous match into a closed gap, 26 November
+2026.** A bounded worker may finish checking its current candidate row
+without admitting a bridge. The reader still sees the current unmatched
+opening. Keeping the checked row permanently at the head would also block
+other repairs. The worker removes only its checked prefix from pending work,
+and source changes can enqueue that entry again. A consumed publication hash
+identifies the operator that ran. Releasing an obsolete coverage obligation
+can also affect an answer, and has a separate attribution requirement.
+[Maintenance contract](ARCHITECTURE.md#repairing-a-shared-bridge-agenda-before-tasks-arrive)
+
 **One displayed witness can omit an agreeing path, 26 November 2026.** The
 readout keeps one representative per outcome. A weaker path that reaches the
 same outcome can have a different source dependency. The joint task receipt

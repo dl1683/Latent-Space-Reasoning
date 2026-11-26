@@ -1,7 +1,9 @@
+from concurrent.futures import ThreadPoolExecutor
 from copy import copy
 from dataclasses import replace
 import json
 import re
+from threading import Barrier
 
 import numpy as np
 import pytest
@@ -16,7 +18,7 @@ from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
 from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemory, CorpusProgramProposal, StaleCorpusRevision
 from experiments.memory.latent_feedback import FeedbackKernel
 from experiments.memory.role_validity import RoleSupersession
-from experiments.memory.task_episode import EpisodeLimits, EpisodePolicy, _Tools, read_episode, run_episode
+from experiments.memory.task_episode import EpisodeLimits, EpisodePolicy, _Tools, read_episode, read_episode_pair, run_episode
 from experiments.memory.task_evidence import TaskBudget, TaskWorld
 from experiments.memory.verified_source_tool import SourceSpan, VerifiedSourceTool
 from experiments.memory.test_task_episode import Tokenizer, reply
@@ -1550,6 +1552,182 @@ def test_bridge_waits_for_legacy_sources_to_stop_obscuring_competitors(tmp_path,
     assert updated.memory.read_role_links(e[0], outcomes=_OUTCOMES, work_limit=64).bridge_pending
     rebuilt = owner.publish_program(owner.prepare_role_links(updated, _ROLES, **policy))
     assert rebuilt.memory.read_role_links(e[0], outcomes=_OUTCOMES, work_limit=64).answer == "accept"
+
+
+@pytest.mark.parametrize("factored", [False, True])
+def test_bounded_maintenance_leaves_live_agenda_and_late_task_provenance(tmp_path, factored, monkeypatch):
+    path = tmp_path / "world.sqlite"
+    axes = np.eye(10)
+    frame = _transport_frame(width=10, extra_predicates=("key",))
+    readonly = _transport_frame(_no_encoding, width=10, extra_predicates=("key",))
+    owner = JournaledCorpusWorkspace(path, frame, create=True)
+
+    def fragment(role, axis, key, strength=.9):
+        return _mentions((role, axes[axis], strength), ("key", axes[key], .9))
+
+    raw = {
+        "z-in": fragment("entry", 0, 8), "z-out": fragment("exit", 1, 8),
+        "a-in": fragment("entry", 2, 9), "a-out": fragment("exit", 3, 9),
+        "z-next": _mentions(("entry", axes[4], .9), ("exit", axes[5], .9)),
+        "a-next": _mentions(("entry", axes[6], .9), ("exit", axes[7], .9)),
+        "z-terminal": _mentions(("accept", axes[5], .8)),
+        "a-terminal": _mentions(("review", axes[7], .8)),
+    }
+    _write(owner, {name: content for name, content in raw.items() if name != "z-out"})
+    owner.publish_program(owner.prepare_role_links(owner.snapshot(), _ROLES, min_similarity=.95,
+                                                   compile_work_limit=512, bridge_key="key",
+                                                   local_bridges=True, factored_bridges=factored,
+                                                   transport="rotation"))
+    _write(owner, {"z-out": raw["z-out"]})
+    raw["a-out"] = fragment("exit", 3, 9, .83)
+    _write(owner, {"a-out": raw["a-out"]})
+    raw["z-out"] = fragment("exit", 1, 8, .85)
+    pending = _write(owner, {"z-out": raw["z-out"]})
+    next_source = owner.prepare_changes(pending, {"z-out": fragment("exit", 1, 8, .81)})
+
+    # Independently reopened workers see only the same durable agenda, without a task.
+    worker = JournaledCorpusWorkspace(path, readonly)
+    other = JournaledCorpusWorkspace(path, readonly)
+    older = worker.snapshot()
+    stale = other.snapshot()
+    ready = Barrier(2)
+    apply_repairs = corpus_binding_journal._apply_bridge_repairs
+
+    def prepare_together(*args):
+        ready.wait(timeout=10)
+        return apply_repairs(*args)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(corpus_binding_journal, "_apply_bridge_repairs", prepare_together)
+        patch.setattr(JournaledCorpusWorkspace, "_read_suffix",
+                      lambda *args: pytest.fail("repair publication loaded a journal suffix"))
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            attempts = [pool.submit(handle.maintain_role_bridges, pin, max_entries=1)
+                        for handle, pin in ((worker, older), (other, stale))]
+            receipts = []
+            for attempt in attempts:
+                try:
+                    receipts.append(attempt.result())
+                except StaleCorpusRevision:
+                    pass
+    receipt, = receipts
+    assert (receipt.status, receipt.checked, receipt.remaining) == ("published", (("z-in", "z-out"),), 1)
+    assert receipt.source_revision == pending.source_revision and receipt.revision == pending.revision + 1
+    first = other.snapshot()
+    assert first.journal_sha256 == receipt.publication_sha256
+
+    # Historical operator-off restores the prepublication state at the same source pin.
+    with pytest.raises(BindingCapacityError, match="event replay allowance"):
+        other.snapshot_at(pending.revision, max_events=pending.revision - 1, max_payload_bytes=32768)
+    with pytest.raises(BindingCapacityError, match="payload replay allowance"):
+        other.snapshot_at(pending.revision, max_events=pending.revision, max_payload_bytes=1)
+    before = other.snapshot_at(pending.revision, max_events=pending.revision, max_payload_bytes=32768)
+    assert before.journal_sha256 == pending.journal_sha256
+    assert before.source_revision == first.source_revision and before.memory.source_digests == first.memory.source_digests
+    assert other.snapshot() is first
+    wrong_order = corpus_binding_journal._bridge_repair_payload(1, (("a-in", "a-out"),))
+    with pytest.raises(ValueError, match="pending plan"):
+        corpus_binding_journal._replay_bridge_repairs(wrong_order, before.memory, receipt.publication_sha256)
+
+    keys, values = np.zeros((10, 1)), np.zeros((10, 10))
+    values[1, 4] = values[3, 6] = 1.
+    values[2, 8] = 1.
+    kernel = FeedbackKernel(query=keys, carry=np.zeros_like(values), observation_key=keys,
+                            observation_value=values, feedback_key=keys, feedback_value=np.zeros_like(values),
+                            max_steps=1)
+    binding_values = np.zeros((6, 10))
+    binding_values[0, 0] = .01
+    receiver = BindingFeedback(kernel, frame, (("accept", 5),), query=(axes[0] + axes[2])[:, None],
+                               observation=binding_values)
+
+    def read(pin, axis):
+        state = receiver.start(axes[axis], pin.memory)
+        return receiver.reason_role_links(state, stages=(BindingRoleAdvance(),), outcomes=_OUTCOMES,
+                                         work_limit=512, branch_limit=4)
+
+    assert read(before, 0).status == "unresolved"
+    assert read(first, 0).answer == "accept"
+    still_pending = read(first, 2)
+    assert still_pending.status == read(before, 2).status == "unresolved"
+    assert still_pending.open_coverage and not still_pending.terminal_reads
+    transported = []
+    for sign in (-1, 1):
+        ready = receiver.start(axes[0] + sign * .15 * axes[2], first.memory)
+        branch, = receiver.continue_role_links(ready, work_limit=256, branch_limit=2).states
+        assert branch.role_steps[0].publication_sha256 == receipt.publication_sha256
+        assert receiver.read_role_links(branch, outcomes=_OUTCOMES, work_limit=256).answer == "accept"
+        transported.append(branch.latest[8])
+    assert transported[0] < -.1 and transported[1] > .1
+
+    leaves = tmp_path / "leaves"
+    leaves.mkdir()
+    for name, content in raw.items():
+        (leaves / (first.memory.source_digests[name] + ".txt")).write_bytes(content)
+    tool = VerifiedSourceTool(tmp_path, first.memory.source_digests)
+    spans = tuple(SourceSpan.from_characters(name, content, 0, len(content)) for name, content in raw.items())
+    later = TaskWorld(tool, spans, bindings=first, receiver=receiver)
+    earlier = TaskWorld(tool, spans, bindings=before, receiver=receiver)
+    policy = EpisodePolicy("late-bridge", "scripted", "byte-count", "notes", probes_enabled=True)
+    limits = EpisodeLimits(6, 1, 5, 1, 16000, 65000, 2048, 512)
+
+    def generate(call):
+        receipts = json.loads(dict(call.messages)["user"])["receipts"]
+        state = "Find the filed decision."
+        if not receipts:
+            return reply(state=state, tool={"op": "search", "query": "entry"})
+        latest = receipts[-1]["result"]
+        if len(receipts) == 1:
+            candidate = next(row for row in latest["candidates"] if row["span"]["source_id"] == "z-in")
+            return reply(state=state, tool={"op": "read", "candidate": candidate["candidate"]})
+        if len(receipts) == 2:
+            return reply(state=state, tool={"op": "reason", "read": latest["id"], "ordinal": 0,
+                                            "outcomes": list(_OUTCOMES), "stages": [1], "terminal_hops": 1})
+        if len(receipts) == 3:
+            if latest["read"]["status"] != "supported":
+                return reply(finish={"findings": [], "open_questions": ["Which bridge is eligible?"]})
+            return reply(state=state, tool={"op": "read", "candidate": [
+                row["candidate"] for row in latest["candidates"] if row["span"]["source_id"] != "z-in"]})
+        return reply(finish={"findings": [{
+            "claim": "The filed decision is accept.", "stance": "supports",
+            "citations": [0, *(row["id"] for row in latest["reads"])],
+            "reason": "The stored bridge leads to the decision record.",
+            "role_support": {"receipt": 0, "outcome": "accept"},
+        }], "open_questions": []})
+
+    task = "What decision governs the entry in region Z?"
+    off_episode = run_episode(task, earlier, policy, limits, Tokenizer(), generate, tmp_path / "earlier-task.jsonl")
+    episode = run_episode(task, later, policy, limits, Tokenizer(), generate, tmp_path / "later-task.jsonl")
+    earlier_ledger, ledger = read_episode_pair(off_episode, episode, contrast="memory")
+    assert earlier_ledger[-1]["data"]["submission"]["findings"] == []
+    assert ledger[-1]["data"]["status"] == "completed"
+    role_result = next(row["data"]["result"] for row in ledger if row["kind"] == "tool"
+                       and row["data"]["request"]["op"] == "reason")
+    terminal, = role_result["read"]["terminal_reads"]
+    witness, = terminal["dependency_witnesses"]
+    assert witness["prefix"][0]["publication_sha256"] == receipt.publication_sha256
+    assert witness["publication_sha256"] is None
+
+    revised = owner.publish(next_source)
+    assert revised.source_revision == first.revision + 1
+    second = worker.maintain_role_bridges(worker.snapshot(), max_entries=1)
+    assert second.checked == (("a-in", "a-out"),) and second.remaining == 1
+    third = worker.maintain_role_bridges(worker.snapshot(), max_entries=1)
+    assert third.checked == (("z-in", "z-out"),) and third.remaining == 0
+    recovered = JournaledCorpusWorkspace(path, readonly)
+    tip = recovered.snapshot()
+    assert recovered.maintain_role_bridges(tip, max_entries=1).status == "no_work"
+    assert read(tip, 0).terminal_reads[0].witnesses[0].prefix[0].publication_sha256 == third.publication_sha256
+    assert read(tip, 2).terminal_reads[0].witnesses[0].prefix[0].publication_sha256 == second.publication_sha256
+    historical = recovered.snapshot_at(first.revision, max_events=first.revision, max_payload_bytes=32768)
+    assert read(historical, 0) == read(first, 0) and read(historical, 2) == read(first, 2)
+    _write(owner, {"rival": fragment("exit", 1, 8)})
+    ambiguity = recovered.maintain_role_bridges(recovered.snapshot(), max_entries=1)
+    assert ambiguity.checked == (("z-in", None),) and ambiguity.remaining == 0
+    unresolved = read(recovered.snapshot(), 0)
+    assert unresolved.status == "unresolved" and unresolved.open_coverage
+    assert read(recovered.snapshot(), 2).terminal_reads[0].witnesses[0].prefix[0].publication_sha256 == (
+        second.publication_sha256
+    )
 
 
 def test_local_bridge_repair_preserves_unaffected_reasoning_and_follows_cross_region_key(tmp_path):

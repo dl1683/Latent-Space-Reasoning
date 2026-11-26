@@ -2,6 +2,7 @@
 
 from collections.abc import Mapping
 from dataclasses import dataclass, field, replace
+from itertools import islice
 from operator import index
 from types import MappingProxyType
 
@@ -20,6 +21,7 @@ class BindingLinkStep:
     exit_ordinal: int
     exit_source: str | None = None
     key_ordinals: tuple[int, int] | None = None
+    publication_sha256: str | None = None
 
     @property
     def sources(self):
@@ -41,6 +43,7 @@ class BindingLinkWitness:
     source_spans: tuple[SourceSpan, ...] = ()
     validity_spans: tuple[SourceSpan, ...] = ()
     unscoped_sources: tuple[str, ...] = ()
+    publication_sha256: str | None = None
 
 
 @dataclass(frozen=True)
@@ -186,8 +189,9 @@ def _key_match(entry, exit, floor, uncertainty):
     return score >= floor and (not uncertainty or score > floor + uncertainty)
 
 
-def _cross_link(source, target, entry, exit, transport):
-    step = BindingLinkStep(source, entry.ordinal, exit.ordinal, target, (entry.key_ordinal, exit.key_ordinal))
+def _cross_link(source, target, entry, exit, transport, *, publication_sha256=None):
+    step = BindingLinkStep(source, entry.ordinal, exit.ordinal, target, (entry.key_ordinal, exit.key_ordinal),
+                           publication_sha256)
     return _RoleLink.from_ends(step, entry.direction, exit.direction, min(entry.strength, exit.strength), transport)
 
 
@@ -256,7 +260,7 @@ def _update_candidates(rows, columns, edges, entries, exits, changed_entries, ch
 
 def _stale_directions(stale, affected, before, after):
     updated = dict(stale)
-    for source in affected:
+    for source in sorted(affected):
         old, new = before.get(source), after.get(source)
         directions = frozenset(fragment.direction for fragment in (old, new) if fragment is not None)
         updated[source] = updated.get(source, frozenset()) | directions
@@ -293,15 +297,23 @@ class _BridgeIndex:
             raise BindingCapacityError("retained bridge obligations limit exceeded")
         return _BridgeIndex(MappingProxyType(entries), MappingProxyType(exits), rows, columns, stale, edges)
 
-    def matches(self, links):
+    def repairs(self, limit):
+        sources = islice(self.stale, min(limit, len(self.stale)))
+        return tuple((source, self.match_target(source)) for source in sources)
+
+    def matches(self, links, repairs=None, *, publication_sha256=None):
+        if repairs is None:
+            repairs = self.repairs(len(self.stale))
         bridges = dict(links.bridges)
-        for source in self.stale:
-            target = self.match_target(source)
+        stale = dict(self.stale)
+        for source, target in repairs:
+            del stale[source]
             if target is not None:
                 bridges[source, target] = _cross_link(source, target, self.entries[source],
-                                                      self.exits[target], links.transport)
-        return replace(links, bridges=MappingProxyType(bridges), bridge_pending=False,
-                       bridge_index=replace(self, stale=MappingProxyType({})))
+                                                      self.exits[target], links.transport,
+                                                      publication_sha256=publication_sha256)
+        return replace(links, bridges=MappingProxyType(bridges), bridge_pending=bool(stale),
+                       bridge_index=replace(self, stale=MappingProxyType(stale)))
 
     def match_target(self, source):
         row = self.rows.get(source)
@@ -806,7 +818,7 @@ class _RoleLinks:
                                     witness = BindingLinkWitness(
                                         outcome, step.source, step.entry_ordinal, step.exit_ordinal,
                                         terminal_source, ordinal, grade, path.steps[:-1], step.exit_source,
-                                        step.key_ordinals,
+                                        step.key_ordinals, publication_sha256=step.publication_sha256,
                                     )
                                     if preferred:
                                         witnesses[outcome] = witness

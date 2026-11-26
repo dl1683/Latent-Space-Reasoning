@@ -318,7 +318,7 @@ class CorpusBindingMemory:
 
     def _witness_with_spans(self, witness):
         final = BindingLinkStep(witness.link_source, witness.entry_ordinal, witness.exit_ordinal,
-                                witness.exit_source, witness.key_ordinals)
+                                witness.exit_source, witness.key_ordinals, witness.publication_sha256)
         positions = []
         authorities = {}
         validity = self._role_links.validity
@@ -469,6 +469,7 @@ class CorpusRevision:
     _source_revisions: Mapping[str, int]
     _owner: object
     _program_revision: int = 0
+    _source_program_revision: int = 0
     _receiver_programs: tuple[_ReceiverProgram, ...] = ()
     source_revision: int = 0
     changed_sources: tuple[str, ...] = ()
@@ -549,7 +550,7 @@ class CorpusBindingWorkspace:
     def _check_dependencies(self, tip, proposal):
         if proposal._require_tip and tip is not proposal.base:
             raise StaleCorpusRevision("corpus workspace tip changed")
-        if not proposal._allow_program_rebase and tip._program_revision != proposal.base._program_revision:
+        if not proposal._allow_program_rebase and tip._source_program_revision != proposal.base._source_program_revision:
             raise StaleCorpusRevision("corpus binding program changed")
         if any(tip._source_revisions.get(source, 0) != proposal.base._source_revisions.get(source, 0)
                for source in proposal._dependencies):
@@ -617,11 +618,12 @@ class CorpusBindingWorkspace:
             raise StaleCorpusRevision("program preview was not prepared on the current revision")
         return self._replace_program(tip, proposal.preview)
 
-    def _replace_program(self, tip, memory):
+    def _replace_program(self, tip, memory, *, updates_source_program=True):
         if memory is tip.memory:
             return tip
         revision = tip.revision + 1
-        return replace(tip, revision=revision, memory=memory, _program_revision=revision)
+        return replace(tip, revision=revision, memory=memory, _program_revision=revision,
+                       _source_program_revision=revision if updates_source_program else tip._source_program_revision)
 
     def remember(self, base, node, binding, *, without_sources=(), work_limit=65536):
         """Retain a completed read only if its pinned revision is still current."""

@@ -26,6 +26,8 @@ A [cross-source bridge worker](docs/ARCHITECTURE.md#matching-source-fragments-be
 
 [Local bridge maintenance](docs/ARCHITECTURE.md#keeping-unaffected-bridges-usable-during-repair) keeps an unaffected connection active while another is repaired. In the software check the same reasoning core reproduced its later hidden state in the unaffected region. An edited key that could compete in both regions reopened both.
 
+[Workers can now repair portions of a shared bridge agenda](docs/ARCHITECTURE.md#repairing-a-shared-bridge-agenda-before-tasks-arrive). The journal records which repair ran, and a later hidden path can identify the publication it used. A scripted task stayed open before a repair and reached a source-backed decision after it, with the same source versions. The directions and matching rules were supplied.
+
 The [factored bridge index](docs/ARCHITECTURE.md#sharing-exact-key-comparisons-across-sources) shares geometry for byte-identical keys. The dense check retained the separate directions and sources of a 128-by-128 ambiguity while doing one key comparison.
 
 The [task evidence investigator](docs/ARCHITECTURE.md#investigating-a-task-on-a-pinned-world) can follow source evidence, probe retained relations and keep conflicts and missing prerequisites in one dossier. A later task can now invoke multiple hidden transitions using the same journaled world that a maintenance worker published. The task shell can reopen and verify the role premises, endpoints and governing clauses before accepting a declared joint-role finding. The checks use scripted tasks and supplied directions. The [whole-world evaluation](docs/WHOLE_WORLD_EVALUATION.md) defines the remaining blind acquisition, independent need inference and matched controls for the central loop.

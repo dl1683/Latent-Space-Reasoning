@@ -72,6 +72,18 @@ class CorpusContextRestoration:
     trial: CorpusProgramTrialResult | None = None
 
 
+@dataclass(frozen=True)
+class CorpusBridgeMaintenance:
+    """Record checked entries and their matched exits, if any, on one source pin."""
+
+    status: str
+    revision: int
+    source_revision: int
+    checked: tuple[tuple[str, str | None], ...] = ()
+    remaining: int | None = None
+    publication_sha256: str | None = None
+
+
 def _check_identifiers(names):
     # ASCII JSON uses the same pair of escapes for an astral character and two surrogate code units.
     if any(_SURROGATE_PAIR.search(name) for name in names):
@@ -390,6 +402,30 @@ def _event_digest(parent, revision, payload):
     return sha256(parent + str(revision).encode("ascii") + b"\x00" + payload).digest()
 
 
+def _apply_bridge_repairs(memory, plan, publication):
+    links = memory._role_links
+    return replace(memory, _role_links=links.bridge_index.matches(
+        links, plan, publication_sha256=publication,
+    ))
+
+
+def _bridge_repair_payload(limit, plan):
+    return _json(["bridge_repair", 1, limit, plan])
+
+
+def _replay_bridge_repairs(payload, memory, publication):
+    event = json.loads(payload)
+    links = memory._role_links
+    if (type(event) is not list or len(event) != 4 or event[:2] != ["bridge_repair", 1]
+            or type(event[2]) is not int or event[2] < 1
+            or links is None or links.bridge_index is None):
+        raise ValueError("invalid bridge repair event")
+    plan = links.bridge_index.repairs(event[2])
+    if not plan or _bridge_repair_payload(event[2], plan) != payload:
+        raise ValueError("bridge repair does not match the pending plan")
+    return _apply_bridge_repairs(memory, plan, publication)
+
+
 def _has_program_trials(db):
     table = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='corpus_program_trials'")
     return table.fetchone() is not None
@@ -553,18 +589,29 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             raise ValueError("corpus journal frame mismatch")
         return record[1]
 
-    def _read_suffix(self, db):
+    def _check_stream(self, db):
         if self._read_root(db) != self._stream:
             raise ValueError("corpus journal stream changed")
-        tip, digest = self._tip, self._digest
-        if tip.revision:
-            pinned = db.execute("SELECT digest FROM corpus_events WHERE revision = ?", (tip.revision,)).fetchone()
-            if pinned != (digest,):
+        if self._tip.revision:
+            pinned = db.execute(
+                "SELECT digest FROM corpus_events WHERE revision = ?", (self._tip.revision,),
+            ).fetchone()
+            if pinned != (self._digest,):
                 raise ValueError("corpus journal lost its pinned revision")
+
+    def _read_suffix(self, db):
+        self._check_stream(db)
         return tuple(db.execute(
             "SELECT revision, parent, digest, payload FROM corpus_events WHERE revision > ? ORDER BY revision",
-            (tip.revision,),
+            (self._tip.revision,),
         ))
+
+    def _require_current_pin(self, db, base):
+        if self._tip is not base:
+            raise StaleCorpusRevision("corpus workspace tip changed")
+        self._check_stream(db)
+        if db.execute("SELECT 1 FROM corpus_events WHERE revision > ? LIMIT 1", (base.revision,)).fetchone():
+            raise StaleCorpusRevision("corpus workspace tip changed")
 
     def _replay(self, suffix):
         tip, digest = self._tip, self._digest
@@ -588,6 +635,9 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 tip = self._replace_program(tip, _decode_role_links(payload, tip.memory))
             elif payload.startswith(b'["role_validity",'):
                 tip = self._replace_program(tip, _decode_role_validity(payload, tip.memory))
+            elif payload.startswith(b'["bridge_repair",'):
+                memory = _replay_bridge_repairs(payload, tip.memory, recorded.hex())
+                tip = self._replace_program(tip, memory, updates_source_program=False)
             elif payload.startswith(b'["program",'):
                 memory = tip.memory.reprogram(_decode_program(payload))
                 if memory is tip.memory:
@@ -607,7 +657,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             raise ValueError("program does not extend the installed receiver")
         revision = tip.revision + 1
         return replace(tip, revision=revision, memory=memory, _program_revision=revision,
-                       _receiver_programs=(*programs, patch))
+                       _source_program_revision=revision, _receiver_programs=(*programs, patch))
 
     def receiver_at(self, revision, root):
         """Recover the receiver for a pinned revision from its original receiver."""
@@ -626,6 +676,37 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 db.commit()
             tip, digest = self._replay(suffix)
             return self._set_tip(tip, digest)
+
+    def snapshot_at(self, revision, *, max_events, max_payload_bytes):
+        """Replay a historical pin without changing this handle's current tip."""
+        fields = (revision, max_events, max_payload_bytes)
+        if any(type(value) is not int or value < 0 for value in fields):
+            raise ValueError("historical pin needs nonnegative revision, event and payload allowances")
+        if revision > 2**63 - 1:
+            raise ValueError("historical revision unavailable")
+        if revision > max_events:
+            raise BindingCapacityError("historical pin exceeds the event replay allowance")
+        root = self._root_tip
+        with self._lock, closing(self._connect()) as db:
+            db.execute("BEGIN")
+            self._check_stream(db)
+            count, size = db.execute(
+                "SELECT COUNT(*), COALESCE(SUM(length(payload)), 0) FROM corpus_events WHERE revision <= ?",
+                (revision,),
+            ).fetchone()
+            if count != revision:
+                raise ValueError("historical revision unavailable")
+            if size > max_payload_bytes:
+                raise BindingCapacityError("historical pin exceeds the payload replay allowance")
+            rows = tuple(db.execute(
+                "SELECT revision, parent, digest, payload FROM corpus_events WHERE revision <= ? ORDER BY revision",
+                (revision,),
+            ))
+            db.commit()
+        tip = root
+        for tip, _ in self._replay_states(rows, root, bytes.fromhex(root.journal_sha256)):
+            pass
+        return tip
 
     def publish(self, proposal):
         self._check_proposal(proposal)
@@ -658,6 +739,38 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 digest = self._append(db, digest, revised.revision, payload)
             db.commit()
             return self._set_tip(revised, digest)
+
+    def maintain_role_bridges(self, base, *, max_entries):
+        """Repair a finite oldest-first batch from the shared source-driven agenda."""
+        self._check_owner(base)
+        if type(max_entries) is not int or max_entries < 1:
+            raise ValueError("bridge maintenance needs a positive entry allowance")
+        links = base.memory._role_links
+        if links is None or not links.local_bridges:
+            raise ValueError("bridge maintenance needs an installed local bridge program")
+        bridge_index = links.bridge_index
+        plan = () if bridge_index is None else bridge_index.repairs(max_entries)
+        if not plan:
+            with self._lock, closing(self._connect()) as db:
+                db.execute("BEGIN")
+                self._require_current_pin(db, base)
+                db.commit()
+            status, remaining = ("index_unavailable", None) if bridge_index is None else ("no_work", 0)
+            return CorpusBridgeMaintenance(status, base.revision, base.source_revision, remaining=remaining)
+
+        payload = _bridge_repair_payload(max_entries, plan)
+        parent = bytes.fromhex(base.journal_sha256)
+        publication = _event_digest(parent, base.revision + 1, payload).hex()
+        memory = _apply_bridge_repairs(base.memory, plan, publication)
+        with self._lock, closing(self._connect()) as db:
+            db.execute("BEGIN IMMEDIATE")
+            self._require_current_pin(db, base)
+            revised = self._replace_program(base, memory, updates_source_program=False)
+            digest = self._append(db, parent, revised.revision, payload)
+            db.commit()
+            self._set_tip(revised, digest)
+        return CorpusBridgeMaintenance("published", revised.revision, revised.source_revision, plan,
+                                       len(memory._role_links.bridge_index.stale), publication)
 
     def begin_program_trial(self, base, gates, *, targets, future_batches, work_limit, protected=(), replay=None,
                             downstream=None, route_edit=None, route_update_limit=None):

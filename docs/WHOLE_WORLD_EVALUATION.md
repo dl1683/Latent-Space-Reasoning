@@ -308,19 +308,17 @@ need/finding adapter and pass an eight-task calibration set that measures
 both format and evidence sufficiency before opening held tasks. See the
 preserved ledgers and exact denominators in [RESULTS.md](RESULTS.md).
 
-The existing maintenance API compiles a declared role pair with a supplied
-threshold and transport; it is not a generic autonomous world worker. It has
-no persistent gap/coverage agenda or query-blind maintenance proposal record
-that can be followed into a late task receipt. The role probe takes
-caller-supplied outcomes and hop count; the worker does not autonomously
-select the operator family. Geometry-twin cases therefore cannot yet be run
-through the current path. The first study can test discovery **within one
-frozen operator family** only after a source-context selection procedure,
-explicit proposal and gap records, and proposal IDs are implemented. The
-journal currently exposes a recovered current snapshot; durable historical
-pin evaluation needs a `snapshot_at(revision)`-style replay API or a narrower
-same-process scope. These interfaces and the typed need protocol must exist
-before the design is executable or preregistered.
+The query-blind bridge worker can now take a bounded batch from a revision-led
+agenda and publish its resulting operators. Late paths carry the actual
+publication digest for bridges installed by those worker batches. Historical replay can recover
+before and after pins under event and payload limits; historical verified opens
+still require the source bytes. The worker operates on a declared role pair,
+key predicate, threshold and transport. Source-context selection between
+competing operators, coverage-only publication dependencies, general gap
+discovery and typed need assignment remain open. Geometry-twin tasks will
+require a frozen method for choosing a transport or abstaining from the
+available context. Match that input and publication opportunity in the
+incremental join arm before a scored test.
 
 Run in stages: first verify the blinded data boundary and causal interventions
 on a small CPU world; next qualify the 0.6B planner's typed action contract on

@@ -538,6 +538,73 @@ An edit to a member fences its own entry and any entries whose reciprocal exit c
 
 The publication fence records the revision from which the preview was actually prepared. Relabeling an old preview with a new base can otherwise install a live state that differs from journal replay even if source bytes are unchanged. [Factored bridge and publication fixtures](../experiments/memory/test_binding_links.py)
 
+#### Repairing a shared bridge agenda before tasks arrive
+
+[SLICE] Source events enqueue affected local or factored bridge entries in
+the durable corpus state. The oldest pending entry stays in place if its
+dependencies change again. Entries first dirtied by the same source event
+are ordered by source identifier. A worker calls
+`maintain_role_bridges(pin, max_entries=...)` with a finite allowance and no
+task inputs. It checks an oldest-first prefix against all retained plausible
+neighbors on both sides. A live entry without a definitive match stays open
+after the check, and a later dependency change can enqueue it again. Entries
+outside the batch retain their prior state, including unresolved coverage.
+If the local index was discarded under its capacity policy, the worker
+reports it unavailable so a separate rebuild can be evaluated.
+
+A single event records the batch limit and the ordered entries with their
+admitted exits or unresolved dispositions. Another publisher or an ingest
+event changes the tip and makes a prepared repair stale. The worker checks
+the durable tip inside the publication transaction without replaying a
+changed suffix under the write lock. Replay checks the
+recorded batch against the retained opening agenda. A bridge admitted by
+this worker carries the actual event digest together with its own source
+pair and ordinals when consumed. Unchanged steps keep their original digest. This records
+application of a published operator. The effect of clearing stale coverage
+without traversing an operator is a separate dependency question.
+New bridge-repair events require a reader that supports this journal event.
+The existing explicit bulk compiler retains its original publication behavior.
+
+`snapshot_at(revision, max_events=..., max_payload_bytes=...)` replays a
+verified prefix without moving the live tip. It checks the event and byte
+allowances before loading the prefix. Historical evidence reopening also
+requires the corresponding source bytes. Bridge repairs change the derived
+program revision, so the existing program-trial fence still detects them.
+An already prepared source edit can cross a repair when its own source
+dependencies and ingest program still match.
+The batch limits candidate decisions. Copying retained maps, source-time
+candidate updates, journal commits and prefix replay have separate costs.
+The task reader still scans reachable candidates against the stored
+openings, so larger backlogs can increase read work outside the changed region.
+The method is a finite worker entry point. Its scheduling policy can age
+pending entries across calls, while invocation cadence and rebuilds remain
+the caller's responsibility.
+
+In the software check, two worker handles had the same backlog and only one
+could publish from that tip. A later scripted task could run the published
+rotation and cite the resulting decision on the same source versions where
+it had stayed open before publication. Two off-axis inputs reused the
+rotation while preserving opposite hidden residuals. A second region stayed
+open until its own turn. Compare with a persisted incremental join that
+can resolve reached stale entries lazily and cache shared transports. Give
+it the same typed keys, similarity and uncertainty, origins and opportunity
+to maintain state. Keep later tasks unknown to the worker and compare
+total lifecycle cost and supported findings. This
+fixture uses supplied typed observations and the same declared transport for
+all bridges. [Maintenance fixture](../experiments/memory/test_binding_links.py)
+
+The next operator-selection test should keep endpoint and key geometry
+identical across two regions while changing source-supported context that
+determines how an off-axis input should move. Fit or select a bounded
+transition before the late roots arrive. Withdraw only the disambiguating
+context and require abstention where both operators remain plausible.
+Compare persistent continuous transitions with a reused reasoning block
+and with an incremental join that can retain the same derived relations
+and nested computation across revisions. Differential dataflow provides
+the classical reuse comparison. Geometric Latent Reasoning motivates a
+separate test of trained transition displacements in a reused model.
+[Differential dataflow](https://www.microsoft.com/en-us/research/wp-content/uploads/2013/01/differentialdataflow.pdf) · [Geometric Latent Reasoning](https://arxiv.org/abs/2606.02248)
+
 #### Rewiring the binding program
 
 [SLICE] `prepare_program(base, gates)` compiles an ordered acyclic graph over the same predicates and immutable encoded rows. The worker can test the whole candidate through `proposal.preview` before deciding whether to call `publish_program(proposal)`. A gate can be added, replaced or removed. Both banks use the same new graph. An output keeps its retained bounds only if its gate and every transitive dependency keep their definitions. A changed dependency invalidates cached downstream answers even when the query name and the source digests agree. Rollback installs the old graph on the current sources as a fresh revision. [Program controls](../experiments/memory/test_corpus_binding_journal.py)
