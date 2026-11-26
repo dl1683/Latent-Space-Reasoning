@@ -196,6 +196,180 @@ class WeightFrameProgram:
         return ReinstalledWeight(_frozen_matrix(candidate), update_norm, transport_error, input_drift, readout_drift)
 
 
+def _relative_row_errors(actual, expected):
+    peak = np.maximum(np.max(np.abs(actual), axis=1), np.max(np.abs(expected), axis=1))
+    scale = np.where(peak > 0, peak, 1.0)[:, None]
+    a, b = actual / scale, expected / scale
+    denominator = np.maximum(np.linalg.norm(a, axis=1), np.linalg.norm(b, axis=1))
+    return np.divide(np.linalg.norm(a - b, axis=1), denominator,
+                     out=np.zeros_like(denominator), where=denominator > 0)
+
+
+def _role_svd(rows, rank, rcond, min_gap=0.0):
+    if rank > min(rows.shape):
+        raise ValueError("calibration has fewer rows or columns than the requested rank")
+    peak = float(np.max(np.abs(rows)))
+    if peak == 0.0:
+        raise ValueError("calibration does not support the requested rank")
+    left, singular, right = np.linalg.svd(rows / peak, full_matrices=False)
+    cutoff = singular[rank - 1]
+    if not cutoff > rcond * singular[0]:
+        raise ValueError("calibration does not support the requested rank")
+    if rank < len(singular) and min_gap and (cutoff - singular[rank]) / cutoff < min_gap:
+        raise ValueError("calibration does not resolve the retained subspace at the chosen rank")
+    return left[:, :rank], singular[:rank], right[:rank], peak
+
+
+@dataclass(frozen=True, eq=False)
+class CalibratedRoleFrame:
+    """A retained row basis and its coordinate map for one bank."""
+
+    _anchors: np.ndarray
+    _encoder: np.ndarray
+    _basis: np.ndarray
+
+    @property
+    def anchors(self):
+        """Rows supplied to the role-action installer in declared order."""
+        return self._anchors.view()
+
+    def coordinates(self, rows):
+        rows = _matrix(rows, "activation rows")
+        if rows.shape[1] != self._anchors.shape[1]:
+            raise ValueError("activation width does not match the calibrated bank")
+        with np.errstate(over="raise", invalid="raise"):
+            result = rows @ self._encoder
+        return _matrix(result, "role coordinates")
+
+    def coverage_errors(self, rows):
+        """Relative per-row distance to the retained native span."""
+        rows = _matrix(rows, "activation rows")
+        if rows.shape[1] != self._anchors.shape[1]:
+            raise ValueError("activation width does not match the calibrated bank")
+        with np.errstate(over="raise", invalid="raise"):
+            projected = (rows @ self._basis.T) @ self._basis
+            errors = _relative_row_errors(rows, projected)
+        if not np.isfinite(projected).all() or not np.isfinite(errors).all():
+            raise ValueError("unable to resolve finite calibration coverage")
+        return errors
+
+
+def _calibrated_frame(singular, basis, peak, rotation):
+    anchors = (rotation @ (singular[:, None] * basis)) * peak
+    encoder = ((basis.T / singular) @ rotation.T) / peak
+    return CalibratedRoleFrame(_frozen_matrix(_matrix(anchors, "calibrated anchors")),
+                               _frozen_matrix(_matrix(encoder, "calibrated encoder")),
+                               _frozen_matrix(basis))
+
+
+@dataclass(frozen=True)
+class RoleCalibrationLimits:
+    rank: int
+    min_correlation: float
+    max_disagreement: float
+    max_span_error: float
+    max_prediction_error: float
+    min_spectral_gap: float
+    rcond: float
+
+
+@dataclass(frozen=True, eq=False)
+class PairedActionErrors:
+    coordinate_errors: np.ndarray
+    input_span_errors: np.ndarray
+    output_span_errors: np.ndarray
+
+
+@dataclass(frozen=True, eq=False)
+class PairedRoleCalibration:
+    """Uncentered linear calibration on corresponding examples from two banks."""
+
+    source: CalibratedRoleFrame
+    destination: CalibratedRoleFrame
+    min_fit_correlation: float
+    max_validation_disagreement: float
+    max_validation_span_error: float
+    max_validation_prediction_error: float
+    limits: RoleCalibrationLimits
+
+    @classmethod
+    def fit(cls, source_fit, destination_fit, source_validation, destination_validation, *,
+            rank, min_correlation, max_disagreement, max_span_error, max_prediction_error,
+            min_spectral_gap=0.01, rcond=1e-10):
+        """Fit on paired rows and admit only after separate paired validation.
+
+        The caller must construct disjoint fit and validation probe sets and freeze
+        them independently of the downstream repair. Thresholds are supplied by
+        the caller before fitting. Role correspondence is limited to these probes.
+        """
+        if isinstance(rank, (bool, np.bool_)) or not isinstance(rank, (int, np.integer)) or rank <= 0:
+            raise ValueError("calibration rank must be a positive integer")
+        if not (0 < rcond < 1 and 0 < min_correlation <= 1 and 0 <= max_disagreement < 1
+                and 0 <= max_span_error < 1 and 0 <= max_prediction_error < 1
+                and 0 < min_spectral_gap < 1):
+            raise ValueError("invalid calibration thresholds")
+        source_fit = _matrix(source_fit, "source calibration rows")
+        destination_fit = _matrix(destination_fit, "destination calibration rows")
+        source_validation = _matrix(source_validation, "source validation rows")
+        destination_validation = _matrix(destination_validation, "destination validation rows")
+        if (len(source_fit) != len(destination_fit) or len(source_fit) <= rank
+                or len(source_validation) != len(destination_validation) or len(source_validation) < rank
+                or source_fit.shape[1] != source_validation.shape[1]
+                or destination_fit.shape[1] != destination_validation.shape[1]):
+            raise ValueError("calibration needs paired fit and validation rows with compatible widths")
+        with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
+            u, s, v, source_peak = _role_svd(source_fit, rank, rcond, min_spectral_gap)
+            ud, sd, vd, destination_peak = _role_svd(destination_fit, rank, rcond, min_spectral_gap)
+            left, correlations, right = np.linalg.svd(u.T @ ud, full_matrices=False)
+            agreement = float(correlations[-1])
+            if not agreement >= min_correlation:
+                raise ValueError("fit calibration is missing a shared direction")
+            source = _calibrated_frame(s, v, source_peak, np.eye(rank))
+            dest = _calibrated_frame(sd, vd, destination_peak, left @ right)
+            z_source = source.coordinates(source_validation)
+            z_dest = dest.coordinates(destination_validation)
+            _role_svd(z_source, rank, rcond)
+            _role_svd(z_dest, rank, rcond)
+            disagreement = float(np.max(_relative_row_errors(z_source, z_dest)))
+            span_error = float(np.maximum(np.max(source.coverage_errors(source_validation)),
+                                          np.max(dest.coverage_errors(destination_validation))))
+            source_prediction = z_dest @ source.anchors
+            dest_prediction = z_source @ dest.anchors
+            prediction_error = float(np.maximum(
+                np.max(_relative_row_errors(source_validation, source_prediction)),
+                np.max(_relative_row_errors(destination_validation, dest_prediction)),
+            ))
+        if not disagreement <= max_disagreement or not span_error <= max_span_error:
+            raise ValueError("paired validation exceeds the correspondence or coverage limit")
+        if not prediction_error <= max_prediction_error:
+            raise ValueError("paired validation exceeds the cross-bank prediction limit")
+        limits = RoleCalibrationLimits(rank, min_correlation, max_disagreement, max_span_error,
+                                       max_prediction_error, min_spectral_gap, rcond)
+        return cls(source, dest, min(1.0, agreement), disagreement, span_error, prediction_error, limits)
+
+    def action_errors(self, source_inputs, destination_inputs, source_delta, destination_delta, *,
+                      input_calibration):
+        """Compare stored effects using separate input and output calibrations."""
+        source_inputs = _matrix(source_inputs, "source guard inputs")
+        destination_inputs = _matrix(destination_inputs, "destination guard inputs")
+        source_delta = _matrix(source_delta, "source stored edit")
+        destination_delta = _matrix(destination_delta, "destination stored edit")
+        if (not len(source_inputs) or len(source_inputs) != len(destination_inputs)
+                or source_inputs.shape[1] != len(source_delta)
+                or destination_inputs.shape[1] != len(destination_delta)):
+            raise ValueError("edit action check requires paired inputs compatible with each stored edit")
+        with np.errstate(over="raise", invalid="raise"):
+            source_output = source_inputs @ source_delta
+            destination_output = destination_inputs @ destination_delta
+            coordinate_errors = _relative_row_errors(self.source.coordinates(source_output),
+                                                     self.destination.coordinates(destination_output))
+        input_span_errors = np.maximum(input_calibration.source.coverage_errors(source_inputs),
+                                       input_calibration.destination.coverage_errors(destination_inputs))
+        output_span_errors = np.maximum(self.source.coverage_errors(source_output),
+                                        self.destination.coverage_errors(destination_output))
+        return PairedActionErrors(coordinate_errors, input_span_errors, output_span_errors)
+
+
 def _solve_weight_delta(inputs, residuals, anchor_rows, readouts, rcond):
     input_basis = _row_basis(anchor_rows, rcond)
     output_basis = _row_basis(readouts.T, rcond)

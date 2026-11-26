@@ -3,7 +3,9 @@ import pytest
 
 from experiments.memory.feedback_workspace import FeedbackProbe, FeedbackProposal, FeedbackWorkspace
 from experiments.memory.latent_feedback import FeedbackKernel
-from experiments.memory.weight_program import WeightFrameProgram, WeightRoleProgram, program_weight
+from experiments.memory.weight_program import (
+    PairedRoleCalibration, WeightFrameProgram, WeightRoleProgram, program_weight,
+)
 
 
 def _two_step_weight_example():
@@ -388,3 +390,131 @@ def test_role_action_leaves_new_sources_outside_the_calibrated_span_unidentified
         basis.setflags(write=True)
     assert read(revised_rows, installed) == pytest.approx(np.tanh(1. / 3), abs=1e-12)
     assert read(revised_rows, alternative) == pytest.approx(np.tanh(1. / 6), abs=1e-12)
+
+
+
+def _paired_calibration_fixture():
+    fit = np.array([[1., 2.], [3., -.5], [-2., 1.], [0., 2.5], [.5, -1.]])
+    validation = np.array([[1., -1.], [-2., -2.], [0., 1.]])
+    source = np.array([[1., 0., 1.], [0., 2., -1.]])
+    destination = np.array([[0., 3., 0., .5], [1., 1., 4., 0.]])
+    return source, destination, (fit @ source, fit @ destination, validation @ source, validation @ destination)
+
+
+def _fit_two_role_calibration(rows):
+    return PairedRoleCalibration.fit(*rows, rank=2, min_correlation=.99,
+                                     max_disagreement=1e-10, max_span_error=1e-10, max_prediction_error=1e-10)
+
+
+def test_paired_calibration_transports_an_edit_defined_after_calibration():
+    native_source, native_dest, rows = _paired_calibration_fixture()
+    learned = _fit_two_role_calibration(rows)
+    output_source = np.array([[2., 1.], [0., -1.]])
+    output_dest = np.array([[0., 1., 0., 3., -1.], [1., 0., 2., 0., 1.]])
+    output_fit = np.array([[2., 2.], [-1., -3.], [1., -1.], [0., 2.]])
+    output_holdout = np.array([[5., 1.], [1., 3.]])
+    outputs = _fit_two_role_calibration((output_fit @ output_source, output_fit @ output_dest,
+                                        output_holdout @ output_source, output_holdout @ output_dest))
+    semantic_update = np.array([[.25, -.125], [.5, .25]])
+    before = np.zeros((3, 2))
+    source_edit = np.linalg.pinv(native_source) @ semantic_update @ output_source
+    program = WeightRoleProgram.capture(before, source_edit, input_anchors=learned.source.anchors,
+                                        output_anchors=outputs.source.anchors)
+    destination = np.zeros((4, 5))
+    repaired = program.reinstall(destination, input_anchors=learned.destination.anchors,
+                                 output_anchors=outputs.destination.anchors, max_update_norm=10.)
+    new_probe = np.array([[2., .5], [-1., 1.]])
+    native_probe = new_probe @ native_dest
+    np.testing.assert_allclose(native_probe @ repaired.weight, new_probe @ semantic_update @ output_dest,
+                               atol=1e-12, rtol=0)
+    np.testing.assert_allclose(learned.source.coordinates(new_probe @ native_source),
+                               learned.destination.coordinates(native_probe), atol=1e-12, rtol=0)
+    assert learned.min_fit_correlation == pytest.approx(1.)
+    assert learned.limits.min_correlation == .99
+    assert max(learned.max_validation_disagreement, learned.max_validation_span_error,
+               learned.max_validation_prediction_error) < 1e-12
+    assert np.max(learned.destination.coverage_errors(native_probe)) < 1e-12
+    guard = new_probe @ native_source
+    errors = outputs.action_errors(guard, native_probe, source_edit, repaired.weight, input_calibration=learned)
+    np.testing.assert_allclose(errors.coordinate_errors, 0., atol=1e-12, rtol=0)
+    np.testing.assert_allclose(errors.input_span_errors, 0., atol=1e-12, rtol=0)
+    np.testing.assert_allclose(errors.output_span_errors, 0., atol=1e-12, rtol=0)
+    wrong = outputs.action_errors(guard, native_probe, source_edit, -repaired.weight, input_calibration=learned)
+    np.testing.assert_allclose(wrong.coordinate_errors, 2., atol=1e-12, rtol=0)
+    unknown_output = np.linalg.svd(output_dest, full_matrices=True)[2][2]
+    contaminated = repaired.weight + np.outer(native_probe[0], unknown_output)
+    outside = outputs.action_errors(guard, native_probe, source_edit, contaminated, input_calibration=learned)
+    np.testing.assert_allclose(outside.coordinate_errors, 0., atol=1e-12, rtol=0)
+    assert outside.output_span_errors[0] > .1
+    native_novel = np.linalg.svd(native_dest, full_matrices=True)[2][2:]
+    np.testing.assert_allclose(learned.destination.coverage_errors(native_novel), 1., atol=1e-12, rtol=0)
+    exposed = learned.destination.anchors
+    exposed.shape = (exposed.size,)
+    assert learned.destination.anchors.shape == (2, 4)
+
+
+def test_paired_calibration_checks_validation_pairing_and_native_span_separately():
+    _, native_dest, (sf, df, sv, dv) = _paired_calibration_fixture()
+    with pytest.raises(ValueError, match="validation exceeds the correspondence or coverage limit"):
+        _fit_two_role_calibration((sf, df, sv, dv[::-1]))
+
+    novel = np.linalg.svd(native_dest, full_matrices=True)[2][2]
+    contaminated = dv.copy()
+    contaminated[0] += novel
+    with pytest.raises(ValueError, match="validation exceeds the correspondence or coverage limit"):
+        _fit_two_role_calibration((sf, df, sv, contaminated))
+
+
+def test_paired_calibration_checks_actual_cross_bank_prediction():
+    _, _, (sf, df, sv, dv) = _paired_calibration_fixture()
+    distorted = dv.copy()
+    distorted[0] += .1 * dv[1]
+    with pytest.raises(ValueError, match="cross-bank prediction limit"):
+        PairedRoleCalibration.fit(sf, df, sv, distorted, rank=2, min_correlation=.99,
+                                  max_disagreement=.5, max_span_error=1e-10, max_prediction_error=1e-10)
+
+
+def test_paired_calibration_refuses_truncating_in_a_tied_subspace():
+    rows = np.vstack((np.eye(3), -np.eye(3)))
+    with pytest.raises(ValueError, match="does not resolve the retained subspace"):
+        _fit_two_role_calibration((rows, rows, rows, rows))
+
+
+def test_paired_calibration_refuses_unresolved_fit_and_validation_directions():
+    _, _, (sf, df, sv, dv) = _paired_calibration_fixture()
+    with pytest.raises(ValueError, match="does not support the requested rank"):
+        _fit_two_role_calibration((sf, np.repeat(df[:1], len(df), axis=0), sv, dv))
+    with pytest.raises(ValueError, match="does not support the requested rank"):
+        _fit_two_role_calibration((sf, df, np.zeros_like(sv), np.zeros_like(dv)))
+    with pytest.raises(ValueError, match="missing a shared direction"):
+        _fit_two_role_calibration((sf, df[[2, 4, 0, 3, 1]], sv, dv))
+
+
+
+def test_small_calibration_error_can_reverse_the_transferred_action():
+    fit = np.array([[3., 0., 0.], [0., 2., 0.], [-3., 0., 0.], [0., -2., 0.]])
+    source_guard = np.array([[1., 0., 0.], [0., 1., 0.], [1., 1e-6, 0.]])
+    destination_guard = source_guard.copy()
+    destination_guard[2, 1] *= -1.
+    calibration = PairedRoleCalibration.fit(
+        fit, fit, source_guard, destination_guard, rank=2, min_correlation=.99,
+        max_disagreement=1e-5, max_span_error=1e-12, max_prediction_error=1e-5,
+    )
+    change = np.diag([0., 1., 0.])
+    assert calibration.max_validation_disagreement < 1e-5
+    assert calibration.max_validation_span_error < 1e-12
+    errors = calibration.action_errors(source_guard, destination_guard, change, change,
+                                       input_calibration=calibration)
+    np.testing.assert_allclose(errors.coordinate_errors, [0., 0., 2.], atol=1e-12, rtol=0)
+
+
+def test_paired_calibration_accepts_small_noise_and_rejects_a_within_span_pair_permutation():
+    _, _, (sf, df, sv, dv) = _paired_calibration_fixture()
+    noisy = dv.copy()
+    noisy[0] += 1e-4 * dv[1]
+    args = dict(rank=2, min_correlation=.99, max_disagreement=.01, max_span_error=1e-10,
+                max_prediction_error=.01)
+    fit = PairedRoleCalibration.fit(sf, df, sv, noisy, **args)
+    assert 0. < fit.max_validation_prediction_error < .01
+    with pytest.raises(ValueError, match="validation exceeds the correspondence or coverage limit"):
+        PairedRoleCalibration.fit(sf, df, sv, noisy[[2, 0, 1]], **args)
