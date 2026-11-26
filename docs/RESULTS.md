@@ -4,6 +4,35 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Testing reachable states in the maintained joint reasoner, 26 November 2026
+
+**Visible CPU software verification.** A source-only worker published a
+two-law operation from typed records. The recipient used it and discharged
+its required relay before the cut. The donor reached the same depth at
+the same pin through ordinary observations. The fixed readout scored
+zero on both cut states. Substituting the midpoint reversed the third
+step's finding from supported to opposed in two constructions.
+
+In the first construction, the two suffixes selected different sources.
+In the second, both used the same published operation at different
+magnitudes, carried its residual past the required relay, and admitted
+the same final source. A scalar calculation predicted the sign reversal
+through the same carry map and fixed threshold. The source-only swap
+reproduced both reversals, and the task-only swap preserved the signed
+outcome and witnesses. Each suffix used two block
+evaluations. The same-state control preserved its route and outcome.
+Removing only the operator on the same pin removed the ordinary
+finding while retaining the observation bank. Substituting before the
+required relay kept that requirement in force and could not close
+the changed path. Donors with an unverified relay or a reached
+uncertain observation were refused.
+
+The fixture supplies the typed source grammar, coordinates, weights and
+numerical questions. It verifies state dependence through the real core
+and its published operation. The receipt's hypothetical path carries no
+authority as evidence. Learned source acquisition, real task inference
+and lifecycle costs remain open. [Integration fixture](../experiments/memory/test_world_transport.py)
+
 ## Discovering and revising a transport before tasks, 26 November 2026
 
 **Visible CPU software verification.** A worker scanned one supplied

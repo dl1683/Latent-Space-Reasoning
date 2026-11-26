@@ -220,6 +220,27 @@ class JointWorldRead:
         return JointWorldOutcome(status, tuple(support), tuple(opposition), self.unit_premises)
 
 
+@dataclass(frozen=True)
+class JointStateComparison:
+    """Diagnostic readouts for one ordinary suffix and its counterfactual."""
+
+    journal_sha256: str
+    transport_sha256: str | None
+    depth: int
+    channel: str
+    recipient_prefix: tuple[WorldWitness | None, ...]
+    donor_prefix: tuple[WorldWitness | None, ...]
+    recipient_cut_score: float
+    donor_cut_score: float
+    first_route_change: int | None
+    ordinary_status: str
+    hypothetical_status: str
+    ordinary_paths: tuple[tuple[WorldWitness | None, ...], ...]
+    hypothetical_paths: tuple[tuple[WorldWitness | None, ...], ...]
+    ordinary_block_evaluations: int
+    hypothetical_block_evaluations: int
+
+
 class RecurrentWorld:
     """Reuse a fixed latent block or feed back a growing sequence of latent thoughts."""
 
@@ -461,6 +482,95 @@ class RecurrentWorld:
         if steps < 1 or last > self._kernel._max_steps or max_hypotheses < len(state.branches):
             raise ValueError("joint continuation exceeds the horizon or cannot hold the current frontier")
         return self._expand_joint(state, last, max_hypotheses)
+
+    def compare_joint_state(self, recipient, donor, *, steps, max_hypotheses, direction, floor,
+                            recipient_branch=0, donor_branch=0, channel="joint"):
+        """Compare suffixes after replacing one reached numerical state at a fixed pin."""
+        if type(channel) is not str or channel not in ("joint", "source", "task"):
+            raise ValueError("state comparison channel must be joint, source or task")
+        if any(type(state) is not JointWorldRead or state._reasoner is not self for state in (recipient, donor)):
+            raise ValueError("joint prefixes must come from the same reasoner")
+        if recipient.memory is None or recipient.memory is not donor.memory:
+            raise ValueError("joint prefixes must share the exact prepared memory")
+        if recipient.memory._constraint_policy is not None:
+            raise ValueError("joint state comparison requires point states without relational constraints")
+        if (not recipient.steps or recipient.steps != donor.steps or recipient.overflow or donor.overflow
+                or recipient._thresholds != donor._thresholds):
+            raise ValueError("joint prefixes must have the same committed depth and routing thresholds")
+        selected = []
+        for state, branch_index in ((recipient, recipient_branch), (donor, donor_branch)):
+            branch_index = index(branch_index)
+            if not 0 <= branch_index < len(state.branches):
+                raise ValueError("selected branch is outside the joint frontier")
+            if len(state._layers) != state.steps or state.branches != tuple(
+                child for expansion in state._layers[-1] for child in expansion.children
+            ):
+                raise ValueError("joint prefixes must contain their committed frontier")
+            branch = state.branches[branch_index]
+            if not branch._complete:
+                raise ValueError("state comparison requires reached source-backed prefixes")
+            selected.append(branch)
+        original, source = selected
+        if (source._pending_destination is not None or donor.uncertain_routes or donor.memory.unlocated_sources
+                or not donor._transport_withheld_contexts.isdisjoint(source.witnesses)):
+            raise ValueError("donor state has unresolved source obligations")
+        direction, floor = self._kernel._vector(direction), float(floor)
+        if not isfinite(floor) or floor <= 0.:
+            raise ValueError("state comparison requires a positive finite readout floor")
+
+        with np.errstate(over="raise", invalid="raise"):
+            recipient_cut = float(original._source_hidden @ direction)
+            donor_cut = float(source._source_hidden @ direction)
+
+        # Preserve the task seed, earlier history, pending proof obligations
+        # and every sibling. The generated key and value belong to the donor row.
+        task_state = original if channel == "source" else source
+        source_state = original if channel == "task" else source
+        midpoint = replace(original, _hidden=task_state._hidden, _source_hidden=source_state._source_hidden,
+                           _key=task_state._key, _value=task_state._value)
+        branches = tuple(midpoint if branch is original else branch for branch in recipient.branches)
+        ordinary = self.continue_joint(recipient, steps=steps, max_hypotheses=max_hypotheses)
+        hypothetical = self.continue_joint(replace(recipient, branches=branches),
+                                           steps=steps, max_hypotheses=max_hypotheses)
+        first_route_change = self._first_route_change(ordinary, hypothetical, after=recipient.steps)
+        publication = recipient.memory._source_transports
+        transport_sha = None if publication is None else next(iter(publication.operations.values())).use.publication_sha256
+        # An intervened path can diagnose computation but cannot furnish evidence.
+        return JointStateComparison(
+            journal_sha256=recipient.memory.corpus.journal_sha256,
+            transport_sha256=transport_sha,
+            depth=recipient.steps,
+            channel=channel,
+            recipient_prefix=original.witnesses,
+            donor_prefix=source.witnesses,
+            recipient_cut_score=recipient_cut,
+            donor_cut_score=donor_cut,
+            first_route_change=first_route_change,
+            ordinary_status=ordinary.read(direction, floor=floor).status,
+            hypothetical_status=hypothetical.read(direction, floor=floor).status,
+            ordinary_paths=tuple(branch.witnesses for branch in ordinary.branches),
+            hypothetical_paths=tuple(branch.witnesses for branch in hypothetical.branches),
+            ordinary_block_evaluations=ordinary.block_evaluations - recipient.block_evaluations,
+            hypothetical_block_evaluations=hypothetical.block_evaluations - recipient.block_evaluations,
+        )
+
+    @staticmethod
+    def _first_route_change(ordinary, hypothetical, *, after):
+        def route(layer):
+            return tuple(
+                (expansion.withheld, tuple(
+                    (child._witness, child._complete, child._transport_use,
+                     None if child._pending_destination is None else child._pending_destination.tobytes())
+                    for child in expansion.children
+                ))
+                for expansion in layer
+            )
+
+        pairs = zip(ordinary._layers[after:], hypothetical._layers[after:])
+        for depth, (left, right) in enumerate(pairs, after + 1):
+            if route(left) != route(right):
+                return depth
+        return None
 
     def repair_joint(self, state, memory, *, max_hypotheses):
         """Update retained transitions on a newer pin, including previously unselected rows."""

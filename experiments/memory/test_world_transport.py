@@ -303,6 +303,125 @@ def test_transport_discovers_across_opaque_source_ids_then_revises_without_a_tas
     np.testing.assert_array_equal(repaired.branches[0].history, pending.branches[0].history)
 
 
+@pytest.mark.parametrize("route_changes", [True, False], ids=["changed-witness", "same-witness"])
+def test_reachable_midpoint_changes_the_joint_suffix_after_a_discovered_transport(tmp_path, route_changes):
+    identity = np.eye(9)
+    axes = dict(zip(("A", "B", "C", "D", "E", "F", "G", "H", "answer"), identity, strict=True))
+    sources = {
+        "case": b"context A",
+        "first": b"law A B",
+        "second": b"law B C",
+        "completion": b"relay C",
+        "donor": b"record D",
+        "donor-mid": b"record E",
+    }
+    if route_changes:
+        sources.update(positive=b"record F", opposite=b"record G")
+    else:
+        sources.update(common=b"record H", opposite=b"record G")
+
+    def encode(raw):
+        role, *symbols = raw.decode("ascii").split()
+        predicates = ("transport_entry", "transport_exit") if role == "law" else (role,)
+        return tuple(BindingMention(predicate, axes[name], 1., (0, len(raw)))
+                     for predicate, name in zip(predicates, symbols, strict=True))
+
+    frame = CorpusBindingMemory.prepare(("context", "relay", "record", "transport_entry", "transport_exit"),
+                                        identity, {}, {}, encode=encode, encoder_version="midpoint-fixture",
+                                        min_similarity=1., gap=0.)
+    values, carry, keys = np.zeros_like(identity), np.zeros_like(identity), identity.copy()
+    values[3], values[4], values[6] = 2. * axes["E"], 2. * axes["G"], -2. * axes["answer"]
+    if route_changes:
+        values[2], values[5] = 2. * axes["F"], 2. * axes["answer"]
+    else:
+        keys[7] = axes["F"]
+        carry[2], carry[5] = 2. * axes["F"], 32. * axes["answer"]
+        values[7] = -32. * .915 * axes["answer"]
+    kernel = FeedbackKernel(query=30. * identity, carry=carry, observation_key=keys, observation_value=values,
+                            feedback_key=identity, feedback_value=identity, max_steps=3)
+    policy = DiscoveredTransportPolicy("context", "relay", gain=2., max_terms=4, max_sources=12)
+    world = RecurrentWorld(kernel, encoder_version=frame.encoder_version, max_observations=8,
+                           feedback=True, transport_policy=policy)
+    owner = JournaledCorpusWorkspace(tmp_path / "midpoint.sqlite", frame, create=True)
+    opening = _publish(owner, sources)
+    published = world.maintain_transports(owner, opening)
+    assert published is not opening
+    bank = world.prepare(published)
+
+    # Tasks and their judgment direction are supplied only after publication.
+    def prefix(seed, depth, memory=bank, *, magnitude=1.):
+        return world.reason_joint(magnitude * axes[seed], steps=depth, max_hypotheses=1,
+                                  null_logit=8., margin=1., memory=memory)
+
+    recipient = prefix("A", 2)
+    donor = prefix("D", 2) if route_changes else prefix("A", 2, magnitude=.4)
+    route, = recipient.branches
+    use, = route.transport_uses
+    assert use.source_row and use.publication_sha256 == published.journal_sha256
+    if not route_changes:
+        assert donor.branches[0].witnesses == route.witnesses
+        for input_scale, sign, branch in ((1., 1., route), (.4, -1., donor.branches[0])):
+            expected_midpoint = np.tanh(2. * np.tanh(2. * input_scale))
+            np.testing.assert_allclose(branch.source_hidden @ axes["F"], expected_midpoint, rtol=0., atol=1.e-14)
+            expected_outcome = np.tanh(32. * (expected_midpoint - .915))
+            assert sign * expected_outcome > .8
+    direction = axes["answer"]
+    params = dict(steps=1, max_hypotheses=1, direction=direction, floor=.8)
+    result = world.compare_joint_state(recipient, donor, **params)
+    assert (result.ordinary_status, result.hypothetical_status) == ("supported", "opposed")
+    assert result.journal_sha256 == result.transport_sha256 == published.journal_sha256
+    assert result.depth == 2
+    assert result.recipient_cut_score == result.donor_cut_score == 0.
+    assert result.recipient_prefix == route.witnesses
+    assert result.donor_prefix == donor.branches[0].witnesses
+    assert result.ordinary_paths[0][:2] == result.hypothetical_paths[0][:2] == route.witnesses
+    actual_relays = result.ordinary_paths[0][-1].span.source_id, result.hypothetical_paths[0][-1].span.source_id
+    assert actual_relays == (("positive", "opposite") if route_changes else ("common", "common"))
+    assert result.first_route_change == (3 if route_changes else None)
+    assert result.ordinary_block_evaluations == result.hypothetical_block_evaluations == 2
+    source_only = world.compare_joint_state(recipient, donor, channel="source", **params)
+    task_only = world.compare_joint_state(recipient, donor, channel="task", **params)
+    assert source_only.hypothetical_status == "opposed" and source_only.hypothetical_paths == result.hypothetical_paths
+    assert task_only.hypothetical_status == "supported" and task_only.hypothetical_paths == result.ordinary_paths
+    ordinary = world.continue_joint(recipient, steps=1, max_hypotheses=1)
+    assert ordinary.read(direction, floor=.8).status == "supported"
+    same = world.compare_joint_state(recipient, recipient, **params)
+    assert same.ordinary_status == same.hypothetical_status == "supported"
+    assert same.ordinary_paths == same.hypothetical_paths and same.first_route_change is None
+    operator_off = prefix("A", 3, world.prepare(published, previous=bank, operators=False))
+    assert operator_off.memory._sources is bank._sources
+    assert operator_off.read(direction, floor=.8).status == "missing"
+    assert prefix("A", 3).read(direction, floor=.8).status == "supported"
+
+    # The donor cannot take the outstanding relay requirement with it. A
+    # transplant before the relay completes runs the changed numerical path
+    # without closing the recipient obligation.
+    early = world.compare_joint_state(prefix("A", 1), prefix("D", 1), **{**params, "steps": 2})
+    assert (early.ordinary_status, early.hypothetical_status) == ("supported", "missing")
+    assert early.hypothetical_paths[0][1].span.source_id == "donor-mid"
+    assert early.hypothetical_paths[0][2].span.source_id == "opposite"
+    assert early.first_route_change == 2
+
+    with pytest.raises(ValueError, match="unresolved source obligations"):
+        world.compare_joint_state(prefix("D", 1), prefix("A", 1), **params)
+    uncertain = world.reason_joint(axes["D"] + (8. / 30.) * axes["A"], steps=1,
+                                   max_hypotheses=1, null_logit=8., margin=1., memory=bank)
+    assert uncertain.branches[0].witnesses == prefix("D", 1).branches[0].witnesses
+    assert uncertain.uncertain_routes[0].span.source_id == "case"
+    with pytest.raises(ValueError, match="unresolved source obligations"):
+        world.compare_joint_state(prefix("D", 1), uncertain, **params)
+    with pytest.raises(ValueError, match="prepared memory"):
+        world.compare_joint_state(recipient, prefix("D", 2, world.prepare(published, operators=False)), **params)
+    with pytest.raises(ValueError, match="same committed depth"):
+        world.compare_joint_state(recipient, prefix("D", 1), **params)
+    with pytest.raises(ValueError, match="outside the joint frontier"):
+        world.compare_joint_state(recipient, donor, donor_branch=1, **params)
+    with pytest.raises(ValueError, match="committed frontier"):
+        world.compare_joint_state(recipient, replace(donor, branches=recipient.branches), **params)
+    with pytest.raises(ValueError, match="different reasoner"):
+        world.continue_joint(result, steps=1, max_hypotheses=1)
+
+
 def test_transport_invalidates_on_authority_changes_and_requires_republication(tmp_path):
     owner, frame, base, world, records, _, axes = _transport_world(tmp_path)
     rival_handle = JournaledCorpusWorkspace(tmp_path / "transport.sqlite", frame)

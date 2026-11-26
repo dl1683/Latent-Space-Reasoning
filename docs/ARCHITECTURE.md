@@ -1806,6 +1806,36 @@ with the exact source-level reference. Full scans per hypothesis,
 branch storage and source-bank copies contribute to cost.
 [Joint workspace](../experiments/memory/recurrent_world.py)
 
+#### Testing a reachable joint state
+
+[SLICE] `RecurrentWorld.compare_joint_state` compares two suffixes at
+one positive, committed depth. The recipient and donor prefixes must
+share the same reasoner, exact prepared memory, and routing thresholds.
+Use the same readout, suffix length and branch budget in both arms.
+The method can substitute the task row and its matching generated key
+and value, the source row, or both. It keeps the recipient seed, prior
+history, source witnesses, siblings and pending relay obligations.
+Donor states with pending or unresolved source obligations are refused.
+Algebraic constraints require a different intervention.
+
+Both suffixes use the ordinary transition. The receipt reports the
+source and publication pins, the donor and recipient prefixes, the
+source-row scores at the cut, and both late outcomes and paths. The
+first route change compares committed admissions, withheld witnesses,
+relay completion and recorded transport uses. It does not establish
+route agreement if an arm reaches its hypothesis cap. A common route
+can still yield a different value after the shared nonlinear update.
+Source-only and task-only comparisons can distinguish the two rows'
+effects. The task-only comparison changes the current generated
+key and value together and leaves their separate effects open.
+
+The two prefixes may be genuinely reached while their combination is
+hypothetical. The result carries diagnostic paths and statuses through
+a separate type. It cannot continue as a regular frontier or supply a
+signed finding. This is a trusted-host diagnostic over retained point
+states. [Implementation](../experiments/memory/recurrent_world.py) ·
+[Fixture](../experiments/memory/test_world_transport.py)
+
 #### Repairing a retained joint frontier
 
 [SLICE] Each committed expansion retains its parent state, the

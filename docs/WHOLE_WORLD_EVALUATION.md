@@ -182,7 +182,13 @@ before independent task selection, and record the proposed finding
 before the checker can reject it. For a claimed hidden transition,
 intervene with a reachable same-pin, same-depth donor state whose later
 consequence is independently known. Keep the task and route metadata
-fixed. A worker-off result still needs the separate control that preserves
+fixed. Score the readout at the cut to detect an answer already present
+in the donor. Record route changes separately from a change through
+the same admitted sources and obligations. The [production-core
+fixture](ARCHITECTURE.md#testing-a-reachable-joint-state) exercises both
+effects after a query-independent publication with supplied coordinates.
+The independent-task and semantic acquisition boundaries remain open.
+A worker-off result still needs the separate control that preserves
 ordinary observations on the same pin.
 
 Tasks and source labels must be held out at the worker-policy boundary, not
