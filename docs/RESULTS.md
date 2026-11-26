@@ -4,6 +4,55 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Isolating the native publication, 26 November 2026
+
+**CPU software control.** The controller took a nine-module runtime
+snapshot before assigning labels to a six-document fixture. An opening
+publisher encoded six rows and computed two continuations in six worker
+backbone calls. A fresh revision worker attached without backbone work,
+encoded two corrected rows, and retained both continuations with their
+original evidence receipts. The two artifacts use 5,641 and 5,705 bytes
+with the default corpus seed.
+
+The controller randomly chose one of the two fixture routes after both
+writers exited. Five fresh Linux readers ran under a separate
+operating-system identity. They received the chosen task and, when
+enabled, one sealed publication. The source feeds and controller's proof
+files were outside their mounts. Both draws were observed in separate
+runs. At two latent steps, the historical and revised readers gave the
+respective label. Disabling the continuation at the revised pin or
+omitting memory gave an empty terminated answer. Restoration reproduced
+the revised proposal byte for byte. For each draw, the controller
+reopened 180 source bytes and checked 15 span occurrences against their
+recorded versions and byte ranges after receiving the proposals.
+
+The fixture supplies two routes, a role grammar and a deterministic
+causal backbone. The challenge is choosing a route after publication
+within that known task family. Independently graded natural-language
+tasks, learned routing and matched-cost comparisons remain open.
+
+With a dedicated Linux CPU virtual environment containing NumPy 2.3.5
+and CPU PyTorch 2.12.0, run the controller as root with Bubblewrap and
+`setpriv`. Choose a new private output path on the Linux filesystem.
+
+```sh
+python -m experiments.memory.native_isolated_trial --output /root/native-control
+```
+
+[Implementation](../experiments/memory/native_isolated_trial.py)
+
+## Tail-sensitive admission under source revision, 26 November 2026
+
+**Standalone numerical control.** A branch reviewer changed one omitted
+key without changing the selected row or its cutoff. Retained global
+softmax mass moved from 0.999965865 to 0.549044006 and returned to its
+original value after the key was restored. The check reproduced 4,096
+integer delta ledgers with full rebuilds and compared 12,288 threshold
+decisions with a high-precision reference. The certificate uses a
+declared exact decimal temperature. The reader still applies its existing
+selected-only rule. Global mass measures score concentration.
+[Standalone control](../experiments/memory/tail_revision_control.py)
+
 ## Reopening a native latent publication, 26 November 2026
 
 **CPU software control.** The selective fixture sealed five source
@@ -24,9 +73,10 @@ and advanced the recovered queue. Checks reject a wrong source seal,
 runtime digest, changed backbone tensor or configuration, damaged numeric payload,
 mismatched original source descriptor and a direct attempt to publish
 an ablation view. A randomly initialized Llama exercises the same
-attachment interface. The task fixture shares executable test code and
-runs in separate processes. OS-enforced task and source boundaries,
-pretrained semantic utility and full lifecycle cost remain open.
+attachment interface. This earlier fixture shares executable test code
+across separate processes. The Linux custody control above exercises
+the source and task boundary with a separate allowlisted runtime.
+Pretrained semantic utility and full lifecycle cost remain open.
 
 ```powershell
 python -m pytest -q experiments/memory/test_native_publication.py experiments/memory/test_native_latent_recurrence.py

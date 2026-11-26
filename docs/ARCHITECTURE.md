@@ -170,6 +170,18 @@ opening reads and hashes it. Both boundaries hash live tensors. Charge
 that work and retained buffers alongside encoding, maintenance and
 inference. [Publication interface](../experiments/memory/native_publication.py)
 
+The Linux software control snapshots an allowlist of reader code before
+creating the fixture. Separate source-only processes publish the opening
+world and revise it from one sealed delta and the previous publication.
+The controller retains both artifacts and draws one of two fixture tasks
+from the operating system's randomness after the writers exit. It mounts
+the resulting task file with only the requested publication.
+A controller with separate source custody reopens exact span bytes after
+receiving the proposals. The stage code digest covers the mounted project
+modules and the stage bootstrap. The publication also binds its live reader
+fingerprint. The Python environment and system libraries remain trusted.
+[Linux control](../experiments/memory/native_isolated_trial.py)
+
 ### Warm exact control on a separate corpus
 
 [SLICE] The exact relation index stores immutable forward and reverse

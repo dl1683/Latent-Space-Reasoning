@@ -33,6 +33,22 @@ to the expected source pin. Keep file and tensor checks distinct from
 verification of source support.
 [Native publication](ARCHITECTURE.md#sealing-the-native-world-for-a-late-reader)
 
+**Late file delivery can still expose the task, 26 November 2026.**
+An opening fixture supplied one chain and a fixed rule for choosing its
+start as the question. Both writers exited before the task file existed,
+but its contents were inferable from the feed. A revised software control
+draws between two disjoint fixture routes after both writers exit. A
+learned comparison still needs independently authored and controlled
+tasks. [Revised control](RESULTS.md#isolating-the-native-publication-26-november-2026)
+
+**Below-cutoff edits can change a mass gate, 26 November 2026.**
+A reviewer changed a key that stayed outside the selected set. The
+selected value stayed fixed while global retained softmax mass fell
+below a proposed 0.9 threshold. If a mass gate controls injection,
+update its tail ledger from both retired and added keys and invalidate
+a dependent suffix when its admission changes.
+[Standalone control](RESULTS.md#tail-sensitive-admission-under-source-revision-26-november-2026)
+
 **A selected-source list misses new competitors, 26 November 2026.**
 A source revision kept every original selected span and introduced
 a tied alternative. Reusing on selected IDs alone would retain the

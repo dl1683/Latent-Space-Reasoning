@@ -30,7 +30,7 @@ _CODE_MODULES = (
     "source_constraints", "task_evidence", "transition_memory", "unit_program",
     "verified_source_tool", "weight_program", "world_transport",
 )
-_STAGE = """
+_BOUNDARY = """
 import json
 import os
 from pathlib import Path
@@ -57,6 +57,9 @@ for path in ("/grade/answers.json", "/answers.json", "/mnt/c", "/home", "/root")
     absent(path)
 sys.path.insert(0, "/code")
 
+"""
+
+_STAGE_CHECKS = """
 if kind == "publish":
     absent("/questions.json")
     absent("/publication/publication.json")
@@ -75,11 +78,17 @@ else:
             raise AssertionError("isolated reader attempted to launch a subprocess")
     sys.addaudithook(refuse_subprocess)
 
+"""
+
+_STAGE_RECEIPT = """
 fds = sorted(int(path.name) for path in Path("/proc/self/fd").iterdir() if path.is_symlink())
 assert fds == [0, 1, 2]
 mounts = sorted(line.split()[4] for line in Path("/proc/self/mountinfo").read_text().splitlines())
 print(json.dumps({"mode": kind, "uid": int(uid), "groups": os.getgroups(), "fds": fds, "mounts": mounts,
                   "network_interfaces": socket.if_nameindex()}), file=sys.stderr, flush=True)
+"""
+
+_STAGE = _BOUNDARY + _STAGE_CHECKS + _STAGE_RECEIPT + """
 if kind == "task-world":
     from experiments.memory.repository_publication_trial import main
 else:
@@ -131,14 +140,14 @@ def _project_git(repo, destination, pins, package, work):
     return dict(git_pack_sha256=sha256(pack), git_pack_bytes=len(pack), git_objects=len(objects))
 
 
-def _snapshot_code(destination):
+def _snapshot_code(destination, modules=_CODE_MODULES):
     source = Path(__file__).resolve().parent
     package = destination / "experiments" / "memory"
     package.mkdir(parents=True)
     for path in (destination, package.parent, package):
         path.chmod(0o755)
     hashes, blob_ids = {}, {}
-    for module in _CODE_MODULES:
+    for module in modules:
         filename = f"{module}.py"
         target = package / filename
         copyfile(source / filename, target)
@@ -193,8 +202,8 @@ def _stage_capture(output, name, stdout, stderr, returncode):
     _sync_directory(output)
 
 
-def _isolated(tool, runtime, code, mode, bindings, arguments, output, name):
-    uid = _ACQUIRE_UID if mode == "publish" else _READ_UID
+def _isolated(tool, runtime, code, mode, bindings, arguments, output, name, *, stage_script=_STAGE):
+    uid = _ACQUIRE_UID if mode in ("publish", "revise") else _READ_UID
     command = [tool, "--unshare-ipc", "--unshare-pid", "--unshare-net", "--unshare-uts",
                "--die-with-parent", "--new-session", "--clearenv",
                "--ro-bind", "/usr", "/usr", "--symlink", "usr/lib", "/lib",
@@ -210,7 +219,7 @@ def _isolated(tool, runtime, code, mode, bindings, arguments, output, name):
         command.extend((binding, str(host), guest))
     command.extend(("/usr/bin/setpriv", f"--reuid={uid}", f"--regid={uid}", "--clear-groups",
                     "--no-new-privs", "--inh-caps=-all", "--ambient-caps=-all", "--bounding-set=-all",
-                    "/runtime/bin/python", "-I", "-B", "-c", _STAGE, mode, str(uid),
+                    "/runtime/bin/python", "-I", "-B", "-c", stage_script, mode, str(uid),
                     str(os.stat("/proc/self/ns/net").st_ino), str(os.stat("/proc/self/ns/mnt").st_ino),
                     *arguments))
     try:
