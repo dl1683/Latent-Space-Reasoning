@@ -103,6 +103,7 @@ class BindingRoleContinuation:
     condition: BindingLinkCondition | None = None
     condition_dots: int = 0
     inherited_open: bool = False
+    bridge_pending: bool = False
 
 
 def _frame_contract(memory):
@@ -236,7 +237,7 @@ class BindingFeedback:
         seed = links._seed_path(state.latest, width, condition, state.role_steps, state.role_strength)
         if seed is None:
             return BindingRoleContinuation("no_direction", (self.step(state),), condition=condition,
-                                           inherited_open=state._role_open)
+                                           inherited_open=state._role_open, bridge_pending=links.bridge_pending)
         effort = _LinkReadWork(limit, links.floor, links.uncertainty)
         states = ()
         with np.errstate(over="raise", invalid="raise", under="ignore"):
@@ -245,7 +246,8 @@ class BindingFeedback:
             except BindingCapacityError:
                 status = "work_limit"
             else:
-                open_coverage = bool(state._role_open or links.unresolved or effort.unavailable or effort.marginal)
+                open_coverage = bool(state._role_open or links.unresolved or links.bridge_pending
+                                     or effort.unavailable or effort.marginal)
                 status = "unresolved" if open_coverage else "no_link"
                 if len(paths) > branch_limit:
                     status = "branch_limit"
@@ -258,7 +260,8 @@ class BindingFeedback:
                 elif not open_coverage:
                     states = (self.step(state),)
         return BindingRoleContinuation(status, states, effort.work, len(links.unresolved) + len(effort.unavailable),
-                                       effort.marginal, condition, effort.condition_dots, state._role_open)
+                                       effort.marginal, condition, effort.condition_dots, state._role_open,
+                                       links.bridge_pending)
 
     def _continue_role_path(self, state, read, path, open_coverage):
         observation = _apply_value(self._kernel._observation_value, path.direction)

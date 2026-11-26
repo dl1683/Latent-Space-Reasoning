@@ -286,9 +286,9 @@ def _transport_encoding(raw):
         yield BindingMention(label, np.array(numbers[:-1], dtype=np.float64), float(numbers[-1]))
 
 
-def _transport_frame(encode=_transport_encoding, *, width=6):
+def _transport_frame(encode=_transport_encoding, *, width=6, extra_predicates=()):
     return CorpusBindingMemory.prepare(
-        (*_ROLES, *_OUTCOMES), np.eye(width), {}, {}, encode=encode,
+        (*_ROLES, *_OUTCOMES, *extra_predicates), np.eye(width), {}, {}, encode=encode,
         encoder_version="transport-control", min_similarity=.7, gap=.05,
     )
 
@@ -790,3 +790,138 @@ def test_conditioned_source_paths_feed_two_shared_hidden_transitions(tmp_path):
     recovered = JournaledCorpusWorkspace(filename, _transport_frame(_no_encoding, width=7)).snapshot()
     np.testing.assert_array_equal(receiver.step(continue_from(recovered).states[0]).latest, later.latest)
     np.testing.assert_array_equal(receiver.step(continue_from(opening).states[0]).latest, later.latest)
+
+
+def test_worker_matches_split_sources_before_reasoning_and_revokes_on_correction(tmp_path):
+    filename = tmp_path / "split-bridge.sqlite"
+    frame = _transport_frame(extra_predicates=("key",))
+    reader_frame = _transport_frame(_no_encoding, extra_predicates=("key",))
+    owner = JournaledCorpusWorkspace(filename, frame, create=True)
+    e = np.eye(6)
+    left = _mentions(("entry", e[0], .9), ("key", e[4], .8), ("review", e[1], .9))
+    right = _mentions(("key", e[4], .6), ("exit", e[1], .9), ("review", e[1], .9))
+    opening = _write(owner, {"left": left, "right": right, "terminal": _mentions(("accept", e[1], .7))})
+    worker = JournaledCorpusWorkspace(filename, reader_frame)
+    policy = dict(min_similarity=.94, uncertainty=.005, compile_work_limit=128,
+                  transport="reflection", bridge_key="key")
+
+    def prepare():
+        return worker.prepare_role_links(worker.snapshot(), _ROLES, **policy)
+
+    stale = prepare()
+    updated = _write(owner, {"unrelated": _mentions(("accept", e[3], .8))})
+    with pytest.raises(StaleCorpusRevision):
+        worker.publish_program(stale)
+    scan_units = len(updated.memory.source_digests) + sum(
+        len(updated.memory.source_mentions(source)) for source in updated.memory.source_digests
+    )
+    with pytest.raises(BindingCapacityError, match="cross-source"):
+        worker.prepare_role_links(worker.snapshot(), _ROLES, **(policy | {"compile_work_limit": scan_units + 5}))
+    worker.publish_program(prepare())
+    pin = owner.snapshot()
+
+    # The maintenance worker had the corpus and policy only.
+    carry = np.zeros((6, 6))
+    carry[2, 5] = 1.
+    values, keys = np.zeros((6, 6)), np.zeros((6, 1))
+    values[1, 2] = 1.
+    kernel = FeedbackKernel(query=keys, carry=carry, observation_key=keys, observation_value=values,
+                            feedback_key=keys, feedback_value=np.zeros((6, 6)), max_steps=2)
+    receiver = BindingFeedback(kernel, frame, (("accept", 1),), query=keys, observation=np.zeros((6, 6)))
+    seed = .98 * e[0] + .2 * e[3]
+    condition = BindingLinkCondition(e[3], .15, .25)
+
+    def advance(memory):
+        return receiver.continue_role_links(receiver.start(seed, memory), condition=condition,
+                                            work_limit=128, branch_limit=4)
+
+    def proof(memory):
+        return memory.read_role_links(seed, condition=condition, outcomes=_OUTCOMES, work_limit=128)
+
+    continued = advance(pin.memory)
+    assert continued.status == "continued"
+    state, = continued.states
+    step, = state.role_steps
+    assert step.sources == ("left", "right") and (step.entry_ordinal, step.exit_ordinal) == (0, 1)
+    assert step.key_ordinals == (1, 0)
+    assert state.role_strength == .6
+
+    # Independent dense reconstruction on the same encoded observations.
+    entry, exit = pin.memory.source_mentions("left")[0].vector, pin.memory.source_mentions("right")[1].vector
+    normal = entry - exit
+    expected = (np.eye(6) - 2. * np.outer(normal, normal) / (normal @ normal)) @ (seed / np.linalg.norm(seed))
+    expected = np.tanh(np.tanh(expected @ values) @ carry)
+    assert expected[5] > .6
+    np.testing.assert_allclose(receiver.step(state).latest, expected, atol=1e-12, rtol=0.)
+    initial = proof(pin.memory)
+    witness, = initial.witnesses
+    assert initial.answer == "accept"
+    assert (witness.link_source, witness.exit_source, witness.terminal_source) == ("left", "right", "terminal")
+    assert witness.key_ordinals == step.key_ordinals
+    assert witness.strength == .6
+    with pytest.raises(ValueError, match="nonstructural"):
+        pin.memory.read_role_links(seed, outcomes=("key",), work_limit=128)
+
+    off = owner.prepare_role_links(pin, _ROLES, min_similarity=.94, uncertainty=.005,
+                                  compile_work_limit=128, transport="reflection").preview
+    assert advance(off).status == "unresolved" and not advance(off).states
+    disabled = owner.prepare_role_links(pin, None).preview
+    assert disabled.source_digests == pin.memory.source_digests
+    off_state, = advance(disabled).states
+    assert receiver.step(off_state).latest[5] == 0.
+    unprogrammed = advance(opening.memory)
+    assert unprogrammed.status == "no_role_program" and receiver.step(unprogrammed.states[0]).latest[5] == 0.
+
+    unrelated = _write(owner, {"unrelated": _mentions(("accept", e[3], .5))})
+    assert unrelated.memory._role_links.bridges is pin.memory._role_links.bridges
+    assert proof(unrelated.memory).answer == "accept"
+    for source, original in (("left", left), ("right", right)):
+        removed = _write(owner, {source: None})
+        denied = advance(removed.memory)
+        assert denied.status == "unresolved" and denied.states == () and denied.bridge_pending
+        reopened = JournaledCorpusWorkspace(filename, reader_frame).snapshot()
+        assert proof(reopened.memory) == proof(removed.memory)
+        _write(owner, {source: original})
+        assert advance(owner.snapshot().memory).status == "unresolved"
+        worker.publish_program(prepare())
+        assert proof(owner.snapshot().memory) == initial
+
+    # A second plausible counterpart is deliberately unidentifiable under this key.
+    alternate_key = .939 * e[4] + np.sqrt(1. - .939 ** 2) * e[3]
+    alternate = _write(owner, {"alternate": _mentions(("key", alternate_key, .9), ("exit", e[3], .9))})
+    assert not advance(alternate.memory).states
+    worker.publish_program(prepare())
+    ambiguous = owner.snapshot()
+    assert not ambiguous.memory._role_links.bridges
+    assert proof(ambiguous.memory).status == "unresolved"
+    assert proof(pin.memory) == initial
+    reopened = JournaledCorpusWorkspace(filename, reader_frame).snapshot()
+    assert proof(reopened.memory) == proof(ambiguous.memory)
+    _write(owner, {"alternate": None})
+    worker.publish_program(prepare())
+    assert proof(owner.snapshot().memory) == initial
+
+
+def test_bridge_waits_for_legacy_sources_to_stop_obscuring_competitors(tmp_path, monkeypatch):
+    filename = tmp_path / "legacy-bridge.sqlite"
+    frame = _transport_frame(extra_predicates=("key",))
+    owner = JournaledCorpusWorkspace(filename, frame, create=True)
+    e = np.eye(6)
+    _write(owner, {
+        "left": _mentions(("entry", e[0], .9), ("key", e[4], .9)),
+        "right": _mentions(("exit", e[1], .9), ("key", e[4], .9)),
+        "terminal": _mentions(("accept", e[1], .8)),
+    })
+    serialize = corpus_binding_journal._encode
+    with monkeypatch.context() as patch:
+        patch.setattr(corpus_binding_journal, "_encode", lambda edits, **kw: serialize(edits, vectors=False))
+        _write(owner, {"legacy": _mentions(("review", e[1], .8))})
+    owner = JournaledCorpusWorkspace(filename, frame)
+    policy = dict(min_similarity=.94, compile_work_limit=64, bridge_key="key")
+    program = owner.publish_program(owner.prepare_role_links(owner.snapshot(), _ROLES, **policy))
+    read = program.memory.read_role_links(e[0], outcomes=_OUTCOMES, work_limit=64)
+    assert read.status == "unresolved" and read.witnesses == ()
+    updated = _write(owner, {"legacy": None})
+    assert updated.memory.read_role_links(e[0], outcomes=_OUTCOMES, work_limit=64).bridge_pending
+    rebuilt = owner.publish_program(owner.prepare_role_links(updated, _ROLES, **policy))
+    assert rebuilt.memory.read_role_links(e[0], outcomes=_OUTCOMES, work_limit=64).answer == "accept"
