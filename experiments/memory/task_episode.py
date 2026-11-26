@@ -23,7 +23,7 @@ _SYSTEM = (
     'only when enabled, {"op":"probe","read":integer,"ordinal":integer,"outcomes":[text],"hops":integer}. '
     "Use only candidate numbers returned by a tool in this episode. If the task names an entity or event, search for it before finishing, then read relevant candidates and use their prerequisite relations to guide the next search. A search match is not evidence until its source is read and verified. "
     "Zero search matches are not proof of absence; try a different task-relevant query. Do not finish early just because evidence has not yet been supplied in the prompt; use the available tools. "
-    'Each finding requires claim, stance (supports, defeats, unknown, or hypothetical), citations, and reason. '
+    'Each finding requires claim, stance (supports, defeats, unknown, conflicted, or hypothetical), citations, and reason. '
     "Citations are verified read numbers from this episode. Do not assert an observed finding without its source citation. "
     "Report open questions as strings. Source observations and scoped role results are separate."
 )
@@ -40,10 +40,13 @@ _JOINT_ROLE_INSTRUCTIONS = (
     'If a reason result includes next_offset, use {"op":"role_spans","receipt":integer,"offset":integer} '
     "to list more of its candidates. "
     'For a finding relying on a joint role result, also include "role_support":{"receipt":integer,"outcome":text} '
-    "and cite verified reads covering the seed, role premises, terminal and any governing authority."
+    "and cite verified reads covering the seed, role premises, terminal and any governing authority. "
+    'For conflicting outcomes, use stance "conflicted" and outcome "conflict"; if read.open_coverage is true, '
+    "also keep a nonempty open question for the unresolved branch or condition. For an open non-conflict result, "
+    "use stance unknown, the exact status as outcome, and preserve its unresolved premise."
 )
 _FINDING_FIELDS = {"claim", "stance", "citations", "reason"}
-_STANCES = {"supports", "defeats", "unknown", "hypothetical"}
+_STANCES = {"supports", "defeats", "unknown", "conflicted", "hypothetical"}
 _TYPED_NEED_FIELDS = {
     "id", "question", "rationale", "parent", "discovered_from", "target_or_event", "relation",
     "time_version_scope", "evidence_sought", "support_requirements", "defeat_requirements",
@@ -85,7 +88,7 @@ _TYPED_JOINT_ROLE_INSTRUCTIONS = (
     "time to the episode pin. If a result includes next_offset, request another page with "
     '{"op":"role_spans","need_id":"n1","receipt":integer,"offset":integer}. For a finding that uses the '
     'joint result, include role_support with its receipt and outcome; cite the seed, premises, terminal and authority reads. '
-    'For conflict, use stance "conflicted" and outcome "conflict"; for an open result, use stance "unknown" and its exact status as outcome.'
+    'For conflict, use stance "conflicted" and outcome "conflict"; if its read has open_coverage true, also add a same-need open question naming the unresolved branch or condition. For an open non-conflict result, use stance "unknown" and its exact status as outcome.'
 )
 
 
@@ -473,7 +476,9 @@ class _Tools:
                       for span in (*witness.source_spans, *witness.validity_spans))
         candidate_cap = max(0, session.budget.role_candidate_spans - self.role_candidate_spans_materialized)
         collected, seen = [], set()
+        examined = 0
         for span in chain(exact, chain.from_iterable(groups)):
+            examined += 1
             if span in seen:
                 continue
             seen.add(span)
@@ -483,7 +488,7 @@ class _Tools:
         truncated = len(collected) > candidate_cap
         available = tuple(collected[:candidate_cap])
         self.role_candidate_spans_materialized += len(available)
-        self.role_candidate_spans_examined += len(collected)
+        self.role_candidate_spans_examined += examined
         spans = islice(available, session.budget.candidates_per_search)
         body = asdict(evidence)
         body["request"].pop("need")
@@ -572,7 +577,7 @@ class _Tools:
                 if (not citations and finding["stance"] != "hypothetical"
                         and not (finding["stance"] == "unknown" and need_id in open_need_ids)):
                     raise ValueError("observed findings require verified citations")
-                self._validate_role_support(finding, citations, need_id)
+                self._validate_role_support(finding, citations, need_id, open_need_ids)
             if seen != known:
                 raise ValueError("every declared need requires at least one finding")
             return report
@@ -591,16 +596,22 @@ class _Tools:
             citations = self._session._citations(finding["citations"])
             if not citations and finding["stance"] != "hypothetical":
                 raise ValueError("observed findings require verified citations")
-            self._validate_role_support(finding, citations, "")
+            self._validate_role_support(
+                finding, citations, "", has_open_question=bool(report["open_questions"])
+            )
         return report
 
-    def _validate_role_support(self, finding, citations, need_id):
+    def _validate_role_support(self, finding, citations, need_id, open_need_ids=None,
+                               has_open_question=False):
         if "role_support" not in finding:
             return
         support = finding["role_support"]
         if type(support) is not dict or support.keys() != {"receipt", "outcome"}:
             raise ValueError("invalid role support fields")
-        self._session._verify_role_support(RoleSupport(**support), finding["stance"], citations, need_id)
+        self._session._verify_role_support(
+            RoleSupport(**support), finding["stance"], citations, need_id, open_need_ids,
+            has_open_question
+        )
 
 
 def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: EpisodeLimits,

@@ -191,7 +191,8 @@ the same action and call budgets. The action receipt must expose the returned
 branch outcomes and versioned witness spans, and the planner must open and
 cite the relevant exact spans. Configure `EpisodeLimits.joint_roles=1` per task;
 cap its
-materialized candidate spans at 256, report examined spans and role-span pages
+materialized candidate spans at 256, report every catalogue span visited
+(including duplicate witness/catalogue references) and role-span pages
 separately, and charge each additional page against the search allowance.
 Give each task at most seven 0.6B calls: one
 initial plan, up to five evidence-action or retrieval rounds, and one final
@@ -295,10 +296,13 @@ citation-free unknown requires a same-need open-question entry, and every
 declared need must receive a finding. A joint `role_support` finding is checked
 against its receipt, seed citation, effective time, retained dependency
 manifest, and finding stance: supported/defeated, conflicted, or unknown must
-match the linked role status. These host checks make traces gradeable; they do not determine
-whether a need is material, whether an open question names a consequential
-premise, or whether cited prose supports the claim. The older `needs` state
-remains untyped, and legacy callers may omit these fields.
+match the linked role status. A joint role finding must cite an actual
+multi-stage role-path receipt. In typed episodes, a conflict receipt with open
+coverage requires an open question for the same need; legacy reports must keep
+at least one open question. These host checks make traces gradeable; they do not determine whether a need is material,
+whether an open question names a consequential premise, or whether cited prose
+supports the claim. The older `needs` state remains untyped, and legacy callers
+may omit these fields.
 
 `run_episode` parses output after generation; its prompt is not a constrained
 decoder. Three prompt-only 0.6B source-only canaries failed to establish

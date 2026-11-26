@@ -28,14 +28,21 @@ The result verifies transport, revision and proof wiring. Learned source
 acquisition, useful-task advantage and full lifecycle costs remain open.
 [Context fixture](../experiments/memory/test_binding_links.py)
 
-**External control, reproduced.** The standalone integer comparison agreed
-with its closed-form oracle on 14,336 paired receipts across 128 regions.
-The sparse workload served 64 reads and counted 16 lazy versus 1,024
-eager context selections, with two shared compositions in each arm.
-This is a logical count on in-memory snapshots with supplied scope and
-temporary-order inputs. The lazy control receives the same evidence and
-can retain the same subpath products. Journal replay, full lifecycle cost
-and learned acquisition were outside that control.
+**External control, reproduced.** The standalone integer comparison produced
+identical eager and lazy receipts on 128 regions: **17,920** checks, including
+**12,288** resolved and **5,632** open outcomes. A forced wrong rotation
+disagreed on **6,144** resolved cases; operator removal opened all **12,288**
+resolved cases. The control also made **3,584** query-time checks at effective
+time 15, outside the eager precompute grid; both arms selected at read time on
+those checks. In the sparse workload, both arms served 64 reads and applied
+64 products, with two shared compositions. Lazy selection used 16 versus
+eager's 1,024 logical selections.
+
+This is a logical count on in-memory snapshots with supplied scope, source
+observations and temporary-order inputs. The lazy control receives the same
+evidence and can retain the same subpath products. It does not measure
+pre-query temporal generalization, learned acquisition, journal replay or full
+lifecycle cost.
 [Comparison source](../experiments/memory/context_transport_join_control.js)
 
 ## Revision-led bridge repair, 26 November 2026

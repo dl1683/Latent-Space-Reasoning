@@ -69,7 +69,7 @@ function run() {
   const times=[9,10,19,20], roots=[[11,3],[13,-4],[17,5],[19,-6]];
   const n=128;
   const eager=new World(true,times),lazy=new World(false,times);
-  let checks=0,offChecks=0,forcedWrong=0,resolved=0,open=0;
+  let checks=0,offChecks=0,forcedWrong=0,resolved=0,open=0,offGridTimeChecks=0;
   function test(r,t,action,deps) {
     for(const x of roots) {
       const a=eager.read(r.id,t,x),b=lazy.read(r.id,t,x),expected=oracle(action,x,deps);
@@ -100,6 +100,8 @@ function run() {
       const peer=i^1,peerBefore=eager.read(peer,10,roots[0]);
       eager.install(state);lazy.install(state);
       for(const t of times)test(state,t,t>=10&&t<20?inside:outside,t>=10&&t<20?indeps:outdeps);
+      // This effective-time point is absent from the eager precompute grid.
+      test(state,15,inside,indeps);offGridTimeChecks+=roots.length;
       assert(eq(peerBefore,eager.read(peer,10,roots[0])),"unrelated region changed");
       assert(eq(peerBefore,lazy.read(peer,10,roots[0])),"unrelated join changed");
     }
@@ -112,6 +114,7 @@ function run() {
   for(const i of [0,1,6,7])for(const t of times)for(const x of roots)
     assert(eq(E.read(i,t,x),L.read(i,t,x)),"sparse mismatch");
   assert(L.counts.select<E.counts.select,"lazy did not avoid cold selection");
-  return {regions:n,checks,resolved,open,forcedWrong,offChecks,sparse:{eager:E.counts,lazy:L.counts}};
+  return {regions:n,checks,resolved,open,forcedWrong,offChecks,offGridTimeChecks,
+          sparse:{eager:E.counts,lazy:L.counts}};
 }
 console.log(JSON.stringify(run(), null, 2));

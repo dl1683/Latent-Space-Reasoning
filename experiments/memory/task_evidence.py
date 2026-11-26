@@ -338,7 +338,8 @@ class _Investigation:
             raise ValueError("citations must identify distinct verified reads from this investigation")
         return ids
 
-    def _verify_role_support(self, support, stance, citations, need):
+    def _verify_role_support(self, support, stance, citations, need, open_need_ids=None,
+                             has_open_question=False):
         if (type(support) is not RoleSupport or type(support.receipt) is not int
                 or not 0 <= support.receipt < len(self.role_evidence)
                 or type(support.outcome) is not str or not support.outcome):
@@ -346,6 +347,8 @@ class _Investigation:
         role = self.role_evidence[support.receipt]
         if role.request.need != need:
             raise ValueError("role support requires a receipt for this need")
+        if type(role.request) is not ExploreRolePaths or type(role.read) is not BindingRoleDecision:
+            raise ValueError("role support requires a joint role-path receipt")
         status = role.read.status
         if status == "supported":
             if stance not in ("supports", "defeats") or role.read.answer != support.outcome:
@@ -375,6 +378,11 @@ class _Investigation:
             witnessed = {witness.outcome for read in terminal_reads for witness in read.dependency_witnesses}
             if len(witnessed) < 2:
                 raise ValueError("a conflicted role finding requires witnesses for distinct outcomes")
+            if role.read.open_coverage:
+                if open_need_ids is not None and need not in open_need_ids:
+                    raise ValueError("a partial role conflict requires a same-need open question")
+                if open_need_ids is None and not has_open_question:
+                    raise ValueError("a partial role conflict requires an open question")
         if stance in ("supports", "defeats") and any(not read.dependency_witnesses for read in terminal_reads):
             raise ValueError("decisive role support requires dependencies for every terminal path")
         verified = tuple(self.reads[i] for i in citations)
