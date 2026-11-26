@@ -74,6 +74,70 @@ def investigate(kind):
     return generate
 
 
+def test_native_task_episode_reads_a_discovered_continuation_at_one_pin(tmp_path):
+    from experiments.memory.native_isolated_stage import _CausalControl, _Tokenizer, _reader
+    from experiments.memory.native_publication import read_native_publication, write_native_publication
+    from experiments.memory.native_task_episode import NativeTaskEpisodeBackend
+    from experiments.memory.source_revision_feed import write_source_delta
+    from experiments.memory.verified_source_tool import sha256
+
+    class EpisodeTokenizer(_Tokenizer):
+        def apply_chat_template(self, messages, *, tokenize, add_generation_prompt, return_dict):
+            assert tokenize and add_generation_prompt and not return_dict
+            task = json.loads(messages[-1]["content"])["task"]
+            return self.encode(task, add_special_tokens=True, truncation=False)
+
+        def decode(self, ids, *, skip_special_tokens):
+            label = super().decode(ids, skip_special_tokens=skip_special_tokens)
+            return json.dumps({"finish": {"findings": [], "open_questions": [label or "unresolved"]}})
+
+    root, cue, bridge, name = (letter * 32 for letter in "abcd")
+    records = {root: "link L02 L03", cue: "link L01 L02", bridge: "link L03 L04", name: "name L04 L06"}
+    raw = {source: text.encode() for source, text in records.items()}
+    source_dir = tmp_path / "source"
+    source = write_source_delta(source_dir, raw)
+    tokenizer = EpisodeTokenizer()
+    writer = _reader(_CausalControl().eval(), tokenizer=tokenizer)
+    opening = writer.maintain(writer.publish(source_dir, source.seal), max_seeds=1, max_parent_scores=1)
+    developed = writer.maintain(opening, max_seeds=1, max_parent_scores=2)
+    seed, = developed.source_spans(cue)
+    parent, = developed.source_spans(root)
+    assert developed.continuation_parent(seed) == parent
+    runtime = sha256(b"task episode control")
+    path = tmp_path / "native"
+    seal = write_native_publication(path, writer, developed, runtime_sha256=runtime, max_bytes=64 * 1024)
+    reader = _reader(_CausalControl().eval(), tokenizer=tokenizer)
+    memory = read_native_publication(path, reader, seal=seal, source_seal=source.seal,
+                                     runtime_sha256=runtime, max_bytes=64 * 1024)
+    tool, spans = _source_tool(tmp_path, records)
+    pinned = TaskWorld(tool, spans)
+    policy = EpisodePolicy("controller", "native-fixture", "native-fixture-tokenizer", "notes")
+    limits = EpisodeLimits(1, 1, 1, 0, 12, 12, 2, 2)
+    task = "follow L01"
+
+    def episode(view):
+        backend = NativeTaskEpisodeBackend(
+            pinned, reader, memory, backend_id=policy.backend_id, tokenizer_id=policy.tokenizer_id,
+            expected_runtime_sha256=runtime, memory_view=view,
+        )
+        return run_episode(task, pinned, policy, limits, tokenizer, backend, tmp_path / view,
+                           native_backend=backend)
+
+    active, disabled, omitted = (episode(view) for view in ("active", "derived_off", "memory_omitted"))
+    a, d = read_episode_pair(active, disabled, contrast="memory")
+    _, o = read_episode_pair(active, omitted, contrast="memory")
+    for ledger, expected in ((a, "L06"), (d, "unresolved"), (o, "unresolved")):
+        assert ledger[0]["data"]["setup_native_source_verification_bytes"] == sum(map(len, raw.values()))
+        request, = [record["data"] for record in ledger if record["kind"] == "request"]
+        assert request["input_ids"] == tokenizer.encode(task, add_special_tokens=True, truncation=False)
+        assert request["max_new_tokens"] == 2
+        assert ledger[-1]["data"]["status"] == "completed"
+        assert ledger[-1]["data"]["submission"]["open_questions"] == [expected]
+    active_reply, = [record["data"]["backend_receipt"] for record in a if record["kind"] == "response"]
+    assert active_reply["source_seal"] == source.seal and active_reply["publication_seal"] == seal
+    assert active_reply["applied_derived_steps"] == 1
+
+
 def test_matched_policies_follow_indirect_sources_and_charge_repeated_context(tmp_path):
     pinned = world(tmp_path)
     structured = replace(POLICY, policy_id="structured", state_kind="needs")

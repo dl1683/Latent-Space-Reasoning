@@ -65,6 +65,23 @@ class RetainedSelector:
         keys = self._kernel._project_quantized_keys(_quantize(addresses), self._kernel._integer_observation_key)
         return RowShard(spans, _frozen(keys.astype(np.int8)), _frozen(_quantize(values).astype(np.int8)))
 
+    def discover_parent(self, seed, frontiers, bank):
+        """Propose one earlier computation using the source-only read trajectory."""
+        if not bank.spans or any(step.receipt.status not in ("ready", "empty") for step in frontiers):
+            return None
+        scores = np.zeros(len(bank.spans), dtype=np.int64)
+        for step in frontiers:
+            query = np.frombuffer(step.query, dtype=np.int8).astype(np.int64)
+            np.maximum(scores, bank.keys @ query, out=scores)
+        for index, span in enumerate(bank.spans):
+            if span.source_id == seed.source_id:
+                scores[index] = 0
+        winner = int(scores.argmax())
+        runner_up = int(np.partition(scores, -2)[-2]) if len(scores) > 1 else 0
+        if int(scores[winner]) - runner_up <= self._margin:
+            return None
+        return bank.spans[winner]
+
     def read(self, hidden, shards):
         shards = tuple(shards)
         with np.errstate(over="raise", invalid="raise"):

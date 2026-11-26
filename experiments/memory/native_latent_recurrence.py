@@ -1,7 +1,7 @@
 """Feed versioned source moments into a borrowed causal backbone's hidden steps."""
 
 from collections.abc import Mapping
-from dataclasses import dataclass, replace
+from dataclasses import asdict, dataclass, replace
 from itertools import chain, islice
 from math import isfinite
 from pathlib import Path
@@ -10,7 +10,9 @@ from types import MappingProxyType
 import numpy as np
 
 from experiments.memory.latent_feedback import _apply_value, _frozen
-from experiments.memory.linear_feedback import AssociationMemory, LinearFeedbackKernel, MomentMemory
+from experiments.memory.linear_feedback import (
+    AssociationMemory, LinearFeedbackKernel, MomentMemory, _quantize,
+)
 from experiments.memory.selective_continuations import (
     RetainedSelector, RowShard, SelectionReceipt, SelectionStep, frontier_survives,
 )
@@ -148,6 +150,15 @@ class NativeLatentRead:
     derived_omitted: bool = False
     source_steps: tuple[SelectionStep, ...] = ()
     derived_steps: tuple[SelectionStep, ...] = ()
+
+    def json_record(self):
+        """Serialize a read receipt, preserving packed queries as hexadecimal."""
+        record = asdict(self)
+        record["omitted_sources"] = sorted(self.omitted_sources)
+        for name in ("source_steps", "derived_steps"):
+            for step in record[name]:
+                step["query"] = step["query"].hex()
+        return record
 
 
 @dataclass(frozen=True, slots=True)
@@ -487,8 +498,8 @@ class NativeLatentModel:
         address = self._encode_hidden(hidden)
         return address, self._continue(hidden, cache, memory, self._steps)
 
-    def maintain(self, memory, *, max_seeds, parent=None):
-        """Install bounded continuations with one optional parent from an earlier pass."""
+    def maintain(self, memory, *, max_seeds, parent=None, max_parent_scores=None):
+        """Install continuations with one fixed or source-discovered parent per seed."""
         import torch
 
         _require_cpu_eval(self._model)
@@ -498,8 +509,13 @@ class NativeLatentModel:
         if parent is not None and (not isinstance(parent, SourceSpan) or memory._selective is None
                                    or parent not in memory._selective.acquired):
             raise ValueError("maintenance parent must be an installed continuation at this pin")
+        if max_parent_scores is not None:
+            if type(max_parent_scores) is not int or max_parent_scores <= 0:
+                raise ValueError("parent discovery needs a positive score budget")
+            if parent is not None or memory._selective is None or memory._derived_off:
+                raise ValueError("parent discovery needs an intact selective world and no fixed parent")
         if memory._selective is not None:
-            return self._maintain_selection(memory, max_seeds, parent)
+            return self._maintain_selection(memory, max_seeds, parent, max_parent_scores)
         if memory._seed_limit == max_seeds:
             return memory
         source_only = self.without_derived(memory)
@@ -518,10 +534,16 @@ class NativeLatentModel:
         return replace(source_only, _derived=bank, _seed_limit=max_seeds, derived_seeds=tuple(seeds),
                        _derived_off=False, _publication_seal=None)
 
-    def _maintain_selection(self, memory, max_seeds, parent):
+    def _maintain_selection(self, memory, max_seeds, parent, max_parent_scores):
         import torch
 
         selective = memory._selective
+        discover = max_parent_scores is not None and bool(selective.derived)
+        if discover:
+            # Each admitted seed can scan the whole opening bank once per latent step.
+            max_seeds = min(max_seeds, max_parent_scores // (len(selective.acquired) * self._steps))
+            if max_seeds == 0 and selective.priority:
+                raise ValueError("parent score budget cannot cover one pending seed")
         rows = (row for source in selective.priority for row in memory._sources[source]
                 if row.span not in selective.attempted)
         batch = tuple(islice(rows, max_seeds))
@@ -536,12 +558,19 @@ class NativeLatentModel:
         with torch.inference_mode():
             for item in batch:
                 address, run = self._run_seed(item, worker_input, lookup)
-                attempted[item.span] = run.source_steps
                 used_parent = parent if run.applied_derived else None
+                value = None
+                if discover:
+                    candidate = self._discover_continuation(item, memory, lookup, address, run)
+                    if candidate is not None:
+                        used_parent, run, value = candidate
+                attempted[item.span] = run.source_steps
                 if used_parent is not None:
                     parents[item.span] = used_parent
                 if self._installable(run.source_steps, item.span.source_id, used_parent):
-                    acquired[item.span] = _Continuation(_frozen(address), _frozen(self._encode_hidden(run.hidden)))
+                    if value is None:
+                        value = self._encode_hidden(run.hidden)
+                    acquired[item.span] = _Continuation(_frozen(address), _frozen(value))
         derived = selective.derived if len(acquired) == len(selective.acquired) else self._derived_rows(acquired)
         worked = {item.span.source_id for item in batch}
         order = sorted(selective.priority, key=worked.__contains__)
@@ -550,6 +579,35 @@ class NativeLatentModel:
                             attempted=MappingProxyType(attempted), priority=priority, parents=MappingProxyType(parents))
         return replace(memory, _selective=selective, derived_seeds=tuple(acquired),
                        _derived_off=False, _publication_seal=None)
+
+    def _discover_continuation(self, item, memory, lookup, address, baseline):
+        selective = memory._selective
+        bank, = selective.derived
+        parent = self._selector.discover_parent(item.span, baseline.source_steps, bank)
+        if parent is None or self._uses_source(selective, parent, item.span.source_id):
+            return None
+        inputs = self._derived_rows({parent: selective.acquired[parent]})
+        worker_input = replace(memory, _selective=replace(selective, derived=inputs))
+        candidate_address, candidate = self._run_seed(item, worker_input, lookup)
+        if (not candidate.applied_derived
+                or not self._installable(candidate.source_steps, item.span.source_id, parent)
+                or not np.array_equal(_quantize(address), _quantize(candidate_address))):
+            return None
+        candidate_value = self._encode_hidden(candidate.hidden)
+        if np.array_equal(_quantize(self._encode_hidden(baseline.hidden)), _quantize(candidate_value)):
+            return None
+        return parent, candidate, candidate_value
+
+    @staticmethod
+    def _uses_source(selective, seed, source_id):
+        while seed is not None:
+            if seed.source_id == source_id or any(
+                hit.span.source_id == source_id for step in selective.attempted[seed]
+                if step.applied for hit in step.receipt.selected
+            ):
+                return True
+            seed = selective.parents.get(seed)
+        return False
 
     @staticmethod
     def _installable(steps, seed_source, parent=None):

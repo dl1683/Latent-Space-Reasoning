@@ -72,6 +72,26 @@ def test_overflow_preserves_strict_winners_and_margin_checks_near_cutoff():
     assert [hit.span.source_id for hit in contested.receipt.selected] == ["last", "neighbor"]
 
 
+def test_parent_discovery_compares_distinct_parents_across_queries_and_refuses_a_tie():
+    kernel, selector = _selector(2, top_k=1)
+    own, early, late, placebo = [_span(source) for source in ("own", "early", "late", "placebo")]
+    _, _, first_step = selector.read([1, 0], ())
+    _, _, second_step = selector.read([0, 1], ())
+    opening = selector.shard((own, early, late), [[1, 0], [0.5, 0], [0, 0.75]], [[0, 1]] * 3)
+    assert selector.discover_parent(own, (first_step,), opening) == early
+    assert selector.discover_parent(own, (first_step, second_step), opening) == late
+
+    tied = selector.shard((early, late, placebo), [[0.5, 0], [0, 0.75], [0, 0.75]],
+                         [[0, 1], [1, 0], [-1, 0]])
+    assert selector.discover_parent(own, (first_step, second_step), tied) is None
+    conservative = RetainedSelector(kernel, top_k=1, tie_limit=2, temperature=0.1, score_margin=5_000)
+    assert conservative.discover_parent(own, (first_step, second_step), opening) is None
+
+    _, _, conflict = selector.read([0, 1], (tied,))
+    assert conflict.receipt.status == "competing"
+    assert selector.discover_parent(own, (first_step, conflict), opening) is None
+
+
 def test_revision_keeps_selected_world_only_when_changed_rows_stay_below_old_cutoff():
     _, selector = _selector(2, top_k=2)
     initial = selector.shard([_span("a"), _span("b")], [[1, 0], [0, 1]], [[1, 1], [-1, -1]])

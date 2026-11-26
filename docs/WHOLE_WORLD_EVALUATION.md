@@ -173,8 +173,7 @@ unresolved.
    and operator dependency for that route; it is not an independently authored
    task result and does not qualify the adapter.
 
-   `NativeTaskEpisodeBackend` now provides an unrun integration slice for the
-   native reader. It consumes the exact `PolicyCall.input_ids` and per-call
+   `NativeTaskEpisodeBackend` connects the native reader to a task episode. It consumes the exact `PolicyCall.input_ids` and per-call
    output cap produced by `run_episode`, and binds the task evidence bytes to
    the reopened native publication's source-feed seal and per-source
    generations, runtime digest, and reader fingerprint. It reopens each full
@@ -194,9 +193,11 @@ unresolved.
    reader permits only one same-pin contribution change. Native selected spans
    remain leads; findings still need ordinary verified source reads and
    citations. This is plumbing for the late-task comparison, not evidence of
-   planning quality or latent-world utility. The path has not been
-   runtime-qualified. `read_episode_pair(..., contrast="native_text")` also
-   admits an active native episode against a text-backed episode when their
+   planning quality or latent-world utility. A deterministic software control
+   completed episodes with the native publication active, derived state disabled
+   and memory omitted. It used a fixture tokenizer and one declared task.
+   `read_episode_pair(..., contrast="native_text")` also admits an active
+   native episode against a text-backed episode when their
    task pin, policy, tokenizer, framing limits, and source setup agree.
 4. **Grade independently.** A blinded evaluator scores obligation coverage,
    evidence chains, final answers and errors from the frozen gold. A policy's

@@ -4,6 +4,51 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Discovering continuation parents before readout, 26 November 2026
+
+**CPU software control.** An opening worker retained two continuations
+from seven source documents. Two later workers reopened successive
+publications and independently selected one parent each from the
+opening numeric bank for their pass. The composed late read returned
+`L06` on a deterministic backbone. The preceding same-pin world, a
+source-only attempt of the final seed, the derived-off view and the
+memory-omitted call gave an empty answer.
+
+The two discovery passes with successful replay each made six
+backbone calls. The source-only attempt of the final seed made three.
+A score budget of three could not cover the required four opening-bank
+dot products for the second worker, and it refused before invoking the
+backbone. Its budget of four covered one seed and left the next
+pending. Broad latency, publication and cost comparisons remain open.
+
+A source edit changed a byte dependency while preserving the first
+parent's recomputed address and value. The earlier descendants were
+withdrawn before rebuilding and a fresh result returned `L06`.
+A subsequent correction changed that parent's value at the same
+address. Fresh work returned `L07`. Withdrawal removed the answer
+and restoration recovered `L07`. The original publication still
+returned `L06`.
+
+Two-cycle and three-generation fixtures exercised the refusal when a
+candidate's own source evidence or inherited ancestry included the
+new seed's source. An exact score tie with different payloads produced
+no proposal. The controls establish selected composition and revision
+on supplied source roles. Independently graded useful acquisition,
+pretrained and multimodal utility, ongoing concurrent swarm operation,
+and equal-evidence cost comparisons remain open.
+
+**Task-episode software control.** A second four-document fixture
+joined source-only parent discovery with the native task-episode
+adapter. The controller ran and reopened same-pin active, derived-off
+and memory-omitted episodes. They used the same prepared task tokens
+and output cap and charged the verified source bytes separately.
+The active episode returned the fixture label `L06`. Both comparison
+episodes recorded an unresolved question. A fixture tokenizer turns
+the model's label into a structured episode response. This verifies
+the token, receipt and intervention boundary with a deterministic
+backbone. Independently graded findings on real tasks remain open.
+[Mechanism](ARCHITECTURE.md#discovering-a-parent-from-the-source-trajectory)
+
 ## Mapping paired media rows into native coordinates, 26 November 2026
 
 **CPU software control.** A rank-three calibration mapped a supplied

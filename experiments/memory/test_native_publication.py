@@ -1,4 +1,4 @@
-from dataclasses import asdict, replace
+from dataclasses import replace
 import json
 from pathlib import Path
 import subprocess
@@ -38,12 +38,6 @@ def _read(directory, reader, seal, source):
                                    runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
 
 
-def _packet(read):
-    packet = asdict(read)
-    packet["omitted_sources"] = sorted(read.omitted_sources)
-    return packet
-
-
 def _publish_child(directory, source, destination):
     reader, _ = _new_reader()
     memory = reader.maintain(reader.publish(directory, source), max_seeds=1)
@@ -55,8 +49,9 @@ def _child(directory, seal, source, question_file):
     memory = _read(directory, reader, seal, source)
     assert not backbone.calls
     question = Path(question_file).read_text(encoding="utf8")
-    return [_packet(reader(question, memory=memory)),
-            _packet(reader(question, memory=reader.without_derived(memory))), _packet(reader(question))]
+    return [reader(question, memory=memory).json_record(),
+            reader(question, memory=reader.without_derived(memory)).json_record(),
+            reader(question).json_record()]
 
 
 def test_fresh_process_attaches_maintained_and_source_only_arms(tmp_path):
@@ -76,8 +71,9 @@ def test_fresh_process_attaches_maintained_and_source_only_arms(tmp_path):
         sys.executable, "-m", "experiments.memory.test_native_publication",
         "read", str(replica), seal, old.seal, str(path),
     ], timeout=60)
-    expected = [_packet(reader(question, memory=warmed)),
-                _packet(reader(question, memory=reader.without_derived(warmed))), _packet(reader(question))]
+    expected = [reader(question, memory=warmed).json_record(),
+                reader(question, memory=reader.without_derived(warmed)).json_record(),
+                reader(question).json_record()]
     expected[0]["publication_seal"] = expected[1]["publication_seal"] = seal
     assert json.loads(result) == json.loads(json.dumps(expected))
     assert [packet["text"] for packet in expected] == ["side", "", ""]
@@ -414,6 +410,155 @@ def test_binary_media_supplies_a_necessary_bridge_to_the_same_reader(tmp_path):
     wrong_start = wrong.publish(tmp_path / "text", text.seal, max_source_bytes=_LIMIT)
     wrong_memory = wrong.publish(tmp_path / "opening", opening.seal, previous=wrong_start, max_source_bytes=_LIMIT)
     assert wrong("follow L00", memory=wrong.maintain(wrong_memory, max_seeds=4)).text == "L11"
+
+
+def test_workers_discover_and_replay_parents_without_a_late_task(tmp_path):
+    from experiments.memory.native_isolated_stage import _CausalControl, _reader as make_reader
+
+    sources = tuple(f"{number:032x}" for number in range(1, 8))
+    root, decoy, relay, cue, bridge, outcome, _ = sources
+    source_dir = tmp_path / "source"
+    feed = write_source_delta(source_dir, dict(zip(sources, (
+        b"link L03 L04", b"link L08 L10", b"link L02 L03", b"link L01 L02",
+        b"link L04 L05", b"name L05 L06", b"name L10 L11",
+    ), strict=True)))
+    model = _CausalControl().eval()
+    reader = make_reader(model)
+    base = reader.publish(source_dir, feed.seal)
+    root_seed, decoy_seed, relay_seed, cue_seed = (base.source_spans(source)[0] for source in sources[:4])
+    opening = reader.maintain(base, max_seeds=2, max_parent_scores=1)
+    assert opening.derived_seeds == (root_seed, decoy_seed)
+    opening_world = tmp_path / "opening-world"
+    opening_seal = write_native_publication(opening_world, reader, opening, runtime_sha256=_RUNTIME,
+                                           max_bytes=_LIMIT)
+
+    second_model = _CausalControl().eval()
+    second = make_reader(second_model)
+    reopened = _read(opening_world, second, opening_seal, feed.seal)
+    with pytest.raises(ValueError, match="cannot cover one pending seed"):
+        second.maintain(reopened, max_seeds=2, max_parent_scores=3)
+    assert second_model.calls == 0 and reopened.pending_seeds == 5
+    relay_world = second.maintain(reopened, max_seeds=2, max_parent_scores=4)
+    assert second_model.calls == 6 and relay_world.pending_seeds == 4
+    assert relay_world.continuation_parent(relay_seed) == root_seed
+    following_world = tmp_path / "relay-world"
+    following_seal = write_native_publication(following_world, second, relay_world, runtime_sha256=_RUNTIME,
+                                             max_bytes=_LIMIT)
+
+    third_model = _CausalControl().eval()
+    third = make_reader(third_model)
+    before_cue = _read(following_world, third, following_seal, feed.seal)
+    composed = third.maintain(before_cue, max_seeds=1, max_parent_scores=6)
+    assert third_model.calls == 6 and composed.pending_seeds == 3
+    assert composed.continuation_parent(cue_seed) == relay_seed
+    assert composed.continuation_parent(decoy_seed) is None
+    composed_path = tmp_path / "composed-world"
+    composed_seal = write_native_publication(composed_path, third, composed, runtime_sha256=_RUNTIME,
+                                            max_bytes=_LIMIT)
+    assert _read(composed_path, third, composed_seal, feed.seal).derived_seeds == composed.derived_seeds
+
+    prompt = "follow L01"
+    late_model = _CausalControl().eval()
+    late = make_reader(late_model)
+    attached = _read(composed_path, late, composed_seal, feed.seal)
+    original = late(prompt, memory=attached)
+    assert original.text == "L06" and original.applied_derived_steps == 1
+    assert {span.source_id for span in attached.evidence_spans(original)} == {root, relay, cue, bridge, outcome}
+    before = _read(following_world, late, following_seal, feed.seal)
+    assert late(prompt, memory=before).text == ""
+    calls = late_model.calls
+    baseline = late.maintain(before, max_seeds=1)
+    assert late_model.calls - calls == 3
+    assert late(prompt, memory=baseline).text == ""
+    derived_off = late.without_derived(attached)
+    assert late(prompt, memory=derived_off).text == ""
+    with pytest.raises(ValueError, match="needs an intact selective world"):
+        late.maintain(derived_off, max_seeds=1, max_parent_scores=8)
+    assert late(prompt).text == ""
+
+    def resume(memory):
+        for _ in range(memory.pending_seeds):
+            memory = late.maintain(memory, max_seeds=1, max_parent_scores=16)
+        assert memory.pending_seeds == 0 and memory.continuation_parent(cue_seed) == relay_seed
+        return memory
+
+    settled = late.maintain(attached, max_seeds=attached.pending_seeds)
+    assert settled.pending_seeds == 0 and late(prompt, memory=settled).text == "L06"
+    recoded_path = tmp_path / "recoded"
+    recoded = write_source_delta(recoded_path, {bridge: b"link L04 L05 "}, previous=feed)
+    next_pin = late.publish(recoded_path, recoded.seal, previous=settled)
+    assert next_pin.derived_seeds == (decoy_seed,)
+    assert late(prompt, memory=next_pin).text == ""
+    rebuilt = resume(next_pin)
+    old_parent = attached._selective.acquired[root_seed]
+    rebuilt_parent = rebuilt._selective.acquired[root_seed]
+    assert old_parent.address.tobytes() == rebuilt_parent.address.tobytes()
+    assert old_parent.value.tobytes() == rebuilt_parent.value.tobytes()
+    assert rebuilt.continuation_reads(root_seed) != attached.continuation_reads(root_seed)
+    assert late(prompt, memory=rebuilt).text == "L06"
+
+    changed_path = tmp_path / "changed-value"
+    changed = write_source_delta(changed_path, {bridge: b"link L04 L07", outcome: b"name L07 L07"},
+                                 previous=recoded)
+    next_pin = late.publish(changed_path, changed.seal, previous=rebuilt)
+    assert cue_seed not in next_pin.derived_seeds
+    assert late(prompt, memory=next_pin).text == ""
+    corrected = resume(next_pin)
+    corrected_parent = corrected._selective.acquired[root_seed]
+    assert corrected_parent.address.tobytes() == old_parent.address.tobytes()
+    assert corrected_parent.value.tobytes() != old_parent.value.tobytes()
+    assert late(prompt, memory=corrected).text == "L07"
+
+    removed_path = tmp_path / "removed"
+    removed = write_source_delta(removed_path, {bridge: None}, previous=changed)
+    withdrawn = late.publish(removed_path, removed.seal, previous=corrected)
+    assert decoy_seed in withdrawn.derived_seeds and cue_seed not in withdrawn.derived_seeds
+    assert late(prompt, memory=withdrawn).text == ""
+    restored_path = tmp_path / "restored"
+    restored = write_source_delta(restored_path, {bridge: b"link L04 L07"}, previous=removed)
+    current = resume(late.publish(restored_path, restored.seal, previous=withdrawn))
+    assert late(prompt, memory=current).text == "L07"
+    assert late(prompt, memory=attached) == original
+
+
+def test_parent_discovery_refuses_a_route_through_its_own_seed_source(tmp_path):
+    from experiments.memory.native_isolated_stage import _CausalControl, _reader as make_reader
+
+    earlier, later = (letter * 32 for letter in "ab")
+    source = write_source_delta(tmp_path / "source", {earlier: b"link L01 L02", later: b"link L02 L01"})
+    reader = make_reader(_CausalControl().eval())
+    opening = reader.maintain(reader.publish(tmp_path / "source", source.seal), max_seeds=1, max_parent_scores=1)
+    parent, = opening.derived_seeds
+    child, = opening.source_spans(later)
+    assert later in {hit.span.source_id for step in opening.continuation_reads(parent) for hit in step.selected}
+    manual = reader.maintain(opening, max_seeds=1, parent=parent)
+    assert manual.continuation_parent(child) == parent
+    discovered = reader.maintain(opening, max_seeds=1, max_parent_scores=2)
+    assert discovered.continuation_parent(child) is None
+    plain_seal = write_native_publication(tmp_path / "plain", reader, reader.maintain(opening, max_seeds=1),
+                                         runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    assert write_native_publication(tmp_path / "found", reader, discovered, runtime_sha256=_RUNTIME,
+                                    max_bytes=_LIMIT) == plain_seal
+
+
+def test_parent_discovery_checks_inherited_source_reads(tmp_path):
+    from experiments.memory.native_isolated_stage import _CausalControl, _reader as make_reader
+
+    first, middle, last = (letter * 32 for letter in "abc")
+    source_dir = tmp_path / "source"
+    source = write_source_delta(source_dir, {
+        first: b"link L03 L04", middle: b"link L02 L03", last: b"link L04 L02",
+    })
+    reader = make_reader(_CausalControl().eval())
+    base = reader.publish(source_dir, source.seal)
+    root, parent, seed = (base.source_spans(source_id)[0] for source_id in (first, middle, last))
+    initial = reader.maintain(base, max_seeds=1, max_parent_scores=1)
+    before = reader.maintain(initial, max_seeds=1, max_parent_scores=2)
+    assert before.continuation_parent(parent) == root
+    assert last in {hit.span.source_id for step in before.continuation_reads(root) for hit in step.selected}
+    assert last not in {hit.span.source_id for step in before.continuation_reads(parent) for hit in step.selected}
+    assert reader.maintain(before, max_seeds=1, parent=parent).continuation_parent(seed) == parent
+    assert reader.maintain(before, max_seeds=1, max_parent_scores=4).continuation_parent(seed) is None
 
 
 def test_same_byte_modality_revision_changes_a_native_continuation(tmp_path):

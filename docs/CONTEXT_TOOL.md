@@ -712,6 +712,18 @@ historical records without rewriting them. Existing authenticated export locks a
 receipts remain unchanged and retain their original identities and hashes.
 
 
+## Discovering native continuation parents
+
+Use `reader.maintain(memory, max_seeds=seeds, max_parent_scores=scores)`
+on a full selective memory view to enable parent discovery for that
+pass. The score allowance bounds opening-bank key dot products.
+If no parent is present, the worker uses source-only maintenance.
+An allowance too small for the first pending seed raises before that
+seed runs. If only part of a batch fits, the remaining seeds stay in the
+persistent queue. This option is exclusive with `parent`. A publication
+can be reopened and used for another discovery pass. Inspect the actual
+binding with `memory.continuation_parent(seed)`.
+
 ## Publishing binary native sources
 
 The publisher marks binary updates by source ID with

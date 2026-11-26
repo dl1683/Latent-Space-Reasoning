@@ -24,6 +24,21 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Packed query bytes require an explicit receipt encoding, 26 November 2026.**
+The task-episode integration added raw selection step queries to the
+in-process read. Before serialization, the fresh-process JSON path failed
+on the new bytes. Convert those fields to hexadecimal in JSON receipts and
+keep the numeric step queries available to the in-process validator.
+
+**Earlier work can feed a seed its own premise, 26 November 2026.**
+In the constructed cycles, an earlier continuation could affect a seed
+after reading that seed's source directly or through an ancestor.
+Naming the parent explicitly allowed the binding. Parent discovery
+vetoed it by walking the applied lineage. A changed packed value shows
+influence. Independently graded consequences are needed to decide
+whether such changes are useful.
+[Discovery control](RESULTS.md#discovering-continuation-parents-before-readout-26-november-2026)
+
 **Aligned numeric rows can preserve the wrong operation, 26 November 2026.**
 A payload-swapped map passed the rank-three calibration and selected the
 same intermediate image as the intended map. At the corrected pin it

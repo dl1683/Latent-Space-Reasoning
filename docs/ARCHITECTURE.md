@@ -159,12 +159,62 @@ The composed snapshot records each used parent's identity and a digest
 of its numeric payload. A fresh reader checks that the parent precedes
 an installed child, that its payload matches and that a recorded worker
 query could select it. The publisher attests to the realized backbone
-intervention. Source-only snapshots keep their existing format. The
-parent choice remains explicit. Future
-workers must earn autonomous selection on tasks with independently
-graded evidence, and compare it with more source-only reasoning at
-equal total work. The joint-state alternative can revise a group of
-competing paths together. [Worker and reader](../experiments/memory/native_latent_recurrence.py)
+intervention. Source-only snapshots keep their existing format. A
+fixed parent remains available as a control. The joint-state
+alternative can revise a group of competing paths together.
+[Worker and reader](../experiments/memory/native_latent_recurrence.py)
+
+#### Discovering a parent from the source trajectory
+
+[SLICE] A worker can use an opening publication to find a parent
+without a task or a supplied parent identity. For each pending seed it
+runs the source-only trajectory. It scores the opening continuation
+keys against each recorded integer query, retaining the maximum score
+per candidate. A winner needs positive overlap and a unique lead over
+the next eligible score or zero by more than the reader's margin.
+A competing or overflowed source read blocks the proposal. An exact
+parent-score tie also blocks it. The worker excludes the seed's source
+as a parent and vetoes a winning
+lineage that already used that source, including inherited applied
+reads.
+
+A candidate replays the same seed using just the proposed parent.
+Its contribution must change a recurrent input, keep the seed's
+quantized address, pass the executed source-frontier checks and change
+the final quantized value. Otherwise the worker retains the source-only
+attempt. These tests detect an effective intervention. Correctness
+requires independent evidence about the later consequence.
+
+The opening parent bank stays fixed for a pass. The worker reserves
+one key dot product per opening continuation per configured latent step
+for each eligible seed. It processes the queue in the sealed order
+and stops before a seed whose full scan would exceed the budget. A
+budget too small for any pending seed raises before recurrence.
+This cap covers proposal matching. Count baseline, replay, source
+selection, lineage walking and publication as additional work.
+
+Composed publications preserve historical bindings. Later workers can
+choose different parents. A replacement of the bound parent requires
+fresh execution, even if its address and packed value agree. The
+publication records the executed parent and source frontiers. It
+does not check the proposal ranking, replay the source-only guard, or
+maintain an up-to-date winner. Newly published parents can change
+pending work. They do not reopen completed attempts on their own.
+A live competition policy would require its own dependency record and
+a retirement rule.
+
+Independent chronological consequences should decide whether a growing
+operator library pays for its search and replay. Compare with a
+fixed-operation worker, longer source-only recurrence and a typed
+joint-state worker allowed to develop computations on the same source
+updates. DreamCoder's library grows by reusing abstractions from solved
+tasks. For this corpus setting, the independent comparison must judge
+reuse on later questions unavailable to maintenance. Adapton's
+demand-driven dependency traces motivate a separate comparison between
+eager rebuilding and deferring reconstruction until readout.
+[Discovery control](RESULTS.md#discovering-continuation-parents-before-readout-26-november-2026)
+· [DreamCoder](https://arxiv.org/abs/2006.08381)
+· [Adapton](https://matthewhammer.org/adapton/adapton-pldi2014.pdf)
 
 #### Admitting a binary source into the native reader
 
