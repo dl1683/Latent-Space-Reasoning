@@ -537,6 +537,9 @@ def _validate_selection_steps(steps, reads, *, source_versions, source_lengths, 
             raise ValueError("native selection query is not canonical")
     _validate_selection_reads(reads, source_versions, source_lengths, source_seal,
                               span_root, span_count, scored_count, tie_limit)
+    if any(hit["score"] < step["cutoff"]
+           for step in steps for hit in step["receipt"]["selected"]):
+        raise ValueError("native selected score is below its recorded cutoff")
 
 
 def _validate_native_read(pin, request, response):
