@@ -8,7 +8,7 @@ from os import fsync
 from pathlib import Path
 from typing import Callable
 
-from experiments.memory.binding_links import CONTEXT_COMPLETION_VERSION, HIDDEN_BOUND_VERSION
+from experiments.memory.binding_links import CONTEXT_COMPLETION_VERSION, HIDDEN_BOUND_VERSION, RECURRENT_BOUND_VERSION
 from experiments.memory.task_evidence import (
     ExploreRolePaths, OpenEvidence, ProbeRoleLinks, RoleSupport, TaskBudget, TaskWorld, _Investigation,
     _role_terminal_reads,
@@ -536,8 +536,8 @@ class _Tools:
             public["next_offset"] = result["next_offset"]
         public["read"] = {key: read[key] for key in ("status", "open_coverage", "stage_no_links")}
         for key in ("context_domain_refusals", "context_completions", "context_projection_refusals",
-                    "bounded_hidden_steps"):
-            if read[key]:
+                    "bounded_hidden_steps", "bounded_recurrent_steps"):
+            if read.get(key):
                 public["read"][key] = read[key]
         public["read"]["terminal_reads"] = branches
         return {"request": receipt["request"], "result": public}
@@ -656,6 +656,10 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
             opening["context_completion_version"] = CONTEXT_COMPLETION_VERSION
         if limits.access.bound_hidden:
             opening["hidden_bound_version"] = HIDDEN_BOUND_VERSION
+        if limits.access.bound_recurrent:
+            opening["recurrent_bound_version"] = RECURRENT_BOUND_VERSION
+        else:
+            del opening["limits"]["access"]["bound_recurrent"]
         ledger.write("start", opening)
         for _ in range(limits.calls):
             reservation = min(limits.max_new_tokens, limits.output_tokens - output_tokens)
@@ -773,6 +777,8 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
         raise ValueError("episode context completion policy differs")
     if a.get("hidden_bound_version") != b.get("hidden_bound_version"):
         raise ValueError("episode hidden bound policy differs")
+    if a.get("recurrent_bound_version") != b.get("recurrent_bound_version"):
+        raise ValueError("episode recurrent bound policy differs")
     if contrast == "memory":
         source_fields = ("source_snapshot", "span_catalogue_sha256", "binding_source_revision")
         for field in source_fields:

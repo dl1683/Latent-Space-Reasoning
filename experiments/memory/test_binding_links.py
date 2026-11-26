@@ -1555,7 +1555,7 @@ def test_bridge_waits_for_legacy_sources_to_stop_obscuring_competitors(tmp_path,
 
 
 @pytest.mark.parametrize("transport", ["fixed", "rotation"])
-def test_off_plane_completions_certify_only_invariant_routes_and_observations(tmp_path, transport):
+def test_off_plane_completions_certify_only_invariant_routes_and_observations(tmp_path, transport, monkeypatch):
     axes = np.eye(8)
     authority = b"Publish the revised regional route."
 
@@ -1730,6 +1730,72 @@ def test_off_plane_completions_certify_only_invariant_routes_and_observations(tm
     assert narrow.answer == "accept" and narrow.bounded_hidden_steps == 1
     _write(owner, {"nearby-rival": None, "rival-decision": None})
 
+    def recurrent_receiver(observation, route_query=None):
+        query = .3 * axes[6, :, None]
+        carry = .9 * (np.outer(axes[5], axes[5]) + np.outer(axes[6], axes[6]))
+        value = .18 * (np.outer(axes[5], axes[5]) + np.outer(axes[6], axes[6]))
+        kernel = FeedbackKernel(query=query, carry=carry, observation_key=query,
+                                observation_value=observation, feedback_key=query, feedback_value=value, max_steps=2)
+        binding_query = np.zeros((8, 1)) if route_query is None else route_query
+        return BindingFeedback(kernel, frame, (("accept", 0),), query=binding_query, observation=np.zeros((6, 8)),
+                               route_floor=.01)
+
+    wide_receiver = recurrent_receiver(leaking)
+    narrow_receiver = recurrent_receiver(quiet_values)
+    wide_start = wide_receiver.start(root, owner.snapshot().memory)
+
+    def complete(receiver, start, role, observation):
+        intermediate = receiver._advance_read(start, receiver._next_read(start), role_extra=role @ observation)
+        return receiver.step(intermediate).latest
+
+    wide_center = complete(wide_receiver, wide_start, center, leaking)
+    angle = np.arctan2(wide_center[6], wide_center[5]) - np.arccos(.93) - .010
+    recurrent_rival = np.cos(angle) * axes[5] + np.sin(angle) * axes[6]
+    updated = _write(owner, {"recurrent-rival": route(recurrent_rival, axes[1]),
+                            "recurrent-rival-decision": _mentions(("review", axes[1], .9))})
+    wide_start = wide_receiver.start(root, updated.memory)
+    narrow_start = narrow_receiver.start(root, updated.memory)
+    np.testing.assert_array_equal(complete(narrow_receiver, narrow_start, center, quiet_values), wide_center)
+    exact = np.array([complete(wide_receiver, wide_start, row, leaking) for row in completions])
+    assert (wide_center @ recurrent_rival / np.linalg.norm(wide_center)
+            < .93 < max(exact @ recurrent_rival / np.linalg.norm(exact, axis=1)))
+    recur_options = options | {"stages": (BindingRoleAdvance(), None),
+                               "bound_recurrent": True, "work_limit": 32000}
+    wide = wide_receiver.reason_role_links(wide_start, **recur_options)
+    assert wide.status == "unresolved" and wide.terminal_reads[0].marginal
+    assert wide.bounded_recurrent_steps == wide.bounded_hidden_steps == 1
+    narrow = narrow_receiver.reason_role_links(narrow_start, **recur_options)
+    assert narrow.answer == "accept" and narrow.bounded_recurrent_steps == 1
+    assert narrow.transitions == 2 and narrow.stage_no_links == (0, 0)
+    capped = narrow_receiver.reason_role_links(narrow_start, **(recur_options | {"work_limit": narrow.work - 1}))
+    assert capped.status == "work_limit" and not capped.terminal_reads
+    with pytest.raises(ValueError, match="recurrent bounds require"):
+        narrow_receiver.reason_role_links(narrow_start, **(recur_options | {"bound_hidden": False}))
+
+    # The midpoint can choose a single address even when legal role completions
+    # lie on both sides of the ordinary router's floor.
+    crossing = axes[6, :, None] - (wide_receiver._advance_read(
+        wide_start, wide_receiver._next_read(wide_start), role_extra=center @ leaking
+    ).latest[6] - .01) / np.tanh(center[2]) * axes[5, :, None]
+    route_switch = recurrent_receiver(leaking, crossing)
+    route_start = route_switch.start(root, updated.memory)
+    route_statuses = {route_switch._next_read(route_switch._advance_read(
+        route_start, route_switch._next_read(route_start), role_extra=row @ leaking)).status for row in completions}
+    assert route_statuses == {"below_floor", "resolved"}
+    def no_attention(*args, **kwargs):
+        pytest.fail("refused or unaffordable recurrence evaluated bounded attention")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(FeedbackKernel, "_step_bounded", no_attention)
+        refused_route = route_switch.reason_role_links(route_start, **recur_options)
+        assert refused_route.status == "unresolved" and refused_route.bounded_hidden_steps == 1
+        assert not refused_route.bounded_recurrent_steps and not refused_route.terminal_reads
+        insufficient = recur_options | {"work_limit": refused_route.work}
+        deferred = narrow_receiver.reason_role_links(narrow_start, **insufficient)
+        assert deferred.status == "work_limit" and deferred.bounded_hidden_steps == 1
+        assert not deferred.bounded_recurrent_steps and not deferred.terminal_reads
+    _write(owner, {"recurrent-rival": None, "recurrent-rival-decision": None})
+
     additions = {"seed": _mentions(("late_seed", root, .9)),
                  "old-unrelated": route(axes[7], axes[5]), "new-unrelated": route(axes[7], axes[6]),
                  "authority": authority}
@@ -1750,7 +1816,7 @@ def test_off_plane_completions_certify_only_invariant_routes_and_observations(tm
                            TaskBudget(role_work=4096, bound_context=True, bound_hidden=True))
     task_policy = EpisodePolicy("bounded-context", "scripted", "byte-count", "notes", probes_enabled=True)
 
-    def generate(call):
+    def generate(call, stages=(1,)):
         payload = json.loads(dict(call.messages)["user"])
         receipts = payload["receipts"]
         step = len(receipts)
@@ -1761,10 +1827,11 @@ def test_off_plane_completions_certify_only_invariant_routes_and_observations(tm
             request = {"op": "read", "candidate": latest["candidates"][0]["candidate"]}
         elif step == 2:
             request = {"op": "reason", "read": latest["id"], "ordinal": 0,
-                       "outcomes": list(_OUTCOMES), "stages": [1], "terminal_hops": 1}
+                       "outcomes": list(_OUTCOMES), "stages": list(stages), "terminal_hops": 1}
         elif step == 3:
             assert latest["read"]["context_completions"] == 1
             assert latest["read"]["bounded_hidden_steps"] == 1
+            assert latest["read"].get("bounded_recurrent_steps", 0) == (len(stages) - 1)
             request = {"op": "read", "candidate": [row["candidate"] for row in latest["candidates"]]}
         else:
             return reply(finish={"findings": [{
@@ -1782,6 +1849,18 @@ def test_off_plane_completions_certify_only_invariant_routes_and_observations(tm
     assert entries[0]["data"]["limits"]["access"]["bound_context"]
     assert entries[0]["data"]["context_completion_version"] == 1
     assert entries[0]["data"]["hidden_bound_version"] == 1
+
+    recurrent_world = TaskWorld(tool, (span,), bindings=task_pin, receiver=narrow_receiver, as_of=27)
+    recurrent_limits = replace(limits, access=replace(limits.access, role_work=32000, bound_recurrent=True))
+
+    recurrent_artifact = run_episode("What decision follows?", recurrent_world, task_policy, recurrent_limits,
+                                     Tokenizer(), lambda call: generate(call, (1, 0)), tmp_path / "bounded-recurrent.jsonl")
+    recurrent_entries = read_episode(recurrent_artifact)
+    assert recurrent_entries[-1]["data"]["status"] == "completed"
+    assert recurrent_entries[0]["data"]["recurrent_bound_version"] == 1
+    assert recurrent_entries[0]["data"]["limits"]["access"]["bound_recurrent"]
+    assert any(entry["data"].get("result", {}).get("read", {}).get("bounded_recurrent_steps") == 1
+               for entry in recurrent_entries)
 
     zero_world = TaskWorld(tool, (span,), bindings=task_pin, receiver=zero_receiver, as_of=27)
     toolbox = _Tools("What decision follows?", zero_world, limits, probes_enabled=True)

@@ -115,12 +115,15 @@ class TaskBudget:
     role_candidate_spans: int = 256
     bound_context: bool = False
     bound_hidden: bool = False
+    bound_recurrent: bool = False
 
     def __post_init__(self):
         if type(self.bound_context) is not bool:
             raise ValueError("context completion policy must be boolean")
         if type(self.bound_hidden) is not bool or (self.bound_hidden and not self.bound_context):
             raise ValueError("hidden bounds require context completion bounds")
+        if type(self.bound_recurrent) is not bool or (self.bound_recurrent and not self.bound_hidden):
+            raise ValueError("recurrent bounds require hidden bounds")
         for name in ("steps", "candidates_per_search", "evidence_bytes", "source_bytes", "role_work",
                      "role_branches", "role_transitions", "role_candidate_spans"):
             value = index(getattr(self, name))
@@ -555,6 +558,7 @@ class _Investigation:
                     branch_limit=branches, terminal_hops=action.terminal_hops, retain_dependencies=True,
                     bound_context=self.budget.bound_context,
                     bound_hidden=self.budget.bound_hidden,
+                    bound_recurrent=self.budget.bound_recurrent,
                 )
             except BindingCapacityError as error:
                 result = BindingRoleDecision(getattr(error, "status", "source_observation_limit"), (), 0, 0, True)

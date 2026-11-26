@@ -3,7 +3,7 @@ import pytest
 
 from experiments.memory.feedback_journal import JournaledFeedbackWorkspace
 from experiments.memory.feedback_workspace import FeedbackProbe
-from experiments.memory.latent_feedback import FactoredValue, FeedbackKernel
+from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, FeedbackKernel, _softmax_bounds
 from experiments.memory.linear_feedback import LinearFeedbackKernel
 from experiments.memory.tree_feedback import TreeFeedbackKernel
 
@@ -110,6 +110,72 @@ def test_factored_value_application_matches_eager_attention_with_feedback():
         projected_values.append(expected @ history_value)
         state = kernel.step(state)
         np.testing.assert_allclose(state.latest, expected, atol=1e-14, rtol=0)
+
+
+@pytest.mark.parametrize("factored", [False, True])
+def test_bounded_recurrent_attention_encloses_shared_queries_and_generated_values(factored):
+    rng = np.random.default_rng(24)
+    width, query_width = 3, 2
+    query, observation_query, observation_key, feedback_key = rng.normal(size=(4, width, query_width))
+    maps = rng.normal(size=(3, width, width))
+    carry = maps[0] / 5
+
+    def value(matrix):
+        return FactoredValue(matrix, np.eye(width)) if factored else matrix
+
+    kernel = FeedbackKernel(query=query, carry=carry, observation_key=observation_key,
+                            observation_value=value(maps[1]), feedback_key=feedback_key,
+                            feedback_value=value(maps[2]), max_steps=3)
+    kernel = kernel._with_observation_query(observation_query)._with_conditional(
+        ConditionalTerm([1., 0., 0.], [0., 1., 0.], [0., -.15, .2], threshold=.1)
+    )
+    prefix = kernel.step(kernel.start(rng.normal(size=width), kernel.prepare(rng.normal(size=(4, width)))))
+    lower = np.array([.07, -.2, .35])
+    upper = np.array([.13, -.1, .55])
+    bias = np.array([.1, -.15, .06])
+
+    def uncertain_row(target):
+        # Make the concrete first row with the original exact cached prefix.
+        preactivation, _, _ = kernel._step_preactivation(prefix)
+        return kernel._advance(prefix, observation_extra=np.arctanh(target) - preactivation)[0]
+
+    exact_outputs, logits = [], []
+    for t in np.ndindex(5, 5, 5):
+        hidden = lower + np.asarray(t) * (upper - lower) / 4
+        concrete = uncertain_row(hidden)
+        diagnostics = {}
+        after, _, _ = kernel._advance(concrete, diagnostics=diagnostics, observation_extra=bias)
+        exact_outputs.append(after.latest)
+        logits.append(diagnostics["logits"])
+
+    lower = np.nextafter(lower - 1e-14, -np.inf)
+    upper = np.nextafter(upper + 1e-14, np.inf)
+    lo, hi = kernel._step_bounded(prefix, (lower, upper), observation_extra=(bias, bias))
+    assert np.all(lo <= exact_outputs) and np.all(exact_outputs <= hi)
+    assert np.ptp(logits, axis=0).min() > 0.01  # Both observation and history actually depend on the row.
+    midpoint = (lower + upper) / 2
+    exact_input = uncertain_row(midpoint)
+    lo, hi = kernel._step_bounded(prefix, (exact_input.latest, exact_input.latest), observation_extra=(bias, bias))
+    reference = kernel._advance(exact_input, observation_extra=bias)[0].latest
+    assert np.all(lo <= reference) and np.all(reference <= hi)
+    assert np.max(hi - lo) < 1e-10
+    assert len(prefix.history) == 1
+
+
+def test_bounded_softmax_contains_complementary_extrema_at_wide_dynamic_range():
+    lower = np.array([-1001., 0., 712., 940., 1000.])
+    upper = np.array([-999., .2, 1002., 992., 1001.])
+    lo, hi = _softmax_bounds(lower, upper)
+    for row in range(len(lower)):
+        for others, own in ((upper, lower), (lower, upper)):
+            logits = others.copy()
+            logits[row] = own[row]
+            weights = np.exp(logits - logits.max())
+            probability = weights[row] / weights.sum()
+            assert lo[row] <= probability <= hi[row]
+    assert lo[-1] > .11 and hi[-1] <= 1.
+    alone = _softmax_bounds(np.array([-.6]), np.array([.7]))
+    assert alone[0][0] <= 1. <= alone[1][0]
 
 
 def test_retarget_reuses_original_observation_bank_and_verifies_the_full_prefix():

@@ -4,6 +4,41 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Bounded recurrent attention, 26 November 2026
+
+**Software verification, supplied directions.** A role-generated hidden
+interval fed one further ordinary attention step and a source-backed
+late read. The same-midpoint narrow range produced acceptance. Widening
+the admissible range let a concrete completion reach a rival and kept
+the bounded result open. An interval crossing the ordinary route floor
+could not certify that step. The scripted task traversed the same
+interface on its effective-time pin and recorded the recurrent policy.
+
+For both dense and factored values, 125 concrete rows per configuration
+tested a kernel with nonempty observations, an exact cached row, a
+variable generated key and value, and a conditional term. All outputs
+fell within the propagated range. A point input recovered the exact
+result within a narrow enclosure. Separate softmax checks included a
+very small probability and overlapping high-logit alternatives. These
+checks establish bounded software behavior on the supplied fixtures.
+A learned same-model trajectory, lifecycle cost and the reach of useful
+multi-step bounds remain open. [Role checks](../experiments/memory/test_binding_links.py)
+[Kernel checks](../experiments/memory/test_latent_feedback.py)
+
+## Correlated completion control, 26 November 2026
+
+**Reproduced standalone development control.** Of 512 structured cases,
+the analytic oracle supported 128. Both coordinate-box arms held all
+128 open. Preserving the joint affine numerator supported all 128, with
+zero false closures. A midpoint alone would incorrectly close 384 cases.
+A separate dense sample checked 65,536 score containments. With identical
+factors and version keys, lazy preparation used 8 compositions versus
+256 with eager preparation and matched all 64 paired receipts. These
+counts cover composition only. The test uses supplied directions and
+a heuristic numerical guard. The control is not integrated into the
+receiver. Lifecycle cost and learned inference remain open.
+[Standalone control](../experiments/memory/correlated_completion_control.js)
+
 ## Bounded final hidden step, 26 November 2026
 
 **Software verification, supplied directions.** The same off-plane input

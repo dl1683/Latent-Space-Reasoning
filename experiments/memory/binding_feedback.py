@@ -16,7 +16,8 @@ from experiments.memory.binding_links import (
 from experiments.memory.binding_memory import BindingCapacityError, _ProofWork, _proof_work_limit
 from experiments.memory.corpus_bindings import CorpusBindingMemory, CorpusBindingRead, _DisjointBranchReads
 from experiments.memory.latent_feedback import (
-    ConditionalTerm, FactoredValue, FeedbackKernel, FeedbackState, _apply_value, _frozen, _real_array,
+    ConditionalTerm, FactoredValue, FeedbackKernel, FeedbackState, _add_bounds, _apply_value, _frozen,
+    _hinge_bounds, _linear_bounds, _outward, _product_bounds, _real_array,
 )
 from experiments.memory.role_validity import RoleSupersession
 
@@ -108,6 +109,7 @@ class _BoundedRoleReadout:
     strength: float
     role_open: bool
     ordinary_read: BindingStepRead
+    hidden: tuple[np.ndarray, np.ndarray]
 
 
 @dataclass(frozen=True)
@@ -155,6 +157,7 @@ class BindingRoleDecision:
     context_completions: int = 0
     context_projection_refusals: int = 0
     bounded_hidden_steps: int = 0
+    bounded_recurrent_steps: int = 0
 
     @property
     def answer(self):
@@ -360,14 +363,14 @@ class BindingFeedback:
 
     def reason_role_links(self, state, *, stages, outcomes, work_limit, branch_limit,
                           terminal_hops=1, terminal_condition=None, retain_dependencies=False, bound_context=False,
-                          bound_hidden=False):
+                          bound_hidden=False, bound_recurrent=False):
         """Run a bounded population of hidden paths and resolve their joint late read.
 
         A stage is either a BindingRoleAdvance or None for an ordinary step.
         Every surviving branch uses this receiver, its hidden history and its
         original memory pin. The joint call owns the population until readout.
-        Work counts role enumeration and readout; ordinary binding and numerical
-        work are bounded separately by receiver limits and transition count.
+        Role work includes enumeration, readout, and the opt-in recurrent
+        enclosure. Exact binding and exact attention use receiver limits.
         """
         if type(state) is not BindingFeedbackState or state._receiver is not self:
             raise ValueError("state belongs to a different binding receiver")
@@ -375,6 +378,8 @@ class BindingFeedback:
             raise ValueError("context completion policy must be boolean")
         if type(bound_hidden) is not bool or (bound_hidden and not bound_context):
             raise ValueError("hidden bounds require context completion bounds")
+        if type(bound_recurrent) is not bool or (bound_recurrent and not bound_hidden):
+            raise ValueError("recurrent bounds require hidden bounds")
         self._kernel._require_state(state.feedback)
         remaining = self._kernel._max_steps - len(state.feedback._history)
         stages = tuple(islice(stages, remaining + 1))
@@ -395,7 +400,8 @@ class BindingFeedback:
             outcomes = state.memory._role_outcomes(outcomes)
 
         population, work, transitions = (state,), 0, 0
-        readouts = []
+        readouts, pending = [], []
+        hidden_steps = recurrent_steps = 0
         context_domain_refusals = 0
         context_completions = context_projection_refusals = 0
         stage_no_links = []
@@ -403,27 +409,50 @@ class BindingFeedback:
         closed_reads = ("resolved", "detached", "below_floor", "catalog_absent")
         open_coverage = state._role_open or any(read.status not in closed_reads for read in state.reads)
         for stage_number, stage in enumerate(stages):
-            if not population:
+            if not population and not pending:
                 break
             stage_no_links.append(0)
             next_population = []
+            if stage is None and pending:
+                enclosure_work = _ProofWork(limit)
+                enclosure_work.charge(work)
+                for prefix, row in pending:
+                    try:
+                        recurrent = self._bound_ordinary_readout(prefix, row, enclosure_work)
+                    except BindingCapacityError:
+                        return BindingRoleDecision(
+                            "work_limit", (), enclosure_work.used, transitions, True, tuple(stage_no_links),
+                            tuple(supersessions), context_domain_refusals, context_completions,
+                            context_projection_refusals, hidden_steps, recurrent_steps,
+                        )
+                    if recurrent is None:
+                        open_coverage = True
+                        continue
+                    readouts.append(recurrent)
+                    recurrent_steps += 1
+                    transitions += 1
+                    open_coverage |= recurrent.ordinary_read.status not in closed_reads
+                work = enclosure_work.used
+                pending.clear()
             for parent in population:
                 if stage is None:
                     children = (self.step(parent),)
                 else:
-                    available = branch_limit - len(next_population) - len(readouts)
+                    available = branch_limit - len(next_population) - len(readouts) - len(pending)
                     if not available:
                         return BindingRoleDecision("branch_limit", (), work, transitions, True,
                                                    tuple(stage_no_links), tuple(supersessions), context_domain_refusals,
-                                                   context_completions, context_projection_refusals, len(readouts))
+                                                   context_completions, context_projection_refusals, hidden_steps, recurrent_steps)
                     if work == limit:
                         return BindingRoleDecision("work_limit", (), work, transitions, True,
                                                    tuple(stage_no_links), tuple(supersessions), context_domain_refusals,
-                                                   context_completions, context_projection_refusals, len(readouts))
+                                                   context_completions, context_projection_refusals, hidden_steps, recurrent_steps)
+                    final_stage = stage_number == len(stages) - 1
+                    next_is_final_ordinary = stage_number == len(stages) - 2 and stages[-1] is None
                     continuation = self._continue_role_links(
                         parent, hops=stage.hops, condition=stage.condition, work_limit=limit - work,
                         branch_limit=available, joint=True, bound_context=bound_context,
-                        bound_hidden=bound_hidden and stage_number == len(stages) - 1,
+                        bound_hidden=bound_hidden and (final_stage or (bound_recurrent and next_is_final_ordinary)),
                     )
                     work += continuation.work
                     context_domain_refusals += continuation.context_domain_refusals
@@ -433,14 +462,18 @@ class BindingFeedback:
                     if continuation.status in ("branch_limit", "work_limit"):
                         return BindingRoleDecision(continuation.status, (), work, transitions, True,
                                                    tuple(stage_no_links), tuple(supersessions), context_domain_refusals,
-                                                   context_completions, context_projection_refusals, len(readouts))
+                                                   context_completions, context_projection_refusals, hidden_steps, recurrent_steps)
                     open_coverage |= continuation.status in ("unresolved", "no_direction")
                     stage_no_links[-1] += continuation.status == "no_link"
                     children = continuation.states
-                    readouts.extend(continuation.readouts)
+                    for row in continuation.readouts:
+                        open_coverage |= row.ordinary_read.status not in closed_reads
+                        if final_stage:
+                            readouts.append(row)
+                        else:
+                            pending.append((parent, row))
+                    hidden_steps += len(continuation.readouts)
                     transitions += len(continuation.readouts)
-                    open_coverage |= any(row.ordinary_read.status not in closed_reads
-                                         for row in continuation.readouts)
                 next_population.extend(children)
                 transitions += len(children)
                 open_coverage |= any(child.reads[-1].status not in closed_reads for child in children)
@@ -451,7 +484,7 @@ class BindingFeedback:
             if work == limit:
                 return BindingRoleDecision("work_limit", (), work, transitions, True,
                                            tuple(stage_no_links), tuple(supersessions), context_domain_refusals,
-                                           context_completions, context_projection_refusals, len(readouts))
+                                           context_completions, context_projection_refusals, hidden_steps, recurrent_steps)
             read_options = dict(outcomes=outcomes, work_limit=limit - work, hops=terminal_hops,
                                 condition=terminal_condition, branch_limit=branch_limit,
                                 retain_dependencies=retain_dependencies, bound_context=bound_context)
@@ -470,7 +503,7 @@ class BindingFeedback:
             if read.status in ("branch_limit", "work_limit"):
                 return BindingRoleDecision(read.status, (), work, transitions, True,
                                            tuple(stage_no_links), tuple(supersessions), context_domain_refusals,
-                                           context_completions, context_projection_refusals, len(readouts))
+                                           context_completions, context_projection_refusals, hidden_steps, recurrent_steps)
             reads.append(read)
 
         statuses = {read.status for read in reads}
@@ -487,7 +520,7 @@ class BindingFeedback:
             status, = statuses or {"no_link"}
         return BindingRoleDecision(status, tuple(reads), work, transitions, open_coverage,
                                    tuple(stage_no_links), tuple(supersessions), context_domain_refusals,
-                                   context_completions, context_projection_refusals, len(readouts))
+                                   context_completions, context_projection_refusals, hidden_steps, recurrent_steps)
 
     def _role_observation_bounds(self, path, effort):
         envelope = path.completion
@@ -511,13 +544,67 @@ class BindingFeedback:
     def _bound_role_readouts(self, state, read, bounded, open_coverage):
         bounds = np.concatenate([bounds for _, bounds in bounded], axis=0)
         extra = self._binding_observation_extra(state, read, role_extra=bounds)
-        preactivation, _, _ = self._kernel._step_preactivation(state.feedback, observation_extra=extra)
-        hidden = np.tanh(preactivation)
-        lower = np.nextafter(hidden[::2], -np.inf)
-        upper = np.nextafter(hidden[1::2], np.inf)
+        preactivation, _, fixed = self._kernel._step_preactivation(state.feedback, observation_extra=extra)
+        # Shared prefix terms are evaluated once in exact-step order. Pad
+        # the remaining additive evaluation at its operand scale.
+        magnitude = np.abs(preactivation) + 2 * np.abs(fixed) + 2 * np.abs(extra)
+        lower, upper = _outward(preactivation[::2], preactivation[1::2],
+                                np.maximum(magnitude[::2], magnitude[1::2]), 3)
+        lower = np.nextafter(np.tanh(lower), -np.inf)
+        upper = np.nextafter(np.tanh(upper), np.inf)
         return tuple(_BoundedRoleReadout(state.memory, _HiddenRoleBox.from_bounds(lo, hi),
-                                         path.steps, path.strength, open_coverage, read)
+                                         path.steps, path.strength, open_coverage, read, (lo, hi))
                      for (path, _), lo, hi in zip(bounded, lower, upper, strict=True))
+
+    def _bound_ordinary_readout(self, exact_prefix, row, effort):
+        try:
+            with np.errstate(over="raise", invalid="raise", under="ignore"):
+                effort.charge(16 * (self._query.size + len(exact_prefix.reads)))
+                read = self._read_bounded(exact_prefix, row)
+                if read is None or read.status not in ("resolved", "below_floor", "catalog_absent"):
+                    return None
+                effort.charge(self._kernel._bounded_step_work(exact_prefix.feedback)
+                              + 16 * self._kernel._width * (8 + 6 * len(self._coordinate_terms)))
+                extra = self._binding_observation_extra(exact_prefix, read, include_coordinate_terms=False)
+                extra_bounds = None if extra is None else (extra, extra)
+                if read.status == "resolved" and read.bounds.possible_strength is not None:
+                    anchor = self._anchors[read.address[1]]
+                    for state_axis, anchor_axis, output, threshold in self._coordinate_terms:
+                        gate = _hinge_bounds(_linear_bounds(row.hidden, state_axis), threshold)
+                        strength = anchor @ anchor_axis
+                        amount = _product_bounds(gate, (strength, strength))
+                        extra_bounds = _add_bounds(extra_bounds, _product_bounds(amount, (output, output)))
+                lower, upper = self._kernel._step_bounded(exact_prefix.feedback, row.hidden,
+                                                          observation_extra=extra_bounds)
+                return replace(row, box=_HiddenRoleBox.from_bounds(lower, upper),
+                               ordinary_read=read, hidden=(lower, upper))
+        except FloatingPointError:
+            return None
+
+    def _read_bounded(self, exact_prefix, row):
+        prefix, prefix_absent = (), False
+        if self._disjoint_reads:
+            prior = row.ordinary_read
+            if prior.status == "catalog_absent":
+                return BindingStepRead("catalog_absent", bounds=prior.bounds)
+            if prior.status != "resolved":
+                return None
+            prefix = tuple(read.address for read in (*exact_prefix.reads, prior))
+            prefix_absent = prior.bounds.possible_strength is None
+
+        lower, upper = _linear_bounds(row.hidden, self._query)
+        trial_routes = prefix and not prefix_absent and self._route_trials > 1
+        best = int(np.argmax(lower))
+        if np.max(upper) <= self._route_floor:
+            if trial_routes and self._expansion is not None:
+                return None
+            return BindingStepRead("below_floor")
+        if trial_routes or lower[best] <= self._route_floor:
+            return None
+        upper[best] = -np.inf
+        if lower[best] - np.max(upper) <= self._route_gap:
+            return None
+        return self._read_address(row.memory, self._addresses[best], prefix, prefix_absent)
 
     def _role_projection_invariant(self, path, effort):
         envelope = path.completion
@@ -615,7 +702,7 @@ class BindingFeedback:
         """Read the chosen bounds, then perform the same transition with or without memory."""
         return self._advance_read(state, self._next_read(state))
 
-    def _binding_observation_extra(self, state, read, *, role_extra=None):
+    def _binding_observation_extra(self, state, read, *, role_extra=None, include_coordinate_terms=True):
         extra = None
         if state.memory is not None:
             features = np.zeros(6)
@@ -634,7 +721,8 @@ class BindingFeedback:
                     anchor = self._anchors[read.address[1]]
                     if self._coordinate_value is not None:
                         extra += anchor @ self._coordinate_value
-                    for state_axis, anchor_axis, output, threshold in self._coordinate_terms:
+                    terms = self._coordinate_terms if include_coordinate_terms else ()
+                    for state_axis, anchor_axis, output, threshold in terms:
                         amount = max(0., float(state.latest @ state_axis) - threshold)
                         if amount:
                             extra += (amount * (anchor @ anchor_axis)) * output
@@ -755,7 +843,9 @@ class BindingFeedback:
             return BindingStepRead("below_floor")
         if len(scores) > 1 and winning - float(np.partition(scores, -2)[-2]) <= self._route_gap:
             return BindingStepRead("ambiguous")
-        address = self._addresses[best]
+        return self._read_address(memory, self._addresses[best], prefix, prefix_absent)
+
+    def _read_address(self, memory, address, prefix, prefix_absent):
         if address[0] not in memory._certain._dependents:
             return BindingStepRead("unavailable", address)
         if prefix_absent:

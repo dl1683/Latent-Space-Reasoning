@@ -24,6 +24,14 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A midpoint can choose the wrong next ordinary branch.** On one pin,
+legal hidden completions crossed the ordinary route floor. The same
+midpoint could also hide a late rival after recurrent attention. The
+bounded recurrence keeps the route-switch case open and distinguishes a
+narrow supported range from a wider unresolved range. Independently
+bounding logits, masses and values can still lose useful joint structure.
+[Bounded recurrent attention](RESULTS.md#bounded-recurrent-attention-26-november-2026)
+
 **An invariant decision can have a varying hidden row.** Requiring an
 invariant value projection leaves some supported consequences open.
 Using just the projected midpoint instead can hide a rival that a legal

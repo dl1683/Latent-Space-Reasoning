@@ -370,6 +370,36 @@ range construction alongside later score and proof work. Measure how
 often a tight result survives compared with an invariant-projection
 control and a more correlation-preserving enclosure.
 
+The standalone [correlation control](../experiments/memory/correlated_completion_control.js)
+shows why the enclosure matters. A joint affine numerator recovered
+128 supported outcomes that both box arms left open. In sparse repeated
+reads, the matched lazy arm amortized factor composition. A proposed
+fallback should retain the cheap box first and project a combined axis
+through the value factors only for a consequential ambiguous read.
+Charge that axis work and give the lazy arm the same option. Before extending
+this certificate to more steps, measure how often it closes against an
+enumerable completion oracle. Keep the exact-step and enclosure costs
+separate and include refusals in the denominator.
+
+For recurrent paths, compare attention with marginal interval bounds,
+attention with shared uncertainty factors, and bidirectional recurrent
+revision of joint latent states. In the latter mechanism several latent
+slots can revise their interpretation after receiving a later constraint.
+Start with three balanced binary slots on a chain. One paired world
+permits equal assignments on the first edge, the other permits opposite
+assignments. Both permit equal assignments on the second edge. A late
+source fixes the last slot and should force opposite findings about the
+first slot. Withdrawing that source leaves both possible, and restoring
+it recovers the finding on the new revision without changing the old
+pin. Randomize slot and outcome labels. An indexed exact join receives
+the same inputs and cache opportunities.
+Hold the readout fixed and withhold the raw constraint set from it. A
+backward-update ablation should remove the downstream consequence and
+restoring the correct recurrent state should recover it. Track justified
+abstention, source dependencies, and complete update and read costs. The
+current one-step enclosure has a CPU software control. This mechanism
+comparison and the learned version are unrun.
+
 Run in stages: first verify the blinded data boundary and causal interventions
 on a small CPU world; next qualify the 0.6B planner's typed action contract on
 visible calibration tasks only; then run the frozen held panel with GPU/RAM

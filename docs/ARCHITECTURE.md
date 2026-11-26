@@ -731,7 +731,8 @@ After the first late role, a ball around the normalized midpoint provides
 a conservative continuation bound. A definitely reached fixed map can
 discard that geometric uncertainty. It still inherits any open sibling
 or possible rival. A bounded row can feed the late role read, with any
-declared terminal-hop count, and cannot feed another ordinary hidden step.
+declared terminal-hop count. This policy alone leaves a following ordinary
+step outside its scope.
 
 The envelope and monotonicity arguments concern the real-arithmetic model
 with common terms fixed. Float64 evaluation uses scaled guards and
@@ -744,6 +745,43 @@ range supports the same result across its modeled outcomes. The wider
 range can reach a rival, so the task stays open. Full lifecycle and
 learned-trajectory coverage comparisons require equal-information lazy
 and correlation-preserving controls. [Hidden-range fixtures](../experiments/memory/test_binding_links.py)
+
+#### Carrying a bound through attention
+
+[SLICE] Add `bound_recurrent=True` to the context and hidden-bound task
+policies when the penultimate required stage is a role step and its
+successor is one final ordinary step. The receiver holds the exact prefix
+and a separate raw hidden interval. The latter can include zero. It never
+inserts an estimated row into the exact history. It checks that every
+completion selects the same direct binding address or clears the same
+below-floor branch. A variable address, unresolved compound route trial,
+or unusable interval leaves coverage open.
+
+The original kernel forms the next query and new generated key and value
+from the same hidden row. Interval dot products bound these projections,
+the observation and exact cached history logits, and the uncertain newest
+row's self score. Every logit contributes to one shared softmax. The
+lower mass for a row uses its lower logit against all other upper logits.
+The upper mass reverses those choices. Two exclusive log-sum-exp scans
+evaluate these endpoints without subtracting an exponential from a
+total. Signed bounds enclose both weighted mixtures, carry, conditional
+interactions, coordinate-dependent binding terms and the final tanh.
+Dense and factored maps retain their original evaluation order. The
+receiver checks that the next generated projections can remain finite
+before presenting the final range to the existing late role reader.
+
+This treats intermediate intervals independently, so their width can grow
+even when the underlying variables covary. The work ledger precharges
+a route check and then, only for an eligible route, a workload bound
+proportional to the projected matrix and attention-bank sizes. Fixed
+ordinary source resolution still uses its existing proof budget. Exact
+transition work and enclosure units need separate measurement before
+any matched-cost comparison. The receipt versions the opt-in policy and counts the bounded
+recurrent transition separately. The same pinned memory and role provenance
+reach the late reader. Evidence dependencies alone do not give complete
+numerical influence attribution. The implementation covers one bounded
+ordinary successor and the Float64 guards are empirical.
+[Recurrent checks](../experiments/memory/test_latent_feedback.py)
 
 #### Rewiring the binding program
 

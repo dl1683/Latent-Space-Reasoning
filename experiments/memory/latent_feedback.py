@@ -225,6 +225,67 @@ def _apply_value(value, vector):
     return vector @ value
 
 
+def _outward(lower, upper, scale, operations):
+    limits = np.finfo(float)
+    operations = max(1, operations)
+    padding = (8 * limits.eps * operations) * scale + operations * limits.smallest_subnormal
+    return np.nextafter(lower - padding, -np.inf), np.nextafter(upper + padding, np.inf)
+
+
+def _linear_bounds(bounds, weight):
+    if isinstance(weight, FactoredValue):
+        return _linear_bounds(_linear_bounds(bounds, weight._left), weight._right)
+    lower, upper = bounds
+    positive, negative = np.maximum(weight, 0.), np.minimum(weight, 0.)
+    low = lower @ positive + upper @ negative
+    high = upper @ positive + lower @ negative
+    scale = np.maximum(np.abs(lower), np.abs(upper)) @ np.abs(weight)
+    return _outward(low, high, scale, lower.size)
+
+
+def _add_bounds(left, right):
+    low, high = left[0] + right[0], left[1] + right[1]
+    scale = np.maximum(np.abs(left[0]), np.abs(left[1])) + np.maximum(np.abs(right[0]), np.abs(right[1]))
+    return _outward(low, high, scale, 1)
+
+
+def _product_bounds(left, right):
+    corners = np.stack([a * b for a in left for b in right])
+    return _outward(corners.min(axis=0), corners.max(axis=0), np.max(np.abs(corners), axis=0), 1)
+
+
+def _exclusive_logsumexp(logits):
+    left = np.concatenate(([-np.inf], np.logaddexp.accumulate(logits[:-1])))
+    right = np.concatenate((np.logaddexp.accumulate(logits[:0:-1])[::-1], [-np.inf]))
+    return np.logaddexp(left, right)
+
+
+def _softmax_bounds(lower, upper):
+    # A row's mass increases with its own logit and decreases with all others.
+    # Exclusive scans avoid cancellation when removing the dominant exponential.
+    scale = float(np.max(np.maximum(np.abs(lower), np.abs(upper))))
+    padding = (16 * np.finfo(float).eps * len(lower)) * max(1., scale)
+    with np.errstate(over="ignore", under="ignore"):
+        low = np.exp(-np.logaddexp(0., (_exclusive_logsumexp(upper) - lower) + padding))
+        high = np.exp(-np.logaddexp(0., (_exclusive_logsumexp(lower) - upper) - padding))
+    return np.maximum(0., np.nextafter(low, -np.inf)), np.minimum(1., np.nextafter(high, np.inf))
+
+
+def _weighted_bounds(probabilities, rows, last=None):
+    width = rows.shape[1]
+    low, high = _linear_bounds(probabilities, rows) if len(rows) else (np.zeros(width), np.zeros(width))
+    if last is not None:
+        low, high = _add_bounds((low, high), _product_bounds(last[0], last[1]))
+    return low, high
+
+
+def _hinge_bounds(gate, threshold):
+    if threshold is None:
+        return gate
+    low, high = _add_bounds(gate, (-threshold, -threshold))
+    return np.maximum(0., low), np.maximum(0., high)
+
+
 def _separating_hinge(hidden, protected, rcond):
     """Search for a strict separator of hidden from protected states and zero."""
     points = np.asarray(protected).reshape(-1, len(hidden))
@@ -400,6 +461,62 @@ class FeedbackKernel:
                     preactivation=preactivation,
                 )
         return preactivation, mixture, fixed
+
+    def _bounded_step_work(self, prefix):
+        observation_count = len(prefix._memory._keys)
+        history_count = len(prefix._keys)
+        width, query_width = self._query.shape
+        value_cells = sum(
+            value._left.size + value._right.size if isinstance(value, FactoredValue) else value.size
+            for value in (self._observation_value, self._feedback_value)
+        )
+        return 16 * (
+            4 * width * query_width + width * width + 2 * value_cells
+            + (observation_count + history_count + 1) * (width + query_width + 8)
+            + width * (8 + 4 * len(self._conditional))
+        )
+
+    def _step_bounded(self, prefix, hidden, *, observation_extra):
+        """Enclose one step with an exact prefix and one bounded appended row."""
+        self._require_state(prefix)
+        if len(prefix._history) + 1 >= self._max_steps:
+            raise RuntimeError("feedback step budget exhausted")
+        memory = prefix._memory
+        query_width = self._query.shape[1]
+        history_keys = np.asarray(prefix._keys).reshape(-1, query_width)
+        history_values = np.asarray(prefix._values).reshape(-1, self._width)
+        with np.errstate(over="raise", invalid="raise", under="ignore"):
+            query = _linear_bounds(hidden, self._query)
+            observation_query = (query if self._observation_query is None
+                                 else _linear_bounds(hidden, self._observation_query))
+            observed = _linear_bounds(observation_query, memory._keys.T)
+            history = _linear_bounds(query, history_keys.T)
+            key = _linear_bounds(hidden, self._feedback_key)
+            new_score = _linear_bounds(_product_bounds(key, query), np.ones(query_width))
+            logits = [np.concatenate((ob, past, [new])) for ob, past, new in zip(observed, history, new_score)]
+            if not all(np.isfinite(endpoint).all() for endpoint in logits):
+                raise FloatingPointError("bounded attention requires finite logits")
+            low, high = _softmax_bounds(*logits)
+            count = len(memory._keys)
+            mixture = _weighted_bounds((low[:count], high[:count]), memory._observations)
+            new_value = _linear_bounds(hidden, self._feedback_value)
+            past_value = _weighted_bounds((low[count:-1], high[count:-1]), history_values,
+                                          ((low[-1], high[-1]), new_value))
+            fixed = _add_bounds(_linear_bounds(hidden, self._carry), past_value) if self._carry is not None else past_value
+            if count:
+                for state_axis, observation_axis, output, threshold in self._conditional:
+                    gate = _hinge_bounds(_linear_bounds(hidden, state_axis), threshold)
+                    observed = _linear_bounds(mixture, observation_axis)
+                    fixed = _add_bounds(fixed, _product_bounds(_product_bounds(gate, observed), (output, output)))
+            if observation_extra is not None:
+                fixed = _add_bounds(fixed, observation_extra)
+            lower, upper = _add_bounds(fixed, _linear_bounds(mixture, self._observation_value))
+            result = np.nextafter(np.tanh(lower), -np.inf), np.nextafter(np.tanh(upper), np.inf)
+            # Ordinary step appends a row, so a completion that could fail its
+            # generated projections cannot support an exact-step claim.
+            _linear_bounds(result, self._feedback_key)
+            _linear_bounds(result, self._feedback_value)
+            return result
 
     def _advance(self, state, *, diagnostics=None, observation_extra=None):
         preactivation, mixture, fixed = self._step_preactivation(
