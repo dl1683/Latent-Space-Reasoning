@@ -4,6 +4,64 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Publishing before a separate named question process, 26 November 2026
+
+**Visible CPU software verification.** Two source-only processes
+published the same four Git pins used in the committed-source control.
+They emitted different custody seals and the same source-content
+digest. The publisher exited before the question and answer files
+were created. A separate process then generated named requests from
+the Git snapshots with seed `80164211`. Per pin it drew two supported
+paths, two wrong targets for those starts, and two starts without a
+qualifying path. Two further requests checked the added module at the
+growth and rollback pins. The attached arm returned nine supported,
+eight undecided, seven unresolved, one missing and one outside its pin.
+
+Fresh readers used the same sealed artifact for 104 reads across
+attachment, operator removal, memory omission and restored attachment.
+The exact comparison agreed on which requests had support, and the
+grader verified all 54 source and authority witness spans on the nine
+supported results against their original Git blobs. All nine positive results went missing with the compiled operators disabled.
+Memory omission returned its explicit status for every in-pin request.
+Restoring attachment reproduced the initial statuses and receipts.
+The reader had no repository argument, the run rejected subprocess
+launches in the reader, and both publication files were byte-identical
+after the reads. The SQLite journal occupied 2,785,280 bytes. The
+earlier combined command still produced the same 419-start support sets.
+
+The software fixture also rejects a changed manifest, a journal from
+a different stream with the same content fingerprint, an answer label
+in a question, and an altered name map even when its digests are
+recomputed. The question author and the publisher still use the same deterministic AST scope. Process separation, custody and replay are demonstrated in
+one trusted account. Independent semantic acquisition, file access
+isolation, evaluation on held tasks and lifecycle advantage remain open.
+
+The branch contributor's Linux canary was reproduced in local Ubuntu
+under WSL with Python 3.12.3. On its dictionary input, six episodes
+gave four acceptances, one rejection and one invalid-checker refusal.
+Five acquisition processes and six reader processes reported 11
+gold-file and 11 cross-stage access denials. This runtime check used the
+canary's separate identities and private directories. The Git journal
+run above used the trusted-account handoff.
+[Linux canary](../experiments/memory/sealed_process_control.py)
+
+Reproduce the four-pin control with
+`python -m experiments.memory.repository_publication_trial`.
+
+For the staged workflow, publish and record the returned seal before
+creating the question file. For example, a question can use
+`{"id":"q1","pin":2,"start":"experiments.memory._latent_factor_clusters","target":"experiments.memory.weight_program"}`
+as one entry in a JSON array.
+
+```powershell
+$receipt = python -m experiments.memory.repository_transport_control --publish --output .\import-publication 0cfeae34 c79f894e c393123f 0cfeae34 | ConvertFrom-Json
+python -m experiments.memory.repository_transport_control --read .\import-publication $receipt.seal .\questions.json
+```
+
+[Runner](../experiments/memory/repository_transport_control.py) ·
+[Four-pin driver](../experiments/memory/repository_publication_trial.py) ·
+[Process fixture](../experiments/memory/test_repository_import_memory.py)
+
 ## Acquiring from committed mixed sources, 26 November 2026
 
 **Visible raw-source CPU software check.** The runner loaded tracked

@@ -460,6 +460,25 @@ from independently prepared questions and proof obligations.
 
 ## Executable gaps in the current branch
 
+The [named publication control](RESULTS.md#publishing-before-a-separate-named-question-process-26-november-2026)
+enforces the process handoff for visible Git sources. Complete the
+source publication and record its digest before the task process
+creates its inputs. Give the reader only the verified artifact and
+question packet. Join the pre-checker proposals to evaluation labels
+outside the reader. The fixture keeps the task vocabulary named and
+the source extractor deterministic. The benchmark driver checks
+returned witness bytes against Git after collecting all proposals.
+
+The [Linux process control](../experiments/memory/sealed_process_control.py)
+uses separate operating-system identities and private working
+directories. Its dictionary canary verified gold and cross-stage
+access denials, and the checker could accept or reject already-hashed
+proposals. Connect the real source publisher and recurrent reader to
+that controller before claiming operating-system separation for this
+handoff. The dictionary run establishes no acquisition or reasoning
+result on the Git sources. Independent task authorship and network
+controls remain open.
+
 The [committed-source control](RESULTS.md#acquiring-from-committed-mixed-sources-26-november-2026)
 runs a visible precursor over the tracked Python package. The worker
 receives committed bytes and canonical paths, publishes before read
@@ -476,8 +495,13 @@ source IDs, then tests its causal use inside the two-step recurrent core.
 It supplies the encoded observations and task readout. The next whole-loop
 test must acquire candidate relations from the original corpus, then use
 them through the same task-facing read without supplying a seed route.
-Give the matching incremental join the same candidates, uncertainty and
-invalidation duties. For a model-backed recurrence comparison, a damped
+Compare the recurrent path with a warm exact incremental join over
+the same source pins and candidate coverage. Charge setup, revision,
+withdrawal, lookup and proof construction for both. A precomputed join
+could already satisfy these named questions. To test what the latent
+path adds, include independently authored late compositions for
+which both mechanisms can propose answers, and check a subset with
+full candidate readout. For a model-backed recurrence comparison, a damped
 reuse of a pretrained middle block is a candidate to compare against the
 unmodified block at matched inference work. A joint-state revision model
 is a separate mechanism to compare. This is a design option for a future

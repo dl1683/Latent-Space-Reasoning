@@ -1994,6 +1994,39 @@ coordinates from source declarations before task generation. It
 uses the Python AST and a fixed numeric transition. [Runner](../experiments/memory/repository_transport_control.py) ·
 [Results](RESULTS.md#acquiring-from-committed-mixed-sources-26-november-2026)
 
+#### Handing a publication to a later question process
+
+[SLICE] The Git control's `--publish` entry takes the package,
+source revisions and a fresh output directory. It writes a
+standalone SQLite journal, then publishes a manifest with the
+name map, frame and kernel fingerprints, fixed readout contract,
+and ordered commit and journal pins. It emits the manifest's SHA-256.
+Record that digest independently before releasing questions. Two
+republishes of the same sources use separate journal stream IDs.
+A second digest covers the names, read contract, source pins and
+ordered event payloads for comparing source-derived content across
+these runs.
+
+The `--read` entry takes the expected manifest digest and a separate
+question file. Each question has `id`, `pin`, `start` and `target`.
+The pin index is zero-based in the original revision order. This
+distinguishes repeated commits after a rollback. The reader verifies
+the journal and replays an exact private copy. It checks the named
+coordinates against each requested pin's source observations and
+does not invoke the encoder or Git. It distinguishes unknown names
+from addresses outside the requested pin. The result records the
+question digest and proposal statuses before grading. A supported
+answer carries the recorded source and authority witnesses.
+They can be checked against original bytes separately.
+
+Use the same named requests for the attached, operator-off and
+memory-omitted arms. Replay reconstructs the deterministic operations
+from the recorded observations. The seal authenticates bytes against
+an expected digest retained by a trusted evaluator. This procedure
+checks process and timing separation on public cases. Filesystem
+access isolation and protection against a publisher given the tasks
+require separate controls. [Runner](../experiments/memory/repository_transport_control.py)
+
 #### Composing calibrated source spans
 
 [SLICE] An opt-in worker fits two maps from paired source directions.

@@ -2,7 +2,9 @@ import codecs
 from contextlib import closing
 from copy import copy, deepcopy
 from dataclasses import replace
+from hashlib import sha256
 import json
+import os
 from pathlib import Path
 import sqlite3
 import subprocess
@@ -12,6 +14,7 @@ import numpy as np
 import pytest
 
 from experiments.memory import disjoint_feedback, repository_import_memory as imports
+from experiments.memory import repository_transport_control
 from experiments.memory.disjoint_feedback import (
     DisjointFeedback, DisjointFeedbackWorkspace, RelationGuardFailed, RelationOutcomeGuard, StaleRelationRevision,
     TerminalHiddenDecision, TerminalRelationEvidence, TerminalRelationGrade,
@@ -1738,3 +1741,100 @@ def test_retained_import_absence_depends_on_every_candidate_and_current_endpoint
     fresh = imports.RepositoryImportMemory.prepare(repo, earlier.commit, package="pkg")
     rebuilt = relocated.advance(fresh)
     assert not rebuilt.reused and rebuilt.quotes == relocated.quotes
+
+
+def test_source_publication_is_readable_in_a_later_process(tmp_path):
+    repo = tmp_path / "repository"
+    repo.mkdir()
+    _git(repo, "init", "-q")
+    package = repo / "pkg"
+    package.mkdir()
+
+    def commit(files):
+        for name, raw in files.items():
+            (package / name).write_bytes(raw)
+        _git(repo, "add", "--", "pkg")
+        _git(repo, "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "Snapshot")
+        return _git(repo, "rev-parse", "HEAD")
+
+    before = commit({"start.py": b"# start\nfrom .middle import x\n",
+                     "middle.py": b"# middle\nfrom .before import x\n",
+                     "before.py": b"# old terminal\n"})
+    after = commit({"middle.py": b"# middle\nfrom .after import x\n", "after.py": b"# new terminal\n"})
+    bundle = tmp_path / "publication"
+    questions = tmp_path / "questions.json"
+    checkout = Path(__file__).resolve().parents[2]
+    env = {**os.environ, "PYTHONPATH": str(checkout), "OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1"}
+
+    def runner(*args):
+        return subprocess.run([sys.executable, "-m", "experiments.memory.repository_transport_control", *map(str, args)],
+                              cwd=tmp_path, env=env, capture_output=True, text=True, timeout=60)
+
+    revisions = (before, after) * 3 + (after, before)
+    publication = runner("--publish", "--repo", repo, "--package", "pkg", "--output", bundle, *revisions)
+    assert publication.returncode == 0, publication.stderr
+    receipt = json.loads(publication.stdout)
+    seal = receipt["seal"]
+    other = runner("--publish", "--repo", repo, "--package", "pkg", "--output", tmp_path / "second",
+                   *revisions)
+    assert other.returncode == 0, other.stderr
+    other_receipt = json.loads(other.stdout)
+    assert other_receipt["seal"] != seal and other_receipt["content_sha256"] == receipt["content_sha256"]
+    assert not questions.exists()
+    _git(repo, "branch", "read", before)
+    legacy = runner("read", "--repo", repo, "--package", "pkg")
+    assert legacy.returncode == 0, legacy.stderr
+    assert json.loads(legacy.stdout)[0]["commit"] == before
+    source_db = (bundle / "corpus.sqlite").read_bytes()
+    source_manifest = (bundle / "publication.json").read_bytes()
+
+    def question(name, pin, target):
+        return dict(id=name, pin=pin, start="pkg.start", target="pkg." + target)
+
+    requests = [question("old", 0, "before"), question("new", 1, "after"),
+                question("withdrawn", 7, "after"), question("restored", 7, "before"),
+                question("stale", 1, "before"), question("unknown", 1, "never_seen")]
+    questions.write_text(json.dumps(requests), encoding="utf8")
+
+    def read(arm):
+        result = runner("--read", bundle, seal, questions, "--arm", arm)
+        assert result.returncode == 0, result.stderr
+        body = json.loads(result.stdout)
+        assert body["seal"] == seal
+        assert body["questions_sha256"] == sha256(questions.read_bytes()).hexdigest()
+        return body["results"]
+
+    normal = read("on")
+    assert [row["status"] for row in normal] == [
+        "supported", "supported", "outside_pin", "supported", "undecided", "unknown_name",
+    ]
+    assert normal[0]["commit"] == normal[3]["commit"] and normal[0]["journal"] != normal[3]["journal"]
+    evidence = normal[1]["branches"][0]["transports"][0]["evidence"]
+    assert [row["span"]["source_id"] for row in evidence] == ["pkg.start", "pkg.start", "pkg.middle", "pkg.middle"]
+    assert [row["status"] for row in read("operators-off")] == ["missing", "missing", "outside_pin", "missing", "missing", "unknown_name"]
+    assert [row["status"] for row in read("memory-omitted")] == ["memory_omitted", "memory_omitted", "outside_pin",
+                                                              "memory_omitted", "memory_omitted", "unknown_name"]
+    assert read("on") == normal
+    assert (bundle / "corpus.sqlite").read_bytes() == source_db
+    assert (bundle / "publication.json").read_bytes() == source_manifest
+
+    questions.write_text(json.dumps([dict(requests[0], expected="supported")]), encoding="utf8")
+    bad_question = runner("--read", bundle, seal, questions)
+    assert bad_question.returncode and "questions may contain only" in bad_question.stderr
+    questions.write_text(json.dumps(requests), encoding="utf8")
+    (bundle / "corpus.sqlite").write_bytes((tmp_path / "second" / "corpus.sqlite").read_bytes())
+    bad_database = runner("--read", bundle, seal, questions)
+    assert bad_database.returncode and "journal digest mismatch" in bad_database.stderr
+    (bundle / "publication.json").write_bytes(source_manifest + b" ")
+    bad_manifest = runner("--read", bundle, seal, questions)
+    assert bad_manifest.returncode and "publication seal mismatch" in bad_manifest.stderr
+
+    (bundle / "corpus.sqlite").write_bytes(source_db)
+    altered = json.loads(source_manifest)
+    names = altered["coordinates"]
+    names[0], names[1] = names[1], names[0]
+    altered["content_sha256"] = repository_transport_control._content_digest(bundle / "corpus.sqlite", altered)
+    forged_manifest = json.dumps(altered, sort_keys=True, separators=(",", ":")).encode("ascii")
+    (bundle / "publication.json").write_bytes(forged_manifest)
+    bad_axis = runner("--read", bundle, sha256(forged_manifest).hexdigest(), questions)
+    assert bad_axis.returncode and "named frame disagrees" in bad_axis.stderr
