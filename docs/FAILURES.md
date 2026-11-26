@@ -24,6 +24,32 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**An isolated worker needs its full module closure, 26 November 2026.**
+The initial v4 integration passed in-process checks and failed at the
+isolated publisher's import. Add the forecast module to the isolated
+code inventory and the task episode's implementation manifest. Retest
+the actual mount boundary when splitting a reader dependency.
+
+**A legacy certificate can omit part of its guard, 26 November 2026.**
+V3 retains the source-only prediction and the winner's executed
+frontiers. It does not retain the baseline frontier. The competing
+worker requires complete ancestor guards because revising a baseline
+source can invalidate the contrast. Legacy publications stay readable
+and such lineages are ineligible for a forecast set. V4 reopening
+also checks newer retained rows against the frozen cutoffs. Otherwise
+a stale publication containing a new competitor could reopen an
+admission that live revision would retire.
+
+**Repeated agreement may leave rival continuations unresolved, 26 November 2026.**
+Two native trajectories agreed with both supplied observations in the
+redundant case while predicting different values elsewhere. The worker
+finished without installing either. Revising the rejected rival's parent
+also retired an earlier scoped admission. Keep absence, failure and
+lack of distinguishing evidence distinct. For learned utility, record
+how often natural source updates discriminate and how long the
+admitted computation survives.
+[Forecast-set control](RESULTS.md#carrying-native-alternatives-across-revisions-26-november-2026)
+
 **A matching forecast can outlive its own premises, 26 November 2026.**
 A later observation matched the candidate on the declared coordinates
 while that same epoch changed the source used by its parent. The

@@ -4,6 +4,42 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Carrying native alternatives across revisions, 26 November 2026
+
+**Software control.** One task-blind native worker used the opening
+source trajectory to draft two prior operations in score order.
+The worker executed nine backbone calls, three each for the source-only
+and two isolated trajectories. Both alternatives predicted the same
+first coordinate (-127); the baseline predicted zero. The first
+typed observation (-95) kept both alternatives pending. A second
+typed observation (95, 0) selected the lower-ranked trajectory
+(127, 0) over the higher-ranked one (0, 127). Neither trajectory
+was replayed to fit those witnesses. The tolerance was 40.
+
+A separate reader reopened the sealed accepted result. Its later
+text task returned L06 with the admitted computation. The same call
+returned empty with derived memory removed or memory omitted and
+returned L06 on restoring the publication. A redundant second
+observation ended in ambiguity. An early second witness, a changed
+rival, a wrong opening object and a wrong commitment were refused.
+After admission, replacing the first witness or withdrawing the
+rejected rival retired the contribution at the new pin. An earlier
+pin could still serve it. Reopening rejected a changed rival
+prediction under the original draft digest and a stale admission
+with a new row crossing a frozen cutoff in an arm or its ancestor.
+The existing seven-stage Linux isolation control passed with the
+updated module inventory. The focused suite passed 106 CPU checks.
+
+The witnesses, roles, and reading behavior were supplied. The result
+establishes that the actual runtime carries alternatives through
+source revisions and serves the accepted computation. Independently
+authored witnesses and tasks, pretrained operation discovery, ongoing
+worker scheduling, and advantage over equal-information warm exact
+or joint-state arms remain unmeasured. The source-partition cost
+issue has a separate Linux software control.
+[Runtime control](../experiments/memory/test_native_publication.py)
+[Source custody control](SEALED_SOURCE_CUSTODY_CONTROL.md)
+
 ## Compact task delivery and historical replay, 26 November 2026
 
 **Historical replay.** The reader reopened all 19 tracked version-1

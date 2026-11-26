@@ -21,7 +21,7 @@ from experiments.memory.verified_source_tool import sha256
 
 
 _MODULES = (
-    "latent_feedback", "linear_feedback", "native_isolated_stage", "native_latent_recurrence",
+    "latent_feedback", "linear_feedback", "native_forecast_set", "native_isolated_stage", "native_latent_recurrence",
     "native_publication", "selective_continuations", "source_revision_feed",
     "verified_source_tool", "weight_program",
 )

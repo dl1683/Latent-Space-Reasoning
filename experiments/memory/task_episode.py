@@ -25,7 +25,7 @@ _EPISODE_IMPLEMENTATION_FILES = (
     "recurrent_world.py", "source_constraints.py", "task_episode.py", "task_evidence.py",
     "repository_import_memory.py", "repository_transport_control.py", "verified_reader_bridge.py",
     "verified_source_tool.py", "world_transport.py", "native_latent_recurrence.py",
-    "native_publication.py", "native_task_episode.py", "source_revision_feed.py",
+    "native_forecast_set.py", "native_publication.py", "native_task_episode.py", "source_revision_feed.py",
     "selective_continuations.py",
 )
 

@@ -652,6 +652,8 @@ def test_forecast_admits_only_a_later_better_observation(tmp_path, pixel, status
     assert offline(prompt, memory=offline.without_derived(attached)).text == ""
     assert offline(prompt).text == ""
     assert attached.continuation_witness(forecast.seed) == learned.source_spans(witness)[0]
+    assert not offline._parent_conflicts(attached._selective, forecast.seed, unrelated)
+    assert offline._parent_conflicts(attached._selective, forecast.seed, unrelated, require_complete_lineage=True)
     assert witness not in {span.source_id for span in attached.evidence_spans(answer)}
 
     quiet_path = tmp_path / "quiet"
@@ -902,3 +904,146 @@ def test_calibrated_binary_projection_changes_the_retained_read(tmp_path):
 if __name__ == "__main__":
     run = {"publish": _publish_child, "read": _child}[sys.argv[1]]
     print(json.dumps(run(*sys.argv[2:])))
+
+
+@pytest.mark.parametrize("outcome", ["admitted", "ambiguous", "witness_out_of_order", "dependencies_changed"])
+def test_native_forecast_set_carries_rivals_across_source_epochs(tmp_path, outcome):
+    import numpy as np
+    from experiments.memory.native_forecast_set import NativeForecastWitness
+    from experiments.memory.native_isolated_stage import LABELS, _CausalControl, _reader
+
+    high, low, cue, bridge, answer, first, second = (letter * 32 for letter in "abcdef1")
+    support = "fedcba98" * 4
+    width = len(LABELS)
+    marker = width + 10
+    ingress_digest = sha256(b"two-witness native forecast set control")
+
+    class RivalControl(_CausalControl):
+        def base_model(self, *, inputs_embeds, past_key_values, use_cache, return_dict):
+            result = super().base_model(inputs_embeds=inputs_embeds, past_key_values=past_key_values,
+                                        use_cache=use_cache, return_dict=return_dict)
+            hidden = result.last_hidden_state[0, 0]
+            if past_key_values is not None and hidden[4] > 0:
+                hidden[marker] = -1
+                if past_key_values.address[0, 0, 2] > 0:
+                    hidden[4], hidden[5] = 0, 1
+            return result
+
+    def ingress(source, raw):
+        row = np.zeros(3 * width + 1)
+        if source == low:
+            row[1], row[7], row[width + 8] = 0.5, 0.9, 0.9
+        elif source == first:
+            row[marker] = -0.75 if raw == b"first" else 0
+        elif source == second:
+            row[marker if outcome == "ambiguous" else 4] = -0.75 if outcome == "ambiguous" else 0.75
+        return row
+
+    model = RivalControl().eval()
+    worker = _reader(model, source_ingress=ingress, source_ingress_sha256=ingress_digest)
+    source_path, opening_path = tmp_path / "source", tmp_path / "opening"
+    source = write_source_delta(source_path, {
+        high: b"link L02 L03", low: b"alternate", cue: b"link L01 L02", bridge: b"link L03 L04",
+        answer: b"name L04 L06", support: b"link L08 L03",
+    }, binary_sources=(low,), max_bytes=_LIMIT)
+    memory = worker.maintain(worker.publish(source_path, source.seal, max_source_bytes=_LIMIT), max_seeds=2)
+    opening = write_native_publication(opening_path, worker, memory, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    memory = _read(opening_path, worker, opening, source.seal)
+    seed, = memory.source_spans(cue)
+    specs = (NativeForecastWitness(first, (marker,), 40),
+             NativeForecastWitness(second, (marker,) if outcome == "ambiguous" else (4, 5), 40))
+    with pytest.raises(ValueError, match="bounded complete parent scan"):
+        worker.forecast_set(memory, witnesses=specs, max_candidates=2, max_parent_scores=3)
+    calls = model.calls
+    forecast = worker.forecast_set(memory, witnesses=specs, max_candidates=2, max_parent_scores=4)
+    assert model.calls - calls == 9
+    commitment = forecast.commitment
+    highest, lower = forecast.parents
+    assert (highest.source_id, lower.source_id) == (high, low)
+    assert forecast.seed == seed and seed not in memory.derived_seeds
+    assert forecast.baseline[0] == (0,)
+    assert tuple(arm.predictions[0] for arm in forecast.alternatives) == ((-127,), (-127,))
+    if outcome != "ambiguous":
+        assert tuple(arm.predictions[1] for arm in forecast.alternatives) == ((0, 127), (127, 0))
+
+    changes = {first: b"first"}
+    if outcome == "witness_out_of_order":
+        changes[second] = b"early"
+    first_path = tmp_path / "first"
+    early = write_source_delta(first_path, changes, previous=source, binary_sources=changes, max_bytes=_LIMIT)
+    with pytest.raises(ValueError, match="opening or commitment differs"):
+        worker.advance_forecast_set(memory, forecast, first_path, early.seal, commitment="0" * 64,
+                                    max_source_bytes=_LIMIT)
+    pending = worker.advance_forecast_set(memory, forecast, first_path, early.seal, commitment=commitment,
+                                          max_source_bytes=_LIMIT)
+    assert seed not in pending.memory.derived_seeds
+    if outcome == "witness_out_of_order":
+        assert pending.status == outcome
+        return
+    assert pending.status == "pending" and pending.survivors == (highest, lower)
+    assert pending.observations == ((-95,),)
+
+    changes = {second: b"second"}
+    if outcome == "dependencies_changed":
+        changes[high] = b"link L02 L05"
+    second_path = tmp_path / "second"
+    later = write_source_delta(second_path, changes, previous=early, binary_sources=(second,), max_bytes=_LIMIT)
+    with pytest.raises(ValueError, match="opening or commitment differs"):
+        worker.advance_forecast_set(memory, forecast, second_path, later.seal, commitment=commitment,
+                                    max_source_bytes=_LIMIT)
+    resolution = worker.advance_forecast_set(pending.memory, forecast, second_path, later.seal, commitment=commitment,
+                                             max_source_bytes=_LIMIT)
+    assert resolution.status == outcome
+    assert resolution.memory.seal == later.seal
+    if outcome != "admitted":
+        assert seed not in resolution.memory.derived_seeds
+        if outcome == "ambiguous":
+            assert resolution.survivors == (highest, lower)
+        return
+    assert resolution.survivors == (lower,) and resolution.observations == ((-95,), (95, 0))
+    destination = tmp_path / "admitted"
+    seal = write_native_publication(destination, worker, resolution.memory,
+                                    runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    reader = _reader(RivalControl().eval(), source_ingress_sha256=ingress_digest)
+    loaded = _read(destination, reader, seal, later.seal)
+    assert loaded.continuation_parent(seed) == lower
+    assert [span.source_id for span in loaded.continuation_witnesses(seed)] == [first, second]
+    question = "follow L01"
+    assert reader(question, memory=loaded).text == "L06"
+    assert reader(question, memory=reader.without_derived(loaded)).text == reader(question).text == ""
+    assert reader(question, memory=loaded).text == "L06"
+
+    manifest = destination / "manifest.json"
+    original = manifest.read_bytes()
+    tampered = json.loads(original)
+    tampered["forecast_sets"][0][-1][0][3][1] = [1, 126]
+    revised_header = _encode(tampered)
+    manifest.write_bytes(revised_header)
+    with pytest.raises(ValueError, match="forecast set commitment differs"):
+        _read(destination, reader, sha256(revised_header), later.seal)
+    manifest.write_bytes(original)
+
+    for label, line, failure in (
+        ("arm", b"link L03 L04", "later competing source row"),
+        ("ancestor", b"link L08 L03", "conflicting or incomplete parent lineage"),
+    ):
+        competing, changes = "9" * 32, tmp_path / f"competing-{label}"
+        update = write_source_delta(changes, {competing: line}, previous=later, max_bytes=_LIMIT)
+        revised = worker.publish(changes, update.seal, previous=resolution.memory, max_source_bytes=_LIMIT)
+        assert seed not in revised.derived_seeds
+        prior = resolution.memory._selective
+        stale = replace(prior, shards=revised._selective.shards, priority=(*prior.priority, competing))
+        forged = replace(revised, _selective=stale, derived_seeds=resolution.memory.derived_seeds)
+        forged_path = tmp_path / f"stale-admission-{label}"
+        forged_seal = write_native_publication(forged_path, worker, forged,
+                                              runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+        with pytest.raises(ValueError, match=failure):
+            _read(forged_path, reader, forged_seal, update.seal)
+
+    for source_id, contents in ((first, b"corrected"), (high, None)):
+        path = tmp_path / source_id
+        correction = write_source_delta(path, {source_id: contents}, previous=later,
+                                        binary_sources=(first,) if source_id == first else (), max_bytes=_LIMIT)
+        updated = worker.publish(path, correction.seal, previous=resolution.memory, max_source_bytes=_LIMIT)
+        assert seed not in updated.derived_seeds
+        assert reader(question, memory=_read(destination, reader, seal, later.seal)).text == "L06"

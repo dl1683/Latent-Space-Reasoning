@@ -65,10 +65,9 @@ class RetainedSelector:
         keys = self._kernel._project_quantized_keys(_quantize(addresses), self._kernel._integer_observation_key)
         return RowShard(spans, _frozen(keys.astype(np.int8)), _frozen(_quantize(values).astype(np.int8)))
 
-    def discover_parent(self, seed, frontiers, bank):
-        """Propose one earlier computation using the source-only read trajectory."""
+    def _parent_scores(self, seed, frontiers, bank):
         if not bank.spans or any(step.receipt.status not in ("ready", "empty") for step in frontiers):
-            return None
+            return np.empty(0, dtype=np.int64)
         scores = np.zeros(len(bank.spans), dtype=np.int64)
         for step in frontiers:
             query = np.frombuffer(step.query, dtype=np.int8).astype(np.int64)
@@ -76,11 +75,30 @@ class RetainedSelector:
         for index, span in enumerate(bank.spans):
             if span.source_id == seed.source_id:
                 scores[index] = 0
-        winner = int(scores.argmax())
-        runner_up = int(np.partition(scores, -2)[-2]) if len(scores) > 1 else 0
-        if int(scores[winner]) - runner_up <= self._margin:
-            return None
-        return bank.spans[winner]
+        return scores
+
+    def discover_parent(self, seed, frontiers, bank):
+        """Propose one earlier computation using the source-only read trajectory."""
+        parents = self.parent_candidates(seed, frontiers, bank, 1)
+        return parents[0] if parents else None
+
+    def parent_candidates(self, seed, frontiers, bank, limit):
+        """Rank the complete bank and refuse a shortlist that cuts a score tie."""
+        scores = self._parent_scores(seed, frontiers, bank)
+        positive = scores[scores > 0]
+        if not len(positive):
+            return ()
+        if len(positive) <= limit:
+            cutoff = 1
+        else:
+            edge = np.partition(positive, -limit - 1)[-limit - 1:]
+            cutoff = int(np.min(edge[1:]))
+            if cutoff - int(edge[0]) <= self._margin:
+                return ()
+        if int(scores.max()) <= self._margin:
+            return ()
+        indices = np.flatnonzero(scores >= cutoff)
+        return tuple(bank.spans[index] for index in indices[np.argsort(-scores[indices], kind="stable")])
 
     def read(self, hidden, shards):
         shards = tuple(shards)

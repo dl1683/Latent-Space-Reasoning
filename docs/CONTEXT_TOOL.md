@@ -745,6 +745,40 @@ Use `memory.continuation_witness(seed)` to inspect its distinct
 qualification source. Admission evidence is recorded separately from
 the exact source receipts used by the later reasoning call.
 
+## Carrying competing native forecasts
+
+Use an attached full selective publication with
+`reader.forecast_set(memory, witnesses=specs, max_candidates=k, max_parent_scores=scores)`.
+Each `NativeForecastWitness(source_id, features, tolerance)` has a distinct
+absent source ID, a sorted tuple of coordinates and an integer tolerance.
+The worker returns `None` if fewer than two legal alternatives are drafted
+or the score boundary cannot be separated within the candidate cap.
+A rival is ineligible if its ancestry includes a legacy one-witness
+admission that lacks a retained baseline read frontier.
+The parent scan covers the complete opening bank. The replay cap is
+two to eight candidates, and the panel has one to eight witnesses.
+
+Record the opening publication and `forecast.commitment` before releasing
+observations. Call
+`reader.advance_forecast_set(memory, forecast, directory, seal, commitment=digest, max_source_bytes=limit)`
+for each direct successor epoch, using the returned `.memory` on the
+next call. The source must appear in declared order as one encoded
+row. The result includes a status, compatible parent spans, and the
+usable observations so far. `pending` is the only continuing status.
+`admitted` installs one continuation. `ambiguous`,
+`baseline_confirmed`, `disconfirmed`, `dependencies_changed`,
+`witness_absent`, `witness_out_of_order` and `unscorable_witness`
+finish without installation. The digest is a comparison with the
+controller's opening record. The controller determines observation
+independence and release order. Cancel a live draft with
+`reader.cancel_forecast(forecast)`. Pending drafts expire if the
+issuing reader is lost.
+
+Accepted results can be written and reopened using the existing native
+publication APIs. Inspect their admission spans with
+`memory.continuation_witnesses(seed)`. The earlier one-witness API
+and its accessor remain available.
+
 ## Publishing binary native sources
 
 The publisher marks binary updates by source ID with

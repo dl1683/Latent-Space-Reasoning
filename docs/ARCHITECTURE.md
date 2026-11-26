@@ -258,6 +258,63 @@ later task. A single baseline miss answers only the declared contrast.
 [Software result](RESULTS.md#qualifying-a-continuation-before-a-late-task-26-november-2026)
 · [Dawid's prequential approach](https://rss.onlinelibrary.wiley.com/doi/10.2307/2981683)
 
+#### Carrying competing continuations across source revisions
+
+[SLICE] An attached native worker can open a forecast set for one
+pending seed. The source-only trajectory proposes prior operations
+from the complete opening bank. A cap that splits a score tie or cuts
+within the score margin refuses the set. At most eight candidates
+can be replayed, separately, through the same backbone. A replay must
+pass the usual address, influence and lineage checks. A legacy
+one-witness admission omitted the baseline frontier from its sealed
+state, so it cannot serve as an ancestor in this stronger comparison.
+The surviving
+drafts and source-only baseline predict the same predeclared sequence
+of up to eight distinct, currently absent source witnesses. Witness
+coordinates and error bounds are fixed before the first update. A
+controller records the opening publication and draft digest before
+releasing any observations. The digest commits to the reader, seed,
+bounds, every candidate's parent and numerical payload, all compared
+vectors, and the recorded source frontiers.
+
+Successive direct source epochs can reduce the candidate set. Pending
+and ambiguous outcomes leave the seed outside the serving bank. A
+terminal admission requires exactly one compatible candidate and an
+incompatible source-only baseline across the complete declared panel.
+An out-of-order or missing witness ends the trial. An edit that
+invalidates any rival's parent or source trajectory ends it as well.
+This avoids treating an incomparable branch as disconfirmed. The
+method qualifies an operation within its declared cohort and panel.
+A later task still has to establish whether using the retained row is
+helpful. Other maintenance policies may acquire rows without this
+qualification.
+
+V4 seals the accepted result with all opening arm receipts and observed
+witness dependencies. Reopening checks the selected payload and
+projections, other candidate metadata, frozen digest and final
+comparison. It rejects source hits whose generations postdate the
+opening, checks the parent lineages and scores newer rows against the
+frozen frontiers, including those of every retained ancestor. Losing
+payloads are represented by their committed
+digests and predictions. The reader does not re-execute old
+trajectories. Later edits to a witness, a rival's defining lineage,
+or any opening source frontier retire the admitted row and its
+descendants. Earlier publications remain readable. A pending draft
+lives on the issuing worker. External orchestration supplies trusted
+ordering, independent observations and publication-tip arbitration.
+
+The recurrent population and a joint-state alternative can take the
+same source events. The latter updates connected latent slots together
+and can preserve distinct live states after a revision. Compare both
+against a warm exact incremental evaluator and a strong text agent
+on a separate late-task stream. Count all parent scores, per-arm
+rollouts, full-scope checks, retained proof bytes, witness ingestion,
+abstentions and retired work. Few witnesses, shortlists that omit the
+useful operator and site-specific projections can all make the added
+work unhelpful.
+[Software controls](RESULTS.md#carrying-native-alternatives-across-revisions-26-november-2026)
+[Worker interface](CONTEXT_TOOL.md#carrying-competing-native-forecasts)
+
 #### Admitting a binary source into the native reader
 
 [SLICE] A source epoch can carry explicitly declared binary assets under
