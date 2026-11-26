@@ -24,6 +24,14 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A matching forecast can outlive its own premises, 26 November 2026.**
+A later observation matched the candidate on the declared coordinates
+while that same epoch changed the source used by its parent. The
+proposal was refused after ordinary source invalidation. In separate
+controls, both an already-sufficient baseline and an expired forecast
+also failed to justify the extra operation.
+[Forecast control](RESULTS.md#qualifying-a-continuation-before-a-late-task-26-november-2026)
+
 **Packed query bytes require an explicit receipt encoding, 26 November 2026.**
 The task-episode integration added raw selection step queries to the
 in-process read. Before serialization, the fresh-process JSON path failed

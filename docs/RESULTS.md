@@ -4,6 +4,51 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Qualifying a continuation before a late task, 26 November 2026
+
+**CPU software control.** A native worker drafted one pending
+continuation from an attached opening publication of four text sources.
+On three declared coordinates the source-only value was `(127, 0, 0)`
+and the composed value was `(0, 127, 0)`. It froze both predictions
+before a new binary observation entered the source feed. The matching
+one-pixel observation encoded as `(0, 95, 0)`. At tolerance 40 the
+candidate's maximum error was 32 and the baseline's was 127.
+Resolution applied the source feed and installed the earlier draft.
+
+The matching observation did not cause another backbone call while
+resolving. The two draft trajectories used six calls. A fresh reader
+with only the ingress digest attached the publication and answered
+`L06` on the later text task. The original, derived-off and memory-omitted
+views gave empty answers. The validation source was recorded separately
+from the text evidence accessed by the late read.
+
+The baseline match, wrong observation, absent first witness and matching
+observation with changed parent support all withheld the draft while
+advancing the source pin. The expired draft could not be used when its
+witness arrived late. A reader-policy edit was refused. The admitted
+operation survived an unrelated source edit. Replacing or withdrawing
+its validation source retired it and a continuation that used it.
+Plain restoration did not resurrect it.
+The historical read remained reproducible. Reopening a quiet revision
+refused replacing the witness with an earlier matching source or
+changing the opening pin. Reopening also rejected a modified baseline
+that already matched the witness.
+
+The source roles and media projector are supplied and the backbone is
+deterministic. These controls exercise a single observed qualification
+event per branch. A learned hit rate and matched comparisons with decoy
+parents, typed state and the warm exact baseline remain open.
+
+**Related numerical control.** The reviewer's linear stand-in uses the
+actual parent selector. I reproduced all 128 wrong higher-score
+proposals and all 896 nondiscriminating probe matches from the committed
+script. An eighth direction separated the candidates in each world.
+This identifies when more observations still leave the wrong operation
+eligible. Count independent directions or separation of plausible
+rivals when designing the future comparison.
+[Control and derivation](PROSPECTIVE_OPERATOR_CONTROL.md)
+[Mechanism](ARCHITECTURE.md#qualifying-a-continuation-on-the-next-source-epoch)
+
 ## Discovering continuation parents before readout, 26 November 2026
 
 **CPU software control.** An opening worker retained two continuations

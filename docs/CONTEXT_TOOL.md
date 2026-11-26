@@ -724,6 +724,27 @@ persistent queue. This option is exclusive with `parent`. A publication
 can be reopened and used for another discovery pass. Inspect the actual
 binding with `memory.continuation_parent(seed)`.
 
+## Qualifying a native continuation on a future source
+
+`reader.forecast_next(memory, witness_source=source, features=indices,
+tolerance=error, max_parent_scores=scores)` takes an attached full
+selective publication. It drafts one pending seed and returns `None`
+when it has no distinct candidate prediction on the declared coordinates.
+The two returned integer vectors are `.baseline` and `.prediction`.
+The issuing reader holds one live draft. It can cancel it with
+`reader.cancel_forecast(forecast)`. After restart a new reader can
+attach an admitted publication. It refuses the earlier pending draft.
+
+Resolve the draft on that same opening object and its next verified
+source-feed epoch using
+`reader.resolve_forecast(memory, forecast, directory, seal, max_source_bytes=limit)`.
+Use the returned `.memory` and inspect `.status`. Only `admitted`
+installs the saved continuation into the returned world. The draft
+is consumed by that epoch, including when the witness is absent.
+Use `memory.continuation_witness(seed)` to inspect its distinct
+qualification source. Admission evidence is recorded separately from
+the exact source receipts used by the later reasoning call.
+
 ## Publishing binary native sources
 
 The publisher marks binary updates by source ID with

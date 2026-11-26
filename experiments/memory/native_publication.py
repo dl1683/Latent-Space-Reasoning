@@ -12,7 +12,8 @@ import numpy as np
 from experiments.memory.latent_feedback import FactoredValue, _frozen
 from experiments.memory.linear_feedback import _LEVELS, _quantize
 from experiments.memory.native_latent_recurrence import (
-    NativeSourceMemory, _Continuation, _EncodedSpan, _SelectiveWorld, _require_cpu_eval,
+    NativeSourceMemory, _Continuation, _EncodedSpan, _ForecastCheck, _SelectiveWorld,
+    _forecast_error, _forecast_fields, _forecast_values, _require_cpu_eval,
 )
 from experiments.memory.selective_continuations import (
     RowShard, SelectedSpan, SelectionReceipt, SelectionStep, competing_values,
@@ -25,6 +26,7 @@ from experiments.memory.verified_source_tool import SourceSpan, require_digest, 
 
 _SCHEMA = "lsr-native-selective-v1"
 _COMPOSED_SCHEMA = "lsr-native-selective-v2"
+_FORECAST_SCHEMA = "lsr-native-selective-v3"
 _FIELDS = {"schema", "runtime", "reader", "source", "source_manifest", "documents", "queue",
            "attempted", "derived", "rows_bytes", "rows_sha256"}
 
@@ -130,6 +132,11 @@ def _metadata(reader, memory):
                    for parent in set(selective.parents.values())}
         header["parents"] = sorted([indices[seed], indices[parent], digests[parent]]
                                    for seed, parent in selective.parents.items())
+    if selective.forecasts:
+        header["schema"] = _FORECAST_SCHEMA
+        header["forecasts"] = sorted([indices[seed], indices[check.witness], check.opening_source,
+                                      check.admission_epoch, check.features, check.tolerance, check.baseline]
+                                     for seed, check in selective.forecasts.items())
     return header
 
 
@@ -356,6 +363,41 @@ def _read_parents(records, spans, attempted, acquired, derived):
     return parents
 
 
+def _read_forecasts(records, scope, sources, spans, acquired, parents, attempted, width):
+    if type(records) is not list or not records:
+        raise ValueError("native forecast inventory is malformed")
+    forecasts, last = {}, -1
+    for idx, witness_idx, opening, admission_epoch, features, tolerance, baseline in records:
+        if (not _between(idx, last + 1, len(spans) - 1)
+                or not _between(witness_idx, 0, len(spans) - 1)):
+            raise ValueError("native forecast span index is invalid")
+        seed, witness = spans[idx], spans[witness_idx]
+        if (seed not in parents or seed not in acquired or witness.source_id == seed.source_id
+                or len(sources[witness.source_id]) != 1):
+            raise ValueError("native forecast has an invalid witness or parent")
+        require_digest(opening)
+        if (not _between(admission_epoch, 2, scope.epoch)
+                or scope.manifest[witness.source_id].generation != admission_epoch):
+            raise ValueError("native forecast witness generation differs from its admission epoch")
+        if (opening == scope.seal or any(step.receipt.observed_source_seal != opening for step in attempted[seed])
+                or (admission_epoch == scope.epoch and json.loads(scope.descriptor)["parent"] != opening)):
+            raise ValueError("native forecast opening source differs from its execution pin")
+        if type(features) is not list or type(baseline) is not list:
+            raise ValueError("native forecast vectors are malformed")
+        features = tuple(features)
+        _forecast_fields(features, tolerance, width)
+        if len(baseline) != len(features) or any(not _between(value, -_LEVELS, _LEVELS) for value in baseline):
+            raise ValueError("native forecast baseline is malformed")
+        prediction = _forecast_values(acquired[seed].value, features)
+        observation = _forecast_values(sources[witness.source_id][0].row, features)
+        if (_forecast_error(prediction, observation) > tolerance
+                or _forecast_error(baseline, observation) <= tolerance):
+            raise ValueError("native forecast comparison does not support admission")
+        forecasts[seed] = _ForecastCheck(opening, admission_epoch, witness, features, tolerance, tuple(baseline))
+        last = idx
+    return forecasts
+
+
 def _restore(header, reader, raw, seal, scope):
     width, key_width = _shape(reader)
     for key in ("documents", "queue", "attempted", "derived"):
@@ -381,7 +423,9 @@ def _restore(header, reader, raw, seal, scope):
     acquired = {spans[idx]: entries[spans[idx]] for idx in indices}
     derived = reader._derived_rows(acquired)
     parents = (_read_parents(header["parents"], spans, attempted, acquired, derived)
-               if header["schema"] == _COMPOSED_SCHEMA else {})
+               if header["schema"] in (_COMPOSED_SCHEMA, _FORECAST_SCHEMA) else {})
+    forecasts = (_read_forecasts(header["forecasts"], scope, sources, spans, acquired, parents, attempted, width)
+                 if header["schema"] == _FORECAST_SCHEMA else {})
     accepted = {seed for seed, steps in attempted.items()
                 if reader._installable(steps, seed.source_id, parents.get(seed))}
     if set(acquired) != accepted:
@@ -391,7 +435,8 @@ def _restore(header, reader, raw, seal, scope):
             or set(pending) != set(reader._pending_groups(sources, sources, attempted))):
         raise ValueError("native publication pending queue is invalid")
     selective = _SelectiveWorld(MappingProxyType(shards), MappingProxyType(acquired),
-                                MappingProxyType(attempted), pending, derived, MappingProxyType(parents))
+                                MappingProxyType(attempted), pending, derived, MappingProxyType(parents),
+                                MappingProxyType(forecasts))
     return NativeSourceMemory(reader._owner, scope, None, MappingProxyType(sources),
                               derived_seeds=tuple(acquired), _selective=selective, _publication_seal=seal,
                               _publication_runtime_sha256=header["runtime"],
@@ -408,7 +453,8 @@ def read_native_publication(directory, reader, *, seal, source_seal, runtime_sha
     if sha256(manifest) != seal:
         raise ValueError("native publication seal differs")
     header = json.loads(manifest)
-    schemas = {_SCHEMA: _FIELDS, _COMPOSED_SCHEMA: _FIELDS | {"parents"}}
+    schemas = {_SCHEMA: _FIELDS, _COMPOSED_SCHEMA: _FIELDS | {"parents"},
+               _FORECAST_SCHEMA: _FIELDS | {"parents", "forecasts"}}
     if (type(header) is not dict or type(header.get("schema")) is not str
             or schemas.get(header["schema"]) != set(header) or _encode(header) != manifest):
         raise ValueError("native publication manifest is malformed")

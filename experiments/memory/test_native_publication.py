@@ -561,6 +561,155 @@ def test_parent_discovery_checks_inherited_source_reads(tmp_path):
     assert reader.maintain(before, max_seeds=1, max_parent_scores=4).continuation_parent(seed) is None
 
 
+@pytest.mark.parametrize(("pixel", "status"), [
+    (4, "admitted"),
+    (3, "baseline_confirmed"),
+    (5, "disconfirmed"),
+    (None, "witness_absent"),
+    (4, "dependencies_changed"),
+])
+def test_forecast_admits_only_a_later_better_observation(tmp_path, pixel, status):
+    import numpy as np
+    from experiments.memory.native_isolated_stage import LABELS, _CausalControl, _reader
+
+    root, cue, bridge, outcome, witness, unrelated = (letter * 32 for letter in "abcdef")
+    p6 = b"P6\n1 1\n255\n"
+    ingress_digest = sha256(b"controlled forecast pixel coordinates")
+
+    def media_row(source, raw):
+        if source != witness or not raw.startswith(p6) or len(raw) != len(p6) + 3 or raw[-3] not in (3, 4, 5):
+            return None
+        row = np.zeros(3 * len(LABELS) + 1)
+        row[raw[-3]] = 0.75
+        return row
+
+    model = _CausalControl().eval()
+    reader = _reader(model, source_ingress=media_row, source_ingress_sha256=ingress_digest)
+    directory = tmp_path / "sources"
+    opening = write_source_delta(directory, {
+        root: b"link L02 L03", cue: b"link L01 L02", bridge: b"link L03 L04", outcome: b"name L04 L06",
+    }, max_bytes=_LIMIT)
+    initial = reader.publish(directory, opening.seal, max_source_bytes=_LIMIT)
+    first = reader.maintain(initial, max_seeds=1)
+    opening_path = tmp_path / "opening"
+    opening_seal = write_native_publication(opening_path, reader, first, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    base = _read(opening_path, reader, opening_seal, opening.seal)
+    options = dict(witness_source=witness, features=(3, 4, 5), tolerance=40, max_parent_scores=2)
+    calls = model.calls
+    forecast = reader.forecast_next(base, **options)
+    assert model.calls - calls == 6
+    assert forecast.seed == base.source_spans(cue)[0] and forecast.parent == base.source_spans(root)[0]
+    assert forecast.baseline == (127, 0, 0) and forecast.prediction == (0, 127, 0)
+    assert forecast.seed not in base.derived_seeds
+    with pytest.raises(ValueError, match="already holds a pending forecast"):
+        reader.forecast_next(base, **options)
+    with pytest.raises(ValueError, match="different opening world"):
+        reader.resolve_forecast(first, forecast, tmp_path / "no-such-feed", opening.seal, max_source_bytes=_LIMIT)
+
+    changes = {unrelated: b"name L09 L11"} if pixel is None else {witness: p6 + bytes((pixel, 0, 0))}
+    if status == "dependencies_changed":
+        changes[bridge] = b"link L03 L05"
+    future = tmp_path / "observation"
+    observed = write_source_delta(future, changes, previous=opening,
+                                  binary_sources=() if pixel is None else (witness,), max_bytes=_LIMIT)
+    if status == "admitted":
+        restarted = _reader(_CausalControl().eval(), source_ingress=media_row, source_ingress_sha256=ingress_digest)
+        reopened_base = _read(opening_path, restarted, opening_seal, opening.seal)
+        with pytest.raises(ValueError, match="no longer pending"):
+            restarted.resolve_forecast(reopened_base, forecast, future, observed.seal, max_source_bytes=_LIMIT)
+        reader._selector._margin = 1
+        with pytest.raises(ValueError, match="unchanged reader"):
+            reader.resolve_forecast(base, forecast, future, observed.seal, max_source_bytes=_LIMIT)
+        reader._selector._margin = 0
+    calls = model.calls
+    resolution = reader.resolve_forecast(base, forecast, future, observed.seal, max_source_bytes=_LIMIT)
+    learned = resolution.memory
+    assert model.calls - calls == int(status in ("witness_absent", "dependencies_changed"))
+    assert resolution.status == status and learned.seal == observed.seal
+    assert resolution.observation == (None if pixel is None else tuple(95 * (index == pixel) for index in (3, 4, 5)))
+    assert (forecast.seed in learned.derived_seeds) == (status == "admitted")
+
+    if pixel is None:
+        later_path = tmp_path / "late-observation"
+        later = write_source_delta(later_path, {witness: p6 + bytes((4, 0, 0))}, previous=observed,
+                                   binary_sources=(witness,), max_bytes=_LIMIT)
+        with pytest.raises(ValueError, match="no longer pending"):
+            reader.resolve_forecast(learned, forecast, later_path, later.seal, max_source_bytes=_LIMIT)
+        assert forecast.seed not in reader.publish(later_path, later.seal, previous=learned,
+                                                  max_source_bytes=_LIMIT).derived_seeds
+    if status != "admitted":
+        return
+
+    prompt = "follow L01"
+    assert reader(prompt, memory=base).text == ""
+    assert learned.continuation_witness(forecast.seed) == learned.source_spans(witness)[0]
+    published = tmp_path / "admitted"
+    admitted_seal = write_native_publication(published, reader, learned, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    offline = _reader(_CausalControl().eval(), source_ingress_sha256=ingress_digest)
+    attached = _read(published, offline, admitted_seal, observed.seal)
+    answer = offline(prompt, memory=attached)
+    assert answer.text == "L06" and answer.applied_derived_steps == 1
+    assert offline(prompt, memory=offline.without_derived(attached)).text == ""
+    assert offline(prompt).text == ""
+    assert attached.continuation_witness(forecast.seed) == learned.source_spans(witness)[0]
+    assert witness not in {span.source_id for span in attached.evidence_spans(answer)}
+
+    quiet_path = tmp_path / "quiet"
+    quiet = write_source_delta(quiet_path, {unrelated: b"link L00 L01"}, previous=observed, max_bytes=_LIMIT)
+    still_valid = reader.publish(quiet_path, quiet.seal, previous=learned, max_source_bytes=_LIMIT)
+    assert still_valid.continuation_witness(forecast.seed) == learned.source_spans(witness)[0]
+    quiet_world = tmp_path / "quiet-world"
+    quiet_seal = write_native_publication(quiet_world, reader, still_valid, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    quiet_read = _read(quiet_world, offline, quiet_seal, quiet.seal)
+    assert offline(prompt, memory=quiet_read).text == "L06"
+
+    quiet_manifest = quiet_world / "manifest.json"
+    original = quiet_manifest.read_bytes()
+    header = json.loads(original)
+    old_witness_index = next(index for index, document in enumerate(header["documents"]) if document[0] == outcome)
+    for field, substitute, message in (
+        (1, old_witness_index, "witness generation differs"),
+        (2, "1" * 64, "opening source differs from its execution pin"),
+    ):
+        forged = json.loads(original)
+        forged["forecasts"][0][field] = substitute
+        altered = _encode(forged)
+        quiet_manifest.write_bytes(altered)
+        with pytest.raises(ValueError, match=message):
+            _read(quiet_world, offline, sha256(altered), quiet.seal)
+    quiet_manifest.write_bytes(original)
+    restored_valid = _read(quiet_world, reader, quiet_seal, quiet.seal)
+    expanded = reader.maintain(restored_valid, max_seeds=restored_valid.pending_seeds, parent=forecast.seed)
+    child, = expanded.source_spans(unrelated)
+    assert expanded.continuation_parent(child) == forecast.seed
+    altered_path = tmp_path / "replacement-observation"
+    altered_bytes = write_source_delta(altered_path, {witness: p6 + bytes((5, 0, 0))}, previous=quiet,
+                                       binary_sources=(witness,), max_bytes=_LIMIT)
+    replaced = reader.publish(altered_path, altered_bytes.seal, previous=expanded, max_source_bytes=_LIMIT)
+    assert forecast.seed not in replaced.derived_seeds and child not in replaced.derived_seeds
+
+    removed_path = tmp_path / "withdrawn"
+    removed = write_source_delta(removed_path, {witness: None}, previous=quiet, max_bytes=_LIMIT)
+    revised = reader.publish(removed_path, removed.seal, previous=expanded, max_source_bytes=_LIMIT)
+    assert forecast.seed not in revised.derived_seeds and child not in revised.derived_seeds
+    assert reader(prompt, memory=revised).text == ""
+    assert offline(prompt, memory=attached) == answer
+    restored_path = tmp_path / "restored-observation"
+    restored = write_source_delta(restored_path, {witness: changes[witness]}, previous=removed,
+                                  binary_sources=(witness,), max_bytes=_LIMIT)
+    restored_memory = reader.publish(restored_path, restored.seal, previous=revised, max_source_bytes=_LIMIT)
+    assert forecast.seed not in restored_memory.derived_seeds
+
+    manifest = published / "manifest.json"
+    header = json.loads(manifest.read_bytes())
+    assert header["schema"] == "lsr-native-selective-v3"
+    header["forecasts"][0][-1] = list(resolution.observation)
+    altered = _encode(header)
+    manifest.write_bytes(altered)
+    with pytest.raises(ValueError, match="comparison does not support admission"):
+        _read(published, offline, sha256(altered), observed.seal)
+
+
 def test_same_byte_modality_revision_changes_a_native_continuation(tmp_path):
     import numpy as np
     from experiments.memory.native_isolated_stage import LABELS, _CausalControl, _reader as make_reader

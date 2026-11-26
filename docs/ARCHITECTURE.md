@@ -216,6 +216,48 @@ eager rebuilding and deferring reconstruction until readout.
 · [DreamCoder](https://arxiv.org/abs/2006.08381)
 · [Adapton](https://matthewhammer.org/adapton/adapton-pldi2014.pdf)
 
+#### Qualifying a continuation on the next source epoch
+
+[SLICE] From an attached selective publication, a worker can freeze one
+pending seed's projected integer predictions with and without its
+discovered parent. The controller declares a currently absent witness
+source, fixed coordinates and an absolute tolerance. Both trajectories
+start from the opening state. The no-parent vector is captured before
+replaying the candidate. The proposal lives on the issuing reader and
+expires on the next resolved source epoch. The reader fingerprint must
+still match. The controller supplies event order and witness independence.
+
+Resolution advances the ordinary source feed even when it withholds the
+draft. A newly present, single encoded witness row must match the
+candidate within tolerance while the baseline misses. The seed, parent
+and both trajectories' recorded source frontiers must still hold. The
+worker installs the saved continuation without rerunning it on the
+witness. This lets new source evidence decide admission before a task
+supplies any reward. Later task utility remains untested.
+
+A qualifying witness is a separate provenance dependency. Changing or
+withdrawing it retires the continuation and its descendants. A fresh
+reader recomputes the stored coordinate comparison against the retained
+witness and candidate values. It checks the witness generation against
+the admission epoch and the opening digest against the executed source
+steps. The earlier baseline and issuance timing come from the trusted
+controller. V3 uses the reader's fixed integer
+row extraction. The trusted runtime digest identifies that implementation.
+A publication records the executed source and parent evidence separately. Earlier publication formats
+remain available for worlds without witness-qualified work.
+
+The comparison follows predict-then-update evaluation. Give the typed
+joint-state and warm exact baselines the same chronological source
+observations and score separate future tasks after the admission window.
+Price the fingerprint, witness encoding, both trajectories, rejections
+and provenance. Choose observables on which credible alternatives
+predict different consequences. If qualified alternatives still
+disagree on an unobserved direction, retain the disagreement for the
+later task. A single baseline miss answers only the declared contrast.
+[Linear distinguishability control](PROSPECTIVE_OPERATOR_CONTROL.md)
+[Software result](RESULTS.md#qualifying-a-continuation-before-a-late-task-26-november-2026)
+· [Dawid's prequential approach](https://rss.onlinelibrary.wiley.com/doi/10.2307/2981683)
+
 #### Admitting a binary source into the native reader
 
 [SLICE] A source epoch can carry explicitly declared binary assets under

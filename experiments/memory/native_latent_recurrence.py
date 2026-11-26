@@ -1,22 +1,23 @@
 """Feed versioned source moments into a borrowed causal backbone's hidden steps."""
 
 from collections.abc import Mapping
-from dataclasses import asdict, dataclass, replace
+from dataclasses import asdict, dataclass, field, replace
 from itertools import chain, islice
 from math import isfinite
 from pathlib import Path
+from threading import Lock
 from types import MappingProxyType
 
 import numpy as np
 
 from experiments.memory.latent_feedback import _apply_value, _frozen
 from experiments.memory.linear_feedback import (
-    AssociationMemory, LinearFeedbackKernel, MomentMemory, _quantize,
+    AssociationMemory, LinearFeedbackKernel, MomentMemory, _LEVELS, _quantize,
 )
 from experiments.memory.selective_continuations import (
     RetainedSelector, RowShard, SelectionReceipt, SelectionStep, frontier_survives,
 )
-from experiments.memory.source_revision_feed import SourceDelta, read_source_delta
+from experiments.memory.source_revision_feed import SourceDelta, _OPAQUE_ID, read_source_delta
 from experiments.memory.verified_source_tool import SourceSpan, require_digest, sha256
 
 
@@ -32,6 +33,31 @@ class _Continuation:
     value: np.ndarray
 
 
+def _forecast_fields(features, tolerance, width):
+    if (not features or any(type(index) is not int or not 0 <= index < width for index in features)
+            or tuple(sorted(set(features))) != features
+            or type(tolerance) is not int or not 0 <= tolerance <= 2 * _LEVELS):
+        raise ValueError("forecast needs distinct sorted row coordinates and an integer tolerance")
+
+
+def _forecast_values(row, features):
+    return tuple(map(int, _quantize(row[list(features)])))
+
+
+def _forecast_error(prediction, observation):
+    return max(abs(left - right) for left, right in zip(prediction, observation, strict=True))
+
+
+@dataclass(frozen=True, slots=True)
+class _ForecastCheck:
+    opening_source: str
+    admission_epoch: int
+    witness: SourceSpan
+    features: tuple[int, ...]
+    tolerance: int
+    baseline: tuple[int, ...]
+
+
 @dataclass(frozen=True, slots=True, eq=False)
 class _SelectiveWorld:
     shards: Mapping[str, RowShard]
@@ -40,6 +66,7 @@ class _SelectiveWorld:
     priority: tuple[str, ...]
     derived: tuple[RowShard, ...]
     parents: Mapping[SourceSpan, SourceSpan]
+    forecasts: Mapping[SourceSpan, _ForecastCheck] = field(default_factory=lambda: MappingProxyType({}))
 
 
 @dataclass(slots=True)
@@ -105,6 +132,13 @@ class NativeSourceMemory:
             raise KeyError(seed)
         return self._selective.parents.get(seed)
 
+    def continuation_witness(self, seed):
+        """Return a separately observed admission witness, when one exists."""
+        if self._selective is None or seed not in self._selective.acquired:
+            raise KeyError(seed)
+        check = self._selective.forecasts.get(seed)
+        return None if check is None else check.witness
+
     def evidence_spans(self, read):
         """Collect candidate source spans for an attached read of this publication."""
         if (not isinstance(read, NativeLatentRead) or self._publication_seal is None
@@ -130,6 +164,28 @@ class NativeSourceMemory:
         if self._selective is None or self.omitted_sources:
             return None
         return self.rows - len(self._selective.attempted)
+
+
+@dataclass(frozen=True, slots=True, eq=False)
+class NativeContinuationForecast:
+    seed: SourceSpan
+    parent: SourceSpan
+    witness_source: str
+    features: tuple[int, ...]
+    tolerance: int
+    baseline: tuple[int, ...]
+    prediction: tuple[int, ...]
+    _opening: NativeSourceMemory = field(repr=False)
+    _continuation: _Continuation = field(repr=False)
+    _steps: tuple[SelectionStep, ...] = field(repr=False)
+    _baseline_steps: tuple[SelectionStep, ...] = field(repr=False)
+
+
+@dataclass(frozen=True, slots=True, eq=False)
+class NativeForecastResolution:
+    memory: NativeSourceMemory
+    status: str
+    observation: tuple[int, ...] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -227,6 +283,8 @@ class NativeLatentModel:
         self._relay_gain, self._derived_gain = relay_gain, derived_gain
         self._eos = eos_ids
         self._owner = object()
+        self._forecast_lock = Lock()
+        self._pending_forecast = None
         self._selector = (None if top_k is None else RetainedSelector(
             moments, top_k=top_k, tie_limit=tie_limit, temperature=temperature, score_margin=score_margin,
         ))
@@ -318,17 +376,23 @@ class NativeLatentModel:
 
     def publish(self, epoch_directory: Path, seal: str, *, previous=None, max_source_bytes=None):
         """Encode only changed sources from one verified, query-blind feed epoch."""
-        import torch
-
         _require_cpu_eval(self._model)
+        delta = self._source_revision(epoch_directory, seal, previous, max_source_bytes)
+        return self._apply_source_revision(delta, previous)
+
+    def _source_revision(self, directory, seal, previous, max_bytes):
         if previous is not None:
             self._check_memory(previous)
             if previous.omitted_sources or previous._derived_off:
                 raise ValueError("an ablated contribution view cannot publish a new epoch")
         if self._source_ingress_sha256 is not None and self._source_ingress is None:
             raise ValueError("publication requires the configured source ingress")
-        delta = read_source_delta(epoch_directory, seal, previous=None if previous is None else previous._scope,
-                                  max_bytes=max_source_bytes, allow_binary=self._source_ingress is not None)
+        return read_source_delta(directory, seal, previous=None if previous is None else previous._scope,
+                                 max_bytes=max_bytes, allow_binary=self._source_ingress is not None)
+
+    def _apply_source_revision(self, delta, previous):
+        import torch
+
         sources = {} if previous is None else dict(previous._sources)
         bank = None
         retire, add = [], []
@@ -373,16 +437,20 @@ class NativeLatentModel:
                 shards[source] = shard
                 revised.append(shard)
         attempted, acquired, parents, previous_priority = {}, {}, {}, ()
+        forecasts = {}
         if previous is not None:
             previous_priority = previous.priority
             for seed, frontiers in previous.attempted.items():
-                if seed.source_id not in changed and all(
-                        frontier_survives(frontier, changed, revised) for frontier in frontiers):
+                forecast = previous.forecasts.get(seed)
+                if (seed.source_id not in changed and (forecast is None or forecast.witness.source_id not in changed)
+                        and all(frontier_survives(frontier, changed, revised) for frontier in frontiers)):
                     attempted[seed] = frontiers
             for seed, row in previous.acquired.items():
                 parent = previous.parents.get(seed)
                 if seed in attempted and (parent is None or parent in acquired):
                     acquired[seed] = row
+                    if seed in previous.forecasts:
+                        forecasts[seed] = previous.forecasts[seed]
             for seed, parent in previous.parents.items():
                 if seed in attempted:
                     if parent in acquired:
@@ -395,7 +463,7 @@ class NativeLatentModel:
         order = dict.fromkeys((*previous_priority, *sorted(sources)))
         priority = self._pending_groups(order, sources, attempted)
         return _SelectiveWorld(ordered, MappingProxyType(acquired), MappingProxyType(attempted),
-                               priority, derived, MappingProxyType(parents))
+                               priority, derived, MappingProxyType(parents), MappingProxyType(forecasts))
 
     @staticmethod
     def _pending_groups(order, sources, attempted):
@@ -424,7 +492,8 @@ class NativeLatentModel:
         selective = memory._selective
         if selective is not None:
             selective = replace(selective, acquired=MappingProxyType({}), attempted=MappingProxyType({}),
-                                priority=tuple(sorted(selective.shards)), derived=(), parents=MappingProxyType({}))
+                                priority=tuple(sorted(selective.shards)), derived=(), parents=MappingProxyType({}),
+                                forecasts=MappingProxyType({}))
         return replace(memory, _derived=None, _seed_limit=0, derived_seeds=(),
                        _selective=selective, _derived_off=True)
 
@@ -498,6 +567,114 @@ class NativeLatentModel:
         address = self._encode_hidden(hidden)
         return address, self._continue(hidden, cache, memory, self._steps)
 
+    def _check_forecast_reader(self, memory):
+        from experiments.memory.native_publication import _reader_digest
+
+        if (memory._publication_seal is None or memory._reader_fingerprint_sha256 is None
+                or _reader_digest(self) != memory._reader_fingerprint_sha256):
+            raise ValueError("forecast requires an attached publication with an unchanged reader")
+
+    def forecast_next(self, memory, *, witness_source, features, tolerance, max_parent_scores):
+        """Draft one continuation before its declared validation source exists."""
+        import torch
+
+        _require_cpu_eval(self._model)
+        self._check_memory(memory)
+        selective = memory._selective
+        if selective is None or memory.omitted_sources or memory._derived_off:
+            raise ValueError("a forecast needs an intact selective world")
+        if self._pending_forecast is not None:
+            raise ValueError("this reader already holds a pending forecast")
+        self._check_forecast_reader(memory)
+        if (type(witness_source) is not str or not _OPAQUE_ID.fullmatch(witness_source)
+                or witness_source in memory._scope.manifest):
+            raise ValueError("a forecast witness needs a currently absent source identity")
+        lookup = self._model.get_input_embeddings().weight
+        features = tuple(features)
+        _forecast_fields(features, tolerance, lookup.shape[1])
+        if type(max_parent_scores) is not int or max_parent_scores <= 0:
+            raise ValueError("parent discovery needs a positive score budget")
+        if not selective.derived or not selective.priority:
+            return None
+        if max_parent_scores < len(selective.acquired) * self._steps:
+            raise ValueError("parent score budget cannot cover one pending seed")
+        source = selective.priority[0]
+        item = next(row for row in memory._sources[source] if row.span not in selective.attempted)
+        source_only = replace(memory, _selective=replace(selective, derived=()))
+        with torch.inference_mode():
+            address, baseline = self._run_seed(item, source_only, lookup)
+            candidate = self._discover_continuation(item, memory, lookup, address, baseline)
+            if candidate is None:
+                return None
+        parent, run, value, baseline_value = candidate
+        control = _forecast_values(baseline_value, features)
+        prediction = _forecast_values(value, features)
+        if prediction == control:
+            return None
+        forecast = NativeContinuationForecast(item.span, parent, witness_source, features, tolerance,
+                                              control, prediction, memory,
+                                              _Continuation(_frozen(address), _frozen(value)),
+                                              run.source_steps, baseline.source_steps)
+        with self._forecast_lock:
+            if self._pending_forecast is not None:
+                raise ValueError("this reader already holds a pending forecast")
+            self._pending_forecast = forecast
+        return forecast
+
+    def cancel_forecast(self, forecast):
+        """Release the opening state and invalidate its uncommitted forecast."""
+        with self._forecast_lock:
+            if forecast is None or self._pending_forecast is not forecast:
+                raise ValueError("forecast is no longer pending on this reader")
+            self._pending_forecast = None
+
+    def resolve_forecast(self, memory, forecast, epoch_directory, seal, *, max_source_bytes=None):
+        """Apply one verified source epoch and admit its already-drafted operation if confirmed."""
+        _require_cpu_eval(self._model)
+        if self._pending_forecast is not forecast or forecast is None:
+            raise ValueError("forecast is no longer pending on this reader")
+        if forecast._opening is not memory:
+            raise ValueError("forecast belongs to a different opening world")
+        self._check_forecast_reader(memory)
+        delta = self._source_revision(epoch_directory, seal, memory, max_source_bytes)
+        self.cancel_forecast(forecast)
+        revised = self._apply_source_revision(delta, memory)
+        witnesses = revised._sources.get(forecast.witness_source, ())
+        if not witnesses:
+            return NativeForecastResolution(revised, "witness_absent")
+        if len(witnesses) != 1:
+            return NativeForecastResolution(revised, "unscorable_witness")
+        witness, = witnesses
+        actual = _forecast_values(witness.row, forecast.features)
+        if _forecast_error(forecast.baseline, actual) <= forecast.tolerance:
+            return NativeForecastResolution(revised, "baseline_confirmed", actual)
+        if _forecast_error(forecast.prediction, actual) > forecast.tolerance:
+            return NativeForecastResolution(revised, "disconfirmed", actual)
+        selective = revised._selective
+        changed = delta.changes
+        changed_shards = tuple(selective.shards[source] for source in changed if source in selective.shards)
+        frontiers = chain(forecast._baseline_steps, forecast._steps)
+        if (forecast.seed.source_id in changed or forecast.parent not in selective.acquired
+                or any(not frontier_survives(step, changed, changed_shards) for step in frontiers)):
+            return NativeForecastResolution(revised, "dependencies_changed", actual)
+        check = _ForecastCheck(memory.seal, delta.epoch, witness.span, forecast.features,
+                               forecast.tolerance, forecast.baseline)
+        admitted = self._retain_forecast(revised, forecast, check)
+        return NativeForecastResolution(admitted, "admitted", actual)
+
+    def _retain_forecast(self, memory, forecast, check):
+        selective, seed = memory._selective, forecast.seed
+        attempted = {**selective.attempted, seed: forecast._steps}
+        acquired = {**selective.acquired, seed: forecast._continuation}
+        parents = {**selective.parents, seed: forecast.parent}
+        forecasts = {**selective.forecasts, seed: check}
+        order = sorted(selective.priority, key=lambda source: source == seed.source_id)
+        priority = self._pending_groups(order, memory._sources, attempted)
+        updated = replace(selective, attempted=MappingProxyType(attempted), acquired=MappingProxyType(acquired),
+                          parents=MappingProxyType(parents), forecasts=MappingProxyType(forecasts),
+                          derived=self._derived_rows(acquired), priority=priority)
+        return replace(memory, _selective=updated, derived_seeds=tuple(acquired))
+
     def maintain(self, memory, *, max_seeds, parent=None, max_parent_scores=None):
         """Install continuations with one fixed or source-discovered parent per seed."""
         import torch
@@ -563,7 +740,7 @@ class NativeLatentModel:
                 if discover:
                     candidate = self._discover_continuation(item, memory, lookup, address, run)
                     if candidate is not None:
-                        used_parent, run, value = candidate
+                        used_parent, run, value, _ = candidate
                 attempted[item.span] = run.source_steps
                 if used_parent is not None:
                     parents[item.span] = used_parent
@@ -588,20 +765,24 @@ class NativeLatentModel:
             return None
         inputs = self._derived_rows({parent: selective.acquired[parent]})
         worker_input = replace(memory, _selective=replace(selective, derived=inputs))
+        baseline_value = self._encode_hidden(baseline.hidden)
         candidate_address, candidate = self._run_seed(item, worker_input, lookup)
         if (not candidate.applied_derived
                 or not self._installable(candidate.source_steps, item.span.source_id, parent)
                 or not np.array_equal(_quantize(address), _quantize(candidate_address))):
             return None
         candidate_value = self._encode_hidden(candidate.hidden)
-        if np.array_equal(_quantize(self._encode_hidden(baseline.hidden)), _quantize(candidate_value)):
+        if np.array_equal(_quantize(baseline_value), _quantize(candidate_value)):
             return None
-        return parent, candidate, candidate_value
+        return parent, candidate, candidate_value, baseline_value
 
     @staticmethod
     def _uses_source(selective, seed, source_id):
         while seed is not None:
-            if seed.source_id == source_id or any(
+            forecast = selective.forecasts.get(seed)
+            if seed.source_id == source_id or (forecast is not None and forecast.witness.source_id == source_id):
+                return True
+            if any(
                 hit.span.source_id == source_id for step in selective.attempted[seed]
                 if step.applied for hit in step.receipt.selected
             ):
