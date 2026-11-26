@@ -242,7 +242,7 @@ class CorpusBindingMemory:
                                      hops=hops, condition=condition)
 
     def _read_role_links(self, direction, *, outcomes, work_limit, hops, condition,
-                         prior_steps=(), prior_strength=1.):
+                         prior_steps=(), prior_strength=1., branch_limit=None):
         hops = _role_hops(hops)
         if condition is not None and type(condition) is not BindingLinkCondition:
             raise TypeError("role-link condition must be a BindingLinkCondition")
@@ -258,7 +258,8 @@ class CorpusBindingMemory:
             raise ValueError("role-link outcomes require distinct nonstructural predicates")
         return links.read(direction, outcomes=frozenset(labels), mentions=self._mentions,
                           limit=_proof_work_limit(work_limit), width=self._anchors.shape[1], hops=hops,
-                          condition=condition, prior_steps=prior_steps, prior_strength=prior_strength)
+                          condition=condition, prior_steps=prior_steps, prior_strength=prior_strength,
+                          branch_limit=branch_limit)
 
     def source_mentions(self, source):
         """Return a source's ordered normalized observations, or None for a legacy row-only source."""

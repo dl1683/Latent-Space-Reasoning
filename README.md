@@ -16,6 +16,8 @@ A [state-dependent link program](docs/ARCHITECTURE.md#composing-state-dependent-
 
 A [conditioned latent continuation](docs/ARCHITECTURE.md#feeding-conditioned-paths-back-into-the-recurrent-core) feeds an admitted path into the next hidden transition alongside the ordinary binding contribution. A subsequent application of the block uses that generated state. The supplied-coordinate check exercises same-pin operator removal, separate source withdrawal, restoration and restart. A branch keeps open coverage when it has live alternatives.
 
+The [joint latent read](docs/ARCHITECTURE.md#resolving-a-population-of-hidden-paths) advances all admitted paths through one receiver and checks their late outcomes together. In a supplied-coordinate journal check, two paths agree before a source correction introduces a weaker conflicting outcome. Withdrawing only the second outcome leaves the decision open. The same receiver can run with memory omitted.
+
 A [cross-source bridge worker](docs/ARCHITECTURE.md#matching-source-fragments-before-inference) can publish a connection before the question arrives. In the supplied-coordinate check it matches complementary source fragments through a declared key. Either source can revoke the connection, and a plausible competing match keeps coverage open.
 
 [Local bridge maintenance](docs/ARCHITECTURE.md#keeping-unaffected-bridges-usable-during-repair) keeps an unaffected connection active while another is repaired. In the software check the same reasoning core reproduced its later hidden state in the unaffected region. An edited key that could compete in both regions reopened both.

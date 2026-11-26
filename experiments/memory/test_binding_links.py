@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from experiments.memory import corpus_binding_journal
-from experiments.memory.binding_feedback import BindingFeedback
+from experiments.memory.binding_feedback import BindingFeedback, BindingRoleAdvance
 from experiments.memory.binding_links import BindingLinkCondition
 from experiments.memory.binding_maintenance import audit_source_observations
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate
@@ -790,6 +790,133 @@ def test_conditioned_source_paths_feed_two_shared_hidden_transitions(tmp_path):
     recovered = JournaledCorpusWorkspace(filename, _transport_frame(_no_encoding, width=7)).snapshot()
     np.testing.assert_array_equal(receiver.step(continue_from(recovered).states[0]).latest, later.latest)
     np.testing.assert_array_equal(receiver.step(continue_from(opening).states[0]).latest, later.latest)
+
+
+def test_joint_hidden_paths_revise_a_late_decision_without_text_replay(tmp_path):
+    path = tmp_path / "joint.sqlite"
+    axes = np.eye(11)
+    frame = _transport_frame(width=len(axes))
+    owner = JournaledCorpusWorkspace(path, frame, create=True)
+
+    def link(start, end, grade):
+        return _mentions(("entry", axes[start], grade), ("exit", axes[end], grade))
+
+    def terminal(label, axis):
+        return _mentions((label, axes[axis], .92))
+
+    side = link(0, 2, .65)
+    _write(owner, {
+        "main": link(0, 1, .9), "side": side,
+        "left-middle": link(3, 5, .91), "right-middle": link(4, 6, .91),
+        "left-readout": link(9, 1, .93), "right-readout": link(10, 2, .93),
+        "left-review": terminal("accept", 1), "right-review": terminal("accept", 2),
+    })
+    worker = JournaledCorpusWorkspace(path, _transport_frame(_no_encoding, width=len(axes)))
+    worker.publish_program(_transport_program(worker, worker.snapshot()))
+    original = owner.snapshot()
+
+    # These late states and the horizon are outside the worker's inputs.
+    keys = np.zeros((11, 1))
+    carry, values = np.zeros_like(axes), np.zeros_like(axes)
+    values[1, 3] = values[2, 4] = values[5, 7] = values[6, 8] = .9
+    carry[7, 9] = carry[8, 10] = .8
+    kernel = FeedbackKernel(query=keys, carry=carry, observation_key=keys, observation_value=values,
+                            feedback_key=keys, feedback_value=np.zeros_like(axes), max_steps=3)
+    receiver = BindingFeedback(kernel, frame, (("accept", 0),), query=keys, observation=np.zeros((6, 11)))
+    options = dict(stages=(BindingRoleAdvance(), BindingRoleAdvance(), None), outcomes=_OUTCOMES,
+                   work_limit=512, branch_limit=2)
+
+    def decide(memory, **changes):
+        return receiver.reason_role_links(receiver.start(axes[0], memory), **(options | changes))
+
+    def oracle_outcomes(oracle):
+        # Independently execute transport and recurrence. The exact index gets
+        # all the source roles and caches dots across source revisions.
+        result = []
+        for first, _, _ in oracle.paths(axes[0], 1):
+            first_hidden = np.tanh(first @ values)
+            (second, _, _), = oracle.paths(first_hidden, 1)
+            second_hidden = np.tanh(first_hidden @ carry + second @ values)
+            result.append(oracle.read(np.tanh(second_hidden @ carry), 1))
+        return result
+
+    oracle = _DenseTransportJoin(original.memory, "reflection")
+    result = decide(original.memory)
+    assert result.answer == "accept" and result.transitions == 6 and not result.open_coverage
+    assert oracle_outcomes(oracle) == [{"accept"}, {"accept"}]
+    assert [tuple(step.source for step in row.witnesses[0].prefix) for row in result.terminal_reads] == [
+        ("main", "left-middle"), ("side", "right-middle"),
+    ]
+    early = decide(original.memory, stages=options["stages"][:-1])
+    assert early.status == "no_link" and early.answer is None
+    suppressed = decide(original.memory, stages=(BindingRoleAdvance(), None, None))
+    assert suppressed.status == "unresolved" and suppressed.transitions == result.transitions
+    assert all(not row.witnesses for row in suppressed.terminal_reads)
+
+    corrected = _write(owner, {"right-review": terminal("review", 2)})
+    conflict = decide(corrected.memory)
+    assert conflict.status == "conflict" and conflict.answer is None and not conflict.open_coverage
+    assert oracle_outcomes(oracle.for_revision(corrected.memory, corrected.changed_sources)) == [{"accept"}, {"review"}]
+    assert [row.witnesses[0].strength for row in conflict.terminal_reads] == [.9, .65]
+    withdrawn = _write(owner, {"right-review": None})
+    missing = decide(withdrawn.memory)
+    assert missing.status == "unresolved" and missing.answer is None and missing.open_coverage
+    assert [row.status for row in missing.terminal_reads] == ["supported", "unresolved"]
+    removed_route = _write(owner, {"side": None})
+    assert decide(removed_route.memory).answer == "accept"
+
+    no_program = owner.prepare_role_links(removed_route, None).preview
+    assert no_program.source_digests == removed_route.memory.source_digests
+    assert decide(no_program).status == "no_role_program"
+    duplicate = _write(owner, {"duplicate-readout": link(9, 1, .82)})
+    assert decide(duplicate.memory).answer == "accept"
+    limited = decide(duplicate.memory, branch_limit=1)
+    assert limited.status == "branch_limit" and limited.transitions == 3 and not limited.terminal_reads
+    detached = decide(None)
+    assert detached.status == "no_memory" and detached.transitions == 3 and not detached.terminal_reads[0].witnesses
+
+    # A plausible carry shortcut could reach the terminal after an ordinary
+    # step. A missing required middle role must never take that step silently.
+    shortcut_carry = carry.copy()
+    shortcut_carry[3, 7] = .8
+    shortcut_kernel = FeedbackKernel(query=keys, carry=shortcut_carry, observation_key=keys,
+                                     observation_value=values, feedback_key=keys,
+                                     feedback_value=np.zeros_like(axes), max_steps=3)
+    shortcut = BindingFeedback(shortcut_kernel, frame, (("accept", 0),), query=keys,
+                               observation=np.zeros((6, 11)))
+    missing_middle = _write(owner, {"left-middle": None, "side": side, "right-review": terminal("review", 2)})
+    bounded = shortcut.reason_role_links(shortcut.start(axes[0], missing_middle.memory), **options)
+    assert bounded.status == "unresolved" and bounded.stage_no_links == (0, 1, 0)
+    assert bounded.terminal_reads[0].answer == "review" and bounded.transitions == 4
+    only_missing = _write(owner, {"side": None})
+    shortcut_start = shortcut.start(axes[0], only_missing.memory)
+    stopped = shortcut.reason_role_links(shortcut_start, **options)
+    assert stopped.status == "no_link" and stopped.stage_no_links == (0, 1) and stopped.transitions == 1
+    bypass = shortcut.reason_role_links(shortcut_start, **(options | {"stages": (BindingRoleAdvance(), None, None)}))
+    assert bypass.answer == "accept" and bypass.transitions == 3
+
+    _write(owner, {"side": side, "left-middle": link(3, 5, .91), "right-review": terminal("accept", 2),
+                   "duplicate-readout": None})
+    reopened = JournaledCorpusWorkspace(path, _transport_frame(_no_encoding, width=len(axes))).snapshot()
+    assert decide(reopened.memory) == decide(original.memory) == result
+    limited = decide(original.memory, work_limit=result.work - 1)
+    assert limited.status == "work_limit" and not limited.terminal_reads and limited.work < result.work
+    limited = decide(original.memory, branch_limit=1)
+    assert limited.status == "branch_limit" and limited.transitions == 0 and not limited.terminal_reads
+    gate = BindingLinkCondition(axes[1], .9, 1.)
+    stages = (BindingRoleAdvance(condition=gate), *options["stages"][1:])
+    assert decide(original.memory, stages=stages, branch_limit=1).status == "branch_limit"
+    assert decide(original.memory, stages=stages, branch_limit=2).answer == "accept"
+    marginal = BindingLinkCondition(axes[1], -.9, 1., uncertainty=.01)
+    partial = decide(original.memory, stages=(BindingRoleAdvance(condition=marginal), *stages[1:]))
+    read, = partial.terminal_reads
+    assert partial.status == "unresolved" and read.inherited_open and read.witnesses[0].outcome == "accept"
+
+    escaped, *_ = receiver.continue_role_links(receiver.start(axes[0], original.memory),
+                                                work_limit=128, branch_limit=2).states
+    partial = receiver.reason_role_links(escaped, **(options | {"stages": options["stages"][1:]}))
+    assert partial.status == "unresolved" and partial.terminal_reads[0].inherited_open
+    assert partial.terminal_reads[0].witnesses[0].outcome == "accept"
 
 
 def test_worker_matches_split_sources_before_reasoning_and_revokes_on_correction(tmp_path):

@@ -407,6 +407,10 @@ class _LinkReadWork:
         return score >= self.floor
 
 
+class _RoleBranchLimit(BindingCapacityError):
+    pass
+
+
 @dataclass(frozen=True, eq=False)
 class _RoleLinks:
     roles: tuple[str, str]
@@ -574,7 +578,7 @@ class _RoleLinks:
             return _Path(direction, prior_steps, frozenset(source for step in prior_steps for source in step.sources),
                          prior_strength)
 
-    def _frontier(self, seed, *, hops, condition, width, effort):
+    def _frontier(self, seed, *, hops, condition, width, effort, branch_limit=None):
         frontier = [seed]
         if len(self.pairs) + len(self.bridges) > effort.limit:
             raise BindingCapacityError("role-link catalog exceeds the read work limit")
@@ -601,6 +605,8 @@ class _RoleLinks:
                     if self.transport == "rotation" and link.reflector is None:
                         effort.unavailable.update(sources)
                         continue
+                    if branch_limit is not None and len(advanced) >= branch_limit:
+                        raise _RoleBranchLimit("role frontier exceeds the branch limit")
                     if path.steps:
                         effort.charge(2 * len(path.steps))
                     if self.transport != "fixed":
@@ -641,7 +647,7 @@ class _RoleLinks:
         return frontier, groups
 
     def read(self, direction, *, outcomes, mentions, limit, width, hops, condition,
-             prior_steps=(), prior_strength=1.):
+             prior_steps=(), prior_strength=1., branch_limit=None):
         vocabulary = tuple(sorted(outcomes))
         seed = self._seed_path(direction, width, condition, prior_steps, prior_strength)
         if seed is None:
@@ -655,7 +661,8 @@ class _RoleLinks:
         outside = set()
         try:
             with np.errstate(over="raise", invalid="raise", under="ignore"):
-                frontier, groups = self._frontier(seed, hops=hops, condition=condition, width=width, effort=effort)
+                frontier, groups = self._frontier(seed, hops=hops, condition=condition, width=width,
+                                                 effort=effort, branch_limit=branch_limit)
                 if frontier:
                     unmatched.update(range(len(frontier)))
                     effort.charge(len(mentions))
@@ -696,8 +703,9 @@ class _RoleLinks:
                                         terminal_source, ordinal, grade, path.steps[:-1], step.exit_source,
                                         step.key_ordinals,
                                     )
-        except BindingCapacityError:
-            return BindingLinkRead("work_limit", work=effort.work,
+        except BindingCapacityError as error:
+            status = "branch_limit" if isinstance(error, _RoleBranchLimit) else "work_limit"
+            return BindingLinkRead(status, work=effort.work,
                                    open_sources=len(self.unresolved | effort.unavailable | effort.bridge_open),
                                    terminal_dots=terminal_dots, outcomes=vocabulary, hops=hops, transports=effort.transports,
                                    condition=condition, condition_dots=effort.condition_dots,
