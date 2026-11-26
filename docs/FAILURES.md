@@ -24,6 +24,14 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A content snapshot can conceal a new source generation, 26 November 2026.**
+In the opening and restored text worlds, the raw bodies, span catalogue
+and content pin matched. The restored world had a different feed seal.
+The source-epoch episode ledger requires both arms to use that seal,
+and native attach refused equal-byte substitution between history and
+restoration.
+[Source-epoch control](RESULTS.md#using-one-source-epoch-for-native-and-text-episodes-26-november-2026)
+
 **An isolated worker needs its full module closure, 26 November 2026.**
 The initial v4 integration passed in-process checks and failed at the
 isolated publisher's import. Add the forecast module to the isolated

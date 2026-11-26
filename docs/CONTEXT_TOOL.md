@@ -724,6 +724,31 @@ persistent queue. This option is exclusive with `parent`. A publication
 can be reopened and used for another discovery pass. Inspect the actual
 binding with `memory.continuation_parent(seed)`.
 
+## Attaching a verified text epoch to a task
+
+`TaskWorld.from_source_epoch(directory, seal, max_feed_bytes=feed_bytes,
+max_source_bytes=active_bytes, max_passages=count, passage_bytes=2048,
+previous=prior)` opens the first text feed or advances its direct
+predecessor. Supply an independently pinned seal. Pass `previous`
+only on successive epochs and keep the passage width fixed. The
+world holds its raw documents in controller memory and requires no
+filesystem leaf archive. Retain the previous handle to read the
+historical corpus. The byte and passage bounds apply to each active
+view. Release unneeded handles to release obsolete bodies and rows.
+
+Use the resulting world with the ordinary task episode backend.
+For native episodes supply a sealed publication of the same source
+epoch to `NativeTaskEpisodeBackend`. A fresh reader rechecks the
+native source partition against the raw bodies. A version-3 episode
+records `source_epoch_seal`; equal contents restored in a later epoch
+cannot substitute for an earlier episode. Existing filesystem
+worlds use the ordinary version-2 ledger.
+
+`world.setup_source_bytes` is the sum of incoming source bodies for
+that epoch. Count feed files, parsing, indexing and retained state
+separately. A verified evidence open still charges the full source
+body and reports bytes delivered for the particular passage.
+
 ## Qualifying a native continuation on a future source
 
 `reader.forecast_next(memory, witness_source=source, features=indices,

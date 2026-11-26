@@ -11,7 +11,7 @@ from experiments.memory.source_revision_feed import (
     _BINARY_SCHEMA, _OPAQUE_ID, _SCHEMA as SOURCE_SCHEMA,
 )
 from experiments.memory.task_episode import EpisodePolicy, PolicyCall, PolicyReply, _packed
-from experiments.memory.task_evidence import TaskWorld
+from experiments.memory.task_evidence import TaskWorld, _catalogue_digest
 from experiments.memory.verified_source_tool import require_digest, sha256
 
 
@@ -101,6 +101,8 @@ def _span_leaf_dict(span):
 
 
 def _task_source_versions(world, memory):
+    if world.source_seal is not None and world.source_seal != memory.seal:
+        raise ValueError("task catalogue and native world do not use the same source epoch")
     versions = {source: version.sha256 for source, version in memory._scope.manifest.items()}
     if dict(world._tool.versions) != versions:
         raise ValueError("task catalogue and native world do not pin the same source versions")
@@ -109,9 +111,7 @@ def _task_source_versions(world, memory):
     for span in world._spans:
         if versions.get(span.source_id) != span.version_sha256:
             raise ValueError("task evidence catalogue contains a source outside the native pin")
-    catalogue = json.dumps([asdict(span) for span in world._spans], sort_keys=True,
-                           separators=(",", ":")).encode("utf8")
-    if sha256(catalogue) != world.pin.span_catalogue_sha256:
+    if _catalogue_digest(world._spans) != world.pin.span_catalogue_sha256:
         raise ValueError("task evidence catalogue differs from its recorded pin")
     return versions
 

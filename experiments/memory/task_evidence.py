@@ -1,8 +1,10 @@
 """Bounded task-time evidence investigation over a pinned source world."""
 
+from collections import Counter
 from copy import copy
 from dataclasses import asdict, dataclass, replace
 import json
+from itertools import islice
 from math import isfinite
 from operator import index
 from types import MappingProxyType
@@ -12,10 +14,37 @@ from experiments.memory.binding_feedback import BindingFeedback, BindingRoleAdva
 from experiments.memory.binding_links import BindingLinkCondition, BindingLinkRead
 from experiments.memory.binding_memory import BindingCapacityError
 from experiments.memory.binding_replay import _receiver_digest
-from experiments.memory.compressed_routing_map import BM25
+from experiments.memory.compressed_routing_map import BM25, lexical_tokens
 from experiments.memory.corpus_bindings import CorpusBindingMemory, CorpusRevision
 from experiments.memory.latent_factor_field import LatentFactorPin
+from experiments.memory.source_revision_feed import SourceDelta, read_source_delta
 from experiments.memory.verified_source_tool import SourceSpan, VerifiedSourceTool, sha256
+
+
+def _catalogue_digest(spans):
+    catalogue = json.dumps([asdict(span) for span in spans], sort_keys=True, separators=(",", ":")).encode()
+    return sha256(catalogue)
+
+
+def _passage_rows(source, version, raw, width):
+    start = 0
+    while start < len(raw):
+        end = min(start + width, len(raw))
+        if end < len(raw):
+            midpoint = start + width // 2
+            paragraph = raw.rfind(b"\n\n", midpoint, end)
+            line = raw.rfind(b"\n", midpoint, end) if paragraph == -1 else -1
+            if paragraph != -1:
+                end = paragraph + 2
+            elif line != -1:
+                end = line + 1
+            else:
+                while raw[end] & 0xC0 == 0x80:
+                    end -= 1
+        fragment = raw[start:end]
+        yield (SourceSpan(source, version, start, end, sha256(fragment)),
+               MappingProxyType(dict(Counter(lexical_tokens(fragment.decode("utf8"))))))
+        start = end
 
 
 @dataclass(frozen=True, slots=True)
@@ -42,6 +71,9 @@ class TaskWorld:
     _memory: CorpusBindingMemory | None
     _receiver: BindingFeedback | None
     _factor_pin: LatentFactorPin | None
+    _feed_scope: SourceDelta | None
+    _passage_bytes: int | None
+    _text_passages: Mapping[str, tuple[tuple[SourceSpan, Mapping[str, int]], ...]]
     pin: TaskPin
     setup_source_bytes: int
     setup_factor_bytes: int
@@ -83,7 +115,6 @@ class TaskWorld:
         if any(type(span) is not SourceSpan for span in spans) or len(set(spans)) != len(spans):
             raise ValueError("search catalogue requires distinct source spans")
         texts, setup_bytes = [], 0
-        by_source = {}
         for span in spans:
             opened = tool.verify(span)
             if opened["status"] != "VERIFIED_SOURCE_BYTES":
@@ -91,22 +122,92 @@ class TaskWorld:
             searchable_identity = span.source_id.replace(".", " ").replace("_", " ")
             texts.append(f"{searchable_identity}\n{opened['text']}")
             setup_bytes += opened["source_bytes_read"]
-            by_source.setdefault(span.source_id, []).append(span)
-        catalogue = json.dumps([asdict(span) for span in spans], sort_keys=True, separators=(",", ":")).encode()
-        pin = TaskPin(tool.snapshot_sha256, sha256(catalogue), None if bindings is None else bindings.revision,
+        pin = TaskPin(tool.snapshot_sha256, _catalogue_digest(spans), None if bindings is None else bindings.revision,
                       None if bindings is None else bindings.source_revision,
                       None if bindings is None else bindings._program_revision,
                       None if bindings is None else bindings.journal_sha256, receiver_sha, as_of, factor_sha)
-        object.__setattr__(self, "_tool", tool)
-        object.__setattr__(self, "_spans", spans)
-        object.__setattr__(self, "_spans_by_source", MappingProxyType({key: tuple(rows) for key, rows in by_source.items()}))
-        object.__setattr__(self, "_index", BM25(texts) if texts else None)
+        self._attach_catalogue(tool, spans, BM25(texts) if texts else None, setup_bytes)
         object.__setattr__(self, "_memory", memory)
         object.__setattr__(self, "_receiver", receiver)
         object.__setattr__(self, "_factor_pin", factor_pin)
+        object.__setattr__(self, "_feed_scope", None)
+        object.__setattr__(self, "_passage_bytes", None)
+        object.__setattr__(self, "_text_passages", MappingProxyType({}))
         object.__setattr__(self, "pin", pin)
-        object.__setattr__(self, "setup_source_bytes", setup_bytes)
         object.__setattr__(self, "setup_factor_bytes", factor_bytes)
+
+    @classmethod
+    def from_source_epoch(cls, directory, seal, *, max_feed_bytes, max_source_bytes,
+                          max_passages, passage_bytes=2048, previous=None):
+        """Attach a verified text feed to the task interface with reusable passage rows."""
+        for value in (max_feed_bytes, max_source_bytes, max_passages):
+            if type(value) is not int or value <= 0:
+                raise ValueError("source epoch needs positive feed, source and passage limits")
+        if type(passage_bytes) is not int or passage_bytes < 4:
+            raise ValueError("text passages need at least four bytes")
+        if previous is not None and (
+            type(previous) is not cls or previous._feed_scope is None or previous._passage_bytes != passage_bytes
+        ):
+            raise ValueError("revision requires a preceding text world with the same passage width")
+        delta = read_source_delta(directory, seal, previous=None if previous is None else previous._feed_scope,
+                                  max_bytes=max_feed_bytes)
+        content = {} if previous is None else dict(previous._tool._content)
+        passages = {} if previous is None else dict(previous._text_passages)
+        for source, raw in delta.changes.items():
+            content.pop(source, None)
+            passages.pop(source, None)
+            if raw is not None:
+                content[source] = raw
+        source_bytes = sum(map(len, content.values()))
+        if source_bytes > max_source_bytes:
+            raise ValueError("text world exceeds its retained source byte allowance")
+        remaining = max_passages - sum(map(len, passages.values()))
+        if remaining < 0:
+            raise ValueError("text world exceeds its passage allowance")
+        for source, raw in delta.changes.items():
+            if raw is None:
+                continue
+            # Consume at most one excess row to detect an incomplete index.
+            rows = tuple(islice(_passage_rows(source, delta.manifest[source].sha256, raw, passage_bytes),
+                                remaining + 1))
+            if len(rows) > remaining:
+                raise ValueError("text world exceeds its passage allowance")
+            passages[source] = rows
+            remaining -= len(rows)
+        versions = {source: item.sha256 for source, item in delta.manifest.items()}
+        tool = VerifiedSourceTool._from_content(versions, content)
+        rows = tuple(row for source in sorted(passages) for row in passages[source])
+        spans = tuple(span for span, _ in rows)
+        index = BM25._from_term_rows(terms for _, terms in rows) if rows else None
+        scope = replace(delta, changes=MappingProxyType({}))
+        world = cls.__new__(cls)
+        world._attach_catalogue(tool, spans, index, sum(len(raw) for raw in delta.changes.values()
+                                                      if raw is not None))
+        object.__setattr__(world, "_memory", None)
+        object.__setattr__(world, "_receiver", None)
+        object.__setattr__(world, "_factor_pin", None)
+        object.__setattr__(world, "_feed_scope", scope)
+        object.__setattr__(world, "_passage_bytes", passage_bytes)
+        object.__setattr__(world, "_text_passages", MappingProxyType(passages))
+        object.__setattr__(world, "pin", TaskPin(tool.snapshot_sha256, _catalogue_digest(spans),
+                                               None, None, None, None))
+        object.__setattr__(world, "setup_factor_bytes", 0)
+        return world
+
+    @property
+    def source_seal(self):
+        """The exact revision identity for a source-feed world."""
+        return None if self._feed_scope is None else self._feed_scope.seal
+
+    def _attach_catalogue(self, tool, spans, index, setup_bytes):
+        by_source = {}
+        for span in spans:
+            by_source.setdefault(span.source_id, []).append(span)
+        object.__setattr__(self, "_tool", tool)
+        object.__setattr__(self, "_spans", spans)
+        object.__setattr__(self, "_spans_by_source", MappingProxyType({key: tuple(rows) for key, rows in by_source.items()}))
+        object.__setattr__(self, "_index", index)
+        object.__setattr__(self, "setup_source_bytes", setup_bytes)
 
     def _search(self, query, limit):
         if self._index is None:

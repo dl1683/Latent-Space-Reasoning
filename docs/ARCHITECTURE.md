@@ -36,6 +36,36 @@ These need causal task evidence and complete costs, not vector geometry alone.
 | Deep latent reasoning with optional memory | The [split-binding receiver](#fitting-and-checking-a-split-binding-receiver) runs two feedback steps and supports intervention on the generated row. The receiver and its separate-state variant have supplied-coordinate controls. | Establish competence and relevance beyond known bindings and keep both memory-attached and memory-omitted calls in the same reasoning model. Identify what certifies absence and what signals unresolved support. |
 | Useful operation on consumer hardware | Local numerical slices can reuse unchanged work and avoid source reopening during some reads. | Measure construction, memory, maintenance, decoding, fallback and repeated use at matched quality. A cheap retained read is one term in that comparison. |
 
+### Sharing a verified source epoch across task readers
+
+[SLICE] A controller builds a `TaskWorld` directly from a verified
+opaque text feed. Feed bytes, retained active bytes and passage
+count have separate allowances. Deterministic contiguous passages
+preserve every source byte and cut at UTF-8 boundaries. The index
+uses only passage text. The corpus, authoring workspace and grading
+material remain outside the policy call.
+
+Each direct revision shares the preceding world's immutable bytes
+and passage term counts for unchanged documents. Changed bodies
+get new byte spans and term rows. The corpus-wide BM25 statistics
+and span catalogue are rebuilt from current metadata. The
+controller can keep an earlier handle for historical reads. A
+restoration with identical current bytes and passage spans still
+has a new source epoch. Passage and raw byte budgets bound the
+active view. The controller owns retention across old handles.
+
+Both the text and native episode paths can attach to this world.
+A source-epoch episode ledger records the feed seal. The native
+arm checks its source seal against that ledger pin as well as its
+ordinary complete partition, publication and reader checks. The
+lexical passage boundaries and native encoded chunks may differ.
+Evidence opens charge the complete verified source body, even
+when it is held in controller memory. There is no alternate disk
+path for these source objects. Compare revision parsing, index
+construction, native verification, actual model work, proof
+reopening and fallbacks separately.
+[Public-corpus control](RESULTS.md#using-one-source-epoch-for-native-and-text-episodes-26-november-2026)
+
 ### Reusing one backbone for source maintenance and reasoning
 
 [SLICE] `NativeLatentModel` attaches optional retained source memory to

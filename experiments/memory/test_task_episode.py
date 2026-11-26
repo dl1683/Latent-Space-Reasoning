@@ -75,10 +75,11 @@ def investigate(kind):
     return generate
 
 
-def test_native_task_episode_reads_a_discovered_continuation_at_one_pin(tmp_path):
+@pytest.mark.parametrize("source_feed_world", [False, True])
+def test_native_task_episode_reads_a_discovered_continuation_at_one_pin(tmp_path, source_feed_world):
     from experiments.memory.native_isolated_stage import _CausalControl, _Tokenizer, _reader
     from experiments.memory.native_publication import read_native_publication, write_native_publication
-    from experiments.memory.native_task_episode import NativeTaskEpisodeBackend
+    from experiments.memory.native_task_episode import NativeTaskEpisodeBackend, NativeTaskWorldPin
     from experiments.memory.source_revision_feed import write_source_delta
     from experiments.memory.verified_source_tool import sha256
 
@@ -110,8 +111,40 @@ def test_native_task_episode_reads_a_discovered_continuation_at_one_pin(tmp_path
     reader = _reader(_CausalControl().eval(), tokenizer=tokenizer)
     memory = read_native_publication(path, reader, seal=seal, source_seal=source.seal,
                                      runtime_sha256=runtime, max_bytes=64 * 1024)
-    tool, spans = _source_tool(tmp_path, records)
-    pinned = TaskWorld(tool, spans)
+    if source_feed_world:
+        budgets = dict(max_feed_bytes=64 * 1024, max_source_bytes=64 * 1024, max_passages=64)
+        pinned = TaskWorld.from_source_epoch(source_dir, source.seal, **budgets)
+        correction = write_source_delta(tmp_path / "source-2", {name: b"name L04 L07"}, previous=source)
+        changed = TaskWorld.from_source_epoch(tmp_path / "source-2", correction.seal, previous=pinned, **budgets)
+        restored = write_source_delta(tmp_path / "source-3", {name: raw[name]}, previous=correction)
+        latest = TaskWorld.from_source_epoch(tmp_path / "source-3", restored.seal, previous=changed, **budgets)
+        assert latest.pin == pinned.pin and latest.source_seal != pinned.source_seal
+        native_limits = dict(memory_view="active", latent_steps=2, expected_runtime_sha256=runtime,
+                             max_source_verification_bytes=64 * 1024)
+        with pytest.raises(ValueError, match="same source epoch"):
+            NativeTaskWorldPin.bind(latest, reader, memory, **native_limits)
+        next_native = reader.publish(tmp_path / "source-2", correction.seal, previous=memory)
+        restored_native = reader.publish(tmp_path / "source-3", restored.seal, previous=next_native)
+        restored_path = tmp_path / "native-restored"
+        restored_seal = write_native_publication(restored_path, reader, restored_native, runtime_sha256=runtime,
+                                                max_bytes=64 * 1024)
+        restored_native = read_native_publication(restored_path, reader, seal=restored_seal, source_seal=restored.seal,
+                                                  runtime_sha256=runtime, max_bytes=64 * 1024)
+        with pytest.raises(ValueError, match="same source epoch"):
+            NativeTaskWorldPin.bind(pinned, reader, restored_native, **native_limits)
+        latest_native_pin = NativeTaskWorldPin.bind(latest, reader, restored_native, **native_limits)
+        assert latest_native_pin.to_record()["source_seal"] == restored.seal
+
+        def text_reply(call):
+            return reply(finish={"findings": [], "open_questions": ["unresolved"]})
+
+        past_episode = run_episode(TASK, pinned, POLICY, LIMITS, Tokenizer(), text_reply, tmp_path / "past-text")
+        restored_episode = run_episode(TASK, latest, POLICY, LIMITS, Tokenizer(), text_reply, tmp_path / "restore-text")
+        with pytest.raises(ValueError, match="source epoch differs"):
+            read_episode_pair(past_episode, restored_episode)
+    else:
+        tool, spans = _source_tool(tmp_path, records)
+        pinned = TaskWorld(tool, spans)
     policy = EpisodePolicy("controller", "native-fixture", "native-fixture-tokenizer", "notes")
     limits = EpisodeLimits(1, 1, 1, 0, 12, 12, 2, 2)
     task = "follow L01"
@@ -128,6 +161,8 @@ def test_native_task_episode_reads_a_discovered_continuation_at_one_pin(tmp_path
     a, d = read_episode_pair(active, disabled, contrast="memory")
     _, o = read_episode_pair(active, omitted, contrast="memory")
     for ledger, expected in ((a, "L06"), (d, "unresolved"), (o, "unresolved")):
+        assert ledger[0]["data"]["version"] == (3 if source_feed_world else 2)
+        assert ledger[0]["data"].get("source_epoch_seal") == (source.seal if source_feed_world else None)
         assert ledger[0]["data"]["setup_native_source_verification_bytes"] == sum(map(len, raw.values()))
         request, = [record["data"] for record in ledger if record["kind"] == "request"]
         assert request["input_ids"] == tokenizer.encode(task, add_special_tokens=True, truncation=False)

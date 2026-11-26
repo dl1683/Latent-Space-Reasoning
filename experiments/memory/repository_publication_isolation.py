@@ -27,7 +27,7 @@ _CODE_MODULES = (
     "disjoint_transition", "latent_factor_field", "latent_feedback", "recurrent_task_bridge",
     "recurrent_world", "relational_feedback", "repository_import_memory",
     "repository_publication_trial", "repository_transport_control", "role_validity",
-    "source_constraints", "task_evidence", "transition_memory", "unit_program",
+    "source_constraints", "source_revision_feed", "task_evidence", "transition_memory", "unit_program",
     "verified_source_tool", "weight_program", "world_transport",
 )
 _BOUNDARY = """

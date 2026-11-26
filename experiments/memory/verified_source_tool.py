@@ -74,6 +74,21 @@ class VerifiedSourceTool:
 
     def __init__(self, root, versions):
         self.root = Path(root).resolve()
+        self._content = None
+        self._bind_versions(versions)
+
+    @classmethod
+    def _from_content(cls, versions, content):
+        """Attach immutable source bytes supplied by the trusted feed reader."""
+        tool = cls.__new__(cls)
+        tool.root = None
+        tool._bind_versions(versions)
+        if content.keys() != tool.versions.keys() or any(type(raw) is not bytes for raw in content.values()):
+            raise ValueError("immutable content must provide bytes for every pinned source")
+        tool._content = MappingProxyType(dict(content))
+        return tool
+
+    def _bind_versions(self, versions):
         versions = dict(versions)
         for identity, version in versions.items():
             if not isinstance(identity, str) or not identity:
@@ -98,23 +113,28 @@ class VerifiedSourceTool:
             return dict(result, status="UNKNOWN_SOURCE")
         if expected != pointer.version_sha256:
             return dict(result, status="STALE")
-        path = self.root / "leaves" / (pointer.version_sha256 + ".txt")
-        # Digest-only filenames prevent injected paths. Reject links escaping
-        # the copied store too; this is not an OS sandbox against hostile races.
-        if not path.resolve().is_relative_to(self.root):
-            return dict(result, status="OUTSIDE_STORE")
-        try:
-            if max_source_bytes is None:
-                data = path.read_bytes()
-            else:
-                with path.open("rb") as handle:
-                    if fstat(handle.fileno()).st_size > max_source_bytes:
-                        return dict(result, status="SOURCE_LIMIT")
-                    data = handle.read(max_source_bytes)
-                    if fstat(handle.fileno()).st_size > max_source_bytes:
-                        return dict(result, status="SOURCE_LIMIT", source_bytes_read=len(data))
-        except FileNotFoundError:
-            return dict(result, status="MISSING")
+        if self._content is not None:
+            data = self._content[pointer.source_id]
+            if max_source_bytes is not None and len(data) > max_source_bytes:
+                return dict(result, status="SOURCE_LIMIT")
+        else:
+            path = self.root / "leaves" / (pointer.version_sha256 + ".txt")
+            # Digest-only filenames prevent injected paths. Reject links escaping
+            # the copied store too; this is not an OS sandbox against hostile races.
+            if not path.resolve().is_relative_to(self.root):
+                return dict(result, status="OUTSIDE_STORE")
+            try:
+                if max_source_bytes is None:
+                    data = path.read_bytes()
+                else:
+                    with path.open("rb") as handle:
+                        if fstat(handle.fileno()).st_size > max_source_bytes:
+                            return dict(result, status="SOURCE_LIMIT")
+                        data = handle.read(max_source_bytes)
+                        if fstat(handle.fileno()).st_size > max_source_bytes:
+                            return dict(result, status="SOURCE_LIMIT", source_bytes_read=len(data))
+            except FileNotFoundError:
+                return dict(result, status="MISSING")
         result["source_bytes_read"] = len(data)
         if sha256(data) != pointer.version_sha256:
             return dict(result, status="SOURCE_CHANGED")
@@ -146,6 +166,8 @@ class VerifiedSourceTool:
         expected = self.versions.get(source_id)
         if expected is None:
             raise ValueError("source is outside the verified snapshot")
+        if self._content is not None:
+            return len(self._content[source_id])
         path = self.root / "leaves" / (expected + ".txt")
         if not path.resolve().is_relative_to(self.root):
             raise ValueError("source path escapes the verified store")
@@ -158,18 +180,23 @@ class VerifiedSourceTool:
         expected = self.versions.get(source_id)
         if expected is None:
             raise ValueError("source is outside the verified snapshot")
-        path = self.root / "leaves" / (expected + ".txt")
-        if not path.resolve().is_relative_to(self.root):
-            raise ValueError("source path escapes the verified store")
-        if max_bytes is None:
-            data = path.read_bytes()
+        if self._content is not None:
+            data = self._content[source_id]
+            if max_bytes is not None and len(data) > max_bytes:
+                raise ValueError("source verification exceeds its byte allowance")
         else:
-            with path.open("rb") as handle:
-                if fstat(handle.fileno()).st_size > max_bytes:
-                    raise ValueError("source verification exceeds its byte allowance")
-                data = handle.read(max_bytes + 1)
-                if len(data) > max_bytes or fstat(handle.fileno()).st_size > max_bytes:
-                    raise ValueError("source verification exceeds its byte allowance")
+            path = self.root / "leaves" / (expected + ".txt")
+            if not path.resolve().is_relative_to(self.root):
+                raise ValueError("source path escapes the verified store")
+            if max_bytes is None:
+                data = path.read_bytes()
+            else:
+                with path.open("rb") as handle:
+                    if fstat(handle.fileno()).st_size > max_bytes:
+                        raise ValueError("source verification exceeds its byte allowance")
+                    data = handle.read(max_bytes + 1)
+                    if len(data) > max_bytes or fstat(handle.fileno()).st_size > max_bytes:
+                        raise ValueError("source verification exceeds its byte allowance")
         if sha256(data) != expected:
             raise ValueError("pinned source bytes changed")
         data.decode("utf8")

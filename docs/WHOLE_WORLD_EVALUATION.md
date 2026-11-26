@@ -577,9 +577,12 @@ the fixed software slice; it does not execute the model-facing `run_episode`
 actions. The readout and route are fixed, and the trial supplies no independent
 task acquisition, semantic grade, or equal-information comparison.
 This helper is specific to Python imports and rejects active `TaskWorld`
-indexes above 8 MiB. The source-disjoint PEP calibration is 12,061,646 bytes
-at its opening pin, so it needs a generic opaque-document loader and measured
-index-memory budget; do not bypass the cap by simply increasing it.
+indexes above 8 MiB. The source-disjoint PEP calibration now has a
+separate [opaque-document loader](CONTEXT_TOOL.md#attaching-a-verified-text-epoch-to-a-task).
+Its complete 12,061,646-byte opening and successive source epochs passed
+a text-side software check. It uses the same source-seal contract as the
+native task interface. The full-corpus learned worker and late-reader
+comparison remains open.
 
 A separate [corpus-wide transport control](RESULTS.md#discovering-and-revising-a-transport-before-tasks-26-november-2026)
 lets a pre-task worker discover and revise an operation without enrolled

@@ -226,3 +226,57 @@ def test_stale_and_budget_refusals_cannot_be_cited(tmp_path):
     assert recovered.role_evidence[0].request.outcomes == ("matches",)
     assert recovered.rejected_actions[1].step == 4
     assert recovered.steps == 7
+
+def test_text_source_world_indexes_a_complete_opaque_revision_without_rereading_other_sources(tmp_path):
+    from experiments.memory.compressed_routing_map import BM25
+    from experiments.memory.source_revision_feed import write_source_delta
+
+    changing, steady, empty = (letter * 32 for letter in "abc")
+    old = "Café\n\nKind 🌍\nWörter".encode("utf8")
+    new = "Café\n\nOther 🌏\nWörter".encode("utf8")
+    anchored = b"Anchor survives"
+    opening_dir = tmp_path / "opening"
+    opening = write_source_delta(opening_dir, {changing: old, steady: anchored, empty: b""})
+    limits = dict(max_feed_bytes=16384, max_source_bytes=1024, max_passages=16, passage_bytes=8)
+    before = TaskWorld.from_source_epoch(opening_dir, opening.seal, **limits)
+    assert before.setup_source_bytes == len(old) + len(anchored)
+    assert not before._spans_by_source.get(empty) and before._tool.versions.keys() == opening.manifest.keys()
+    assert before._search(changing, 4) == ((), 0)
+
+    def compare_cold(world, source, query):
+        passages = world._spans_by_source[source]
+        raw = world._tool._read_verified_source(source)
+        assert passages[0].start_byte == 0 and passages[-1].end_byte == len(raw)
+        assert all(a.end_byte == b.start_byte for a, b in zip(passages, passages[1:]))
+        assert all(span.end_byte - span.start_byte <= limits["passage_bytes"] for span in passages)
+        texts = [world._tool.verify(span)["text"] for span in world._spans]
+        assert "".join(text for text, span in zip(texts, world._spans, strict=True) if span.source_id == source) == (
+            raw.decode("utf8"))
+        np.testing.assert_array_equal(world._index.score(query), BM25(texts).score(query))
+
+    compare_cold(before, changing, "Café Kind Anchor")
+    corrected_dir = tmp_path / "corrected"
+    corrected = write_source_delta(corrected_dir, {changing: new}, previous=opening)
+    after = TaskWorld.from_source_epoch(corrected_dir, corrected.seal, previous=before, **limits)
+    assert after.setup_source_bytes == len(new)
+    assert after._text_passages[steady] is before._text_passages[steady]
+    assert after._tool._content[steady] is before._tool._content[steady]
+    old_span, = before._search("Kind", 1)[0]
+    assert before._tool.verify(old_span)["status"] == "VERIFIED_SOURCE_BYTES"
+    assert after._tool.verify(old_span)["status"] == "STALE"
+    compare_cold(after, changing, "Café Other Anchor")
+    with pytest.raises(ValueError, match="retained source byte allowance"):
+        TaskWorld.from_source_epoch(corrected_dir, corrected.seal, previous=before,
+                                    **{**limits, "max_source_bytes": len(new)})
+    with pytest.raises(ValueError, match="passage allowance"):
+        TaskWorld.from_source_epoch(corrected_dir, corrected.seal, previous=before,
+                                    **{**limits, "max_passages": 1})
+    with pytest.raises(ValueError, match="projection"):
+        TaskWorld.from_source_epoch(corrected_dir, corrected.seal, **limits)
+
+    removed_dir = tmp_path / "removed"
+    removed = write_source_delta(removed_dir, {changing: None}, previous=corrected)
+    view = TaskWorld.from_source_epoch(removed_dir, removed.seal, previous=after, **limits)
+    assert view.setup_source_bytes == 0 and view._search("Other", 2) == ((), 0)
+    assert view._tool.verify(old_span)["status"] == "UNKNOWN_SOURCE"
+    assert after._tool.verify(after._spans_by_source[changing][0])["status"] == "VERIFIED_SOURCE_BYTES"

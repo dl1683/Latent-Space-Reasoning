@@ -20,7 +20,7 @@ from experiments.memory.verified_source_tool import SourceSpan, require_digest, 
 
 
 _EPISODE_IMPLEMENTATION_FILES = (
-    "binding_links.py", "corpus_binding_journal.py", "corpus_bindings.py", "latent_feedback.py",
+    "binding_links.py", "compressed_routing_map.py", "corpus_binding_journal.py", "corpus_bindings.py", "latent_feedback.py",
     "recurrent_task_bridge.py",
     "recurrent_world.py", "source_constraints.py", "task_episode.py", "task_evidence.py",
     "repository_import_memory.py", "repository_transport_control.py", "verified_reader_bridge.py",
@@ -549,7 +549,7 @@ def read_episode(artifact):
     if type(opening_data) is not dict:
         raise ValueError("episode opening record is malformed")
     version = opening_data.get("version")
-    if type(version) is not int or version not in (1, 2):
+    if type(version) is not int or version not in (1, 2, 3):
         raise ValueError("episode version is unsupported")
     recurrent_receipts = {}
     recurrent_offsets = {}
@@ -557,11 +557,11 @@ def read_episode(artifact):
         data = row["data"]
         if row["kind"] == "refusal":
             if type(data) is not dict:
-                if version == 2:
+                if version >= 2:
                     raise ValueError("episode refusal is malformed")
                 continue
             limited = data.get("reason") in ("input_limit", "context_limit")
-            if "input_ids" in data or (version == 2 and limited):
+            if "input_ids" in data or (version >= 2 and limited):
                 ids = data.get("input_ids")
                 if (not limited or type(data.get("input_tokens")) is not int or type(ids) is not list
                         or len(ids) != data["input_tokens"]
@@ -594,25 +594,31 @@ def read_episode(artifact):
                 raise ValueError("recurrent-world page does not follow its bound receipt and offset")
             recurrent_offsets[receipt] = result.get("next_offset")
     policy_record = opening_data.get("policy")
-    if version == 2 and (type(policy_record) is not dict or "compact_delivery" not in policy_record):
+    if version >= 2 and (type(policy_record) is not dict or "compact_delivery" not in policy_record):
         raise ValueError("episode delivery policy is missing")
     if type(policy_record) is dict:
         if policy_record.get("output_constraint_sha256") is not None:
             require_digest(policy_record["output_constraint_sha256"])
         _validate_delivery(policy_record.get("compact_delivery", False), policy_record.get("state_kind"))
     native_pin = opening_data.get("native_world_pin")
+    if ("source_epoch_seal" in opening_data) != (version == 3):
+        raise ValueError("episode source epoch field differs from its schema")
+    if version == 3:
+        require_digest(opening_data["source_epoch_seal"])
+        if type(native_pin) is dict and native_pin.get("source_seal") != opening_data["source_epoch_seal"]:
+            raise ValueError("episode source epoch differs from its native world pin")
     setup = {field: opening_data[field] for field in (
         "setup_source_bytes", "setup_native_source_verification_bytes", "setup_total_source_bytes",
     ) if field in opening_data}
     if any(type(value) is not int or value < 0 for value in setup.values()):
         raise ValueError("episode source setup accounting is malformed")
-    if version == 2 or native_pin is not None or setup.keys() - {"setup_source_bytes"}:
+    if version >= 2 or native_pin is not None or setup.keys() - {"setup_source_bytes"}:
         if len(setup) != 3:
             raise ValueError("episode source setup accounting is malformed")
         if setup["setup_total_source_bytes"] != (
                 setup["setup_source_bytes"] + setup["setup_native_source_verification_bytes"]):
             raise ValueError("episode total source setup bytes do not add up")
-    if version == 2:
+    if version >= 2:
         finish = records[-1]["data"]
         if type(finish) is not dict:
             raise ValueError("episode finish is malformed")
@@ -1326,11 +1332,14 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
     status = "call_limit"
     with path.open("xb") as handle:
         ledger = _Ledger(handle)
-        opening = {"version": 2, "task": task, "pin": asdict(world.pin),
+        opening = {"version": 3 if world.source_seal is not None else 2,
+                   "task": task, "pin": asdict(world.pin),
                    "policy": asdict(policy), "limits": asdict(limits),
                    "setup_source_bytes": world.setup_source_bytes,
                    "setup_native_source_verification_bytes": native_source_bytes,
                    "setup_total_source_bytes": total_setup_source_bytes}
+        if world.source_seal is not None:
+            opening["source_epoch_seal"] = world.source_seal
         if native_opening is not None:
             opening["native_world_pin"] = native_opening
         if world.pin.factor_sha256 is None:
@@ -1601,6 +1610,8 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
     for field in ("version", "task", "limits"):
         if a[field] != b[field]:
             raise ValueError(f"episode {field} differs")
+    if a.get("source_epoch_seal") != b.get("source_epoch_seal"):
+        raise ValueError("episode source epoch differs")
     if a.get("context_completion_version") != b.get("context_completion_version"):
         raise ValueError("episode context completion policy differs")
     if a.get("hidden_bound_version") != b.get("hidden_bound_version"):

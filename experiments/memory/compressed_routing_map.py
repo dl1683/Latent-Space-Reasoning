@@ -154,7 +154,16 @@ def lexical_tokens(text):
 
 class BM25:
     def __init__(self, texts):
-        self.rows = [Counter(lexical_tokens(x)) for x in texts]
+        self._initialize([Counter(lexical_tokens(text)) for text in texts])
+
+    @classmethod
+    def _from_term_rows(cls, rows):
+        index = cls.__new__(cls)
+        index._initialize(list(rows))
+        return index
+
+    def _initialize(self, rows):
+        self.rows = rows
         self.lengths = np.asarray([sum(x.values()) for x in self.rows])
         self.average = max(float(self.lengths.mean()), 1)
         self.df = Counter()
@@ -165,7 +174,7 @@ class BM25:
         out = np.zeros(len(self.rows), dtype=np.float32)
         norm = 1.5 * (.25 + .75 * self.lengths / self.average)
         for word in set(lexical_tokens(query)):
-            freq = np.asarray([x[word] for x in self.rows], dtype=np.float32)
+            freq = np.asarray([row.get(word, 0) for row in self.rows], dtype=np.float32)
             df = self.df[word]
             idf = math.log(1 + (len(self.rows) - df + .5) / (df + .5))
             out += idf * freq * 2.5 / (freq + norm)

@@ -35,13 +35,14 @@ The current `repository_transport_control` publication is a Python-import
 control, not the PEP loader: it uses AST imports as its observation grammar,
 limits changed source bytes to 8 MiB per revision, and `open_task_world`
 rejects an active index above 8 MiB. This calibration has 12,061,646 source
-bytes at its opening pin. Do not raise those limits without a resource
-preflight. Build a generic raw-document handoff with opaque document IDs,
-measure index memory and setup/read costs on the full 655-document snapshot,
-and keep PEP identifiers and oracle mappings out of latent coordinates and
-reader metadata. `TaskWorld` currently adds source identifiers to its lexical
-index text, so this loader must use truly opaque IDs rather than PEP filenames
-or numbers; preserve PEP references only in the source text itself.
+bytes at its opening pin. The generic
+[verified text epoch](CONTEXT_TOOL.md#attaching-a-verified-text-epoch-to-a-task)
+now opens the complete 655-document feed. It indexes body passages and
+uses their opaque source IDs for provenance. The native and text episode
+paths can share the feed seal. The public corpus check measured text
+setup and proof reopening on the opening, correction and restoration.
+The matched native comparison still needs a qualified publisher and reader.
+[Source-epoch results](RESULTS.md#using-one-source-epoch-for-native-and-text-episodes-26-november-2026)
 
 ## Rubric revision 2 — 26 November 2026
 

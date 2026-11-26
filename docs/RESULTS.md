@@ -4,6 +4,52 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Using one source epoch for native and text episodes, 26 November 2026
+
+**Public-corpus software control.** The existing PEP feed exported
+the 655 opening documents, a one-document correction and a one-document
+restoration. The controller reopened the complete committed Git scope
+at each pin and verified equality of every body and contiguous coverage
+by UTF-8 passages capped at 2,048 bytes. The two later views reused
+the passage term rows of all 654 unchanged documents.
+
+| Epoch | Active bytes | Incoming source bytes | Reused passages | Newly indexed passages |
+| --- | ---: | ---: | ---: | ---: |
+| Opening | 12,061,646 | 12,061,646 | 0 | 6,698 |
+| Correction | 12,062,734 | 48,269 | 6,672 | 27 |
+| Restoration | 12,061,646 | 47,181 | 6,672 | 26 |
+
+The serialized feed occupied 12,498,017, 118,993 and 117,881 bytes.
+For four generic queries on each pin, the retained index matched a
+fresh BM25 build over the same passages in scores, top-20 order and
+candidate counts. The corrected view rejected the old changed span.
+Opening and restored spans had the same bytes and different source
+seals. Independent Git proofs agreed with the task tool on the
+passage text and full-document read charges of 47,181, 48,269 and
+47,181 bytes.
+
+**Cost observation.** One Windows CPU process measured the world
+construction at 0.95, 0.20 and 0.18 seconds wall time, and 0.86,
+0.17 and 0.16 seconds CPU time. The separate cold lexical index builds
+took 0.66, 0.72 and 0.81 seconds wall time after Git bytes and passage
+boundaries were available. Git feed export took 0.96 seconds across
+all three pins. Process peak RSS was 216 MiB including the independent
+Git and cold index checks. These timings cover different operations
+and come from one process. They do not measure model inference or
+lifecycle savings.
+
+**Same-pin native path.** The supplied native backbone completed
+active, derived-off and omitted episodes through the ordinary task
+interface over a feed-backed fixture. Native attach refused opening
+and restored publications substituted in either direction.
+Text-ledger pairing likewise refused the equal-byte cross-epoch
+comparison. The native proof pass still verified every body and
+encoded span. The existing six-stage Linux publication check passed
+104 reads and 54 attached witness checks with the expanded allowlist.
+No model used the PEP corpus and no PEP task was graded.
+[Task interface](CONTEXT_TOOL.md#attaching-a-verified-text-epoch-to-a-task)
+[Public source pins](PEP_VISIBLE_LATE_TASK.md#source-and-revision-contract)
+
 ## Carrying native alternatives across revisions, 26 November 2026
 
 **Software control.** One task-blind native worker used the opening
