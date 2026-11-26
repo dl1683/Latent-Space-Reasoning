@@ -2,8 +2,11 @@
 
 This is the auditable output of a one-task visible synthetic pilot run on
 `research-review` at base commit `145f548`. The source-only publisher ran before
-the reader opened task `glass-arch-p2`; the evaluator file was opened only by
-the final scoring command.
+the reader opened task `glass-arch-p2`. Both inference runs kept evaluator gold
+closed; separate scoring commands opened it after generation.
+
+The ordinary direct-text follow-up ran at base commit `2faefad` using runner
+SHA-256 `7d26287b62249cde198e09f9528f83997f0692091aae874b4acfc7e8d3c23476`.
 
 ## Frozen inputs and runtime
 
@@ -31,16 +34,29 @@ latent steps, so it routed and applied 0 derived steps.
 The gold answer was `1` (Copper). Active, derived-off and memory-omitted each
 predicted `2`; the full-text arm received all five source bodies, covered all
 three critical source IDs, and predicted `3` (unresolved). Each arm scored 0/1.
-The full-text arm used the same native reader with the corpus appended; it is
-not a qualified conventional RAG or direct-generation baseline.
+The full-text arm used the same native reader with the corpus appended; the
+ordinary Qwen comparison is recorded separately below.
+
+The separate ordinary Qwen full-context run used the exact 336-token p2 prompt,
+the same model revision, tokenizer/template and two-token label-then-EOS
+constraint. It returned `2` (Amber), which scored **0/1** against gold `1`
+(Copper). The output IDs were `[17, 151645]`; greedy generation used two
+backbone calls, 337 input positions, and 3.04 seconds on CPU. It did not use
+the native recurrence or memory. Transformers warned that the attention mask
+could not be inferred because pad and EOS IDs match; inspection of the pinned
+installed generation code showed it fell back to all ones. This prompt has no
+padding, so the fallback matches its intended mask. The raw prompt IDs, hashes,
+run record and post-generation score are in `direct_text_baseline.json` and
+`direct_text_score.json`.
 
 One earlier attempt on the same task was excluded: the script passed the
 literal string `default` as a chat template, producing a one-token prompt. The
 corrected run checked that the decoded prompt retained the exact task; the
 task-only input was 63 tokens and the full-text input was 336.
 
-This one visible relation family is a falsification/interface diagnostic. Its
-incompetent full-text control and absent derived route do not establish a
-latent-world advantage or a general task-reasoning result. Do not scale this
-protocol until the text control can solve the task and the task-addressed read
-uses the required evidence.
+This one visible relation family is a falsification/interface diagnostic.
+Neither ordinary Qwen full-text nor the native full-text arm solved it, and the
+active derived route was unused. It cannot compare latent memory against a
+competent text reasoner. Stop this fixture here. A later broad T8 one-shot also
+missed its critical needs, so the competence gate remains unmet; see the
+[separate T8 record](../whole_world_t8_direct_text_2026-11-26/README.md).

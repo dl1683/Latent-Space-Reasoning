@@ -2,7 +2,7 @@
 
 **Classification:** evaluation infrastructure directly supporting the whole-loop mission. Independent response to issue #6 comments 7204225938, 7204501570 and 7204850572. This is a public, visible calibration panel, not held-out data or a model result. The source authors are independent of LSR; the task and rubric author is independent of the current native implementation, not of this evaluation design. Another reviewer should check the rubric without seeing model outputs. No model execution authority is granted.
 
-The latest native addressing run at 2faefadf is 0/1 in each of four arms; the installed continuation was never addressed and the full-text native arm also failed. Do not scale that experiment. Establish a competent ordinary direct-text control first. This independent source panel is the next real-revision gate once authorized, not an excuse to tune the failed canary or to add more deterministic ingress fixtures.
+The latest native addressing run at 2faefadf is 0/1 in each of four arms; the installed continuation was never addressed and the full-text native arm also failed. Do not scale that experiment. Ordinary direct Qwen full-text also scored 0/1 on p2, and a broader visible T8 one-shot scored 0/1 complete (0/3 critical needs, 1/1 side fact). Neither establishes model-wide incapability, but neither qualifies the reader for this panel. First complete the registered visible planner/action calibration and text-access controls. This independent source panel remains the real-revision gate after that prerequisite; it is not a reason to tune a failed canary or add deterministic ingress fixtures.
 
 ## Controller-only source stream
 
@@ -36,8 +36,18 @@ Opening: 163118 source bytes. Send only the new PEP 751 generation and ordinary 
 The [native weighted witness](CONTEXT_TOOL.md#comparing-a-byte-weighted-revision-witness)
 implements the source-scoped aggregate and its distinct opening-mean
 control. All seven edits passed the source-only input preflight.
-The forecast and late-task experiment awaits the ordinary direct-text
-competence gate and explicit execution authority.
+The forecast and late-task model experiment still awaits a passing task-reader
+gate. The direct p2 and broad T8 one-shot checks both missed critical needs;
+the registered visible planner/action calibration is the next model gate.
+
+For these seven PEP transitions, source preflight reports that digest-set
+membership and opening-digest multiset subtraction select the same locations,
+so the current panel counts are unaffected. Static review found a general
+scope edge in [`NativeWeightedRevisionWitness`](../experiments/memory/native_forecast_set.py):
+its opening digest set can omit a newly added occurrence when identical chunk
+bytes already appeared in the opening version. Reconcile that case or keep
+future claims scoped to revision streams whose preflight shows the two rules
+agree.
 
 Every p0..p6 opening is eligible. Freeze a worker-selected proposal set, source-only control and any predicted observation before the next release. The controller gives the same fixed source scope (the existing PEP 751 opaque identity, not a passage) at each opening; this is a scoped acquisition test, not a test of autonomous witness-source selection. A fully blind follow-up would remove that hint. A fixed one-event horizon is the primary denominator (7 openings). If testing a competing multi-event forecast set, declare its horizon before starting, record each prefix and expiration, and report it separately; no retroactive window extensions or favorable subset selection.
 

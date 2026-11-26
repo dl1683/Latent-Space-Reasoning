@@ -46,7 +46,13 @@ This preflight verified source identities and potential witness
 locations. No backbone, late task, or grader ran on the panel.
 Aggregate agreement still needs to predict a causal late-task gain.
 Ordinary direct-text competence and pretrained task addressing
-remain open.
+remain open. For these seven transitions, preflight found digest-set
+membership and multiset subtraction selected the same locations. Static
+review of [`NativeWeightedRevisionWitness`](../experiments/memory/native_forecast_set.py)
+found that its opening digest set can omit a newly added occurrence whose
+identical chunk bytes already existed in the opening version. This does not
+change the current seven-transition counts, but broader revision-stream
+claims need that case reconciled or separately scoped.
 [Source panel](PEP751_CHRONOLOGICAL_PANEL.md)
 [Software controls](../experiments/memory/test_native_publication.py)
 
@@ -267,8 +273,9 @@ tokenization with the pinned Qwen3-0.6B tokenizer revision
 Both fit a 512-token per-call cap. Together they use 522 tokens from a
 1,792-token episode ceiling, leaving 1,270 tokens for up to five action
 outputs. All eight task plans, action schemas and finals still need complete
-token preflight before inference; this sample is not a full-episode guarantee.
-No model calibration has run on this packet.
+token preflight before an episode; this sample is not a full-episode guarantee.
+One separate raw full-text T8 canary has since run, but it did not execute the
+episode planner or action contract.
 
 ## Native-world task-addressing gate, 26 November 2026
 
@@ -300,6 +307,23 @@ excluded after a prompt audit found that the literal `default` had been used
 as a one-token chat template. The corrected runner checks that the exact task
 survives tokenization.
 
+**Ordinary direct-text competence gate.** A separate run fed the same exact
+336-token task-plus-five-source prompt to ordinary Qwen3-0.6B causal
+generation, without the native reader or memory. Greedy output was `2`
+(Amber), followed by EOS; the answer scored **0/1** against gold `1` (Copper).
+It used the same tokenizer/template, label allowlist and two-token cap, with
+two backbone calls, 337 input positions and 3.04 seconds generation time on
+CPU. The run did not open gold; scoring opened it afterward. Transformers
+warned that pad and EOS match; inspection of the installed generation code
+confirmed its fallback mask was all ones, which is correct for this unpadded
+prompt. The raw prompt IDs and score are retained beside the native outputs.
+
+The ordinary text solver also failed this fixture. Stop this p2 comparison
+here; do not tune it or expand its task panel. A later broad T8 one-shot also
+missed all critical needs; see the separate canary below. The visible 0.6B
+competence gate therefore remains unmet, and no mechanism comparison should
+be scaled yet.
+
 Publication used 28 backbone calls and 158 input positions; source encoding,
 maintenance and writing the three publications took 3.08, 0.58 and 1.19
 seconds. The p2 reader used 16 backbone calls and 537 input positions across
@@ -307,11 +331,35 @@ four arms. The complete publications, source feeds, reads and scored record
 are retained in
 [`native_world_addressing_p2_2026-11-26`](../experiments/memory/results/native_world_addressing_p2_2026-11-26/README.md).
 This one visible synthetic relation family is an interface falsification
-only; the p2 source explicitly states that the correction was withdrawn.
-Before expanding the panel, qualify an ordinary full-context Qwen text answer
-under the same prompt and output cap. Then compare task-addressed memory with
-that text path and a same-information exact join, including same-pin removal
-and restoration. Do not interpret retrieval or a retained vector as reasoning.
+only; the p2 source explicitly states that the correction was withdrawn. The
+ordinary direct-text baseline is also preserved in the linked artifact. Do not
+interpret retrieval or a retained vector as reasoning.
+
+## Raw full-text strategy canary, 26 November 2026
+
+One ordinary greedy Qwen3-0.6B call received the exact visible T8 task and all
+five pinned source texts in a 202-token prompt. It returned 64 tokens and
+terminated normally. The answer named the assigned desk, North Borough,
+Room 4, but said the team should establish a review desk and did not identify
+that the E-22 signature token must be verified before its timely receipt can
+substitute for the missing office mark.
+
+After generation, manual application of the frozen T8 criteria scored
+**0/1 complete tasks**, **0/3 critical needs**, **1/1 side needs**, and **0
+false-closure cases**. The run used the pinned Qwen3-0.6B snapshot on an RTX
+5070 Laptop GPU, with no memory, tools, latent recurrence, or constrained
+answer format. It used 2.62 seconds for generation and peaked at 1.27 GB
+allocated VRAM. [Raw run, score, and prompt hashes](../experiments/memory/results/whole_world_t8_direct_text_2026-11-26/README.md)
+preserve the input and the single output.
+
+This broad task canary failed to show that the raw one-shot reader inferred a
+consequential unknown. Along with p2, it motivates a task-planning and
+evidence-action qualification before a larger latent-world panel. It does
+not establish a general model limitation, compare against iterative RAG, or
+show a latent-memory benefit. Do not tune or rerun T8. The evaluation contract
+still requires a full preflight of all eight legal plans, actions, and finals
+before the visible episode calibration; only a passing visible task gate would
+justify the next held comparison.
 
 ## Qualifying a continuation before a late task, 26 November 2026
 

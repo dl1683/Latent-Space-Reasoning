@@ -1,0 +1,1 @@
+{"accuracy":0,"baseline_sha256":"da76ef5231a1e0579067f4f6d42592b4dec8bc039d0853da364b00a1bb289fad","correct":false,"expected":"1","gold_sha256":"98efcbe4c8d91427c42b14402782f0634e7166565c1461246375d9305461a6ac","input_tokens":336,"output_token_ids":[17,151645],"prediction":"2","schema":"lsr-native-world-direct-text-score-v1","task_id":"glass-arch-p2","tasks":1,"terminated":true}

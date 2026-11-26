@@ -1,0 +1,30 @@
+{
+  "schema": "lsr-whole-world-direct-text-score-v1",
+  "task_id": "T8",
+  "run_sha256": "de55762ccef351f9472175acc20fa9deb6a089d6626fbeec83473afdf11872a7",
+  "gold_sha256": "61cefbeb2a6e1d11d898c0fa4a9d07c6185978b6f23a9580c1130ceb318ed62b",
+  "scoring": "manual post-generation application of the frozen T8 criteria; gold was not opened by the inference runner",
+  "task_count": 1,
+  "complete_tasks": 0,
+  "critical_needs_satisfied": 0,
+  "critical_needs_total": 3,
+  "side_needs_satisfied": 1,
+  "side_needs_total": 1,
+  "false_closure_cases": 0,
+  "tasks": [
+    {
+      "task_id": "T8",
+      "complete": false,
+      "critical_need_results": {
+        "T8-N1": false,
+        "T8-N2": false,
+        "T8-N3": false
+      },
+      "side_need_results": {
+        "T8-SIDE": true
+      },
+      "false_closure": false,
+      "reason": "The answer named North Borough, Room 4 but did not identify the missing signature-token verification, the timely receipt, or the unresolved appeal outcome."
+    }
+  ]
+}

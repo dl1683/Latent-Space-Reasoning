@@ -794,12 +794,35 @@ reader and was not a competent direct-text baseline.
 
 An earlier attempt passed literal `default` as the chat template and generated
 from a one-token prompt; it was excluded. The runner now verifies that decoded
-input preserves the exact task. Do not scale the panel or tune the reader on
-this example. First run the ordinary Qwen full-text baseline with the same
-prompt and output cap; if it cannot solve the task, redesign the visible gate
-before comparing memory mechanisms. The corrected run and source publications
+input preserves the exact task. The ordinary direct Qwen3-0.6B full-context
+baseline then used the verified 336-token prompt but also returned Amber, 0/1
+versus gold Copper. Therefore this fixture has no competent text baseline and
+cannot support a comparison of memory mechanisms. Do not scale its panel or
+tune this example. Retire it as a capability comparison. A subsequent broad
+T8 one-shot also failed its critical needs, so the 0.6B competence gate remains
+unmet; see the separate entry below. The corrected runs and source publications
 are retained in
 [`native_world_addressing_p2_2026-11-26`](../experiments/memory/results/native_world_addressing_p2_2026-11-26/README.md).
+
+## Broad direct-text canary omitted the consequential unknown, 26 November 2026
+
+On the visible T8 strategy task, ordinary greedy Qwen3-0.6B saw the complete
+202-token prompt with all five source texts. It named the review desk but
+missed the three critical needs: the denial basis, the conditional electronic
+receipt rule, and the timely-but-unverified E-22 receipt. It scored 0/1
+complete, 0/3 critical, 1/1 side, with no unsupported validity or appeal
+claim. This is a failure of one raw one-shot task reader on a visible synthetic
+case, not evidence that the model cannot reason generally and not a latent
+world comparison.
+
+Stop the direct T8 canary here; do not tune its prompt or count the desk fact
+as adequate task resolution. Together with the p2 direct-text miss, it shows
+that selecting the broad task and placing all sources in context did not by
+themselves produce the required task-level need inference. Before trying the
+larger PEP revision panel, complete the registered all-eight plan/action/final
+token preflight and qualify a task-directed episode against iterative text
+access and an equal-information exact control. Preserve the missing-need
+denominators and charge the complete episode budget.
 
 ## Recovery and interpretation
 
