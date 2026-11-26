@@ -722,6 +722,16 @@ A writer configured for binary ingress supplies `max_source_bytes`
 to every `NativeLatentModel.publish` call. A controller reading the
 feed directly passes `allow_binary=True` with its byte budget.
 
+A correction to the declared modality is also an update when the raw
+bytes are identical. Submit the original bytes again with the corrected
+binary membership. The digest stays the same, but the source generation
+and epoch seal advance; the source appears in `changes`. The native
+publisher uses that changed-source set to replace rows and check saved
+frontiers. A repeated update with identical bytes and identical type is
+still refused. Historical interpretation requires the pinned epoch, not
+just a byte digest. The feed regression covers both type-change directions
+and historical replay; the integrated native type-only revision test remains open.
+
 Configure the writer with `source_ingress(source_id, raw_bytes)` and
 `source_ingress_sha256`. The callable returns a hidden row for a
 supported binary format. Returning `None` refuses that source.
