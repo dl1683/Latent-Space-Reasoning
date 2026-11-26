@@ -42,6 +42,8 @@ function control() {
   function checkOnly(proposal, gold) {
     return proposal.answer===gold ? proposal.answer : "open";
   }
+  const oracleGate = (publication, proposal, gold) => publication ? gold : proposal.answer;
+  const tableReason = (table, task) => table ? table[task.start] : "open";
   const out={worlds:64,pins:0,lateReads:0,resolved:0,sourceOnlyCorrect:0,routeLeakCorrect:0,taskVisibleCorrect:0,oracleGateCorrect:0,answerTableCorrect:0,sourceOnlyCausal:0,routeLeakCausal:0,taskVisibleCausal:0,oracleGateCausal:0,answerTableCausal:0,routeFieldsRejected:0,pairedPublicationDifferences:0,sourceOnlyPublicationDifferences:0,rawOracleGateResolved:0,checkOnlyResolved:0,midpointTrials:0,sourceOnlyMidpointCorrect:0,routeLeakMidpointCorrect:0,historyReads:0,changedAnswers:0,withdrawnAnswers:0,restoredAnswers:0};
   for(let w=0;w<out.worlds;w++){
     let rows=[];
@@ -75,8 +77,8 @@ function control() {
         visiblePublications.push(serial(taskPub));
         const visible=reason(taskPub,t.start);
         const raw={answer:"open"};
-        const gateFilled=pub?g.answer:raw.answer; // intentionally invalid oracle-style postprocessor
-        const tableRead=table[t.start];
+        const gateFilled=oracleGate(pub,raw,g.answer); // intentionally invalid oracle-style postprocessor
+        const tableRead=tableReason(table,t);
         out.lateReads++;
         out.sourceOnlyCorrect+=acquired.answer===g.answer;
         out.routeLeakCorrect+=leaked.answer===g.answer;
@@ -87,15 +89,15 @@ function control() {
         if(g.answer!=="open"){
           out.resolved++;
           out.sourceOnlyCausal+=acquired.answer===g.answer&&off==="open"&&reason(pub,t.start).answer===g.answer;
-          out.routeLeakCausal+=leaked.answer===g.answer&&off==="open"&&reason(pub,t.start,null,route).answer===g.answer;
+          out.routeLeakCausal+=leaked.answer===g.answer&&reason(null,t.start,null,route).answer==="open"&&reason(pub,t.start,null,route).answer===g.answer;
           out.taskVisibleCausal+=visible.answer===g.answer&&off==="open"&&reason(taskPub,t.start).answer===g.answer;
-          out.oracleGateCausal+=gateFilled===g.answer&&raw.answer==="open"&&g.answer===gateFilled;
-          out.answerTableCausal+=tableRead===g.answer&&off==="open"&&table[t.start]===g.answer;
+          out.oracleGateCausal+=gateFilled===g.answer&&oracleGate(null,raw,g.answer)==="open"&&oracleGate(pub,raw,g.answer)===g.answer;
+          out.answerTableCausal+=tableRead===g.answer&&tableReason(null,t)==="open"&&tableReason(table,t)===g.answer;
         }
         out.rawOracleGateResolved+=raw.answer!=="open";
         out.checkOnlyResolved+=checkOnly(raw,g.answer)!=="open";
         try{taskInput({start:x,route});}catch(e){out.routeFieldsRejected++;}
-        out.sourceOnlyPublicationDifferences+=serial(pub)!==before;
+        out.sourceOnlyPublicationDifferences+=serial(pub)!==before || serial(publish(src))!==before;
         if(pin===1&&g.answer!==oracle(old,x).answer)out.changedAnswers++;
         if(pin===2&&g.answer!==oracle(edit,x).answer)out.withdrawnAnswers++;
         if(pin===3&&g.answer!==oracle(withdrawn,x).answer)out.restoredAnswers++;
