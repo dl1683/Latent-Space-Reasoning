@@ -11,7 +11,7 @@ from experiments.memory.binding_maintenance import audit_source_observations
 from experiments.memory.binding_memory import BindingCapacityError
 from experiments.memory.binding_replay import replay_binding_repair
 from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
-from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemory, StaleCorpusRevision
+from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemory, CorpusProgramProposal, StaleCorpusRevision
 from experiments.memory.latent_feedback import FeedbackKernel
 
 
@@ -925,3 +925,129 @@ def test_bridge_waits_for_legacy_sources_to_stop_obscuring_competitors(tmp_path,
     assert updated.memory.read_role_links(e[0], outcomes=_OUTCOMES, work_limit=64).bridge_pending
     rebuilt = owner.publish_program(owner.prepare_role_links(updated, _ROLES, **policy))
     assert rebuilt.memory.read_role_links(e[0], outcomes=_OUTCOMES, work_limit=64).answer == "accept"
+
+
+def test_local_bridge_repair_preserves_unaffected_reasoning_and_follows_cross_region_key(tmp_path):
+    filename = tmp_path / "local-bridges.sqlite"
+    frame = _transport_frame(width=8, extra_predicates=("key",))
+    readonly = _transport_frame(_no_encoding, width=8, extra_predicates=("key",))
+    owner = JournaledCorpusWorkspace(filename, frame, create=True)
+    e = np.eye(8)
+    angle = np.deg2rad(20.)
+    key_a = e[6]
+    key_b = np.cos(2. * angle) * e[6] + np.sin(2. * angle) * e[7]
+    key_both = np.cos(angle) * e[6] + np.sin(angle) * e[7]
+    key_near_a = .939 * e[6] + np.sqrt(1. - .939 ** 2) * e[5]
+
+    def fragment(role, direction, key):
+        return _mentions((role, direction, .9), ("key", key, .8))
+
+    _write(owner, {
+        "a-in": fragment("entry", e[0], key_a), "a-out": fragment("exit", e[1], key_a),
+        "b-in": fragment("entry", e[2], key_b), "b-out": fragment("exit", e[3], key_b),
+        "decide-a": _mentions(("accept", e[1], .7)), "decide-b": _mentions(("review", e[3], .7)),
+    })
+    worker = JournaledCorpusWorkspace(filename, readonly)
+    policy = dict(min_similarity=.94, uncertainty=.005, compile_work_limit=60,
+                  transport="reflection", bridge_key="key", local_bridges=True)
+
+    def publish():
+        return worker.publish_program(worker.prepare_role_links(worker.snapshot(), _ROLES, **policy))
+
+    publish()
+    initial = owner.snapshot()
+    original_match = initial.memory._role_links.bridges["b-in", "b-out"]
+
+    def read(pin, coordinate):
+        return pin.memory.read_role_links(e[coordinate], outcomes=_OUTCOMES, work_limit=512)
+
+    values, carry, keys = np.zeros((8, 8)), np.zeros((8, 8)), np.zeros((8, 1))
+    values[3, 4] = 1.
+    carry[4, 5] = 1.
+    kernel = FeedbackKernel(query=keys, carry=carry, observation_key=keys, observation_value=values,
+                            feedback_key=keys, feedback_value=np.zeros((8, 8)), max_steps=2)
+    route = (e[0] + e[2])[:, None]
+    binding_values = np.zeros((6, 8))
+    binding_values[0, 0], binding_values[5, 6] = .04, .03
+    receiver = BindingFeedback(kernel, frame, (("review", 3),), query=route, observation=binding_values)
+    condition = BindingLinkCondition(e[3], .9, 1.)
+
+    def response(pin):
+        ready = receiver.start(e[2], pin.memory)
+        return receiver.continue_role_links(ready, condition=condition, work_limit=128, branch_limit=2)
+
+    assert read(initial, 0).answer == "accept"
+    assert read(initial, 2).answer == "review"
+    continued_state, = response(initial).states
+    full_row = receiver.step(continued_state).latest
+    assert full_row[5] > .6
+    disabled = owner.prepare_role_links(initial, None).preview
+    baseline = receiver.step(receiver.start(e[2], disabled))
+    assert baseline.reads == continued_state.reads and receiver.step(baseline).latest[5] == 0.
+    np.testing.assert_allclose(np.arctanh(continued_state.latest) - np.arctanh(baseline.latest),
+                               e[3] @ values, atol=1e-12, rtol=0.)
+
+    revised = _write(owner, {"rival": fragment("exit", e[4], key_near_a),
+                             **{f"other-{position}": _mentions(("review", e[5], .5)) for position in range(6)}})
+    assert read(revised, 0).status == "unresolved" and read(revised, 0).bridge_pending
+    assert read(revised, 2).answer == "review" and not read(revised, 2).bridge_pending
+    assert revised.memory._role_links.bridges["b-in", "b-out"] is original_match
+    with pytest.raises(StaleCorpusRevision, match="different source snapshot"):
+        owner.publish_program(CorpusProgramProposal(revised, initial.memory))
+    continued = response(revised)
+    assert continued.status == "continued"
+    np.testing.assert_array_equal(receiver.step(continued.states[0]).latest, full_row)
+    restarted = JournaledCorpusWorkspace(filename, readonly).snapshot()
+    assert read(restarted, 0) == read(revised, 0) and read(restarted, 2) == read(revised, 2)
+
+    # The full scan now exceeds the same allowance. The worker can publish from its retained index.
+    with pytest.raises(BindingCapacityError):
+        owner.prepare_role_links(revised, _ROLES, **(policy | {"local_bridges": False}))
+    publish()
+    resolved_scope = owner.snapshot()
+    assert read(resolved_scope, 0).status == "unresolved" and not read(resolved_scope, 0).bridge_pending
+    assert read(resolved_scope, 2).answer == "review"
+    whole_scan = owner.prepare_role_links(
+        resolved_scope, _ROLES, **(policy | {"local_bridges": False, "compile_work_limit": 512})
+    ).preview
+    assert resolved_scope.memory._role_links.bridges == whole_scan._role_links.bridges
+
+    # Same source, new key. Its candidate interval intersects both former regions.
+    boundary = _write(owner, {"rival": fragment("exit", e[4], key_both)})
+    assert read(boundary, 0).bridge_pending and read(boundary, 0).status == "unresolved"
+    assert read(boundary, 2).bridge_pending and response(boundary).status == "unresolved"
+    assert response(boundary).states == ()
+    publish()
+    after_publish = owner.snapshot()
+    assert read(after_publish, 2).status == "unresolved" and not read(after_publish, 2).bridge_pending
+    assert read(initial, 2).answer == "review"
+
+    _write(owner, {"rival": None})
+    publish()
+    restored = JournaledCorpusWorkspace(filename, readonly).snapshot()
+    assert read(restored, 0).answer == "accept" and read(restored, 2).answer == "review"
+    np.testing.assert_array_equal(receiver.step(response(restored).states[0]).latest, full_row)
+
+    new_entry = _write(owner, {"rival-entry": fragment("entry", e[4], key_both)})
+    assert read(new_entry, 0).bridge_pending and read(new_entry, 2).bridge_pending
+    assert read(new_entry, 4).status == "unresolved"
+    _write(owner, {"rival-entry": None})
+    publish()
+    assert read(owner.snapshot(), 2).answer == "review"
+
+    oversized = {f"extra-{position}": fragment("exit", e[4], e[5]) for position in range(4)}
+    saturated = _write(owner, oversized)
+    assert saturated.memory._role_links.bridge_index is None
+    assert read(saturated, 2).status == "unresolved" and read(saturated, 2).bridge_pending
+    replayed = JournaledCorpusWorkspace(filename, readonly).snapshot()
+    assert read(replayed, 2) == read(saturated, 2)
+    _write(owner, dict.fromkeys(oversized))
+    publish()
+    assert read(owner.snapshot(), 2).answer == "review"
+
+    orphan = _write(owner, {"orphan": fragment("entry", e[4], e[5])})
+    assert read(orphan, 2).answer == "review"
+    assert read(orphan, 4).status == "unresolved" and read(orphan, 4).bridge_pending
+    publish()
+    assert read(owner.snapshot(), 4).status == "unresolved" and not read(owner.snapshot(), 4).bridge_pending
+    assert read(owner.snapshot(), 2).answer == "review"

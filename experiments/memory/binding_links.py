@@ -152,12 +152,152 @@ class _BridgeFragment:
     key: np.ndarray
 
 
+def _bridge_fragment(records, roles, key):
+    anchors, ends = [], []
+    for ordinal, (role, grade, raw, _) in enumerate(records):
+        if role == key:
+            anchors.append((ordinal, grade, raw))
+        elif role in roles:
+            ends.append((ordinal, role, grade, raw))
+    fragment = None
+    if len(anchors) == len(ends) == 1:
+        ordinal, role, grade, raw = ends[0]
+        key_ordinal, key_grade, anchor = anchors[0]
+        fragment = role, _BridgeFragment(ordinal, key_ordinal, min(grade, key_grade), raw,
+                                         np.frombuffer(anchor, dtype="<f8"))
+    return bool(anchors), fragment
+
+
+def _key_match(entry, exit, floor, uncertainty):
+    score = float(np.clip(entry.key @ exit.key, -1., 1.))
+    if score < floor - uncertainty:
+        return None
+    return score >= floor and (not uncertainty or score > floor + uncertainty)
+
+
+def _cross_link(source, target, entry, exit, transport):
+    step = BindingLinkStep(source, entry.ordinal, exit.ordinal, target, (entry.key_ordinal, exit.key_ordinal))
+    return _RoleLink.from_ends(step, entry.direction, exit.direction, min(entry.strength, exit.strength), transport)
+
+
+@dataclass(frozen=True, eq=False)
+class _BridgeIndex:
+    entries: Mapping[str, _BridgeFragment]
+    exits: Mapping[str, _BridgeFragment]
+    rows: Mapping[str, Mapping[str, bool]]
+    columns: Mapping[str, frozenset[str]]
+    stale: Mapping[str, frozenset[bytes]]
+    edges: int = 0
+
+    @classmethod
+    def build(cls, entries, exits, links):
+        empty = MappingProxyType({})
+        index = cls(empty, empty, empty, empty, empty)
+        return index.revise(entries, exits, frozenset(entries) | frozenset(exits), links)
+
+    def revise(self, entries, exits, changed, links):
+        """Update incident pairs, then fence entries that share an affected exit."""
+        new_entries, new_exits = changed & entries.keys(), changed & exits.keys()
+        width = next(iter(entries.values())).key.size if entries else 0
+        comparisons = len(new_entries) * len(exits) + len(new_exits) * (len(entries) - len(new_entries))
+        if width * comparisons > links.compile_limit:
+            raise BindingCapacityError("bridge incident comparison limit exceeded")
+
+        row_edits, col_edits = {}, {}
+        edges = self.edges
+
+        def edit(source, target, match):
+            nonlocal edges
+            if source not in row_edits:
+                row_edits[source] = dict(self.rows.get(source, {}))
+            if target not in col_edits:
+                col_edits[target] = set(self.columns.get(target, ()))
+            row, col = row_edits[source], col_edits[target]
+            if match is None:
+                if target in row:
+                    edges -= 1
+                    del row[target]
+                    col.discard(source)
+            else:
+                edges += int(target not in row)
+                row[target] = match
+                col.add(source)
+
+        for source in changed:
+            for target in self.rows.get(source, ()):
+                edit(source, target, None)
+            for entry in self.columns.get(source, ()):
+                edit(entry, source, None)
+        for source in new_entries:
+            for target, exit in exits.items():
+                match = _key_match(entries[source], exit, links.floor, links.uncertainty)
+                if match is not None:
+                    edit(source, target, match)
+        for target in new_exits:
+            for source, entry in entries.items():
+                if source not in new_entries:
+                    match = _key_match(entry, exits[target], links.floor, links.uncertainty)
+                    if match is not None:
+                        edit(source, target, match)
+        if edges + len(entries) + len(exits) > links.compile_limit:
+            raise BindingCapacityError("retained bridge index limit exceeded")
+
+        affected = (changed & (self.entries.keys() | entries.keys())) | row_edits.keys()
+        for target, col in col_edits.items():
+            affected.update(self.columns.get(target, ()))
+            affected.update(col)
+        stale = dict(self.stale)
+        for source in affected:
+            old, new = self.entries.get(source), entries.get(source)
+            directions = frozenset(fragment.direction for fragment in (old, new) if fragment is not None)
+            stale[source] = stale.get(source, frozenset()) | directions
+        if edges + len(entries) + len(exits) + sum(map(len, stale.values())) > links.compile_limit:
+            raise BindingCapacityError("retained bridge obligations limit exceeded")
+
+        rows, columns = dict(self.rows), dict(self.columns)
+        for source, row in row_edits.items():
+            if row:
+                rows[source] = MappingProxyType(row)
+            else:
+                rows.pop(source, None)
+        for target, col in col_edits.items():
+            if col:
+                columns[target] = frozenset(col)
+            else:
+                columns.pop(target, None)
+        return _BridgeIndex(MappingProxyType(entries), MappingProxyType(exits), MappingProxyType(rows),
+                            MappingProxyType(columns), MappingProxyType(stale), edges)
+
+    def matches(self, links):
+        bridges = dict(links.bridges)
+        for source in self.stale:
+            row = self.rows.get(source)
+            if row and len(row) == 1:
+                target, definite = next(iter(row.items()))
+                if definite and len(self.columns[target]) == 1:
+                    bridges[source, target] = _cross_link(source, target, self.entries[source],
+                                                          self.exits[target], links.transport)
+        return replace(links, bridges=MappingProxyType(bridges), bridge_pending=False,
+                       bridge_index=replace(self, stale=MappingProxyType({})))
+
+    def openings(self, bridges):
+        installed = {source for source, _ in bridges}
+        openings = {source: frozenset((entry.direction,)) for source, entry in self.entries.items()
+                    if source not in installed}
+        for source, directions in self.stale.items():
+            openings[source] = openings.get(source, frozenset()) | directions
+        return tuple((source, raw, source in self.stale)
+                     for source, directions in sorted(openings.items()) for raw in sorted(directions))
+
+
 class _LinkReadWork:
     def __init__(self, limit, floor, uncertainty):
         self.limit, self.floor, self.uncertainty = limit, floor, uncertainty
         self.work = self.transports = self.condition_dots = 0
         self.unavailable = set()
         self.marginal = False
+        self.bridge_open = set()
+        self.bridge_stale = False
 
     def charge(self, amount=1):
         if self.work + amount > self.limit:
@@ -185,9 +325,12 @@ class _RoleLinks:
     key_sources: frozenset[str] = frozenset()
     bridge_pending: bool = False
     legacy_sources: frozenset[str] = frozenset()
+    local_bridges: bool = False
+    bridge_index: _BridgeIndex | None = None
 
     @classmethod
-    def prepare(cls, roles, floor, uncertainty, limit, transport, digests, mentions, bridge_key=None):
+    def prepare(cls, roles, floor, uncertainty, limit, transport, digests, mentions, bridge_key=None,
+                local_bridges=False):
         remaining = limit - len(digests)
         if remaining < 0:
             raise BindingCapacityError("role-link compilation work limit exceeded")
@@ -198,23 +341,18 @@ class _RoleLinks:
         local = empty.revise(digests, digests, mentions)
         if bridge_key is None:
             return local
-        return local._find_bridges(bridge_key, mentions, remaining)
+        return replace(local, local_bridges=local_bridges)._find_bridges(bridge_key, mentions, remaining)
 
     def _find_bridges(self, key, mentions, remaining):
         enters, exits, key_sources = {}, {}, set()
         for source, records in mentions.items():
-            anchors = [(ordinal, grade, raw) for ordinal, (role, grade, raw, _) in enumerate(records) if role == key]
-            if not anchors:
-                continue
-            key_sources.add(source)
-            ends = [(ordinal, role, grade, raw) for ordinal, (role, grade, raw, _) in enumerate(records)
-                    if role in self.roles]
-            if len(anchors) == len(ends) == 1:
-                ordinal, role, grade, raw = ends[0]
-                anchor_ordinal, anchor_grade, anchor = anchors[0]
+            has_key, fragment = _bridge_fragment(records, self.roles, key)
+            if has_key:
+                key_sources.add(source)
+            if fragment is not None:
+                role, value = fragment
                 table = enters if role == self.roles[0] else exits
-                table[source] = _BridgeFragment(ordinal, anchor_ordinal, min(grade, anchor_grade), raw,
-                                                np.frombuffer(anchor, dtype="<f8"))
+                table[source] = value
         selected = replace(self, bridge_key=key, key_sources=frozenset(key_sources))
         if self.legacy_sources:
             return selected
@@ -222,25 +360,26 @@ class _RoleLinks:
         width = next(iter(enters.values())).key.size if enters else 0
         if len(enters) * len(exits) * width > remaining:
             raise BindingCapacityError("cross-source role matching work limit exceeded")
+        if self.local_bridges:
+            index = _BridgeIndex.build(enters, exits, self)
+            return index.matches(replace(selected, unresolved=self.unresolved - enters.keys() - exits.keys()))
+
         entries, departures, pairs = {}, {}, {}
         for source, entry in enters.items():
             for target, exit in exits.items():
-                score = float(np.clip(entry.key @ exit.key, -1., 1.))
-                if score < self.floor - self.uncertainty:
+                match = _key_match(entry, exit, self.floor, self.uncertainty)
+                if match is None:
                     continue
                 entries[source] = entries.get(source, 0) + 1
                 departures[target] = departures.get(target, 0) + 1
-                if score >= self.floor and (not self.uncertainty or score > self.floor + self.uncertainty):
+                if match:
                     pairs[source] = target
 
         bridges, resolved = {}, set()
         for source, target in pairs.items():
             if entries[source] != 1 or departures[target] != 1:
                 continue
-            entry, exit = enters[source], exits[target]
-            step = BindingLinkStep(source, entry.ordinal, exit.ordinal, target, (entry.key_ordinal, exit.key_ordinal))
-            strength = min(entry.strength, exit.strength)
-            bridges[source, target] = _RoleLink.from_ends(step, entry.direction, exit.direction, strength, self.transport)
+            bridges[source, target] = _cross_link(source, target, enters[source], exits[target], self.transport)
             resolved.update((source, target))
         return replace(selected, bridges=MappingProxyType(bridges), unresolved=self.unresolved - resolved)
 
@@ -249,6 +388,7 @@ class _RoleLinks:
         key_sources = set(self.key_sources)
         legacy_sources = set(self.legacy_sources)
         bridge_pending = self.bridge_pending
+        bridge_changes = {}
         entry_role, exit_role = self.roles
         for source in changed:
             pairs.pop(source, None)
@@ -259,6 +399,7 @@ class _RoleLinks:
                 new_key = any(role == self.bridge_key for role, _, _, _ in mentions.get(source, ()))
                 if old_key or new_key or source in legacy_sources or legacy:
                     bridge_pending = True
+                    bridge_changes[source] = mentions.get(source, ())
                 if new_key:
                     key_sources.add(source)
                 else:
@@ -282,10 +423,40 @@ class _RoleLinks:
                                                     left, right, min(left_strength, right_strength), self.transport)
             elif entries or exits:
                 unresolved.add(source)
-        return replace(self, pairs=MappingProxyType(pairs), unresolved=frozenset(unresolved),
-                       bridges=MappingProxyType({}) if bridge_pending else self.bridges,
-                       key_sources=frozenset(key_sources), bridge_pending=bridge_pending,
-                       legacy_sources=frozenset(legacy_sources))
+        revised = replace(self, pairs=MappingProxyType(pairs), unresolved=frozenset(unresolved),
+                          key_sources=frozenset(key_sources), bridge_pending=bridge_pending,
+                          legacy_sources=frozenset(legacy_sources))
+        if self.bridge_index is not None:
+            return revised._revise_bridge_index(bridge_changes)
+        return replace(revised, bridges=MappingProxyType({})) if bridge_pending else revised
+
+    def _revise_bridge_index(self, changed):
+        if not changed:
+            return self
+        entries, exits = dict(self.bridge_index.entries), dict(self.bridge_index.exits)
+        for source, records in changed.items():
+            entries.pop(source, None)
+            exits.pop(source, None)
+            _, fragment = _bridge_fragment(records, self.roles, self.bridge_key)
+            if fragment is not None:
+                role, value = fragment
+                table = entries if role == self.roles[0] else exits
+                table[source] = value
+        if not self.legacy_sources:
+            try:
+                index = self.bridge_index.revise(entries, exits, changed.keys(), self)
+            except BindingCapacityError:
+                pass
+            else:
+                bridges = {pair: link for pair, link in self.bridges.items() if pair[0] not in index.stale}
+                return replace(self, bridges=MappingProxyType(bridges), bridge_index=index,
+                               bridge_pending=bool(index.stale),
+                               unresolved=self.unresolved - entries.keys() - exits.keys())
+        return replace(self, bridges=MappingProxyType({}), bridge_index=None)
+
+    @property
+    def bridge_global_pending(self):
+        return self.bridge_pending and self.bridge_index is None
 
     def structural(self, role):
         return role in self.roles or role == self.bridge_key
@@ -307,9 +478,17 @@ class _RoleLinks:
             raise BindingCapacityError("role-link catalog exceeds the read work limit")
         links = tuple(self.pairs[source] for source in sorted(self.pairs))
         links += tuple(self.bridges[pair] for pair in sorted(self.bridges))
+        openings = () if self.bridge_index is None else self.bridge_index.openings(self.bridges)
         for _ in range(hops):
             advanced = []
             for path in frontier:
+                for source, raw, stale in openings:
+                    effort.charge(width)
+                    if source not in path.used and np.frombuffer(raw, dtype="<f8") @ path.direction >= (
+                        self.floor - self.uncertainty
+                    ):
+                        effort.bridge_open.add(source)
+                        effort.bridge_stale |= stale
                 effort.charge(len(links))
                 for link in links:
                     sources = link.step.sources
@@ -365,7 +544,7 @@ class _RoleLinks:
         seed = self._seed_path(direction, width, condition, prior_steps, prior_strength)
         if seed is None:
             return BindingLinkRead("no_direction", outcomes=vocabulary, hops=hops, condition=condition,
-                                   bridge_pending=self.bridge_pending)
+                                   bridge_pending=self.bridge_global_pending)
 
         effort = _LinkReadWork(limit, self.floor, self.uncertainty)
         witnesses = {}
@@ -417,15 +596,16 @@ class _RoleLinks:
                                     )
         except BindingCapacityError:
             return BindingLinkRead("work_limit", work=effort.work,
-                                   open_sources=len(self.unresolved) + len(effort.unavailable),
+                                   open_sources=len(self.unresolved | effort.unavailable | effort.bridge_open),
                                    terminal_dots=terminal_dots, outcomes=vocabulary, hops=hops, transports=effort.transports,
                                    condition=condition, condition_dots=effort.condition_dots,
-                                   bridge_pending=self.bridge_pending)
-        open_sources = len(self.unresolved) + len(effort.unavailable)
-        incomplete = open_sources or unmatched or effort.marginal or outside or self.bridge_pending
+                                   bridge_pending=self.bridge_global_pending or effort.bridge_stale)
+        open_sources = len(self.unresolved | effort.unavailable | effort.bridge_open)
+        pending = self.bridge_global_pending or effort.bridge_stale
+        incomplete = open_sources or unmatched or effort.marginal or outside or pending
         status = ("conflict" if len(witnesses) > 1 else "unresolved" if incomplete
                   else "supported" if witnesses else "no_link")
         return BindingLinkRead(status, tuple(witnesses[key] for key in sorted(witnesses)), effort.work,
                                open_sources, len(unmatched), effort.marginal, terminal_dots,
                                vocabulary, tuple(sorted(outside)), hops, effort.transports, condition, effort.condition_dots,
-                               bridge_pending=self.bridge_pending)
+                               bridge_pending=pending)

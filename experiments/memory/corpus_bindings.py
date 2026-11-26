@@ -195,7 +195,9 @@ class CorpusBindingMemory:
                        _certain=lower, _possible=upper, _mentions=MappingProxyType(mentions), _role_links=links)
 
     def _reprogram_role_links(self, roles, min_similarity, uncertainty, compile_work_limit, transport="fixed",
-                              bridge_key=None):
+                              bridge_key=None, local_bridges=False):
+        if type(local_bridges) is not bool or (local_bridges and bridge_key is None):
+            raise ValueError("local bridge maintenance requires a bridge key")
         if roles is None:
             if bridge_key is not None:
                 raise ValueError("bridge matching requires a compiled role program")
@@ -216,14 +218,19 @@ class CorpusBindingMemory:
             raise ValueError("role-link transport must be fixed, reflection or rotation")
         limit = _proof_work_limit(compile_work_limit)
         links = self._role_links
-        if links is not None and not links.bridge_pending and (
-            links.roles, links.floor, links.uncertainty, links.compile_limit, links.transport, links.bridge_key
+        if links is not None and (
+            links.roles, links.floor, links.uncertainty, links.compile_limit, links.transport,
+            links.bridge_key, links.local_bridges
         ) == (
-            roles, floor, uncertainty, limit, transport, bridge_key,
+            roles, floor, uncertainty, limit, transport, bridge_key, local_bridges,
         ):
-            return self
+            if not links.bridge_pending:
+                return self
+            if links.bridge_index is not None:
+                return replace(self, _role_links=links.bridge_index.matches(links))
         return replace(self, _role_links=_RoleLinks.prepare(
             roles, floor, uncertainty, limit, transport, self.source_digests, self._mentions, bridge_key,
+            local_bridges,
         ))
 
     def read_role_links(self, direction, *, outcomes, work_limit, hops=1, condition=None):
@@ -465,11 +472,11 @@ class CorpusBindingWorkspace:
         return CorpusProgramProposal(base, base.memory.reprogram(gates))
 
     def prepare_role_links(self, base, roles, *, min_similarity=None, uncertainty=0., compile_work_limit=None,
-                           transport="fixed", bridge_key=None):
+                           transport="fixed", bridge_key=None, local_bridges=False):
         """Compile declared roles and optionally match fragments across sources on this pin."""
         self._check_owner(base)
         memory = base.memory._reprogram_role_links(roles, min_similarity, uncertainty, compile_work_limit, transport,
-                                                   bridge_key)
+                                                   bridge_key, local_bridges)
         return CorpusProgramProposal(base, memory)
 
     def publish_program(self, proposal):
@@ -487,6 +494,10 @@ class CorpusBindingWorkspace:
     def _apply_program(self, tip, proposal):
         if tip is not proposal.base:
             raise StaleCorpusRevision("corpus workspace tip changed")
+        if (type(proposal.preview) is not CorpusBindingMemory
+                or proposal.preview.source_digests is not tip.memory.source_digests
+                or proposal.preview._mentions is not tip.memory._mentions):
+            raise StaleCorpusRevision("program preview belongs to a different source snapshot")
         return self._replace_program(tip, proposal.preview)
 
     def _replace_program(self, tip, memory):
