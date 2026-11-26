@@ -2079,9 +2079,11 @@ bounds and splits only when a downstream decision can differ.
 [SLICE] A scoped unit policy keeps named group views of one pinned
 registry. Each view contains its own explicit group and ungrouped
 definitions. References and aliases cannot enter through another
-group. Shared competing definitions within the view still require
-agreement. The group names serve as membership evidence under the
-declared scope rule. Pint's native precedence and group inheritance
+group. An ungrouped formula can still evaluate differently across views
+if it depends on a group-local definition. Its receipt carries the
+actual definitions for the selected view. Shared competing definitions
+within the view still require agreement. The group names serve as
+membership evidence under the declared scope rule. Pint's native precedence and group inheritance
 are separate semantics.
 
 A registered scope observation binds one group to a conversion

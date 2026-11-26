@@ -1,7 +1,13 @@
 # Goal
 
-Build memory that lets an agent or person reason about a task over a large
-knowledge repository. Given a task, the system should infer what information
+Build one model that reasons in a persistent latent space over a whole,
+changing multimodal corpus. A person or agent can attach this memory to
+the same call the model uses to reason without it. Encoders and decoders
+handle input and output. Intermediate reasoning and routine maintenance
+should usually operate on the retained state without decoding it to text.
+
+The first user-facing test is reasoning about a task over a large knowledge
+repository. Given a task, the system should infer what information
 and relationships matter, find and evaluate direct and indirect evidence,
 connect distributed or conflicting facts, consider relevant alternatives or
 hypothetical changes, and expose consequential unknowns. It should return
@@ -27,12 +33,21 @@ system, but they answer different questions: the planner asks what matters for
 this task; maintenance asks what changed, is uncertain, or may be useful to
 future tasks.
 
-The architecture is a research hypothesis, not a result. Encoding an entire
-corpus, adding latent state, or finding more links does not by itself meet the
-goal. Progress must show better task-directed evidence use, revision,
-provenance, uncertainty handling, or lifecycle cost against a strong control.
-Persistent latent state is optional where another representation better
-supports the goal.
+Continuing workers should discover, challenge, revise and retract
+connections and reusable computations on the same shared state used by
+the reasoner. Preserve source provenance, unresolved alternatives and
+historical reads. Compare distinct latent reasoning mechanisms, including
+reused-block recurrence and joint-state revision, and test whether
+pretrained components can carry useful reasoning into either one.
+
+The next proof has to join maintenance and later reasoning. Freeze a
+changing corpus, keep the task hidden from maintenance until publication,
+and independently grade a later answer that uses something the workers
+acquired. Remove that contribution at the same source pin and restore it
+to test causal use. Exercise the same reasoner with memory omitted. Give
+an incremental exact evaluator and a strong text agent equivalent evidence
+and charge encoding, maintenance, verification, readout and fallbacks.
+A text-first pass would be a slice of the multimodal target.
 
 ## Anti-drift rule
 
@@ -51,11 +66,11 @@ Before pursuing an idea, write down:
 4. What result would falsify the idea or show it is only a retrieval,
    compression, or engineering improvement.
 
-If an idea cannot answer those points, do not let it redirect the project.
-Prefer latent-space reasoning or simulation when it helps the goal, but choose
-mechanisms by evidence. Compression, retrieval, indexing, and usability
-improvements remain valid supporting work when they demonstrably help
-task-directed reasoning and are reported as such.
+A supporting slice earns another iteration when a concrete failure in
+the whole loop calls for it. Otherwise, use the slice as a control and
+return to that loop. Choose latent reasoning and maintenance mechanisms
+by their effect on independently graded answers, correct revisions and
+full cost, including what happens when the needed evidence is missing.
 
 ## Evidence and project hygiene
 
