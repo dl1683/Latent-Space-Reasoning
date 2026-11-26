@@ -4,6 +4,76 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Warm exact relations on the PEP corpus, 26 November 2026
+
+**Visible CPU software verification.** The exact control covered 655
+regular four-digit PEP RST files at the opening and correction commits.
+Index maintenance retained the scope and read only the changed PEP 749
+blob for the immediate correction. Proof verification reopened source
+bytes separately. A wider history point and a return to the opening tree
+exercised larger updates. The memoized and direct traversal arms used
+the same incremental postings and agreed on paths, statuses and
+verified source receipts on all 16 reads.
+
+| Upstream pin | Documents | Documents read for maintenance | Unique maintenance bytes read | Changed posting buckets | Unique proof-verification bytes read |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `aced24fc3547` opening | 655 | 655 | 12,061,646 | 2,631 | 109,556 |
+| `55cf374db5e0` correction | 655 | 1 | 48,269 | 10 | 110,644 |
+| `db044b61d2a6` later acceptance | 687 | 640 | 11,989,878 | 2,594 | 117,076 |
+| `aced24fc3547` restored tree | 655 | 608 | 11,281,042 | 2,594 | 109,556 |
+
+The opening pin had no indexed rename of PEP 749's `SOURCE` symbol.
+The correction had two proof spans ending at `STRING`, from one
+source document. The returned opening tree withdrew those spans.
+At the correction, the unrelated PEP 723 status read skipped its
+one edge visit with one memo validation. The two-hop PEP 749-to-563
+result remained stable while its witness was refreshed from the
+edited source. With an edge limit of one, the corrected rename
+read withheld its proof set. Verification reopened committed blobs
+and checked four, six, six and four distinct spans by pin.
+The rename recognizer was fitted to the visible PEP 749 edit. It
+matched no clauses at opening and only the two PEP 749 clauses at
+correction. The exact comparison for the learned trial will consume
+relations from the same publisher as the latent arm. These local
+counts omit full tree inspection and top-level map copying. Elapsed
+time, retained bytes, the meaning of surrounding prose, actual
+interpreter behavior and question coverage remain open.
+
+The source-only mode produced the opening, changed and restored
+epochs with 655, one and one raw document updates. The revised
+document kept its opaque ID and advanced generation on both changes.
+A small Git fixture exercised withdrawal of the entire scope and
+restoration through both the feed and exact index.
+A separate temporary Linux smoke exercised a scripted reader with
+the current epoch read-only, the preceding manifest and loopback
+only. Its namespace excluded the checkout, custody catalogue and
+other epochs. The commands below reproduce the portable feed and
+direct-Git diagnostic. Before scoring, the learned stages need
+their own runtime allowlist and controller checks against the
+frozen pin inventory and raw Git bytes.
+
+**Oracle review.** Two separate source audits checked both frozen
+inventories, all 17 line anchors and four stable evidence blobs.
+They agreed on the core facts and requested scoring clarifications
+before using the oracle for pass/fail. These include whether the
+rendering producer survives assignment and which definite limits
+the source establishes despite unknown details. One audit saw the
+task overview before reading the sources. No grader was run.
+[Review findings](https://github.com/dl1683/Latent-Space-Reasoning/issues/6#issuecomment-7198363545)
+
+Reproduce the exact control and the source feed using a local
+[python/peps](https://github.com/python/peps) clone with these pins.
+
+```powershell
+python -S -m experiments.memory.pep_relation_control --repo $PepRepo aced24fc3547 55cf374db5e0 db044b61d2a6 aced24fc3547 --query pep:749 requires '^superseded_by' --query symbol:749:SOURCE renamed_to --query pep:749 status --query pep:723 status
+python -S -m experiments.memory.pep_relation_control --repo $PepRepo aced24fc3547 55cf374db5e0 aced24fc3547 --source-output $NewFeedDirectory
+```
+
+Set `--cache-size 0` for direct indexed traversal. Keep `custody.json`
+with the controller and hand one `epochs/NNNN` directory to the
+worker. [Runner](../experiments/memory/pep_relation_control.py) ·
+[Visible task and controls](PEP_VISIBLE_LATE_TASK.md)
+
 ## Publishing before a separate named question process, 26 November 2026
 
 **Visible CPU software verification.** Two source-only processes
@@ -112,6 +182,10 @@ runtime overlap and predictable task selection leave semantic blinding
 and any efficiency or quality advantage open. The memory-omitted arm
 still consults pin membership and names from the verified journal. It
 removes memory from the reasoning core for this ablation.
+
+This isolated named-reader control sends the journal-only format across
+the stage boundary. The separate recurrent task-world control uses the
+source archive and its charged source-read interface.
 
 Use a disposable Linux root controller with bubblewrap, setpriv and a
 Python virtual environment readable by both stage UIDs. The checkout

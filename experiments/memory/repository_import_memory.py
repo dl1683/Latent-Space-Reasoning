@@ -6,16 +6,13 @@ from codecs import BOM_UTF8, getincrementaldecoder
 from collections.abc import Mapping
 from dataclasses import InitVar, asdict, dataclass, field
 from importlib.util import resolve_name
-from io import BytesIO
 from itertools import product
 import json
 from math import prod
 from numbers import Real
 from operator import index
-import os
 from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
-import subprocess
 from tokenize import detect_encoding
 from types import MappingProxyType
 
@@ -27,6 +24,7 @@ from experiments.memory.disjoint_feedback import (
     _check_retraction_absence, _matching_witness, _same_supported_grade,
 )
 from experiments.memory.disjoint_transition import DisjointTransitionMemory, DisjointTransitionPath, propagate_disjoint
+from experiments.memory.git_source import git_read as _git, read_blobs as _read_blobs
 from experiments.memory.weight_program import _frobenius, program_weight
 
 
@@ -70,20 +68,6 @@ class _Module:
     imports: Mapping[str, _Declaration]
 
 
-def _git(repo, *args, data=None):
-    env = dict(os.environ)
-    for name in ("GIT_DIR", "GIT_COMMON_DIR", "GIT_WORK_TREE", "GIT_OBJECT_DIRECTORY",
-                 "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_LITERAL_PATHSPECS", "GIT_GLOB_PATHSPECS",
-                 "GIT_NOGLOB_PATHSPECS", "GIT_ICASE_PATHSPECS"):
-        env.pop(name, None)
-    env["GIT_NO_LAZY_FETCH"] = "1"
-    result = subprocess.run(["git", "--no-replace-objects", "--literal-pathspecs", "-C", str(repo), *args],
-                            input=data, capture_output=True, check=False, env=env)
-    if result.returncode:
-        raise ValueError(result.stderr.decode("utf-8", errors="replace").strip() or "Git command failed")
-    return result.stdout
-
-
 def _module_tree(repo, commit, root, package):
     scope = root.joinpath(*package.split("."))
     listing = _git(repo, "ls-tree", "-rz", "--full-tree", commit, "--", f"{scope}/")
@@ -105,22 +89,6 @@ def _module_tree(repo, commit, root, package):
             raise ValueError(f"ambiguous tracked Python module: {name}")
         modules[name] = str(path), blob
     return modules
-
-
-def _read_blobs(repo, blobs):
-    if not blobs:
-        return {}
-    response = BytesIO(_git(repo, "cat-file", "--batch", data="\n".join((*blobs, "")).encode("ascii")))
-    contents = {}
-    for blob in blobs:
-        header = response.readline().decode("ascii").split()
-        if len(header) != 3 or header[:2] != [blob, "blob"]:
-            raise ValueError("could not read a pinned Python blob")
-        size = int(header[-1])
-        contents[blob] = response.read(size)
-        if len(contents[blob]) != size or response.read(1) != b"\n":
-            raise ValueError("truncated pinned Python blob")
-    return contents
 
 
 def _module_imports(contents, path, name, package):

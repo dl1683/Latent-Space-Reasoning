@@ -23,7 +23,6 @@ from experiments.memory.recurrent_world import RecurrentWorld
 from experiments.memory.repository_import_memory import (
     RepositoryImportMemory, _decode_python, _git, _module_imports, _module_tree, _read_blobs,
 )
-from experiments.memory.task_evidence import TaskWorld
 from experiments.memory.verified_source_tool import SourceSpan, VerifiedSourceTool, require_digest, sha256
 from experiments.memory.world_transport import DiscoveredTransportPolicy
 
@@ -250,6 +249,8 @@ def _verify_archive_covers_pins(workspace, manifest):
 @contextmanager
 def open_task_world(directory, seal, pin_index, *, arm="on"):
     """Open one source-complete TaskWorld from a sealed publication, with no Git access."""
+    from experiments.memory.task_evidence import TaskWorld
+
     if type(pin_index) is not int or arm not in ("on", "operators-off"):
         raise ValueError("task-world reader requires a pin index and supported operator arm")
     directory = Path(directory)
@@ -365,8 +366,10 @@ def _content_digest(journal, manifest):
     return digest.hexdigest()
 
 
-def publish(repo, revisions, destination, *, package):
-    """Write a source-only publication and content-addressed text snapshot."""
+def publish(repo, revisions, destination, *, package, include_source_archive=True):
+    """Write a source publication, optionally retaining the text for later source reads."""
+    if type(include_source_archive) is not bool:
+        raise ValueError("source archive selection must be boolean")
     encoder = _ImportEncoder(package)
     frame, world = _frame(encoder)
     destination = Path(destination)
@@ -375,6 +378,9 @@ def publish(repo, revisions, destination, *, package):
     workspace = JournaledCorpusWorkspace(journal, frame, create=True)
     pins, source_blobs, current = [], {}, {}
     for commit, pin, changes, _ in _publications(repo, revisions, package, encoder, world, workspace):
+        pins.append([commit, pin.revision, pin.journal_sha256])
+        if not include_source_archive:
+            continue
         for name, contents in changes.items():
             if contents is None:
                 current.pop(name, None)
@@ -385,25 +391,26 @@ def publish(repo, revisions, destination, *, package):
                 or any(sha256(contents) != pin.memory.source_digests[name]
                        for name, contents in current.items())):
             raise ValueError("published text snapshot differs from the source journal pin")
-        pins.append([commit, pin.revision, pin.journal_sha256])
-    if not source_blobs or len(source_blobs) > _MAX_SOURCE_ARCHIVE_BLOBS:
-        raise ValueError("source snapshot exceeds its content-addressed blob allowance")
-    source_archive_bytes = sum(map(len, source_blobs.values()))
-    if source_archive_bytes > _MAX_SOURCE_ARCHIVE_BYTES:
-        raise ValueError("source snapshot exceeds its byte allowance")
-    leaves = destination / "sources" / "leaves"
-    leaves.mkdir(parents=True)
-    for digest, contents in sorted(source_blobs.items()):
-        with (leaves / f"{digest}.txt").open("xb") as handle:
-            handle.write(contents)
-    archive_inventory = [[digest, len(contents)] for digest, contents in sorted(source_blobs.items())]
     if any(journal.with_name(journal.name + suffix).exists() for suffix in ("-journal", "-wal", "-shm")):
         raise ValueError("publication requires a standalone finalized journal")
-    data = dict(schema=_PUBLICATION_SCHEMA, package=package, coordinates=list(encoder.code),
+    schema = _PUBLICATION_SCHEMA if include_source_archive else _PUBLICATION_SCHEMA_V1
+    data = dict(schema=schema, package=package, coordinates=list(encoder.code),
                 journal_sha256=sha256(_bounded_read(journal, _MAX_JOURNAL_BYTES)),
                 frame_sha256=_frame_digest(frame).hex(), kernel_sha256=world._kernel_sha256,
-                read_contract=_READ_CONTRACT, pins=pins, source_blobs=archive_inventory,
-                source_archive_bytes=source_archive_bytes)
+                read_contract=_READ_CONTRACT, pins=pins)
+    if include_source_archive:
+        if not source_blobs or len(source_blobs) > _MAX_SOURCE_ARCHIVE_BLOBS:
+            raise ValueError("source snapshot exceeds its content-addressed blob allowance")
+        source_archive_bytes = sum(map(len, source_blobs.values()))
+        if source_archive_bytes > _MAX_SOURCE_ARCHIVE_BYTES:
+            raise ValueError("source snapshot exceeds its byte allowance")
+        leaves = destination / "sources" / "leaves"
+        leaves.mkdir(parents=True)
+        for digest, contents in sorted(source_blobs.items()):
+            with (leaves / f"{digest}.txt").open("xb") as handle:
+                handle.write(contents)
+        archive_inventory = [[digest, len(contents)] for digest, contents in sorted(source_blobs.items())]
+        data.update(source_blobs=archive_inventory, source_archive_bytes=source_archive_bytes)
     data["content_sha256"] = _content_digest(journal, data)
     manifest = _json(data)
     if len(manifest) > _MAX_JSON_BYTES:
@@ -413,8 +420,10 @@ def publish(repo, revisions, destination, *, package):
     with staging.open("xb") as handle:
         handle.write(manifest)
     staging.rename(destination / "publication.json")
-    return {"seal": sha256(manifest), "content_sha256": data["content_sha256"],
-            "source_archive_bytes": source_archive_bytes, "source_blob_count": len(archive_inventory)}
+    receipt = {"seal": sha256(manifest), "content_sha256": data["content_sha256"]}
+    if include_source_archive:
+        receipt.update(source_archive_bytes=source_archive_bytes, source_blob_count=len(archive_inventory))
+    return receipt
 
 
 def _read_manifest(directory, seal):
@@ -605,12 +614,15 @@ def main(argv=None):
     else:
         if action == "--publish":
             parser.add_argument("--output", type=Path, required=True)
+            parser.add_argument("--journal-only", action="store_true",
+                                help="seal the journal without its raw source archive")
         parser.add_argument("revisions", nargs="+")
         parser.add_argument("--repo", default=".", type=Path)
         parser.add_argument("--package", default="experiments.memory")
         args = parser.parse_args(rest if action == "--publish" else argv)
         if action == "--publish":
-            result = publish(args.repo, args.revisions, args.output, package=args.package)
+            result = publish(args.repo, args.revisions, args.output, package=args.package,
+                             include_source_archive=not args.journal_only)
         else:
             result = run(args.repo, args.revisions, package=args.package)
     print(json.dumps(result, indent=2))

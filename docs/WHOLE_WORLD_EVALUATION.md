@@ -510,6 +510,17 @@ The next comparison needs a source corpus disjoint from executable
 code, separately specified tasks and an independent oracle.
 The public Git case shares a parser and uses deterministic named inputs.
 
+The [PEP calibration](PEP_VISIBLE_LATE_TASK.md) supplies a public,
+source-disjoint roster and evidence oracle. A source-only feed exports
+each complete declared scope and its changed bytes to a worker. The
+[exact relation control](RESULTS.md#warm-exact-relations-on-the-pep-corpus-26-november-2026)
+exercises incremental typed lookup on visible explicit declarations
+from the same corpus. The next comparison requires one stream
+of generic predicted relations shared by the exact and latent arms,
+raw task strings delivered only after publication, and independently
+checked semantic answers. Keep the explicit-clause correctness
+control separate from decisions about prose, uncertainty and authority.
+
 The [committed-source control](RESULTS.md#acquiring-from-committed-mixed-sources-26-november-2026)
 runs a visible precursor over the tracked Python package. The worker
 receives committed bytes and canonical paths, publishes before read

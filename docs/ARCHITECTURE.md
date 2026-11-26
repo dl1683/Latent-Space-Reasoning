@@ -36,6 +36,40 @@ These need causal task evidence and complete costs, not vector geometry alone.
 | Deep latent reasoning with optional memory | The [split-binding receiver](#fitting-and-checking-a-split-binding-receiver) runs two feedback steps and supports intervention on the generated row. The receiver and its separate-state variant have supplied-coordinate controls. | Establish competence and relevance beyond known bindings and keep both memory-attached and memory-omitted calls in the same reasoning model. Identify what certifies absence and what signals unresolved support. |
 | Useful operation on consumer hardware | Local numerical slices can reuse unchanged work and avoid source reopening during some reads. | Measure construction, memory, maintenance, decoding, fallback and repeated use at matched quality. A cheap retained read is one term in that comparison. |
 
+### Warm exact control on a separate corpus
+
+[SLICE] The exact relation index stores immutable forward and reverse
+postings for source-scoped assertions. Updating a source replaces its
+proofs and rebuilds the affected buckets. The index copies the top-level
+maps and shares untouched buckets. A query supplies a start and a finite
+sequence of directed roles. Full enumeration retains all matched paths
+and their original byte spans. A read can require distinct source IDs
+across its hops. Different spans in one document remain one origin.
+The work limit withholds the path set if enumeration cannot finish.
+Complete no-path results apply to the declared postings, including
+a revision that withdraws the entire source scope.
+
+A bounded read memo remembers every consulted posting, including empty
+ones. It can keep a proof after an unrelated edit as long as those
+posting objects survive. New witnesses and newly filled negative
+lookups invalidate the memo. Historical snapshots retain their own
+postings. The memo is process-local. Direct traversal can use the same
+incrementally maintained index with the memo disabled.
+
+The PEP controller can produce a source-only feed before any query.
+Each worker-facing epoch contains raw UTF-8 source updates and the
+current opaque-ID manifest with source hashes and generations. Each
+manifest binds the update bytes and the preceding manifest. The
+controller retains Git paths, commit and blob IDs in a separate
+catalogue. Hand one epoch at a time to the worker and keep that catalogue
+outside its input. The direct-Git diagnostic uses Git paths and
+indexes explicit declarations. Future matched arms will consume the
+same model-proposed relations keyed by opaque IDs. Keep the diagnostic
+adapter, its tests and the oracle outside the learned runtime.
+[Exact index](../experiments/memory/versioned_relations.py) ·
+[Source feed](../experiments/memory/source_revision_feed.py) ·
+[PEP calibration](PEP_VISIBLE_LATE_TASK.md)
+
 ### Task planning and world maintenance are separate jobs
 
 A task-conditioned planner receives the task and a pinned world. Its output
