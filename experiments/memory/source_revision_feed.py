@@ -37,7 +37,7 @@ class SourceDelta:
     binary_sources: frozenset[str] = frozenset()
 
 
-def _advance(previous, changes):
+def _advance(previous, changes, *, binary, prior_binary):
     epoch = 1 if previous is None else previous.epoch + 1
     manifest = {} if previous is None else dict(previous.manifest)
     for source, raw in changes.items():
@@ -52,7 +52,8 @@ def _advance(previous, changes):
                 raise TypeError("source feed needs committed bytes")
             digest = sha256(raw)
             current = manifest.get(source)
-            if current is not None and current.sha256 == digest:
+            same_type = (source in binary) == (source in prior_binary)
+            if current is not None and current.sha256 == digest and same_type:
                 raise ValueError("source update repeats the current bytes")
             manifest[source] = SourceVersion(digest, epoch)
     return epoch, manifest
@@ -80,11 +81,13 @@ def _raw_value(value):
 
 
 def _prepare(previous, changes, *, binary_sources):
-    epoch, manifest = _advance(previous, changes)
     binary = frozenset(binary_sources)
     if any(source not in changes or not changes[source] for source in binary):
         raise ValueError("binary sources must name nonempty updates")
     prior = frozenset() if previous is None else previous.binary_sources
+    # The byte digest identifies evidence, not its encoding semantics.
+    # A type-only correction must advance the generation and invalidate dependents.
+    epoch, manifest = _advance(previous, changes, binary=binary, prior_binary=prior)
     current = prior.difference(changes) | binary
     schema = _BINARY_SCHEMA if binary or (previous and previous.schema == _BINARY_SCHEMA) else _SCHEMA
     updates = _encode({source: _wire_value(raw, binary=source in binary) for source, raw in changes.items()})
