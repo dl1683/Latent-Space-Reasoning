@@ -521,6 +521,116 @@ durable worker publication, warm exact lifecycle costs and reuse
 across incompatible operators remain open.
 [Revision controls](../experiments/memory/test_recurrent_world.py)
 
+## Revising a source operator with a live frontier, 26 November 2026
+
+**Scripted CPU software verification.** An authority correction moved one
+of two independently supported paths to the other path's terminal. The
+later readout changed from conflict to opposition. The worker received
+only the source revision and re-used the parsed clause records from two
+of three authority documents. Cache-free compilation reproduced the
+action bytes and receipts on correction, withdrawal, restoration and
+authority reassignment. The reader repaired the earlier frontier
+with eight source scores and three block evaluations. Fresh recurrent
+execution of the same two-step task used 18 source scores and six block
+evaluations. It regenerated four transitions, while repair regenerated
+two and kept the numeric state of two. Both arms agreed on hidden rows,
+feedback keys and values, exact witnesses and the result of a further
+continuation. The unaffected path used the new publication receipt with
+the original authority witnesses, and its historical version retained
+the original receipt. The reader allocated two wrappers to rebind the
+unchanged path. A separate first-publication check activated a previously
+missing operation for an unchanged observation and matched fresh replay.
+
+On the corrected pin, removing the transport while holding the source
+bank, discovery table and selected first observations fixed removed the
+first-step source contribution. The ordinary operator-off comparison
+returned missing, and the memory-free call returned memory omitted.
+Withdrawing the changed authority left the joint result unresolved.
+Restoring the earlier bytes at a new generation recovered the conflict.
+Reassigning a law to the relay document kept the first-step numeric
+direction but removed independent relay support. Repair and fresh replay
+agreed on that open result, and a journal reopen reproduced the historical
+corrected result.
+
+This slice uses a preexisting task seed, supplied coordinates and a
+scoped declaration grammar. It tests whether query-blind source
+maintenance can preserve useful latent work as a task runs and the
+corpus changes. Counts cover numeric work, not elapsed time. Full
+authority-table assembly, frontier traversal, action comparison,
+receipt rebindings, retained bytes and durable storage matter to
+the warm exact and text comparisons. The publication cache leaves
+discovery coverage assembly on the read preparation path. Independently authored tasks
+on a separate corpus remain the next whole-world test.
+[Mixed-document fixture](../experiments/memory/test_world_transport.py)
+
+**Committed-source diagnostic.** Kept all 99 opening named frontiers
+live through two actual Git revisions and restoration of the opening
+pin. All 297 repairs agreed with fresh execution on the ordered routes,
+receipts, uncertainty and both recurrent row channels. A fixed opening
+vocabulary keeps later newly tracked modules out of the query roster,
+while their source contents still participate in each new pin.
+
+| Transition target | Retained / current authority records | Repair / fresh source scores | Repair / fresh block evaluations |
+| --- | ---: | ---: | ---: |
+| `c79f894e` | 81 / 83 | 590 / 19,602 | 4 / 198 |
+| `c393123f` | 74 / 104 | 7,869 / 24,156 | 30 / 198 |
+| `0cfeae34` restored | 72 / 83 | 3,855 / 19,602 | 34 / 198 |
+
+This diagnostic used the existing public Python scope and counted local
+operations. It compares reuse with a fresh run of the same receiver.
+The warm exact and text comparisons require separately authored
+late tasks and full costs.
+
+To reproduce the diagnostic from the repository root, use the following
+Python block with single-thread BLAS.
+
+```python
+from collections import Counter
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+import numpy as np
+
+from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
+from experiments.memory.repository_transport_control import (
+    _ImportEncoder, _REASONING_ARGS, _frame, _publications,
+)
+
+package = "experiments.memory"
+pins = ("0cfeae34", "c79f894e", "c393123f", "0cfeae34")
+encoder = _ImportEncoder(package)
+frame, world = _frame(encoder)
+with TemporaryDirectory() as scratch:
+    workspace = JournaledCorpusWorkspace(Path(scratch) / "world.sqlite", frame, create=True)
+    bank, live, previous_scopes = None, {}, {}
+    for rev, (_, pin, _, _) in zip(pins, _publications(Path.cwd(), pins, package, encoder, world, workspace),
+                                   strict=True):
+        bank = world.prepare(pin, previous=bank, packed=False)
+        scopes = pin._source_transports._scoped_sources
+        if not live:
+            live = {name: world.reason_joint(encoder.code[name], memory=bank, **_REASONING_ARGS)
+                    for name in sorted(pin.memory.source_digests)}
+        else:
+            counts = Counter()
+            for name, old in live.items():
+                repaired = world.repair_joint(old, bank, max_hypotheses=1)
+                fresh = world.reason_joint(encoder.code[name], memory=bank, **_REASONING_ARGS)
+                assert not repaired.overflow and not fresh.overflow
+                assert world._first_route_change(repaired, fresh, after=0) is None
+                assert repaired.uncertain_routes == fresh.uncertain_routes
+                assert repaired._transport_withheld_contexts == fresh._transport_withheld_contexts
+                for kept, rebuilt in zip(repaired.branches, fresh.branches, strict=True):
+                    for left, right in zip(kept._ancestry(), rebuilt._ancestry(), strict=True):
+                        np.testing.assert_array_equal(left._hidden, right._hidden)
+                        np.testing.assert_array_equal(left._source_hidden, right._source_hidden)
+                counts.update(repair_scores=repaired.observation_scores, fresh_scores=fresh.observation_scores,
+                              repair_blocks=repaired.block_evaluations, fresh_blocks=fresh.block_evaluations)
+                live[name] = repaired
+            reused = sum(previous_scopes.get(name) is scope for name, scope in scopes.items())
+            print(rev, len(live), reused, len(scopes), dict(counts))
+        previous_scopes = scopes
+```
+
 ## Branch-preserving latent workspace, 26 November 2026
 
 **Scripted CPU software verification.** Two source observations set

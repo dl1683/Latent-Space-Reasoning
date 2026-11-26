@@ -593,8 +593,6 @@ class RecurrentWorld:
             raise ValueError("repair requires a complete attached frontier and positive capacity")
         self._require_memory(memory)
         previous = state.memory
-        if memory._source_transports is not previous._source_transports:
-            raise ValueError("changed source transport operators require a fresh frontier")
         if memory._source_constraints is not previous._source_constraints:
             raise ValueError("changed source constraints require a fresh frontier")
         if (memory.corpus._owner is not previous.corpus._owner
@@ -607,14 +605,16 @@ class RecurrentWorld:
         if max_hypotheses < len(roots):
             raise ValueError("repair requires capacity for the original hypotheses")
         opening = JointWorldRead(memory, roots, self, state._thresholds, unit_premises=state.unit_premises)
-        return self._expand_joint(opening, state.steps, max_hypotheses, prior_layers=state._layers, changed=changed)
+        transport_before = previous if memory._source_transports is not previous._source_transports else None
+        return self._expand_joint(opening, state.steps, max_hypotheses, prior_layers=state._layers, changed=changed,
+                                  transport_before=transport_before)
 
     @staticmethod
     def _bank_version(memory, source):
         bank = memory._sources.get(source)
         return None if bank is None else bank.version
 
-    def _expand_joint(self, state, last, max_hypotheses, *, prior_layers=(), changed=()):
+    def _expand_joint(self, state, last, max_hypotheses, *, prior_layers=(), changed=(), transport_before=None):
         memory = state.memory
         all_banks = () if memory is None else tuple(memory._sources.values())
         changed_banks = () if not changed else tuple(bank for source, bank in memory._sources.items()
@@ -630,6 +630,8 @@ class RecurrentWorld:
         ranked = state.priority_scores
         reused = state.reused_writes
         null_row = np.zeros(self._kernel._width)
+        rebound_parents = {}
+        retained_transports = {}
 
         def checkpoint(overflow):
             return replace(state, branches=branches, uncertain_routes=tuple(uncertain), steps=len(layers),
@@ -643,7 +645,7 @@ class RecurrentWorld:
             plans = []
             total = 0
             for parent in branches:
-                incumbent = prior.get(parent)
+                incumbent = prior.get(rebound_parents.get(parent, parent))
                 banks = all_banks if incumbent is None else changed_banks
                 plan, source_scores, priority_scores = self._plan_joint(
                     parent, memory, banks, state._thresholds, incumbent, changed,
@@ -656,7 +658,10 @@ class RecurrentWorld:
                 plans.append(plan)
 
             layer = []
+            rebound_parents = {}
             for plan in plans:
+                if transport_before is not None:
+                    plan = self._rebase_joint_plan(plan, transport_before, memory, retained_transports, rebound_parents)
                 expansion, writes, evaluations, feedback_scores = self._apply_joint_plan(plan, memory, null_row)
                 layer.append(expansion)
                 written += writes
@@ -730,6 +735,42 @@ class RecurrentWorld:
             admitted = tuple(choices)
         withheld.sort(key=lambda w: (w.span.source_id, w.ordinal))
         return _JointPlan(parent, source_query, admitted, tuple(withheld), previous), scores, priority_scores
+
+    @staticmethod
+    def _same_transport_action(before, after):
+        if before is after:
+            return True
+        if before is None or after is None:
+            return False
+        return (replace(before.use, publication_sha256=after.use.publication_sha256) == after.use
+                and before.axis.tobytes() == after.axis.tobytes()
+                and before.destination.tobytes() == after.destination.tobytes()
+                and before.output.tobytes() == after.output.tobytes())
+
+    def _rebase_joint_plan(self, plan, before, after, checked, rebound):
+        previous = {}
+        for witness in plan.choices:
+            child = plan.previous.get(witness)
+            if child is None:
+                continue
+            if witness is not None and witness not in checked:
+                observation = self._witness_observation(after, witness)
+                earlier = self._selected_transport(before, witness, observation)
+                current = self._selected_transport(after, witness, observation)
+                checked[witness] = (self._same_transport_action(earlier, current),
+                                    None if current is None else current.use.publication_sha256)
+            keep, publication = checked.get(witness, (True, None))
+            if not keep:
+                continue
+            use = child._transport_use
+            if use is not None and publication != use.publication_sha256:
+                use = replace(use, publication_sha256=publication)
+            if child._parent is not plan.parent or child._transport_use is not use:
+                updated = replace(child, _parent=plan.parent, _transport_use=use)
+                rebound[updated] = child
+                child = updated
+            previous[witness] = child
+        return replace(plan, previous=previous)
 
     def _apply_joint_plan(self, plan, memory, null_row):
         parent = plan.parent

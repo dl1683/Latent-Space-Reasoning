@@ -146,11 +146,19 @@ class _Transport:
 
 
 @dataclass(frozen=True, eq=False)
+class _ScopedSourceLaws:
+    version: tuple[str, int]
+    laws: tuple[tuple[bytes, tuple[np.ndarray, np.ndarray, tuple[WorldWitness, ...]]], ...]
+    blocked: frozenset[bytes]
+
+
+@dataclass(frozen=True, eq=False)
 class SourceTransportPublication:
     kernel_sha256: str
     policy: SourceTransportPolicy | DiscoveredTransportPolicy
     source_versions: tuple[tuple[str, str | None, int | None], ...]
     operations: MappingProxyType
+    _scoped_sources: MappingProxyType | None = None
 
     def active_on(self, pin):
         try:
@@ -308,26 +316,40 @@ def _laws(pin, sources, policy):
     return laws
 
 
-def _scoped_laws(pin, authorities, policy):
-    laws, blocked = defaultdict(list), set()
+def _scoped_source_laws(pin, source, version, policy):
+    laws, blocked = [], set()
     memory = pin.memory
-    for source in authorities:
-        mentions = memory.source_mentions(source)
-        for group in _authority_groups(memory._mentions[source], scoped=True):
-            entries = [(ordinal, row) for ordinal, row in group if row[0] == "transport_entry"]
-            if (group[0][1][4] is None or not entries or any(row[3] != 1 for _, row in entries)):
-                return None, blocked
-            if len(group) != 2 or len(entries) != 1 or any(row[1] != 1. or row[3] != 1 for _, row in group):
-                blocked.update(transport_coordinate_key(mentions[ordinal].vector, policy) for ordinal, _ in entries)
-                continue
-            first, = (ordinal for ordinal, _ in entries)
-            second, = (ordinal for ordinal, row in group if row[0] == "transport_exit")
-            generation = pin._source_revisions[source]
-            witnesses = tuple(WorldWitness(memory.source_mention_span(source, ordinal), generation, ordinal)
-                              for ordinal in (first, second))
-            start, end = mentions[first].vector, mentions[second].vector
-            laws[transport_coordinate_key(start, policy)].append((start, end, witnesses))
-    return laws, blocked
+    mentions = memory.source_mentions(source)
+    for group in _authority_groups(memory._mentions[source], scoped=True):
+        entries = [(ordinal, row) for ordinal, row in group if row[0] == "transport_entry"]
+        if (group[0][1][4] is None or not entries or any(row[3] != 1 for _, row in entries)):
+            return None
+        if len(group) != 2 or len(entries) != 1 or any(row[1] != 1. or row[3] != 1 for _, row in group):
+            blocked.update(transport_coordinate_key(mentions[ordinal].vector, policy) for ordinal, _ in entries)
+            continue
+        first, = (ordinal for ordinal, _ in entries)
+        second, = (ordinal for ordinal, row in group if row[0] == "transport_exit")
+        witnesses = tuple(WorldWitness(memory.source_mention_span(source, ordinal), version[1], ordinal)
+                          for ordinal in (first, second))
+        start, end = mentions[first].vector, mentions[second].vector
+        laws.append((transport_coordinate_key(start, policy), (start, end, witnesses)))
+    return _ScopedSourceLaws(version, tuple(laws), frozenset(blocked))
+
+
+def _scoped_laws(pin, versions, policy, earlier):
+    laws, blocked, scopes = defaultdict(list), set(), {}
+    for source, digest, generation in versions:
+        version = digest, generation
+        scope = earlier.get(source)
+        if scope is None or scope.version != version:
+            scope = _scoped_source_laws(pin, source, version, policy)
+        if scope is None:
+            return None, (), None
+        scopes[source] = scope
+        blocked.update(scope.blocked)
+        for key, law in scope.laws:
+            laws[key].append(law)
+    return laws, blocked, MappingProxyType(scopes)
 
 
 def require_transport_scope(pin, policy):
@@ -541,10 +563,12 @@ def compile_source_transports(pin, policy, kernel_sha256, publication_sha256):
     if (previous is not None and previous.policy == policy and previous.kernel_sha256 == kernel_sha256
             and previous.source_versions == versions):
         return None
-    blocked = ()
+    blocked, scopes = (), None
     if type(policy) is DiscoveredTransportPolicy:
         if policy.scoped_clauses:
-            first, blocked = _scoped_laws(pin, authorities, policy)
+            earlier = (previous._scoped_sources if previous is not None and previous.policy == policy
+                       and previous.kernel_sha256 == kernel_sha256 else None)
+            first, blocked, scopes = _scoped_laws(pin, versions, policy, earlier or {})
             second = first
         else:
             first = second = _laws(pin, authorities, policy)
@@ -561,4 +585,4 @@ def compile_source_transports(pin, policy, kernel_sha256, publication_sha256):
             return None
     if not operations:
         return None
-    return SourceTransportPublication(kernel_sha256, policy, versions, MappingProxyType(operations))
+    return SourceTransportPublication(kernel_sha256, policy, versions, MappingProxyType(operations), scopes)

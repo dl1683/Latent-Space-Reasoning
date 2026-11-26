@@ -11,7 +11,8 @@ from experiments.memory.recurrent_world import RecurrentWorld
 from experiments.memory.role_validity import RoleSupersession
 from experiments.memory.verified_source_tool import VerifiedSourceTool, sha256
 from experiments.memory.world_transport import (
-    DiscoveredTransportPolicy, SourceTransportPolicy, TransportAlignment, transport_action_rows,
+    DiscoveredTransportPolicy, SourceTransportPolicy, TransportAlignment, compile_source_transports,
+    transport_action_rows, transport_discovery_digest,
 )
 
 
@@ -101,7 +102,13 @@ def test_query_blind_transport_is_published_before_late_readouts_and_survives_re
     assert late.read(axes[4], floor=.8).status == "supported"
     assert late.read(axes[5], floor=.8).status == "opposed"
     assert _read(world, ablated, seed).read(axes[4], floor=.8).status == "missing"
-    assert _read(world, old, seed).read(axes[4], floor=.8).status == "missing"
+    uncompiled = _read(world, old, seed)
+    assert uncompiled.read(axes[4], floor=.8).status == "missing"
+    activated = world.repair_joint(uncompiled, enabled, max_hypotheses=1)
+    assert world._first_route_change(activated, late, after=0) is None
+    assert activated.read(axes[4], floor=.8).status == "supported"
+    assert activated.transition_writes == 2 and activated.reused_writes == 0
+    assert enabled._sources is old._sources
     branch, = late.branches
     assert tuple(w.span.source_id for w in branch.witnesses) == ("entry", "rollout")
     used, = branch.transport_uses
@@ -429,6 +436,120 @@ def test_scoped_discovery_reads_mixed_documents_by_original_ordinal(tmp_path):
     np.testing.assert_array_equal(replayed.history, branch.history)
     assert reopened.snapshot().journal_sha256 == restored.journal_sha256
 
+    # Use nonzero generated feedback in the separate live-revision case.
+    kernel = FeedbackKernel(query=30. * eye, carry=None, observation_key=eye, observation_value=values,
+                            feedback_key=eye, feedback_value=.15 * eye, max_steps=3)
+    world = RecurrentWorld(kernel, encoder_version=frame.encoder_version, max_observations=8,
+                           feedback=True, transport_policy=policy)
+    restored = world.maintain_transports(owner, restored)
+    # Both continuations belong to the same late read. Only B's law changes.
+    seed = .6 * (axes["A"] + axes["D"])
+
+    def run(memory, steps=2):
+        return world.reason_joint(seed, steps=steps, max_hypotheses=2, null_logit=8., margin=1., memory=memory)
+
+    def compare(repaired, fresh):
+        assert world._first_route_change(repaired, fresh, after=0) is None
+        assert (repaired.uncertain_routes, repaired._transport_withheld_contexts) == (
+            fresh.uncertain_routes, fresh._transport_withheld_contexts,
+        )
+        assert repaired.read(direction, floor=.8).status == fresh.read(direction, floor=.8).status
+        for kept, rebuilt in zip(repaired.branches, fresh.branches, strict=True):
+            assert kept.witnesses == rebuilt.witnesses and kept.transport_uses == rebuilt.transport_uses
+            assert kept._complete == rebuilt._complete
+            np.testing.assert_array_equal(kept._pending_destination, rebuilt._pending_destination)
+            for left, right in zip(kept._ancestry(), rebuilt._ancestry(), strict=True):
+                for name in ("_hidden", "_source_hidden", "_key", "_value"):
+                    np.testing.assert_array_equal(getattr(left, name), getattr(right, name))
+
+    def compare_uncached(pin):
+        cached = pin._source_transports
+        fresh = compile_source_transports(replace(pin, _source_transports=None), policy, world._kernel_sha256,
+                                          pin.journal_sha256)
+        assert fresh is not None and cached is not None
+        assert transport_action_rows(fresh) == transport_action_rows(cached)
+        assert transport_discovery_digest(fresh) == transport_discovery_digest(cached)
+        assert {key: op.use for key, op in fresh.operations.items()} == {
+            key: op.use for key, op in cached.operations.items()
+        }
+
+    before_bank = world.prepare(restored, packed=False)
+    before = run(before_bank)
+    previous_d = before.branches[1]
+    assert previous_d.witnesses[0].span.source_id == "D"
+    changed = world.maintain_transports(owner, _publish(owner, {"B": b"law B F\ncontext self\n"}))
+    direction = axes["C"] - axes["F"]
+    assert before.read(direction, floor=.8).status == "conflict"
+    changed_bank = world.prepare(changed, previous=before_bank, packed=False)
+    previous_scopes = restored._source_transports._scoped_sources
+    current_scopes = changed._source_transports._scoped_sources
+    assert tuple(current_scopes) == tuple(previous_scopes) == ("A", "B", "E")
+    assert [name for name in current_scopes if current_scopes[name] is previous_scopes[name]] == ["A", "E"]
+    repaired = world.repair_joint(before, changed_bank, max_hypotheses=2)
+    fresh = run(changed_bank)
+    compare(repaired, fresh)
+    assert repaired.read(direction, floor=.8).status == "opposed"
+    assert (repaired.transition_writes, repaired.reused_writes, fresh.transition_writes) == (2, 2, 4)
+    assert (repaired.block_evaluations, fresh.block_evaluations) == (3, 6)
+    assert (repaired.observation_scores, fresh.observation_scores) == (8, 18)
+    current_d = repaired.branches[1]
+    assert current_d._hidden is previous_d._hidden and current_d._parent._hidden is previous_d._parent._hidden
+    assert current_d is not previous_d and current_d._parent is not previous_d._parent
+    assert current_d._parent is repaired._layers[0][0].children[1]
+    assert current_d._value.any()
+    continued = world.continue_joint(repaired, steps=1, max_hypotheses=2)
+    compare(continued, run(changed_bank, steps=3))
+    assert current_d.transport_uses[0].evidence == previous_d.transport_uses[0].evidence
+    assert current_d.transport_uses[0].publication_sha256 == changed.journal_sha256
+    assert previous_d.transport_uses[0].publication_sha256 == restored.journal_sha256
+
+    ablated = world.prepare(changed, previous=changed_bank, packed=False, operators=False)
+    assert ablated._sources is changed_bank._sources
+    actionless = replace(changed_bank, _source_transports=None)
+    assert actionless._sources is changed_bank._sources
+    assert actionless._transport_coverage is changed_bank._transport_coverage
+    absent_term = run(actionless, steps=1)
+    for ordinary, control in zip(fresh._layers[0][0].children, absent_term.branches, strict=True):
+        assert ordinary.witnesses == control.witnesses
+        assert ordinary.source_hidden[5] > .8 and control.source_hidden[5] == 0.
+    assert run(ablated).read(direction, floor=.8).status == "missing"
+    assert run(None).read(direction, floor=.8).status == "memory_omitted"
+
+    withdrawn = world.maintain_transports(owner, _publish(owner, {"B": None}))
+    removed_bank = world.prepare(withdrawn, previous=changed_bank, packed=False)
+    removed = world.repair_joint(repaired, removed_bank, max_hypotheses=2)
+    compare(removed, run(removed_bank))
+    assert removed.read(direction, floor=.8).status == "unresolved"
+    for branch in removed.branches:
+        for use in branch.transport_uses:
+            assert all(w.span.source_id != "B" for w in use.evidence)
+
+    returned = world.maintain_transports(owner, _publish(owner, {"B": sources["B"]}))
+    restored_bank = world.prepare(returned, previous=removed_bank, packed=False)
+    returned_scope = returned._source_transports._scoped_sources["B"]
+    before_digest, before_generation = previous_scopes["B"].version
+    assert returned_scope.version[0] == before_digest and returned_scope.version[1] != before_generation
+    recovered = world.repair_joint(removed, restored_bank, max_hypotheses=2)
+    compare(recovered, run(restored_bank))
+    assert recovered.read(direction, floor=.8).status == "conflict"
+    assert before.read(direction, floor=.8).status == "conflict"
+    historical = reopened.snapshot_at(changed.revision, max_events=30, max_payload_bytes=200000)
+    replay = run(world.prepare(historical, packed=False))
+    compare(repaired, replay)
+
+    reassigned = _publish(owner, {"B": b"context self\n", "C": b"relay C\nlaw B C\n"})
+    reassigned = world.maintain_transports(owner, reassigned)
+    reassigned_bank = world.prepare(reassigned, previous=restored_bank, packed=False)
+    dependent = world.repair_joint(recovered, reassigned_bank, max_hypotheses=2)
+    compare(dependent, run(reassigned_bank))
+    assert dependent.read(direction, floor=.8).status == "unresolved"
+    first = dependent.branches[0]
+    assert first.witnesses[-1].span.source_id == "C" and not first._complete
+    assert first.transport_uses[0].evidence[-1].span.source_id == "C"
+    np.testing.assert_array_equal(first._parent.source_hidden, recovered.branches[0]._parent.source_hidden)
+    for pin in (changed, withdrawn, returned, reassigned):
+        compare_uncached(pin)
+
 
 @pytest.mark.parametrize("route_changes", [True, False], ids=["changed-witness", "same-witness"])
 def test_reachable_midpoint_changes_the_joint_suffix_after_a_discovered_transport(tmp_path, route_changes):
@@ -563,8 +684,9 @@ def test_transport_invalidates_on_authority_changes_and_requires_republication(t
     assert world.maintain_transports(owner, conflict) is conflict
     open_bank = world.prepare(conflict, previous=original)
     assert _read(world, open_bank, axes[0]).read(axes[4], floor=.8).status == "missing"
-    with pytest.raises(ValueError, match="fresh frontier"):
-        world.repair_joint(live, open_bank, max_hypotheses=1)
+    retired = world.repair_joint(live, open_bank, max_hypotheses=1)
+    assert retired.read(axes[4], floor=.8).status == "missing"
+    assert not retired.branches[0].transport_uses and retired.transition_writes == 2
 
     incomplete = _publish(owner, {"rival": records["incomplete"]})
     assert world.maintain_transports(owner, incomplete) is incomplete

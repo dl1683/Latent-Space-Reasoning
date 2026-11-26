@@ -1857,16 +1857,41 @@ Changed eligibility reorders the eligible list under the same
 current task row. Scope includes unlocated sources in the new pin
 independently of numeric reuse. The previous pin remains readable.
 Repair carries no question readout target and can run before a later
-readout. It holds the same task seed and numerical operator. A
-different journal handle or operator uses a fresh frontier.
+readout. It holds the same task seed and recurrent kernel. A different
+journal handle, kernel or constraint publication requires a fresh
+frontier.
+
+For scoped transport maintenance, the previous successful publication
+retains decoded clauses and located blockers by source digest and
+generation. The same policy and kernel can reuse those records for
+unchanged authorities. Build the combined entry table again from the
+current records, so a new competitor still affects previously installed
+operations. A withdrawn source contributes no rows. Restoring the same
+bytes at a new generation rebuilds the affected evidence. This cache is
+derived during journal replay without a new event format.
+
+Repair can cross a new transport publication, including one that
+withholds a previously installed action. For a surviving observation
+witness, reuse requires the same selected action bytes and the same
+authority and validation witnesses. A publication identifier change on
+an otherwise identical action refreshes the receipt. Descendants
+rebind their parent links and keep the numerical rows and generated
+feedback. Only receipt and parent rebindings can refer back to an
+earlier expansion. Regenerated parents scan the full bank. Assemble
+discovery coverage afresh on the destination pin. Equal authority
+evidence preserves relay eligibility on a reused path. Regenerated
+paths evaluate eligibility on the new pin. Equal action bytes can
+still require regeneration when the law's origin changes which
+relay is admissible.
 
 Use unpacked preparation to retain source banks without copying them
 into a global matrix. The joint reader consumes those banks directly.
 The pooled reader can materialize its ordinary dense input on demand
 and records those rows. Repair reports rescored rows, new and reused
-transitions and block evaluations for the new pin. These counts omit
-source-bank enumeration, retained checkpoint bytes and per-source
-dispatch overhead. Compare complete lifecycle cost with a warm
+transitions and block evaluations for the new pin. Reused numerical
+transitions can still allocate a node to carry a new receipt and parent.
+These counts omit source-bank enumeration, action comparisons, authority
+table assembly, those allocations and retained checkpoint bytes. Compare complete lifecycle cost with a warm
 incremental solver. Historical source replay can reconstruct the
 inputs. Durable frontier storage remains separate work.
 [Repair runtime](../experiments/memory/recurrent_world.py)
