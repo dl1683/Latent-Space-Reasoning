@@ -1,5 +1,6 @@
 """Durable source and program publication in a trusted local SQLite file."""
 
+from base64 import b64decode, b64encode
 from contextlib import closing
 from dataclasses import dataclass, replace
 from hashlib import sha256
@@ -21,7 +22,7 @@ from experiments.memory.binding_replay import (
     validate_route_program,
 )
 from experiments.memory.corpus_bindings import (
-    CorpusBindingRead, CorpusBindingWorkspace, StaleCorpusRevision, _EncodedChange,
+    CorpusBindingRead, CorpusBindingWorkspace, StaleCorpusRevision, _EncodedChange, _source_vector_limit,
 )
 from experiments.memory.latent_feedback import ConditionalTerm
 
@@ -95,9 +96,18 @@ def _frame_digest(memory):
     })).digest()
 
 
-def _encode(staged):
+def _encode(staged, *, vectors=True):
     _check_identifiers(edit.source for edit in staged)
-    return _json([(edit.source, edit.digest, edit.outlier, edit.certain, edit.possible) for edit in staged])
+    records = []
+    for edit in staged:
+        row = (edit.source, edit.digest, edit.outlier, edit.certain, edit.possible)
+        if vectors:
+            mentions = (None if edit.mentions is None else
+                        [(predicate, strength, b64encode(vector).decode("ascii"), count)
+                         for predicate, strength, vector, count in edit.mentions])
+            row = (*row, mentions)
+        records.append(row)
+    return _json(["source_vectors", records] if vectors else records)
 
 
 def _encode_program(gates):
@@ -197,24 +207,72 @@ def _decode_rows(rows, width, predicates):
     return tuple(terms)
 
 
+def _decode_mentions(mentions, memory, certain, possible, outlier, remaining):
+    if type(mentions) is not list or not len(certain) <= len(mentions) <= len(possible):
+        raise ValueError("invalid encoded corpus mentions")
+    if len(mentions) > remaining:
+        raise ValueError("encoded source vector batch byte limit exceeded")
+    byte_width = memory._anchors.shape[1] * 8
+    base64_width = 4 * ((byte_width + 2) // 3)
+    width = memory._certain.width
+    decoded, lower = [], []
+    offset = 0
+    has_outlier = False
+    for mention in mentions:
+        if type(mention) is not list or len(mention) != 4:
+            raise ValueError("invalid encoded corpus mention")
+        predicate, strength, vector, count = mention
+        if (type(predicate) is not str or predicate not in memory._certain._predicates
+                or type(strength) is not float or not 0 <= strength <= 1
+                or type(vector) is not str or len(vector) != base64_width
+                or type(count) is not int or not 0 <= count <= width):
+            raise ValueError("invalid encoded corpus mention")
+        size = count or width
+        routes = possible[offset:offset + size]
+        offset += size
+        if (len(routes) != size or any(row[0] != predicate or row[2] != strength for row in routes)
+                or any(left[1] >= right[1] for left, right in zip(routes, routes[1:]))):
+            raise ValueError("encoded corpus mention does not match its possible rows")
+        if count == 1:
+            lower.append(routes[0])
+        has_outlier |= count == 0
+
+        raw = b64decode(vector, validate=True)
+        if len(raw) != byte_width:
+            raise ValueError("invalid encoded corpus vector width")
+        row = np.frombuffer(raw, dtype="<f8")
+        if (not np.isfinite(row).all() or np.max(np.abs(row)) > 1. + 1e-12
+                or abs(np.linalg.norm(row) - 1.) > 1e-12):
+            raise ValueError("invalid encoded corpus unit vector")
+        decoded.append((predicate, strength, raw, count))
+    if offset != len(possible) or tuple(lower) != certain or has_outlier != outlier:
+        raise ValueError("encoded corpus mentions do not match their envelope")
+    return tuple(decoded)
+
+
 def _decode(payload, memory):
     records = json.loads(payload)
+    vectors = type(records) is list and len(records) == 2 and records[0] == "source_vectors"
+    if vectors:
+        records = records[1]
     if type(records) is not list or not records:
         raise ValueError("empty encoded corpus event")
     staged = []
     previous = ""
     remaining = memory._expanded_limit
+    vector_limit = _source_vector_limit(memory._anchors.shape[1])
     bank = memory._certain
     for record in records:
-        if type(record) is not list or len(record) != 5:
+        if type(record) is not list or len(record) != (6 if vectors else 5):
             raise ValueError("invalid encoded corpus change")
-        source, digest, outlier, certain, possible = record
+        source, digest, outlier, certain, possible = record[:5]
+        mentions = record[5] if vectors else None
         if type(source) is not str or source <= previous or type(outlier) is not bool:
             raise ValueError("noncanonical encoded corpus change")
         if digest == memory.source_digests.get(source):
             raise ValueError("unchanged source in encoded corpus event")
         if digest is None:
-            if certain is not None or possible is not None or outlier:
+            if certain is not None or possible is not None or mentions is not None or outlier:
                 raise ValueError("invalid encoded corpus deletion")
         else:
             if type(digest) is not str or len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
@@ -224,9 +282,12 @@ def _decode(payload, memory):
             remaining -= len(possible)
             if remaining < 0 or not set(certain).issubset(possible) or (outlier and not possible):
                 raise ValueError("invalid encoded corpus envelope")
-        staged.append(_EncodedChange(source, digest, certain, possible, outlier))
+            if vectors:
+                mentions = _decode_mentions(mentions, memory, certain, possible, outlier, vector_limit)
+                vector_limit -= len(mentions)
+        staged.append(_EncodedChange(source, digest, certain, possible, outlier, mentions))
         previous = source
-    if _encode(staged) != payload:
+    if _encode(staged, vectors=vectors) != payload:
         raise ValueError("noncanonical encoded corpus payload")
     return tuple(staged)
 
@@ -342,7 +403,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
     def __init__(self, path, empty, *, create=False):
         super().__init__(empty)
         self._root_tip = self._tip
-        if (empty.source_digests or empty.outlier_sources or empty._certain._rows or empty._possible._rows
+        if (empty.source_digests or empty.outlier_sources or empty._mentions or empty._certain._rows or empty._possible._rows
                 or empty._certain._retained or empty._possible._retained):
             raise ValueError("a corpus journal requires an empty frame")
         if type(create) is not bool:

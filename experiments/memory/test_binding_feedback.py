@@ -8,7 +8,7 @@ import pytest
 from experiments.memory import binding_memory, corpus_binding_journal
 from experiments.memory.binding_feedback import BindingFeedback, BindingRouteExpansion
 from experiments.memory.binding_maintenance import (
-    _project_context_route, discover_binding_context, propose_binding_context, propose_binding_program,
+    _project_context_route, audit_source_observations, discover_binding_context, propose_binding_context, propose_binding_program,
 )
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof, _ProofWork
 from experiments.memory.binding_replay import (
@@ -2778,3 +2778,137 @@ def test_detached_absence_supported_zero_and_failed_reads_are_distinct(monkeypat
     monkeypatch.setattr(receiver, "_read", unexpected_read)
     with pytest.raises(RuntimeError, match="step budget exhausted"):
         receiver.step(exhausted)
+
+
+
+def test_revision_audit_and_late_feedback_share_recovered_continuous_evidence(tmp_path):
+    def encode(raw):
+        predicate, x, y, z, strength = raw.decode().split(",")
+        return (BindingMention(predicate, np.array([float(x), float(y), float(z)]), float(strength)),)
+
+    def unavailable(raw):
+        raise AssertionError("recovery or late feedback called the source encoder")
+
+    def frame(encoder):
+        return CorpusBindingMemory.prepare(
+            ("permit", "accept", "review"), np.eye(3)[:2], {}, {}, encode=encoder,
+            encoder_version="observation-world-control", min_similarity=.6, gap=.05,
+        )
+
+    path = tmp_path / "world.sqlite"
+    root = frame(encode)
+    owner = JournaledCorpusWorkspace(path, root, create=True)
+    sources = {
+        "permit": b"permit,.8,0,.6,.8",
+        "accept": b"accept,0,1,0,.7",
+        "review": b"review,0,1,0,.7",
+    }
+    opening = _write(owner, sources)
+    corrected = _write(owner, {"permit": b"permit,.8,0,-.6,.8"})
+    fresh = JournaledCorpusWorkspace(path, frame(unavailable)).snapshot()
+    assert fresh.revision == corrected.revision
+    assert opening.memory._certain is corrected.memory._certain
+    assert opening.memory._possible is corrected.memory._possible
+    assert opening.memory.resolve("permit", 0) == fresh.memory.resolve("permit", 0)
+
+    audit = audit_source_observations(fresh, min_residual=.5, max_mentions=1)
+    assert audit.revision == audit.source_revision == fresh.revision and audit.checked_mentions == 1
+    finding, = audit.findings
+    assert (finding.source, finding.predicate, finding.ordinal) == ("permit", "permit", 0)
+    assert finding.residual == pytest.approx(.6)
+    assert not audit.withdrawn and not audit.unavailable
+    with pytest.raises(BindingCapacityError, match="audit mention limit"):
+        audit_source_observations(opening, min_residual=.5, max_mentions=2)
+
+    # Select the late seed only after the worker has audited the committed batch.
+    seed = np.array([1., 0., 0.])
+    values = np.diag([0., 0., 1.])
+    zeros = np.zeros((3, 1))
+    kernel = FeedbackKernel(query=[[18.], [0.], [0.]], carry=None, observation_key=[[1.], [0.], [0.]],
+                            observation_value=values, feedback_key=zeros, feedback_value=values * 0, max_steps=2)
+    extra = np.zeros((6, 3))
+    extra[2, 1] = .4
+    kwargs = dict(query=[[1., 0., 0.], [0., .5, .5], [0., 1., -1.]], observation=extra,
+                  route_floor=.6, route_gap=.1, disjoint_reads=True)
+    addresses = (("permit", 0), ("accept", 1), ("review", 1))
+    receiver = BindingFeedback(kernel, root, addresses, source_observation_limit=3, **kwargs)
+    compiled = BindingFeedback(kernel, root, addresses, **kwargs)
+    assert _receiver_digest(receiver) != _receiver_digest(compiled)
+
+    def first(pin):
+        return receiver.step(receiver.start(seed, memory=pin.memory))
+
+    former, current = first(opening), first(fresh)
+    assert former.reads[0].address == current.reads[0].address == ("permit", 0)
+    assert former.reads[0].bounds == current.reads[0].bounds
+    assert receiver.step(former).reads[-1].address == ("accept", 1)
+    assert receiver.step(current).reads[-1].address == ("review", 1)
+    same_pin = receiver._intervene_latest(current, former.latest)
+    assert receiver.step(same_pin).reads[-1].address == ("accept", 1)
+    for memory in (fresh.memory, None):
+        control = compiled if memory is not None else receiver
+        state = control.step(control.step(control.start(seed, memory=memory)))
+        assert state.reads[-1].address is None
+    continuous_only = BindingFeedback(
+        kernel, root, addresses, source_observation_limit=3, **{**kwargs, "observation": extra * 0.},
+    )
+    standalone = continuous_only.step(continuous_only.start(seed, memory=fresh.memory))
+    assert standalone.latest[2] == current.latest[2]
+    assert continuous_only.step(standalone).reads[-1].address is None
+
+    deleted = _write(owner, {"permit": None})
+    assert audit_source_observations(deleted, min_residual=.5, max_mentions=1).withdrawn == ("permit",)
+    assert receiver.step(first(deleted)).reads[-1].address is None
+    restored = _write(owner, {"permit": sources["permit"]})
+    assert receiver.step(first(restored)).reads[-1].address == ("accept", 1)
+    for pin in (opening, fresh, deleted, restored):
+        # The equally informed rule reads the retained sign directly.
+        if "permit" in pin.memory.source_digests:
+            row, = pin.memory.source_mentions("permit")
+            expected = ("accept" if row.vector[2] > 0. else "review", 1)
+        else:
+            expected = None
+        assert receiver.step(first(pin)).reads[-1].address == expected
+
+    # A disjoint edit preserves the restored decision, then a program event
+    # preserves the latest source agenda on both the live and recovered tips.
+    target = CorpusProgramExpectation(
+        CorpusProgramProbe((("permit", 0), ("accept", 1))),
+        CorpusBindingRead(BindingProof(.7, frozenset({"permit", "accept"})), .7),
+    )
+    candidate_weights = np.diag([.1, 0., 0.])
+    trial = owner.begin_coordinate_trial(
+        restored, receiver, receiver._with_coordinate_value(candidate_weights),
+        seed=seed, target=target, future_batches=1, max_update_norm=1.,
+    )
+    unrelated = _write(owner, {"unrelated": b"accept,0,1,0,.2"})
+    judge = JournaledCorpusWorkspace(path, frame(unavailable))
+    refusal = judge.finish_program_trial(trial.trial_id, receiver=receiver)
+    assert refusal.status == "source_observation_limit"
+    assert refusal.observed_revision == unrelated.revision
+    assert not owner.pending_program_trials(limit=1)
+    assert owner.finish_program_trial(trial.trial_id) == refusal
+    installed = owner.publish_program(owner.prepare_program(
+        unrelated, {"alias": BindingGate("or", ("permit",))},
+    ))
+    reopened = JournaledCorpusWorkspace(path, frame(unavailable)).snapshot()
+    for pin in (installed, reopened):
+        receipt = audit_source_observations(pin, min_residual=.5, max_mentions=1)
+        assert pin.changed_sources == ("unrelated",)
+        assert (receipt.source_revision, receipt.revision, receipt.checked_mentions) == (
+            unrelated.revision, installed.revision, 1,
+        )
+        assert not receipt.findings
+    expanded = BindingFeedback(kernel, root, addresses, source_observation_limit=4, **kwargs)
+    assert expanded.step(expanded.step(expanded.start(seed, reopened.memory))).reads[-1].address == ("accept", 1)
+    assert receiver.step(first(fresh)).reads[-1].address == ("review", 1)
+
+    with pytest.raises(BindingCapacityError, match="continuous observation limit"):
+        BindingFeedback(kernel, root, addresses, source_observation_limit=2, **kwargs).start(seed, fresh.memory)
+    mention, = fresh.memory.source_mentions("permit")
+    mention.vector.shape = (1, 3)
+    with pytest.raises(ValueError):
+        mention.vector.setflags(write=True)
+    retained, = fresh.memory.source_mentions("permit")
+    assert retained.vector.shape == (3,)
+    assert retained.vector[2] == pytest.approx(-.6)

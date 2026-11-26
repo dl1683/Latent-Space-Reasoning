@@ -9,6 +9,7 @@ from math import nextafter, prod
 import numpy as np
 
 from experiments.memory.binding_feedback import BindingFeedback, BindingFeedbackState
+from experiments.memory.corpus_bindings import _SourceObservationRefusal
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, _separating_hinge
 from experiments.memory.weight_program import _frobenius, _remove_span, _row_basis, program_weight
 
@@ -114,6 +115,8 @@ def _receiver_digest(receiver):
                 _value_signature(kernel._feedback_value),
                 tuple((*map(_array_signature, terms[:3]), terms[3]) for terms in kernel._conditional)),
     )
+    if receiver._source_observation_limit is not None:
+        scope["source_observation_limit"] = receiver._source_observation_limit
     if receiver._coordinate_value is not None:
         scope["coordinate_value"] = _array_signature(receiver._coordinate_value)
     if receiver._coordinate_terms:
@@ -456,8 +459,8 @@ def supported_coordinate_continuation(receiver, memory, seed, steps):
 
 def check_coordinate_replay(receiver, candidate, memory, seed, addresses, expected, *, minimum_gain=None):
     """Judge the changed transition and its state intervention on the same source pin."""
-    prior, revised = receiver.start(seed, memory), candidate.start(seed, memory)
     try:
+        prior, revised = receiver.start(seed, memory), candidate.start(seed, memory)
         with np.errstate(**_REPLAY_ERRORS):
             for address in addresses[:-1]:
                 prior, revised = receiver.step(prior), candidate.step(revised)
@@ -471,6 +474,8 @@ def check_coordinate_replay(receiver, candidate, memory, seed, addresses, expect
             incumbent = receiver._next_read(prior)
             substitute = candidate._intervene_latest(revised, prior.latest)
             control = candidate._next_read(substitute)
+    except _SourceObservationRefusal as refusal:
+        return refusal.status
     except FloatingPointError:
         return "coordinate_numerical"
     if any(read.status in _INCOMPLETE_REPLAY for read in (terminal, incumbent, control)):
@@ -524,6 +529,8 @@ def check_context_retirement(receiver, candidate, memory, probes, atol):
                         return "retirement_read_changed"
                     if np.max(np.abs(prior.latest - revised.latest)) > atol:
                         return "retirement_state_changed"
+    except _SourceObservationRefusal as refusal:
+        return refusal.status
     except FloatingPointError:
         return "retirement_numerical"
     return "published"
@@ -590,9 +597,9 @@ def _check_downstream(receiver, incumbent, repaired, address, expected):
 def check_binding_replay(spec, receiver, incumbent, candidate, addresses, expected, *, downstream=None,
                          candidate_receiver=None):
     """Require the same failed route and a causal repair on the checked future tip."""
-    baseline = receiver.start(spec["seed"], incumbent)
     prefix = tuple(tuple(address) for address in spec["prefix"])
     try:
+        baseline = receiver.start(spec["seed"], incumbent)
         for address in prefix:
             baseline = _replay_step(receiver, baseline)
             read = baseline.reads[-1]
@@ -601,6 +608,8 @@ def check_binding_replay(spec, receiver, incumbent, candidate, addresses, expect
             if read.address != address or read.status != "resolved" or read.bounds.possible_strength is None:
                 return "replay_route_changed"
         baseline = _replay_step(receiver, baseline)
+    except _SourceObservationRefusal as refusal:
+        return refusal.status
     except FloatingPointError:
         return "replay_numerical"
     if baseline.reads[-1].status in _INCOMPLETE_REPLAY:

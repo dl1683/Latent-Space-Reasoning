@@ -17,7 +17,60 @@ from experiments.memory.corpus_binding_journal import (
     CorpusProgramExpectation, CorpusProgramProbe, CorpusProgramTrialResult, JournaledCorpusWorkspace,
     _cold_trial_memory, _trial_expectation, _trial_grade,
 )
-from experiments.memory.corpus_bindings import CorpusBindingRead, StaleCorpusRevision, _DisjointBranchReads
+from experiments.memory.corpus_bindings import CorpusBindingRead, CorpusRevision, StaleCorpusRevision, _DisjointBranchReads
+from experiments.memory.weight_program import _remove_span, _row_basis
+
+
+@dataclass(frozen=True)
+class SourceObservationFinding:
+    source: str
+    ordinal: int
+    predicate: str
+    residual: float
+
+
+@dataclass(frozen=True)
+class SourceObservationAudit:
+    revision: int
+    source_revision: int
+    findings: tuple[SourceObservationFinding, ...]
+    withdrawn: tuple[str, ...]
+    unavailable: tuple[str, ...]
+    checked_mentions: int
+
+
+def audit_source_observations(pin, *, min_residual, max_mentions):
+    """Inspect the latest source batch on a pin before any question is selected."""
+    if type(pin) is not CorpusRevision:
+        raise ValueError("expected a corpus revision")
+    min_residual = float(min_residual)
+    if not 0. < min_residual <= 1.:
+        raise ValueError("source audit residual floor must be in (0, 1]")
+    limit = index(max_mentions)
+    if limit < 1:
+        raise ValueError("source audit mention limit must be positive")
+
+    memory = pin.memory
+    withdrawn = tuple(source for source in pin.changed_sources if source not in memory.source_digests)
+    unavailable = tuple(source for source in pin.changed_sources
+                        if source in memory.source_digests and source not in memory._mentions)
+    count = sum(len(memory._mentions.get(source, ())) for source in pin.changed_sources)
+    if count > limit:
+        raise BindingCapacityError("source audit mention limit exceeded")
+    findings = []
+    if count:
+        basis = _row_basis(memory._anchors, 1e-12)
+        for source in pin.changed_sources:
+            if not memory._mentions.get(source):
+                continue
+            mentions = memory.source_mentions(source)
+            rows = np.stack([mention.vector for mention in mentions])
+            residuals = np.linalg.norm(_remove_span(rows, basis), axis=1)
+            findings.extend(
+                SourceObservationFinding(source, int(i), mentions[i].predicate, float(residuals[i]))
+                for i in np.flatnonzero(residuals >= min_residual)
+            )
+    return SourceObservationAudit(pin.revision, pin.source_revision, tuple(findings), withdrawn, unavailable, count)
 
 
 @dataclass(frozen=True)

@@ -108,7 +108,7 @@ class BindingFeedback:
     def __init__(self, kernel, frame, addresses, *, query, observation,
                  route_floor=0.0, route_gap=0.0, work_limit=65536, disjoint_reads=False, route_trials=1,
                  reuse_matching_failures=False, reuse_prefix_matching=False, reuse_weighted_matching=False,
-                 expansion=None, coordinate_value=None):
+                 expansion=None, coordinate_value=None, source_observation_limit=None):
         if type(kernel) is not FeedbackKernel or type(frame) is not CorpusBindingMemory:
             raise ValueError("binding feedback requires a dense feedback kernel and a corpus frame")
         addresses = tuple((node, index(binding)) for node, binding in addresses)
@@ -140,6 +140,11 @@ class BindingFeedback:
             or expansion.node_query.shape != (kernel._width, len(expansion.nodes))
         ):
             raise ValueError("route expansion requires multiple trials and matching score shapes")
+        if source_observation_limit is not None:
+            source_observation_limit = index(source_observation_limit)
+            if source_observation_limit < 1 or kernel._width != frame._anchors.shape[1]:
+                raise ValueError("source observations require a positive limit and matching hidden width")
+        self._source_observation_limit = source_observation_limit
         self._kernel = kernel
         self._contract, self._anchors = _frame_contract(frame), frame._anchors
         self._addresses = addresses
@@ -157,13 +162,16 @@ class BindingFeedback:
         self._fixed_addresses = frozenset(addresses) if expansion is not None else None
 
     def start(self, seed, memory=None):
-        """Pin an optional compiled corpus snapshot for this trajectory."""
+        """Pin the compiled corpus and optionally its continuous source observations."""
         if memory is not None and (
             type(memory) is not CorpusBindingMemory or _frame_contract(memory) != self._contract
             or (memory._anchors is not self._anchors and not np.array_equal(memory._anchors, self._anchors))
         ):
             raise ValueError("memory belongs to a different binding frame")
-        return BindingFeedbackState(self, self._kernel.start(seed), memory, _STATE_CREATION_KEY)
+        observations = None
+        if memory is not None and self._source_observation_limit is not None:
+            observations = self._kernel.prepare(memory._observation_rows(self._source_observation_limit))
+        return BindingFeedbackState(self, self._kernel.start(seed, observations), memory, _STATE_CREATION_KEY)
 
     def _intervene_latest(self, state, hidden):
         """Replace the generated row and its feedback projections, leaving the proof trace pinned."""

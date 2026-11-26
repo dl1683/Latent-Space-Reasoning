@@ -1,7 +1,9 @@
+from base64 import b64encode
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
 from fractions import Fraction
 from pathlib import Path
+import json
 import sqlite3
 import subprocess
 import sys
@@ -10,7 +12,7 @@ from threading import Barrier, Event
 import numpy as np
 import pytest
 
-from experiments.memory import corpus_binding_journal
+from experiments.memory import corpus_binding_journal, corpus_bindings
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate, BindingProof
 from experiments.memory.corpus_binding_journal import (
     CorpusProgramExpectation, CorpusProgramProbe, JournaledCorpusWorkspace, _event_digest,
@@ -501,6 +503,10 @@ raise AssertionError("child returned after commit")
     assert child.returncode == 0, child.stderr.decode()
     revived = JournaledCorpusWorkspace(path, _frame(_no_encoding)).snapshot()
     assert revived.revision == 2
+    assert revived.changed_sources == ("sensor",)
+    mention, = revived.memory.source_mentions("sensor")
+    assert mention.predicate == "inspection" and mention.strength == .8
+    assert np.allclose(mention.vector, np.array([1., 1.]) / np.sqrt(2.))
     assert revived.memory.resolve("release", 0) == CorpusBindingRead(None, .8)
     combined = parent.publish(delayed)
     assert combined.revision == 3
@@ -659,3 +665,73 @@ def test_copied_read_suffix_does_not_block_another_handles_commit(tmp_path, monk
     assert copied.revision == 1 and final.revision == 2
     assert copied.memory.resolve("release", 0) == CorpusBindingRead(None, None)
     assert reader.snapshot().memory.resolve("release", 0).certain.strength == .7
+
+
+
+def test_row_only_history_replays_without_fabricating_observations(tmp_path, monkeypatch):
+    path = tmp_path / "legacy.sqlite"
+    old_writer = JournaledCorpusWorkspace(path, _frame(), create=True)
+    new_encoder = corpus_binding_journal._encode
+    with monkeypatch.context() as patched:
+        patched.setattr(corpus_binding_journal, "_encode", lambda edits, **kw: new_encoder(edits, vectors=False))
+        _write(old_writer, {"permit": b"permit,1,0,0.9"})
+
+    reader = JournaledCorpusWorkspace(path, _frame(_no_encoding))
+    legacy = reader.snapshot()
+    assert legacy.memory.source_mentions("permit") is None
+    assert legacy.memory.resolve("permit", 0) == CorpusBindingRead(BindingProof(.9, frozenset({"permit"})), .9)
+    with pytest.raises(ValueError, match="legacy sources"):
+        legacy.memory._observation_rows(1)
+    assert _write(reader, {"permit": b"permit,1,0,0.9"}) is legacy
+
+    writer = JournaledCorpusWorkspace(path, _frame())
+    replaced = _write(writer, {"permit": b"permit,1,0,0.8"})
+    assert reader.snapshot().memory.source_mentions("permit")[0].strength == .8
+    assert np.array_equal(replaced.memory._observation_rows(1), [[1., 0.]])
+    assert legacy.memory.source_mentions("permit") is None
+    removed = _write(writer, {"permit": None})
+    assert reader.snapshot().revision == removed.revision
+    with pytest.raises(KeyError):
+        reader.snapshot().memory.source_mentions("permit")
+
+
+@pytest.mark.parametrize("corruption, error", [("nonfinite", "unit vector"), ("routing", "envelope")])
+def test_recovery_checks_observations_even_with_a_matching_event_hash(tmp_path, corruption, error):
+    path = tmp_path / "corpus.sqlite"
+    writer = JournaledCorpusWorkspace(path, _frame(), create=True)
+    _write(writer, {"permit": b"permit,1,0,0.9"})
+    with closing(sqlite3.connect(path)) as db:
+        revision, parent, payload = db.execute("SELECT revision, parent, payload FROM corpus_events").fetchone()
+        encoded = json.loads(payload)
+        mentions = encoded[1][0][5]
+        if corruption == "nonfinite":
+            mentions[0][2] = b64encode(np.array([np.nan, 0.], dtype="<f8").tobytes()).decode("ascii")
+        else:
+            encoded[1][0][3] = []
+        altered = corpus_binding_journal._json(encoded)
+        db.execute("UPDATE corpus_events SET digest = ?, payload = ? WHERE revision = ?",
+                   (_event_digest(parent, revision, altered), altered, revision))
+        db.commit()
+    with pytest.raises(ValueError, match=error):
+        JournaledCorpusWorkspace(path, _frame(_no_encoding))
+
+
+
+def test_source_vector_byte_budget_is_separate_from_expanded_rows(tmp_path, monkeypatch):
+    def encode(raw):
+        return () if raw == b"no mentions" else _encode(raw)
+
+    path = tmp_path / "budget.sqlite"
+    owner = JournaledCorpusWorkspace(path, _frame(encode), create=True)
+    monkeypatch.setattr(corpus_bindings, "_SOURCE_VECTOR_BYTES", 16)
+    with pytest.raises(BindingCapacityError, match="vector batch byte limit"):
+        _write(owner, {"a": b"permit,1,0,0.9", "b": b"inspection,1,0,0.8"})
+    assert owner.snapshot().revision == 0
+    pin = _write(owner, {"a": b"permit,1,0,0.9", "b": b"no mentions"})
+    reader = JournaledCorpusWorkspace(path, _frame(_no_encoding))
+    assert reader.snapshot().memory.source_mentions("b") == ()
+    assert np.array_equal(reader.snapshot().memory._observation_rows(1), [[1., 0.]])
+    monkeypatch.setattr(corpus_bindings, "_SOURCE_VECTOR_BYTES", 15)
+    with pytest.raises(ValueError, match="vector batch byte limit"):
+        JournaledCorpusWorkspace(path, _frame(_no_encoding))
+    assert pin.memory.source_mentions("b") == ()

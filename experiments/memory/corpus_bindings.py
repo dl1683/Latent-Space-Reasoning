@@ -36,6 +36,12 @@ class CorpusBindingRead:
 
 
 _BindingRows = tuple[tuple[str, int, float], ...]
+_StoredMention = tuple[str, float, bytes, int]
+_SOURCE_VECTOR_BYTES = 64 * 1024 * 1024
+
+
+def _source_vector_limit(width):
+    return _SOURCE_VECTOR_BYTES // (width * 8)
 
 
 @dataclass(frozen=True)
@@ -45,6 +51,7 @@ class _EncodedChange:
     certain: _BindingRows | None
     possible: _BindingRows | None
     outlier: bool
+    mentions: tuple[_StoredMention, ...] | None = None
 
 
 def _unit_rows(rows):
@@ -56,9 +63,15 @@ def _unit_rows(rows):
         return scaled / np.linalg.norm(scaled, axis=1, keepdims=True)
 
 
+class _SourceObservationRefusal(BindingCapacityError):
+    def __init__(self, status, message):
+        super().__init__(message)
+        self.status = status
+
+
 @dataclass(frozen=True, eq=False)
 class CorpusBindingMemory:
-    """A revision of source digests, frozen anchors and compiled evidence."""
+    """A revision of source digests, continuous observations and compiled evidence."""
 
     encoder_version: str
     source_digests: Mapping[str, str]
@@ -70,6 +83,7 @@ class CorpusBindingMemory:
     _expanded_limit: int
     _certain: BindingMemory
     _possible: BindingMemory
+    _mentions: Mapping[str, tuple[_StoredMention, ...]]
 
     @classmethod
     def prepare(cls, predicates, anchors, gates, sources, *, encode, encoder_version,
@@ -88,11 +102,11 @@ class CorpusBindingMemory:
         bank = BindingMemory.prepare(predicates, len(anchors), gates, {}, materialize=False,
                                      term_limit=term_limit, retained_limit=retained_limit)
         empty = cls(encoder_version, MappingProxyType({}), frozenset(), encode, anchors,
-                    float(min_similarity), float(gap), expanded_limit, bank, bank)
+                    float(min_similarity), float(gap), expanded_limit, bank, bank, MappingProxyType({}))
         return empty.revise(sources)
 
-    def _project(self, raw, remaining):
-        certain, possible = [], []
+    def _project(self, raw, remaining, vector_limit):
+        certain, possible, mentions = [], [], []
         outlier = False
         for mention in self._encode(raw):
             if not isinstance(mention, BindingMention):
@@ -118,7 +132,10 @@ class CorpusBindingMemory:
             if remaining < 0:
                 raise BindingCapacityError("encoded binding expansion limit exceeded")
             possible.extend((predicate, int(coordinate), strength) for coordinate in choices)
-        return tuple(certain), tuple(possible), outlier, remaining
+            if len(mentions) >= vector_limit:
+                raise BindingCapacityError("source vector batch byte limit exceeded")
+            mentions.append((predicate, strength, np.asarray(unit, dtype="<f8").tobytes(), int(coordinates.size)))
+        return tuple(certain), tuple(possible), outlier, tuple(mentions), remaining
 
     def revise(self, changes):
         """Encode changed byte records and publish both banks together."""
@@ -127,6 +144,7 @@ class CorpusBindingMemory:
     def _prepare_changes(self, changes):
         staged = []
         remaining = self._expanded_limit
+        vector_limit = _source_vector_limit(self._anchors.shape[1])
         for source, raw in changes.items():
             if type(source) is not str or not source:
                 raise ValueError("source IDs must be nonempty strings")
@@ -139,14 +157,16 @@ class CorpusBindingMemory:
                 raise ValueError("source records must be bytes")
             digest = sha256(raw).hexdigest()
             if digest != previous:
-                certain, possible, outlier, remaining = self._project(raw, remaining)
-                staged.append(_EncodedChange(source, digest, certain, possible, outlier))
+                certain, possible, outlier, mentions, remaining = self._project(raw, remaining, vector_limit)
+                vector_limit -= len(mentions)
+                staged.append(_EncodedChange(source, digest, certain, possible, outlier, mentions))
         return tuple(staged)
 
     def _apply_changes(self, staged):
         if not staged:
             return self
         digests = dict(self.source_digests)
+        mentions = dict(self._mentions)
         outliers = set(self.outlier_sources)
         certain, possible = {}, {}
         for edit in staged:
@@ -156,6 +176,10 @@ class CorpusBindingMemory:
                 del digests[source]
             else:
                 digests[source] = edit.digest
+            if edit.mentions is None:
+                mentions.pop(source, None)
+            else:
+                mentions[source] = edit.mentions
             if edit.outlier:
                 outliers.add(source)
             else:
@@ -163,7 +187,36 @@ class CorpusBindingMemory:
         lower = self._certain.revise(certain)
         upper = lower if self._certain is self._possible and certain == possible else self._possible.revise(possible)
         return replace(self, source_digests=MappingProxyType(digests), outlier_sources=frozenset(outliers),
-                       _certain=lower, _possible=upper)
+                       _certain=lower, _possible=upper, _mentions=MappingProxyType(mentions))
+
+    def source_mentions(self, source):
+        """Return a source's ordered normalized observations, or None for a legacy row-only source."""
+        if source not in self.source_digests:
+            raise KeyError(source)
+        mentions = self._mentions.get(source)
+        if mentions is None:
+            return None
+        return tuple(BindingMention(predicate, np.frombuffer(vector, dtype="<f8"), strength)
+                     for predicate, strength, vector, _ in mentions)
+
+    def _observation_rows(self, max_mentions):
+        limit = _proof_work_limit(max_mentions)
+        if len(self._mentions) != len(self.source_digests):
+            raise _SourceObservationRefusal(
+                "source_observations_unavailable", "continuous observations are unavailable for legacy sources",
+            )
+        count = sum(len(mentions) for mentions in self._mentions.values())
+        if count > limit:
+            raise _SourceObservationRefusal(
+                "source_observation_limit", "continuous observation limit exceeded",
+            )
+        rows = np.empty((count, self._anchors.shape[1]), dtype=np.float64)
+        position = 0
+        for source in sorted(self._mentions):
+            for _, _, vector, _ in self._mentions[source]:
+                rows[position] = np.frombuffer(vector, dtype="<f8")
+                position += 1
+        return rows
 
     def resolve(self, node, binding, *, without_sources=(), work_limit=65536):
         """Read both modeled bounds, with a work allowance for each bank."""
@@ -252,6 +305,8 @@ class CorpusRevision:
     _owner: object
     _program_revision: int = 0
     _receiver_programs: tuple[_ReceiverProgram, ...] = ()
+    source_revision: int = 0
+    changed_sources: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, eq=False)
@@ -340,7 +395,8 @@ class CorpusBindingWorkspace:
         revision = tip.revision + 1
         source_revisions = dict(tip._source_revisions)
         source_revisions.update((edit.source, revision) for edit in staged)
-        return replace(tip, revision=revision, memory=memory, _source_revisions=MappingProxyType(source_revisions))
+        return replace(tip, revision=revision, memory=memory, _source_revisions=MappingProxyType(source_revisions),
+                       source_revision=revision, changed_sources=tuple(sorted(edit.source for edit in staged)))
 
     def prepare_program(self, base, gates):
         """Compile alternate wiring for independent checks on a pinned memory."""
