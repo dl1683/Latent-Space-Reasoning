@@ -24,6 +24,22 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Transient tokenizer settings can break an encoding pin, 26 November 2026.**
+A normal unpadded, untruncated call clears a fast tokenizer's preset
+backend padding and truncation. Those settings are outside the
+content-encoding fingerprint. A serialized backend can also omit
+wrapper rules that change encoding. Every content-mode reader needs
+a tokenizer implementation and configuration digest from the caller.
+Exact token-ID digests still travel with the encoded chunks.
+
+**Fixed windows can turn a local edit into corpus churn, 26 November 2026.**
+In the public PEP correction, fixed windows preserved only two of 95
+revised spans at a 512-character cap. Content-defined cuts preserved
+123 of 137. The latter also increased the opening input count across
+the full corpus. A stable representation needs to pay for additional
+opening spans with real revision and readout savings.
+[Chunk reuse control](RESULTS.md#reusing-native-chunks-after-a-text-correction-26-november-2026)
+
 **A content snapshot can conceal a new source generation, 26 November 2026.**
 In the opening and restored text worlds, the raw bodies, span catalogue
 and content pin matched. The restored world had a different feed seal.

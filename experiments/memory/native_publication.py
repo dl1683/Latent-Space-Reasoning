@@ -68,12 +68,27 @@ def _reader_digest(reader):
         h.update(raw)
 
     tokenizer = getattr(reader._tokenizer, "backend_tokenizer", None)
-    if tokenizer is not None:
+    if reader._source_chunking == "content":
+        if callable(getattr(tokenizer, "to_str", None)):
+            settings = json.loads(tokenizer.to_str())
+            # Source inputs are unpadded and untruncated. Fast tokenizer calls
+            # clear these transient backend settings on their first encode.
+            settings.pop("padding", None)
+            settings.pop("truncation", None)
+            add("tokenizer", "json", None, _encode(settings))
+            options = {key: getattr(reader._tokenizer, key, None)
+                       for key in ("split_special_tokens", "add_bos_token", "add_eos_token")}
+            add("tokenizer-options", "json", None, _encode(options))
+        require_digest(reader._source_tokenizer_sha256)
+        add("source-tokenizer", "sha256", None, reader._source_tokenizer_sha256.encode("ascii"))
+    elif tokenizer is not None:
         add("tokenizer", "utf8", None, tokenizer.to_str().encode("utf8"))
     if reader._task_template is not None:
         add("task-template", "utf8", None, reader._task_template.encode("utf8"))
     if reader._source_ingress_sha256 is not None:
         add("source-ingress", "sha256", None, reader._source_ingress_sha256.encode("ascii"))
+    if reader._source_chunking == "content":
+        add("source-chunking", "utf8", None, b"content-v1")
 
     value = kernel._observation_value
     arrays = [("query", kernel._query), ("key", kernel._integer_observation_key)]
@@ -136,7 +151,10 @@ def _metadata(reader, memory):
         spans = []
         for item in items:
             indices[item.span] = len(indices)
-            spans.append([item.span.end_byte, item.span.span_sha256])
+            record = [item.span.end_byte, item.span.span_sha256]
+            if item.input_sha256 is not None:
+                record.append(item.input_sha256)
+            spans.append(record)
         documents.append([source, spans])
 
     attempted = sorted([indices[seed], _step_metadata(frontiers, indices)]
@@ -191,6 +209,8 @@ def write_native_publication(directory, reader, memory, *, runtime_sha256, max_b
     if payload_bytes > max_bytes:
         raise ValueError("native publication exceeds its byte allowance")
     header = _metadata(reader, memory)
+    if reader._source_chunking == "content" and header["reader"] != memory._reader_fingerprint_sha256:
+        raise ValueError("content-defined publication requires the unchanged source encoder")
     header.update(runtime=runtime_sha256, rows_bytes=payload_bytes, rows_sha256="0" * 64)
     if len(_encode(header)) + payload_bytes > max_bytes:
         raise ValueError("native publication exceeds its byte allowance")
@@ -282,7 +302,7 @@ def _source_scope(header):
                        descriptor, record["schema"], frozenset(binary))
 
 
-def _read_sources(documents, scope, rows, width, key_width):
+def _read_sources(documents, scope, rows, width, key_width, *, content_chunks):
     sources, shards, spans, key_rows, value_rows = {}, {}, [], [], []
     if [source for source, _ in documents] != sorted(scope.manifest):
         raise ValueError("native publication source inventory differs from the descriptor")
@@ -294,14 +314,22 @@ def _read_sources(documents, scope, rows, width, key_width):
             raise ValueError("native publication empty source inventory differs")
         coordinates = rows.take(len(ranges), width, "<f8")
         keys = rows.take(len(ranges), key_width, "i1")
-        doc_spans, start = [], 0
-        for end, span_digest in ranges:
+        has_inputs = content_chunks and source not in scope.binary_sources
+        items, start = [], 0
+        for record, row in zip(ranges, coordinates, strict=True):
+            if type(record) is not list or len(record) != (3 if has_inputs else 2):
+                raise ValueError("native publication source span differs from the chunking policy")
+            end, span_digest = record[:2]
+            input_sha256 = record[2] if has_inputs else None
+            if has_inputs:
+                require_digest(input_sha256)
             span = SourceSpan(source, digest, start, end, span_digest)
-            doc_spans.append(span)
+            items.append(_EncodedSpan(span, row, input_sha256))
             start = end
+        doc_spans = [item.span for item in items]
         if len(doc_spans) == 1 and doc_spans[0].span_sha256 != digest:
             raise ValueError("native publication single span differs from its source")
-        sources[source] = tuple(_EncodedSpan(span, row) for span, row in zip(doc_spans, coordinates, strict=True))
+        sources[source] = tuple(items)
         if doc_spans:
             values = _frozen(_quantize(coordinates).astype(np.int8))
             shards[source] = RowShard(tuple(doc_spans), keys, values)
@@ -520,7 +548,9 @@ def _restore(header, reader, raw, seal, scope):
         if type(header[key]) is not list:
             raise ValueError("native publication directory is malformed")
     rows = _Rows(raw)
-    sources, shards, spans, key_rows, value_rows = _read_sources(header["documents"], scope, rows, width, key_width)
+    sources, shards, spans, key_rows, value_rows = _read_sources(
+        header["documents"], scope, rows, width, key_width, content_chunks=reader._source_chunking == "content",
+    )
     def read_steps(records):
         return _read_steps(records, reader, spans, key_rows, value_rows, key_width, scope)
 

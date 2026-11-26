@@ -21,14 +21,35 @@ from experiments.memory.native_forecast_set import (
 from experiments.memory.selective_continuations import (
     RetainedSelector, RowShard, SelectionReceipt, SelectionStep, frontier_survives,
 )
-from experiments.memory.source_revision_feed import SourceDelta, _OPAQUE_ID, read_source_delta
+from experiments.memory.source_revision_feed import SourceDelta, _OPAQUE_ID, _encode, read_source_delta
 from experiments.memory.verified_source_tool import SourceSpan, require_digest, sha256
+
+
+_GEAR = tuple(int.from_bytes(bytes.fromhex(sha256(bytes((value,))))[:8], "little") for value in range(256))
+_GEAR_MASK = (1 << 64) - 1
+
+
+def _content_chunks(text, width):
+    """Cut on rolling text landmarks with a hard character cap."""
+    minimum = max(1, width // 2)
+    anchor_mask = (1 << max(0, (width // 4).bit_length() - 1)) - 1
+    rolling = start = 0
+    for end, char in enumerate(text, start=1):
+        # Keep the rolling state across cuts so an insertion can resynchronize.
+        rolling = ((rolling << 1) + _GEAR[ord(char) & 255]) & _GEAR_MASK
+        length = end - start
+        if length == width or (length >= minimum and rolling & anchor_mask == 0):
+            yield text[start:end]
+            start = end
+    if start < len(text):
+        yield text[start:]
 
 
 @dataclass(frozen=True, slots=True)
 class _EncodedSpan:
     span: SourceSpan
     row: np.ndarray
+    input_sha256: str | None = None
 
 
 @dataclass(frozen=True, slots=True, eq=False)
@@ -257,7 +278,8 @@ class NativeLatentModel:
     def __init__(self, model, tokenizer, moments, *, source_chars, context_tokens, latent_steps,
                  output_tokens, representation_scale, memory_gain, null_weight, eos_ids,
                  relay_gain=1.0, derived_gain=0.5, top_k=None, tie_limit=16, temperature=0.1,
-                 score_margin=0, task_template=None, source_ingress=None, source_ingress_sha256=None):
+                 score_margin=0, task_template=None, source_ingress=None, source_ingress_sha256=None,
+                 source_chunking="fixed", source_tokenizer_sha256=None):
         _require_cpu_eval(model)
         embedding = model.get_input_embeddings()
         if (embedding.weight.device.type != "cpu" or model.get_output_embeddings() is None
@@ -282,6 +304,14 @@ class NativeLatentModel:
             task_template = tokenizer.get_chat_template(task_template)
             if type(task_template) is not str or not task_template.strip():
                 raise ValueError("task template must resolve to a nonempty body")
+        if type(source_chunking) is not str or source_chunking not in ("fixed", "content"):
+            raise ValueError("source chunking must be fixed or content")
+        if source_chunking == "content" and top_k is None:
+            raise ValueError("content-defined source chunking requires a selective reader")
+        if source_chunking == "content" and source_tokenizer_sha256 is None:
+            raise ValueError("content chunking needs an explicit tokenizer identity")
+        if source_tokenizer_sha256 is not None:
+            require_digest(source_tokenizer_sha256)
         if source_ingress is not None and not callable(source_ingress):
             raise ValueError("source ingress must be callable")
         if source_ingress is not None or source_ingress_sha256 is not None:
@@ -290,6 +320,8 @@ class NativeLatentModel:
         self._task_template = task_template
         self._source_ingress, self._source_ingress_sha256 = source_ingress, source_ingress_sha256
         self._source_chars, self._context_tokens = source_chars, context_tokens
+        self._source_chunking = source_chunking
+        self._source_tokenizer_sha256 = source_tokenizer_sha256
         self._steps, self._output_tokens = latent_steps, output_tokens
         self._scale, self._memory_gain, self._null_weight = representation_scale, memory_gain, null_weight
         self._relay_gain, self._derived_gain = relay_gain, derived_gain
@@ -357,7 +389,7 @@ class NativeLatentModel:
             raise ValueError("backbone did not retain the expected causal prefix")
         return hidden, next_cache
 
-    def _encode_source(self, source, raw, version, *, binary):
+    def _encode_source(self, source, raw, version, *, binary, previous_text=()):
         if binary:
             projected = self._source_ingress(source, raw)
             if projected is None:
@@ -366,16 +398,29 @@ class NativeLatentModel:
             span = SourceSpan(source, version.sha256, 0, len(raw), version.sha256)
             return (_EncodedSpan(span, _frozen(row)),)
         text = raw.decode("utf8")
+        width = self._source_chars
+        chunks = (_content_chunks(text, width) if self._source_chunking == "content"
+                  else (text[start:start + width] for start in range(0, len(text), width)))
+        retained = {(item.span.span_sha256, item.input_sha256): item.row for item in previous_text}
+        tokenizer_options = {"padding": False} if self._source_chunking == "content" else {}
         offset = 0
         encoded = []
-        for start in range(0, len(text), self._source_chars):
-            chunk = text[start:start + self._source_chars]
+        for chunk in chunks:
             data = chunk.encode("utf8")
             stop = offset + len(data)
-            span = SourceSpan(source, version.sha256, offset, stop, sha256(data))
-            hidden, _ = self._backbone(self._embed(chunk, self._context_tokens), retain_cache=False)
-            row = _frozen(self._encode_hidden(hidden))
-            encoded.append(_EncodedSpan(span, row))
+            digest = sha256(data)
+            span = SourceSpan(source, version.sha256, offset, stop, digest)
+            ids = tuple(self._tokenizer.encode(chunk, add_special_tokens=True, truncation=False, **tokenizer_options))
+            self._check_input_ids(ids, self._context_tokens)
+            input_sha256 = sha256(_encode(ids)) if self._source_chunking == "content" else None
+            key = digest, input_sha256
+            row = retained.get(key)
+            if row is None:
+                hidden, _ = self._backbone(self._embed_ids(ids), retain_cache=False)
+                row = _frozen(self._encode_hidden(hidden))
+                if input_sha256 is not None:
+                    retained[key] = row
+            encoded.append(_EncodedSpan(span, row, input_sha256))
             offset = stop
         return tuple(encoded)
 
@@ -406,6 +451,13 @@ class NativeLatentModel:
     def _apply_source_revision(self, delta, previous):
         import torch
 
+        fingerprint = None
+        if self._source_chunking == "content":
+            from experiments.memory.native_publication import _reader_digest
+
+            fingerprint = _reader_digest(self)
+            if previous is not None and fingerprint != previous._reader_fingerprint_sha256:
+                raise ValueError("content-defined source reuse requires the unchanged opening reader")
         sources = {} if previous is None else dict(previous._sources)
         bank = None
         retire, add = [], []
@@ -415,8 +467,10 @@ class NativeLatentModel:
                 if self._selector is None:
                     retire.extend(item.row for item in old_rows)
                 if raw is not None:
+                    was_text = previous is not None and source not in previous._scope.binary_sources
+                    reusable = old_rows if fingerprint is not None and was_text else ()
                     encoded = self._encode_source(source, raw, delta.manifest[source],
-                                                  binary=source in delta.binary_sources)
+                                                  binary=source in delta.binary_sources, previous_text=reusable)
                     sources[source] = encoded
                     if self._selector is None:
                         add.extend(item.row for item in encoded)
@@ -425,7 +479,8 @@ class NativeLatentModel:
             if retire or add:
                 bank = self._moments.revise(bank, remove=retire or None, append=add or None)
         scope = replace(delta, changes=MappingProxyType({}))
-        memory = NativeSourceMemory(self._owner, scope, bank, MappingProxyType(sources))
+        memory = NativeSourceMemory(self._owner, scope, bank, MappingProxyType(sources),
+                                    _reader_fingerprint_sha256=fingerprint)
         if self._selector is None:
             return memory
         selective = self._revise_selection(None if previous is None else previous._selective, sources, delta.changes)

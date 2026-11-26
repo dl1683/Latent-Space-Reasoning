@@ -749,6 +749,26 @@ that epoch. Count feed files, parsing, indexing and retained state
 separately. A verified evidence open still charges the full source
 body and reports bytes delivered for the particular passage.
 
+## Reusing native text encodings after a document edit
+
+Pass `source_chunking="content"` when constructing a selective
+`NativeLatentModel` to use content-defined text chunks. The existing
+`source_chars` is a hard cap. Keep the same tokenizer, backbone, maps
+and chunking policy for the lifetime of a native publication and
+its source revisions. Supply `source_tokenizer_sha256` for the
+tokenizer implementation and complete encoding configuration,
+including wrapper options. Reopening under a different reader or chunking
+policy is refused.
+
+On a source update the worker still checks each chunk's actual token
+IDs against the context limit. The earlier hidden row is eligible
+for reuse when its byte and token hashes match. The worker creates
+new versioned spans for the current source proof. Binary inputs use
+their configured ingress, and a source type change cannot reuse
+the former text encoding across that change. Derivations continue
+to follow ordinary source invalidation. Use the previous source
+pin's retained state for history.
+
 ## Qualifying a native continuation on a future source
 
 `reader.forecast_next(memory, witness_source=source, features=indices,

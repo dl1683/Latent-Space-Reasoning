@@ -1047,3 +1047,120 @@ def test_native_forecast_set_carries_rivals_across_source_epochs(tmp_path, outco
         updated = worker.publish(path, correction.seal, previous=resolution.memory, max_source_bytes=_LIMIT)
         assert seed not in updated.derived_seeds
         assert reader(question, memory=_read(destination, reader, seal, later.seal)).text == "L06"
+
+@pytest.mark.parametrize("real_backbone", [False, True])
+def test_content_defined_reuse_matches_cold_source_rows_after_reopen(tmp_path, real_backbone):
+    import numpy as np
+    import torch
+    from experiments.memory.native_latent_recurrence import NativeLatentModel, _content_chunks
+    from experiments.memory.test_native_latent_recurrence import _kernel
+
+    class ChunkTokenizer:
+        def encode(self, text, *, add_special_tokens, truncation, padding=False):
+            assert add_special_tokens and not truncation and not padding
+            digest = bytes.fromhex(sha256(text.encode("utf8")))
+            return [1 + byte % 9 for byte in digest[:3]]
+
+        def decode(self, ids, *, skip_special_tokens):
+            return " ".join(map(str, ids))
+
+    def make_reader(mode="content", tokenizer_version=b"chunk-tokenizer-v1"):
+        tokenizer = ChunkTokenizer()
+        digest = sha256(tokenizer_version) if mode == "content" and tokenizer_version is not None else None
+        if real_backbone:
+            transformers = pytest.importorskip("transformers")
+            tokenizers = pytest.importorskip("tokenizers")
+            words = ("[PAD]", "[UNK]", "Heading", "Neighboring", "text", "New", "clause.", "café", "🌍.", "steady")
+            backend = tokenizers.Tokenizer(tokenizers.models.WordLevel(dict(zip(words, range(len(words)))),
+                                                                       unk_token="[UNK]"))
+            backend.pre_tokenizer = tokenizers.pre_tokenizers.WhitespaceSplit()
+            tokenizer = transformers.PreTrainedTokenizerFast(tokenizer_object=backend, unk_token="[UNK]",
+                                                             pad_token="[PAD]")
+            tokenizer.backend_tokenizer.enable_padding(pad_id=0, pad_token="[PAD]")
+            tokenizer.backend_tokenizer.enable_truncation(max_length=5)
+            config = transformers.LlamaConfig(vocab_size=10, hidden_size=6, intermediate_size=12, head_dim=6,
+                                              num_hidden_layers=1, num_attention_heads=1, num_key_value_heads=1,
+                                              max_position_embeddings=32, eos_token_id=0)
+            with torch.random.fork_rng(devices=[]):
+                torch.manual_seed(17)
+                model = transformers.LlamaForCausalLM(config).eval()
+            model.calls = []
+            model.base_model.register_forward_pre_hook(lambda _module, _inputs: model.calls.append("backbone"))
+        else:
+            model = _StandIn().eval()
+        return model, NativeLatentModel(
+            model, tokenizer, _kernel(), source_chars=128, context_tokens=32 if real_backbone else 12, latent_steps=2,
+            output_tokens=2, representation_scale=0.25, memory_gain=1, null_weight=0.1, eos_ids=(0,),
+            top_k=1, source_chunking=mode, source_tokenizer_sha256=digest,
+        )
+
+    source, steady = (letter * 32 for letter in "ab")
+    original = "".join(f"Heading {index}: café 🌍. Neighboring text {sha256(str(index).encode())}\n"
+                       for index in range(48))
+    edited = original[:154] + "New clause. " + original[154:]
+    raw, revised_raw = original.encode("utf8"), edited.encode("utf8")
+    initial_dir, revision_dir = tmp_path / "source", tmp_path / "correction"
+    opening = write_source_delta(initial_dir, {source: raw, steady: b"steady"})
+    correction = write_source_delta(revision_dir, {source: revised_raw}, previous=opening)
+    author_model, author = make_reader()
+    encoded = author.publish(initial_dir, opening.seal)
+    assert "".join(_content_chunks(edited, 128)) == edited
+    opening_dir = tmp_path / "opening-publication"
+    seal = write_native_publication(opening_dir, author, encoded, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+
+    model, reader = make_reader()
+    loaded = _read(opening_dir, reader, seal, opening.seal)
+    assert not model.calls
+    assert tuple(item.input_sha256 for item in loaded._sources[source]) == tuple(
+        item.input_sha256 for item in encoded._sources[source]
+    )
+    assert len(encoded._sources[source]) == len(list(_content_chunks(original, 128)))
+    with pytest.raises(ValueError, match="explicit tokenizer identity"):
+        make_reader(tokenizer_version=None)
+    _, different_tokenizer = make_reader(tokenizer_version=b"different configuration")
+    with pytest.raises(ValueError, match="reader differs"):
+        _read(opening_dir, different_tokenizer, seal, opening.seal)
+    legacy, fixed_reader = make_reader("fixed")
+    with pytest.raises(ValueError, match="reader differs"):
+        _read(opening_dir, fixed_reader, seal, opening.seal)
+
+    revised = reader.publish(revision_dir, correction.seal, previous=loaded)
+    warm_rows = revised._sources[source]
+    old_inputs = {(item.span.span_sha256, item.input_sha256): item for item in loaded._sources[source]}
+    current_inputs = {(item.span.span_sha256, item.input_sha256) for item in warm_rows}
+    assert 0 < len(current_inputs - old_inputs.keys()) < len(current_inputs) // 2
+    assert len(model.calls) == len(current_inputs - old_inputs.keys())
+    assert revised._sources[steady] is loaded._sources[steady]
+    assert any(item.span.start_byte != old_inputs[item.span.span_sha256, item.input_sha256].span.start_byte
+               for item in warm_rows if (item.span.span_sha256, item.input_sha256) in old_inputs)
+    assert all(item.span.version_sha256 == sha256(revised_raw) for item in warm_rows)
+    assert all(sha256(revised_raw[item.span.start_byte:item.span.end_byte]) == item.span.span_sha256
+               for item in warm_rows)
+
+    published_dir = tmp_path / "revised-publication"
+    revised_seal = write_native_publication(published_dir, reader, revised, runtime_sha256=_RUNTIME,
+                                            max_bytes=_LIMIT)
+    reopened_model, reopened_reader = make_reader()
+    reopened = _read(published_dir, reopened_reader, revised_seal, correction.seal)
+    assert not reopened_model.calls
+    cold_model, cold_reader = make_reader()
+    cold_dir = tmp_path / "cold-source"
+    cold_feed = write_source_delta(cold_dir, {source: revised_raw, steady: b"steady"})
+    cold = cold_reader.publish(cold_dir, cold_feed.seal)
+    for warm, fresh in zip(reopened._sources[source], cold._sources[source], strict=True):
+        assert warm.span == fresh.span and warm.input_sha256 == fresh.input_sha256
+        assert warm.row.tobytes() == fresh.row.tobytes()
+    np.testing.assert_array_equal(reopened._selective.shards[source].keys, cold._selective.shards[source].keys)
+    warm_read = reopened_reader("Heading", memory=reopened)
+    cold_read = cold_reader("Heading", memory=cold)
+    assert warm_read.token_ids == cold_read.token_ids
+    assert author_model.calls and cold_model.calls and not legacy.calls
+
+    with torch.no_grad():
+        model.get_input_embeddings().weight[1, 0].add_(1)
+    calls = list(model.calls)
+    with pytest.raises(ValueError, match="unchanged opening reader"):
+        reader.publish(revision_dir, correction.seal, previous=loaded)
+    with pytest.raises(ValueError, match="unchanged source encoder"):
+        write_native_publication(tmp_path / "drift", reader, revised, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    assert model.calls == calls and not (tmp_path / "drift").exists()

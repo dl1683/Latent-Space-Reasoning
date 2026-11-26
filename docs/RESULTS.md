@@ -4,6 +4,47 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Reusing native chunks after a text correction, 26 November 2026
+
+**Public byte-only check.** Run the actual chunker over all 655
+opening PEP documents and the original one-document correction.
+Both policies preserved every opening text byte across 12,061,646
+bytes with a 512-character cap. The opening inventory includes all
+locations. Distinct inputs count equal chunk strings once per source
+and assume a fixed deterministic tokenizer.
+
+| Count | Fixed windows | Content-defined chunks |
+| --- | ---: | ---: |
+| Opening corpus spans | 23,867 | 33,689 |
+| Distinct opening inputs | 23,867 | 33,684 |
+| Revised document spans | 95 | 137 |
+| Exact reusable locations in that document | 2 | 123 |
+| Distinct missing inputs after correction | 93 | 14 |
+| Revised document cuts at the hard cap | 94 | 16 |
+
+The fixed column includes hypothetical exact source-local reuse so
+the comparison isolates the boundary policy. The live fixed reader
+still encodes all chunks of an edited document. The content-defined
+opening uses 9,817 more distinct inputs. The observed correction
+saves 79 inputs against the reuse-matched fixed policy. The counts
+expose the opening versus revision tradeoff. No PEP tokens or model
+states were produced, so these are input opportunities with no
+model latency, cost or answer-quality estimate.
+
+**Software controls.** The native reader reopened a source snapshot
+and revised a UTF-8 document. On both a controlled backbone and
+a one-layer randomly initialized CPU Transformer, the warm path
+made one forward call per distinct missing input. Its published
+rows matched same-policy cold bytes, token hashes and routed keys.
+The same short read produced identical output IDs after reopen and
+cold encoding. The worker reissued changed source coordinates when matching
+chunks moved. A different policy or modified reader was refused.
+The test guards row reuse after source publication. Qualifying
+source revisions as forecasts and evaluating useful later responses
+remain open.
+[Source-epoch calibration](PEP_VISIBLE_LATE_TASK.md)
+[Native fixture](../experiments/memory/test_native_publication.py)
+
 ## Using one source epoch for native and text episodes, 26 November 2026
 
 **Public-corpus software control.** The existing PEP feed exported

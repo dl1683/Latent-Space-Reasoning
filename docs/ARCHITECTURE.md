@@ -194,6 +194,40 @@ fixed parent remains available as a control. The joint-state
 alternative can revise a group of competing paths together.
 [Worker and reader](../experiments/memory/native_latent_recurrence.py)
 
+#### Reusing the encodings of unchanged text inside a revised source
+
+[SLICE] A selective native reader can use the opt-in
+`source_chunking="content"` policy. A rolling character hash
+proposes cuts after a minimum width. Every chunk has the configured
+hard character cap. The rolling state continues across forced cuts,
+so revised text can return to a shared boundary. Stable boundaries
+are empirical. A run of forced cuts can shift when text is inserted.
+
+At a verified correction the worker tokenizes current chunks
+individually. It reuses an earlier row only within the same source,
+text modality and reader fingerprint, and only when both the
+chunk bytes and exact token IDs match. Repeated matches get separate
+current spans. A missing key runs the same batch-one, unpadded
+source encoder from position zero. The publication seals the
+chunk policy and input digest of each text row. It identifies the
+serialized backend without transient padding or truncation state
+when available. The caller pins the complete tokenizer implementation
+and configuration in every content-mode reader, including wrapper
+behavior beyond the serialized backend. Earlier fixed
+chunk publications keep the existing wire format and reader
+fingerprint. Source generations still govern downstream dependency
+invalidation. Numerical reuse does not revive historical evidence.
+
+Both policies retain the exact input context bound at tokenization.
+The caller supplies an immutable reader, tokenizer and numerical
+runtime. Measure rolling boundary work, repeated tokenization,
+fingerprinting, numeric repacking, retained bytes and application
+quality together with encode calls. Compare against an exact
+incremental fixed-window arm with the same reuse opportunities.
+A deployment can keep the fixed policy when opening costs dominate.
+[Public correction and cold parity checks](RESULTS.md#reusing-native-chunks-after-a-text-correction-26-november-2026)
+[Content-defined chunking precedent](https://www.usenix.org/conference/atc16/technical-sessions/presentation/xia)
+
 #### Discovering a parent from the source trajectory
 
 [SLICE] A worker can use an opening publication to find a parent
