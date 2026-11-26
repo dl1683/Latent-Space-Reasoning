@@ -64,7 +64,7 @@ function run(){
   function compile(s,c){
     c.compile++;
     const relevant=s.sources.filter(r=>r.scope===s.scope);
-    if(s.sources.some(r=>r.scope===null))return {rows:[null,null],deps:relevant.map(r=>r.id)};
+    if(s.sources.some(r=>r.scope===null))return {rows:[null,null],deps:s.sources.filter(r=>r.scope===s.scope||r.scope===null).map(r=>r.id)};
     const upstream=relevant.filter(r=>r.kind==="measurement");
     const downstream=relevant.filter(r=>r.kind==="law");
     const deps=relevant.map(r=>r.id);
@@ -148,7 +148,7 @@ function run(){
         eager.reads++;lazy.reads++;
         const a=read(published[j],x),b=read(cache.get(j),x),gold=oracle(f,s,x);
         ok(eq(a,b)&&eq(a.values,gold),"oracle mismatch");
-        ok(eq(a.deps,s.sources.filter(r=>r.scope===s.scope).map(r=>r.id)),"provenance");
+        ok(eq(a.deps,s.sources.filter(r=>r.scope===s.scope||r.scope===null).map(r=>r.id)),"provenance");
         reads++;resolved+=gold.filter(z=>z!==null).length;open+=gold.filter(z=>z===null).length;
         if(gold.filter(z=>z===null).length===1)partial++;
         if(gold.some(z=>z!==null)){
