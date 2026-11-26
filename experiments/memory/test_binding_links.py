@@ -275,3 +275,241 @@ def test_outcome_vocabulary_cannot_conceal_compatible_excluded_evidence(tmp_path
     assert partial.status == "work_limit" and partial.answer is None
     assert partial.work == complete.work - 1 and partial.terminal_dots > 0
     assert partial.witnesses == () and partial.outcomes == _OUTCOMES
+
+
+def _transport_encoding(raw):
+    for line in raw.decode().splitlines():
+        label, *numbers = line.split(",")
+        yield BindingMention(label, np.array(numbers[:-1], dtype=np.float64), float(numbers[-1]))
+
+
+def _transport_frame(encode=_transport_encoding):
+    return CorpusBindingMemory.prepare(
+        (*_ROLES, *_OUTCOMES), np.eye(6), {}, {}, encode=encode,
+        encoder_version="transport-control", min_similarity=.7, gap=.05,
+    )
+
+
+def _mentions(*observations):
+    return "\n".join(",".join(map(str, (predicate, *direction, grade)))
+                     for predicate, direction, grade in observations).encode()
+
+
+def _transport_program(owner, pin, transport="reflection"):
+    return owner.prepare_role_links(pin, _ROLES, min_similarity=.94, uncertainty=.005,
+                                    compile_work_limit=64, transport=transport)
+
+
+class _DenseTransportJoin:
+    """Independent reference that maintains dense transforms on affected sources."""
+
+    def __init__(self, memory, transport):
+        self.transport = transport
+        self.effects = {}
+        self.terminals = {}
+        self.update(memory, memory.source_digests)
+
+    def update(self, memory, changed):
+        for source in changed:
+            self.effects.pop(source, None)
+            self.terminals.pop(source, None)
+            if source not in memory.source_digests:
+                continue
+            observations = memory.source_mentions(source)
+            endpoints = {item.predicate: item.vector for item in observations}
+            if "entry" in endpoints:
+                entry, exit = endpoints["entry"], endpoints["exit"]
+                eye = np.eye(len(entry))
+                if self.transport == "rotation":
+                    normal = entry + exit
+                    incoming = eye - 2. * np.outer(entry, entry) / (entry @ entry)
+                    outgoing = eye - 2. * np.outer(normal, normal) / (normal @ normal)
+                    matrix = outgoing @ incoming
+                else:
+                    delta = entry - exit
+                    square = delta @ delta
+                    matrix = eye - 2. * np.outer(delta, delta) / square if square else eye
+                self.effects[source] = entry, matrix
+            else:
+                self.terminals[source] = tuple((item.predicate, item.vector) for item in observations)
+
+    def read(self, direction, hops):
+        paths = [(direction / np.linalg.norm(direction), frozenset())]
+        for _ in range(hops):
+            expanded = []
+            for incoming, used in paths:
+                for source, (entry, matrix) in self.effects.items():
+                    if source in used or entry @ incoming <= .945:
+                        continue
+                    state = matrix @ incoming
+                    expanded.append((state / np.linalg.norm(state), used | {source}))
+            paths = expanded
+        return {
+            label
+            for state, used in paths
+            for source, observations in self.terminals.items()
+            if source not in used
+            for label, terminal in observations
+            if terminal @ state > .945
+        }
+
+
+@pytest.mark.parametrize("transport", ["reflection", "rotation"])
+def test_transported_links_carry_different_contexts_to_late_depths_after_restart(tmp_path, transport):
+    filename = tmp_path / "transport.sqlite"
+    frame = _transport_frame()
+    owner = JournaledCorpusWorkspace(filename, frame, create=True)
+    axes = np.eye(6)
+
+    def link(entry, exit):
+        return _mentions(("entry", entry, .8), ("exit", exit, .8))
+
+    terminals = {f"{label}-{depth}": _mentions((label, .98 * axes[axis] + sign * .2 * axes[4], .7))
+                 for label, sign in (("accept", 1.), ("review", -1.))
+                 for depth, axis in ((3, 3), (4, 5))}
+    third = link(axes[2], axes[3])
+    _write(owner, {
+        "first": link(axes[0], axes[1]), "second": link(axes[1], axes[2]),
+        "third": third, "fourth": link(axes[3], axes[5]), **terminals,
+    })
+    worker = JournaledCorpusWorkspace(filename, _transport_frame(_no_encoding))
+    worker.publish_program(_transport_program(worker, worker.snapshot(), transport))
+    original = owner.snapshot()
+    oracle = _DenseTransportJoin(original.memory, transport)
+
+    # The late depths and query directions are independent of program installation.
+    keys = np.zeros((6, 1))
+    values = np.zeros((6, 6))
+    kernel = FeedbackKernel(query=keys, carry=np.eye(6) / 4., observation_key=keys, observation_value=values,
+                            feedback_key=keys, feedback_value=values, max_steps=2)
+    receiver = BindingFeedback(kernel, frame, (("accept", 3),), query=keys, observation=np.zeros((6, 6)))
+    positive, negative = .98 * axes[0] + .2 * axes[4], .98 * axes[0] - .2 * axes[4]
+
+    def read(seed, pin, hops):
+        state = receiver.step(receiver.start(seed, pin.memory))
+        readout = receiver.read_role_links(state, outcomes=_OUTCOMES, hops=hops, work_limit=256)
+        assert {item.outcome for item in readout.witnesses} == oracle.read(state.latest, hops)
+        return readout
+
+    for hops, last in ((3, "third"), (4, "fourth")):
+        for seed, answer in ((positive, "accept"), (negative, "review")):
+            seen = read(seed, original, hops)
+            assert seen.answer == answer and seen.transports == seen.hops == hops
+            witness, = seen.witnesses
+            assert tuple(step.source for step in witness.prefix) == ("first", "second", "third")[:hops - 1]
+            assert witness.link_source == last and witness.terminal_source == f"{answer}-{hops}"
+
+    a = receiver.step(receiver.start(positive, original.memory))
+    b = receiver.step(receiver.start(negative, original.memory))
+    intervened = receiver._intervene_latest(a, b.latest)
+    assert receiver.read_role_links(intervened, outcomes=_OUTCOMES, hops=4, work_limit=256).answer == "review"
+    fixed = _transport_program(owner, original, "fixed").preview
+    for incoming in (a.latest, b.latest):
+        assert fixed.read_role_links(incoming, outcomes=_OUTCOMES, hops=4, work_limit=256).status == "conflict"
+    limited = receiver.read_role_links(a, outcomes=_OUTCOMES, hops=4, work_limit=10)
+    assert limited.status == "work_limit" and limited.witnesses == ()
+    detached = receiver.step(receiver.start(positive))
+    assert receiver.read_role_links(detached, outcomes=_OUTCOMES, hops=4, work_limit=256).hops == 4
+
+    corrected = _write(owner, {"third": link(axes[2], .98 * axes[3] + .2 * axes[4])})
+    oracle.update(corrected.memory, corrected.changed_sources)
+    assert corrected.memory._certain is original.memory._certain
+    assert corrected.memory._possible is original.memory._possible
+    assert corrected.memory._role_links.pairs["first"] is original.memory._role_links.pairs["first"]
+    assert all(original.memory.source_digests[name] == corrected.memory.source_digests[name] for name in terminals)
+    assert read(positive, corrected, 3).answer == "accept"
+    assert read(positive, corrected, 4).status == "no_link"
+    assert read(negative, corrected, 3).status == "conflict"
+    conflict = read(negative, corrected, 4)
+    assert conflict.status == "conflict" and conflict.answer is None
+
+    recovered = JournaledCorpusWorkspace(filename, _transport_frame(_no_encoding)).snapshot()
+    assert recovered.revision == corrected.revision and read(negative, recovered, 4) == conflict
+    withdrawn = _write(owner, {"third": None})
+    oracle.update(withdrawn.memory, withdrawn.changed_sources)
+    assert read(negative, withdrawn, 4).status == "no_link"
+    restored = _write(owner, {"third": third})
+    oracle.update(restored.memory, restored.changed_sources)
+    assert read(negative, restored, 4).answer == "review" and read(positive, original, 4).answer == "accept"
+    assert receiver.read_role_links(receiver.step(receiver.start(negative, corrected.memory)),
+                                   outcomes=_OUTCOMES, hops=4, work_limit=256) == conflict
+
+
+def test_exact_horizon_does_not_reuse_an_identity_link_as_its_own_next_premise(tmp_path):
+    owner = JournaledCorpusWorkspace(tmp_path / "identity.sqlite", _transport_frame(), create=True)
+    direction = np.eye(6)[0]
+    before = _write(owner, {
+        "link": _mentions(("entry", direction, .8), ("exit", direction, .8)),
+        "terminal": _mentions(("accept", direction, .7)),
+    })
+    pin = owner.publish_program(_transport_program(owner, before))
+    opts = dict(outcomes=_OUTCOMES, work_limit=64)
+    assert pin.memory.read_role_links(direction, hops=1, **opts).answer == "accept"
+    repeat = pin.memory.read_role_links(direction, hops=2, **opts)
+    assert repeat.status == "no_link" and repeat.transports == 1
+    with pytest.raises(ValueError, match="hop count must be positive"):
+        pin.memory.read_role_links(direction, hops=0, **opts)
+
+
+
+def test_rotation_preserves_small_corrections_where_reflection_flips_the_residual(tmp_path):
+    filename = tmp_path / "rotation.sqlite"
+    owner = JournaledCorpusWorkspace(filename, _transport_frame(), create=True)
+    e = np.eye(6)
+    positive, negative = .98 * e[0] + .2 * e[4], .98 * e[0] - .2 * e[4]
+    opening = _write(owner, {
+        "near": _mentions(("entry", e[0], .9), ("exit", e[0], .9)),
+        "plus": _mentions(("accept", positive, .8)),
+        "minus": _mentions(("review", negative, .8)),
+        "elsewhere": _mentions(("accept", e[2], .8)),
+    })
+    fixed = owner.publish_program(_transport_program(owner, opening, "fixed"))
+    opts = dict(outcomes=_OUTCOMES, work_limit=64)
+    assert fixed.memory.read_role_links(positive, **opts).status == "conflict"
+    draft = owner.prepare_changes(fixed, {"other": _mentions(("entry", e[1], .9), ("exit", e[2], .9))},
+                                  allow_program_rebase=True)
+    owner.publish_program(_transport_program(owner, fixed))
+    reflected = owner.publish(draft)
+    assert reflected.memory._role_links.pairs["other"].reflector is not None
+    assert reflected.memory.read_role_links(positive, **opts).answer == "accept"
+    changed = _write(owner, {"near": _mentions(("entry", e[0], .9), ("exit", e[0] + 1e-6 * e[4], .9))})
+    assert changed.memory._certain is reflected.memory._certain
+    assert changed.memory._possible is reflected.memory._possible
+    assert changed.memory.read_role_links(positive, **opts).answer == "review"
+
+    rotated = owner.publish_program(_transport_program(owner, changed, "rotation"))
+    assert rotated.memory.source_digests is changed.memory.source_digests
+    assert rotated.memory.read_role_links(positive, **opts).answer == "accept"
+    assert rotated.memory.read_role_links(negative, **opts).answer == "review"
+    fresh = JournaledCorpusWorkspace(filename, _transport_frame(_no_encoding)).snapshot()
+    assert fresh.memory.read_role_links(positive, **opts) == rotated.memory.read_role_links(positive, **opts)
+
+    for offset in (0., 2e-13):
+        antipodal = _write(owner, {"near": _mentions(("entry", e[0], .9), ("exit", -e[0] + offset * e[4], .9))})
+        unresolved = antipodal.memory.read_role_links(positive, **opts)
+        assert unresolved.status == "unresolved" and unresolved.open_sources == 1
+        unrelated = antipodal.memory.read_role_links(e[1], **opts)
+        assert unrelated.answer == "accept" and unrelated.open_sources == 0
+    far = _write(owner, {"near": _mentions(("entry", e[0], .9), ("exit", -e[0] + 2e-10 * e[4], .9))})
+    assert far.memory.read_role_links(positive, **opts).open_sources == 0
+
+
+def test_distinct_prefix_origins_preserve_incompatible_outcomes_after_convergence(tmp_path):
+    owner = JournaledCorpusWorkspace(tmp_path / "convergence.sqlite", _transport_frame(), create=True)
+    e = np.eye(6)
+    start = _write(owner, {
+        "a": _mentions(("entry", e[0], .8), ("exit", e[1], .8), ("accept", e[3], .8)),
+        "b": _mentions(("entry", e[0], .3), ("exit", e[1], .3), ("review", e[3], .8)),
+        "middle": _mentions(("entry", e[1], .8), ("exit", e[2], .8)),
+        "last": _mentions(("entry", e[2], .8), ("exit", e[3], .8)),
+    })
+    pin = owner.publish_program(_transport_program(owner, start))
+    options = dict(outcomes=_OUTCOMES, hops=3)
+    result = pin.memory.read_role_links(e[0], work_limit=256, **options)
+    assert result.status == "conflict" and result.answer is None
+    assert [(w.outcome, w.prefix[0].source, w.link_source, w.terminal_source, w.strength)
+            for w in result.witnesses] == [
+        ("accept", "b", "last", "a", .3), ("review", "a", "last", "b", .8),
+    ]
+    limited = pin.memory.read_role_links(e[0], work_limit=result.work - 1, **options)
+    assert limited.status == "work_limit" and not limited.witnesses

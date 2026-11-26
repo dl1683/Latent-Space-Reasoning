@@ -10,7 +10,7 @@ from types import MappingProxyType
 
 import numpy as np
 
-from experiments.memory.binding_links import BindingLinkRead, _RoleLinks
+from experiments.memory.binding_links import BindingLinkRead, _RoleLinks, _role_hops
 from experiments.memory.binding_memory import (
     BindingCapacityError, BindingMemory, BindingProof, _exclusions, _ProofWork, _proof_work_limit,
 )
@@ -194,7 +194,7 @@ class CorpusBindingMemory:
         return replace(self, source_digests=MappingProxyType(digests), outlier_sources=frozenset(outliers),
                        _certain=lower, _possible=upper, _mentions=MappingProxyType(mentions), _role_links=links)
 
-    def _reprogram_role_links(self, roles, min_similarity, uncertainty, compile_work_limit):
+    def _reprogram_role_links(self, roles, min_similarity, uncertainty, compile_work_limit, transport="fixed"):
         if roles is None:
             return self if self._role_links is None else replace(self, _role_links=None)
         if isinstance(roles, str):
@@ -206,21 +206,24 @@ class CorpusBindingMemory:
         floor, uncertainty = float(min_similarity), float(uncertainty)
         if not 0. < floor <= 1. or not 0. <= uncertainty <= min(floor, 1. - floor):
             raise ValueError("invalid role-link similarity threshold or uncertainty band")
+        if type(transport) is not str or transport not in ("fixed", "reflection", "rotation"):
+            raise ValueError("role-link transport must be fixed, reflection or rotation")
         limit = _proof_work_limit(compile_work_limit)
         links = self._role_links
-        if links is not None and (links.roles, links.floor, links.uncertainty, links.compile_limit) == (
-            roles, floor, uncertainty, limit,
+        if links is not None and (links.roles, links.floor, links.uncertainty, links.compile_limit, links.transport) == (
+            roles, floor, uncertainty, limit, transport,
         ):
             return self
         return replace(self, _role_links=_RoleLinks.prepare(
-            roles, floor, uncertainty, limit, self.source_digests, self._mentions,
+            roles, floor, uncertainty, limit, transport, self.source_digests, self._mentions,
         ))
 
-    def read_role_links(self, direction, *, outcomes, work_limit):
+    def read_role_links(self, direction, *, outcomes, work_limit, hops=1):
         """Apply installed directions and then compare against declared terminal predicates."""
+        hops = _role_hops(hops)
         links = self._role_links
         if links is None:
-            return BindingLinkRead("no_role_program")
+            return BindingLinkRead("no_role_program", hops=hops)
         if isinstance(outcomes, str):
             raise ValueError("role-link outcomes require distinct nonstructural predicates")
         labels = tuple(outcomes)
@@ -229,7 +232,7 @@ class CorpusBindingMemory:
                 or len(set(labels)) != len(labels)):
             raise ValueError("role-link outcomes require distinct nonstructural predicates")
         return links.read(direction, outcomes=frozenset(labels), mentions=self._mentions,
-                          limit=_proof_work_limit(work_limit), width=self._anchors.shape[1])
+                          limit=_proof_work_limit(work_limit), width=self._anchors.shape[1], hops=hops)
 
     def source_mentions(self, source):
         """Return a source's ordered normalized observations, or None for a legacy row-only source."""
@@ -445,10 +448,11 @@ class CorpusBindingWorkspace:
         self._check_owner(base)
         return CorpusProgramProposal(base, base.memory.reprogram(gates))
 
-    def prepare_role_links(self, base, roles, *, min_similarity=None, uncertainty=0., compile_work_limit=None):
+    def prepare_role_links(self, base, roles, *, min_similarity=None, uncertainty=0., compile_work_limit=None,
+                           transport="fixed"):
         """Propose the source-typed role program without a query or terminal family."""
         self._check_owner(base)
-        memory = base.memory._reprogram_role_links(roles, min_similarity, uncertainty, compile_work_limit)
+        memory = base.memory._reprogram_role_links(roles, min_similarity, uncertainty, compile_work_limit, transport)
         return CorpusProgramProposal(base, memory)
 
     def publish_program(self, proposal):

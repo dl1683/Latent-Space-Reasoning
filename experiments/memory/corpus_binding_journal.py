@@ -112,19 +112,24 @@ def _encode(staged, *, vectors=True):
 
 def _encode_role_links(links):
     spec = None if links is None else (*links.roles, links.floor, links.uncertainty, links.compile_limit)
+    if links is not None and links.transport != "fixed":
+        return _json(["role_links", 2, (*spec, links.transport)])
     return _json(["role_links", 1, spec])
 
 
 def _decode_role_links(payload, memory):
     event = json.loads(payload)
-    if type(event) is not list or len(event) != 3 or event[:2] != ["role_links", 1]:
+    if type(event) is not list or len(event) != 3 or event[0] != "role_links":
         raise ValueError("invalid role-link program event")
-    spec = event[2]
-    if spec is None:
+    version, spec = event[1:]
+    if type(version) is not int or version not in (1, 2):
+        raise ValueError("unsupported role-link program version")
+    if spec is None and version == 1:
         revised = memory._reprogram_role_links(None, None, None, None)
     else:
-        if (type(spec) is not list or len(spec) != 5 or type(spec[2]) is not float
-                or type(spec[3]) is not float or type(spec[4]) is not int):
+        if (type(spec) is not list or len(spec) != 4 + version or type(spec[2]) is not float
+                or type(spec[3]) is not float or type(spec[4]) is not int
+                or (version == 2 and spec[5] not in ("reflection", "rotation"))):
             raise ValueError("invalid role-link program specification")
         revised = memory._reprogram_role_links(spec[:2], *spec[2:])
     if revised is memory or _encode_role_links(revised._role_links) != payload:
