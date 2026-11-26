@@ -382,7 +382,125 @@ def test_generated_route_hint_cannot_admit_an_inapplicable_source_or_override_su
     assert [_sources(branch)[-1] for branch in fixed.branches] == ["a-release", "b-release"]
     assert fixed.priority_scores == 0 and fixed.block_evaluations == 4
 
-    withdrawn = feedback.prepare(_publish(owner, {"a-release": None, "b-release": None}), previous=original)
+    edited = feedback.prepare(_publish(owner, {"b-release": texts["a-release"]}), previous=original, packed=False)
+    reordered = feedback.repair_joint(complete, edited, max_hypotheses=2)
+    fresh = feedback.reason_joint(axes[0], steps=3, memory=edited, **limits)
+    _same_joint_read(reordered, fresh, axes[3])
+    assert [_sources(branch)[-1] for branch in reordered.branches] == ["a-release", "b-release"]
+    assert reordered.branches[0] is complete.branches[1]
+    assert reordered.observation_scores == 3 and reordered.priority_scores == 2
+    assert reordered.transition_writes == 1 and reordered.reused_writes == 3
+
+    withdrawn = feedback.prepare(_publish(owner, {"a-release": None, "b-release": None}), previous=edited)
     missing = feedback.reason_joint(axes[0], steps=3, memory=withdrawn, **limits)
     assert missing.read(axes[3], floor=.8).status == "missing"
     assert _sources(missing.branches[0]) == ("origin", "mid", None)
+
+
+def _same_joint_read(repaired, fresh, direction):
+    assert repaired.memory is fresh.memory
+    assert repaired.steps == fresh.steps and repaired.overflow == fresh.overflow
+    assert repaired.uncertain_routes == fresh.uncertain_routes
+    for kept, rebuilt in zip(repaired.branches, fresh.branches, strict=True):
+        assert kept.witnesses == rebuilt.witnesses
+        np.testing.assert_array_equal(kept.source_hidden, rebuilt.source_hidden)
+        np.testing.assert_array_equal(kept.history, rebuilt.history)
+    assert repaired.read(direction, floor=.8).status == fresh.read(direction, floor=.8).status
+
+
+@pytest.mark.parametrize("feedback", [False, True])
+def test_repair_rescores_new_relevance_and_reuses_unchanged_branch_nodes(tmp_path, feedback):
+    owner, frame, opening, world, texts, axes = _relay_world(tmp_path, feedback)
+    original = world.prepare(opening, packed=False)
+    assert original._bank is None and original.packed_rows == 0 and original.projected_rows == 5
+    packed = world.prepare(opening, previous=original)
+    assert packed.packed_rows == 5 and packed.projected_rows == 0
+    pooled = world.reason(axes[0], steps=2, memory=original)
+    assert pooled.packed_rows == 5 and original._bank is None
+    np.testing.assert_array_equal(pooled.hidden, world.reason(axes[0], steps=2, memory=packed).hidden)
+
+    def run(memory, cap=2):
+        return world.reason_joint(axes[0], steps=2, max_hypotheses=cap, null_logit=8., margin=1., memory=memory)
+
+    before = run(original)
+    north, south = before.branches
+    retired = world.prepare(_publish(owner, {"south": None}), previous=original, packed=False)
+    partial = world.repair_joint(before, retired, max_hypotheses=2)
+    _same_joint_read(partial, run(retired), axes[3])
+    assert partial.read(axes[3], floor=.8).status == "unresolved"
+    assert partial.observation_scores == 0 and partial.transition_writes == 1 and partial.reused_writes == 3
+    assert partial.branches[0] is north
+    assert partial.block_evaluations == (2 if feedback else 1)
+
+    # Defeat invalidation based only on previously selected dependencies.
+    routed = world.prepare(_publish(owner, {"decoy": texts["south"]}), previous=retired, packed=False)
+    rebound = world.repair_joint(partial, routed, max_hypotheses=2)
+    _same_joint_read(rebound, run(routed), axes[3])
+    assert rebound.read(axes[3], floor=.8).status == "conflict"
+    assert _sources(rebound.branches[1]) == ("south-origin", "decoy")
+    assert routed.packed_rows == 0 and routed.projected_rows == 1
+    assert rebound.branches[0] is north and rebound.observation_scores == 3 and rebound.reused_writes == 3
+
+    # Restore identical bytes through a new, distinct source generation.
+    restored = world.prepare(_publish(owner, {"south": texts["south"], "decoy": texts["decoy"]}), previous=routed)
+    resumed = world.repair_joint(before, restored, max_hypotheses=2)
+    _same_joint_read(resumed, run(restored), axes[3])
+    assert resumed.branches[0] is north and resumed.branches[1] is not south
+    assert resumed.branches[1].witnesses[-1].span == south.witnesses[-1].span
+    assert resumed.branches[1].witnesses[-1].generation != south.witnesses[-1].generation
+    assert resumed.observation_scores == 6 and resumed.reused_writes == 3
+    assert before.branches == (north, south)
+
+    reopened = JournaledCorpusWorkspace(tmp_path / "relay.sqlite", frame)
+    with pytest.raises(ValueError, match="journal handle"):
+        world.repair_joint(before, world.prepare(reopened.snapshot()), max_hypotheses=2)
+
+
+def test_repair_keeps_unlocated_source_and_new_ambiguity_open_even_with_reused_nodes(tmp_path):
+    owner, _, opening, world, texts, axes = _relay_world(tmp_path, feedback=False)
+    original = world.prepare(opening)
+
+    def run(memory):
+        return world.reason_joint(axes[0], steps=2, max_hypotheses=2, null_logit=8., margin=1., memory=memory)
+
+    completed = run(original)
+    ambiguous = world.prepare(_publish(owner, {"ambiguous": texts["ambiguous"]}), previous=original)
+    partial = world.repair_joint(completed, ambiguous, max_hypotheses=2)
+    _same_joint_read(partial, run(ambiguous), axes[3])
+    assert partial.read(axes[3], floor=.8).status == "unresolved"
+    assert partial.branches == completed.branches and partial.observation_scores == 3 and partial.reused_writes == 4
+
+    empty = world.prepare(_publish(owner, {"empty": texts["empty"], "ambiguous": None}), previous=ambiguous)
+    unknown = world.repair_joint(partial, empty, max_hypotheses=2)
+    _same_joint_read(unknown, run(empty), axes[3])
+    assert unknown.read(axes[3], floor=.8).status == "unresolved" and not unknown.uncertain_routes
+    assert unknown.branches == completed.branches and unknown.observation_scores == unknown.transition_writes == 0
+
+    fixed = world.prepare(_publish(owner, {"empty": None}), previous=empty)
+    final = world.repair_joint(unknown, fixed, max_hypotheses=2)
+    assert final.read(axes[3], floor=.8).status == "conflict"
+    assert final.branches == completed.branches and final.observation_scores == final.transition_writes == 0
+
+
+def test_repair_discovers_new_parents_and_capacity_refuses_at_committed_depth(tmp_path):
+    owner, _, opening, world, texts, axes = _relay_world(tmp_path, feedback=False)
+
+    def run(memory, cap=3):
+        return world.reason_joint(axes[0], steps=2, max_hypotheses=cap, null_logit=8., margin=1., memory=memory)
+
+    first = _publish(owner, {"south-origin": None})
+    initial = world.prepare(first, previous=world.prepare(opening))
+    single = run(initial)
+    expanded = world.prepare(_publish(owner, {"south-origin": texts["south-origin"]}), previous=initial)
+    two = world.repair_joint(single, expanded, max_hypotheses=3)
+    _same_joint_read(two, run(expanded), axes[3])
+    assert two.observation_scores == 7 and two.transition_writes == two.reused_writes == 2
+    assert two.branches[0] is single.branches[0]
+
+    copied = world.prepare(_publish(owner, {"north-copy": texts["north"]}), previous=expanded)
+    limited = world.repair_joint(two, copied, max_hypotheses=2)
+    assert limited.steps == 1 and limited.transition_writes == 0 and limited.reused_writes == 2
+    assert limited.read(axes[3], floor=.8).status == "hypothesis_limit"
+    resumed = world.continue_joint(limited, steps=1, max_hypotheses=3)
+    _same_joint_read(resumed, run(copied), axes[3])
+    assert resumed.read(axes[3], floor=.8).status == "conflict"

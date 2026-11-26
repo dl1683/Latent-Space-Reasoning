@@ -24,6 +24,15 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A source edit can create a dependency without touching an old witness.**
+With the south relay withdrawn, the saved route had a missing
+premise. An edit made a previously excluded record the applicable
+relay. A cache that only checks cited sources would leave the result
+stale. Rescore changed rows against saved queries and consider
+changes in unresolved source scope even when all numeric objects can
+be reused.
+[Revision controls](RESULTS.md#differential-repair-of-a-retained-latent-frontier-26-november-2026)
+
 **Pooled signs can erase opposition or admit a decoy.** The two-relay
 fixture produced a near-zero pooled result when both relay reports
 were present. Removing both reports left an unrelated record that

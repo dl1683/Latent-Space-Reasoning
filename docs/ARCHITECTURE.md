@@ -1793,8 +1793,9 @@ A task can continue from a committed frontier on the same reasoner,
 source pin and route thresholds. If an expansion exceeds the
 hypothesis budget, the frontier stays at its previous depth and the
 read withholds a verdict. Retrying counts the repeated key scans.
-Changing the source world or the kernel requires a fresh task state.
-The task's private trajectories carry no publication authority.
+A newer source pin can repair a completed frontier under the same
+kernel. Changing the kernel requires a fresh task state. The task's
+private trajectories carry no publication authority.
 
 The current operation appends and resumes joint trajectories. A
 later workspace should let late evidence write an earlier hypothesis
@@ -1804,6 +1805,42 @@ the branching read with pooling over identical admitted rows and
 with the exact source-level reference. Full scans per hypothesis,
 branch storage and source-bank copies contribute to cost.
 [Joint workspace](../experiments/memory/recurrent_world.py)
+
+#### Repairing a retained joint frontier
+
+[SLICE] Each committed expansion retains its parent state, the
+source-only query, its witnessed successors and the routed uncertain
+rows. Each successor stores its new rows and a parent link. Histories
+are reconstructed when read. Repair on the same journal handle
+compares source digest and generation. For a retained parent, remove
+admission and uncertainty entries from changed sources, then score their
+new rows against the saved query. This includes changed rows that
+were irrelevant before. Fresh and resumed scans evaluate one source
+bank at a time so a retained source has the same numerical batch
+shape in either path. A newly reached parent scans the current bank
+in full.
+
+An unchanged parent and unchanged selected witness can share the
+successor object, even when other children of that parent change.
+Unchanged source membership preserves generated priority order.
+Changed eligibility reorders the eligible list under the same
+current task row. Scope includes unlocated sources in the new pin
+independently of numeric reuse. The previous pin remains readable.
+Repair carries no question readout target and can run before a later
+readout. It holds the same task seed and numerical operator. A
+different journal handle or operator uses a fresh frontier.
+
+Use unpacked preparation to retain source banks without copying them
+into a global matrix. The joint reader consumes those banks directly.
+The pooled reader can materialize its ordinary dense input on demand
+and records those rows. Repair reports rescored rows, new and reused
+transitions and block evaluations for the new pin. These counts omit
+source-bank enumeration, retained checkpoint bytes and per-source
+dispatch overhead. Compare complete lifecycle cost with a warm
+incremental solver. Historical source replay can reconstruct the
+inputs. Durable frontier storage and query-blind publication of a new
+operator remain separate work.
+[Repair runtime](../experiments/memory/recurrent_world.py)
 
 ## Claims and evidence boundary (2026-10-15; not a new experiment)
 

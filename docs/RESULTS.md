@@ -4,6 +4,34 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Differential repair of a retained latent frontier, 26 November 2026
+
+**Scripted CPU software verification.** Withdrawing the south relay
+retained three of four transitions and rescored zero source rows.
+The north terminal branch stayed the same object. Editing an
+unselected decoy to make it an applicable south relay rescored its
+one observation against three recorded queries. The repair replaced
+one transition, kept three, and recovered the conflict. Full rebuilds
+on the same pins matched its hidden rows and versioned witnesses.
+Same-byte restoration from a new source birth replaced the affected
+witness and transition. A changed priority tie also matched a fresh
+ordering while sharing the unchanged terminal branch.
+
+Admitting a new origin created a new parent and required a fresh
+scan at that parent. The repair scored seven rows, compared with
+15 for a fresh read, and shared two of four resulting transitions.
+A budget refusal left the first committed depth available. A newly
+routed ambiguous row and a source that encoded to zero rows opened
+the result even when all numeric branch objects were reused.
+Unpacked preparation projected one changed row and performed zero
+global packing for the re-routed decoy. The pooled path could pack
+that representation on demand with the same fixture output.
+
+These counts measure supplied local operations. Learned source scope,
+durable worker publication, warm exact lifecycle costs and reuse
+across incompatible operators remain open.
+[Revision controls](../experiments/memory/test_recurrent_world.py)
+
 ## Branch-preserving latent workspace, 26 November 2026
 
 **Scripted CPU software verification.** Two source observations set

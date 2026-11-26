@@ -331,6 +331,17 @@ priority scores and rescoring at refusal and restart. The supplied two-relay fix
 a numerical intervention and leaves semantic acquisition and
 calibration to the learned comparison.
 
+The differential repair canary tests both invalidation directions.
+Withdraw a recorded premise and make a previously unselected source
+applicable. Compare every repaired branch with a fresh read on the
+new pin. Include same-byte restoration, pending scope without a
+numeric change, a newly reached parent, and refusal after a
+committed depth. Give the exact comparator symmetric cache rights
+on positive and negative applicability. Charge source enumeration,
+projection, packing, per-source scoring, checkpoint retention,
+branch replay, verification and restart. Hold out the late
+readout targets when choosing any query-blind maintenance probes.
+
 ## Executable gaps in the current branch
 
 `TaskWorld` pins a verified source catalogue to an optional journaled

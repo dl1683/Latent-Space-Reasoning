@@ -812,4 +812,17 @@ pinned. The result reports source scores, generated-history scores
 and transition writes across all attempts. It also counts block
 evaluations and any generated-state priority scores. A branch exposes
 both its task row and its source-only row. Signed evidence uses the
-source-only row. A changed source or model uses a fresh task state.
+source-only row. A changed model uses a fresh task state.
+
+For a newer corpus revision, prepare the bank with
+`prepare(revision, previous=old_bank, packed=False)`. The optional
+flag keeps source-local keys and observations without a dense copy.
+The ordinary pooled reader packs on demand and reports its row count.
+Repair a completed attached result with
+`repair_joint(result, new_bank, max_hypotheses=limit)`.
+Repair starts a new accounting record, including `reused_writes`
+and the work actually redone. It checks changed rows against saved
+queries and preserves unchanged successor objects. It uses the same
+reasoner, journal handle, seed, depth and route thresholds. A reopened
+journal can prepare a fresh bank and run a fresh frontier. The
+frontier itself remains process-local.
