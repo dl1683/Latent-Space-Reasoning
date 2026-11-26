@@ -9,6 +9,8 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 import hashlib
 import json
+from operator import index
+from os import fstat
 from pathlib import Path
 import re
 from types import MappingProxyType
@@ -82,9 +84,13 @@ class VerifiedSourceTool:
             versions, sort_keys=True, separators=(",", ":"),
             ensure_ascii=False).encode("utf8"))
 
-    def verify(self, pointer: SourceSpan):
+    def verify(self, pointer: SourceSpan, *, max_source_bytes=None):
         if not isinstance(pointer, SourceSpan):
             raise TypeError("SourceSpan required")
+        if max_source_bytes is not None:
+            max_source_bytes = index(max_source_bytes)
+            if max_source_bytes < 0:
+                raise ValueError("nonnegative source allowance required")
         result = dict(pointer=asdict(pointer), source_bytes_read=0,
                       file=f"leaves/{pointer.version_sha256}.txt")
         expected = self.versions.get(pointer.source_id)
@@ -98,7 +104,15 @@ class VerifiedSourceTool:
         if not path.resolve().is_relative_to(self.root):
             return dict(result, status="OUTSIDE_STORE")
         try:
-            data = path.read_bytes()
+            if max_source_bytes is None:
+                data = path.read_bytes()
+            else:
+                with path.open("rb") as handle:
+                    if fstat(handle.fileno()).st_size > max_source_bytes:
+                        return dict(result, status="SOURCE_LIMIT")
+                    data = handle.read(max_source_bytes)
+                    if fstat(handle.fileno()).st_size > max_source_bytes:
+                        return dict(result, status="SOURCE_LIMIT", source_bytes_read=len(data))
         except FileNotFoundError:
             return dict(result, status="MISSING")
         result["source_bytes_read"] = len(data)

@@ -439,7 +439,6 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
 
     def __init__(self, path, empty, *, create=False):
         super().__init__(empty)
-        self._root_tip = self._tip
         if (empty.source_digests or empty.outlier_sources or empty._mentions or empty._role_links is not None
                 or empty._certain._rows or empty._possible._rows
                 or empty._certain._retained or empty._possible._retained):
@@ -469,9 +468,17 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 raise ValueError("corpus journal schema is incomplete")
             self._stream = self._read_root(db)
             self._digest = sha256(self._frame + self._stream).digest()
+            self._root_tip = self._set_tip(self._tip, self._digest)
             suffix = self._read_suffix(db)
             db.commit()
-        self._tip, self._digest = self._replay(suffix)
+        self._set_tip(*self._replay(suffix))
+
+    def _set_tip(self, tip, digest):
+        identity = digest.hex()
+        if tip.journal_sha256 != identity:
+            tip = replace(tip, journal_sha256=identity)
+        self._tip, self._digest = tip, digest
+        return tip
 
     def _connect(self, *, create=False):
         mode = "rwc" if create else "rw"
@@ -530,6 +537,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             else:
                 tip = self._apply_proposal(tip, _decode(payload, tip.memory))
             digest = recorded
+            tip = replace(tip, journal_sha256=digest.hex())
             yield tip, digest
 
     def _install_program_revision(self, tip, memory, patch):
@@ -558,8 +566,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 suffix = self._read_suffix(db)
                 db.commit()
             tip, digest = self._replay(suffix)
-            self._tip, self._digest = tip, digest
-            return tip
+            return self._set_tip(tip, digest)
 
     def publish(self, proposal):
         self._check_proposal(proposal)
@@ -572,8 +579,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 tip = self._apply_proposal(tip, staged)
                 digest = self._append(db, digest, tip.revision, _encode(staged))
             db.commit()
-            self._tip, self._digest = tip, digest
-            return tip
+            return self._set_tip(tip, digest)
 
     def publish_program(self, proposal):
         self._check_program(proposal)
@@ -587,8 +593,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                            else _encode_program(revised.memory._certain._gates))
                 digest = self._append(db, digest, revised.revision, payload)
             db.commit()
-            self._tip, self._digest = revised, digest
-            return revised
+            return self._set_tip(revised, digest)
 
     def begin_program_trial(self, base, gates, *, targets, future_batches, work_limit, protected=(), replay=None,
                             downstream=None, route_edit=None, route_update_limit=None):
@@ -890,7 +895,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                 ))
             db.commit()
             base, digest = self._replay(suffix)
-            self._tip, self._digest = base, digest
+            base = self._set_tip(base, digest)
         if outcome is not None:
             return outcome
 
@@ -1012,7 +1017,7 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                     WHERE trial_id = ?""", (status, base.revision, trial_id))
                 outcome = CorpusProgramTrialResult(trial_id, status, base.revision)
             db.commit()
-            self._tip, self._digest = tip, digest
+            self._set_tip(tip, digest)
             return outcome
 
     def _check_retirement_window(self, events, opened, revision, checked_digest, receiver, candidate, spec):
@@ -1066,5 +1071,4 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             if memory is not base.memory:
                 tip = replace(base, memory=memory)
             db.commit()
-            self._tip, self._digest = tip, digest
-            return tip
+            return self._set_tip(tip, digest)

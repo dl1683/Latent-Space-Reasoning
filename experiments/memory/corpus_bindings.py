@@ -378,6 +378,7 @@ class CorpusRevision:
     _receiver_programs: tuple[_ReceiverProgram, ...] = ()
     source_revision: int = 0
     changed_sources: tuple[str, ...] = ()
+    journal_sha256: str | None = None
 
 
 @dataclass(frozen=True, eq=False)
