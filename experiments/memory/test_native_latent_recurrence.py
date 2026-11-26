@@ -37,7 +37,7 @@ class _Cache:
 class _StandIn(torch.nn.Module):
     """Deterministic CPU state machine with the expected backbone and head interfaces."""
 
-    def __init__(self):
+    def __init__(self, *, clear_previous=False):
         super().__init__()
         self.config = SimpleNamespace(max_position_embeddings=16)
         rows = torch.zeros((10, 6))
@@ -48,6 +48,7 @@ class _StandIn(torch.nn.Module):
         rows[6, 2] = rows[6, 5] = 1
         self._lookup = torch.nn.Embedding.from_pretrained(rows)
         self.calls = []
+        self._clear_previous = clear_previous
 
     def get_input_embeddings(self):
         return self._lookup
@@ -63,6 +64,8 @@ class _StandIn(torch.nn.Module):
         if past_key_values is not None:
             prefix = past_key_values.get_seq_length()
             hidden[..., 0] = 0
+            if self._clear_previous:
+                hidden[..., 1] = torch.where(hidden[..., 2] != 0, 0, hidden[..., 1])
         cache = _Cache(prefix + hidden.shape[1]) if use_cache else None
         return SimpleNamespace(last_hidden_state=hidden, past_key_values=cache)
 
@@ -84,9 +87,9 @@ def _kernel(*, terminal_axis=4):
                                 feedback_key=query, feedback_value=np.zeros((6, 6)), max_steps=2)
 
 
-def _reader(backbone, *, terminal_axis=4):
+def _reader(backbone, *, terminal_axis=4, latent_steps=2, top_k=None):
     return NativeLatentModel(backbone, _Tokenizer(), _kernel(terminal_axis=terminal_axis),
-                             source_chars=4, context_tokens=12, latent_steps=2,
+                             source_chars=4, context_tokens=12, latent_steps=latent_steps, top_k=top_k,
                              output_tokens=2, representation_scale=0.25, memory_gain=1, null_weight=0.1,
                              eos_ids=(0,))
 
@@ -182,6 +185,103 @@ def test_small_alignment_has_proportionally_small_observation_support():
     assert mass == 1 and small == pytest.approx(0.001)
 
 
+def test_selective_worker_keeps_a_valid_continuation_and_invalidates_for_new_tie(tmp_path):
+    cue, middle, result, unrelated, tie = (letter * 32 for letter in "abcde")
+    documents = {cue: "écho".encode(), middle: b"blue", result: b"side", unrelated: b"."}
+    opening_feed = write_source_delta(tmp_path / "p0", documents)
+    quiet_feed = write_source_delta(tmp_path / "p1", {unrelated: b" "}, previous=opening_feed)
+    tie_feed = write_source_delta(tmp_path / "p2", {tie: b"gold"}, previous=quiet_feed)
+    restored_feed = write_source_delta(tmp_path / "p3", {tie: None}, previous=tie_feed)
+    backbone = _StandIn(clear_previous=True).eval()
+    reader = _reader(backbone, terminal_axis=2, top_k=1)
+    opening = reader.publish(tmp_path / "p0", opening_feed.seal)
+    maintained = reader.maintain(opening, max_seeds=1)
+    seed, = maintained.derived_seeds
+    assert seed == opening.source_spans(cue)[0]
+    dependencies = maintained.continuation_reads(seed)
+    assert [step.selected[0].span.source_id for step in dependencies] == [cue, middle]
+    assert all(step.rows_scored == 4 for step in dependencies)
+    question = "What follows?"
+    supported = reader(question, memory=maintained)
+    source_only = reader(question, memory=reader.without_derived(maintained))
+    assert supported.text == "side" and supported.applied_derived_steps == 1
+    assert supported.derived_reads[0].selected[0].span == seed
+    assert not source_only.text and source_only.source_seal == supported.source_seal
+    ablated = reader.without_contribution(reader.without_derived(maintained), cue)
+    omitted = reader(question, memory=ablated)
+    assert omitted.source_seal == supported.source_seal and omitted.omitted_sources == {cue}
+    assert omitted.source_reads[0].status == "empty" and not omitted.text
+
+    backbone.calls.clear()
+    quiet = reader.publish(tmp_path / "p1", quiet_feed.seal, previous=maintained)
+    assert backbone.calls == [("backbone", False, 1)]
+    assert quiet.derived_seeds == maintained.derived_seeds
+    assert quiet.continuation_reads(seed) == dependencies
+    quiet_answer = reader(question, memory=quiet)
+    assert quiet_answer.text == supported.text
+    rebuilt = reader.maintain(reader.without_derived(quiet), max_seeds=1)
+    assert rebuilt.derived_seeds == quiet.derived_seeds
+    np.testing.assert_array_equal(rebuilt._selective.derived[0].keys, quiet._selective.derived[0].keys)
+    np.testing.assert_array_equal(rebuilt._selective.derived[0].values, quiet._selective.derived[0].values)
+    assert reader(question, memory=rebuilt) == quiet_answer
+
+    contested = reader.publish(tmp_path / "p2", tie_feed.seal, previous=quiet)
+    assert not contested.derived_seeds
+    retried = reader.maintain(contested, max_seeds=1)
+    assert not retried.derived_seeds
+    read = reader(question, memory=retried)
+    ambiguous = read.source_reads[1]
+    assert ambiguous.status == "competing" and ambiguous.eligible == 2
+    assert {hit.span.source_id for hit in ambiguous.selected} == {middle, tie}
+    assert not read.text
+
+    restored = reader.publish(tmp_path / "p3", restored_feed.seal, previous=retried)
+    # Fresh workers can continue after the changed-source budget is used.
+    while seed not in restored.derived_seeds:
+        following = reader.maintain(restored, max_seeds=1)
+        assert following is not restored
+        restored = following
+    assert reader(question, memory=restored).text == supported.text
+    assert reader(question, memory=maintained) == supported
+
+
+def test_selective_queue_preserves_rejected_work_and_progress_across_edit(tmp_path):
+    idle, cue, middle, result, edited = (letter * 32 for letter in "abcde")
+    opening = write_source_delta(tmp_path / "p0", {
+        idle: b".", cue: "écho".encode(), middle: b"blue", result: b"side", edited: b".",
+    })
+    following = write_source_delta(tmp_path / "p1", {edited: b" "}, previous=opening)
+    reader = _reader(_StandIn(clear_previous=True).eval(), terminal_axis=2, top_k=1)
+    world = reader.publish(tmp_path / "p0", opening.seal)
+    assert world.pending_seeds == 5
+    first = reader.maintain(world, max_seeds=1)
+    assert first.pending_seeds == 4 and not first.derived_seeds
+    revised = reader.publish(tmp_path / "p1", following.seal, previous=first)
+    assert revised.pending_seeds == 4
+    second = reader.maintain(revised, max_seeds=1)
+    assert second.derived_seeds == world.source_spans(cue)
+    assert second.pending_seeds == 3
+
+
+def test_source_only_third_runtime_step_matches_the_shorter_maintained_route(tmp_path):
+    documents = {"a" * 32: "écho".encode(), "b" * 32: b"blue", "c" * 32: b"side"}
+    folder = tmp_path / "p0"
+    feed = write_source_delta(folder, documents)
+    backbone = _StandIn(clear_previous=True).eval()
+    shallow = _reader(backbone, terminal_axis=2, top_k=1)
+    deeper = _reader(backbone, terminal_axis=2, latent_steps=3, top_k=1)
+    prepared = shallow.maintain(shallow.publish(folder, feed.seal), max_seeds=1)
+    source_only = deeper.publish(folder, feed.seal)
+    question = "What follows?"
+    offline = shallow(question, memory=prepared)
+    online = deeper(question, memory=source_only)
+    assert offline.text == online.text == "side"
+    assert offline.applied_derived_steps > 0
+    assert offline.latent_steps == 2 and online.latent_steps == 3
+    assert deeper(question, memory=source_only, steps=2).text == ""
+    assert deeper(question, steps=0).latent_steps == 0
+
+
 def test_native_reader_rejects_a_non_cpu_shard_before_forward():
     backbone = _StandIn().eval()
     reader = _reader(backbone)
@@ -191,7 +291,8 @@ def test_native_reader_rejects_a_non_cpu_shard_before_forward():
     assert backbone.calls == []
 
 
-def test_transformers_llama_backbone_accepts_continuous_cached_inputs(tmp_path):
+@pytest.mark.parametrize("top_k", [None, 1])
+def test_transformers_llama_backbone_accepts_continuous_cached_inputs(tmp_path, top_k):
     transformers = pytest.importorskip("transformers")
     config = transformers.LlamaConfig(vocab_size=10, hidden_size=6, intermediate_size=12, head_dim=6,
                                       num_hidden_layers=1, num_attention_heads=1, num_key_value_heads=1,
@@ -199,7 +300,7 @@ def test_transformers_llama_backbone_accepts_continuous_cached_inputs(tmp_path):
     with torch.random.fork_rng(devices=[]):
         torch.manual_seed(17)
         backbone = transformers.LlamaForCausalLM(config).eval()
-    reader = _reader(backbone)
+    reader = _reader(backbone, top_k=top_k)
     source = "b" * 32
     feed = write_source_delta(tmp_path / "p0", {source: b"blue"})
     memory = reader.publish(tmp_path / "p0", feed.seal)
@@ -208,6 +309,7 @@ def test_transformers_llama_backbone_accepts_continuous_cached_inputs(tmp_path):
     assert memory.rows == 1
     assert with_memory.source_seal == feed.seal and no_memory.source_seal is None
     assert with_memory.latent_steps == no_memory.latent_steps == 2
+    assert len(with_memory.source_reads) == (0 if top_k is None else 2)
     for result in (with_memory, no_memory):
         assert 1 <= len(result.token_ids) <= 2
         assert result.terminated or len(result.token_ids) == 2

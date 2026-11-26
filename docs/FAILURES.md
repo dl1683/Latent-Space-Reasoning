@@ -24,6 +24,16 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A selected-source list misses new competitors, 26 November 2026.**
+A source revision kept every original selected span and introduced
+a tied alternative. Reusing on selected IDs alone would retain the
+old continuation. Test new keys against each stored cutoff and treat
+an underfilled read as open to any positive score. At a saturated
+cutoff, keep the strongest witnesses in an overflow receipt and
+withhold the value. Equal-score refusal leaves nearby, separated
+and semantically distinct candidates for future calibration.
+[Selective continuation](ARCHITECTURE.md#selective-reads-and-continuation-reuse)
+
 **An aggregate moment read can hide a needed source, 26 November
 2026.** With a single shared feature, a target payload contributes
 one part in the count of aligned rows. High total mass can then accompany

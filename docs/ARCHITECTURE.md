@@ -55,8 +55,8 @@ state as a separate address/value association if the bank changed
 an input in the backbone's dtype. A later reader combines the source
 and derived banks using separate gains and normalizers. Removing the
 derived bank keeps the exact same source seal and observation moments.
-The derived bank currently depends on the entire source pin. Each new
-epoch clears it and leaves historical snapshots available. The address
+In the dense moment arm, the derived bank depends on the entire source
+pin. Each new epoch clears it and leaves historical snapshots available. The address
 span identifies the seed. It does not enumerate contributing sources
 or prove an answer.
 
@@ -83,6 +83,54 @@ maintenance, state retention, inference and exact evidence reopening in
 the comparison. [Implementation](../experiments/memory/native_latent_recurrence.py)
 · [Continuous thought feedback](https://arxiv.org/abs/2412.06769)
 · [Retrofitted recurrence](https://arxiv.org/abs/2511.07384)
+
+#### Selective reads and continuation reuse
+
+Passing `top_k` selects a retained-row path for both the native task
+reader and its maintenance worker. It retains one immutable shard per
+source and shares untouched shards between epochs. A read scans signed
+integer dot products between the projected query and the retained keys.
+It includes positive scores through the kth score and an optional
+integer margin below it. If fewer than k scores are positive, the cutoff
+is one. The normalizer applies to the selected values. Competing values
+at the same score or within the margin block that bank's injection and
+leave the candidate spans visible. If the candidate limit is exceeded,
+the read withholds the value, reports the count and preserves a bounded
+sample with the strongest scores. A numerical read supplies source
+leads. The decoder can still generate without that read's contribution.
+
+Each source-only maintenance call spends a fixed seed budget on pending
+source groups. Groups with remaining work move to the back of the queue.
+An epoch preserves older pending work and adds newly eligible groups.
+It adds a separate address/value association when a selected step that
+includes another source actually changes the native input. A contested
+or overflowing source read blocks that proposal. The worker records
+the seed and the exact selected spans, quantized query and cutoff for
+each step. It can continue through further batches. This is an
+in-process worker loop with one snapshot handle.
+
+After a sealed revision, recheck every stored attempt. Its seed
+and selected source groups must survive. Re-score changed or added keys
+and discard the continuation if any reaches a stored cutoff. Otherwise
+each old selected set is unchanged at the old query. With a fixed
+backbone, encoding and ordering, the next hidden input is unchanged and
+the argument repeats for each step. Empty and underfilled reads retain
+the threshold of one so added weak support can invalidate them.
+Deletion of selected evidence invalidates immediately. The worker also
+keeps rejected attempts while their complete frontiers survive. An
+overflow receipt is incomplete and must be checked again after an epoch
+advances. A worker does not use its derived bank as an input to new
+proposals, so the induction covers its entire observed input.
+
+The selector scans each active row at every latent read. Reuse avoids
+some worker reruns but still copies source-group metadata and checks
+changed rows against retained queries. Duplicated payloads can affect
+weights and pooled values from separated scores can hide incompatible
+paths. Exact integer ranking under supplied maps does not establish
+semantic relevance or calibrated absence. Compare single-state and
+separate-state continuations and retain the same-layer pretrained
+relay as a separate architecture. [Selector](../experiments/memory/selective_continuations.py)
+· [Memorizing Transformers](https://arxiv.org/abs/2203.08913)
 
 ### Warm exact control on a separate corpus
 

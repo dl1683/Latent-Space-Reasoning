@@ -21,6 +21,7 @@ _READ_UID = 65533
 _STAGE_SECONDS = 45
 _MAX_PACK_BYTES = 16 * 1024 * 1024
 _CODE_MODULES = (
+    "_latent_factor_clusters",
     "binding_feedback", "binding_links", "binding_memory", "binding_replay", "git_source",
     "compressed_routing_map", "corpus_binding_journal", "corpus_bindings", "disjoint_feedback",
     "disjoint_transition", "latent_factor_field", "latent_feedback", "recurrent_task_bridge",
@@ -333,7 +334,7 @@ def run_isolated(repo, output):
         os.chown(work, _ACQUIRE_UID, _ACQUIRE_UID)
         publication = _isolated(tool, runtime, code, "publish",
                                 [("--ro-bind", source, "/source"), ("--bind", work, "/output")],
-                                ["--publish", "--journal-only", "--repo", "/source", "--output", "/output/publication", *_PINS],
+                                ["--publish", "--repo", "/source", "--output", "/output/publication", *_PINS],
                                 output, "publisher.json")
         receipt = json.loads(publication)
         bundle = output / "publication"

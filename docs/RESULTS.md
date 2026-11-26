@@ -4,6 +4,38 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Selective continuations and local reuse, 26 November 2026
+
+**CPU software controls.** In a fixed synthetic 24,000-row bank of
+normalized random directions, the query has cosine 0.8 with a planted
+row before quantization. The target carries the only nonzero payload.
+The signed dot-product top-eight read retains over 99% of its value at
+temperature 0.04. The dense signed-overlap control retains less than
+0.02% from the same addresses and payloads. The arms use different score
+and normalization rules. This is a planted-geometry diagnostic.
+
+In the native stand-in, an unrelated one-document edit re-encodes one
+chunk and retains a continuation computed by the worker without a
+backbone rerun. Recomputing from the same updated source bank gives
+identical integer association keys and values and the same decoded
+fixture result. A new equal-score competitor invalidates the old
+continuation even though all its selected versions survive. The read
+exposes the two candidate spans and withholds that numerical
+contribution. Removing the competitor makes the original route
+available again. A separate check preserves a rejected seed across an
+unrelated edit so the next maintenance call reaches the next pending
+source. A positive new key strictly below a full cutoff leaves the
+previous numerical read unchanged. Another control reaches the same result with three
+source-only runtime steps as with two maintained steps. This supports
+moving work out of the query in that fixture. Setup, frontier storage,
+replay and query costs still need a joint comparison.
+
+```powershell
+python -m pytest -q experiments/memory/test_selective_continuations.py experiments/memory/test_native_latent_recurrence.py
+```
+
+[Mechanism](ARCHITECTURE.md#selective-reads-and-continuation-reuse)
+
 ## Native recurrence with source-only maintenance, 26 November 2026
 
 **CPU software controls.** A supplied-coordinate backbone encodes
@@ -94,6 +126,9 @@ rendering producer survives assignment and which definite limits
 the source establishes despite unknown details. One audit saw the
 task overview before reading the sources. No grader was run.
 [Review findings](https://github.com/dl1683/Latent-Space-Reasoning/issues/6#issuecomment-7198363545)
+The reviewer later applied all four corrections in rubric revision 2.
+The raw tasks, source pins and sequence match the original roster.
+[Corrected calibration](PEP_VISIBLE_LATE_TASK.md#rubric-revision-2--26-november-2026)
 
 Reproduce the exact control and the source feed using a local
 [python/peps](https://github.com/python/peps) clone with these pins.
@@ -219,9 +254,9 @@ and any efficiency or quality advantage open. The memory-omitted arm
 still consults pin membership and names from the verified journal. It
 removes memory from the reasoning core for this ablation.
 
-This isolated named-reader control sends the journal-only format across
-the stage boundary. The separate recurrent task-world control uses the
-source archive and its charged source-read interface.
+This historical named-reader run sent the journal-only format across
+the stage boundary. The current reproducer includes the later
+source-complete control described below.
 
 Use a disposable Linux root controller with bubblewrap, setpriv and a
 Python virtual environment readable by both stage UIDs. The checkout
@@ -423,12 +458,24 @@ directly; it does not exercise `run_episode` search/read/`world_read` actions,
 typed need inference, or final finding submission. The optional `run_episode`
 bridge remains an unqualified interface for those questions.
 
-The Linux isolated runner now transfers only the journal, manifest and
-manifest-listed source leaves, then has a separate read-only task-world stage
-with neither Git nor the question file. That updated isolation path was not run
-here: this Windows environment has no WSL installation. The earlier WSL
-publication result therefore does not yet qualify the source-archive or
-task-world stage.
+A six-stage replay in WSL transferred the journal, manifest and 134
+manifest-listed source leaves. The separate task-world stage mounted
+the read-only publication with neither the source checkout nor the
+question or grading files. All six processes exited successfully.
+The named readers reproduced 104 reads and verified 54 attached
+spans. The task-world reader reopened six spans with the operator on
+and five with it removed, then reproduced the original receipt on
+restoration. Across the controller and readers, eight archive checks
+accounted for 27,455,248 bytes. The separately metered source reopens
+accounted for 253,730 bytes on the two task-world arms.
+
+The first two WSL attempts exposed a journal-only publisher argument
+and a missing transitive import in the task-world stage. The third run
+used source-complete publication and added the required factor-cluster
+module to the explicit allowlist. At the growth pin, ten mounted code
+files match source blobs byte for byte. The stage still receives the
+full historical archive for this fixed input. A source-disjoint learned
+trial needs its own runtime and pin-scoped source access.
 
 ## Choosing a late scope for the same unit name, 26 November 2026
 

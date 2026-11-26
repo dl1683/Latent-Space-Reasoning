@@ -105,9 +105,7 @@ class LinearFeedbackKernel(FeedbackKernel):
         return self._summarize_quantized(payload, payload, key_map, observation=observation)
 
     def _summarize_quantized(self, payload, addresses, key_map, *, observation):
-        projected = addresses @ key_map
-        magnitude = (np.abs(projected) + _LEVELS // 2) // _LEVELS
-        keys = np.sign(projected) * np.minimum(magnitude, _LEVELS)
+        keys = self._project_quantized_keys(addresses, key_map)
         features = self._add_pairs(_sign_features(keys), _LEVELS)
         # Column zero carries the unnormalized mass for each feature.
         base = np.column_stack((np.ones(len(payload), dtype=np.int64), payload))
@@ -120,6 +118,12 @@ class LinearFeedbackKernel(FeedbackKernel):
                 columns.extend((base * (payload[:, [axis]] > 0), base * (payload[:, [axis]] < 0)))
         packed = np.column_stack(columns) if len(columns) > 1 else base
         return features.T @ packed
+
+    @staticmethod
+    def _project_quantized_keys(addresses, key_map):
+        projected = addresses @ key_map
+        magnitude = (np.abs(projected) + _LEVELS // 2) // _LEVELS
+        return np.sign(projected) * np.minimum(magnitude, _LEVELS)
 
     def _add_pairs(self, unary, unary_scale):
         if not len(self._pair_left):
