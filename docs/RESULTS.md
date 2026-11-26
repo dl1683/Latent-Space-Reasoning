@@ -4,6 +4,34 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Composing a retained continuation, 26 November 2026
+
+**CPU software control.** On a six-document role fixture, one pass
+published a source-only continuation. A fresh worker attached it and
+made two further passes. Each used one earlier result, giving a
+three-continuation lineage. The two additional passes used six
+backbone calls, the same as two source-only attempts from the shared
+opening publication. The attached composed arm reached the expected
+label in two task steps. The source-only worker arm and the same-pin
+derived-off arm both returned an empty answer. The two worker arms
+produced different packed values for the late cue. Restoring the
+composed bank reproduced the earlier read.
+
+Reopening the three-continuation publication in a new reader called no
+backbone steps. A source revision outside the lineage kept the
+computed result. Withdrawing a source used by the first worker
+invalidated both descendants. The final descendant had no direct read
+of that source. The earlier pin still answered. The opener refused a
+wrong parent payload digest, a self edge and a reference to a later
+descendant. It also refused an older, correctly hashed parent whose key
+could never match any of the child's recorded queries.
+
+The fixture supplies the parent choices and role encoding. The result
+isolates reuse across passes and checks transitive withdrawal. It
+leaves learned acquisition and comparison with a longer or stronger
+reader at matched full cost open.
+[Software control](../experiments/memory/test_native_publication.py)
+
 ## Isolating the native publication, 26 November 2026
 
 **CPU software control.** The controller took a nine-module runtime

@@ -37,6 +37,7 @@ class _SelectiveWorld:
     attempted: Mapping[SourceSpan, tuple[SelectionStep, ...]]
     priority: tuple[str, ...]
     derived: tuple[RowShard, ...]
+    parents: Mapping[SourceSpan, SourceSpan]
 
 
 @dataclass(slots=True)
@@ -90,6 +91,14 @@ class NativeSourceMemory:
         if seed not in self._selective.acquired:
             raise KeyError(seed)
         return tuple(frontier.receipt for frontier in self._selective.attempted[seed])
+
+    def continuation_parent(self, seed):
+        """Return the earlier continuation that affected this computation, if any."""
+        if self._selective is None:
+            raise ValueError("continuation parents require selective memory")
+        if seed not in self._selective.acquired:
+            raise KeyError(seed)
+        return self._selective.parents.get(seed)
 
     @property
     def pending_seeds(self):
@@ -261,20 +270,30 @@ class NativeLatentModel:
                 shard = self._selector.shard([row.span for row in rows], vectors, vectors)
                 shards[source] = shard
                 revised.append(shard)
-        attempted, acquired, previous_priority = {}, {}, ()
+        attempted, acquired, parents, previous_priority = {}, {}, {}, ()
         if previous is not None:
             previous_priority = previous.priority
             for seed, frontiers in previous.attempted.items():
                 if seed.source_id not in changed and all(
                         frontier_survives(frontier, changed, revised) for frontier in frontiers):
                     attempted[seed] = frontiers
-            acquired = {seed: row for seed, row in previous.acquired.items() if seed in attempted}
+            for seed, row in previous.acquired.items():
+                parent = previous.parents.get(seed)
+                if seed in attempted and (parent is None or parent in acquired):
+                    acquired[seed] = row
+            for seed, parent in previous.parents.items():
+                if seed in attempted:
+                    if parent in acquired:
+                        parents[seed] = parent
+                    else:
+                        del attempted[seed]
         derived = (previous.derived if previous is not None and len(acquired) == len(previous.acquired)
                    else self._derived_rows(acquired))
         ordered = MappingProxyType(dict(sorted(shards.items())))
         order = dict.fromkeys((*previous_priority, *sorted(sources)))
         priority = self._pending_groups(order, sources, attempted)
-        return _SelectiveWorld(ordered, MappingProxyType(acquired), MappingProxyType(attempted), priority, derived)
+        return _SelectiveWorld(ordered, MappingProxyType(acquired), MappingProxyType(attempted),
+                               priority, derived, MappingProxyType(parents))
 
     @staticmethod
     def _pending_groups(order, sources, attempted):
@@ -303,7 +322,7 @@ class NativeLatentModel:
         selective = memory._selective
         if selective is not None:
             selective = replace(selective, acquired=MappingProxyType({}), attempted=MappingProxyType({}),
-                                priority=tuple(sorted(selective.shards)), derived=())
+                                priority=tuple(sorted(selective.shards)), derived=(), parents=MappingProxyType({}))
         return replace(memory, _derived=None, _seed_limit=0, derived_seeds=(),
                        _selective=selective, _derived_off=True)
 
@@ -366,16 +385,19 @@ class NativeLatentModel:
         address = self._encode_hidden(hidden)
         return address, self._continue(hidden, cache, memory, self._steps)
 
-    def maintain(self, memory, *, max_seeds):
-        """Propose and install bounded source-only continuations before tasks arrive."""
+    def maintain(self, memory, *, max_seeds, parent=None):
+        """Install bounded continuations with one optional parent from an earlier pass."""
         import torch
 
         _require_cpu_eval(self._model)
         self._check_memory(memory)
         if type(max_seeds) is not int or max_seeds <= 0 or memory.omitted_sources:
             raise ValueError("maintenance needs a positive seed budget and an intact source bank")
+        if parent is not None and (not isinstance(parent, SourceSpan) or memory._selective is None
+                                   or parent not in memory._selective.acquired):
+            raise ValueError("maintenance parent must be an installed continuation at this pin")
         if memory._selective is not None:
-            return self._maintain_selection(memory, max_seeds)
+            return self._maintain_selection(memory, max_seeds, parent)
         if memory._seed_limit == max_seeds:
             return memory
         source_only = self.without_derived(memory)
@@ -394,7 +416,7 @@ class NativeLatentModel:
         return replace(source_only, _derived=bank, _seed_limit=max_seeds, derived_seeds=tuple(seeds),
                        _derived_off=False, _publication_seal=None)
 
-    def _maintain_selection(self, memory, max_seeds):
+    def _maintain_selection(self, memory, max_seeds, parent):
         import torch
 
         selective = memory._selective
@@ -403,31 +425,36 @@ class NativeLatentModel:
         batch = tuple(islice(rows, max_seeds))
         if not batch:
             return memory
-        source_only = replace(memory, _selective=replace(selective, derived=()))
+        # Freeze a single parent for the entire pass, including attempts that do not select it.
+        inputs = () if parent is None else self._derived_rows({parent: selective.acquired[parent]})
+        worker_input = replace(memory, _selective=replace(selective, derived=inputs))
         lookup = self._model.get_input_embeddings().weight
-        acquired = dict(selective.acquired)
-        attempted = dict(selective.attempted)
+        acquired, attempted = dict(selective.acquired), dict(selective.attempted)
+        parents = dict(selective.parents)
         with torch.inference_mode():
             for item in batch:
-                address, run = self._run_seed(item, source_only, lookup)
+                address, run = self._run_seed(item, worker_input, lookup)
                 attempted[item.span] = run.source_steps
-                if self._cross_source_steps(run.source_steps, item.span.source_id):
+                used_parent = parent if run.applied_derived else None
+                if used_parent is not None:
+                    parents[item.span] = used_parent
+                if self._installable(run.source_steps, item.span.source_id, used_parent):
                     acquired[item.span] = _Continuation(_frozen(address), _frozen(self._encode_hidden(run.hidden)))
         derived = selective.derived if len(acquired) == len(selective.acquired) else self._derived_rows(acquired)
         worked = {item.span.source_id for item in batch}
         order = sorted(selective.priority, key=worked.__contains__)
         priority = self._pending_groups(order, memory._sources, attempted)
         selective = replace(selective, acquired=MappingProxyType(acquired), derived=derived,
-                            attempted=MappingProxyType(attempted), priority=priority)
+                            attempted=MappingProxyType(attempted), priority=priority, parents=MappingProxyType(parents))
         return replace(memory, _selective=selective, derived_seeds=tuple(acquired),
                        _derived_off=False, _publication_seal=None)
 
     @staticmethod
-    def _cross_source_steps(steps, seed_source):
+    def _installable(steps, seed_source, parent=None):
         if any(step.receipt.status not in ("ready", "empty") for step in steps):
             return False
-        return any(hit.span.source_id != seed_source for step in steps
-                   if step.applied for hit in step.receipt.selected)
+        return parent is not None or any(hit.span.source_id != seed_source for step in steps
+                                         if step.applied for hit in step.receipt.selected)
 
     def __call__(self, task: str, *, memory=None, steps=None):
         """Read raw task text through the same recurrent call with optional source memory."""

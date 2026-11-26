@@ -119,8 +119,8 @@ the threshold of one so added weak support can invalidate them.
 Deletion of selected evidence invalidates immediately. The worker also
 keeps rejected attempts while their complete frontiers survive. An
 overflow receipt is incomplete and must be checked again after an epoch
-advances. A worker does not use its derived bank as an input to new
-proposals, so the induction covers its entire observed input.
+advances. In the source-only pass, the source read receipts cover the
+entire retained input to the worker.
 
 The selector scans each active row at every latent read. Reuse avoids
 some worker reruns but still copies source-group metadata and checks
@@ -131,6 +131,35 @@ semantic relevance or calibrated absence. Compare single-state and
 separate-state continuations and retain the same-layer pretrained
 relay as a separate architecture. [Selector](../experiments/memory/selective_continuations.py)
 · [Memorizing Transformers](https://arxiv.org/abs/2203.08913)
+
+#### Composing continuations across worker passes
+
+[SLICE] A selective maintenance pass can name one already-installed
+continuation as an additional input. Every seed in the pass sees the
+same singleton derived bank and the current source bank. Work published
+in the pass becomes available to the next call. New attempts use the
+pending queue, and an existing address keeps its installed value until
+revision invalidates it.
+
+An attempt depends on its parent when the parent's contribution
+changes a backbone input. The child retains its source read frontiers.
+A revision checks those frontiers and walks the accepted rows in
+publication order. A parent that fails its own checks invalidates all
+dependent attempts, including later generations. Newly published rows
+cannot change the parent set a previous worker used. They can change a
+later task's ordinary read of the complete live bank. A rejected
+attempt with a withdrawn parent returns to the pending queue.
+
+The composed snapshot records each used parent's identity and a digest
+of its numeric payload. A fresh reader checks that the parent precedes
+an installed child, that its payload matches and that a recorded worker
+query could select it. The publisher attests to the realized backbone
+intervention. Source-only snapshots keep their existing format. The
+parent choice remains explicit. Future
+workers must earn autonomous selection on tasks with independently
+graded evidence, and compare it with more source-only reasoning at
+equal total work. The joint-state alternative can revise a group of
+competing paths together. [Worker and reader](../experiments/memory/native_latent_recurrence.py)
 
 #### Sealing the native world for a late reader
 

@@ -41,6 +41,14 @@ draws between two disjoint fixture routes after both writers exit. A
 learned comparison still needs independently authored and controlled
 tasks. [Revised control](RESULTS.md#isolating-the-native-publication-26-november-2026)
 
+**A worker that reads a live derived bank needs its search frontier,
+26 November 2026.** A newly installed derived row can beat an earlier
+winner while every recorded parent survives. A seed can also select
+its own earlier computation and give the appearance of collaboration.
+The explicit-parent control freezes one older operator per pass. Keep
+alternative versions in separate snapshots until a reader can resolve
+their competing values. [Composed maintenance](ARCHITECTURE.md#composing-continuations-across-worker-passes)
+
 **Below-cutoff edits can change a mass gate, 26 November 2026.**
 A reviewer changed a key that stayed outside the selected set. The
 selected value stayed fixed while global retained softmax mass fell

@@ -215,6 +215,95 @@ def test_an_overflow_attempt_cannot_be_restored_across_an_epoch(tmp_path):
         _read(updated, reader, sha256(changed), delta.seal)
 
 
+def test_reopened_workers_build_on_each_other_and_withdraw_dependents(tmp_path):
+    from experiments.memory.native_isolated_stage import _CausalControl, _reader as make_reader
+
+    # The first two source steps cannot reach the answer from the late cue.
+    root, relay, cue, bridge, _, idle = sources = tuple(letter * 32 for letter in "abcdef")
+    feed = write_source_delta(tmp_path / "opening", dict(zip(sources, (
+        b"link L03 L04", b"link L02 L03", b"link L01 L02", b"link L04 L05",
+        b"name L05 L06", b"name L08 L09",
+    ), strict=True)))
+    reader = make_reader(_CausalControl().eval())
+    base = reader.publish(tmp_path / "opening", feed.seal)
+    root_seed, = base.source_spans(root)
+    relay_seed, = base.source_spans(relay)
+    cue_seed, = base.source_spans(cue)
+
+    first = reader.maintain(base, max_seeds=1)
+    with pytest.raises(ValueError, match="parent must be an installed continuation"):
+        reader.maintain(first, max_seeds=1, parent=cue_seed)
+
+    opened = tmp_path / "one-worker"
+    seal = write_native_publication(opened, reader, first, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    model = _CausalControl().eval()
+    worker = make_reader(model)
+    recovered = _read(opened, worker, seal, feed.seal)
+    assert model.calls == 0
+    second = worker.maintain(recovered, max_seeds=1, parent=root_seed)
+    composed = worker.maintain(second, max_seeds=1, parent=relay_seed)
+    assert model.calls == 6
+    assert composed.derived_seeds == (root_seed, relay_seed, cue_seed)
+    assert [composed.continuation_parent(seed) for seed in composed.derived_seeds] == [None, root_seed, relay_seed]
+    assert bridge not in {hit.span.source_id for step in composed.continuation_reads(cue_seed)
+                          for hit in step.selected}
+
+    calls = model.calls
+    source_only = worker.maintain(recovered, max_seeds=2)
+    assert model.calls - calls == 6
+    active_shard, = composed._selective.derived
+    control_shard, = source_only._selective.derived
+    active_payload = active_shard.values[active_shard.spans.index(cue_seed)].tobytes()
+    control_payload = control_shard.values[control_shard.spans.index(cue_seed)].tobytes()
+    assert active_payload != control_payload
+    assert worker("follow L01", memory=source_only).text == ""
+
+    published = tmp_path / "three-workers"
+    seal = write_native_publication(published, worker, composed, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    later_model = _CausalControl().eval()
+    later = make_reader(later_model)
+    restored = _read(published, later, seal, feed.seal)
+    assert later_model.calls == 0
+    assert restored.continuation_parent(cue_seed) == relay_seed
+    assert write_native_publication(tmp_path / "replay", later, restored, runtime_sha256=_RUNTIME,
+                                    max_bytes=_LIMIT) == seal
+    read = later("follow L01", memory=restored)
+    assert read.text == "L06" and read.terminated and read.applied_derived_steps == 1
+    assert later("follow L01", memory=later.without_derived(restored)).text == ""
+    assert later("follow L01", memory=restored) == read
+
+    quiet = write_source_delta(tmp_path / "quiet", {idle: b"name L08 L10"}, previous=feed)
+    stable = later.publish(tmp_path / "quiet", quiet.seal, previous=restored)
+    assert stable.continuation_parent(cue_seed) == relay_seed
+    assert later("follow L01", memory=stable).text == "L06"
+    withdrawal = write_source_delta(tmp_path / "withdrawal", {bridge: None}, previous=quiet)
+    revoked = later.publish(tmp_path / "withdrawal", withdrawal.seal, previous=stable)
+    assert revoked.pending_seeds == 5 and revoked.derived_seeds == ()
+    assert later("follow L01", memory=revoked).text == ""
+    assert later("follow L01", memory=restored) == read
+
+    manifest = published / "manifest.json"
+    original = json.loads(manifest.read_bytes())
+    for damage, message in (("payload", "parent payload differs"),
+                            ("self", "parent must precede"),
+                            ("descendant", "parent must precede"),
+                            ("unreachable", "parent is unreachable")):
+        header = json.loads(json.dumps(original))
+        edge = header["parents"][0]
+        if damage == "payload":
+            edge[2] = "0" * 64
+        elif damage == "self":
+            edge[1] = edge[0]
+        elif damage == "descendant":
+            edge[1] = header["parents"][1][0]
+        else:
+            header["parents"][1][1:] = edge[1:]
+        altered = _encode(header)
+        manifest.write_bytes(altered)
+        with pytest.raises(ValueError, match=message):
+            _read(published, later, sha256(altered), feed.seal)
+
+
 if __name__ == "__main__":
     run = {"publish": _publish_child, "read": _child}[sys.argv[1]]
     print(json.dumps(run(*sys.argv[2:])))

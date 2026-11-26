@@ -24,6 +24,7 @@ from experiments.memory.verified_source_tool import SourceSpan, require_digest, 
 
 
 _SCHEMA = "lsr-native-selective-v1"
+_COMPOSED_SCHEMA = "lsr-native-selective-v2"
 _FIELDS = {"schema", "runtime", "reader", "source", "source_manifest", "documents", "queue",
            "attempted", "derived", "rows_bytes", "rows_sha256"}
 
@@ -90,6 +91,10 @@ def _enforce_limit(max_bytes):
         raise ValueError("native publication requires a positive byte budget")
 
 
+def _continuation_rows(continuation):
+    return np.asarray([continuation.address, continuation.value], dtype="<f8")
+
+
 def _metadata(reader, memory):
     selective = memory._selective
     indices, documents = {}, []
@@ -111,10 +116,17 @@ def _metadata(reader, memory):
                           step.query.hex(), step.cutoff, step.applied, receipt.observed_source_seal])
         attempted.append([indices[seed], steps])
     derived = [indices[seed] for seed in selective.acquired]
-    return dict(schema=_SCHEMA, reader=_reader_digest(reader), source=memory.seal,
-                source_manifest=memory._scope.descriptor.decode("utf8"),
-                documents=documents, queue=list(selective.priority),
-                attempted=attempted, derived=derived)
+    header = dict(schema=_SCHEMA, reader=_reader_digest(reader), source=memory.seal,
+                  source_manifest=memory._scope.descriptor.decode("utf8"),
+                  documents=documents, queue=list(selective.priority),
+                  attempted=attempted, derived=derived)
+    if selective.parents:
+        header["schema"] = _COMPOSED_SCHEMA
+        digests = {parent: sha256(_continuation_rows(selective.acquired[parent]).tobytes())
+                   for parent in set(selective.parents.values())}
+        header["parents"] = sorted([indices[seed], indices[parent], digests[parent]]
+                                   for seed, parent in selective.parents.items())
+    return header
 
 
 def _numeric_blocks(memory):
@@ -125,8 +137,7 @@ def _numeric_blocks(memory):
             yield selective.shards[source].keys
     if selective.derived:
         for seed in selective.derived[0].spans:
-            row = selective.acquired[seed]
-            yield np.asarray([row.address, row.value], dtype="<f8")
+            yield _continuation_rows(selective.acquired[seed])
 
 
 def write_native_publication(directory, reader, memory, *, runtime_sha256, max_bytes):
@@ -306,6 +317,32 @@ def _read_steps(records, reader, spans, key_rows, value_rows, key_width, scope):
     return tuple(result)
 
 
+def _read_parents(records, spans, attempted, acquired, derived):
+    if type(records) is not list or not records:
+        raise ValueError("native publication parent inventory is malformed")
+    order = {seed: index for index, seed in enumerate(acquired)}
+    keys = dict(zip(derived[0].spans, derived[0].keys, strict=True)) if derived else {}
+    parents, digests, last = {}, {}, -1
+    for idx, parent_idx, digest in records:
+        if (not _between(idx, last + 1, len(spans) - 1)
+                or not _between(parent_idx, 0, len(spans) - 1)):
+            raise ValueError("native publication parent index is invalid")
+        seed, parent = spans[idx], spans[parent_idx]
+        if (seed not in attempted or parent not in order
+                or order[parent] >= order.get(seed, len(order))):
+            raise ValueError("native publication parent must precede its dependent attempt")
+        if parent not in digests:
+            digests[parent] = sha256(_continuation_rows(acquired[parent]).tobytes())
+        if digest != digests[parent]:
+            raise ValueError("native publication parent payload differs")
+        key = keys[parent]
+        if not any(key @ np.frombuffer(step.query, dtype=np.int8).astype(np.int64) > 0 for step in attempted[seed]):
+            raise ValueError("native publication parent is unreachable from the recorded queries")
+        parents[seed] = parent
+        last = idx
+    return parents
+
+
 def _restore(header, reader, raw, seal, scope):
     width, key_width = _shape(reader)
     for key in ("documents", "queue", "attempted", "derived"):
@@ -323,10 +360,6 @@ def _restore(header, reader, raw, seal, scope):
     if (any(not _between(idx, 0, len(spans) - 1) for idx in indices)
             or len(set(indices)) != len(indices)):
         raise ValueError("native publication derived identity is invalid")
-    installed = {spans[idx] for idx in indices}
-    accepted = {seed for seed, steps in attempted.items() if reader._cross_source_steps(steps, seed.source_id)}
-    if installed != accepted:
-        raise ValueError("native publication derived rows differ from complete cross-source attempts")
     pairs = rows.take(2 * len(indices), width, "<f8").reshape(-1, 2, width)
     if rows.offset != len(raw):
         raise ValueError("native publication has trailing numeric bytes")
@@ -334,12 +367,18 @@ def _restore(header, reader, raw, seal, scope):
     entries = {seed: _Continuation(pair[0], pair[1]) for seed, pair in zip(ordered, pairs, strict=True)}
     acquired = {spans[idx]: entries[spans[idx]] for idx in indices}
     derived = reader._derived_rows(acquired)
+    parents = (_read_parents(header["parents"], spans, attempted, acquired, derived)
+               if header["schema"] == _COMPOSED_SCHEMA else {})
+    accepted = {seed for seed, steps in attempted.items()
+                if reader._installable(steps, seed.source_id, parents.get(seed))}
+    if set(acquired) != accepted:
+        raise ValueError("native publication derived rows differ from installable attempts")
     pending = tuple(header["queue"])
     if (any(type(source) is not str for source in pending) or len(set(pending)) != len(pending)
             or set(pending) != set(reader._pending_groups(sources, sources, attempted))):
         raise ValueError("native publication pending queue is invalid")
     selective = _SelectiveWorld(MappingProxyType(shards), MappingProxyType(acquired),
-                                MappingProxyType(attempted), pending, derived)
+                                MappingProxyType(attempted), pending, derived, MappingProxyType(parents))
     return NativeSourceMemory(reader._owner, scope, None, MappingProxyType(sources),
                               derived_seeds=tuple(acquired), _selective=selective, _publication_seal=seal)
 
@@ -354,8 +393,9 @@ def read_native_publication(directory, reader, *, seal, source_seal, runtime_sha
     if sha256(manifest) != seal:
         raise ValueError("native publication seal differs")
     header = json.loads(manifest)
-    if (type(header) is not dict or set(header) != _FIELDS or header["schema"] != _SCHEMA
-            or _encode(header) != manifest):
+    schemas = {_SCHEMA: _FIELDS, _COMPOSED_SCHEMA: _FIELDS | {"parents"}}
+    if (type(header) is not dict or type(header.get("schema")) is not str
+            or schemas.get(header["schema"]) != set(header) or _encode(header) != manifest):
         raise ValueError("native publication manifest is malformed")
     if header["source"] != source_seal or header["runtime"] != runtime_sha256:
         raise ValueError("native publication source or runtime differs")
