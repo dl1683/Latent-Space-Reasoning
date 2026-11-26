@@ -24,6 +24,14 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Separator marginals can hide a joint contradiction.** In the supplied
+cluster fixture, two messages agreed on each unary marginal and
+disagreed on every compatible pair. The joint table is necessary for
+the downstream conflict. Eagerly refreshing all directions can also
+do avoidable work when future reads use a fixed endpoint. The balanced
+ladder control updates only three cached products for one source edit.
+[Bounded cyclic-region results](RESULTS.md#bounded-cyclic-region-compilation-26-november-2026)
+
 **A stable local belief can mask a globally impossible world.**
 A cycle with two equality relations and one inequality reached a
 uniform message fixed point despite having no joint assignment. A soft,

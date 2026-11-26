@@ -4,6 +4,27 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Bounded cyclic-region compilation, 26 November 2026
+
+**Software verification, supplied likelihoods.** The worker compiled an
+impossible cycle into cluster state and resolved the inconsistency. A
+bag cap one cell below its requirement kept the raw result open.
+An interrupted read stayed open until its incoming messages were
+ready. A bag with enough incoming information could still answer
+within the same exhausted work budget. Two separators had identical unary marginals and opposite joint support.
+Swapping the joint message on an unchanged pin changed the relation read.
+Restoring it recovered the inconsistency.
+
+A weighted 24-slot ladder matched separately optimized exact tensor
+contraction and an independent balanced transfer tree. Its largest
+clique had eight cells. One value edit reused 23 of 46 directed messages
+and used 23 new contractions versus 46 for a cold rebuild. The balanced
+endpoint control updated the same edit with three cached 4-by-4 matrix
+products. These operation counts describe different units and do not
+establish elapsed-time or lifecycle advantage. Withdrawing an edge
+discarded the old layout. Recompiling recovered the new exact marginal
+while the historical pin kept its result. [CPU controls](../experiments/memory/test_latent_factor_field.py)
+
 ## Bidirectional latent factor field, 26 November 2026
 
 **Software verification, supplied likelihoods.** On paired equal and

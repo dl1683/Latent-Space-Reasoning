@@ -1591,6 +1591,43 @@ cycle shows why local convergence cannot close a joint claim.
 [Implementation](../experiments/memory/latent_factor_field.py)
 [Controls](../experiments/memory/test_latent_factor_field.py)
 
+#### Compiling cyclic regions before a task
+
+[SLICE] A maintenance call can select cyclic components from a source
+pin and compile them as elimination trees. The greedy order selects the
+smallest next bag by the product of its slot cardinalities. Removing a
+slot connects its remaining neighbors. The earliest eliminated neighbor
+owns the parent bag, which contains the full separator. Each original
+factor goes to one containing bag. Each task drive goes to the bag that
+eliminates its slot. The ordered intersections retain joint likelihood
+tables. Classical junction-tree message passing gives the corresponding
+component marginals. [Local computations on graphical structures](https://doi.org/10.1111/j.2517-6161.1988.tb01721.x)
+
+The worker sees source scopes and numerical factors before any query.
+It checks component slots, bag cardinalities, NumPy rank feasibility and
+total retained cells before allocating clique tables. The retained-cell
+allowance includes both directions of each separator. It applies to
+one pin. Prior pins, temporary arrays, graph planning, gathering and
+readout have separate costs. The message pass debits contractions and
+input cells. A bag can read once it has all valid incoming messages.
+An earlier limit withholds that read's support mask. Forest updates
+take priority, then installed clusters and then raw loopy proposals.
+Installed clusters do not retain a second raw message bank. When no
+layout fits, the raw cyclic read remains open.
+
+A source edit with the same factor scopes recomputes its host potential
+and removes every directed message whose sender-side subtree contains
+the changed host. Task drives invalidate the same directed dependencies
+without updating the source pin. The workers retain layouts, potentials
+and messages where valid. A changed scope drops that component's layout
+and gives maintenance a chance to rebuild. A completed read projects a
+bag in the requested axis order and reports the same component spans and
+separate task-conditioned status as the factor reference. The compiled
+pin is still in process. Normalized messages are suitable for marginals.
+Cutset branches need retained mass offsets before they can be combined.
+[Implementation](../experiments/memory/_latent_factor_clusters.py)
+[Controls](../experiments/memory/test_latent_factor_field.py)
+
 ## Claims and evidence boundary (2026-10-15; not a new experiment)
 
 | Claim | Tag and current boundary | What is still required |

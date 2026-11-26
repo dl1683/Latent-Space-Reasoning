@@ -465,9 +465,10 @@ weighted contraction. A cycle gives a direct counterexample to claiming
 global support from settled local messages. A matched lifecycle
 comparison, learned version and recognized task evaluation remain unrun.
 
-Compare two ways out of that failure. A query-blind worker can compile
-a small cyclic region into a joint cluster and retain its separator.
-A second mechanism can condition a cycle cutset and retain separate
+A query-blind worker now compiles bounded cyclic regions and retains
+joint separator messages. The weighted ladder and shared-separator
+controls verify exact cyclic readout, invalidation and historical pins.
+A competing mechanism can condition a cycle cutset and retain separate
 latent hypotheses for the assignments it evaluates. Compare both
 against an incremental junction tree or variable elimination, with
 the same factor access, width limits and source invalidation rules.
@@ -475,7 +476,13 @@ On wider regions, test whether learned proposals select useful
 hypotheses sooner than both a fixed schedule and local belief ordering.
 Count the work of rejected proposals, verification of unvisited
 alternatives, retained state and evidence delivery. The forward
-attention receiver remains a separate reasoning arm.
+attention receiver remains a separate reasoning arm. Give repeated
+ladder endpoints the balanced transfer-tree comparator, and compare
+adaptive tree contraction for wider exact regions. The typed task
+harness still needs a path from a source-derived constraint to a
+verified joint finding. Use cyclic conflict and withdrawal as its first
+discriminating task family.
+[Adaptive Inference on General Graphical Models](https://proceedings.mlr.press/r6/acar08a)
 [Incremental Compilation of Bayesian Networks](https://arxiv.org/abs/1212.2456)
 [Bounded Conditioning](https://ics.uci.edu/~dechter/publications/r130a.pdf)
 

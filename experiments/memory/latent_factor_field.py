@@ -1,24 +1,29 @@
 """Bidirectional latent recurrence over source-scoped compatibility tensors.
 
-This carrier uses log-domain sum-product messages. Its forest semantics are
-classical. Loopy states are proposals, including when local messages settle.
+This carrier uses log-domain sum-product messages. Forests and compiled
+cluster trees admit exact component reads. Raw loopy messages are proposals.
 """
 
 from collections import deque
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from operator import index
 from types import MappingProxyType
 
 import numpy as np
 
+from experiments.memory._latent_factor_clusters import (
+    _ClusterBank, _ClusterPlan, _refresh_clusters, _relative_log, _settle_clusters, _signature,
+)
 from experiments.memory.corpus_bindings import CorpusRevision, StaleCorpusRevision
 from experiments.memory.latent_feedback import _frozen, _real_array
 from experiments.memory.verified_source_tool import SourceSpan
 
 
-def _relative_log(log_values):
-    peak = np.max(log_values)
-    return log_values if peak == -np.inf else log_values - peak
+def _limits(updates, cells):
+    limits = index(updates), index(cells)
+    if min(limits) < 0:
+        raise ValueError("recurrence budgets must be nonnegative")
+    return limits
 
 
 def _weights(value, shape):
@@ -103,14 +108,26 @@ class LatentFactorPin:
     _versions: MappingProxyType
     _graph: _Graph
     _state: _Messages
+    _clusters: MappingProxyType
+    cluster_updates: int
+    cluster_tensor_cells: int
 
     @property
     def updates(self):
-        return self._state.updates
+        return self._state.updates + self.cluster_updates
 
     @property
     def tensor_cells(self):
-        return self._state.tensor_cells
+        return self._state.tensor_cells + self.cluster_tensor_cells
+
+
+    @property
+    def clustered_components(self):
+        return len(self._clusters)
+
+    @property
+    def retained_cluster_cells(self):
+        return sum(bank.plan.retained_cells for bank in self._clusters.values())
 
 
 @dataclass(frozen=True, eq=False)
@@ -129,19 +146,25 @@ class LatentFactorState:
     _graph: _Graph
     _drives: MappingProxyType
     _state: _Messages
+    _clusters: MappingProxyType
+    cluster_updates: int
+    cluster_tensor_cells: int
 
     @property
     def updates(self):
-        return self._state.updates
+        return self._state.updates + self.cluster_updates
 
     @property
     def tensor_cells(self):
-        return self._state.tensor_cells
+        return self._state.tensor_cells + self.cluster_tensor_cells
 
     def read(self, slot):
         """Read one slot and its component dependencies after recurrence."""
         slot = self._field._slot(slot)
         root = self._graph.components[slot]
+        cluster = self._clusters.get(root)
+        if cluster is not None:
+            return self._cluster_read(root, cluster, cluster.plan.owner[slot], (slot,))
         bank = self._state.banks.get(root, {})
         log_mass = self._field._cavity(self._graph, bank, self._drives, slot)
         return self._read_mass(root, log_mass)
@@ -151,23 +174,30 @@ class LatentFactorState:
         key = (source, index(ordinal))
         factor = self._graph.factors[key]
         root = self._graph.components[factor.axes[0]]
+        cluster = self._clusters.get(root)
+        if cluster is not None:
+            return self._cluster_read(root, cluster, cluster.plan.host[key], factor.axes)
         log_mass = self._field._factor_mass(self._graph, self._state.banks[root], self._drives, key)
         return self._read_mass(root, log_mass)
 
-    def _read_mass(self, root, log_mass):
+    def _cluster_read(self, root, cluster, bag, axes):
+        log_mass = cluster.project(bag, axes, self._drives) if cluster.can_read(bag) else None
+        return self._read_mass(root, log_mass, clustered=True)
+
+    def _read_mass(self, root, log_mass, *, clustered=False):
         sources = self._graph.sources.get(root, ())
         conditioned = tuple(sorted(slot for slot in self._drives if self._graph.components[slot] == root))
-        support = np.isfinite(log_mass)
-        feasible = np.count_nonzero(support)
+        support = np.isfinite(log_mass) if log_mass is not None else None
+        feasible = np.count_nonzero(support) if support is not None else 0
         probabilities = None
         if feasible:
             mass = np.exp(_relative_log(log_mass))
             probabilities = _frozen(mass / mass.sum())
         if self.pin is not None and self.pin.uncompiled_sources:
             status = "uncompiled"
-        elif root in self._graph.loopy:
+        elif root in self._graph.loopy and not clustered:
             status = "loopy"
-        elif root in self._state.pending_components:
+        elif log_mass is None or (not clustered and root in self._state.pending_components):
             status = "update_limit"
         else:
             status = "inconsistent" if not feasible else ("supported" if feasible == 1 else "alternatives")
@@ -187,6 +217,7 @@ class LatentFactorField:
         self._neutral = tuple(_frozen(np.zeros(width)) for width in self._widths)
         self._empty = _Graph.build(self._widths, {})
         self._no_evidence = MappingProxyType({})
+        self._no_clusters = MappingProxyType({})
         self._no_messages = _Messages(MappingProxyType({}), (), frozenset(), 0, 0)
 
     def _slot(self, slot):
@@ -269,10 +300,45 @@ class LatentFactorField:
                             if old_graph.factors.get(key) is not factors.get(key)}
             changed_slots = {slot for bank in (old_graph.factors, factors) for key in changed_keys & bank.keys()
                              for slot in bank[key].axes}
-        state = self._settle(graph, old_state, self._no_evidence, changed_slots, (max_updates, max_tensor_cells),
-                             prior_graph=old_graph, changed_keys=changed_keys)
+        limits = _limits(max_updates, max_tensor_cells)
+        clusters = self._no_clusters if previous is None else _refresh_clusters(previous._clusters, graph, changed_keys)
+        state, clusters, updates, cells = self._advance(
+            graph, old_state, clusters, self._no_evidence, changed_slots, limits,
+            prior_graph=old_graph, changed_keys=changed_keys,
+        )
         return LatentFactorPin(corpus, frozenset(corpus.memory.source_digests.keys() - versions.keys()), self,
-                               MappingProxyType(versions), graph, state)
+                               MappingProxyType(versions), graph, state, clusters, updates, cells)
+
+    def maintain_clusters(self, pin, *, max_bag_cells, max_retained_cells, max_component_slots=256,
+                          max_updates=1024, max_tensor_cells=1_000_000):
+        """Compile bounded cyclic regions before a question is chosen."""
+        self._require_pin(pin)
+        if pin is None:
+            raise ValueError("cluster maintenance requires a source pin")
+        limits = _limits(max_updates, max_tensor_cells)
+        max_bag_cells, remaining, slot_limit = map(index, (max_bag_cells, max_retained_cells, max_component_slots))
+        if min(max_bag_cells, remaining, slot_limit) < 1:
+            raise ValueError("cluster construction limits must be positive")
+        graph = pin._graph
+        sizes = {}
+        for root in graph.components:
+            sizes[root] = sizes.get(root, 0) + 1
+        selected = {}
+        for root in sorted(graph.loopy):
+            if sizes[root] > slot_limit or remaining < 1:
+                continue
+            bank = pin._clusters.get(root)
+            if bank is None:
+                plan = _ClusterPlan.build(self._widths, _signature(graph, root),
+                                          max_bag_cells=max_bag_cells, max_retained_cells=remaining)
+                if plan is None:
+                    continue
+                bank = _ClusterBank.initialize(plan, graph.factors)
+            if bank.plan.peak_cells <= max_bag_cells and bank.plan.retained_cells <= remaining:
+                selected[root] = bank
+                remaining -= bank.plan.retained_cells
+        raw, clusters, updates, cells = self._advance(graph, pin._state, selected, self._no_evidence, (), limits)
+        return replace(pin, _clusters=clusters, cluster_updates=updates, cluster_tensor_cells=cells, _state=raw)
 
     def _require_pin(self, pin):
         if pin is not None and (type(pin) is not LatentFactorPin or pin._field is not self):
@@ -282,16 +348,18 @@ class LatentFactorField:
         """Condition numeric slots with or without a retained corpus pin."""
         self._require_pin(memory)
         graph, state = (self._empty, self._no_messages) if memory is None else (memory._graph, memory._state)
-        return self._condition(memory, graph, state, self._no_evidence, evidence, (max_updates, max_tensor_cells))
+        clusters = self._no_clusters if memory is None else memory._clusters
+        return self._condition(memory, graph, state, clusters, self._no_evidence, evidence,
+                               _limits(max_updates, max_tensor_cells))
 
     def revise(self, state, evidence, *, max_updates=1024, max_tensor_cells=1_000_000):
         """Replace task evidence or clear it with None, leaving the shared pin intact."""
         if type(state) is not LatentFactorState or state._field is not self:
             raise ValueError("latent state belongs to a different field")
-        return self._condition(state.pin, state._graph, state._state, state._drives, evidence,
-                               (max_updates, max_tensor_cells))
+        return self._condition(state.pin, state._graph, state._state, state._clusters, state._drives, evidence,
+                               _limits(max_updates, max_tensor_cells))
 
-    def _condition(self, pin, graph, state, drives, evidence, limits):
+    def _condition(self, pin, graph, state, clusters, drives, evidence, limits):
         revised, changed = dict(drives), set()
         for slot, values in dict(evidence).items():
             slot = self._slot(slot)
@@ -304,8 +372,23 @@ class LatentFactorField:
                     revised[slot] = new
                 changed.add(slot)
         revised = MappingProxyType(revised)
-        result = self._settle(graph, state, revised, changed, limits)
-        return LatentFactorState(pin, self, graph, revised, result)
+        result, clusters, updates, cells = self._advance(graph, state, clusters, revised, changed, limits)
+        return LatentFactorState(pin, self, graph, revised, result, clusters, updates, cells)
+
+    def _advance(self, graph, state, clusters, drives, changed, limits, *, prior_graph=None, changed_keys=()):
+        raw = self._settle(graph, state, drives, changed, limits, prior_graph=prior_graph,
+                           changed_keys=changed_keys, skip_roots=clusters, defer_loopy=bool(clusters))
+        if not clusters:
+            return raw, clusters, 0, 0
+        remaining = limits[0] - raw.updates, limits[1] - raw.tensor_cells
+        drive_changes = changed if prior_graph is None else ()
+        clusters, updates, cells = _settle_clusters(clusters, drives, drive_changes, remaining)
+        remaining = remaining[0] - updates, remaining[1] - cells
+        if raw.pending_components & graph.loopy and min(remaining) > 0:
+            resumed = self._settle(graph, raw, drives, (), remaining, skip_roots=clusters)
+            raw = replace(resumed, updates=raw.updates + resumed.updates,
+                          tensor_cells=raw.tensor_cells + resumed.tensor_cells)
+        return raw, clusters, updates, cells
 
     def _cavity(self, graph, messages, drives, slot, *, omit=None):
         result = drives.get(slot, self._neutral[slot]).copy()
@@ -326,34 +409,45 @@ class LatentFactorField:
             mass += self._cavity(graph, messages, drives, slot, omit=key).reshape(shape)
         return mass
 
-    def _settle(self, graph, state, drives, changed_slots, limits, *, prior_graph=None, changed_keys=()):
-        update_limit, cell_limit = map(index, limits)
-        if min(update_limit, cell_limit) < 0:
-            raise ValueError("recurrence budgets must be nonnegative")
-        reset = {graph.components[slot] for slot in changed_slots} & graph.loopy
-        queued = dict.fromkeys(state.pending)
+    def _settle(self, graph, state, drives, changed_slots, limits, *, prior_graph=None, changed_keys=(),
+                skip_roots=(), defer_loopy=False):
+        update_limit, cell_limit = limits
+        excluded = frozenset(skip_roots)
+        reset = ({graph.components[slot] for slot in changed_slots} & graph.loopy) - excluded
+        queued = {address: None for address in state.pending
+                  if address[0] in graph.factors and address[1] in graph.factors[address[0]].axes
+                  and graph.components[address[1]] not in excluded}
+
+        def initialize(root, *, from_graph=None):
+            bank = {}
+            for key in graph.groups[root]:
+                for target in graph.factors[key].axes:
+                    address = key, target
+                    if from_graph is None or key in changed_keys:
+                        old = None
+                    else:
+                        prior_root = from_graph.components[target]
+                        old = state.banks.get(prior_root, {}).get(address)
+                    if old is None:
+                        bank[address] = self._neutral[target]
+                        queued[address] = None
+                    else:
+                        bank[address] = old
+            return MappingProxyType(bank)
+
         if prior_graph is not None and prior_graph is not graph:
-            queued = {address: None for address in queued
-                      if address[0] in graph.factors and address[1] in graph.factors[address[0]].axes}
             banks = {}
             for root, keys in graph.groups.items():
-                if keys == prior_graph.groups.get(root) and changed_keys.isdisjoint(keys):
-                    banks[root] = state.banks[root]
+                if root in excluded:
                     continue
-                bank = {}
-                for key in keys:
-                    factor = graph.factors[key]
-                    for target in factor.axes:
-                        address = key, target
-                        if key in changed_keys:
-                            bank[address] = self._neutral[target]
-                            queued[address] = None
-                        else:
-                            prior_root = prior_graph.components[target]
-                            bank[address] = state.banks[prior_root][address]
-                banks[root] = MappingProxyType(bank)
+                if root in state.banks and keys == prior_graph.groups.get(root) and changed_keys.isdisjoint(keys):
+                    banks[root] = state.banks[root]
+                else:
+                    banks[root] = initialize(root, from_graph=prior_graph)
         else:
-            banks = dict(state.banks)
+            banks = {root: bank for root, bank in state.banks.items() if root not in excluded}
+            for root in sorted(graph.groups.keys() - banks.keys() - excluded):
+                banks[root] = initialize(root)
         mutable = {}
         for root in sorted(reset):
             bank = dict(banks[root])
@@ -363,6 +457,8 @@ class LatentFactorField:
             mutable[root] = bank
 
         def propagate(slot, omit=None):
+            if graph.components[slot] in excluded:
+                return
             for key in graph.adjacent[slot]:
                 if key != omit:
                     for target in graph.factors[key].axes:
@@ -379,7 +475,7 @@ class LatentFactorField:
             propagate(slot)
         updates = cells = 0
         deferred = []
-        while any(queues) and updates < update_limit:
+        while (queues[0] or (not defer_loopy and queues[1])) and updates < update_limit:
             # Prioritize components that can deliver a supported read.
             key, target = address = (queues[0] or queues[1]).popleft()
             factor = graph.factors[key]
