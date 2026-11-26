@@ -3,7 +3,7 @@ import pytest
 
 from experiments.memory.feedback_workspace import FeedbackProbe, FeedbackProposal, FeedbackWorkspace
 from experiments.memory.latent_feedback import FeedbackKernel
-from experiments.memory.weight_program import WeightFrameProgram, program_weight
+from experiments.memory.weight_program import WeightFrameProgram, WeightRoleProgram, program_weight
 
 
 def _two_step_weight_example():
@@ -219,3 +219,172 @@ def test_frame_program_checks_preservation_even_when_incumbent_output_masks_drif
     with pytest.raises(ValueError, match="transport or preservation"):
         program.reinstall([[1e16], [0.]], input_anchors=inputs, output_anchors=outputs,
                           preserve_inputs=[[1., 1.]], max_update_norm=2.)
+
+
+
+def _two_source_history(seed, values):
+    def probabilities(scores):
+        weights = np.exp(scores - max(scores))
+        return weights / weights.sum()
+
+    first_mix = probabilities(4 * seed[:2])
+    first = np.tanh(first_mix @ values)
+    second_mix = probabilities(np.r_[4 * first[:2], 0.])[:2]
+    return np.array([first, np.tanh(second_mix @ values)])
+
+
+def test_role_action_moves_a_late_repair_between_nonisometric_feedback_banks():
+    rows, weight, seed, common, mixture, readout = _two_step_weight_example()
+    output = np.eye(4)[[0]]
+    edit = program_weight(weight, rows[[1]], [[-1., 0., 0., 0.]], preserve_inputs=[mixture],
+                          preserve_readouts=readout, max_update_norm=3.)
+    source_roles = np.array([mixture, rows[1]])
+    program = WeightRoleProgram.capture(weight, edit.weight, input_anchors=source_roles,
+                                        output_anchors=output)
+
+    destination_rows = np.array([[4., 1., 0., 2.], [0., 2., 3., 0.]])
+    destination_key = np.array([[.25, -.125, 0., 0.], [0., .5, 0., 0.], [0., 0., 0., 0.], [0., 0., 0., 0.]])
+    destination_weight = np.zeros((4, 4))
+    destination_weight[2, 0] = .25
+    destination_weight[3, 1] = .5
+    cold = FeedbackKernel(observation_value=destination_weight,
+                          **dict(common, observation_key=destination_key))
+    first_probabilities = np.exp([4., 0.])
+    first_probabilities /= first_probabilities.sum()
+    destination_mixture = first_probabilities @ destination_rows
+    destination_roles = np.array([destination_mixture, destination_rows[1]])
+    args = dict(input_anchors=destination_roles, output_anchors=output, max_update_norm=3.,
+                preserve_inputs=[destination_mixture], preserve_readouts=readout)
+    installed = program.reinstall(destination_weight, **args)
+    polar = WeightFrameProgram.capture(weight, edit.weight, input_anchors=source_roles, output_anchors=output)
+    with pytest.raises(ValueError, match="incompatible geometry"):
+        polar.reinstall(destination_weight, **args)
+
+    # Domain control: shift the second source by -2 and conserve the first mixture.
+    desired_values = np.array([[2. * np.exp(-4.), 1., 0., 0.], [-1.25, 0., 0., 0.]])
+    expected = _two_source_history(seed, desired_values)
+    workspace = FeedbackWorkspace(cold, destination_rows, [FeedbackProbe(seed, 2, expected[1])],
+                                  guards=[FeedbackProbe(seed, 1, expected[0])], max_update_norm=3.)
+    base = workspace.snapshot()
+    assert base.errors[0] > 1.
+    assert base.guard_errors[0] < 1e-12
+    copied = destination_weight + (edit.weight - weight)
+    with pytest.raises(ValueError, match="does not satisfy its target probe"):
+        workspace.publish(FeedbackProposal(base, 0, copied))
+    assert workspace.snapshot() is base
+    published = workspace.publish(FeedbackProposal(base, 0, installed.weight))
+    assert published.errors[0] < 1e-12 and published.guard_errors[0] < 1e-12
+
+    refit, _, _ = cold.retarget(base.start(seed), 2, expected[1], max_update_norm=3.)
+    for query in (seed, np.array([.6, .15, 0., 0.])):
+        first = published.kernel.step(published.start(query))
+        actual = published.kernel.step(first)
+        np.testing.assert_allclose(actual.history, _two_source_history(query, desired_values),
+                                   rtol=0, atol=1e-12)
+        refit_first = refit.step(refit.start(query, refit.prepare(destination_rows)))
+        np.testing.assert_allclose(refit.step(refit_first).history, actual.history, rtol=0, atol=1e-12)
+
+    first = published.kernel.step(published.start(seed))
+    replaced_history = published.kernel.intervene(first, 0, seed)
+    assert published.kernel.step(replaced_history).latest[0] > -.1
+    assert expected[1, 0] < -.6
+
+
+def test_role_action_uses_stretches_in_both_rectangular_role_spaces():
+    weight = np.zeros((2, 2))
+    action = np.array([[1., 2.], [3., -1.]])
+    source_inputs = np.array([[2., 0.], [1., 1.]])
+    source_outputs = np.array([[1., .5], [0., 2.]])
+    edit = np.linalg.solve(source_inputs, action @ source_outputs)
+    program = WeightRoleProgram.capture(weight, edit, input_anchors=source_inputs, output_anchors=source_outputs)
+    destination = np.arange(12, dtype=float).reshape(4, 3) / 8.
+    target_inputs = np.array([[0., 3., 0., 0.], [1., 1., 0., 0.]])
+    target_outputs = np.array([[.5, 1., 0.], [0., 3., 0.]])
+    chosen = program.reinstall(destination, input_anchors=target_inputs, output_anchors=target_outputs,
+                               max_update_norm=10., preserve_inputs=[[0., 0., 1., 0.]],
+                               preserve_readouts=[[0.], [0.], [1.]])
+    independent = np.zeros_like(destination)
+    independent[:2] = np.linalg.solve(target_inputs[:, :2], action @ target_outputs)
+    np.testing.assert_allclose(chosen.weight, destination + independent, rtol=0, atol=1e-12)
+    assert max(chosen.action_error, chosen.role_error) < 1e-12
+    with pytest.raises(ValueError, match="WRITEABLE"):
+        chosen.weight.setflags(write=True)
+
+
+def test_role_action_refuses_unrepresented_source_edit():
+    with pytest.raises(ValueError, match="outside the captured role spans"):
+        WeightRoleProgram.capture(np.zeros((2, 2)), np.eye(2), input_anchors=[[1., 0.]],
+                                  output_anchors=[[1., 0.]])
+
+
+@pytest.mark.parametrize("change", [1., 1e-9])
+def test_role_action_catches_loss_of_an_ambient_weak_output_direction(change):
+    program = WeightRoleProgram.capture([[0., 0.]], [[change, change]], input_anchors=[[1.]],
+                                        output_anchors=np.eye(2))
+    stretched = [[1., 0.], [0., 1e-10]]
+    with pytest.raises(ValueError, match="role action or preservation"):
+        program.reinstall([[0., 1e8]], input_anchors=[[1.]], output_anchors=stretched, max_update_norm=2.)
+
+
+def test_role_action_refuses_conflict_and_unrepresentable_stored_update():
+    args = dict(input_anchors=[[1.]], output_anchors=[[1.]])
+    program = WeightRoleProgram.capture([[0.]], [[1.]], **args)
+    with pytest.raises(ValueError, match="role action or preservation"):
+        program.reinstall([[0.]], **args, preserve_readouts=[[1.]], max_update_norm=2.)
+    with pytest.raises(ValueError, match="role action or preservation"):
+        program.reinstall([[1e16]], **args, max_update_norm=2., atol=2.)
+    with pytest.raises(ValueError, match="norm budget"):
+        program.reinstall([[0.]], **args, max_update_norm=.5)
+
+
+
+def test_role_action_refuses_a_stored_change_hidden_in_the_evaluated_response():
+    program = WeightRoleProgram.capture([[0.]], [[1.]], input_anchors=[[1.]], output_anchors=[[1.]])
+    with pytest.raises(ValueError, match="role action or preservation"):
+        program.reinstall([[1e16], [0.]], input_anchors=[[1., 1.]], output_anchors=[[1.]],
+                          preserve_inputs=[[1., 0.]], max_update_norm=2.)
+
+
+def test_role_action_preserves_units_where_polar_accepts_a_uniform_stretch():
+    source = [[0.]]
+    roles = dict(input_anchors=[[1.]], output_anchors=[[1.]])
+    role_program = WeightRoleProgram.capture(source, [[1.]], **roles)
+    polar_program = WeightFrameProgram.capture(source, [[1.]], **roles)
+    target_args = dict(input_anchors=[[2.]], output_anchors=[[1.]], max_update_norm=2.)
+    role = role_program.reinstall(source, **target_args)
+    polar = polar_program.reinstall(source, **target_args)
+    np.testing.assert_allclose(np.array([[2.]]) @ role.weight, [[1.]], atol=1e-12, rtol=0)
+    np.testing.assert_allclose(np.array([[2.]]) @ polar.weight, [[2.]], atol=1e-12, rtol=0)
+
+
+def test_role_action_leaves_new_sources_outside_the_calibrated_span_unidentified():
+    weight = np.zeros((3, 3))
+    source_edit = np.diag([1., 0., 0.])
+    source_rows = np.eye(3)[:2]
+    output_roles = np.eye(3)[[0]]
+    program = WeightRoleProgram.capture(weight, source_edit, input_anchors=source_rows, output_anchors=output_roles)
+
+    diagonal = np.diag([2., 1., 1.])
+    shear = diagonal.copy()
+    shear[2, 0] = 1.
+    destination_rows = source_rows @ diagonal
+    np.testing.assert_array_equal(destination_rows, source_rows @ shear)
+    result = program.reinstall(weight, input_anchors=destination_rows, output_anchors=output_roles,
+                               max_update_norm=1.)
+    basis = result.calibrated_input_basis
+    installed = result.weight
+    alternative = np.linalg.solve(shear, source_edit)
+
+    def read(rows, value_map):
+        kernel = FeedbackKernel(query=weight, carry=None, observation_key=weight, observation_value=value_map,
+                                feedback_key=weight, feedback_value=weight, max_steps=1)
+        return kernel.step(kernel.start(np.zeros(3), kernel.prepare(rows))).latest[0]
+
+    assert read(destination_rows, installed) == pytest.approx(read(destination_rows, alternative), abs=1e-12)
+    revised_rows = np.vstack((destination_rows, [0., 0., 1.]))
+    residuals = revised_rows - (revised_rows @ basis.T) @ basis
+    np.testing.assert_allclose(np.linalg.norm(residuals, axis=1), [0., 0., 1.], atol=1e-12, rtol=0)
+    with pytest.raises(ValueError, match="WRITEABLE"):
+        basis.setflags(write=True)
+    assert read(revised_rows, installed) == pytest.approx(np.tanh(1. / 3), abs=1e-12)
+    assert read(revised_rows, alternative) == pytest.approx(np.tanh(1. / 6), abs=1e-12)

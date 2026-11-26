@@ -25,6 +25,19 @@ class ReinstalledWeight:
     readout_drift: float
 
 
+@dataclass(frozen=True, eq=False)
+class ReinstalledRoleAction:
+    """The candidate and its calibration basis, in destination input coordinates."""
+
+    weight: np.ndarray
+    calibrated_input_basis: np.ndarray
+    update_norm: float
+    action_error: float
+    role_error: float
+    input_drift: float
+    readout_drift: float
+
+
 def _matrix(data, name):
     if np.iscomplexobj(data):
         raise ValueError(f"{name} must be real")
@@ -75,7 +88,7 @@ def _preservation_drifts(weight, candidate, installed, rows, readouts):
     return float(np.maximum(input_drift, input_delta)), float(np.maximum(readout_drift, readout_delta))
 
 
-def _anchor_frame(anchors, width, rcond):
+def _anchor_decomposition(anchors, width, rcond):
     anchors = _matrix(anchors, "role anchors")
     if anchors.shape[1] != width or not 1 <= len(anchors) <= width:
         raise ValueError("role anchors need one independent row per role")
@@ -86,9 +99,20 @@ def _anchor_frame(anchors, width, rcond):
     left, singular, right = np.linalg.svd(scaled, full_matrices=False)
     if not np.isfinite(singular).all() or singular[-1] <= rcond * singular[0]:
         raise ValueError("role anchors must have full row rank")
+    return anchors, peak, left, singular, right
+
+
+def _anchor_frame(anchors, width, rcond):
+    rows, peak, left, singular, right = _anchor_decomposition(anchors, width, rcond)
+    scaled = rows / peak
     norm = _frobenius(scaled)
     whitener = left.T / (singular / norm)[:, None]
     return left @ right, scaled / norm, whitener
+
+
+def _role_coordinates(observed, scale, left, singular, right):
+    projected = (observed / scale) @ right.T
+    return (projected / singular) @ left.T
 
 
 def _frame_error(rows, whitener):
@@ -172,6 +196,112 @@ class WeightFrameProgram:
         return ReinstalledWeight(_frozen_matrix(candidate), update_norm, transport_error, input_drift, readout_drift)
 
 
+def _solve_weight_delta(inputs, residuals, anchor_rows, readouts, rcond):
+    input_basis = _row_basis(anchor_rows, rcond)
+    output_basis = _row_basis(readouts.T, rcond)
+    editable_inputs = _remove_span(inputs, input_basis)
+    residuals = _remove_span(residuals, output_basis)
+    left, singular, right = np.linalg.svd(editable_inputs, full_matrices=False)
+    keep = singular > _frobenius(inputs, scale=rcond)
+    projected_targets = left[:, keep].T @ residuals
+    delta = right[keep].T @ (projected_targets / singular[keep, None])
+    delta = _remove_span(delta.T, input_basis).T
+    return _remove_span(delta, output_basis), int(keep.sum())
+
+
+@dataclass(frozen=True, eq=False)
+class WeightRoleProgram:
+    """An edit expressed as the change in action on corresponding primal anchor rows.
+
+    The caller supplies ordered input activations and output directions with the same
+    meaning and units in role coordinates. No isometry between those rows is assumed.
+    """
+
+    _action: np.ndarray
+    _rcond: float
+
+    def __post_init__(self):
+        action = _matrix(self._action, "role action")
+        if not all(action.shape) or not 0 < self._rcond < 1:
+            raise ValueError("incompatible role action")
+        object.__setattr__(self, "_action", _frozen_matrix(action))
+
+    @classmethod
+    def capture(cls, weight, edited, *, input_anchors, output_anchors, atol=1e-8,
+                edit_rtol=1e-8, rcond=1e-12):
+        """Record the realized change only when the supplied roles reconstruct it."""
+        weight = _matrix(weight, "weight")
+        edited = _matrix(edited, "edited weight")
+        if weight.shape != edited.shape:
+            raise ValueError("source weights must have identical shapes")
+        _validate_role_tolerances(atol, edit_rtol, rcond)
+        with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
+            inputs, input_scale, input_left, input_singular, input_right = _anchor_decomposition(
+                input_anchors, weight.shape[0], rcond
+            )
+            outputs, output_scale, output_left, output_singular, output_right = _anchor_decomposition(
+                output_anchors, weight.shape[1], rcond
+            )
+            delta = edited - weight
+            action = _role_coordinates(inputs @ delta, output_scale, output_left, output_singular, output_right)
+            rebuilt = input_left.T @ ((action @ outputs) / input_scale)
+            rebuilt = input_right.T @ (rebuilt / input_singular[:, None])
+            error = _frobenius(rebuilt - delta)
+            limit = min(atol, _frobenius(delta, scale=edit_rtol))
+        if not error <= limit or (np.any(delta) and not np.any(action)):
+            raise ValueError("source edit extends outside the captured role spans")
+        return cls(action, rcond)
+
+    def reinstall(self, weight, *, input_anchors, output_anchors, max_update_norm,
+                  preserve_inputs=None, preserve_readouts=None, atol=1e-8, edit_rtol=1e-8, role_atol=1e-8):
+        """Fit only the transported change in action and check the stored edit."""
+        weight = _matrix(weight, "weight")
+        protected, readouts = _preservation_matrices(preserve_inputs, preserve_readouts, weight.shape)
+        _validate_role_tolerances(atol, edit_rtol, self._rcond)
+        if not isfinite(role_atol) or role_atol <= 0:
+            raise ValueError("role_atol must be finite and positive")
+        if not isfinite(max_update_norm) or max_update_norm < 0:
+            raise ValueError("max_update_norm must be finite and nonnegative")
+        with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
+            inputs, _, _, _, input_basis = _anchor_decomposition(input_anchors, weight.shape[0], self._rcond)
+            outputs, *output_basis = _anchor_decomposition(output_anchors, weight.shape[1], self._rcond)
+            if (len(inputs), len(outputs)) != self._action.shape:
+                raise ValueError("destination has incompatible role counts")
+            desired = self._action @ outputs
+            delta, _ = _solve_weight_delta(inputs, desired, protected, readouts, self._rcond)
+            candidate = weight + delta
+            installed = candidate - weight
+            actual = inputs @ installed
+            rounded_change = inputs @ candidate - inputs @ weight
+            stored_errors = _role_action_errors(actual, desired, self._action, output_basis)
+            evaluated_errors = _role_action_errors(rounded_change, desired, self._action, output_basis)
+            action_error, role_error = np.maximum(stored_errors, evaluated_errors)
+            action_limit = min(atol, _frobenius(desired, scale=edit_rtol))
+            role_limit = min(role_atol, edit_rtol * float(np.max(np.abs(self._action))))
+            weight_error = _frobenius(installed - delta)
+            weight_limit = min(atol, _frobenius(delta, scale=edit_rtol))
+            update_norm = _frobenius(installed)
+            input_drift, readout_drift = _preservation_drifts(weight, candidate, installed, protected, readouts)
+        if not isfinite(update_norm) or update_norm > max_update_norm:
+            raise ValueError("edit exceeds the weight update norm budget")
+        if (not action_error <= action_limit or not weight_error <= weight_limit
+                or not role_error <= role_limit or (np.any(self._action) and not np.any(actual))
+                or not all(error <= atol for error in (input_drift, readout_drift))):
+            raise ValueError("edit is incompatible with role action or preservation tolerance")
+        return ReinstalledRoleAction(_frozen_matrix(candidate), _frozen_matrix(input_basis), update_norm,
+                                     float(action_error), float(role_error), input_drift, readout_drift)
+
+
+def _role_action_errors(actual, desired, action, output_basis):
+    observed_action = _role_coordinates(actual, *output_basis)
+    return _frobenius(actual - desired), float(np.max(np.abs(observed_action - action)))
+
+
+def _validate_role_tolerances(atol, edit_rtol, rcond):
+    if not isfinite(atol) or atol <= 0 or not (0 < edit_rtol < 1 and 0 < rcond < 1):
+        raise ValueError("atol must be finite and positive, edit_rtol and rcond must be between zero and one")
+
+
 def program_weight(weight, inputs, targets, *, preserve_inputs=None,
                    preserve_readouts=None, max_update_norm, atol=1e-8, rcond=1e-12):
     """Fit a row-vector map update while preserving specified input rows and readouts.
@@ -196,16 +326,8 @@ def program_weight(weight, inputs, targets, *, preserve_inputs=None,
         raise ValueError("atol and rcond must be positive and rcond below one")
 
     with np.errstate(over="raise", invalid="raise", divide="raise"):
-        input_basis = _row_basis(anchor_rows, rcond)
-        output_basis = _row_basis(readouts.T, rcond)
-        editable_inputs = _remove_span(inputs, input_basis)
-        residuals = _remove_span(targets - inputs @ weight, output_basis)
-        left, singular, right = np.linalg.svd(editable_inputs, full_matrices=False)
-        keep = singular > _frobenius(inputs, scale=rcond)
-        projected_targets = left[:, keep].T @ residuals
-        delta = right[keep].T @ (projected_targets / singular[keep, None])
-        delta = _remove_span(delta.T, input_basis).T
-        delta = _remove_span(delta, output_basis)
+        delta, editable_rank = _solve_weight_delta(inputs, targets - inputs @ weight,
+                                                   anchor_rows, readouts, rcond)
         candidate = weight + delta
         installed_delta = candidate - weight
 
@@ -217,5 +339,5 @@ def program_weight(weight, inputs, targets, *, preserve_inputs=None,
     if not all(isfinite(error) and error <= atol for error in (target_error, input_drift, readout_drift)):
         raise ValueError("edit is incompatible with target or preservation tolerance")
 
-    return WeightEdit(_frozen_matrix(candidate), int(keep.sum()), update_norm, target_error,
+    return WeightEdit(_frozen_matrix(candidate), editable_rank, update_norm, target_error,
                       input_drift, readout_drift)
