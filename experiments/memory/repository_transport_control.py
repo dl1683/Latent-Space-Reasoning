@@ -211,11 +211,27 @@ def _history(workspace, revision):
 
 def _verify_source_archive(directory, manifest):
     """Check every content-addressed source file against the sealed inventory."""
+    directory = Path(directory)
+    if not directory.is_dir() or directory.is_symlink():
+        raise ValueError("publication bundle must be a regular directory")
+    entries = tuple(directory.iterdir())
+    if any(path.is_symlink() for path in entries):
+        raise ValueError("publication bundle cannot contain symlinks")
     if manifest["schema"] == _PUBLICATION_SCHEMA_V1:
+        if {path.name for path in entries} != {"corpus.sqlite", "publication.json"}:
+            raise ValueError("legacy publication contains files outside its sealed bundle")
+        if any(not path.is_file() for path in entries):
+            raise ValueError("legacy publication entries must be regular files")
         return None
-    source_root = Path(directory) / "sources"
+    if {path.name for path in entries} != {"corpus.sqlite", "publication.json", "sources"}:
+        raise ValueError("publication contains files outside its sealed bundle")
+    if any(path.name != "sources" and not path.is_file() for path in entries):
+        raise ValueError("publication journal and manifest must be regular files")
+    source_root = directory / "sources"
     leaf_root = source_root / "leaves"
-    if source_root.is_symlink() or leaf_root.is_symlink() or not leaf_root.is_dir():
+    if (source_root.is_symlink() or not source_root.is_dir()
+            or {path.name for path in source_root.iterdir()} != {"leaves"}
+            or leaf_root.is_symlink() or not leaf_root.is_dir()):
         raise ValueError("publication source archive is unavailable")
     expected = {f"{digest}.txt": size for digest, size in manifest["source_blobs"]}
     entries = tuple(leaf_root.iterdir())
@@ -295,11 +311,20 @@ def open_task_world(directory, seal, pin_index, *, arm="on"):
             raise ValueError("task search catalogue omits a pinned source")
         tool = VerifiedSourceTool(source_root, versions)
         task_world = TaskWorld(tool, spans, bindings=pin)
-        memory = world.prepare(pin, packed=False, operators=arm == "on")
+        memory = world.prepare(pin, packed=False, operators=True)
+        if arm == "operators-off":
+            if memory._source_transports is not None:
+                memory = memory.without_source_transport()
+            if memory._source_constraints is not None:
+                memory = memory.without_source_constraints()
         if task_world.pin.binding_journal_sha256 != pin.journal_sha256:
             raise ValueError("task source and recurrent world are not at the same journal pin")
         yield dict(commit=commit, pin=pin, task_world=task_world, reasoner=world, memory=memory,
-                   encoder=encoder, source_archive_bytes=manifest["source_archive_bytes"],
+                   source_archive_bytes=manifest["source_archive_bytes"],
+                   source_archive_verified_bytes=manifest["source_archive_bytes"],
+                   source_archive_blob_count=len(manifest["source_blobs"]),
+                   journal_bytes_copied=len(journal),
+                   journal_pin_replays=len(manifest["pins"]) + 1,
                    source_setup_bytes=task_world.setup_source_bytes)
 
 
@@ -428,7 +453,10 @@ def publish(repo, revisions, destination, *, package, include_source_archive=Tru
 
 def _read_manifest(directory, seal):
     require_digest(seal)
-    raw = _bounded_read(directory / "publication.json", _MAX_JSON_BYTES)
+    manifest_path = Path(directory) / "publication.json"
+    if manifest_path.is_symlink() or not manifest_path.is_file():
+        raise ValueError("publication manifest must be a regular file")
+    raw = _bounded_read(manifest_path, _MAX_JSON_BYTES)
     if sha256(raw) != seal:
         raise ValueError("publication seal mismatch")
     data = json.loads(raw)
@@ -597,6 +625,7 @@ def read_publication(directory, seal, questions_path, *, arm="on"):
         results = _read_questions(workspace, world, code, pins, questions, arm)
         return {"seal": seal, "questions_sha256": questions_digest, "results": results,
                 "source_archive_bytes": manifest.get("source_archive_bytes", 0),
+                "source_archive_verified_bytes": manifest.get("source_archive_bytes", 0),
                 "source_archive_available": source_root is not None}
 
 

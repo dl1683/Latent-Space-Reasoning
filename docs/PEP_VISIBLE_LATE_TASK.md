@@ -30,3 +30,15 @@ Compare all critical obligations per task, correct conflict acknowledgment, fals
 GitHub's raw tree listing for both pinned commits was nontruncated. Counts, byte sizes, and the single changed blob were computed from those listings. Both pinned texts were fetched independently of LSR, all 17 oracle line ranges were checked for their expected anchors and exact Git blob IDs, and four unchanged evidence documents were fetched at both pins and compared for text and blob identity. This verifies source selection and witness anchors, not automated semantic adjudication, byte offsets, model execution, whole-corpus reasoning, runtime isolation on this corpus, or lifecycle economics. The oracle still needs an independent second annotator and integration into the real publisher/reader. No model run or held evaluation was performed. Local Git network access is unavailable in this execution environment.
 
 The high-value next gate is a source-only maintenance publication followed by raw-text late questions with no gold target mappings. Do not create another deterministic dictionary that directly encodes these specific answers. First obtain an independently reviewed oracle, then use the same source-derived predictions in the latent and warm exact arms. A positive result must depend on the maintained computation and survive the matched baselines.
+
+The current `repository_transport_control` publication is a Python-import
+control, not the PEP loader: it uses AST imports as its observation grammar,
+limits changed source bytes to 8 MiB per revision, and `open_task_world`
+rejects an active index above 8 MiB. This calibration has 12,061,646 source
+bytes at its opening pin. Do not raise those limits without a resource
+preflight. Build a generic raw-document handoff with opaque document IDs,
+measure index memory and setup/read costs on the full 655-document snapshot,
+and keep PEP identifiers and oracle mappings out of latent coordinates and
+reader metadata. `TaskWorld` currently adds source identifiers to its lexical
+index text, so this loader must use truly opaque IDs rather than PEP filenames
+or numbers; preserve PEP references only in the source text itself.

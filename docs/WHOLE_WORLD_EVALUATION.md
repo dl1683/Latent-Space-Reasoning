@@ -536,9 +536,14 @@ retains all unique source blobs needed by its journal pins. A separate late
 reader reconstructs `TaskWorld` and recurrent memory from that sealed bundle
 without Git, then reopens returned witness spans. One known task route loses
 support under same-pin operator removal and recovers the exact receipt when
-restored. This closes the data-plumbing gap for the software slice; the
-readout and route are fixed, and the trial supplies no independent task
-acquisition, semantic grade, or equal-information comparison.
+restored. This demonstrates bundle-to-`TaskWorld`-to-direct-bridge loading for
+the fixed software slice; it does not execute the model-facing `run_episode`
+actions. The readout and route are fixed, and the trial supplies no independent
+task acquisition, semantic grade, or equal-information comparison.
+This helper is specific to Python imports and rejects active `TaskWorld`
+indexes above 8 MiB. The source-disjoint PEP calibration is 12,061,646 bytes
+at its opening pin, so it needs a generic opaque-document loader and measured
+index-memory budget; do not bypass the cap by simply increasing it.
 
 A separate [corpus-wide transport control](RESULTS.md#discovering-and-revising-a-transport-before-tasks-26-november-2026)
 lets a pre-task worker discover and revise an operation without enrolled

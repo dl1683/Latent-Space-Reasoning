@@ -186,8 +186,10 @@ The publisher and reader used distinct unprivileged host UIDs. Each
 reader saw the question file and sealed publication through read-only
 mounts. The stage probes confirmed separate mount and network namespaces,
 loopback as the only interface, no supplementary groups, no effective
-capabilities, and only the three standard descriptors. The reader had
-no original checkout, source projection or grading-file mount.
+capabilities, and only the three standard descriptors. In that pre-v2
+control the reader had no original checkout, source projection or grading-file
+mount. The later source-complete task-world extension needs the pinned source
+leaves and is reported separately below.
 
 Four fresh readers completed 104 reads and reproduced the named
 control's nine supported, eight undecided, seven unresolved, one missing
@@ -389,10 +391,26 @@ The added task-world slice starts from the predetermined `context` mention in
 published transport installed, the two-step route is supported. Removing only
 that operator on the same pin leaves the second transition unobserved and the
 result unresolved; restoring it reproduces the exact receipt. The attached and
-removed arms have the same retained observation fingerprint, and all six
-returned witness spans reopen from the sealed archive. The bridge also keeps
-unbanked law mentions out of path observations while allowing exact law spans
-from validated discovery coverage in the uncertainty packet.
+removed arms have the same retained observation fingerprint. The trial checks
+that its returned packet separates two path spans from four transport-law
+spans, then reopens all six from the sealed archive. The operator-off opener
+preserves the discovery-coverage state while removing the maintained operator.
+
+Each task-world arm indexed 2,981,113 source bytes, or 5,962,226 bytes for the
+active/removed pair. The two seed-source opens read 8,884 bytes each. Reopening
+the six attached witness spans read 131,516 bytes across three distinct source
+files; the five operator-off packet spans read another 104,446 bytes. Those
+five include one path context and four transport-law mentions. Seed and
+witness reads totaled 253,730 bytes, within
+the 8 MiB reopen limit;
+including both source-index builds, the pair processed 6,215,956 source bytes
+within its 16 MiB allowance. Each task-world opening also verified the full
+3,431,906-byte archive, copied 2,785,280 journal bytes, and replayed five
+historical pins. Across the four named readers and two task-world openings,
+archive verification read 20,591,436 bytes in six passes. These are scoped
+source, archive, copy and pin counters, not full lifecycle or inference costs;
+BM25 work, journal event-read work, Python startup and publisher costs remain
+unaccounted here.
 
 This checks source-complete handoff and a causal operator dependency in one
 fixed, known route. The source-derived coordinates, seed, target and readout
@@ -400,8 +418,17 @@ are supplied by the fixture. It has no independently authored task, language
 to-world addressing, semantic sufficiency judgment, matched iterative-RAG or
 incremental-join comparison, or lifecycle cost result. It therefore does not
 establish general task-directed reasoning or a latent-world advantage. The
-optional `run_episode` bridge remains an unqualified interface for those
-questions.
+fixture constructs `EvidenceRead` and calls `RecurrentTaskBridge.read()`
+directly; it does not exercise `run_episode` search/read/`world_read` actions,
+typed need inference, or final finding submission. The optional `run_episode`
+bridge remains an unqualified interface for those questions.
+
+The Linux isolated runner now transfers only the journal, manifest and
+manifest-listed source leaves, then has a separate read-only task-world stage
+with neither Git nor the question file. That updated isolation path was not run
+here: this Windows environment has no WSL installation. The earlier WSL
+publication result therefore does not yet qualify the source-archive or
+task-world stage.
 
 ## Choosing a late scope for the same unit name, 26 November 2026
 

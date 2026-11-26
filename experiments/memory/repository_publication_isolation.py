@@ -7,7 +7,7 @@ import json
 import os
 from pathlib import Path
 from shutil import copyfile, which
-from stat import S_ISREG
+from stat import S_ISDIR, S_ISREG
 import subprocess
 import sys
 from tempfile import TemporaryDirectory
@@ -22,10 +22,12 @@ _STAGE_SECONDS = 45
 _MAX_PACK_BYTES = 16 * 1024 * 1024
 _CODE_MODULES = (
     "binding_feedback", "binding_links", "binding_memory", "binding_replay", "git_source",
-    "corpus_binding_journal", "corpus_bindings", "disjoint_feedback", "disjoint_transition",
-    "latent_feedback", "recurrent_world", "relational_feedback", "repository_import_memory",
-    "repository_transport_control", "role_validity", "source_constraints", "transition_memory",
-    "unit_program", "verified_source_tool", "weight_program", "world_transport",
+    "compressed_routing_map", "corpus_binding_journal", "corpus_bindings", "disjoint_feedback",
+    "disjoint_transition", "latent_factor_field", "latent_feedback", "recurrent_task_bridge",
+    "recurrent_world", "relational_feedback", "repository_import_memory",
+    "repository_publication_trial", "repository_transport_control", "role_validity",
+    "source_constraints", "task_evidence", "transition_memory", "unit_program",
+    "verified_source_tool", "weight_program", "world_transport",
 )
 _STAGE = """
 import json
@@ -59,11 +61,14 @@ if kind == "publish":
     absent("/publication/publication.json")
     assert os.statvfs("/source").f_flag & os.ST_RDONLY
 else:
-    assert kind == "read"
+    assert kind in ("read", "task-world")
     absent("/source/HEAD")
     absent("/output/publication/publication.json")
     assert os.statvfs("/publication").f_flag & os.ST_RDONLY
-    assert os.statvfs("/questions.json").f_flag & os.ST_RDONLY
+    if kind == "read":
+        assert os.statvfs("/questions.json").f_flag & os.ST_RDONLY
+    else:
+        absent("/questions.json")
     def refuse_subprocess(event, arguments):
         if event == "subprocess.Popen":
             raise AssertionError("isolated reader attempted to launch a subprocess")
@@ -74,7 +79,10 @@ assert fds == [0, 1, 2]
 mounts = sorted(line.split()[4] for line in Path("/proc/self/mountinfo").read_text().splitlines())
 print(json.dumps({"mode": kind, "uid": int(uid), "groups": os.getgroups(), "fds": fds, "mounts": mounts,
                   "network_interfaces": socket.if_nameindex()}), file=sys.stderr, flush=True)
-from experiments.memory.repository_transport_control import main
+if kind == "task-world":
+    from experiments.memory.repository_publication_trial import main
+else:
+    from experiments.memory.repository_transport_control import main
 main(args)
 """
 
@@ -217,20 +225,66 @@ def _isolated(tool, runtime, code, mode, bindings, arguments, output, name):
     return completed.stdout
 
 
-def _retain_publication(candidate, bundle, limit):
-    if candidate.is_symlink() or sorted(p.name for p in candidate.iterdir()) != ["corpus.sqlite", "publication.json"]:
-        raise ValueError("publisher must leave exactly a journal and its manifest")
+def _retain_publication(candidate, bundle, limit, seal):
+    from experiments.memory.repository_transport_control import (
+        _MAX_JSON_BYTES, _MAX_SOURCE_ARCHIVE_BYTES, _PUBLICATION_SCHEMA,
+        _read_manifest,
+    )
+
+    if not S_ISDIR(os.lstat(candidate).st_mode):
+        raise ValueError("publisher output must be a regular directory")
+    if sorted(path.name for path in candidate.iterdir()) != ["corpus.sqlite", "publication.json", "sources"]:
+        raise ValueError("publisher must leave exactly a journal, manifest, and source archive")
+    for name, file_limit in (("corpus.sqlite", limit), ("publication.json", _MAX_JSON_BYTES)):
+        info = os.lstat(candidate / name)
+        if not S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_size > file_limit:
+            raise ValueError("publisher must provide bounded regular files with one link")
+    manifest = _read_manifest(candidate, seal)
+    if manifest["schema"] != _PUBLICATION_SCHEMA:
+        raise ValueError("isolated task-world handoff requires a source-complete publication")
+    source_root, leaf_root = candidate / "sources", candidate / "sources" / "leaves"
+    if (not S_ISDIR(os.lstat(source_root).st_mode) or not S_ISDIR(os.lstat(leaf_root).st_mode)
+            or sorted(path.name for path in source_root.iterdir()) != ["leaves"]):
+        raise ValueError("publisher source archive must contain one regular leaves directory")
+    expected = {f"{digest}.txt": size for digest, size in manifest["source_blobs"]}
+    leaf_entries = tuple(leaf_root.iterdir())
+    if sorted(path.name for path in leaf_entries) != sorted(expected):
+        raise ValueError("publisher source archive differs from its sealed inventory")
+
     bundle.mkdir()
     bundle.chmod(0o755)
-    for path in candidate.iterdir():
+    for name, file_limit in (("corpus.sqlite", limit), ("publication.json", _MAX_JSON_BYTES)):
+        path = candidate / name
         with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK), "rb") as handle:
             info = os.fstat(handle.fileno())
-            if not S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_size > limit:
+            if not S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_size > file_limit:
                 raise ValueError("publisher must provide bounded regular files with one link")
-            data = handle.read(limit + 1)
-            if len(data) > limit:
+            data = handle.read(file_limit + 1)
+            if len(data) != info.st_size or len(data) > file_limit:
                 raise ValueError("publisher file exceeded the transfer allowance")
-        _write_record(bundle / path.name, data, mode=0o444)
+        _write_record(bundle / name, data, mode=0o444)
+
+    retained_sources = bundle / "sources"
+    retained_leaves = retained_sources / "leaves"
+    retained_sources.mkdir(mode=0o755)
+    retained_leaves.mkdir(mode=0o755)
+    retained_bytes = 0
+    for filename, expected_size in expected.items():
+        path = leaf_root / filename
+        with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK), "rb") as handle:
+            info = os.fstat(handle.fileno())
+            if (not S_ISREG(info.st_mode) or info.st_nlink != 1
+                    or info.st_size != expected_size or expected_size <= 0
+                    or expected_size > _MAX_SOURCE_ARCHIVE_BYTES - retained_bytes):
+                raise ValueError("publisher source blob is not a bounded single-link regular file")
+            data = handle.read(expected_size + 1)
+            if len(data) != expected_size or sha256(data) != filename[:-4]:
+                raise ValueError("publisher source blob failed its content-address check")
+        retained_bytes += len(data)
+        _write_record(retained_leaves / filename, data, mode=0o444)
+    if retained_bytes != manifest["source_archive_bytes"]:
+        raise ValueError("publisher source archive byte total differs from its manifest")
+    return dict(source_archive_bytes=retained_bytes, source_blob_count=len(expected))
 
 
 def _json_record(path, payload):
@@ -283,7 +337,9 @@ def run_isolated(repo, output):
                                 output, "publisher.json")
         receipt = json.loads(publication)
         bundle = output / "publication"
-        _retain_publication(work / "publication", bundle, _MAX_JOURNAL_BYTES)
+        archive = _retain_publication(work / "publication", bundle, _MAX_JOURNAL_BYTES, receipt["seal"])
+        if archive != {key: receipt[key] for key in ("source_archive_bytes", "source_blob_count")}:
+            raise ValueError("publisher archive receipt differs from its retained source files")
         manifest = _read_manifest(bundle, receipt["seal"])
         journal = _bounded_read(bundle / "corpus.sqlite", _MAX_JOURNAL_BYTES)
         if sha256(journal) != manifest["journal_sha256"] or receipt["content_sha256"] != manifest["content_sha256"]:
@@ -313,15 +369,35 @@ def run_isolated(repo, output):
                                  output, name)
             records.append(dict(file=name, arm=arm, sha256=sha256(proposal)))
             raw_proposals.append(proposal)
+        task_world_raw = _isolated(
+            tool, runtime, code, "task-world", [("--ro-bind", bundle, "/publication")],
+            ["--task-world", "/publication", receipt["seal"], "2"], output, "task-world-bridge.json",
+        )
+        task_world = json.loads(task_world_raw)
+        if (task_world["status"] != "supported" or task_world["removed_status"] != "unresolved"
+                or task_world["checked_witness_spans"] != 6
+                or len(task_world["restored_receipt"]) != 64):
+            raise ValueError("isolated task-world reader did not preserve the fixed route intervention")
         _json_record(output / "proposals.json", dict(
-            publication_seal=receipt["seal"], questions_sha256=sha256(questions.read_bytes()), proposals=records,
+            publication_seal=receipt["seal"], questions_sha256=sha256(questions.read_bytes()),
+            proposals=records, task_world_bridge=dict(
+                file="task-world-bridge.json", sha256=sha256(task_world_raw),
+            ),
         ))
         outputs = [json.loads(proposal) for proposal in raw_proposals]
         checked = _grade(repo, outputs, questions, gold, receipt["seal"])
+        reader_archive_bytes = sum(result["source_archive_verified_bytes"] for result in outputs)
         result = dict(**receipt, **source_report, seed=_SEED, journal_bytes=len(journal),
                       questions_sha256=outputs[0]["questions_sha256"], checked_attached_witnesses=checked,
                       attached_statuses=Counter(row["status"] for row in outputs[0]["results"]),
                       validated_reads=sum(len(result["results"]) for result in outputs),
-                      stages=1 + len(outputs), code_overlap=overlap)
+                      source_archive_verification_passes=(
+                          2 + len(outputs) + task_world["source_archive_verification_passes"]
+                      ),
+                      source_archive_verified_bytes=(
+                          2 * archive["source_archive_bytes"] + reader_archive_bytes
+                          + task_world["source_archive_verified_bytes"]
+                      ),
+                      task_world_bridge=task_world, stages=2 + len(outputs), code_overlap=overlap)
         _json_record(output / "grade.json", result)
         return result
