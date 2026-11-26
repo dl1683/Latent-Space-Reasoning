@@ -195,8 +195,11 @@ class CorpusBindingMemory:
                        _certain=lower, _possible=upper, _mentions=MappingProxyType(mentions), _role_links=links)
 
     def _reprogram_role_links(self, roles, min_similarity, uncertainty, compile_work_limit, transport="fixed",
-                              bridge_key=None, local_bridges=False):
-        if type(local_bridges) is not bool or (local_bridges and bridge_key is None):
+                              bridge_key=None, local_bridges=False, factored_bridges=False):
+        if type(local_bridges) is not bool or type(factored_bridges) is not bool:
+            raise ValueError("bridge maintenance options must be boolean")
+        local_bridges = local_bridges or factored_bridges
+        if local_bridges and bridge_key is None:
             raise ValueError("local bridge maintenance requires a bridge key")
         if roles is None:
             if bridge_key is not None:
@@ -220,9 +223,9 @@ class CorpusBindingMemory:
         links = self._role_links
         if links is not None and (
             links.roles, links.floor, links.uncertainty, links.compile_limit, links.transport,
-            links.bridge_key, links.local_bridges
+            links.bridge_key, links.local_bridges, links.factored_bridges
         ) == (
-            roles, floor, uncertainty, limit, transport, bridge_key, local_bridges,
+            roles, floor, uncertainty, limit, transport, bridge_key, local_bridges, factored_bridges,
         ):
             if not links.bridge_pending:
                 return self
@@ -230,7 +233,7 @@ class CorpusBindingMemory:
                 return replace(self, _role_links=links.bridge_index.matches(links))
         return replace(self, _role_links=_RoleLinks.prepare(
             roles, floor, uncertainty, limit, transport, self.source_digests, self._mentions, bridge_key,
-            local_bridges,
+            local_bridges, factored_bridges,
         ))
 
     def read_role_links(self, direction, *, outcomes, work_limit, hops=1, condition=None):
@@ -390,6 +393,7 @@ class CorpusSourceProposal:
 class CorpusProgramProposal:
     base: CorpusRevision
     _preview: CorpusBindingMemory
+    _prepared_on: CorpusRevision | None = None
 
     @property
     def preview(self):
@@ -469,15 +473,15 @@ class CorpusBindingWorkspace:
     def prepare_program(self, base, gates):
         """Compile alternate wiring for independent checks on a pinned memory."""
         self._check_owner(base)
-        return CorpusProgramProposal(base, base.memory.reprogram(gates))
+        return CorpusProgramProposal(base, base.memory.reprogram(gates), base)
 
     def prepare_role_links(self, base, roles, *, min_similarity=None, uncertainty=0., compile_work_limit=None,
-                           transport="fixed", bridge_key=None, local_bridges=False):
+                           transport="fixed", bridge_key=None, local_bridges=False, factored_bridges=False):
         """Compile declared roles and optionally match fragments across sources on this pin."""
         self._check_owner(base)
         memory = base.memory._reprogram_role_links(roles, min_similarity, uncertainty, compile_work_limit, transport,
-                                                   bridge_key, local_bridges)
-        return CorpusProgramProposal(base, memory)
+                                                   bridge_key, local_bridges, factored_bridges)
+        return CorpusProgramProposal(base, memory, base)
 
     def publish_program(self, proposal):
         """Install a checked preview only if it still represents the whole tip."""
@@ -498,6 +502,8 @@ class CorpusBindingWorkspace:
                 or proposal.preview.source_digests is not tip.memory.source_digests
                 or proposal.preview._mentions is not tip.memory._mentions):
             raise StaleCorpusRevision("program preview belongs to a different source snapshot")
+        if proposal._prepared_on is not tip:
+            raise StaleCorpusRevision("program preview was not prepared on the current revision")
         return self._replace_program(tip, proposal.preview)
 
     def _replace_program(self, tip, memory):

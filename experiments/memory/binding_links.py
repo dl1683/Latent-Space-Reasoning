@@ -149,7 +149,7 @@ class _BridgeFragment:
     key_ordinal: int
     strength: float
     direction: bytes
-    key: np.ndarray
+    key: bytes
 
 
 def _bridge_fragment(records, roles, key):
@@ -163,13 +163,13 @@ def _bridge_fragment(records, roles, key):
     if len(anchors) == len(ends) == 1:
         ordinal, role, grade, raw = ends[0]
         key_ordinal, key_grade, anchor = anchors[0]
-        fragment = role, _BridgeFragment(ordinal, key_ordinal, min(grade, key_grade), raw,
-                                         np.frombuffer(anchor, dtype="<f8"))
+        fragment = role, _BridgeFragment(ordinal, key_ordinal, min(grade, key_grade), raw, anchor)
     return bool(anchors), fragment
 
 
 def _key_match(entry, exit, floor, uncertainty):
-    score = float(np.clip(entry.key @ exit.key, -1., 1.))
+    left, right = np.frombuffer(entry, dtype="<f8"), np.frombuffer(exit, dtype="<f8")
+    score = float(np.clip(left @ right, -1., 1.))
     if score < floor - uncertainty:
         return None
     return score >= floor and (not uncertainty or score > floor + uncertainty)
@@ -180,12 +180,84 @@ def _cross_link(source, target, entry, exit, transport):
     return _RoleLink.from_ends(step, entry.direction, exit.direction, min(entry.strength, exit.strength), transport)
 
 
+def _update_candidates(rows, columns, edges, entries, exits, changed_entries, changed_exits, links, limit):
+    """Replace incident candidate relations and find entries touched through an exit."""
+    new_entries, new_exits = changed_entries & entries.keys(), changed_exits & exits.keys()
+    width = len(next(iter(entries.values()))) // 8 if entries else 0
+    comparisons = len(new_entries) * len(exits) + len(new_exits) * (len(entries) - len(new_entries))
+    if width * comparisons > limit:
+        raise BindingCapacityError("bridge incident comparison limit exceeded")
+
+    row_edits, col_edits = {}, {}
+
+    def edit(source, target, match):
+        nonlocal edges
+        if source not in row_edits:
+            row_edits[source] = dict(rows.get(source, {}))
+        if target not in col_edits:
+            col_edits[target] = set(columns.get(target, ()))
+        row, col = row_edits[source], col_edits[target]
+        if match is None:
+            if target in row:
+                edges -= 1
+                del row[target]
+                col.discard(source)
+        else:
+            edges += int(target not in row)
+            row[target] = match
+            col.add(source)
+
+    for source in changed_entries:
+        for target in rows.get(source, ()):
+            edit(source, target, None)
+    for target in changed_exits:
+        for entry in columns.get(target, ()):
+            edit(entry, target, None)
+    for source in new_entries:
+        for target, exit in exits.items():
+            match = _key_match(entries[source], exit, links.floor, links.uncertainty)
+            if match is not None:
+                edit(source, target, match)
+    for target in new_exits:
+        for source, entry in entries.items():
+            if source not in new_entries:
+                match = _key_match(entry, exits[target], links.floor, links.uncertainty)
+                if match is not None:
+                    edit(source, target, match)
+
+    affected = set(row_edits)
+    for target, col in col_edits.items():
+        affected.update(columns.get(target, ()))
+        affected.update(col)
+    rows, columns = dict(rows), dict(columns)
+    for source, row in row_edits.items():
+        if row:
+            rows[source] = MappingProxyType(row)
+        else:
+            rows.pop(source, None)
+    for target, col in col_edits.items():
+        if col:
+            columns[target] = frozenset(col)
+        else:
+            columns.pop(target, None)
+    return MappingProxyType(rows), MappingProxyType(columns), edges, affected, comparisons
+
+
+def _stale_directions(stale, affected, before, after):
+    updated = dict(stale)
+    for source in affected:
+        old, new = before.get(source), after.get(source)
+        directions = frozenset(fragment.direction for fragment in (old, new) if fragment is not None)
+        updated[source] = updated.get(source, frozenset()) | directions
+    return MappingProxyType(updated)
+
+
 @dataclass(frozen=True, eq=False)
 class _BridgeIndex:
     entries: Mapping[str, _BridgeFragment]
     exits: Mapping[str, _BridgeFragment]
-    rows: Mapping[str, Mapping[str, bool]]
-    columns: Mapping[str, frozenset[str]]
+    rows: Mapping[str | bytes, Mapping[str | bytes, bool]]
+    columns: Mapping[str | bytes, frozenset[str | bytes]]
     stale: Mapping[str, frozenset[bytes]]
     edges: int = 0
 
@@ -196,89 +268,36 @@ class _BridgeIndex:
         return index.revise(entries, exits, frozenset(entries) | frozenset(exits), links)
 
     def revise(self, entries, exits, changed, links):
-        """Update incident pairs, then fence entries that share an affected exit."""
-        new_entries, new_exits = changed & entries.keys(), changed & exits.keys()
-        width = next(iter(entries.values())).key.size if entries else 0
-        comparisons = len(new_entries) * len(exits) + len(new_exits) * (len(entries) - len(new_entries))
-        if width * comparisons > links.compile_limit:
-            raise BindingCapacityError("bridge incident comparison limit exceeded")
-
-        row_edits, col_edits = {}, {}
-        edges = self.edges
-
-        def edit(source, target, match):
-            nonlocal edges
-            if source not in row_edits:
-                row_edits[source] = dict(self.rows.get(source, {}))
-            if target not in col_edits:
-                col_edits[target] = set(self.columns.get(target, ()))
-            row, col = row_edits[source], col_edits[target]
-            if match is None:
-                if target in row:
-                    edges -= 1
-                    del row[target]
-                    col.discard(source)
-            else:
-                edges += int(target not in row)
-                row[target] = match
-                col.add(source)
-
-        for source in changed:
-            for target in self.rows.get(source, ()):
-                edit(source, target, None)
-            for entry in self.columns.get(source, ()):
-                edit(entry, source, None)
-        for source in new_entries:
-            for target, exit in exits.items():
-                match = _key_match(entries[source], exit, links.floor, links.uncertainty)
-                if match is not None:
-                    edit(source, target, match)
-        for target in new_exits:
-            for source, entry in entries.items():
-                if source not in new_entries:
-                    match = _key_match(entry, exits[target], links.floor, links.uncertainty)
-                    if match is not None:
-                        edit(source, target, match)
+        rows, columns, edges, affected, _ = _update_candidates(
+            self.rows, self.columns, self.edges,
+            {source: fragment.key for source, fragment in entries.items()},
+            {source: fragment.key for source, fragment in exits.items()},
+            changed, changed, links, links.compile_limit,
+        )
         if edges + len(entries) + len(exits) > links.compile_limit:
             raise BindingCapacityError("retained bridge index limit exceeded")
-
-        affected = (changed & (self.entries.keys() | entries.keys())) | row_edits.keys()
-        for target, col in col_edits.items():
-            affected.update(self.columns.get(target, ()))
-            affected.update(col)
-        stale = dict(self.stale)
-        for source in affected:
-            old, new = self.entries.get(source), entries.get(source)
-            directions = frozenset(fragment.direction for fragment in (old, new) if fragment is not None)
-            stale[source] = stale.get(source, frozenset()) | directions
+        affected.update(changed & (self.entries.keys() | entries.keys()))
+        stale = _stale_directions(self.stale, affected, self.entries, entries)
         if edges + len(entries) + len(exits) + sum(map(len, stale.values())) > links.compile_limit:
             raise BindingCapacityError("retained bridge obligations limit exceeded")
-
-        rows, columns = dict(self.rows), dict(self.columns)
-        for source, row in row_edits.items():
-            if row:
-                rows[source] = MappingProxyType(row)
-            else:
-                rows.pop(source, None)
-        for target, col in col_edits.items():
-            if col:
-                columns[target] = frozenset(col)
-            else:
-                columns.pop(target, None)
-        return _BridgeIndex(MappingProxyType(entries), MappingProxyType(exits), MappingProxyType(rows),
-                            MappingProxyType(columns), MappingProxyType(stale), edges)
+        return _BridgeIndex(MappingProxyType(entries), MappingProxyType(exits), rows, columns, stale, edges)
 
     def matches(self, links):
         bridges = dict(links.bridges)
         for source in self.stale:
-            row = self.rows.get(source)
-            if row and len(row) == 1:
-                target, definite = next(iter(row.items()))
-                if definite and len(self.columns[target]) == 1:
-                    bridges[source, target] = _cross_link(source, target, self.entries[source],
-                                                          self.exits[target], links.transport)
+            target = self.match_target(source)
+            if target is not None:
+                bridges[source, target] = _cross_link(source, target, self.entries[source],
+                                                      self.exits[target], links.transport)
         return replace(links, bridges=MappingProxyType(bridges), bridge_pending=False,
                        bridge_index=replace(self, stale=MappingProxyType({})))
+
+    def match_target(self, source):
+        row = self.rows.get(source)
+        if row and len(row) == 1:
+            target, definite = next(iter(row.items()))
+            if definite and len(self.columns[target]) == 1:
+                return target
 
     def openings(self, bridges):
         installed = {source for source, _ in bridges}
@@ -288,6 +307,83 @@ class _BridgeIndex:
             openings[source] = openings.get(source, frozenset()) | directions
         return tuple((source, raw, source in self.stale)
                      for source, directions in sorted(openings.items()) for raw in sorted(directions))
+
+
+def _revise_key_members(groups, before, after, changed):
+    edits = {}
+    for source in changed:
+        old, new = before.get(source), after.get(source)
+        if old is not None:
+            if old.key not in edits:
+                edits[old.key] = set(groups[old.key])
+            edits[old.key].remove(source)
+        if new is not None:
+            if new.key not in edits:
+                edits[new.key] = set(groups.get(new.key, ()))
+            edits[new.key].add(source)
+    members = dict(groups)
+    for key, group in edits.items():
+        if group:
+            members[key] = frozenset(group)
+        else:
+            del members[key]
+    return MappingProxyType(members), edits.keys()
+
+
+@dataclass(frozen=True, eq=False)
+class _FactoredBridgeIndex(_BridgeIndex):
+    # In this index rows and columns are keyed by exact key bytes.
+    entry_members: Mapping[bytes, frozenset[str]] = field(default_factory=lambda: MappingProxyType({}))
+    exit_members: Mapping[bytes, frozenset[str]] = field(default_factory=lambda: MappingProxyType({}))
+    comparisons: int = 0
+
+    @classmethod
+    def build(cls, entries, exits, links, remaining):
+        empty = MappingProxyType({})
+        index = cls(empty, empty, empty, empty, empty)
+        return index.revise(entries, exits, entries.keys() | exits.keys(), links, comparison_limit=remaining)
+
+    def revise(self, entries, exits, changed, links, *, comparison_limit=None):
+        left, left_changed = _revise_key_members(self.entry_members, self.entries, entries, changed)
+        right, right_changed = _revise_key_members(self.exit_members, self.exits, exits, changed)
+        entry_changes = self.entry_members.keys() ^ left.keys()
+        exit_changes = self.exit_members.keys() ^ right.keys()
+        limit = links.compile_limit if comparison_limit is None else comparison_limit
+        rows, columns, edges, _, comparisons = _update_candidates(
+            self.rows, self.columns, self.edges, {key: key for key in left}, {key: key for key in right},
+            entry_changes, exit_changes, links, limit,
+        )
+
+        # An entry-group membership edit can make existing exits non-unique for another entry.
+        affected_right = set(right_changed)
+        for key in left_changed:
+            affected_right.update(self.rows.get(key, ()))
+            affected_right.update(rows.get(key, ()))
+        affected_left = set(left_changed)
+        for key in affected_right:
+            affected_left.update(self.columns.get(key, ()))
+            affected_left.update(columns.get(key, ()))
+        affected_sources = set()
+        for key in affected_left:
+            affected_sources.update(self.entry_members.get(key, ()))
+            affected_sources.update(left.get(key, ()))
+        stale = _stale_directions(self.stale, affected_sources, self.entries, entries)
+        retained = len(entries) + len(exits) + len(left) + len(right) + edges + sum(map(len, stale.values()))
+        if retained > links.compile_limit:
+            raise BindingCapacityError("retained factored bridge index and obligations limit exceeded")
+        return _FactoredBridgeIndex(MappingProxyType(entries), MappingProxyType(exits), rows, columns, stale,
+                                    edges, left, right, comparisons)
+
+    def match_target(self, source):
+        entry = self.entries.get(source)
+        if entry is None:
+            return None
+        row = self.rows.get(entry.key)
+        if row and len(row) == 1:
+            key, definite = next(iter(row.items()))
+            exits = self.exit_members[key]
+            if definite and len(exits) == len(self.columns[key]) == len(self.entry_members[entry.key]) == 1:
+                return next(iter(exits))
 
 
 class _LinkReadWork:
@@ -327,10 +423,11 @@ class _RoleLinks:
     legacy_sources: frozenset[str] = frozenset()
     local_bridges: bool = False
     bridge_index: _BridgeIndex | None = None
+    factored_bridges: bool = False
 
     @classmethod
     def prepare(cls, roles, floor, uncertainty, limit, transport, digests, mentions, bridge_key=None,
-                local_bridges=False):
+                local_bridges=False, factored_bridges=False):
         remaining = limit - len(digests)
         if remaining < 0:
             raise BindingCapacityError("role-link compilation work limit exceeded")
@@ -341,7 +438,8 @@ class _RoleLinks:
         local = empty.revise(digests, digests, mentions)
         if bridge_key is None:
             return local
-        return replace(local, local_bridges=local_bridges)._find_bridges(bridge_key, mentions, remaining)
+        return replace(local, local_bridges=local_bridges,
+                       factored_bridges=factored_bridges)._find_bridges(bridge_key, mentions, remaining)
 
     def _find_bridges(self, key, mentions, remaining):
         enters, exits, key_sources = {}, {}, set()
@@ -357,7 +455,11 @@ class _RoleLinks:
         if self.legacy_sources:
             return selected
 
-        width = next(iter(enters.values())).key.size if enters else 0
+        if self.factored_bridges:
+            index = _FactoredBridgeIndex.build(enters, exits, self, remaining)
+            return index.matches(replace(selected, unresolved=self.unresolved - enters.keys() - exits.keys()))
+
+        width = len(next(iter(enters.values())).key) // 8 if enters else 0
         if len(enters) * len(exits) * width > remaining:
             raise BindingCapacityError("cross-source role matching work limit exceeded")
         if self.local_bridges:
@@ -367,7 +469,7 @@ class _RoleLinks:
         entries, departures, pairs = {}, {}, {}
         for source, entry in enters.items():
             for target, exit in exits.items():
-                match = _key_match(entry, exit, self.floor, self.uncertainty)
+                match = _key_match(entry.key, exit.key, self.floor, self.uncertainty)
                 if match is None:
                     continue
                 entries[source] = entries.get(source, 0) + 1

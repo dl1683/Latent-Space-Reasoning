@@ -8,7 +8,7 @@ from experiments.memory import corpus_binding_journal
 from experiments.memory.binding_feedback import BindingFeedback
 from experiments.memory.binding_links import BindingLinkCondition
 from experiments.memory.binding_maintenance import audit_source_observations
-from experiments.memory.binding_memory import BindingCapacityError
+from experiments.memory.binding_memory import BindingCapacityError, BindingGate
 from experiments.memory.binding_replay import replay_binding_repair
 from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
 from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemory, CorpusProgramProposal, StaleCorpusRevision
@@ -286,10 +286,10 @@ def _transport_encoding(raw):
         yield BindingMention(label, np.array(numbers[:-1], dtype=np.float64), float(numbers[-1]))
 
 
-def _transport_frame(encode=_transport_encoding, *, width=6, extra_predicates=()):
+def _transport_frame(encode=_transport_encoding, *, width=6, extra_predicates=(), term_limit=64):
     return CorpusBindingMemory.prepare(
         (*_ROLES, *_OUTCOMES, *extra_predicates), np.eye(width), {}, {}, encode=encode,
-        encoder_version="transport-control", min_similarity=.7, gap=.05,
+        encoder_version="transport-control", min_similarity=.7, gap=.05, term_limit=term_limit,
     )
 
 
@@ -1051,3 +1051,129 @@ def test_local_bridge_repair_preserves_unaffected_reasoning_and_follows_cross_re
     publish()
     assert read(owner.snapshot(), 4).status == "unresolved" and not read(owner.snapshot(), 4).bridge_pending
     assert read(owner.snapshot(), 2).answer == "review"
+
+
+def test_factored_bridge_admission_retains_source_multiplicity_and_directions(tmp_path):
+    filename = tmp_path / "factored-bridges.sqlite"
+    frame = _transport_frame(extra_predicates=("key",), term_limit=512)
+    readonly = _transport_frame(_no_encoding, extra_predicates=("key",), term_limit=512)
+    owner = JournaledCorpusWorkspace(filename, frame, create=True)
+    e = np.eye(6)
+
+    def fragment(role, direction, key=e[4]):
+        return _mentions((role, direction, .9), ("key", key, .8))
+
+    count = 128
+    entries = {f"entry-{number}": fragment("entry", e[0] if number else e[2]) for number in range(count)}
+    exits = {f"exit-{number}": fragment("exit", e[1]) for number in range(count)}
+    opening = _write(owner, {**entries, **exits, "terminal": _mentions(("accept", e[1], .7))})
+    worker = JournaledCorpusWorkspace(filename, readonly)
+    policy = dict(min_similarity=.94, uncertainty=.005, compile_work_limit=1024,
+                  transport="reflection", bridge_key="key")
+
+    def publish():
+        return worker.publish_program(worker.prepare_role_links(worker.snapshot(), _ROLES,
+                                                               factored_bridges=True, **policy))
+
+    def read(pin, coordinate):
+        return pin.memory.read_role_links(e[coordinate], outcomes=_OUTCOMES, work_limit=4096)
+
+    def compare_full(pin):
+        sides = {"entry": {}, "exit": {}}
+        for source in pin.memory.source_digests:
+            observations = {item.predicate: item.vector for item in pin.memory.source_mentions(source)}
+            if "key" in observations:
+                role, = observations.keys() & sides.keys()
+                sides[role][source] = observations["key"]
+        left, right = sides["entry"], sides["exit"]
+        scores = np.array(list(left.values())) @ np.array(list(right.values())).T
+        plausible = scores >= .935
+        unique = (plausible.sum(axis=1) == 1)[:, None] & (plausible.sum(axis=0) == 1)[None, :]
+        entry_ids, exit_ids = tuple(left), tuple(right)
+        expected = {(entry_ids[i], exit_ids[j]) for i, j in zip(*np.where((scores > .945) & unique), strict=True)}
+        assert set(pin.memory._role_links.bridges) == expected
+
+    with pytest.raises(BindingCapacityError, match="matching work limit"):
+        owner.prepare_role_links(opening, _ROLES, local_bridges=True, **policy)
+    publish()
+    dense = owner.snapshot()
+    index = dense.memory._role_links.bridge_index
+    assert index.comparisons == index.edges == 1
+    assert tuple(map(len, index.entry_members.values())) == (128,)
+    assert tuple(map(len, index.exit_members.values())) == (128,)
+    assert read(dense, 0).status == read(dense, 2).status == "unresolved"
+    compare_full(dense)
+
+    alternate = .98 * e[4] + .2 * e[5]
+    corrected = _write(owner, {"exit-127": fragment("exit", e[3], alternate)})
+    corrected_index = corrected.memory._role_links.bridge_index
+    assert corrected_index.comparisons == 1 and corrected_index.edges == 2
+    assert read(corrected, 2).bridge_pending and not read(corrected, 2).witnesses
+    publish()
+    compare_full(owner.snapshot())
+    restored = _write(owner, {"exit-127": exits["exit-127"]})
+    assert restored.memory._role_links.bridge_index.comparisons == 0
+    publish()
+    compare_full(owner.snapshot())
+
+    kept_entry, kept_exit = "entry-0", "exit-0"
+    deleted = dict.fromkeys((entries.keys() | exits.keys()) - {kept_entry, kept_exit})
+    thinned = _write(owner, deleted)
+    assert thinned.memory._role_links.bridge_index.comparisons == 0
+    assert read(thinned, 0).bridge_pending and read(thinned, 2).bridge_pending
+    reopened = JournaledCorpusWorkspace(filename, readonly).snapshot()
+    assert read(reopened, 2) == read(thinned, 2)
+    publish()
+    unique = owner.snapshot()
+    compare_full(unique)
+    assert read(unique, 0).status == "no_link"
+    proof = read(unique, 2)
+    assert proof.answer == "accept"
+    witness, = proof.witnesses
+    assert (witness.link_source, witness.exit_source, witness.terminal_source) == (kept_entry, kept_exit, "terminal")
+
+    reopened = JournaledCorpusWorkspace(filename, readonly).snapshot()
+    assert read(reopened, 2) == proof and read(dense, 2).status == "unresolved"
+    redundant = _write(owner, {"entry-1": entries["entry-1"]})
+    assert redundant.memory._role_links.bridge_index.comparisons == 0
+    assert read(redundant, 2).status == "unresolved" and read(redundant, 2).bridge_pending
+    publish()
+    compare_full(owner.snapshot())
+    assert read(owner.snapshot(), 2).status == "unresolved"
+    _write(owner, {"entry-1": None})
+    publish()
+    assert read(owner.snapshot(), 2) == proof
+
+    moved = _write(owner, {"entry-0": fragment("entry", e[3])})
+    assert moved.memory._role_links.bridge_index.comparisons == 0
+    assert read(moved, 2).bridge_pending and read(moved, 3).bridge_pending
+    publish()
+    assert read(owner.snapshot(), 2).status == "no_link"
+    assert read(owner.snapshot(), 3).answer == "accept"
+    compare_full(owner.snapshot())
+
+
+def test_program_preview_cannot_be_relabelled_after_same_source_wiring_change(tmp_path):
+    filename = tmp_path / "stale-program.sqlite"
+    frame = _transport_frame()
+    owner = JournaledCorpusWorkspace(filename, frame, create=True)
+    e = np.eye(6)
+    opening = _write(owner, {
+        "link": _mentions(("entry", e[0], .9), ("exit", e[1], .9)),
+        "terminal": _mentions(("accept", e[1], .7)),
+    })
+    earlier = _transport_program(owner, opening)
+    gates = {"approved": BindingGate("or", ("accept",))}
+    gated = owner.publish_program(owner.prepare_program(opening, gates))
+    assert earlier.preview.source_digests is gated.memory.source_digests
+    assert earlier.preview._mentions is gated.memory._mentions
+    with pytest.raises(StaleCorpusRevision, match="not prepared on the current revision"):
+        owner.publish_program(replace(earlier, base=gated))
+    assert owner.snapshot() is gated
+
+    installed = owner.publish_program(_transport_program(owner, gated))
+    reopened = JournaledCorpusWorkspace(filename, _transport_frame(_no_encoding)).snapshot()
+    assert reopened.revision == installed.revision
+    assert reopened.memory.resolve("approved", 1) == installed.memory.resolve("approved", 1)
+    opts = dict(outcomes=_OUTCOMES, work_limit=64)
+    assert reopened.memory.read_role_links(e[0], **opts) == installed.memory.read_role_links(e[0], **opts)

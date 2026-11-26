@@ -113,6 +113,8 @@ def _encode(staged, *, vectors=True):
 def _encode_role_links(links):
     spec = None if links is None else (*links.roles, links.floor, links.uncertainty, links.compile_limit)
     if links is not None and links.bridge_key is not None:
+        if links.factored_bridges:
+            return _json(["role_links", 5, (*spec, links.transport, links.bridge_key, True, True)])
         if links.local_bridges:
             return _json(["role_links", 4, (*spec, links.transport, links.bridge_key, True)])
         return _json(["role_links", 3, (*spec, links.transport, links.bridge_key)])
@@ -126,7 +128,7 @@ def _decode_role_links(payload, memory):
     if type(event) is not list or len(event) != 3 or event[0] != "role_links":
         raise ValueError("invalid role-link program event")
     version, spec = event[1:]
-    if type(version) is not int or version not in (1, 2, 3, 4):
+    if type(version) is not int or version not in (1, 2, 3, 4, 5):
         raise ValueError("unsupported role-link program version")
     if spec is None and version == 1:
         revised = memory._reprogram_role_links(None, None, None, None)
@@ -136,7 +138,8 @@ def _decode_role_links(payload, memory):
                 or (version == 2 and spec[5] not in ("reflection", "rotation"))
                 or (version >= 3 and (spec[5] not in ("fixed", "reflection", "rotation")
                                       or type(spec[6]) is not str))
-                or (version == 4 and spec[7] is not True)):
+                or (version >= 4 and spec[7] is not True)
+                or (version == 5 and spec[8] is not True)):
             raise ValueError("invalid role-link program specification")
         revised = memory._reprogram_role_links(spec[:2], *spec[2:])
     if revised is memory or _encode_role_links(revised._role_links) != payload:
