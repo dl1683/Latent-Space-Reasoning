@@ -108,6 +108,8 @@ class NativeTaskWorldPin:
     _sha256: str
     _span_indices: MappingProxyType
     _merkle_levels: tuple
+    _derived_span_indices: MappingProxyType
+    _derived_merkle_levels: tuple
 
     @classmethod
     def bind(cls, world, reader, memory, *, memory_view, latent_steps, expected_runtime_sha256,
@@ -165,6 +167,8 @@ class NativeTaskWorldPin:
                 raise ValueError("native encoded spans do not cover the complete pinned source")
             native_source_lengths.append({"source_id": source, "source_bytes": len(raw)})
         span_root, span_indices, merkle_levels = _span_merkle(native_span_objects)
+        derived_spans = tuple(memory._selective.acquired)
+        derived_root, derived_indices, derived_levels = _span_merkle(derived_spans)
         version_rows = [
             {"source_id": source, "sha256": version.sha256, "generation": version.generation}
             for source, version in sorted(memory._scope.manifest.items())
@@ -183,6 +187,9 @@ class NativeTaskWorldPin:
             "native_source_lengths": native_source_lengths,
             "native_span_count": len(native_span_objects),
             "native_span_catalogue_sha256": span_root,
+            "native_derived_span_count": len(derived_spans),
+            "native_derived_span_catalogue_sha256": derived_root,
+            "selector_tie_limit": reader._selector._tie_limit,
             "source_verification_bytes": verified_bytes,
             "source_verification_byte_limit": max_source_verification_bytes,
             "native_publication_seal": memory._publication_seal,
@@ -193,23 +200,26 @@ class NativeTaskWorldPin:
             "stop_token_ids": sorted(reader._eos),
         }
         record["pin_sha256"] = _digest_record(record)
-        return cls(_packed(record), record["pin_sha256"], span_indices, merkle_levels)
+        return cls(_packed(record), record["pin_sha256"], span_indices, merkle_levels,
+                   derived_indices, derived_levels)
 
     def to_record(self):
         return json.loads(self._serialized)
 
-    def span_proof(self, span):
-        index = self._span_indices.get(span)
+    def span_proof(self, span, *, derived=False):
+        indices = self._derived_span_indices if derived else self._span_indices
+        levels = self._derived_merkle_levels if derived else self._merkle_levels
+        index = indices.get(span)
         if index is None:
             raise ValueError("native selection is outside the pinned span catalogue")
         proof = []
-        for level in self._merkle_levels[:-1]:
+        for level in levels[:-1]:
             sibling = index - 1 if index % 2 else index + 1
             if sibling >= len(level):
                 sibling = index
             proof.append({"side": "left" if index % 2 else "right", "sha256": level[sibling].hex()})
             index //= 2
-        return {"index": self._span_indices[span], "siblings": proof}
+        return {"index": indices[span], "siblings": proof}
 
     @property
     def sha256(self):
@@ -296,9 +306,9 @@ class NativeTaskEpisodeBackend:
             "publication_seal": read.publication_seal,
             "latent_steps": read.latent_steps,
             "source_reads": [_selection_receipt(item, self._pin) for item in read.source_reads],
-            "derived_reads": [_selection_receipt(item, self._pin) for item in read.derived_reads],
+            "derived_reads": [_selection_receipt(item, self._pin, derived=True) for item in read.derived_reads],
             "source_steps": [_selection_step(item, self._pin) for item in read.source_steps],
-            "derived_steps": [_selection_step(item, self._pin) for item in read.derived_steps],
+            "derived_steps": [_selection_step(item, self._pin, derived=True) for item in read.derived_steps],
             "routed_memory_steps": read.routed_memory_steps,
             "applied_memory_steps": read.applied_memory_steps,
             "routed_derived_steps": read.routed_derived_steps,
@@ -323,6 +333,7 @@ def _validate_pin(record):
         "schema", "task_pin", "source_snapshot_sha256", "span_catalogue_sha256",
         "source_seal", "source_manifest", "source_versions", "native_publication_seal",
         "native_source_lengths", "native_span_count", "native_span_catalogue_sha256",
+        "native_derived_span_count", "native_derived_span_catalogue_sha256", "selector_tie_limit",
         "source_verification_bytes",
         "source_verification_byte_limit", "runtime_sha256", "reader_fingerprint_sha256",
         "memory_view", "latent_steps",
@@ -335,7 +346,8 @@ def _validate_pin(record):
     if _digest_record(body) != record["pin_sha256"]:
         raise ValueError("native task world pin digest differs")
     for key in ("source_snapshot_sha256", "span_catalogue_sha256", "source_seal",
-                "native_publication_seal", "native_span_catalogue_sha256", "runtime_sha256",
+                "native_publication_seal", "native_span_catalogue_sha256",
+                "native_derived_span_catalogue_sha256", "runtime_sha256",
                 "reader_fingerprint_sha256"):
         require_digest(record[key])
     if (type(record["source_verification_bytes"]) is not int or record["source_verification_bytes"] < 0
@@ -424,6 +436,12 @@ def _validate_pin(record):
         raise ValueError("native span catalogue count is invalid")
     if record["native_span_count"] == 0 and record["native_span_catalogue_sha256"] != _EMPTY_SPAN_ROOT:
         raise ValueError("empty native span catalogue has the wrong root")
+    if (type(record["native_derived_span_count"]) is not int
+            or not 0 <= record["native_derived_span_count"] <= record["native_span_count"]
+            or (record["native_derived_span_count"] == 0
+                and record["native_derived_span_catalogue_sha256"] != _EMPTY_SPAN_ROOT)
+            or type(record["selector_tie_limit"]) is not int or record["selector_tie_limit"] < 1):
+        raise ValueError("native derived span catalogue or selector limit is invalid")
     versions = {source_id: pair[0] for source_id, pair in observed.items()}
     snapshot = sha256(json.dumps(versions, sort_keys=True, separators=(",", ":"),
                                 ensure_ascii=False).encode("utf8"))
@@ -432,7 +450,7 @@ def _validate_pin(record):
 
 
 def _validate_selection_reads(reads, source_versions, source_lengths, source_seal, span_root,
-                               span_count):
+                              span_count, scored_count, tie_limit):
     if type(reads) is not list:
         raise ValueError("native selection receipts must be a list")
     span_fields = {"source_id", "version_sha256", "start_byte", "end_byte", "span_sha256",
@@ -442,17 +460,37 @@ def _validate_selection_reads(reads, source_versions, source_lengths, source_sea
                 or set(receipt) != {"status", "selected", "eligible", "rows_scored", "observed_source_seal"}
                 or receipt["status"] not in {"empty", "ready", "competing", "overflow"}
                 or type(receipt["eligible"]) is not int or receipt["eligible"] < 0
-                or type(receipt["rows_scored"]) is not int or receipt["rows_scored"] < receipt["eligible"]
+                or type(receipt["rows_scored"]) is not int or receipt["rows_scored"] != scored_count
+                or receipt["eligible"] > receipt["rows_scored"]
                 or type(receipt["selected"]) is not list
                 or len(receipt["selected"]) > receipt["eligible"]
                 or receipt["observed_source_seal"] != source_seal):
             raise ValueError("native selection receipt is invalid")
         if (receipt["status"] == "empty") != (receipt["eligible"] == 0):
             raise ValueError("native selection receipt status differs from its coverage")
+        selected_count = len(receipt["selected"])
+        if ((receipt["status"] == "empty" and selected_count != 0)
+                or (receipt["status"] in {"ready", "competing"}
+                    and selected_count != receipt["eligible"])
+                or (receipt["status"] == "competing" and selected_count < 2)
+                or (receipt["status"] == "overflow"
+                    and not 0 < selected_count == tie_limit < receipt["eligible"])):
+            raise ValueError("native selection receipt status differs from its selected rows")
+        seen_indices = set()
+        previous_score = None
         for hit in receipt["selected"]:
             if (type(hit) is not dict or set(hit) != {"span", "score", "span_proof"}
                     or type(hit["score"]) is not int):
                 raise ValueError("native selected span receipt is invalid")
+            if previous_score is not None and hit["score"] > previous_score:
+                raise ValueError("native selected span scores are not ordered")
+            previous_score = hit["score"]
+            proof = hit["span_proof"]
+            if type(proof) is not dict or type(proof.get("index")) is not int:
+                raise ValueError("native selected span proof index is malformed")
+            if proof["index"] in seen_indices:
+                raise ValueError("native selector returned a duplicate span")
+            seen_indices.add(proof["index"])
             span = hit["span"]
             if (type(span) is not dict or set(span) != span_fields
                     or type(span["source_id"]) is not str
@@ -467,21 +505,21 @@ def _validate_selection_reads(reads, source_versions, source_lengths, source_sea
                 raise ValueError("native selected span is outside the sealed native catalogue")
 
 
-def _selection_step(step, pin):
-    return {"receipt": _selection_receipt(step.receipt, pin), "query_hex": step.query.hex(),
+def _selection_step(step, pin, *, derived=False):
+    return {"receipt": _selection_receipt(step.receipt, pin, derived=derived), "query_hex": step.query.hex(),
             "cutoff": step.cutoff, "applied": step.applied}
 
 
-def _selection_receipt(receipt, pin):
+def _selection_receipt(receipt, pin, *, derived=False):
     return {"status": receipt.status,
             "selected": [{"span": asdict(hit.span), "score": hit.score,
-                          "span_proof": pin.span_proof(hit.span)} for hit in receipt.selected],
+                          "span_proof": pin.span_proof(hit.span, derived=derived)} for hit in receipt.selected],
             "eligible": receipt.eligible, "rows_scored": receipt.rows_scored,
             "observed_source_seal": receipt.observed_source_seal}
 
 
 def _validate_selection_steps(steps, reads, *, source_versions, source_lengths, source_seal,
-                              span_root, span_count):
+                              span_root, span_count, scored_count, tie_limit):
     if type(steps) is not list or len(steps) != len(reads):
         raise ValueError("native ordered selection steps differ from their receipts")
     for step, receipt in zip(steps, reads, strict=True):
@@ -498,7 +536,7 @@ def _validate_selection_steps(steps, reads, *, source_versions, source_lengths, 
         if query.hex() != step["query_hex"]:
             raise ValueError("native selection query is not canonical")
     _validate_selection_reads(reads, source_versions, source_lengths, source_seal,
-                              span_root, span_count)
+                              span_root, span_count, scored_count, tie_limit)
 
 
 def _validate_native_read(pin, request, response):
@@ -595,12 +633,16 @@ def _validate_native_read(pin, request, response):
                                   source_versions=versions, source_lengths=source_lengths,
                                   source_seal=pin["source_seal"],
                                   span_root=pin["native_span_catalogue_sha256"],
-                                  span_count=pin["native_span_count"])
+                                  span_count=pin["native_span_count"],
+                                  scored_count=pin["native_span_count"],
+                                  tie_limit=pin["selector_tie_limit"])
         _validate_selection_steps(receipt["derived_steps"], receipt["derived_reads"],
                                   source_versions=versions, source_lengths=source_lengths,
                                   source_seal=pin["source_seal"],
-                                  span_root=pin["native_span_catalogue_sha256"],
-                                  span_count=pin["native_span_count"])
+                                  span_root=pin["native_derived_span_catalogue_sha256"],
+                                  span_count=pin["native_derived_span_count"],
+                                  scored_count=pin["native_derived_span_count"],
+                                  tie_limit=pin["selector_tie_limit"])
     source_ready = sum(step["receipt"]["status"] == "ready" for step in receipt["source_steps"])
     derived_ready = sum(step["receipt"]["status"] == "ready" for step in receipt["derived_steps"])
     if (source_ready != receipt["routed_memory_steps"]

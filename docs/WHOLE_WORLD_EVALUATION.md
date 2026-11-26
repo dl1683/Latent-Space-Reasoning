@@ -175,17 +175,21 @@ unresolved.
 
    `NativeTaskEpisodeBackend` now provides an unrun integration slice for the
    native reader. It consumes the exact `PolicyCall.input_ids` and per-call
-   output cap produced by `run_episode`, and binds the task evidence catalogue
-   to the reopened native publication's source-feed seal, per-source
+   output cap produced by `run_episode`, and binds the task evidence bytes to
+   the reopened native publication's source-feed seal and per-source
    generations, runtime digest, and reader fingerprint. It reopens each full
    source once, checks complete byte coverage and every native chunk hash, and
    caps that verification at the episode's `access.source_bytes` allowance. It
    records those bytes separately from TaskWorld setup in the episode opening
    and usage. This UTF-8 TaskWorld path refuses feeds with typed binary sources;
-   binary evidence needs a matching modality-aware open and citation path. The runtime
+   binary evidence needs a matching modality-aware open and citation path. The
+   TaskWorld pin remains content-and-span based; this path does not qualify a
+   modality-only revision in the task-facing evidence view. The runtime
    digest remains a trusted controller-supplied publication expectation. The
    opening and each successful response carry a hashed pin, exact token trace, and
-   ordered source/derived selection steps. Its active, derived-off, and
+   ordered source/derived selection steps. Offline ledger checks establish span
+   membership and internal receipt consistency; they do not replay selector scores,
+   cutoffs, or query-to-selection behavior. Its active, derived-off, and
    memory-omitted views share the same published source world; the episode-pair
    reader permits only one same-pin contribution change. Native selected spans
    remain leads; findings still need ordinary verified source reads and
