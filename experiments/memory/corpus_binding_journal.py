@@ -110,6 +110,28 @@ def _encode(staged, *, vectors=True):
     return _json(["source_vectors", records] if vectors else records)
 
 
+def _encode_role_links(links):
+    spec = None if links is None else (*links.roles, links.floor, links.uncertainty, links.compile_limit)
+    return _json(["role_links", 1, spec])
+
+
+def _decode_role_links(payload, memory):
+    event = json.loads(payload)
+    if type(event) is not list or len(event) != 3 or event[:2] != ["role_links", 1]:
+        raise ValueError("invalid role-link program event")
+    spec = event[2]
+    if spec is None:
+        revised = memory._reprogram_role_links(None, None, None, None)
+    else:
+        if (type(spec) is not list or len(spec) != 5 or type(spec[2]) is not float
+                or type(spec[3]) is not float or type(spec[4]) is not int):
+            raise ValueError("invalid role-link program specification")
+        revised = memory._reprogram_role_links(spec[:2], *spec[2:])
+    if revised is memory or _encode_role_links(revised._role_links) != payload:
+        raise ValueError("unchanged or noncanonical role-link program event")
+    return revised
+
+
 def _encode_program(gates):
     _check_identifiers(name for name, _ in gates)
     return _json(["program", [(name, gate.operation, gate.parents) for name, gate in gates]])
@@ -403,7 +425,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
     def __init__(self, path, empty, *, create=False):
         super().__init__(empty)
         self._root_tip = self._tip
-        if (empty.source_digests or empty.outlier_sources or empty._mentions or empty._certain._rows or empty._possible._rows
+        if (empty.source_digests or empty.outlier_sources or empty._mentions or empty._role_links is not None
+                or empty._certain._rows or empty._possible._rows
                 or empty._certain._retained or empty._possible._retained):
             raise ValueError("a corpus journal requires an empty frame")
         if type(create) is not bool:
@@ -482,6 +505,8 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
                                      b'["context_restoration",')):
                 patch = _decode_coordinate_event(payload, tip.memory._anchors.shape[1])
                 tip = self._install_program_revision(tip, tip.memory, patch)
+            elif payload.startswith(b'["role_links",'):
+                tip = self._replace_program(tip, _decode_role_links(payload, tip.memory))
             elif payload.startswith(b'["program",'):
                 memory = tip.memory.reprogram(_decode_program(payload))
                 if memory is tip.memory:
@@ -542,7 +567,10 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
             tip, digest = self._replay(self._read_suffix(db))
             revised = self._apply_program(tip, proposal)
             if revised is not tip:
-                digest = self._append(db, digest, revised.revision, _encode_program(revised.memory._certain._gates))
+                payload = (_encode_role_links(revised.memory._role_links)
+                           if revised.memory._role_links is not tip.memory._role_links
+                           else _encode_program(revised.memory._certain._gates))
+                digest = self._append(db, digest, revised.revision, payload)
             db.commit()
             self._tip, self._digest = revised, digest
             return revised

@@ -8,6 +8,7 @@ from operator import index
 
 import numpy as np
 
+from experiments.memory.binding_links import BindingLinkRead
 from experiments.memory.binding_memory import BindingCapacityError, _ProofWork
 from experiments.memory.corpus_bindings import CorpusBindingMemory, CorpusBindingRead, _DisjointBranchReads
 from experiments.memory.latent_feedback import ConditionalTerm, FeedbackKernel, FeedbackState, _frozen, _real_array
@@ -172,6 +173,14 @@ class BindingFeedback:
         if memory is not None and self._source_observation_limit is not None:
             observations = self._kernel.prepare(memory._observation_rows(self._source_observation_limit))
         return BindingFeedbackState(self, self._kernel.start(seed, observations), memory, _STATE_CREATION_KEY)
+
+    def read_role_links(self, state, *, outcomes, work_limit):
+        """Read late outcomes using the generated direction and the state's pinned role program."""
+        if type(state) is not BindingFeedbackState or state._receiver is not self:
+            raise ValueError("state belongs to a different binding receiver")
+        if state.memory is None:
+            return BindingLinkRead("no_memory")
+        return state.memory.read_role_links(state.latest, outcomes=outcomes, work_limit=work_limit)
 
     def _intervene_latest(self, state, hidden):
         """Replace the generated row and its feedback projections, leaving the proof trace pinned."""

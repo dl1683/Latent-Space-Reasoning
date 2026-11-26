@@ -10,6 +10,7 @@ from types import MappingProxyType
 
 import numpy as np
 
+from experiments.memory.binding_links import BindingLinkRead, _RoleLinks
 from experiments.memory.binding_memory import (
     BindingCapacityError, BindingMemory, BindingProof, _exclusions, _ProofWork, _proof_work_limit,
 )
@@ -84,6 +85,7 @@ class CorpusBindingMemory:
     _certain: BindingMemory
     _possible: BindingMemory
     _mentions: Mapping[str, tuple[_StoredMention, ...]]
+    _role_links: _RoleLinks | None = None
 
     @classmethod
     def prepare(cls, predicates, anchors, gates, sources, *, encode, encoder_version,
@@ -186,8 +188,48 @@ class CorpusBindingMemory:
                 outliers.discard(source)
         lower = self._certain.revise(certain)
         upper = lower if self._certain is self._possible and certain == possible else self._possible.revise(possible)
+        links = self._role_links
+        if links is not None:
+            links = links.revise((edit.source for edit in staged), digests, mentions)
         return replace(self, source_digests=MappingProxyType(digests), outlier_sources=frozenset(outliers),
-                       _certain=lower, _possible=upper, _mentions=MappingProxyType(mentions))
+                       _certain=lower, _possible=upper, _mentions=MappingProxyType(mentions), _role_links=links)
+
+    def _reprogram_role_links(self, roles, min_similarity, uncertainty, compile_work_limit):
+        if roles is None:
+            return self if self._role_links is None else replace(self, _role_links=None)
+        if isinstance(roles, str):
+            raise ValueError("role links require two distinct declared predicates")
+        roles = tuple(roles)
+        if (len(roles) != 2 or any(type(role) is not str or role not in self._certain._predicates for role in roles)
+                or roles[0] == roles[1]):
+            raise ValueError("role links require two distinct declared predicates")
+        floor, uncertainty = float(min_similarity), float(uncertainty)
+        if not 0. < floor <= 1. or not 0. <= uncertainty <= min(floor, 1. - floor):
+            raise ValueError("invalid role-link similarity threshold or uncertainty band")
+        limit = _proof_work_limit(compile_work_limit)
+        links = self._role_links
+        if links is not None and (links.roles, links.floor, links.uncertainty, links.compile_limit) == (
+            roles, floor, uncertainty, limit,
+        ):
+            return self
+        return replace(self, _role_links=_RoleLinks.prepare(
+            roles, floor, uncertainty, limit, self.source_digests, self._mentions,
+        ))
+
+    def read_role_links(self, direction, *, outcomes, work_limit):
+        """Apply installed directions and then compare against declared terminal predicates."""
+        links = self._role_links
+        if links is None:
+            return BindingLinkRead("no_role_program")
+        if isinstance(outcomes, str):
+            raise ValueError("role-link outcomes require distinct nonstructural predicates")
+        labels = tuple(outcomes)
+        if (not labels or any(type(label) is not str or label not in self._certain._predicates
+                              or label in links.roles for label in labels)
+                or len(set(labels)) != len(labels)):
+            raise ValueError("role-link outcomes require distinct nonstructural predicates")
+        return links.read(direction, outcomes=frozenset(labels), mentions=self._mentions,
+                          limit=_proof_work_limit(work_limit), width=self._anchors.shape[1])
 
     def source_mentions(self, source):
         """Return a source's ordered normalized observations, or None for a legacy row-only source."""
@@ -402,6 +444,12 @@ class CorpusBindingWorkspace:
         """Compile alternate wiring for independent checks on a pinned memory."""
         self._check_owner(base)
         return CorpusProgramProposal(base, base.memory.reprogram(gates))
+
+    def prepare_role_links(self, base, roles, *, min_similarity=None, uncertainty=0., compile_work_limit=None):
+        """Propose the source-typed role program without a query or terminal family."""
+        self._check_owner(base)
+        memory = base.memory._reprogram_role_links(roles, min_similarity, uncertainty, compile_work_limit)
+        return CorpusProgramProposal(base, memory)
 
     def publish_program(self, proposal):
         """Install a checked preview only if it still represents the whole tip."""
