@@ -703,6 +703,48 @@ and permits it to cache both the composed transports and projection checks.
 Source acquisition, coverage on learned trajectories, and a full lifecycle
 comparison remain open. [Completion fixtures](../experiments/memory/test_binding_links.py)
 
+#### Carrying completion bounds through a final hidden step
+
+[SLICE] `TaskBudget(bound_context=True, bound_hidden=True)` also enables a
+bounded final required stage in a joint role call. The preceding recurrent
+state and its cached history are exact. The receiver computes the same
+ordinary binding and attention terms as the ordinary step. For each
+possible role observation, the difference enters through the value map
+and the additive preactivation input. An invariant projection still
+produces an ordinary exact state.
+
+For a changing projection, the completion envelope bounds the contribution
+to each output column. A dense map uses the column's component
+orthogonal to the retained frame, or the full column for an unrestricted
+ball. With a factored map the first factor yields a box, which the
+absolute coefficients of the second factor propagate without materializing
+the dense map. This can be looser than scoring composed columns. The
+receiver batches the endpoint inputs with the shared exact attention
+evaluation and applies monotone tanh to both ends. A separate internal
+readout contains the resulting box, the ordinary read and the original
+source dependencies. It never enters the generated-key or value history.
+
+The next role tests bound the score numerator and divide by an interval for
+the hidden row's positive norm. The lower norm uses the distance from the
+box to zero. A range that can include zero leaves the decision open.
+After the first late role, a ball around the normalized midpoint provides
+a conservative continuation bound. A definitely reached fixed map can
+discard that geometric uncertainty. It still inherits any open sibling
+or possible rival. A bounded row can feed the late role read, with any
+declared terminal-hop count, and cannot feed another ordinary hidden step.
+
+The envelope and monotonicity arguments concern the real-arithmetic model
+with common terms fixed. Float64 evaluation uses scaled guards and
+endpoint padding. Full floating-point error certification is open. The
+episode logs the policy version, counts bound construction against role
+work and charges one transition per readout. The model, source and journal
+pins follow the same task rules. The fixture changes the width of a
+non-invariant projection while holding the midpoint fixed. The narrow
+range supports the same result across its modeled outcomes. The wider
+range can reach a rival, so the task stays open. Full lifecycle and
+learned-trajectory coverage comparisons require equal-information lazy
+and correlation-preserving controls. [Hidden-range fixtures](../experiments/memory/test_binding_links.py)
+
 #### Rewiring the binding program
 
 [SLICE] `prepare_program(base, gates)` compiles an ordered acyclic graph over the same predicates and immutable encoded rows. The worker can test the whole candidate through `proposal.preview` before deciding whether to call `publish_program(proposal)`. A gate can be added, replaced or removed. Both banks use the same new graph. An output keeps its retained bounds only if its gate and every transitive dependency keep their definitions. A changed dependency invalidates cached downstream answers even when the query name and the source digests agree. Rollback installs the old graph on the current sources as a fresh revision. [Program controls](../experiments/memory/test_corpus_binding_journal.py)

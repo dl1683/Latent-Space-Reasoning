@@ -4,6 +4,24 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Bounded final hidden step, 26 November 2026
+
+**Software verification, supplied directions.** The same off-plane input
+that strict projection invariance refused produced a bounded hidden
+readout. With nonzero exact history and binding terms, the box contained
+the concrete completions checked by the fixture. A scripted task reopened
+and cited the governing clauses through the late role reader.
+
+With the same midpoint and sources, a narrow projection range supported
+the finding and a wider range remained unresolved. For the wider range,
+the midpoint missed a rival but a legal completion reached it. The checks
+also exercised fixed and rotational late roles, a factored value map,
+signed score intervals, and refusal before a following ordinary step.
+A possible zero norm kept the finding open and preserved the task's
+effective-time pin. The checks establish supplied-instance software behavior.
+Float64 guards, coverage under learned dynamics, and total cost require
+separate evidence. [Hidden-range fixtures](../experiments/memory/test_binding_links.py)
+
 ## Off-plane completion bounds, 26 November 2026
 
 **Software verification, supplied directions.** The role reader put a

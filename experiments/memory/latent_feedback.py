@@ -363,10 +363,11 @@ class FeedbackKernel:
                         state_gate = max(0.0, float(state_gate) - threshold)
                     fixed += (state_gate * observed) * output
         if observation_extra is not None:
-            fixed += observation_extra
+            fixed = fixed + observation_extra
         return fixed + _apply_value(self._observation_value, mixture), fixed
 
-    def _advance(self, state, *, diagnostics=None, observation_extra=None):
+    def _step_preactivation(self, state, *, diagnostics=None, observation_extra=None):
+        """Evaluate the exact prefix once, with optional batched additive inputs."""
         self._require_state(state)
         if len(state._history) >= self._max_steps:
             raise RuntimeError("feedback step budget exhausted")
@@ -392,21 +393,27 @@ class FeedbackKernel:
             preactivation, fixed = self._preactivation(
                 hidden, mixture, history_value, observation_count, observation_extra=observation_extra,
             )
-            next_hidden = _frozen(np.tanh(preactivation))
             if diagnostics is not None:
                 diagnostics.update(
                     logits=logits if observation_count or history_count else np.empty(0),
                     probabilities=weights if observation_count or history_count else np.empty(0),
                     preactivation=preactivation,
                 )
+        return preactivation, mixture, fixed
+
+    def _advance(self, state, *, diagnostics=None, observation_extra=None):
+        preactivation, mixture, fixed = self._step_preactivation(
+            state, diagnostics=diagnostics, observation_extra=observation_extra,
+        )
+        next_hidden = _frozen(np.tanh(preactivation))
         next_key, next_value = self._project_generated(next_hidden)
         next_state = replace(
             state,
             _history=state._history + (next_hidden,),
             _keys=state._keys + (next_key,),
             _values=state._values + (next_value,),
-            observation_scores=state.observation_scores + observation_count,
-            feedback_scores=state.feedback_scores + history_count,
+            observation_scores=state.observation_scores + len(state._memory._keys),
+            feedback_scores=state.feedback_scores + len(state._history),
         )
         return next_state, mixture, fixed
 

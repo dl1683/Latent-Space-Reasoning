@@ -295,7 +295,7 @@ class CorpusBindingMemory:
 
     def _read_role_links(self, direction, *, outcomes, work_limit, hops, condition,
                          prior_steps=(), prior_strength=1., branch_limit=None, retain_dependencies=False,
-                         bound_context=False):
+                         bound_context=False, hidden_box=None):
         hops = _role_hops(hops)
         if type(bound_context) is not bool:
             raise ValueError("context completion policy must be boolean")
@@ -309,7 +309,7 @@ class CorpusBindingMemory:
                           limit=_proof_work_limit(work_limit), width=self._anchors.shape[1], hops=hops,
                           condition=condition, prior_steps=prior_steps, prior_strength=prior_strength,
                           branch_limit=branch_limit, scoped_sources=self._scoped_sources,
-                          retain_dependencies=retain_dependencies, bound_context=bound_context)
+                          retain_dependencies=retain_dependencies, bound_context=bound_context, hidden_box=hidden_box)
         if not self._scoped_sources and not retain_dependencies:
             return read
         return replace(read, witnesses=tuple(self._witness_with_spans(witness) for witness in read.witnesses),

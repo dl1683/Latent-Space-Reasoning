@@ -363,6 +363,13 @@ transition would depend on the unidentified component. Charge interval
 work and proof handling in both arms. The existing typed task check
 uses supplied directions and a scripted reader.
 
+For a varying final hidden row, include a same-midpoint comparison with
+different admissible ranges. Give the lazy arm the same exact prefix,
+value-map factors, envelope, and authority and provenance rules. Charge
+range construction alongside later score and proof work. Measure how
+often a tight result survives compared with an invariant-projection
+control and a more correlation-preserving enclosure.
+
 Run in stages: first verify the blinded data boundary and causal interventions
 on a small CPU world; next qualify the 0.6B planner's typed action contract on
 visible calibration tasks only; then run the frozen held panel with GPU/RAM

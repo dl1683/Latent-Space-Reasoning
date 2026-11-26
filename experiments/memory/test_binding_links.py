@@ -10,7 +10,7 @@ import pytest
 
 from experiments.memory import corpus_binding_journal
 from experiments.memory.binding_feedback import BindingFeedback, BindingRoleAdvance
-from experiments.memory.binding_links import BindingLinkCondition
+from experiments.memory.binding_links import BindingLinkCondition, _HiddenRoleBox
 from experiments.memory.binding_maintenance import audit_source_observations
 from experiments.memory.binding_memory import BindingCapacityError, BindingGate
 from experiments.memory.binding_replay import replay_binding_repair
@@ -1557,8 +1557,11 @@ def test_bridge_waits_for_legacy_sources_to_stop_obscuring_competitors(tmp_path,
 @pytest.mark.parametrize("transport", ["fixed", "rotation"])
 def test_off_plane_completions_certify_only_invariant_routes_and_observations(tmp_path, transport):
     axes = np.eye(8)
+    authority = b"Publish the revised regional route."
 
     def encode(raw):
+        if raw == authority:
+            return
         for mention in _transport_encoding(raw):
             yield replace(mention, byte_span=(0, len(raw)))
 
@@ -1636,12 +1639,15 @@ def test_off_plane_completions_certify_only_invariant_routes_and_observations(tm
     removed = _write(owner, {"second-entry": None, "second-exit": None})
     owner.maintain_role_bridges(removed, max_entries=1)
 
-    def receiver_for(observation):
+    def receiver_for(observation, *, with_history=False):
         keys = np.zeros((8, 1))
         zeros = np.zeros_like(values)
+        feedback_value = .025 * np.outer(axes[0], axes[5]) if with_history else zeros
         kernel = FeedbackKernel(query=keys, carry=zeros, observation_key=keys, observation_value=observation,
-                                feedback_key=keys, feedback_value=zeros, max_steps=1)
-        return BindingFeedback(kernel, frame, (("accept", 0),), query=keys, observation=np.zeros((6, 8)))
+                                feedback_key=keys, feedback_value=feedback_value, max_steps=2)
+        binding_values = np.zeros((6, 8))
+        binding_values[0, 5] = .01 if with_history else 0.
+        return BindingFeedback(kernel, frame, (("accept", 0),), query=keys, observation=binding_values)
 
     receiver = receiver_for(values)
     initial = receiver.start(root, pin.memory)
@@ -1655,24 +1661,93 @@ def test_off_plane_completions_certify_only_invariant_routes_and_observations(tm
                                               branch_limit=2, bound_context=True).states
     np.testing.assert_array_equal(projected.latest, continued.latest)
     leaking = values.copy()
-    leaking[0, 6] = .5
+    leaking[0, 6] = .12
     unsafe = receiver_for(leaking)
     leaking_result = unsafe.reason_role_links(unsafe.start(root, pin.memory), stages=(BindingRoleAdvance(),),
                                               branch_limit=2, bound_context=True, **read_options)
     assert leaking_result.status == "unresolved" and leaking_result.transitions == 0
     assert leaking_result.context_projection_refusals == 1
 
-    raw["seed"] = _mentions(("late_seed", root, .9))
-    task_pin = _write(owner, {"seed": raw["seed"]})
+    options = dict(stages=(BindingRoleAdvance(),), branch_limit=2, bound_context=True, bound_hidden=True,
+                   **read_options)
+    prior = unsafe.start(root, pin.memory)
+    hidden_range = unsafe.reason_role_links(prior, **options)
+    assert hidden_range.answer == "accept" and hidden_range.bounded_hidden_steps == 1
+    assert hidden_range.transitions == 1 and hidden_range.context_projection_refusals == 0
+    no_room = unsafe.reason_role_links(prior, **(options | {"work_limit": hidden_range.work - 1}))
+    assert no_room.status == "work_limit" and no_room.answer is None
+    earlier = unsafe.reason_role_links(prior, **(options | {"stages": (BindingRoleAdvance(), None)}))
+    assert earlier.status == "unresolved" and earlier.transitions == 0 and earlier.bounded_hidden_steps == 0
+    factored_unsafe = receiver_for(FactoredValue(leaking[:, [5, 6]], axes[[5, 6]]))
+    assert factored_unsafe.reason_role_links(factored_unsafe.start(root, pin.memory), **options).answer == "accept"
+    ambiguous_zero = np.zeros_like(values)
+    ambiguous_zero[0, 6] = .12
+    zero_receiver = receiver_for(ambiguous_zero)
+    zero_range = zero_receiver.reason_role_links(zero_receiver.start(root, pin.memory), **options)
+    assert zero_range.status == "unresolved" and zero_range.bounded_hidden_steps == 1
+    assert zero_range.terminal_reads[0].status == "no_direction"
+
+    history_receiver = receiver_for(leaking, with_history=True)
+    prefix = history_receiver.step(history_receiver.start(root, pin.memory))
+    # Fix the exact opening state while exercising a nonzero cached history value.
+    prefix = history_receiver._intervene_latest(prefix, root)
+    interval = history_receiver._continue_role_links(prefix, hops=1, condition=None, work_limit=4096,
+                                                      branch_limit=2, joint=True, bound_context=True, bound_hidden=True)
+    assert not interval.states
+    bounded_row, = interval.readouts
+    box = bounded_row.box
+    assert box.center[5] > hidden[5]
+    prior_read = history_receiver._next_read(prefix)
+    concrete_with_history = np.stack([
+        history_receiver._advance_read(prefix, prior_read, role_extra=row @ leaking).latest for row in completions
+    ])
+    assert np.all(box.center - box.spread <= concrete_with_history)
+    assert np.all(concrete_with_history <= box.center + box.spread)
+    assert history_receiver.reason_role_links(prefix, **options).answer == "accept"
+
+    midpoint = np.arctan2(hidden[6], hidden[5])
+    rival_angle = midpoint - np.arccos(.93) - .008
+    late_rival = np.cos(rival_angle) * axes[5] + np.sin(rival_angle) * axes[6]
+    joined = _write(owner, {"nearby-rival": route(late_rival, axes[1]),
+                            "rival-decision": _mentions(("review", axes[1], .9))})
+    late = unsafe.start(root, joined.memory)
+    exact_read = unsafe._next_read(late)
+    concrete = [unsafe._advance_read(late, exact_read, role_extra=row @ leaking).latest for row in completions]
+    center_hidden = unsafe._advance_read(late, exact_read, role_extra=center @ leaking).latest
+    center_score = center_hidden @ late_rival / np.linalg.norm(center_hidden)
+    assert center_score < .93 < max(row @ late_rival / np.linalg.norm(row) for row in concrete)
+    assert all(row @ hidden / (np.linalg.norm(hidden) * np.linalg.norm(row)) > .93 for row in concrete)
+    varied = unsafe.reason_role_links(late, **options)
+    assert varied.status == "unresolved" and varied.answer is None and varied.bounded_hidden_steps == 1
+    assert varied.terminal_reads[0].marginal
+    quiet_values = values.copy()
+    quiet_values[0, 6] = .001
+    quiet = receiver_for(quiet_values)
+    quiet_prior = quiet.start(root, joined.memory)
+    quiet_hidden = quiet._advance_read(quiet_prior, quiet._next_read(quiet_prior), role_extra=center @ quiet_values)
+    np.testing.assert_array_equal(quiet_hidden.latest, center_hidden)
+    narrow = quiet.reason_role_links(quiet_prior, **options)
+    assert narrow.answer == "accept" and narrow.bounded_hidden_steps == 1
+    _write(owner, {"nearby-rival": None, "rival-decision": None})
+
+    additions = {"seed": _mentions(("late_seed", root, .9)),
+                 "old-unrelated": route(axes[7], axes[5]), "new-unrelated": route(axes[7], axes[6]),
+                 "authority": authority}
+    raw.update(additions)
+    task_pin = _write(owner, additions)
     leaves = tmp_path / "leaves"
     leaves.mkdir()
     for name, content in raw.items():
         (leaves / (task_pin.memory.source_digests[name] + ".txt")).write_bytes(content)
     tool = VerifiedSourceTool(tmp_path, task_pin.memory.source_digests)
+    rule = RoleSupersession(task_pin.memory.source_mention_span("old-unrelated", 0),
+                           task_pin.memory.source_mention_span("new-unrelated", 0),
+                           SourceSpan.from_characters("authority", authority, 0, len(authority)), 20)
+    task_pin = owner.publish_program(owner.prepare_role_validity(task_pin, (rule,), as_of=30, verifier=tool))
     span = SourceSpan.from_characters("seed", raw["seed"], 0, len(raw["seed"]))
-    world = TaskWorld(tool, (span,), bindings=task_pin, receiver=receiver)
+    world = TaskWorld(tool, (span,), bindings=task_pin, receiver=unsafe, as_of=27)
     limits = EpisodeLimits(6, 1, 5, 1, 16000, 65000, 4096, 1024,
-                           TaskBudget(role_work=4096, bound_context=True))
+                           TaskBudget(role_work=4096, bound_context=True, bound_hidden=True))
     task_policy = EpisodePolicy("bounded-context", "scripted", "byte-count", "notes", probes_enabled=True)
 
     def generate(call):
@@ -1689,6 +1764,7 @@ def test_off_plane_completions_certify_only_invariant_routes_and_observations(tm
                        "outcomes": list(_OUTCOMES), "stages": [1], "terminal_hops": 1}
         elif step == 3:
             assert latest["read"]["context_completions"] == 1
+            assert latest["read"]["bounded_hidden_steps"] == 1
             request = {"op": "read", "candidate": [row["candidate"] for row in latest["candidates"]]}
         else:
             return reply(finish={"findings": [{
@@ -1705,6 +1781,36 @@ def test_off_plane_completions_certify_only_invariant_routes_and_observations(tm
     assert entries[-1]["data"]["status"] == "completed"
     assert entries[0]["data"]["limits"]["access"]["bound_context"]
     assert entries[0]["data"]["context_completion_version"] == 1
+    assert entries[0]["data"]["hidden_bound_version"] == 1
+
+    zero_world = TaskWorld(tool, (span,), bindings=task_pin, receiver=zero_receiver, as_of=27)
+    toolbox = _Tools("What decision follows?", zero_world, limits, probes_enabled=True)
+    found = toolbox.call({"op": "search", "query": "late_seed"})
+    seed = toolbox.call({"op": "read", "candidate": found["candidates"][0]["candidate"]})
+    refused = toolbox.call({"op": "reason", "read": seed["id"], "ordinal": 0, "outcomes": list(_OUTCOMES),
+                            "stages": [1], "terminal_hops": 1})
+    assert refused["read"]["terminal_reads"][0]["as_of"] == 27
+    assert refused["read"]["status"] == "unresolved"
+    report = {"findings": [{
+        "claim": "The hidden direction remains unresolved.", "stance": "unknown", "citations": [seed["id"]],
+        "reason": "The possible hidden row includes zero.",
+        "role_support": {"receipt": refused["receipt"], "outcome": "unresolved"},
+    }], "open_questions": ["Which nonzero direction is supported?"]}
+    assert toolbox.submission(report) == report
+
+
+def test_hidden_box_cosines_bound_signed_scores_with_variable_norm():
+    lower = np.array([-.8, -.35])
+    upper = np.array([-.4, .75])
+    box = _HiddenRoleBox.from_bounds(lower, upper)
+    for axis in (np.array([1., 0.]), np.array([-1., 0.]), np.array([0., 1.])):
+        low, high = box.scores(axis)
+        for first in np.linspace(lower[0], upper[0], 17):
+            for second in np.linspace(lower[1], upper[1], 17):
+                point = np.array([first, second])
+                assert low <= point @ axis / np.linalg.norm(point) <= high
+    assert box.scores(np.array([1., 0.]))[1] < 0.
+    assert _HiddenRoleBox.from_bounds(-np.ones(2), np.ones(2)) is None
 
 
 def test_required_multi_hop_keeps_a_stopped_sibling_open(tmp_path):

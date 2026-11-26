@@ -18,6 +18,7 @@ _CONTEXT_MIN_RESIDUAL = 1e-4
 _CONTEXT_FRAME_TOLERANCE = 1e-8
 _CONTEXT_TRANSPORT_POLICY = (_CONTEXT_MIN_RESIDUAL, _CONTEXT_FRAME_TOLERANCE)
 CONTEXT_COMPLETION_VERSION = 1
+HIDDEN_BOUND_VERSION = 1
 _COMPLETION_ROUNDING_UNIT = 32 * np.finfo(np.float64).eps
 
 
@@ -212,6 +213,36 @@ class _CompletionEnvelope:
     fresh_plane: bool = False
 
 
+@dataclass(frozen=True, slots=True, eq=False)
+class _HiddenRoleBox:
+    center: np.ndarray
+    spread: np.ndarray
+    min_norm: float
+    max_norm: float
+    normalized_radius: float
+
+    @classmethod
+    def from_bounds(cls, lower, upper):
+        padding = _completion_slack(lower.size)
+        nearest = np.maximum(0., np.maximum(lower, -upper))
+        minimum = float(np.linalg.norm(nearest)) - padding
+        if minimum <= 0.:
+            return None
+        maximum = float(np.linalg.norm(np.maximum(np.abs(lower), np.abs(upper)))) + padding
+        center = (lower + upper) / 2
+        spread = (upper - lower) / 2
+        radius = 2 * (np.linalg.norm(spread) + padding) / np.linalg.norm(center) + padding
+        return cls(center, spread, minimum, maximum, min(2., float(radius)))
+
+    def scores(self, axis):
+        score = float(self.center @ axis)
+        deviation = float(self.spread @ np.abs(axis)) + _completion_slack(axis.size)
+        low, high = score - deviation, score + deviation
+        lower = low / (self.max_norm if low >= 0. else self.min_norm)
+        upper = high / (self.min_norm if high >= 0. else self.max_norm)
+        return max(-1., min(1., lower)), max(-1., min(1., upper))
+
+
 @dataclass(frozen=True, slots=True)
 class _Path:
     direction: np.ndarray
@@ -220,6 +251,7 @@ class _Path:
     strength: float = 1.
     authority_sources: frozenset[str] = frozenset()
     completion: _CompletionEnvelope | None = None
+    hidden_box: _HiddenRoleBox | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -546,6 +578,9 @@ class _LinkReadWork:
         return score >= self.floor
 
     def scores(self, path, axis):
+        if path.hidden_box is not None:
+            self.charge(5 * axis.size)
+            return path.hidden_box.scores(axis)
         envelope = path.completion
         if envelope is not None:
             self.charge(axis.size * (8 if envelope.plane is not None else 3))
@@ -900,7 +935,7 @@ class _RoleLinks:
             gate_results, retained, retained_groups = {}, [], []
             for path in frontier:
                 effort.charge(width)
-                key = np.asarray(path.direction, dtype="<f8").tobytes(), path.completion
+                key = np.asarray(path.direction, dtype="<f8").tobytes(), path.completion, path.hidden_box
                 if key not in gate_results:
                     effort.charge(width)
                     effort.condition_dots += 1
@@ -925,13 +960,15 @@ class _RoleLinks:
 
     def read(self, direction, *, outcomes, mentions, limit, width, hops, condition,
              prior_steps=(), prior_strength=1., branch_limit=None, scoped_sources=frozenset(),
-             retain_dependencies=False, bound_context=False):
+             retain_dependencies=False, bound_context=False, hidden_box=None):
         vocabulary = tuple(sorted(outcomes))
         as_of = None if self.validity is None else self.validity.as_of
         seed = self._seed_path(direction, width, condition, prior_steps, prior_strength)
         if seed is None:
             return BindingLinkRead("no_direction", outcomes=vocabulary, hops=hops, condition=condition,
                                    bridge_pending=self.bridge_global_pending, as_of=as_of)
+        if hidden_box is not None:
+            seed = replace(seed, completion=_CompletionEnvelope(hidden_box.normalized_radius), hidden_box=hidden_box)
 
         effort = _LinkReadWork(limit, self.floor, self.uncertainty, bound_context=bound_context)
         witnesses = {}

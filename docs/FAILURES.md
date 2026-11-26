@@ -24,6 +24,13 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**An invariant decision can have a varying hidden row.** Requiring an
+invariant value projection leaves some supported consequences open.
+Using just the projected midpoint instead can hide a rival that a legal
+completion reaches. The final-stage check keeps the hidden range for the
+late read and rejects ordinary recurrence over that range.
+[Bounded final hidden step](RESULTS.md#bounded-final-hidden-step-26-november-2026)
+
 **A projected center can hide a viable rival.** With an unidentified
 off-plane component, a rival may score below the threshold at the
 center and above it under a legal completion. Routing and terminal

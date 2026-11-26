@@ -114,10 +114,13 @@ class TaskBudget:
     role_transitions: int = 16
     role_candidate_spans: int = 256
     bound_context: bool = False
+    bound_hidden: bool = False
 
     def __post_init__(self):
         if type(self.bound_context) is not bool:
             raise ValueError("context completion policy must be boolean")
+        if type(self.bound_hidden) is not bool or (self.bound_hidden and not self.bound_context):
+            raise ValueError("hidden bounds require context completion bounds")
         for name in ("steps", "candidates_per_search", "evidence_bytes", "source_bytes", "role_work",
                      "role_branches", "role_transitions", "role_candidate_spans"):
             value = index(getattr(self, name))
@@ -551,6 +554,7 @@ class _Investigation:
                     state, stages=operations, outcomes=outcomes, work_limit=work,
                     branch_limit=branches, terminal_hops=action.terminal_hops, retain_dependencies=True,
                     bound_context=self.budget.bound_context,
+                    bound_hidden=self.budget.bound_hidden,
                 )
             except BindingCapacityError as error:
                 result = BindingRoleDecision(getattr(error, "status", "source_observation_limit"), (), 0, 0, True)
