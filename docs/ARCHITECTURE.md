@@ -2074,6 +2074,38 @@ bounds and splits only when a downstream decision can differ.
 [Catalog implementation](../experiments/memory/source_constraints.py) ·
 [Joint read](../experiments/memory/recurrent_world.py)
 
+#### Choosing a catalog scope inside the recurrent path
+
+[SLICE] A scoped unit policy keeps named group views of one pinned
+registry. Each view contains its own explicit group and ungrouped
+definitions. References and aliases cannot enter through another
+group. Shared competing definitions within the view still require
+agreement. The group names serve as membership evidence under the
+declared scope rule. Pint's native precedence and group inheritance
+are separate semantics.
+
+A registered scope observation binds one group to a conversion
+context. It retains its source version, and the receipt includes
+the group header and definition spans. The task supplies a unit name
+and magnitude. The same recurrent path can use an earlier case record
+to reach one of the scope observations before applying the associated
+operation. Different plausible scope paths stay distinct. An unknown
+group or an inconsistent scope sequence stays open.
+
+Version 4 pins the context bindings and their view fingerprints.
+Case records can move a task to a different valid scope without
+republishing the unit registry. Warm repair keeps the publication
+and updates affected descendants. A changed scope authority or
+registry source still requires republication and a fresh frontier.
+The supplied observation coordinates control routing in this slice.
+Compare a warm exact evaluator given the same case evidence, scope
+rule and source dependency burden.
+If independent scopes multiply, compare explicit branch enumeration
+with shared representations of configurations and their conditions.
+[Choice calculus](https://eric.walkingshaw.net/files/pubs/2011/tosem11-choice-calculus.pdf)
+[Scoped compiler](../experiments/memory/unit_program.py) ·
+[Scope receipt](../experiments/memory/source_constraints.py)
+
 ## Claims and evidence boundary (2026-10-15; not a new experiment)
 
 | Claim | Tag and current boundary | What is still required |

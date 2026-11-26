@@ -13,7 +13,7 @@ from experiments.memory.latent_feedback import FeedbackKernel
 from experiments.memory.recurrent_world import RecurrentWorld
 from experiments.memory.source_constraints import SourceConstraintPolicy
 from experiments.memory.test_world_transport import _publish
-from experiments.memory.unit_program import compile_units
+from experiments.memory.unit_program import compile_unit_scopes, compile_units
 
 
 # Self-contained grammar fixtures. The public release check uses pinned Pint files.
@@ -254,6 +254,157 @@ def test_catalog_work_cap_refuses_the_whole_publication(tmp_path, monkeypatch):
     with pytest.raises(ValueError, match="exceeded its term budget"):
         _install(world, journal, base, source)
     assert journal.snapshot() is base
+
+
+_SCOPED = b"""@import metric.txt
+@group Survey
+survey_foot = 1200 / 3937 * metre
+chain = 66 * survey_foot = survey_chain
+@end
+@group International
+foot = 0.3048 * metre
+chain = 66 * foot = intl_chain
+@end
+"""
+
+
+def test_group_views_share_global_dependencies_without_foreign_aliases():
+    shared = {"units.txt": _SCOPED, "metric.txt": _METRIC}
+    program = compile_units("units.txt", shared)
+    assert program.convert("chain", "metre").status == "conflict"
+    views = compile_unit_scopes("units.txt", shared, ("Survey", "International", "Absent"), max_terms=256)
+    survey, headers = views["Survey"]
+    span, = headers
+    assert _SCOPED[span.start_byte:span.end_byte] == b"@group Survey"
+    assert survey.convert("chain", "metre").coefficient == Fraction(79200, 3937)
+    assert survey.convert("intl_chain", "metre").status == "missing"
+    assert views["International"][0].convert("chain", "metre").coefficient == Fraction("20.1168")
+    assert views["Absent"] == (None, ())
+
+    mixed = {**shared, "units.txt": _SCOPED + b"chain = 30 * metre\n"}
+    ambiguity = compile_unit_scopes("units.txt", mixed, ("Survey",), max_terms=256)["Survey"][0]
+    assert ambiguity.convert("chain", "metre").status == "conflict"
+    duplicate = {**shared, "units.txt": _SCOPED + b"@group Survey\n@end\n"}
+    unusable, headers = compile_unit_scopes("units.txt", duplicate, ("Survey",), max_terms=256)["Survey"]
+    assert unusable is None and len(headers) == 2
+
+
+def _scope_world(tmp_path, *, registry=None, entry="units.txt", groups=("Survey", "International"),
+                 conflicting_scope_after_use=False):
+    axes = np.eye(11)
+    scope = ("survey fixture", "opening magnitude", "scoped unit definitions", "recorded source authority", "metre")
+
+    def record(group):
+        return json.dumps(["lsr-linear-v1", scope, "catalog", group, None]).encode()
+
+    observations = {
+        "old record": (b"The survey record applies to the parcel.", 1),
+        "new record": (b"The international record applies to the parcel.", 2),
+        "both records": (b"Two incompatible records might apply to the parcel.", 9),
+        "weak record": (b"The survey record is only tentatively linked to this parcel.", 8),
+        "survey": (record(groups[0]), 3),
+        "international": (record(groups[1]), 4),
+        "relay": (b"The converted length clears the limit.", 6),
+        "unbound": (record("Unknown"), 3),
+    }
+
+    def encode(raw):
+        for text, axis in observations.values():
+            if raw == text:
+                return (BindingMention("record", axes[axis], 1., (0, len(raw))),)
+        return ()
+
+    frame = CorpusBindingMemory.prepare(("record",), axes, {}, {}, encode=encode, encoder_version="scope-unit-fixture",
+                                        min_similarity=1., gap=0.)
+    journal = JournaledCorpusWorkspace(tmp_path / "scoped.sqlite", frame, create=True)
+    registry = {"units.txt": _SCOPED, "metric.txt": _METRIC} if registry is None else registry
+    raw = {name: observations[name][0] for name in ("survey", "international", "relay")}
+    raw.update({**registry, "case": observations["old record"][0]})
+    base = _publish(journal, raw)
+    keys, values = axes.copy(), np.zeros_like(axes)
+    keys[1] = keys[2] = keys[8] = keys[9] = axes[0]
+    keys[6] = axes[5]
+    values[1], values[2] = 2. * axes[3], 2. * axes[4]
+    values[6], values[9] = 2. * axes[7], 2. * (axes[3] + axes[4])
+    values[8] = .4023364 * axes[3]
+    if conflicting_scope_after_use:
+        values[3] = 2. * axes[4]
+    kernel = FeedbackKernel(query=30. * axes, carry=None, observation_key=keys, observation_value=values,
+                            feedback_key=axes, feedback_value=np.zeros_like(axes), max_steps=3)
+    policy = SourceConstraintPolicy(scope, (10,), (5,), 1, tuple(registry), ("survey", "international"),
+                                    unit_registry=entry, unit_catalog=True, scoped_units=True)
+    world = RecurrentWorld(kernel, encoder_version=frame.encoder_version, max_observations=5,
+                           feedback=True, constraint_policy=policy)
+    return journal, frame, base, world, raw, axes, observations
+
+
+def _read_scoped(world, pin, axes, *, steps=3, operators=True, candidates=("chain",)):
+    return world.reason_joint(.8 * axes[0] + .02 * axes[10], steps=steps, max_hypotheses=4,
+                              null_logit=30. * tanh(.4023364), margin=1.e-6,
+                              memory=world.prepare(pin, operators=operators), unit_candidates=candidates)
+
+
+def test_same_named_operation_follows_late_scope_after_warm_repair(tmp_path):
+    journal, frame, base, world, raw, axes, cases = _scope_world(tmp_path)
+    pin = _install(world, journal, base, raw)
+    assert _read_scoped(world, pin, axes, steps=1).read(axes[7], floor=.8).status == "unresolved"
+    initial = _read_scoped(world, pin, axes)
+    assert initial.read(axes[7], floor=.8).status == "supported"
+    branch, = initial.branches
+    use, = branch.constraint_uses
+    assert use.unit_scope == "Survey"
+    real_lines = {raw[w.span.source_id][w.span.start_byte:w.span.end_byte]
+                  for _, witnesses in use.evidence for w in witnesses}
+    assert {b"@group Survey", raw["survey"]} <= real_lines
+    assert _read_scoped(world, pin, axes, operators=False).read(axes[7], floor=.8).status == "unresolved"
+
+    changed = _publish(journal, {"case": cases["new record"][0]})
+    bank = world.prepare(changed)
+    assert bank._source_constraints is initial.memory._source_constraints
+    repaired = world.repair_joint(initial, bank, max_hypotheses=4)
+    fresh = _read_scoped(world, changed, axes)
+    assert repaired.read(axes[7], floor=.8).status == fresh.read(axes[7], floor=.8).status == "missing"
+    warm_branch, = repaired.branches
+    fresh_branch, = fresh.branches
+    assert warm_branch.constraint_uses == fresh_branch.constraint_uses
+    assert warm_branch.witnesses == fresh_branch.witnesses
+    np.testing.assert_array_equal(warm_branch.history, fresh_branch.history)
+    assert warm_branch.constraint_uses[0].unit_scope == "International"
+
+    ambiguous = _publish(journal, {"case": cases["both records"][0]})
+    conflict = _read_scoped(world, ambiguous, axes)
+    assert {use.unit_scope for branch in conflict.branches for use in branch.constraint_uses} == {
+        "International", "Survey",
+    }
+    assert conflict.read(axes[7], floor=.8).status == "unresolved"
+
+    weak = _publish(journal, {"case": cases["weak record"][0]})
+    weak_read = _read_scoped(world, weak, axes)
+    assert "survey" in {witness.span.source_id for witness in weak_read.uncertain_routes}
+    assert not any(branch.constraint_uses for branch in weak_read.branches)
+    assert weak_read.read(axes[7], floor=.8).status == "unresolved"
+
+    invalidated = _publish(journal, {"survey": cases["unbound"][0], "case": cases["old record"][0]})
+    assert world.prepare(invalidated)._source_constraints is None
+    withheld = _install(world, journal, invalidated, {**raw, "survey": cases["unbound"][0]})
+    unknown_scope = _read_scoped(world, withheld, axes)
+    assert unknown_scope.read(axes[7], floor=.8).status == "unresolved"
+    assert unknown_scope.branches[0].constraint_uses[0].withheld_conversion[0] == "unit_scope"
+
+    reopened = JournaledCorpusWorkspace(tmp_path / "scoped.sqlite", frame)
+    historical = reopened.snapshot_at(pin.revision, max_events=12, max_payload_bytes=100_000)
+    assert _read_scoped(world, historical, axes).read(axes[7], floor=.8).status == "supported"
+
+
+def test_sequentially_encountered_incompatible_scope_keeps_read_open(tmp_path):
+    journal, _, base, world, raw, axes, _ = _scope_world(tmp_path, conflicting_scope_after_use=True)
+    pin = _install(world, journal, base, raw)
+    result = _read_scoped(world, pin, axes)
+    mixed = next(branch for branch in result.branches if branch.witnesses[-1].span.source_id == "international")
+    assert [use.unit_scope for use in mixed.constraint_uses] == ["Survey", "International"]
+    assert mixed.constraint_uses[-1].withheld_conversion[0] == "multiple_conversions"
+    outcome = result.read(axes[7], floor=.8)
+    assert outcome.status == "unresolved" and mixed not in outcome.support
 
 
 def test_registered_unit_source_changes_the_actual_recurrent_choice(tmp_path):

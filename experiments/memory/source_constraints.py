@@ -1,7 +1,7 @@
 """Compile exact, scoped linear consequences before a task enters the latent world."""
 
 from collections import defaultdict
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from fractions import Fraction
 from hashlib import sha256
 import json
@@ -9,7 +9,7 @@ import re
 from types import MappingProxyType
 
 from experiments.memory.relational_feedback import Expression, _FLOAT_MAX, _rounded, combine
-from experiments.memory.unit_program import MAX_REGISTRY_BYTES, UnitProgram, compile_units
+from experiments.memory.unit_program import MAX_REGISTRY_BYTES, UnitConversion, UnitProgram, compile_unit_scopes, compile_units
 from experiments.memory.verified_source_tool import SourceSpan
 from experiments.memory.world_transport import WorldWitness, _source_ids
 
@@ -17,6 +17,7 @@ from experiments.memory.world_transport import WorldWitness, _source_ids
 MAX_CONSTRAINT_SOURCE_BYTES = 4096
 UNIT_ACTION_GRAMMAR = "multiplicative-units-v1"
 UNIT_CATALOG_GRAMMAR = "named-unit-factors-v1"
+UNIT_SCOPE_GRAMMAR = "scoped-unit-factors-v1"
 _UNIT_CATALOG_TERMS = 65_536
 _MAX_AXES = 16
 _MAX_SOURCES = 32
@@ -37,6 +38,7 @@ class SourceConstraintPolicy:
     contexts: tuple[str, ...]
     unit_registry: str | None = None
     unit_catalog: bool = False
+    scoped_units: bool = False
 
     def __post_init__(self):
         if (type(self.scope) is not tuple or len(self.scope) != 5
@@ -63,13 +65,16 @@ class SourceConstraintPolicy:
             or not self.scope[4].isidentifier()
         ):
             raise ValueError("a unit registry requires scalar channels and one named target unit")
-        if (type(self.unit_catalog) is not bool
-                or self.unit_catalog and (self.unit_registry is None or len(self.contexts) != 1)):
-            raise ValueError("a unit catalog requires one registered conversion context")
+        if (type(self.unit_catalog) is not bool or type(self.scoped_units) is not bool
+                or self.scoped_units and not self.unit_catalog
+                or self.unit_catalog and (self.unit_registry is None or not self.scoped_units and len(self.contexts) != 1)):
+            raise ValueError("unit catalogs require registered conversion contexts")
 
     def wire(self):
         linear = (self.scope, self.input_axes, self.output_axes, self.middle_width, self.authorities, self.contexts)
         grammar = UNIT_CATALOG_GRAMMAR if self.unit_catalog else UNIT_ACTION_GRAMMAR
+        if self.scoped_units:
+            grammar = UNIT_SCOPE_GRAMMAR
         return linear if self.unit_registry is None else (*linear, self.unit_registry, grammar)
 
     def byte_limit(self, source):
@@ -95,6 +100,7 @@ class ConstraintUse:
     unreconciled_scope: tuple[WorldWitness, ...] = ()
     withheld_conversion: tuple[str, tuple[WorldWitness, ...]] | None = None
     source_units: tuple[str, ...] = ()
+    unit_scope: str | None = None
 
 
 @dataclass(frozen=True, eq=False)
@@ -125,6 +131,14 @@ class ConstraintAction:
 
 
 @dataclass(frozen=True, eq=False)
+class ScopedUnitCatalog:
+    program: UnitProgram | None
+    context: WorldWitness
+    group: str
+    headers: tuple[SourceSpan, ...]
+
+
+@dataclass(frozen=True, eq=False)
 class SourceConstraintPublication:
     policy: SourceConstraintPolicy
     kernel_sha256: str
@@ -133,21 +147,41 @@ class SourceConstraintPublication:
     catalog: UnitProgram | None = None
     catalog_context: WorldWitness | None = None
     publication_sha256: str = ""
+    scoped_catalogs: MappingProxyType = field(default_factory=lambda: MappingProxyType({}))
 
     def active_on(self, pin):
         return self.source_versions == constraint_versions(pin, self.policy)
 
-    def unit_action(self, name):
-        if self.catalog is None or name is None:
-            return None
-        target = self.policy.scope[4]
-        result = self.catalog.convert(name, target)
-        if name not in self.catalog:
-            result = replace(result, status="outside_grammar")
-        elif target not in self.catalog:
-            result = replace(result, status="target_unit")
+    def unit_actions(self, name):
         generations = {source: generation for source, _, generation in self.source_versions}
-        return _conversion_action(result, self.policy.output_axes[0], generations, self.publication_sha256)
+        target, output = self.policy.scope[4], self.policy.output_axes[0]
+        if self.catalog is not None:
+            result = _catalog_conversion(self.catalog, name, target)
+            return {self.catalog_context.span.source_id:
+                    _conversion_action(result, output, generations, self.publication_sha256)}
+        actions = {}
+        for source, catalog in self.scoped_catalogs.items():
+            result = (UnitConversion("unit_scope") if catalog.program is None
+                      else _catalog_conversion(catalog.program, name, target))
+            spans = tuple(dict.fromkeys((catalog.context.span, *catalog.headers, *result.spans)))
+            actions[source] = _conversion_action(replace(result, spans=spans), output, generations,
+                                                 self.publication_sha256, unit_scope=catalog.group)
+        return actions
+
+    def context_witness(self, source):
+        if self.catalog is not None:
+            return self.catalog_context
+        selected = self.scoped_catalogs.get(source)
+        return None if selected is None else selected.context
+
+
+def _catalog_conversion(catalog, name, target):
+    result = catalog.convert(name, target)
+    if name not in catalog:
+        return replace(result, status="outside_grammar")
+    if target not in catalog:
+        return replace(result, status="target_unit")
+    return result
 
 
 def constraint_versions(pin, policy):
@@ -185,9 +219,10 @@ def _declaration(raw, policy):
     kind, left, right = data[2:]
     if policy.unit_registry is not None:
         if policy.unit_catalog:
-            if kind == "catalog" and left is None and right is None:
+            valid_group = (type(left) is str and left.isidentifier() if policy.scoped_units else left is None)
+            if kind == "catalog" and valid_group and right is None:
                 return kind, left, right
-            raise ValueError("unit catalog context must leave the source unit unspecified")
+            raise ValueError("invalid catalog context declaration")
         if kind == "conversion" and all(type(unit) is str and unit.isidentifier() for unit in (left, right)):
             return kind, left, right
         raise ValueError("numeric context must declare a conversion between registry names")
@@ -288,12 +323,13 @@ def _linear_actions(pin, policy, records, publication_sha256):
     return {source: operation for source in sorted(contexts)}
 
 
-def _conversion_action(result, output, generations, publication_sha256):
+def _conversion_action(result, output, generations, publication_sha256, *, unit_scope=None):
     evidence = tuple(WorldWitness(span, generations[span.source_id], 0) for span in result.spans)
     if result.coefficient is None:
-        use = ConstraintUse(publication_sha256, (), (output,), withheld_conversion=(result.status, evidence))
+        use = ConstraintUse(publication_sha256, (), (output,), withheld_conversion=(result.status, evidence),
+                            unit_scope=unit_scope)
         return ConstraintAction((), use)
-    use = ConstraintUse(publication_sha256, ((output, evidence),), ())
+    use = ConstraintUse(publication_sha256, ((output, evidence),), (), unit_scope=unit_scope)
     return ConstraintAction(((output, (result.coefficient,), (Fraction(),)),), use)
 
 
@@ -322,6 +358,22 @@ def _unit_actions(pin, policy, records, publication_sha256):
     return actions, None, None
 
 
+def _scoped_unit_catalogs(pin, policy, records):
+    authorities = {source: raw for source, raw, _ in records if source in policy.authorities}
+    if set(authorities) != set(policy.authorities):
+        return {}
+    contexts = {}
+    for source, raw, witness in records:
+        if source in policy.contexts and _context_matches(pin, source, witness.span):
+            declaration = _declaration(raw, policy)
+            if declaration is not None and declaration[0] == "catalog":
+                contexts[source] = declaration[1], witness
+    views = compile_unit_scopes(policy.unit_registry, authorities, (group for group, _ in contexts.values()),
+                               max_terms=_UNIT_CATALOG_TERMS)
+    return {source: ScopedUnitCatalog(views[group][0], witness, group, views[group][1])
+            for source, (group, witness) in contexts.items()}
+
+
 def bind_constraint_publication(publication, digest):
     bound = {action: replace(action, use=replace(action.use, publication_sha256=digest))
              for action in dict.fromkeys(publication.actions.values())}
@@ -337,6 +389,11 @@ def unit_action_digest(publication):
     rows = []
     if publication.policy.unit_catalog and publication.catalog is not None:
         rows.append(("catalog", publication.catalog.fingerprint(), spans((publication.catalog_context,))))
+    for source, catalog in sorted(publication.scoped_catalogs.items()):
+        fingerprint = None if catalog.program is None else catalog.program.fingerprint()
+        headers = [(span.source_id, span.version_sha256, span.start_byte, span.end_byte, span.span_sha256)
+                   for span in catalog.headers]
+        rows.append(("scope", source, catalog.group, fingerprint, spans((catalog.context,)), headers))
     for source, action in sorted(publication.actions.items()):
         if action.use.withheld_conversion is None:
             axis, (coefficient,), _ = action.relations[0]
@@ -363,9 +420,13 @@ def compile_source_constraints(pin, policy, kernel_sha256, records, publication_
         span = SourceSpan(source, digest, 0, len(raw), digest)
         verified.append((source, raw, WorldWitness(span, generation, 0)))
     catalog = context = None
+    scoped = {}
     if policy.unit_registry is None:
         actions = _linear_actions(pin, policy, verified, publication_sha256)
+    elif policy.scoped_units:
+        actions = {}
+        scoped = _scoped_unit_catalogs(pin, policy, verified)
     else:
         actions, catalog, context = _unit_actions(pin, policy, verified, publication_sha256)
     return SourceConstraintPublication(policy, kernel_sha256, versions, MappingProxyType(actions),
-                                       catalog, context, publication_sha256)
+                                       catalog, context, publication_sha256, MappingProxyType(scoped))

@@ -4,6 +4,38 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Choosing a late scope for the same unit name, 26 November 2026
+
+**Visible CPU software verification.** The worker compiled two
+scoped views from the same pinned Pint registry and import. For
+the same `chain` hypothesis, the scoped rational coefficients
+were `79200/3937` and `20.1168` metres. A supplied case
+record changed which authority the ordinary recurrent path
+encountered at its second transition. The third transition used
+that result to choose whether to admit a comparison source.
+
+Across three case states and three magnitudes, nine reads matched
+an exact threshold calculation with the same scope assumptions.
+At 0.02 chain, the survey scope admitted the source, the
+international scope left it unadmitted, and competing scope paths
+left a joint read unresolved. Removing the operation at the same
+pin or stopping before scope was used also left the result open.
+The source byte spans checked against the original records.
+
+Editing the case record preserved the publication. Warm repair
+scored nine observations compared with 12 on a fresh read of the
+same revised case. Reopening the journal recovered the historical
+result. The offline tests also exercise absent groups, shared
+conflicts, foreign aliases and successive incompatible scopes.
+A version 3 journal written by the preceding commit reopened with
+the same digest and signed read.
+
+The policy, case wording, coordinates and threshold were supplied.
+This checks conditional source use through the existing recurrent
+path. Learned scope selection and total-cost advantage remain open.
+[Scoped fixtures](../experiments/memory/test_unit_program.py) ·
+[Registry source](https://github.com/hgrecco/pint/blob/e29ea5aad7762fcf7b097d47759ea5a442da440f/pint/default_en.txt)
+
 ## Late unit hypotheses on a maintained catalog, 26 November 2026
 
 **Visible CPU software verification.** One generic context and

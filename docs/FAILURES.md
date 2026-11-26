@@ -24,6 +24,14 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A foreign alias can inject a different definition into a scope.**
+If a survey-defined alias follows a bare name in an international
+view, the alias could acquire a coefficient its declaration never
+supplied. Compile each explicit view with its own group and shared
+ungrouped definitions. Keep the full group and source witnesses.
+An ungrouped conflicting definition still keeps the value open.
+[Scoped controls](RESULTS.md#choosing-a-late-scope-for-the-same-unit-name-26-november-2026)
+
 **Different definitions can share one spelling.**
 The catalog keeps inconsistent coefficients under one name open.
 Names supplied by the caller also leave semantic completeness open.

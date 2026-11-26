@@ -961,3 +961,18 @@ interpretations open. Keep the same published catalog for
 `repair_joint`, or start a fresh read after it changes.
 The catalog compile cap is 65,536 counted definition and expansion
 terms. A capacity refusal leaves the journal tip unchanged.
+
+Add `scoped_units=True` to a unit catalog policy to register
+several scope contexts. The last three fields of each full-span
+context record are `["catalog", group_name, null]`. The fields
+declare authority for a view over the pinned registry. The group
+must have one explicit header in the import graph. Other groups
+are excluded from that view. The policy's last scope field still
+names the single output unit.
+
+Use the same `reason_joint` call with unit hypotheses.
+Inspect `ConstraintUse.unit_scope` and the definition, scope
+and header witnesses. The action needs the actual matching context
+on the branch. An unrelated case-record change can use
+`repair_joint` on the same publication. Editing a scope context
+or registry authority invalidates the publication.

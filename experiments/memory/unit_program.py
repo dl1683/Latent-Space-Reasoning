@@ -117,6 +117,7 @@ class UnitConversion:
 class _Definition:
     expression: _Product | None
     span: SourceSpan
+    group: str | None = None
 
 
 @dataclass(frozen=True)
@@ -130,10 +131,10 @@ def _references(definition):
         yield from (symbol for symbol, _ in definition.expression.powers if not _DIMENSION.fullmatch(symbol))
 
 
-def _read_registry(source, raw, includes, definitions, charge):
+def _read_registry(source, raw, includes, definitions, charge, groups):
     if type(raw) is not bytes or not 0 < len(raw) <= MAX_REGISTRY_BYTES:
         raise ValueError("unit registry bytes exceed the supported range")
-    digest, offset, block = sha256(raw).hexdigest(), 0, None
+    digest, offset, block, group = sha256(raw).hexdigest(), 0, None, None
     for line in raw.splitlines(keepends=True):
         raw_prefix = line.split(b"#", 1)[0]
         fragment = raw_prefix.strip()
@@ -146,9 +147,17 @@ def _read_registry(source, raw, includes, definitions, charge):
             key, _, argument = text.partition(" ")
             name = key.split("(", 1)[0]
             if name == "@end" and block is not None and not argument:
-                block = None
+                block = group = None
             elif block is None and name in ("@group", "@defaults", "@context", "@system"):
                 block = name
+                if name == "@group" and groups is not None:
+                    fields = argument.split()
+                    if not fields or not fields[0].isidentifier():
+                        raise ValueError("scoped registry requires a named group")
+                    group = fields[0]
+                    charge(1)
+                    header = SourceSpan(source, digest, start, start + len(fragment), sha256(fragment).hexdigest())
+                    groups.setdefault(group, []).append(header)
             elif block is None and key == "@import" and _REFERENCE.fullmatch(argument.strip()):
                 includes(argument.strip())
             else:
@@ -165,13 +174,13 @@ def _read_registry(source, raw, includes, definitions, charge):
             product = None
         charge(1 if product is None else 1 + len(product.powers))
         definition = _Definition(product, SourceSpan(source, digest, start, start + len(fragment),
-                                                     sha256(fragment).hexdigest()))
+                                                     sha256(fragment).hexdigest()), group)
         definitions.setdefault(name, []).append(definition)
         for alias in dict.fromkeys(aliases):
             if alias and alias not in ("_", name) and alias.isidentifier():
                 charge(2)
                 reference = _Product(Fraction(1), ((name, 1),))
-                definitions.setdefault(alias, []).append(_Definition(reference, definition.span))
+                definitions.setdefault(alias, []).append(_Definition(reference, definition.span, group))
     if block is not None:
         raise ValueError("unclosed unit registry directive")
 
@@ -249,10 +258,35 @@ def _propagate_conflicts(values, definitions):
 
 def compile_units(entry, records, *, max_terms=None):
     """Compile exact dependencies within the supplied, closed import catalogue."""
+    charge = _term_counter(max_terms)
+    return _resolve_units(_registry_definitions(entry, records, charge), charge)
+
+
+def compile_unit_scopes(entry, records, scopes, *, max_terms):
+    """Compile named views over the same graph, sharing only ungrouped definitions."""
+    charge = _term_counter(max_terms)
+    groups = {}
+    definitions = _registry_definitions(entry, records, charge, groups=groups)
+    views = {}
+    for scope in dict.fromkeys(scopes):
+        headers = tuple(groups.get(scope, ()))
+        program = None
+        if len(headers) == 1:
+            selected = {}
+            for name, candidates in definitions.items():
+                charge(len(candidates))
+                visible = tuple(candidate for candidate in candidates if candidate.group in (None, scope))
+                if visible:
+                    selected[name] = visible
+            program = _resolve_units(selected, charge)
+        views[scope] = program, headers
+    return views
+
+
+def _term_counter(max_terms):
     if max_terms is not None and (type(max_terms) is not int or max_terms < 1):
         raise ValueError("unit term budget must be positive")
     remaining = max_terms
-    definitions, read, importing = {}, set(), set()
 
     def charge(terms):
         nonlocal remaining
@@ -261,19 +295,28 @@ def compile_units(entry, records, *, max_terms=None):
             if remaining < 0:
                 raise ValueError("unit catalog compilation exceeded its term budget")
 
+    return charge
+
+
+def _registry_definitions(entry, records, charge, *, groups=None):
+    definitions, read, importing = {}, set(), set()
+
     def include(source):
         if source in importing or source not in records:
             raise ValueError("unit registry import is missing or cyclic")
         if source not in read:
             importing.add(source)
-            _read_registry(source, records[source], include, definitions, charge)
+            _read_registry(source, records[source], include, definitions, charge, groups)
             importing.remove(source)
             read.add(source)
 
     include(entry)
     if read != set(records):
         raise ValueError("unit registry contains records outside its import graph")
+    return definitions
 
+
+def _resolve_units(definitions, charge):
     values, resolving = {}, set()
 
     def expand(expression):

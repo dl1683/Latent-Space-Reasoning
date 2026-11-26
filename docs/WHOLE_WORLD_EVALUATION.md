@@ -420,6 +420,15 @@ candidate or source access. Compare qualified definition
 alternatives, catalog-only exact computation, and memory-omitted
 operation under a fixed task and evidence budget.
 
+Test late scope qualification with the same task name and
+magnitude across source revisions. Require the case evidence to
+change which exact law governs the answer, and retain both paths
+when the evidence cannot decide. Give the warm evaluator the same
+case text, candidate scope rules, revisions and provenance duties.
+Treat supplied routing and an authored threshold as instrumentation.
+The learned comparison must infer the evidence need from
+independently authored task language.
+
 The contributor's visible prose amendments give a second case
 with a numerical bound arriving from an independent approval.
 Require a worker to propose the governing scope and variable

@@ -10,9 +10,7 @@ import numpy as np
 from experiments.memory import relational_feedback as relations
 from experiments.memory.corpus_bindings import CorpusRevision
 from experiments.memory.latent_feedback import FeedbackKernel, ObservationMemory, _apply_value, _frozen, _real_array
-from experiments.memory.source_constraints import (
-    ConstraintAction, ConstraintUse, SourceConstraintPolicy, SourceConstraintPublication,
-)
+from experiments.memory.source_constraints import ConstraintUse, SourceConstraintPolicy, SourceConstraintPublication
 from experiments.memory.world_transport import (
     SourceTransportPolicy, SourceTransportPublication, SourceTransportUse, WorldWitness,
     coordinate_key, require_transport_scope, world_kernel_digest,
@@ -88,7 +86,7 @@ class JointWorldBranch:
     _constraint_input: MappingProxyType | None = None
     _unit_context: WorldWitness | None = None
     _unit_candidates: tuple[str, ...] = ()
-    _catalog_action: ConstraintAction | None = None
+    _catalog_actions: MappingProxyType | None = None
     _catalog_used: bool = False
 
     def _ancestry(self):
@@ -417,11 +415,12 @@ class RecurrentWorld:
             additions = MappingProxyType({action: action.project(publication.policy, points)
                                           for action in dict.fromkeys(publication.actions.values())})
         openings = []
-        for names, action in self._unit_hypotheses(publication, unit_candidates):
-            projected = (additions if action is None
-                         else MappingProxyType({action: action.project(publication.policy, points)}))
+        for names, actions in self._unit_hypotheses(publication, unit_candidates):
+            projected = (additions if not actions else MappingProxyType(
+                {action: action.project(publication.policy, points) for action in actions.values()},
+            ))
             openings.append(JointWorldBranch(initial, initial, _constraint_input=projected,
-                                             _unit_candidates=names, _catalog_action=action))
+                                             _unit_candidates=names, _catalog_actions=actions))
         state = JointWorldRead(memory, tuple(openings), self, (lower, upper), unit_premises=unit_candidates or ())
         return self.continue_joint(state, steps=steps, max_hypotheses=max_hypotheses)
 
@@ -429,16 +428,18 @@ class RecurrentWorld:
     def _unit_hypotheses(publication, candidates):
         if candidates is None:
             return (((), None),)
-        if publication is None or publication.catalog is None:
+        if publication is None or publication.catalog is None and not publication.scoped_catalogs:
             return ((candidates, None),)
         groups = {}
         for name in candidates:
-            action = publication.unit_action(name)
-            key = action.relations, action.use
-            names, representative = groups.setdefault(key, ([], action))
+            actions = publication.unit_actions(name)
+            key = tuple((source, action.relations, action.use) for source, action in actions.items())
+            names, representative = groups.setdefault(key, ([], actions))
             names.append(name)
-        return tuple((tuple(names), replace(action, use=replace(action.use, source_units=tuple(names))))
-                     for names, action in groups.values())
+        return tuple((tuple(names), MappingProxyType({
+            source: replace(action, use=replace(action.use, source_units=tuple(names)))
+            for source, action in actions.items()
+        })) for names, actions in groups.values())
 
     def continue_joint(self, state, *, steps, max_hypotheses):
         """Resume at a committed frontier on the same source and operator pin."""
@@ -633,7 +634,10 @@ class RecurrentWorld:
             return None, None
         publication = memory._source_constraints
         if policy.unit_catalog:
-            return policy, parent._catalog_action if publication is not None and witness == publication.catalog_context else None
+            if (publication is not None and parent._catalog_actions is not None
+                    and witness == publication.context_witness(source)):
+                return policy, parent._catalog_actions.get(source)
+            return policy, None
         return policy, None if publication is None else publication.actions.get(source)
 
     @staticmethod
@@ -682,6 +686,7 @@ class RecurrentWorld:
         observed = witness is not None
         earlier_unit = branch._unit_context
         unit_context = earlier_unit
+        mixed_scope = False
         installed_additions, constraint_use = ((None, None) if constraint is None
                                                else branch._constraint_input[constraint])
         if constraint_policy is not None and constraint_policy.unit_registry is not None:
@@ -691,6 +696,7 @@ class RecurrentWorld:
                 constraint_policy, constraint, constraint_use = None, None, None
             else:
                 constraint = None
+                mixed_scope = True
                 if constraint_use is not None:
                     constraint_use = replace(constraint_use, evidence=(), open_axes=constraint_policy.output_axes,
                                              withheld_conversion=("multiple_conversions", (earlier_unit, witness)))
@@ -731,12 +737,13 @@ class RecurrentWorld:
         if transport is not None and (source_extra is not None or task_extra is not None):
             use = replace(transport.use, source_row=source_extra is not None, task_row=task_extra is not None)
         destination = None if source_extra is None else transport.destination
-        catalog_used = (branch._catalog_used or
-                        bool(constraint_use and constraint_use.source_units and constraint_use.withheld_conversion is None))
+        catalog_used = not mixed_scope and (branch._catalog_used or bool(
+            constraint_use and constraint_use.source_units and constraint_use.withheld_conversion is None,
+        ))
         successor = JointWorldBranch(hidden, source_next, branch, witness, key, value, complete,
                                      _transport_use=use, _pending_destination=destination, _source_relations=source_rows,
                                      _constraint_use=constraint_use,
                                      _constraint_input=branch._constraint_input, _unit_context=unit_context,
-                                     _unit_candidates=branch._unit_candidates, _catalog_action=branch._catalog_action,
+                                     _unit_candidates=branch._unit_candidates, _catalog_actions=branch._catalog_actions,
                                      _catalog_used=catalog_used)
         return successor, evaluations
