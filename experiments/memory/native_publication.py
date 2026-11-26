@@ -18,7 +18,7 @@ from experiments.memory.selective_continuations import (
     RowShard, SelectedSpan, SelectionReceipt, SelectionStep, competing_values,
 )
 from experiments.memory.source_revision_feed import (
-    SourceDelta, SourceVersion, _OPAQUE_ID, _SCHEMA as SOURCE_SCHEMA, _encode,
+    SourceDelta, SourceVersion, _BINARY_SCHEMA, _OPAQUE_ID, _SCHEMA as SOURCE_SCHEMA, _encode,
 )
 from experiments.memory.verified_source_tool import SourceSpan, require_digest, sha256
 
@@ -64,6 +64,8 @@ def _reader_digest(reader):
         add("tokenizer", "utf8", None, tokenizer.to_str().encode("utf8"))
     if reader._task_template is not None:
         add("task-template", "utf8", None, reader._task_template.encode("utf8"))
+    if reader._source_ingress_sha256 is not None:
+        add("source-ingress", "sha256", None, reader._source_ingress_sha256.encode("ascii"))
 
     value = kernel._observation_value
     arrays = [("query", kernel._query), ("key", kernel._integer_observation_key)]
@@ -220,8 +222,12 @@ def _source_scope(header):
     if sha256(descriptor) != header["source"]:
         raise ValueError("native publication source descriptor differs")
     record = json.loads(descriptor)
-    if (type(record) is not dict or set(record) != {"schema", "epoch", "parent", "changes_sha256", "documents"}
-            or record["schema"] != SOURCE_SCHEMA or _encode(record) != descriptor
+    if type(record) is not dict or record.get("schema") not in (SOURCE_SCHEMA, _BINARY_SCHEMA):
+        raise ValueError("native publication source descriptor is malformed")
+    fields = {"schema", "epoch", "parent", "changes_sha256", "documents"}
+    if record["schema"] == _BINARY_SCHEMA:
+        fields.add("binary_sources")
+    if (set(record) != fields or _encode(record) != descriptor
             or not _between(record["epoch"], 1, 2 ** 63 - 1) or type(record["documents"]) is not dict):
         raise ValueError("native publication source descriptor is malformed")
     require_digest(record["changes_sha256"])
@@ -236,7 +242,12 @@ def _source_scope(header):
             raise ValueError("native publication source inventory is invalid")
         require_digest(digest)
         manifest[source] = SourceVersion(digest, generation)
-    return SourceDelta(header["source"], record["epoch"], MappingProxyType(manifest), MappingProxyType({}), descriptor)
+    binary = record.get("binary_sources", [])
+    if (type(binary) is not list or any(type(source) is not str or source not in manifest for source in binary)
+            or binary != sorted(set(binary))):
+        raise ValueError("native publication binary source inventory is invalid")
+    return SourceDelta(header["source"], record["epoch"], MappingProxyType(manifest), MappingProxyType({}),
+                       descriptor, record["schema"], frozenset(binary))
 
 
 def _read_sources(documents, scope, rows, width, key_width):
@@ -244,7 +255,7 @@ def _read_sources(documents, scope, rows, width, key_width):
     if [source for source, _ in documents] != sorted(scope.manifest):
         raise ValueError("native publication source inventory differs from the descriptor")
     for source, ranges in documents:
-        if type(ranges) is not list:
+        if type(ranges) is not list or (source in scope.binary_sources and len(ranges) != 1):
             raise ValueError("native publication span inventory is invalid")
         digest = scope.manifest[source].sha256
         if (not ranges) != (digest == sha256(b"")):

@@ -95,7 +95,7 @@ class _CausalControl(torch.nn.Module):
         return logits
 
 
-def _reader(model):
+def _reader(model, **source_options):
     size = len(LABELS)
     query = np.eye(model.width, size)
     value = np.zeros((model.width, model.width))
@@ -107,7 +107,7 @@ def _reader(model):
     return NativeLatentModel(
         model, _Tokenizer(), kernel, source_chars=32, context_tokens=12, latent_steps=2,
         top_k=1, output_tokens=2, representation_scale=0.25, memory_gain=1, null_weight=0.1,
-        eos_ids=(0,),
+        eos_ids=(0,), **source_options,
     )
 
 

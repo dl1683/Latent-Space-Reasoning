@@ -4,6 +4,33 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Revising binary evidence in the native world, 26 November 2026
+
+**CPU software control.** The source feed advanced from a text-only
+epoch to one containing a binary one-pixel PPM asset. A supplied
+numeric projection made the pixel determine the route between text
+clauses. The source-only worker acquired that continuation before
+the read. The fresh reader attached the publication without access to
+the ingress callable and returned `L07` on the late task. Removing
+the continuation at that pin or omitting memory gave an empty answer.
+
+Changing the pixel from red to blue while keeping the text fixed
+invalidated the continuation. The blue file contained only UTF-8-valid
+bytes and remained binary by declaration. Maintenance recomputed the
+continuation and the same task returned `L11`. A cold rebuild agreed
+on the source rows and answer. Withdrawing the asset and rerunning
+maintenance removed the answer. Restoring red gave the original
+answer under a new seal. The earlier publication still answered. The
+controller reopened the original image bytes and checked the returned
+whole-asset span. A same-width map with swapped route coordinates
+gave the wrong answer and could not reopen the original publication.
+
+The test uses hand-authored coordinates and a deterministic backbone.
+It exercises cross-modal dependency through the native call, historical
+attachment and correction. An aligned adapter from a real media
+encoder and independently graded model answers remain open.
+[Binary source interface](CONTEXT_TOOL.md#publishing-binary-native-sources)
+
 ## Reopening native evidence on the PEP corpus, 26 November 2026
 
 **Source verification.** The controller reopened opaque span receipts

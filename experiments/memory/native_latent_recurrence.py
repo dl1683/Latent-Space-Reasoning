@@ -15,7 +15,7 @@ from experiments.memory.selective_continuations import (
     RetainedSelector, RowShard, SelectionReceipt, SelectionStep, frontier_survives,
 )
 from experiments.memory.source_revision_feed import SourceDelta, read_source_delta
-from experiments.memory.verified_source_tool import SourceSpan, sha256
+from experiments.memory.verified_source_tool import SourceSpan, require_digest, sha256
 
 
 @dataclass(frozen=True, slots=True)
@@ -173,7 +173,7 @@ class NativeLatentModel:
     def __init__(self, model, tokenizer, moments, *, source_chars, context_tokens, latent_steps,
                  output_tokens, representation_scale, memory_gain, null_weight, eos_ids,
                  relay_gain=1.0, derived_gain=0.5, top_k=None, tie_limit=16, temperature=0.1,
-                 score_margin=0, task_template=None):
+                 score_margin=0, task_template=None, source_ingress=None, source_ingress_sha256=None):
         _require_cpu_eval(model)
         embedding = model.get_input_embeddings()
         if (embedding.weight.device.type != "cpu" or model.get_output_embeddings() is None
@@ -198,8 +198,13 @@ class NativeLatentModel:
             task_template = tokenizer.get_chat_template(task_template)
             if type(task_template) is not str or not task_template.strip():
                 raise ValueError("task template must resolve to a nonempty body")
+        if source_ingress is not None and not callable(source_ingress):
+            raise ValueError("source ingress must be callable")
+        if source_ingress is not None or source_ingress_sha256 is not None:
+            require_digest(source_ingress_sha256)
         self._model, self._tokenizer, self._moments = model, tokenizer, moments
         self._task_template = task_template
+        self._source_ingress, self._source_ingress_sha256 = source_ingress, source_ingress_sha256
         self._source_chars, self._context_tokens = source_chars, context_tokens
         self._steps, self._output_tokens = latent_steps, output_tokens
         self._scale, self._memory_gain, self._null_weight = representation_scale, memory_gain, null_weight
@@ -265,7 +270,14 @@ class NativeLatentModel:
             raise ValueError("backbone did not retain the expected causal prefix")
         return hidden, next_cache
 
-    def _encode_source(self, source, raw, version):
+    def _encode_source(self, source, raw, version, *, binary):
+        if binary:
+            projected = self._source_ingress(source, raw)
+            if projected is None:
+                raise ValueError("binary source needs a compatible source ingress")
+            row, = self._moments._bounded_rows((projected,))
+            span = SourceSpan(source, version.sha256, 0, len(raw), version.sha256)
+            return (_EncodedSpan(span, _frozen(row)),)
         text = raw.decode("utf8")
         offset = 0
         encoded = []
@@ -288,7 +300,7 @@ class NativeLatentModel:
         if type(memory) is not NativeSourceMemory or memory._owner is not self._owner:
             raise ValueError("source memory belongs to a different native reader")
 
-    def publish(self, epoch_directory: Path, seal: str, *, previous=None):
+    def publish(self, epoch_directory: Path, seal: str, *, previous=None, max_source_bytes=None):
         """Encode only changed sources from one verified, query-blind feed epoch."""
         import torch
 
@@ -297,7 +309,10 @@ class NativeLatentModel:
             self._check_memory(previous)
             if previous.omitted_sources or previous._derived_off:
                 raise ValueError("an ablated contribution view cannot publish a new epoch")
-        delta = read_source_delta(epoch_directory, seal, previous=None if previous is None else previous._scope)
+        if self._source_ingress_sha256 is not None and self._source_ingress is None:
+            raise ValueError("publication requires the configured source ingress")
+        delta = read_source_delta(epoch_directory, seal, previous=None if previous is None else previous._scope,
+                                  max_bytes=max_source_bytes, allow_binary=self._source_ingress is not None)
         sources = {} if previous is None else dict(previous._sources)
         bank = None
         retire, add = [], []
@@ -307,7 +322,8 @@ class NativeLatentModel:
                 if self._selector is None:
                     retire.extend(item.row for item in old_rows)
                 if raw is not None:
-                    encoded = self._encode_source(source, raw, delta.manifest[source])
+                    encoded = self._encode_source(source, raw, delta.manifest[source],
+                                                  binary=source in delta.binary_sources)
                     sources[source] = encoded
                     if self._selector is None:
                         add.extend(item.row for item in encoded)

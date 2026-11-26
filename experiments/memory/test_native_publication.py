@@ -7,7 +7,7 @@ import sys
 import pytest
 
 from experiments.memory.native_publication import read_native_publication, write_native_publication
-from experiments.memory.source_revision_feed import _encode, write_source_delta
+from experiments.memory.source_revision_feed import _encode, read_source_delta, write_source_delta
 from experiments.memory.test_native_latent_recurrence import _reader, _StandIn
 from experiments.memory.verified_source_tool import sha256
 
@@ -312,6 +312,108 @@ def test_reopened_workers_build_on_each_other_and_withdraw_dependents(tmp_path):
         manifest.write_bytes(altered)
         with pytest.raises(ValueError, match=message):
             _read(published, later, sha256(altered), feed.seal)
+
+
+def test_binary_media_supplies_a_necessary_bridge_to_the_same_reader(tmp_path):
+    from experiments.memory.native_isolated_stage import LABELS, _CausalControl, _reader as make_reader
+
+    cue, image, red_name, blue_name = (letter * 32 for letter in "abcd")
+    header = b"P6\n1 1\n255\n"
+    red = header + bytes((255, 0, 0))
+    blue = header + bytes((0, 0, 100))
+    blue.decode("utf8")
+    media_calls = []
+
+    def projector(red_edge, blue_edge):
+        spec = dict(format="P6-single-pixel", address=1, red=red_edge, blue=blue_edge)
+
+        def project(source, raw):
+            if not raw.startswith(header) or len(raw) != len(header) + 3:
+                return None
+            rgb = tuple(raw[len(header):])
+            media_calls.append((source, rgb))
+            width = len(LABELS)
+            row = [0.0] * (3 * width + 1)
+            row[spec["address"]] = 1
+            row[width + spec["red" if rgb[0] > rgb[2] else "blue"]] = 1
+            return row
+
+        return project, sha256(_encode(spec))
+
+    project, digest = projector(2, 3)
+
+    text = write_source_delta(tmp_path / "text", {
+        cue: b"link L00 L01", red_name: b"name L02 L07", blue_name: b"name L03 L11",
+    })
+    opening = write_source_delta(tmp_path / "opening", {image: red}, previous=text,
+                                 binary_sources=(image,), max_bytes=_LIMIT)
+    edited = write_source_delta(tmp_path / "edited", {image: blue}, previous=opening,
+                                binary_sources=(image,), max_bytes=_LIMIT)
+    removed = write_source_delta(tmp_path / "removed", {image: None}, previous=edited, max_bytes=_LIMIT)
+    put_back = write_source_delta(tmp_path / "restored", {image: red}, previous=removed,
+                                  binary_sources=(image,), max_bytes=_LIMIT)
+    reader = make_reader(_CausalControl().eval(), source_ingress=project, source_ingress_sha256=digest)
+    text_only = reader.publish(tmp_path / "text", text.seal, max_source_bytes=_LIMIT)
+    first = reader.publish(tmp_path / "opening", opening.seal, previous=text_only, max_source_bytes=_LIMIT)
+    first = reader.maintain(first, max_seeds=1)
+    before_dir = tmp_path / "before"
+    before_seal = write_native_publication(before_dir, reader, first, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    assert media_calls == [(image, (255, 0, 0))]
+    assert first.continuation_reads(first.derived_seeds[0])[1].selected[0].span.source_id == image
+
+    offline = make_reader(_CausalControl().eval(), source_ingress_sha256=digest)
+    old = _read(before_dir, offline, before_seal, opening.seal)
+    answer = offline("follow L00", memory=old)
+    assert answer.text == "L07" and answer.terminated and answer.applied_derived_steps == 1
+    assert offline("follow L00", memory=offline.without_derived(old)).text == ""
+    assert offline("follow L00").text == ""
+    span, = [span for span in old.evidence_spans(answer) if span.source_id == image]
+    assert span.start_byte == 0 and span.end_byte == len(red)
+    assert span.version_sha256 == span.span_sha256 == sha256(red)
+    reopened_bytes = read_source_delta(tmp_path / "opening", opening.seal, previous=text,
+                                       allow_binary=True, max_bytes=_LIMIT).changes[span.source_id]
+    assert reopened_bytes == red
+    assert sha256(reopened_bytes[span.start_byte:span.end_byte]) == span.span_sha256
+
+    swapped, swapped_hash = projector(3, 2)
+    wrong = make_reader(_CausalControl().eval(), source_ingress=swapped, source_ingress_sha256=swapped_hash)
+    with pytest.raises(ValueError, match="reader differs"):
+        _read(before_dir, wrong, before_seal, opening.seal)
+    with pytest.raises(ValueError, match="configured source ingress"):
+        offline.publish(tmp_path / "edited", edited.seal, previous=old, max_source_bytes=_LIMIT)
+    text_reader = make_reader(_CausalControl().eval())
+    text_memory = text_reader.publish(tmp_path / "text", text.seal)
+    with pytest.raises(ValueError, match="binary source"):
+        text_reader.publish(tmp_path / "opening", opening.seal, previous=text_memory, max_source_bytes=_LIMIT)
+
+    writer = make_reader(_CausalControl().eval(), source_ingress=project, source_ingress_sha256=digest)
+    previous = _read(before_dir, writer, before_seal, opening.seal)
+    revised = writer.publish(tmp_path / "edited", edited.seal, previous=previous, max_source_bytes=_LIMIT)
+    assert revised.derived_seeds == ()
+    assert writer("follow L00", memory=revised).text == ""
+    revised = writer.maintain(revised, max_seeds=4)
+    assert writer("follow L00", memory=revised).text == "L11"
+    withdrawn = writer.publish(tmp_path / "removed", removed.seal, previous=revised, max_source_bytes=_LIMIT)
+    withdrawn = writer.maintain(withdrawn, max_seeds=4)
+    assert writer("follow L00", memory=withdrawn).text == ""
+    restored = writer.publish(tmp_path / "restored", put_back.seal, previous=withdrawn, max_source_bytes=_LIMIT)
+    restored = writer.maintain(restored, max_seeds=4)
+    restored_read = writer("follow L00", memory=restored)
+    assert restored_read.text == answer.text and restored_read.source_seal != answer.source_seal
+    assert media_calls == [(image, (255, 0, 0)), (image, (0, 0, 100)), (image, (255, 0, 0))]
+    assert offline("follow L00", memory=old) == answer
+
+    cold_pin = write_source_delta(tmp_path / "cold", {**text.changes, image: blue},
+                                  binary_sources=(image,), max_bytes=_LIMIT)
+    cold = writer.maintain(writer.publish(tmp_path / "cold", cold_pin.seal, max_source_bytes=_LIMIT), max_seeds=4)
+    assert writer("follow L00", memory=cold).text == "L11"
+    for source in text.changes.keys() | {image}:
+        cold_rows = tuple(item.row.tobytes() for item in cold._sources[source])
+        assert cold_rows == tuple(item.row.tobytes() for item in revised._sources[source])
+
+    wrong_start = wrong.publish(tmp_path / "text", text.seal, max_source_bytes=_LIMIT)
+    wrong_memory = wrong.publish(tmp_path / "opening", opening.seal, previous=wrong_start, max_source_bytes=_LIMIT)
+    assert wrong("follow L00", memory=wrong.maintain(wrong_memory, max_seeds=4)).text == "L11"
 
 
 if __name__ == "__main__":

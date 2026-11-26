@@ -24,6 +24,13 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**UTF-8 validity cannot declare a source's modality, 26 November 2026.**
+A valid one-pixel blue image can contain only ASCII bytes. Routing it by
+UTF-8 decoding could send it to the text encoder and bind the wrong
+computation to its digest. Declare binary sources in the feed. Keep
+the type through revision and publication reopening.
+[Binary control](RESULTS.md#revising-binary-evidence-in-the-native-world-26-november-2026)
+
 **Checkpoint defaults and template aliases can confound the
 receiver control, 26 November 2026.** A checkpoint generation option
 could suppress the first stop token even with an explicit token cap.

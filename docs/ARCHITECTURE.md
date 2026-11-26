@@ -166,6 +166,34 @@ graded evidence, and compare it with more source-only reasoning at
 equal total work. The joint-state alternative can revise a group of
 competing paths together. [Worker and reader](../experiments/memory/native_latent_recurrence.py)
 
+#### Admitting a binary source into the native reader
+
+[SLICE] A source epoch can carry explicitly declared binary assets under
+a combined manifest and update budget. The updated wire format uses
+canonical Base64 for these values and records their live source IDs.
+Source versions and whole-asset spans identify the decoded original
+bytes. An asset can be declared binary even if its bytes happen to be
+valid UTF-8. Existing text epochs retain their original format and digest.
+
+Only declared binary data goes to the configured publisher ingress. The ingress
+returns one finite, bounded row in the native hidden coordinates for
+that asset. The publisher supplies the ingress and its trusted identity,
+which should cover decoding, preprocessing and projection. The
+publication fingerprints the identity. A fresh reader can attach with
+that expected digest and no callable. It can retrieve a whole-asset
+byte span but cannot run another source publication without the ingress.
+The controller retains the original asset for evidence reopening.
+
+The ingress uses the same retained selector and recurrent task call as
+text. The typed joint-state route remains a distinct comparison for
+working through conflicting media and text observations. Sangam
+exposes modality embeddings and source-linked sidecars. To use them
+here, validate an adapter on downstream decisions and compare with
+permuted or role-swapped coordinates. A projector of the right shape
+alone establishes an interface. The current positive uses a supplied
+pixel map.
+[Native publication interface](CONTEXT_TOOL.md#publishing-binary-native-sources)
+
 #### Qualifying the native reader before attaching memory
 
 Start with `compare_greedy(task)` on the pinned causal model. It renders

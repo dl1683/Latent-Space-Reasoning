@@ -246,3 +246,39 @@ def test_git_controls_replay_withdrawal_of_entire_scope(tmp_path):
             assert previous.changes == {source: None}
     assert previous.changes == {source: original}
     assert previous.manifest[source].generation == 3
+def test_binary_feed_checks_budget_and_canonical_wire_bytes(tmp_path):
+    source = "a" * 32
+    data = b"\xff"
+    with pytest.raises(UnicodeDecodeError):
+        write_source_delta(tmp_path / "plain", {source: data})
+    with pytest.raises(ValueError, match="requires a byte budget"):
+        write_source_delta(tmp_path / "unbounded", {source: data}, binary_sources=(source,))
+
+    folder = tmp_path / "media"
+    delta = write_source_delta(folder, {source: data}, binary_sources=(source,), max_bytes=4096)
+    manifest_path, updates_path = folder / "manifest.json", folder / "updates.json"
+    size = manifest_path.stat().st_size + updates_path.stat().st_size
+    with pytest.raises(ValueError, match="not enabled"):
+        read_source_delta(folder, delta.seal, max_bytes=4096)
+    with pytest.raises(ValueError, match="requires a byte budget"):
+        read_source_delta(tmp_path / "no_source_read", delta.seal, allow_binary=True)
+    with pytest.raises(ValueError, match="exceeds the byte budget"):
+        read_source_delta(folder, delta.seal, max_bytes=size - 1, allow_binary=True)
+    assert read_source_delta(folder, delta.seal, max_bytes=size, allow_binary=True).changes[source] == data
+    assert delta.manifest[source].sha256 == sha256(data)
+
+    end = write_source_delta(tmp_path / "removed", {source: None}, previous=delta, max_bytes=4096)
+    assert end.schema == delta.schema and read_source_delta(
+        tmp_path / "removed", end.seal, previous=delta, max_bytes=4096, allow_binary=True,
+    ).epoch == 2
+
+    manifest = json.loads(manifest_path.read_bytes())
+    # Noncanonical pad bits decode to the same byte.
+    noncanonical = updates_path.read_bytes().replace(b"/w==", b"/x==")
+    assert noncanonical != updates_path.read_bytes()
+    updates_path.write_bytes(noncanonical)
+    manifest["changes_sha256"] = sha256(noncanonical)
+    descriptor = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()
+    manifest_path.write_bytes(descriptor)
+    with pytest.raises(ValueError, match="retained scope and parent"):
+        read_source_delta(folder, sha256(descriptor), max_bytes=4096, allow_binary=True)

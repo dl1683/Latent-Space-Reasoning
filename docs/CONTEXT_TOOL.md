@@ -712,6 +712,25 @@ historical records without rewriting them. Existing authenticated export locks a
 receipts remain unchanged and retain their original identities and hashes.
 
 
+## Publishing binary native sources
+
+The publisher marks binary updates by source ID with
+`write_source_delta(..., binary_sources=(asset_id,), max_bytes=limit)`.
+The limit covers both stored feed files. Keep declaring the limit even
+for a text-only update or withdrawal after introducing a binary asset.
+A writer configured for binary ingress supplies `max_source_bytes`
+to every `NativeLatentModel.publish` call. A controller reading the
+feed directly passes `allow_binary=True` with its byte budget.
+
+Configure the writer with `source_ingress(source_id, raw_bytes)` and
+`source_ingress_sha256`. The callable returns a hidden row for a
+supported binary format. Returning `None` refuses that source.
+The digest identifies the trusted decoder and coordinate map verified
+by the controller. On reopen, the reader needs the same digest and can
+omit the callable. The reader reports the entire original asset as a
+byte interval. The controller can check that asset against the digest
+at the declared source revision.
+
 ## Reopening native candidate evidence
 
 After recording the raw answer, call `opened_memory.evidence_spans(read)`
