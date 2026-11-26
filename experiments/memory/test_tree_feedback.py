@@ -768,7 +768,7 @@ def test_slot_triage_prioritizes_a_routed_probe_with_only_one_opening_criterion_
                               observation_key=[[0.]], observation_value=[[0.]],
                               feedback_key=[[0.]], feedback_value=[[0.]], max_steps=1)
     routed = FeedbackProbe((1.,), 1, (0.,), FeedbackRoutingGoal(0, .75))
-    boundary = FeedbackProbe((1.,), 1, (.25,))
+    boundary = FeedbackProbe((2.,), 1, (.25,))
     workspace = FeedbackWorkspace(tree, [[0.], [1.]], [routed, boundary], max_update_norm=1., atol=.25)
     base = workspace.snapshot()
     reviewed = workspace.triage_observation_slot_batch(base, ({1: None},), max_candidates=1, max_replays=1)
@@ -788,6 +788,167 @@ def test_slot_triage_prioritizes_a_routed_probe_with_only_one_opening_criterion_
     assert source.replay_failure == "test reference replay ran outside Float64 range"
     assert source.estimated_satisfied is None and source.replayed_satisfied is None
     assert edge.replayed_satisfied is True and workspace.snapshot() is base
+
+
+def _slot_triage_shared_fixture(*, long_first=False):
+    tree = TreeFeedbackKernel(depth=2, max_frontier=4, query=[[0.]], carry=[[.1]],
+                              observation_key=[[0.]], observation_value=[[.7]],
+                              feedback_key=[[0.]], feedback_value=[[.2]], max_steps=3)
+    seed = (1.,)
+    short = (
+        FeedbackProbe(seed, 1, (0.,), FeedbackRoutingGoal(0, .25)),
+        FeedbackProbe(seed, 1, (0.,), FeedbackRoutingGoal(1, .25)),
+        FeedbackProbe(seed, 1, (0.,), FeedbackRoutingGoal(2, .25)),
+    )
+    long = FeedbackProbe(seed, 3, (0.,), FeedbackRoutingGoal(1, .15))
+    probes = (long, *short) if long_first else (*short, long)
+    guard = FeedbackProbe(seed, 1, (.125,))
+    workspace = FeedbackWorkspace(tree, [[0.], [0.], [0.]], probes, guards=(guard,),
+                                  max_update_norm=1., atol=.125, reuse_tree_routes=True)
+    return workspace, (*probes, guard), {0: None, 1: [.6]}
+
+
+def test_slot_triage_shares_selected_prefixes_and_reads_two_masses_from_one_transition(monkeypatch):
+    workspace, probes, edit = _slot_triage_shared_fixture()
+    base = workspace.snapshot()
+    estimate = TreeFeedbackKernel._run_many_with_error_bounds
+    advance = TreeFeedbackKernel._advance
+    horizons, transitions = [], []
+
+    def track_estimate(kernel, seed, memory, *, steps, **kwargs):
+        horizons.append(steps)
+        return estimate(kernel, seed, memory, steps=steps, **kwargs)
+
+    def track_advance(kernel, state, **kwargs):
+        if state._memory is not base.memory:
+            transitions.append(len(state._history) + 1)
+        return advance(kernel, state, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(TreeFeedbackKernel, "_run_many_with_error_bounds", track_estimate)
+        patch.setattr(TreeFeedbackKernel, "_advance", track_advance)
+        result = workspace.triage_observation_slot_batch(base, (edit,), max_candidates=1, max_replays=5)
+
+    assert horizons == [3] and transitions == [1, 2, 3]
+    assert result.replay_count == 5 and result.trajectory_replay_count == 1
+    alternative, = result.alternatives
+    reference = base.kernel.with_frontier(4, logit_tolerance=0.)
+    for probe, review in zip(probes, alternative.reads, strict=True):
+        preview = workspace.preview_observation_slots(base, edit, seed=probe.seed, steps=probe.steps,
+                                                      published_opening=True)
+        opening_error = workspace._probe_error(preview.state, probe)
+        radius = preview.error_bounds[-1]
+        assert review.error_interval == (max(0., opening_error - radius), opening_error + radius)
+        if probe.routing is None:
+            state, mass = workspace._run(reference, alternative.reference_memory, probe), None
+        else:
+            state, mass = workspace._run_routed(reference, alternative.reference_memory, probe)
+        assert review.replayed_error == workspace._probe_error(state, probe)
+        assert review.replayed_mass == mass and review.replay_failure is None
+        assert review.replayed_satisfied == (
+            review.replayed_error <= .125 and (mass is None or mass >= probe.routing.min_mass)
+        )
+    assert [read.replayed_mass for read in alternative.reads] == [0., .5, .5, .25, None]
+    assert [read.is_guard for read in alternative.reads] == [False, False, False, False, True]
+
+    limited = workspace.triage_observation_slot_batch(base, (edit,), max_candidates=1, max_replays=1)
+    assert limited.replay_count == limited.trajectory_replay_count == 1
+    assert all(read.replayed_satisfied is None for read in limited.alternatives[0].reads[:-1])
+    assert limited.alternatives[0].reads[-1].replayed_satisfied is False
+
+    transitions.clear()
+    with monkeypatch.context() as patch:
+        patch.setattr(TreeFeedbackKernel, "_advance", track_advance)
+        partial = workspace.triage_observation_slot_batch(base, (edit, edit), max_candidates=2, max_replays=3)
+    assert transitions == [1, 1]
+    assert partial.replay_count == 3 and partial.trajectory_replay_count == 2
+    first, second = partial.alternatives
+    assert [read.replayed_satisfied is not None for read in first.reads] == [True, False, False, False, True]
+    assert [read.replayed_satisfied is not None for read in second.reads] == [False, False, False, False, True]
+    assert workspace.snapshot() is base
+
+
+def test_slot_triage_keeps_finished_endpoints_when_a_shared_reference_step_fails(monkeypatch):
+    workspace, _, edit = _slot_triage_shared_fixture(long_first=True)
+    base = workspace.snapshot()
+    advance = TreeFeedbackKernel._advance
+
+    def fail_second_reference_step(kernel, state, **kwargs):
+        if state._memory is not base.memory and len(state._history) == 1:
+            raise FloatingPointError("reference overflow")
+        return advance(kernel, state, **kwargs)
+
+    monkeypatch.setattr(TreeFeedbackKernel, "_advance", fail_second_reference_step)
+    result = workspace.triage_observation_slot_batch(base, (edit,), max_candidates=1, max_replays=5)
+    late, first, second, third, plain = result.alternatives[0].reads
+    assert result.replay_count == 5 and result.trajectory_replay_count == 1
+    assert first.replayed_mass == 0. and second.replayed_mass == .5
+    assert third.replayed_mass == .5
+    assert all(read.replayed_error is not None and read.replay_failure is None
+               for read in (first, second, third, plain))
+    assert late.replayed_satisfied is late.replayed_mass is late.replayed_error is None
+    assert late.replay_failure == "reference overflow"
+
+
+def test_slot_triage_discards_shared_replay_if_the_opening_revision_changes(monkeypatch):
+    workspace, _, edit = _slot_triage_shared_fixture()
+    base = workspace.snapshot()
+    advance = TreeFeedbackKernel._advance
+    candidate = None
+
+    def supersede_reference(kernel, state, **kwargs):
+        nonlocal candidate
+        if candidate is None and state._memory is not base.memory:
+            candidate = state._memory
+            workspace.revise_observation_slots(base, {2: [.1]})
+        elif state._memory is candidate:
+            pytest.fail("stale triage continued along the shared reference")
+        return advance(kernel, state, **kwargs)
+
+    monkeypatch.setattr(TreeFeedbackKernel, "_advance", supersede_reference)
+    with pytest.raises(StaleFeedbackRevision):
+        workspace.triage_observation_slot_batch(base, (edit,), max_candidates=1, max_replays=5)
+    assert candidate is not None and workspace.snapshot().number == base.number + 1
+
+
+@pytest.mark.parametrize("underflow, expected_estimates, expected_trajectories",
+                         [("ignore", 2, 4), ("call", 3, 6), ("warn", 3, 6),
+                          ("log", 3, 6), ("print", 3, 6)])
+def test_slot_triage_isolates_binary_seeds_and_alternatives_and_respects_callback_mode(
+        monkeypatch, underflow, expected_estimates, expected_trajectories):
+    gain = 1e-200 if underflow == "call" else 0.
+    tree = TreeFeedbackKernel(depth=1, max_frontier=2, query=[[0.]], carry=None,
+                              observation_key=[[0.]], observation_value=[[gain]],
+                              feedback_key=[[gain]], feedback_value=[[gain]], max_steps=1)
+    probes = [FeedbackProbe((seed,), 1, (.25,)) for seed in (0., -0., 0.)]
+    workspace = FeedbackWorkspace(tree, [[0.], [1.]], probes, max_update_norm=1., atol=.25)
+    base = workspace.snapshot()
+    estimate = TreeFeedbackKernel._run_many_with_error_bounds
+    groups, events = [], []
+
+    def track_groups(kernel, seed, memory, **kwargs):
+        groups.append(bool(np.signbit(seed[0])))
+        return estimate(kernel, seed, memory, **kwargs)
+
+    monkeypatch.setattr(TreeFeedbackKernel, "_run_many_with_error_bounds", track_groups)
+    previous = np.geterrcall()
+    try:
+        np.seterrcall(lambda name, flag: events.append((name, flag)))
+        with np.errstate(under=underflow):
+            result = workspace.triage_observation_slot_batch(base, ({0: None}, {0: None}),
+                                                             max_candidates=2, max_replays=6)
+            if underflow == "call":
+                actual = events.copy()
+                events.clear()
+                for alternative in result.alternatives:
+                    for probe in probes:
+                        workspace._run(base.kernel, alternative.reference_memory, probe)
+                assert actual and actual == events
+    finally:
+        np.seterrcall(previous)
+    assert len(groups) == expected_estimates and groups[:2] == [False, True]
+    assert result.replay_count == 6 and result.trajectory_replay_count == expected_trajectories
+    assert all(read.replayed_satisfied is True for alternative in result.alternatives for read in alternative.reads)
 
 
 def test_slot_triage_checks_a_previously_met_source_floor_despite_a_definite_target_failure():

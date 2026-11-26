@@ -633,6 +633,31 @@ class TreeFeedbackKernel(FeedbackKernel):
                 return stepped, float(probability) / score.node.count
         raise RuntimeError("tree softmax frontier omitted the selected source")
 
+    def _source_masses_step(self, state, slots):
+        if len(slots) == 1:
+            stepped, mass = self._source_mass_step(state, slots[0])
+            return stepped, (mass,)
+        self._require_state(state)
+        paths = tuple(self._route_program_path(state._memory, slot, missing_ok=True) for slot in slots)
+        if not any(paths):
+            return self.step(state), (0.,) * len(paths)
+        diagnostics = {}
+        stepped = self._advance(state, diagnostics=diagnostics)[0]
+        weights = {score.node: float(probability) / score.node.count
+                   for score, probability in zip(diagnostics["frontier"], diagnostics["probabilities"])}
+        masses = []
+        for path in paths:
+            if not path:
+                masses.append(0.)
+                continue
+            for node in path:
+                if node in weights:
+                    masses.append(weights[node])
+                    break
+            else:
+                raise RuntimeError("tree softmax frontier omitted the selected source")
+        return stepped, tuple(masses)
+
     def _history_logits(self, keys, query):
         scores = np.asarray(keys).reshape(-1, self._query.shape[1]) @ query
         if not np.isfinite(scores).all():

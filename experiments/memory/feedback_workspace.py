@@ -166,6 +166,7 @@ class FeedbackSlotTriage:
     base: FeedbackRevision
     alternatives: tuple[FeedbackSlotAlternativeReview, ...]
     replay_count: int
+    trajectory_replay_count: int = 0
 
 
 class FeedbackWorkspace:
@@ -267,7 +268,11 @@ class FeedbackWorkspace:
 
     @staticmethod
     def _probe_error(state, probe):
-        error = float(np.max(np.abs(state.latest - probe.target)))
+        return FeedbackWorkspace._target_error(state.latest, probe.target)
+
+    @staticmethod
+    def _target_error(hidden, target):
+        error = float(np.max(np.abs(hidden - target)))
         if not isfinite(error):
             raise ValueError("probe error must be finite")
         return error
@@ -852,8 +857,9 @@ class FeedbackWorkspace:
         return previews
 
     def _estimate_slot_read(self, preview, probe, read_index, is_guard, opening_error, opening_mass):
-        error = self._probe_error(preview.state, probe)
-        radius = preview.error_bounds[-1]
+        endpoint = probe.steps - 1
+        error = self._target_error(preview.state._history[endpoint], probe.target)
+        radius = preview.error_bounds[endpoint]
         interval = max(0., error - radius), error + radius
         decision = None
         if interval[0] > self._atol:
@@ -864,6 +870,56 @@ class FeedbackWorkspace:
         opening_satisfied = opening_error <= self._atol and (floor is None or opening_mass >= floor)
         return FeedbackSlotReadReview(read_index, is_guard, opening_error, opening_mass, floor,
                                       opening_satisfied, interval, decision)
+
+    def _record_slot_replay(self, review, probe, state, mass):
+        if mass is not None and not 0. <= mass <= 1.:
+            return replace(review, replay_failure="probe source mass must be a probability")
+        try:
+            error = self._probe_error(state, probe)
+        except FloatingPointError as failure:
+            return replace(review, replay_failure=str(failure))
+        satisfied = error <= self._atol and (probe.routing is None or mass >= probe.routing.min_mass)
+        return replace(review, replayed_error=error, replayed_mass=mass, replayed_satisfied=satisfied)
+
+    def _replay_slot_reads(self, base, reference, memory, reads, reviews):
+        if len(reads) == 1:
+            position, probe = reads[0]
+            try:
+                if probe.routing is None:
+                    state, mass = self._run(reference, memory, probe), None
+                else:
+                    state, mass = self._run_routed(reference, memory, probe)
+                reviews[position] = self._record_slot_replay(reviews[position], probe, state, mass)
+            except FloatingPointError as failure:
+                reviews[position] = replace(reviews[position], replay_failure=str(failure))
+            return
+
+        horizons = {}
+        for position, probe in reads:
+            horizons.setdefault(probe.steps, []).append((position, probe))
+        completed = 0
+        try:
+            state = reference.start(reads[0][1].seed, memory)
+            for horizon, endpoints in sorted(horizons.items()):
+                if completed:
+                    self._require_current(base)
+                for _ in range(completed + 1, horizon):
+                    state = reference.step(state)
+                slots = tuple(dict.fromkeys(probe.routing.slot for _, probe in endpoints
+                                            if probe.routing is not None))
+                if slots:
+                    state, probabilities = reference._source_masses_step(state, slots)
+                    masses = dict(zip(slots, probabilities, strict=True))
+                else:
+                    state, masses = reference.step(state), {}
+                for position, probe in endpoints:
+                    mass = None if probe.routing is None else masses[probe.routing.slot]
+                    reviews[position] = self._record_slot_replay(reviews[position], probe, state, mass)
+                completed = horizon
+        except FloatingPointError as failure:
+            for position, probe in reads:
+                if probe.steps > completed:
+                    reviews[position] = replace(reviews[position], replay_failure=str(failure))
 
     def triage_observation_slot_batch(self, base, candidates, *, max_candidates, max_replays=0):
         """Review proposed edits against configured reads while bounding reference replay work."""
@@ -879,15 +935,27 @@ class FeedbackWorkspace:
                       for i, probe in enumerate(self._probes)]
         configured.extend((guard, i, True, base.guard_errors[i], None)
                           for i, guard in enumerate(self._guards))
-        reviews = [[] for _ in references]
-        for probe, read_index, is_guard, opening_error, opening_mass in configured:
-            _, seed, steps, opening = self._slot_preview_opening(base, kernel, probe.seed, probe.steps, True)
+        # Preserve separate executions for underflow warnings and NumPy's callback, log, and print modes.
+        error_modes = np.geterr()
+        share = (error_modes["under"] != "warn"
+                 and not any(mode in ("call", "log", "print") for mode in error_modes.values()))
+        signatures = [np.asarray(probe.seed, dtype=np.float64).tobytes() if share else position
+                      for position, (probe, *_) in enumerate(configured)]
+        seed_groups = {}
+        for position, signature in enumerate(signatures):
+            seed_groups.setdefault(signature, []).append(position)
+
+        reviews = [[None] * len(configured) for _ in references]
+        for positions in seed_groups.values():
+            probe = configured[positions[0]][0]
+            longest = max(configured[position][0].steps for position in positions)
+            _, seed, steps, opening = self._slot_preview_opening(base, kernel, probe.seed, longest, True)
             previews = kernel._run_many_with_error_bounds(
                 seed, base.memory, steps=steps, references=references, opening=opening,
             )
             for entries, preview in zip(reviews, previews, strict=True):
-                entries.append(self._estimate_slot_read(preview, probe, read_index, is_guard,
-                                                        opening_error, opening_mass))
+                for position in positions:
+                    entries[position] = self._estimate_slot_read(preview, *configured[position])
 
         pending = []
         for alternative, entries in enumerate(reviews):
@@ -899,33 +967,20 @@ class FeedbackWorkspace:
                                     alternative, position))
         pending.sort()
         selected = pending[:replay_budget]
+        replay_groups = {}
         for _, _, alternative, position in selected:
+            key = alternative, signatures[position]
+            replay_groups.setdefault(key, []).append((position, configured[position][0]))
+        for (alternative, _), reads in replay_groups.items():
             self._require_current(base)
-            probe = configured[position][0]
             memory = references[alternative]
             reference = kernel.with_frontier(max(kernel._max_frontier, memory.count), logit_tolerance=0.)
-            review = reviews[alternative][position]
-            try:
-                mass = None
-                if probe.routing is None:
-                    state = self._run(reference, memory, probe)
-                else:
-                    state, mass = self._run_routed(reference, memory, probe)
-                    if not 0. <= mass <= 1.:
-                        raise FloatingPointError("probe source mass must be a probability")
-                error = self._probe_error(state, probe)
-            except FloatingPointError as failure:
-                reviews[alternative][position] = replace(review, replay_failure=str(failure))
-                continue
-            satisfied = error <= self._atol and (probe.routing is None or mass >= probe.routing.min_mass)
-            reviews[alternative][position] = replace(
-                review, replayed_error=error, replayed_mass=mass, replayed_satisfied=satisfied,
-            )
+            self._replay_slot_reads(base, reference, memory, reads, reviews[alternative])
 
         self._require_current(base)
         alternatives = tuple(FeedbackSlotAlternativeReview(memory, tuple(entries))
                              for memory, entries in zip(references, reviews, strict=True))
-        return FeedbackSlotTriage(base, alternatives, len(selected))
+        return FeedbackSlotTriage(base, alternatives, len(selected), len(replay_groups))
 
     def _prepare_slot_revision(self, base, changes):
         if not isinstance(base.kernel, TreeFeedbackKernel):
