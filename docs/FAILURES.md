@@ -24,6 +24,15 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**A revision mean can conceal opposing passages, 26 November 2026.**
+The same edit let one candidate pass the byte-weighted mean while
+both candidates failed against the individual changed rows. The
+separate opening-mean control vetoed an explained change. Record the
+aggregation rule before release and preserve each witness location
+for later review. Mean agreement does not establish passage-level
+consistency or late-task quality.
+[Weighted witness results](RESULTS.md#qualifying-a-byte-weighted-revision-forecast-26-november-2026)
+
 **One changed passage can hide contradictory revision evidence, 26 November 2026.**
 A correction produced one introduced row compatible with each rival.
 Scoring either row alone would favor a different operation. Scoring

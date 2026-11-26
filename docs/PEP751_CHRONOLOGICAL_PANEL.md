@@ -31,13 +31,19 @@ The other three blobs at **all eight sampled pins**:
 
 Opening: 163118 source bytes. Send only the new PEP 751 generation and ordinary source-manifest update at each event. Source content and publication identity are distinct. History must remain addressable; a controller-provided revision must not give the reader an answer-specific source coordinate.
 
-## Prospective witness protocol (proposed, not implemented)
+## Prospective witness protocol
+
+The [native weighted witness](CONTEXT_TOOL.md#comparing-a-byte-weighted-revision-witness)
+implements the source-scoped aggregate and its distinct opening-mean
+control. All seven edits passed the source-only input preflight.
+The forecast and late-task experiment awaits the ordinary direct-text
+competence gate and explicit execution authority.
 
 Every p0..p6 opening is eligible. Freeze a worker-selected proposal set, source-only control and any predicted observation before the next release. The controller gives the same fixed source scope (the existing PEP 751 opaque identity, not a passage) at each opening; this is a scoped acquisition test, not a test of autonomous witness-source selection. A fully blind follow-up would remove that hint. A fixed one-event horizon is the primary denominator (7 openings). If testing a competing multi-event forecast set, declare its horizon before starting, record each prefix and expiration, and report it separately; no retroactive window extensions or favorable subset selection.
 
 Use an opening-fixed rule that can operate on a multi-passage revision: freeze the reader, deterministic content-defined chunk policy and cap, candidate-selected coordinate set, reducer and tolerance. After release compare exact chunk bytes against the previous source generation. For the primary numeric witness, take the byte-length-weighted mean of the frozen reader's row values over all new-content chunk **locations** (including repeated new strings at different locations), then apply the frozen coordinate projection and quantization. Prediction arms must predict that same aggregate, not pick a convenient new row after release. The source-only control receives all opening source rows and the same rollout budget; include an old-source mean persistence control. If no new locations exist, the changed source is deleted, numeric limits fail, a complete observation exceeds the cap, or the necessary binding fails, record unscorable/expired/refused, never a win. Do not silently replace this rule with a whole-document mean or select changed chunks based on later task words. A deletion-sensitive paired old/new aggregate is a separate proposed arm, not the primary rule.
 
-This aggregate is only a controlled predictive contrast; similar means can hide changed semantics. A winning numeric prediction is **not** evidence that an acquired operation is useful. The decisive outcome is independently graded late-task improvement caused by that operation. Recheck parent and rival frontiers, source generation, scope and all forecast dependencies before installing, and invalidate downstream work on changed evidence. Current NativeForecastWitness requires an absent single-row source; the adapter needs to support this explicit existing-generation update rule before the panel can run. Do not call a forced scalar replacement a pass.
+This aggregate is only a controlled predictive contrast; similar means can hide changed semantics. A winning numeric prediction is **not** evidence that an acquired operation is useful. The decisive outcome is independently graded late-task improvement caused by that operation. Recheck parent and rival frontiers, source generation, scope and all forecast dependencies before installing, and invalidate downstream work on changed evidence. Use `NativeWeightedRevisionWitness` for this existing-generation update rule. Its exact byte-length weights and one nearest-even Q8 rounding are part of the committed comparator.
 
 Controller-only event audit (do not expose these descriptions before release):
 - p1: multi-use lockfile concepts and marker rules introduced.

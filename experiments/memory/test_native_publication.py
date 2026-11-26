@@ -1168,10 +1168,13 @@ def test_content_defined_reuse_matches_cold_source_rows_after_reopen(tmp_path, r
 @pytest.mark.parametrize("outcome", [
     "admitted", "persistence_confirmed", "disconfirmed", "witness_change_limit",
     "deletion_only", "witness_unchanged", "witness_withdrawn", "witness_out_of_order",
+    "weighted_admitted", "weighted_persistence", "weighted_cap", "same_edit_all_rows",
 ])
 def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, outcome):
     import numpy as np
-    from experiments.memory.native_forecast_set import NativeForecastWitness, NativeRevisionWitness
+    from experiments.memory.native_forecast_set import (
+        NativeForecastWitness, NativeRevisionWitness, NativeWeightedRevisionWitness,
+    )
     from experiments.memory.native_isolated_stage import LABELS, _CausalControl, _reader
     from experiments.memory.native_task_episode import NativeTaskWorldPin
     from experiments.memory.task_evidence import TaskWorld
@@ -1209,6 +1212,12 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
     new_text = document("follow L04", new_tail, "follow L11")
     if outcome == "deletion_only":
         new_text = document(old_head, "follow L11")
+    weighted = outcome.startswith("weighted_")
+    single_edit = weighted or outcome == "same_edit_all_rows"
+    if single_edit:
+        new_text = document("follow L04") + b"follow L05"
+    if outcome == "weighted_persistence":
+        old_text = document("follow  L04") + b"follow  L05"
 
     model = RevisionControl().eval()
     worker = _reader(model)
@@ -1225,28 +1234,36 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
     seed, = opening.source_spans(cue)
     high_parent, = opening.source_spans(high)
     low_parent, = opening.source_spans(low)
-    witness = NativeRevisionWitness(second, (4, 5), 40, 3, 1 if outcome == "witness_change_limit" else 2)
-    fresh = NativeForecastWitness(first, (marker,), 40)
+    spec_type = NativeWeightedRevisionWitness if weighted else NativeRevisionWitness
+    witness = spec_type(second, (4, 5), 60 if single_edit else 40,
+                        3, 1 if outcome in ("witness_change_limit", "weighted_cap") else 2)
+    fresh = () if single_edit else (NativeForecastWitness(first, (marker,), 40),)
     budgets = dict(max_candidates=2, max_parent_scores=4)
+    too_small = replace(witness, max_opening_rows=len(opening.source_spans(second)) - 1)
     with pytest.raises(ValueError, match="opening row allowance"):
-        worker.forecast_set(opening, witnesses=(fresh, replace(witness, max_opening_rows=2)), **budgets)
-    draft = worker.forecast_set(opening, witnesses=(fresh, witness), **budgets)
+        worker.forecast_set(opening, witnesses=(*fresh, too_small), **budgets)
+    draft = worker.forecast_set(opening, witnesses=(*fresh, witness), **budgets)
     commitment = draft.commitment
     assert draft.parents == (high_parent, low_parent)
-    assert draft._opening_at(1).version_sha256 == sha256(old_text)
-    assert draft._opening_at(1).generation == 1
+    assert draft._opening_at(len(fresh)).version_sha256 == sha256(old_text)
+    assert draft._opening_at(len(fresh)).generation == 1
+    if outcome == "weighted_persistence":
+        assert draft._opening_at(0).persistence == (71, 24)
 
-    changes = {first: b"follow L06"}
-    if outcome == "witness_out_of_order":
-        changes[second] = new_text
-    first_dir = tmp_path / "first"
-    epoch = write_source_delta(first_dir, changes, previous=source, max_bytes=_LIMIT)
-    pending = worker.advance_forecast_set(opening, draft, first_dir, epoch.seal, commitment=commitment,
-                                         max_source_bytes=_LIMIT)
-    if outcome == "witness_out_of_order":
-        assert pending.status == outcome and seed not in pending.memory.derived_seeds
-        return
-    assert pending.status == "pending" and pending.survivors == (high_parent, low_parent)
+    previous_memory, epoch = opening, source
+    if fresh:
+        changes = {first: b"follow L06"}
+        if outcome == "witness_out_of_order":
+            changes[second] = new_text
+        first_dir = tmp_path / "first"
+        epoch = write_source_delta(first_dir, changes, previous=source, max_bytes=_LIMIT)
+        pending = worker.advance_forecast_set(opening, draft, first_dir, epoch.seal, commitment=commitment,
+                                             max_source_bytes=_LIMIT)
+        if outcome == "witness_out_of_order":
+            assert pending.status == outcome and seed not in pending.memory.derived_seeds
+            return
+        assert pending.status == "pending" and pending.survivors == (high_parent, low_parent)
+        previous_memory = pending.memory
 
     changes = {second: new_text}
     if outcome == "witness_unchanged":
@@ -1255,25 +1272,38 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
         changes[second] = None
     revision_path = tmp_path / "revision"
     revision = write_source_delta(revision_path, changes, previous=epoch, max_bytes=_LIMIT)
-    resolution = worker.advance_forecast_set(pending.memory, draft, revision_path, revision.seal,
+    if outcome == "weighted_admitted":
+        with pytest.raises(ValueError, match="source feed exceeds the byte budget"):
+            worker.advance_forecast_set(previous_memory, draft, revision_path, revision.seal,
+                                        commitment=commitment, max_source_bytes=1)
+    resolution = worker.advance_forecast_set(previous_memory, draft, revision_path, revision.seal,
                                              commitment=commitment, max_source_bytes=_LIMIT)
-    expected = "unscorable_witness" if outcome == "deletion_only" else outcome
+    expected = {
+        "deletion_only": "unscorable_witness", "weighted_admitted": "admitted",
+        "weighted_persistence": "persistence_confirmed", "same_edit_all_rows": "disconfirmed",
+        "weighted_cap": "witness_change_limit",
+    }.get(outcome, outcome)
     assert resolution.status == expected and resolution.memory.seal == revision.seal
-    assert (seed in resolution.memory.derived_seeds) == (outcome == "admitted")
-    if outcome != "admitted":
+    assert (seed in resolution.memory.derived_seeds) == (expected == "admitted")
+    if weighted and outcome != "weighted_cap":
+        assert resolution.observations == ((73, 23),)
+    if outcome == "same_edit_all_rows":
+        assert resolution.observations == (((95, 0), (0, 95)),)
+    if expected != "admitted":
         return
-    assert resolution.observations == ((-95,), ((95, 0), (95, 0)))
+    if not weighted:
+        assert resolution.observations == ((-95,), ((95, 0), (95, 0)))
     assert resolution.survivors == (low_parent,)
 
     destination = tmp_path / "admitted"
     seal = write_native_publication(destination, worker, resolution.memory, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
     reader = _reader(RevisionControl().eval())
     restored = _read(destination, reader, seal, revision.seal)
-    assert restored.continuation_witnesses(seed) == (
-        *restored.source_spans(first), *restored.source_spans(second)[:2],
-    )
-    assert restored._selective.forecast_sets[seed].observation_seals == (epoch.seal, revision.seal)
-    unadmitted = worker.publish(revision_path, revision.seal, previous=pending.memory, max_source_bytes=_LIMIT)
+    first_spans = restored.source_spans(first) if fresh else ()
+    assert restored.continuation_witnesses(seed) == (*first_spans, *restored.source_spans(second)[:2])
+    seals = (epoch.seal, revision.seal) if fresh else (revision.seal,)
+    assert restored._selective.forecast_sets[seed].observation_seals == seals
+    unadmitted = worker.publish(revision_path, revision.seal, previous=previous_memory, max_source_bytes=_LIMIT)
     assert set(resolution.memory.derived_seeds) - {seed} == set(unadmitted.derived_seeds)
     assert all(resolution.memory._selective.acquired[span] is unadmitted._selective.acquired[span]
                for span in unadmitted.derived_seeds)
@@ -1284,7 +1314,8 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
     assert restored._sources.keys() == baseline._sources.keys()
     source_caps = dict(max_feed_bytes=_LIMIT, max_source_bytes=_LIMIT, max_passages=64)
     world = TaskWorld.from_source_epoch(source_path, source.seal, **source_caps)
-    world = TaskWorld.from_source_epoch(first_dir, epoch.seal, previous=world, **source_caps)
+    if fresh:
+        world = TaskWorld.from_source_epoch(first_dir, epoch.seal, previous=world, **source_caps)
     world = TaskWorld.from_source_epoch(revision_path, revision.seal, previous=world, **source_caps)
     pin_options = dict(memory_view="active", latent_steps=2, expected_runtime_sha256=_RUNTIME,
                        max_source_verification_bytes=_LIMIT)
@@ -1303,13 +1334,23 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
 
     manifest = destination / "manifest.json"
     original = manifest.read_bytes()
-    assert json.loads(original)["schema"] == "lsr-native-selective-v5"
-    for attack in ("drop_row", "change_predecessor"):
+    version = 6 if weighted else 5
+    assert json.loads(original)["schema"] == f"lsr-native-selective-v{version}"
+    attacks = ("drop_row", "change_predecessor", "wrong_schema")
+    if weighted:
+        attacks += ("change_persistence",)
+    for attack in attacks:
         forged = json.loads(original)
         record, = forged["forecast_sets"]
         if attack == "drop_row":
-            record[7][1][0].pop()
+            record[7][len(fresh)][0].pop()
             reason = "cover all introduced rows"
+        elif attack == "wrong_schema":
+            forged["schema"] = "lsr-native-selective-v5" if weighted else "lsr-native-selective-v6"
+            reason = "witness inventory is malformed" if weighted else "has no weighted witnesses"
+        elif attack == "change_persistence":
+            record[7][0][3][-1][0] = 1
+            reason = "commitment differs"
         else:
             record[-1][0] = "1" * 64
             reason = "observation chain differs"
@@ -1323,3 +1364,41 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
     retained = worker.publish(reverted_path, reverted.seal, previous=resolution.memory, max_source_bytes=_LIMIT)
     assert seed not in retained.derived_seeds
     assert reader(question, memory=_read(destination, reader, seal, revision.seal)).text == "L06"
+
+
+def test_weighted_witness_keeps_new_duplicate_locations_and_rounds_once():
+    from types import SimpleNamespace
+
+    import numpy as np
+
+    from experiments.memory.native_forecast_set import (
+        NativeWeightedRevisionWitness, _WeightedWitnessOpening, _forecast_values,
+        _measure_witness, _witness_prediction,
+    )
+    from experiments.memory.verified_source_tool import SourceSpan
+
+    current = b"aabbcd"
+    source = "a" * 32
+    version = sha256(current)
+
+    def row(start, end, value):
+        return SimpleNamespace(
+            span=SourceSpan(source, version, start, end, sha256(current[start:end])),
+            row=(value,),
+        )
+
+    old_digest = sha256(b"a")
+    opening = _WeightedWitnessOpening(old_digest, 1, (old_digest,), (127,))
+    rows = [row(0, 1, 1.0), row(1, 2, 1.0), row(2, 3, 1.0), row(3, 4, 1.0), row(4, 6, 0.0)]
+    witness = NativeWeightedRevisionWitness(source, (0,), 4, 1, 3)
+    assert opening.introduced_rows(rows, 3) == tuple(rows[2:])
+    assert opening.introduced_rows(rows, 2) is None
+    assert _measure_witness(witness, tuple(rows[2:])) == (64,)
+
+    assert _measure_witness(witness, (row(0, 1, -1.0), row(1, 2, 0.0))) == (-64,)
+    for sign in (-1, 1):
+        nearly_half = (sign * 1.5 / 127,)
+        assert _forecast_values(np.asarray(nearly_half), (0,)) == (sign * 2,)
+        assert _witness_prediction(witness, nearly_half) == (sign,)
+    unequal = (row(0, 3, 0.49 / 127), row(3, 4, 1.49 / 127))
+    assert _measure_witness(witness, unequal) == (1,)

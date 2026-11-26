@@ -15,9 +15,10 @@ from experiments.memory.linear_feedback import (
     AssociationMemory, LinearFeedbackKernel, MomentMemory, _quantize,
 )
 from experiments.memory.native_forecast_set import (
-    NativeForecastObservation, NativeForecastSet, NativeRevisionWitness,
-    _ForecastAlternative, _ForecastSetCheck, _MAX_ARMS, _RevisionWitnessOpening,
-    _forecast_error, _forecast_fields, _forecast_values, _payload_digest, _validate_witnesses,
+    NativeForecastObservation, NativeForecastSet, NativeRevisionWitness, NativeWeightedRevisionWitness,
+    _ForecastAlternative, _ForecastSetCheck, _MAX_ARMS, _RevisionWitnessOpening, _WeightedWitnessOpening,
+    _forecast_error, _forecast_fields, _forecast_values, _measure_witness, _payload_digest, _validate_witnesses,
+    _witness_prediction,
 )
 from experiments.memory.selective_continuations import (
     RetainedSelector, RowShard, SelectionReceipt, SelectionStep, frontier_survives,
@@ -776,7 +777,7 @@ class NativeLatentModel:
             bank, = selective.derived
             parents = self._selector.parent_candidates(item.span, baseline.source_steps, bank, max_candidates)
             baseline_value = self._encode_hidden(baseline.hidden)
-            control = tuple(_forecast_values(baseline_value, spec.features) for spec in witnesses)
+            control = tuple(_witness_prediction(spec, baseline_value) for spec in witnesses)
             alternatives, payloads = [], []
             for parent in parents:
                 replay = self._replay_parent(item, memory, lookup, address, baseline_value, parent,
@@ -785,7 +786,7 @@ class NativeLatentModel:
                     continue
                 run, value = replay
                 payload = _Continuation(_frozen(address), _frozen(value))
-                predictions = tuple(_forecast_values(value, spec.features) for spec in witnesses)
+                predictions = tuple(_witness_prediction(spec, value) for spec in witnesses)
                 alternatives.append(_ForecastAlternative(parent, _payload_digest(selective.acquired[parent]),
                                                           _payload_digest(payload), predictions, run.source_steps))
                 payloads.append(payload)
@@ -812,6 +813,13 @@ class NativeLatentModel:
         rows = memory._sources[source]
         if len(rows) > spec.max_opening_rows:
             raise ValueError("revision witness exceeds its opening row allowance")
+        if isinstance(spec, NativeWeightedRevisionWitness):
+            if not rows:
+                raise ValueError("weighted revision witness needs a nonempty opening source")
+            return _WeightedWitnessOpening(
+                version.sha256, version.generation, tuple(item.span.span_sha256 for item in rows),
+                _measure_witness(spec, rows),
+            )
         return _RevisionWitnessOpening(version.sha256, version.generation, tuple(
             (item.span.span_sha256, _forecast_values(item.row, spec.features)) for item in rows
         ))
@@ -853,8 +861,7 @@ class NativeLatentModel:
         status, rows = self._observe_witness(cursor.memory, revised, delta, spec, opening)
         if status is not None:
             return NativeForecastSetResolution(revised, status, (), observations), None
-        measured = tuple(_forecast_values(item.row, spec.features) for item in rows)
-        observations += (measured[0] if opening is None else measured,)
+        observations += (_measure_witness(spec, rows),)
         survivors = forecast._survivors(observations)
         witness_spans = (*cursor.witness_spans, *(item.span for item in rows))
         observation_seals = (*cursor.observation_seals, delta.seal)

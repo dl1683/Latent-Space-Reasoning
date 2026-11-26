@@ -843,6 +843,23 @@ rows is unscorable. Use `memory.continuation_witnesses(seed)` to
 inspect the exact introduced spans in an admitted publication.
 Preserve the opening and direct source feeds for independent replay.
 
+## Comparing a byte-weighted revision witness
+
+Use `NativeWeightedRevisionWitness` from
+`experiments.memory.native_forecast_set` with the same source ID,
+features, tolerance and row allowances as `NativeRevisionWitness`.
+The observation is one Q8 vector for the byte-weighted mean of all
+current chunk locations whose content digest was absent in the
+opening version of that source. Predictions and the opening-document
+mean use the same exact rounding. Every new occurrence contributes
+its own byte length. A cap overflow withholds the comparison.
+
+The controller commits to this witness type at opening. A V6
+publication keeps its selected spans and separate opening mean.
+Keep the earlier publication and source feed for historical replay.
+For the primary PEP 751 comparison, freeze the content-defined
+chunker and one-event horizon and count all seven openings.
+
 ## Publishing binary native sources
 
 The publisher marks binary updates by source ID with

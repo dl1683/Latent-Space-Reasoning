@@ -422,6 +422,35 @@ same-source persistence veto complements a whole-corpus exact
 baseline and an independently assessed ordinary text arm.
 [Control result](RESULTS.md#qualifying-latent-work-on-an-existing-text-correction-26-november-2026)
 
+#### Qualifying a byte-weighted forecast from an edited source
+
+[SLICE] `NativeWeightedRevisionWitness` fixes a different comparison
+before an existing text source is corrected. Select every current
+chunk location with a byte digest absent from that document's
+opening inventory. Repeated occurrences of a new digest each carry
+their own byte width. An extra occurrence of a known digest adds
+no weight. The opening and introduced-row allowances still apply.
+
+Each projected coordinate is the sum of its stored binary64 values
+weighted by exact span byte lengths, divided by the total included
+bytes. The worker evaluates that rational value exactly, applies the
+signed Q8 scale of 127 and rounds once to nearest, ties to even.
+The source-only and composed forecasts use the same rounding for
+their predicted aggregate coordinates. The opening-document
+persistence arm uses the same byte-weighted mean over every
+opening row. An empty opening cannot define that control.
+
+This arm's commitment and V6 publication distinguish it from the
+all-row comparison. Reopening derives all selected locations again
+and recomputes the changed mean from the sealed numerical rows.
+The opening inventory and control are attested by the
+controller-pinned opening and the pre-release commitment. Retain
+the opening publication and exact feed to rederive historical
+values independently. An average can pass while a short changed
+passage contradicts the prediction. Report both comparison policies,
+and use independently graded late tasks to evaluate acquired work.
+[Controlled runs and source preflight](RESULTS.md#qualifying-a-byte-weighted-revision-forecast-26-november-2026)
+
 #### Admitting a binary source into the native reader
 
 [SLICE] A source epoch can carry explicitly declared binary assets under

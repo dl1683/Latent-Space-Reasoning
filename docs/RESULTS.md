@@ -4,6 +4,52 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Qualifying a byte-weighted revision forecast, 26 November 2026
+
+**Software controls.** Two newly introduced rows of 32 and 10 bytes
+gave a weighted projection of (73, 23). At a tolerance of 60, that
+aggregate qualified one rival. Both rivals failed when each row
+was evaluated separately on the same edit. A separate opening mean
+of (71, 24) vetoed the weighted admission despite the source-only
+miss. The worker also refused a cap of one row and an insufficient
+source-feed byte allowance. The same-revision publication with the
+admitted operation returned L06. The ordinary-revision publication
+kept the parents and source rows and returned empty. Reattaching
+the admitted publication restored L06.
+
+The V6 reopen check verified all locations and refused a changed
+opening mean or a downgraded record. A legacy all-row record also
+failed when labeled as a weighted publication. A small arithmetic
+control counted each repeated new-content location once and ignored
+extra copies of opening content. It checked positive and negative
+ties and a binary64 value that rounds differently when the product
+is rounded before conversion to Q8.
+
+**PEP 751 input preflight.** All eight declared source snapshots
+opened over the four-document scope. The implemented membership
+rule at a 512-character cap produced these available weights.
+A cap one location below the count withheld each of the corresponding
+selections. The policy was implemented after the public source-only
+preflight, where membership and multiset counts already agreed.
+
+| Edit | New locations | Bytes at those locations |
+| --- | ---: | ---: |
+| p0 to p1 | 65 | 24,741 |
+| p1 to p2 | 13 | 5,340 |
+| p2 to p3 | 6 | 2,364 |
+| p3 to p4 | 10 | 3,625 |
+| p4 to p5 | 3 | 1,038 |
+| p5 to p6 | 34 | 12,265 |
+| p6 to p7 | 8 | 2,875 |
+
+This preflight verified source identities and potential witness
+locations. No backbone, late task, or grader ran on the panel.
+Aggregate agreement still needs to predict a causal late-task gain.
+Ordinary direct-text competence and pretrained task addressing
+remain open.
+[Source panel](PEP751_CHRONOLOGICAL_PANEL.md)
+[Software controls](../experiments/memory/test_native_publication.py)
+
 ## Qualifying latent work on an existing text correction, 26 November 2026
 
 **Controlled native run.** A fresh witness fit both drafted operations.

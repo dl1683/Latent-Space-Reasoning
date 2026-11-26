@@ -2,7 +2,8 @@
 
 from collections import Counter
 from dataclasses import asdict, dataclass
-from itertools import chain
+from fractions import Fraction
+from itertools import chain, islice
 
 import numpy as np
 
@@ -46,6 +47,11 @@ class NativeRevisionWitness(NativeForecastWitness):
 
 
 @dataclass(frozen=True, slots=True)
+class NativeWeightedRevisionWitness(NativeRevisionWitness):
+    """Observe the byte-weighted mean of all new-content locations in a text edit."""
+
+
+@dataclass(frozen=True, slots=True)
 class _RevisionWitnessOpening:
     version_sha256: str
     generation: int
@@ -66,6 +72,42 @@ class _RevisionWitnessOpening:
         return tuple(introduced)
 
 
+@dataclass(frozen=True, slots=True)
+class _WeightedWitnessOpening:
+    version_sha256: str
+    generation: int
+    digests: tuple[str, ...]
+    persistence: tuple[int, ...]
+
+    def introduced_rows(self, current, limit):
+        known = frozenset(self.digests)
+        introduced = (item for item in current if item.span.span_sha256 not in known)
+        rows = tuple(islice(introduced, limit))
+        return rows if next(introduced, None) is None else None
+
+
+def _weighted_projection(rows, features):
+    """Quantize the exact byte-weighted mean of the stored binary64 coordinates."""
+    widths = tuple(item.span.end_byte - item.span.start_byte for item in rows)
+    total = sum(widths)
+    return tuple(round(sum(width * Fraction(float(item.row[index]))
+                           for width, item in zip(widths, rows, strict=True)) * _LEVELS / total)
+                 for index in features)
+
+
+def _witness_prediction(spec, row):
+    if isinstance(spec, NativeWeightedRevisionWitness):
+        return tuple(round(_LEVELS * Fraction(float(row[index]))) for index in spec.features)
+    return _forecast_values(row, spec.features)
+
+
+def _measure_witness(spec, rows):
+    if isinstance(spec, NativeWeightedRevisionWitness):
+        return _weighted_projection(rows, spec.features)
+    projected = tuple(_forecast_values(item.row, spec.features) for item in rows)
+    return projected if isinstance(spec, NativeRevisionWitness) else projected[0]
+
+
 NativeForecastObservation = tuple[int, ...] | tuple[tuple[int, ...], ...]
 
 
@@ -74,7 +116,8 @@ def _validate_witnesses(specs, width):
         raise ValueError("forecast set needs one to eight witness specifications")
     seen = set()
     for spec in specs:
-        if (type(spec) not in (NativeForecastWitness, NativeRevisionWitness) or type(spec.source_id) is not str
+        if (type(spec) not in (NativeForecastWitness, NativeRevisionWitness, NativeWeightedRevisionWitness)
+                or type(spec.source_id) is not str
                 or not _OPAQUE_ID.fullmatch(spec.source_id) or spec.source_id in seen
                 or type(spec.features) is not tuple):
             raise ValueError("forecast set needs distinct source identities")
@@ -107,7 +150,7 @@ class _ForecastAlternative:
 @dataclass(frozen=True, slots=True, eq=False)
 class NativeForecastSet:
     seed: SourceSpan
-    witnesses: tuple[NativeForecastWitness | NativeRevisionWitness, ...]
+    witnesses: tuple[NativeForecastWitness, ...]
     opening_source: str
     opening_epoch: int
     opening_publication: str
@@ -117,7 +160,11 @@ class NativeForecastSet:
     alternatives: tuple[_ForecastAlternative, ...]
     _arm_limit: int
     _score_limit: int
-    _revision_openings: tuple[_RevisionWitnessOpening | None, ...] = ()
+    _revision_openings: tuple[_RevisionWitnessOpening | _WeightedWitnessOpening | None, ...] = ()
+
+    @property
+    def _has_weighted_witness(self):
+        return any(isinstance(spec, NativeWeightedRevisionWitness) for spec in self.witnesses)
 
     def _opening_at(self, index):
         return self._revision_openings[index] if self._revision_openings else None
@@ -133,7 +180,8 @@ class NativeForecastSet:
               _trace_description(arm.steps)] for arm in self.alternatives],
         ]
         if self._revision_openings:
-            preimage[0] = "lsr-native-forecast-set-v2"
+            preimage[0] = ("lsr-native-forecast-set-v3" if self._has_weighted_witness
+                           else "lsr-native-forecast-set-v2")
             preimage.append([None if opening is None else asdict(opening) for opening in self._revision_openings])
         return sha256(_encode(preimage))
 
@@ -144,7 +192,7 @@ class NativeForecastSet:
     def _matches(self, predictions, observations):
         count = len(observations)
         for spec, predicted, observation in zip(self.witnesses[:count], predictions[:count], observations, strict=True):
-            rows = observation if isinstance(spec, NativeRevisionWitness) else (observation,)
+            rows = observation if type(spec) is NativeRevisionWitness else (observation,)
             if any(_forecast_error(predicted, row) > spec.tolerance for row in rows):
                 return False
         return True
@@ -158,9 +206,12 @@ class NativeForecastSet:
                 continue
             checked = True
             tolerance = self.witnesses[index].tolerance
-            for row in observation:
-                if not any(_forecast_error(old, row) <= tolerance for _, old in opening.rows):
+            if isinstance(opening, _WeightedWitnessOpening):
+                if _forecast_error(opening.persistence, observation) > tolerance:
                     return False
+            elif any(not any(_forecast_error(old, row) <= tolerance for _, old in opening.rows)
+                     for row in observation):
+                return False
         return checked
 
     def _survivors(self, observations):
