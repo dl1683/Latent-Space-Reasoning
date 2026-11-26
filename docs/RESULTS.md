@@ -4,6 +4,28 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Joint task reasoning on a maintained pin, 26 November 2026
+
+**Software verification, supplied directions.** A scripted task used the
+normal episode interface to select a past effective time on a later journal
+snapshot, run two hidden transitions, and reopen the source and authority
+clauses for the governing route. The host rejected a filing that omitted an
+authority citation and accepted the corrected filing. That episode took seven
+policy calls, including a candidate page and the rejected submission, and
+reopened 202 source bytes across five reads. A separate tool check
+used two role-driven stages followed by an ordinary stage. It rejected a
+finding that cited the strongest path but omitted a second agreeing path.
+The complete dependency citations passed, a mismatched outcome failed, and
+an over-budget transition request returned an open refusal. [Fixtures](../experiments/memory/test_binding_links.py)
+
+These checks cover the host contract from a published revision to a later
+task and back to verified source bytes. The task adapter was scripted and
+used a byte-counting tokenizer with its own input budget. Its count has
+no model-token interpretation. Learned
+acquisition, causal use in an unconstrained task,
+autonomous maintenance, end-to-end costs and comparison with an equally
+informed incremental temporal join remain open.
+
 ## Task-need planner pilot, 26 November 2026
 
 **Instrument failure; no planner quality result.** On the pinned 50-question,

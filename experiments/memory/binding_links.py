@@ -40,6 +40,7 @@ class BindingLinkWitness:
     key_ordinals: tuple[int, int] | None = None
     source_spans: tuple[SourceSpan, ...] = ()
     validity_spans: tuple[SourceSpan, ...] = ()
+    unscoped_sources: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -88,6 +89,7 @@ class BindingLinkRead:
     as_of: int | None = None
     validity_open: bool = False
     supersessions: tuple[RoleSupersession, ...] = ()
+    dependency_witnesses: tuple[BindingLinkWitness, ...] = ()
 
     @property
     def answer(self):
@@ -737,7 +739,8 @@ class _RoleLinks:
         return frontier, groups
 
     def read(self, direction, *, outcomes, mentions, limit, width, hops, condition,
-             prior_steps=(), prior_strength=1., branch_limit=None, scoped_sources=frozenset()):
+             prior_steps=(), prior_strength=1., branch_limit=None, scoped_sources=frozenset(),
+             retain_dependencies=False):
         vocabulary = tuple(sorted(outcomes))
         as_of = None if self.validity is None else self.validity.as_of
         seed = self._seed_path(direction, width, condition, prior_steps, prior_strength)
@@ -747,6 +750,7 @@ class _RoleLinks:
 
         effort = _LinkReadWork(limit, self.floor, self.uncertainty)
         witnesses = {}
+        dependencies = []
         terminal_dots = 0
         unmatched = set()
         outside = set()
@@ -795,14 +799,19 @@ class _RoleLinks:
                                 unmatched.discard(position)
                                 grade = min(path.strength, strength)
                                 prior = witnesses.get(outcome)
-                                if prior is None or grade > prior.strength:
+                                preferred = prior is None or grade > prior.strength
+                                if retain_dependencies or preferred:
                                     effort.charge(len(path.steps) - 1)
                                     step = path.steps[-1]
-                                    witnesses[outcome] = BindingLinkWitness(
+                                    witness = BindingLinkWitness(
                                         outcome, step.source, step.entry_ordinal, step.exit_ordinal,
                                         terminal_source, ordinal, grade, path.steps[:-1], step.exit_source,
                                         step.key_ordinals,
                                     )
+                                    if preferred:
+                                        witnesses[outcome] = witness
+                                    if retain_dependencies:
+                                        dependencies.append(witness)
         except BindingCapacityError as error:
             status = "branch_limit" if isinstance(error, _RoleBranchLimit) else "work_limit"
             return BindingLinkRead(status, work=effort.work,
@@ -823,4 +832,4 @@ class _RoleLinks:
                                vocabulary, tuple(sorted(outside)), hops, effort.transports, condition, effort.condition_dots,
                                bridge_pending=pending, dependent_outcomes=tuple(sorted(dependent_outcomes)),
                                as_of=as_of, validity_open=effort.validity_open,
-                               supersessions=tuple(effort.supersessions))
+                               supersessions=tuple(effort.supersessions), dependency_witnesses=tuple(dependencies))

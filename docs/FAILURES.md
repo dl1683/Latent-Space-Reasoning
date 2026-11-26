@@ -24,6 +24,16 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**One displayed witness can omit an agreeing path, 26 November 2026.** The
+readout keeps one representative per outcome. A weaker path that reaches the
+same outcome can have a different source dependency. The joint task receipt
+now retains both, and the host rejects declared joint-role support when
+either lacks verified coverage. The scope of this repair is the role
+dependencies recorded by the receiver. Model-written findings can still
+omit the declaration, and verifying cited bytes cannot grade the claim's
+meaning. Compare the same proof checks in the temporal-join arm and score
+false closure independently. [Joint task evidence](RESULTS.md#joint-task-reasoning-on-a-maintained-pin-26-november-2026)
+
 **The evidence-planner output contract failed on three attempts, 26 November 2026.** In the 50-question NanoHotpotQA pilot, all 100 Qwen3-0.6B calls (50 per arm) hit the 128-token cap, none terminated, and none produced parseable JSON. A one-question canary after disabling the thinking channel repeated the failure on both arms (2/2 capped and unterminated). On a second one-question canary with thinking disabled and an equal 256-token cap, the planner terminated but emitted incomplete JSON (1/1 invalid); the query expander returned valid JSON with three queries (1/1). No labels were read in either canary. The apparent equal retrieval score was only the shared BM25 fallback. Do not report it as planner evidence. The full v2 cohort was not run. This instrument failure is separate from the historical F-ID table and does not change its 125 keys. [Pilot protocol](TASK_NEED_PLANNER_PILOT.md)
 
 **The model-facing task-episode protocol also failed three source-only canaries, 26 November 2026.** The first 7-call episode made one zero-result search and then repeated invalid finish actions; it ended without a submission or source read. A concrete JSON example led the next episode to copy the example's clarification question and stop without searching (1/1). Removing examples still produced repeated fenced outputs containing mutually exclusive action and finish keys, with no parsed tool action in the 7-call episode. All three used the unbound synthetic fixture, so they do not measure latent-world utility. Prompt wording alone is not a qualified parser; use a frozen schema-constrained decoder and typed need/finding contract before held tasks. Exact denominators and hashes are in [RESULTS.md](RESULTS.md).

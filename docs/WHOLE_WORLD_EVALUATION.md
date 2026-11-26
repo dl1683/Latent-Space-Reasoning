@@ -120,7 +120,7 @@ unresolved.
    directs searches or latent probes, opens exact evidence where needed, and
    reports findings with citations or explicit unknowns. Use
    `run_episode` as the common model/tool/receipt shell: its search and open
-   tools use the pinned catalogue. The planned joint-role action returns
+   tools use the pinned catalogue. The joint-role action returns
    bounded branches and versioned witness spans as readable candidates;
    `TaskInvestigator` remains useful for scripted typed actions and policy
    fixtures.
@@ -264,21 +264,21 @@ role witnesses. `TaskInvestigator` records the same actions as scripted
 policy receipts. The probe requires a verified complete-source
 observation and caller-supplied outcome labels/hop count; there is still no
 task/need-to-latent query encoder or general language-to-world addressing.
-The branch also has two low-level building blocks that the task shell does not
-yet compose: `BindingMention.byte_span` carries acquired relations to exact,
-versioned source clauses while retaining one document origin, and
-`BindingFeedback.reason_role_links` evaluates a whole population of hidden
-paths across declared stages, preserving conflicts and open branches. These
-use supplied directions, roles and stage/outcome definitions; the task-time
-planner cannot yet select or call the joint operation from typed needs. Its
-current one-hop probe can expose exact scoped witnesses through verified reads,
-but the joint operation remains unavailable. The next integration must provide
-a host-owned receiver/state configuration, bound stage and branch choices, and
-a task action that consumes one root while preserving the episode pin. It must
-also return the joint decision's versioned witness spans as readable
-candidates, preserve exact pointers in citation receipts, and separately
-account role work, hidden transitions and terminal reads. The independent
-need IDs and need-linked action receipts described below are also required.
+The task shell now composes source-scoped mentions with
+`BindingFeedback.reason_role_links`. A scripted policy can consume one
+verified source observation, select a stage schedule, advance hidden paths at
+the task's pinned revision and effective time, and reopen their source and
+authority clauses. For a declared joint-role finding the host checks the
+cited seed and retained dependency manifest, including weaker paths that have
+the same outcome. It separately accounts role work and hidden transitions.
+This software check uses supplied directions, stages and outcomes. The number
+of probe actions, source bytes, retained evidence bytes and prepared input
+tokens all need separate checks against the registered ceilings. The scripted
+fixture uses a byte-counting adapter with a larger input allowance. It supplies
+neither a model-adapter feasibility result nor a comparison with the staged
+index. Independent need IDs and need-linked action receipts remain required
+for a scored study, including evaluation of generic findings that bypass
+the declared proof contract.
 `run_episode` accepts JSON-state and text-notes policies, but its `needs` state
 is only checked as a dictionary; it is not a typed obligation validator. Its
 final findings have no stable need ID, and tool receipts do not identify which

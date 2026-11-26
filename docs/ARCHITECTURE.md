@@ -78,14 +78,31 @@ evaluated against independent need labels.
 
 Search uses the existing BM25 scorer as a candidate source, and records how many candidates matched before the delivery limit. Opening a span verifies it against the pinned bytes. The byte allowances separately limit complete source rereads and the evidence returned. The policy has a fixed step allowance and shares one work allowance across role probes. A rejected action spends a step and leaves a receipt. The dossier records the allowances, candidate lists, rejected openings, actual source and returned bytes, lexical rows scored, role work and the stop reason. Building the lexical catalogue has a separate source-byte receipt. Model inputs and outputs are outside these software receipts.
 
-An observed support, defeat or documented unknown requires verified reads from the investigation. A later verified case can settle a need despite an earlier rejected opening. A role probe can take a direction from a retained observation of a completely verified source, or take an explicit vector. The receipt includes the request and direction used. A conflicting or unresolved probe keeps the need open until a policy assessment reconciles it with verified text. The original result remains in the dossier alongside the reconciliation. A probe alone supplies no semantic verification or source citation. The dossier retains opposing cases, hypothetical cases, any unsatisfied child need and the record of failed attempts. Each stated case is a policy assessment of the cited material. The process provides no corpus-absence or semantic-completeness certificate.
+An observed support, defeat or documented unknown requires verified reads from the investigation. A later verified case can settle a need despite an earlier rejected opening. A role probe can take a direction from a retained observation of a completely verified source, or take an explicit vector. The dossier keeps the request and direction. An open joint or temporal receipt remains open until new admissible computation addresses its cause. Legacy probes outside a temporal view still permit a policy reconciliation recorded beside the original result. The dossier retains opposing cases, hypothetical cases, any unsatisfied child need and the record of failed attempts. Judging whether the answer follows from the cited material requires semantic evaluation.
 
-In the model-facing `run_episode` shell, a role-probe receipt also makes its
-versioned `BindingLinkWitness.source_spans` available as readable candidates
-before the terminal-source catalogue fallbacks. The model can open those
-exact clauses through the ordinary verified-read tool and cite the resulting
-read IDs. This exposes the scoped witnesses from a one-hop probe; it does not
-invoke the separate multi-stage `BindingFeedback.reason_role_links` operation.
+In `run_episode`, a configured receiver enables the `reason` action, which
+starts from one completely verified source observation and advances a bounded
+population through caller-selected ordinary or role-driven stages. The receiver
+and effective time are part of the task pin. Source versions identify the
+knowledge snapshot, which remains distinct from the effective time assigned
+to its claims. Both direct probes and joint paths use that same time view.
+The operation exposes versioned witness and authority spans as candidates.
+Further pages use the pinned receipt and spend a search attempt each.
+A single batched read can reopen several of them, charging each opening
+against the ordinary read and byte allowances. The ledger preserves the full
+receipt while the policy sees a compact branch summary and candidate list.
+
+A finding can declare `role_support` with a completed joint receipt and outcome.
+The host checks the seed citation, the outcome and time, and coverage of the
+retained role dependencies across all matched terminal paths. A representative
+witness per outcome is available for display, while weaker agreeing paths
+contribute their citations as well. Scoped dependencies require the exact
+bytes, including when cited inside a larger verified passage. Unscoped
+dependencies require whole-source reads. The check covers the modeled role
+operation; the numerical ordinary-binding inputs and the meaning of prose
+findings require their own causal and grading checks. Generic findings remain
+available and are graded separately. Role enumeration and the number of hidden
+transitions have separate receipts and caps.
 
 The capability target is discovering consequential needs and resolving or bounding them through justified source chains. Improvement requires better held-task findings or justified unknowns under matched access and full costs against competent iterative text RAG and plain search. Equivalent task outcomes at the same total cost would leave the structured planner with an engineering result on that family. The current fixture drives the action loop with a scripted policy. It checks assembly, reads, revision and uncertainty. The comparison of task inference remains unrun. [Task evidence fixtures](../experiments/memory/test_task_evidence.py)
 

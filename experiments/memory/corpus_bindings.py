@@ -287,27 +287,34 @@ class CorpusBindingMemory:
                                      hops=hops, condition=condition)
 
     def _read_role_links(self, direction, *, outcomes, work_limit, hops, condition,
-                         prior_steps=(), prior_strength=1., branch_limit=None):
+                         prior_steps=(), prior_strength=1., branch_limit=None, retain_dependencies=False):
         hops = _role_hops(hops)
         if condition is not None and type(condition) is not BindingLinkCondition:
             raise TypeError("role-link condition must be a BindingLinkCondition")
         links = self._role_links
         if links is None:
             return BindingLinkRead("no_role_program", hops=hops, condition=condition)
+        labels = self._role_outcomes(outcomes)
+        read = links.read(direction, outcomes=frozenset(labels), mentions=self._mentions,
+                          limit=_proof_work_limit(work_limit), width=self._anchors.shape[1], hops=hops,
+                          condition=condition, prior_steps=prior_steps, prior_strength=prior_strength,
+                          branch_limit=branch_limit, scoped_sources=self._scoped_sources,
+                          retain_dependencies=retain_dependencies)
+        if not self._scoped_sources and not retain_dependencies:
+            return read
+        return replace(read, witnesses=tuple(self._witness_with_spans(witness) for witness in read.witnesses),
+                       dependency_witnesses=tuple(self._witness_with_spans(witness)
+                                                  for witness in read.dependency_witnesses))
+
+    def _role_outcomes(self, outcomes):
         if isinstance(outcomes, str):
             raise ValueError("role-link outcomes require distinct nonstructural predicates")
         labels = tuple(outcomes)
         if (not labels or any(type(label) is not str or label not in self._certain._predicates
-                              or links.structural(label) for label in labels)
+                              or self._role_links.structural(label) for label in labels)
                 or len(set(labels)) != len(labels)):
             raise ValueError("role-link outcomes require distinct nonstructural predicates")
-        read = links.read(direction, outcomes=frozenset(labels), mentions=self._mentions,
-                          limit=_proof_work_limit(work_limit), width=self._anchors.shape[1], hops=hops,
-                          condition=condition, prior_steps=prior_steps, prior_strength=prior_strength,
-                          branch_limit=branch_limit, scoped_sources=self._scoped_sources)
-        if not self._scoped_sources:
-            return read
-        return replace(read, witnesses=tuple(self._witness_with_spans(witness) for witness in read.witnesses))
+        return labels
 
     def _witness_with_spans(self, witness):
         final = BindingLinkStep(witness.link_source, witness.entry_ordinal, witness.exit_ordinal,
@@ -325,9 +332,15 @@ class CorpusBindingMemory:
                 for span in validity.authorities.get((step.source, step.entry_ordinal), ()):
                     authorities[span] = None
         positions.append((witness.terminal_source, witness.terminal_ordinal))
-        spans = dict.fromkeys(self.source_mention_span(source, ordinal) for source, ordinal in positions)
-        spans.pop(None, None)
-        return replace(witness, source_spans=tuple(spans), validity_spans=tuple(authorities)) if spans else witness
+        spans, unscoped = {}, {}
+        for source, ordinal in positions:
+            span = self.source_mention_span(source, ordinal)
+            if span is None:
+                unscoped[source] = None
+            else:
+                spans[span] = None
+        return replace(witness, source_spans=tuple(spans), validity_spans=tuple(authorities),
+                       unscoped_sources=tuple(unscoped))
 
     def source_mentions(self, source):
         """Return a source's ordered normalized observations, or None for a legacy row-only source."""

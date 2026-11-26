@@ -16,9 +16,10 @@ from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
 from experiments.memory.corpus_bindings import BindingMention, CorpusBindingMemory, CorpusProgramProposal, StaleCorpusRevision
 from experiments.memory.latent_feedback import FeedbackKernel
 from experiments.memory.role_validity import RoleSupersession
-from experiments.memory.task_episode import EpisodeLimits, _Tools
-from experiments.memory.task_evidence import TaskWorld
+from experiments.memory.task_episode import EpisodeLimits, EpisodePolicy, _Tools, read_episode, run_episode
+from experiments.memory.task_evidence import TaskBudget, TaskWorld
 from experiments.memory.verified_source_tool import SourceSpan, VerifiedSourceTool
+from experiments.memory.test_task_episode import Tokenizer, reply
 
 
 _ROLES = ("entry", "exit")
@@ -798,7 +799,7 @@ def test_conditioned_source_paths_feed_two_shared_hidden_transitions(tmp_path):
     np.testing.assert_array_equal(receiver.step(continue_from(opening).states[0]).latest, later.latest)
 
 
-def test_joint_hidden_paths_revise_a_late_decision_without_text_replay(tmp_path):
+def test_joint_hidden_paths_revise_a_late_decision_without_text_replay(tmp_path, monkeypatch):
     path = tmp_path / "joint.sqlite"
     axes = np.eye(11)
     frame = _transport_frame(width=len(axes))
@@ -811,12 +812,13 @@ def test_joint_hidden_paths_revise_a_late_decision_without_text_replay(tmp_path)
         return _mentions((label, axes[axis], .92))
 
     side = link(0, 2, .65)
-    _write(owner, {
+    raw = {
         "main": link(0, 1, .9), "side": side,
         "left-middle": link(3, 5, .91), "right-middle": link(4, 6, .91),
         "left-readout": link(9, 1, .93), "right-readout": link(10, 2, .93),
         "left-review": terminal("accept", 1), "right-review": terminal("accept", 2),
-    })
+    }
+    _write(owner, raw)
     worker = JournaledCorpusWorkspace(path, _transport_frame(_no_encoding, width=len(axes)))
     worker.publish_program(_transport_program(worker, worker.snapshot()))
     original = owner.snapshot()
@@ -874,8 +876,62 @@ def test_joint_hidden_paths_revise_a_late_decision_without_text_replay(tmp_path)
     no_program = owner.prepare_role_links(removed_route, None).preview
     assert no_program.source_digests == removed_route.memory.source_digests
     assert decide(no_program).status == "no_role_program"
-    duplicate = _write(owner, {"duplicate-readout": link(9, 1, .82)})
+    alternate_readout = link(9, 1, .82)
+    duplicate = _write(owner, {"duplicate-readout": alternate_readout})
     assert decide(duplicate.memory).answer == "accept"
+    surviving = {name: raw[name] for name in duplicate.memory.source_digests if name in raw}
+    surviving["duplicate-readout"] = alternate_readout
+    leaves = tmp_path / "leaves"
+    leaves.mkdir()
+    for source, content in surviving.items():
+        (leaves / (duplicate.memory.source_digests[source] + ".txt")).write_bytes(content)
+    tool = VerifiedSourceTool(tmp_path, duplicate.memory.source_digests)
+    spans = [SourceSpan.from_characters(name, content, 0, len(content)) for name, content in surviving.items()]
+    world = TaskWorld(tool, spans, bindings=duplicate, receiver=receiver)
+    limits = EpisodeLimits(8, 1, 7, 3, 8192, 30000, 2048, 512, TaskBudget(role_transitions=6))
+    toolbox = _Tools("Which decision follows?", world, limits, probes_enabled=True)
+    found = toolbox.call({"op": "search", "query": "entry"})
+    seed = next(row["candidate"] for row in found["candidates"] if row["span"]["source_id"] == "main")
+    opened = toolbox.call({"op": "read", "candidate": seed})
+    request = {"op": "reason", "read": opened["id"], "ordinal": 0, "outcomes": list(_OUTCOMES),
+               "stages": [1, 1, 0], "terminal_hops": 1}
+    with monkeypatch.context() as patch:
+        patch.setattr(BindingFeedback, "start", lambda *args: pytest.fail("invalid vocabulary started a receiver"))
+        assert toolbox.call(request | {"outcomes": ["entry"]})["status"] == "INVALID_TOOL_ARGUMENTS"
+    assert toolbox.counters()["role_transitions"] == 0
+    joint = toolbox.call(request)
+    assert joint["read"]["status"] == "supported" and joint["read"]["transitions"] == 3
+    read, = joint["read"]["terminal_reads"]
+    assert [witness["link_source"] for witness in read["witnesses"]] == ["left-readout"]
+    assert {witness["link_source"] for witness in read["dependency_witnesses"]} == {
+        "left-readout", "duplicate-readout",
+    }
+    assert toolbox.call(request | {"stages": [1, 1, 0, 0]})["read"]["status"] == "transition_limit"
+    opened = toolbox.call({"op": "read", "candidate": [
+        row["candidate"] for row in joint["candidates"] if row["candidate"] != seed]})
+    finding = {"claim": "The decision is accept.", "stance": "supports", "citations": [
+        0, *(row["id"] for row in opened["reads"] if row["span"]["source_id"] != "duplicate-readout")],
+        "reason": "Both readout paths agree.", "role_support": {"receipt": joint["receipt"], "outcome": "accept"}}
+    report = {"findings": [finding], "open_questions": []}
+    with pytest.raises(ValueError, match="premises, terminal and authority"):
+        toolbox.submission(report)
+    finding["citations"] = [0, *(row["id"] for row in opened["reads"])]
+    assert toolbox.submission(report) == report
+    finding["role_support"]["outcome"] = "review"
+    with pytest.raises(ValueError, match="closed receipt"):
+        toolbox.submission(report)
+    batch = [row["candidate"] for row in joint["candidates"]][:2]
+    original_verify = VerifiedSourceTool.verify
+
+    def verify(self, span, **options):
+        if span.source_id == toolbox._pointers[batch[0]].source_id:
+            raise PermissionError("fixture refusal")
+        return original_verify(self, span, **options)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(VerifiedSourceTool, "verify", verify)
+        retried = toolbox.call({"op": "read", "candidate": batch})
+    assert [row["status"] for row in retried["reads"]] == ["SOURCE_ERROR", "VERIFIED_SOURCE_BYTES"]
     limited = decide(duplicate.memory, branch_limit=1)
     assert limited.status == "branch_limit" and limited.transitions == 3 and not limited.terminal_reads
     detached = decide(None)
@@ -1217,6 +1273,65 @@ def test_role_supersession_follows_explicit_effective_time_and_source_versions(t
     governing = next(row for row in probed["candidates"] if row["span"]["source_id"] == "later")
     verified = toolbox.call({"op": "read", "candidate": governing["candidate"]})
     assert verified["status"] == "VERIFIED_SOURCE_BYTES" and verified["text"] == raw["later"].decode()
+
+    world = TaskWorld(tool, (manual,), bindings=following, receiver=receiver, as_of=20)
+    assert world.pin.as_of == 20 and world.pin.receiver_sha256
+    limits = EpisodeLimits(7, 2, 5, 2, 8192, 45000, 2048, 512,
+                           TaskBudget(role_transitions=2, candidates_per_search=2))
+    policy = EpisodePolicy("role-fixture", "scripted", "byte-count", "notes", probes_enabled=True)
+
+    def generate(call):
+        frame = json.loads(dict(call.messages)["user"])
+        assert frame["as_of"] == 20 and frame["joint_roles_enabled"]
+        receipts = frame["receipts"]
+        state = "Find the decision in force."
+        if not receipts:
+            return reply(state=state, tool={"op": "search", "query": "Juniper"})
+        latest = receipts[-1]["result"]
+        if len(receipts) == 1:
+            return reply(state=state, tool={"op": "read", "candidate": latest["candidates"][0]["candidate"]})
+        if len(receipts) == 2:
+            return reply(state=state, tool={"op": "reason", "read": latest["id"], "ordinal": 0,
+                                            "outcomes": list(_OUTCOMES), "stages": [0, 0], "terminal_hops": 1})
+        if len(receipts) == 3:
+            assert latest["read"]["status"] == "supported"
+            assert latest["read"]["terminal_reads"][0]["outcomes"] == ["review"]
+            assert "direction" not in latest
+            assert latest["next_offset"] == 2
+            return reply(state=state, tool={"op": "role_spans", "receipt": latest["receipt"],
+                                            "offset": latest["next_offset"]})
+        if len(receipts) == 4:
+            assert latest["status"] == "ROLE_SPANS" and "next_offset" not in latest
+            return reply(state=state, tool={"op": "read", "candidate": [
+                candidate["candidate"] for result in (receipts[-2]["result"], latest)
+                for candidate in result["candidates"]]})
+        if len(receipts) == 5 and not frame["last_rejection"]:
+            citations = [0, *(row["id"] for row in latest["reads"] if row["span"]["source_id"] != "authority")]
+        else:
+            assert "authority spans" in frame["last_rejection"]
+            citations = [0, *(row["id"] for row in latest["reads"])]
+        return reply(finish={"findings": [{
+            "claim": "Maple requires review.", "stance": "supports", "citations": citations,
+            "reason": "The earlier resolution selects Maple.",
+            "role_support": {"receipt": 0, "outcome": "review"},
+        }], "open_questions": []})
+
+    artifact = run_episode("Which record governs Cobalt?", world, policy, limits, Tokenizer(), generate,
+                           tmp_path / "role-episode.jsonl")
+    records = read_episode(artifact)
+    assert records[-1]["data"]["status"] == "completed"
+    assert sum(record["kind"] == "rejection" for record in records) == 1
+    usage = records[-1]["data"]["usage"]
+    assert usage["role_transitions"] == 2 and usage["attempts"] == {"read": 5, "search": 2, "probe": 1}
+    role = next(row["data"]["result"] for row in records if row["kind"] == "tool"
+                and row["data"]["request"]["op"] == "reason")
+    terminal_read, = role["read"]["terminal_reads"]
+    assert terminal_read["as_of"] == 20
+    assert {span["source_id"] for witness in terminal_read["dependency_witnesses"]
+            for span in witness["validity_spans"]} == {"authority", "later"}
+    report = records[-1]["data"]["submission"]
+    assert report["findings"][0]["role_support"] == {"receipt": 0, "outcome": "review"}
+
     state = receiver.start(directions["Cobalt"], following.memory)
     full = decide(following.memory)
     limited = receiver.reason_role_links(state, stages=(None,), outcomes=_OUTCOMES,

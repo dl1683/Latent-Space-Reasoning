@@ -1,5 +1,6 @@
 """Bounded task-time evidence investigation over a pinned source world."""
 
+from copy import copy
 from dataclasses import asdict, dataclass, replace
 import json
 from math import isfinite
@@ -7,9 +8,12 @@ from operator import index
 from types import MappingProxyType
 from typing import Callable, Mapping
 
+from experiments.memory.binding_feedback import BindingFeedback, BindingRoleAdvance, BindingRoleDecision
 from experiments.memory.binding_links import BindingLinkCondition, BindingLinkRead
+from experiments.memory.binding_memory import BindingCapacityError
+from experiments.memory.binding_replay import _receiver_digest
 from experiments.memory.compressed_routing_map import BM25
-from experiments.memory.corpus_bindings import CorpusRevision
+from experiments.memory.corpus_bindings import CorpusBindingMemory, CorpusRevision
 from experiments.memory.verified_source_tool import SourceSpan, VerifiedSourceTool, sha256
 
 
@@ -21,6 +25,8 @@ class TaskPin:
     binding_source_revision: int | None
     binding_program_revision: int | None
     binding_journal_sha256: str | None
+    receiver_sha256: str | None = None
+    as_of: int | None = None
 
 
 @dataclass(frozen=True, slots=True, init=False)
@@ -31,11 +37,12 @@ class TaskWorld:
     _spans: tuple[SourceSpan, ...]
     _spans_by_source: Mapping[str, tuple[SourceSpan, ...]]
     _index: BM25 | None
-    _bindings: CorpusRevision | None
+    _memory: CorpusBindingMemory | None
+    _receiver: BindingFeedback | None
     pin: TaskPin
     setup_source_bytes: int
 
-    def __init__(self, tool, spans, *, bindings=None):
+    def __init__(self, tool, spans, *, bindings=None, receiver=None, as_of=None):
         if type(tool) is not VerifiedSourceTool:
             raise TypeError("a verified source tool is required")
         if bindings is not None and (
@@ -44,6 +51,22 @@ class TaskWorld:
             raise ValueError("retained computation and source catalogue must use the same sources and versions")
         if bindings is not None and bindings.journal_sha256 is None:
             raise ValueError("a retained computation requires a journaled revision")
+        if as_of is not None and type(as_of) is not int:
+            raise ValueError("task effective time must be an integer")
+        memory = None if bindings is None else bindings.memory
+        if type(receiver) is BindingFeedback:
+            receiver = copy(receiver)
+            receiver._kernel = copy(receiver._kernel)
+        receiver_sha = None if receiver is None else _receiver_digest(receiver)
+        if receiver is not None and bindings is not None and bindings._receiver_programs:
+            if receiver_sha != bindings._receiver_programs[-1][1]:
+                raise ValueError("task receiver does not match the journaled program")
+        validity = None if memory is None or memory._role_links is None else memory._role_links.validity
+        if validity is not None:
+            if as_of is not None:
+                memory = memory.at_role_time(as_of)
+            else:
+                as_of = validity.as_of
         tool = VerifiedSourceTool(tool.root, tool.versions)
         spans = tuple(spans)
         if any(type(span) is not SourceSpan for span in spans) or len(set(spans)) != len(spans):
@@ -61,12 +84,13 @@ class TaskWorld:
         pin = TaskPin(tool.snapshot_sha256, sha256(catalogue), None if bindings is None else bindings.revision,
                       None if bindings is None else bindings.source_revision,
                       None if bindings is None else bindings._program_revision,
-                      None if bindings is None else bindings.journal_sha256)
+                      None if bindings is None else bindings.journal_sha256, receiver_sha, as_of)
         object.__setattr__(self, "_tool", tool)
         object.__setattr__(self, "_spans", spans)
         object.__setattr__(self, "_spans_by_source", MappingProxyType({key: tuple(rows) for key, rows in by_source.items()}))
         object.__setattr__(self, "_index", BM25(texts) if texts else None)
-        object.__setattr__(self, "_bindings", bindings)
+        object.__setattr__(self, "_memory", memory)
+        object.__setattr__(self, "_receiver", receiver)
         object.__setattr__(self, "pin", pin)
         object.__setattr__(self, "setup_source_bytes", setup_bytes)
 
@@ -86,9 +110,12 @@ class TaskBudget:
     evidence_bytes: int = 8192
     source_bytes: int = 2 * 1024 * 1024
     role_work: int = 512
+    role_branches: int = 4
+    role_transitions: int = 16
 
     def __post_init__(self):
-        for name in ("steps", "candidates_per_search", "evidence_bytes", "source_bytes", "role_work"):
+        for name in ("steps", "candidates_per_search", "evidence_bytes", "source_bytes", "role_work",
+                     "role_branches", "role_transitions"):
             value = index(getattr(self, name))
             if value < 1:
                 raise ValueError("task allowances must be positive")
@@ -135,12 +162,28 @@ class ProbeRoleLinks:
 
 
 @dataclass(frozen=True, slots=True)
+class ExploreRolePaths:
+    need: str
+    source_observation: tuple[int, int]
+    outcomes: tuple[str, ...]
+    stages: tuple[int, ...]
+    terminal_hops: int = 1
+
+
+@dataclass(frozen=True, slots=True)
+class RoleSupport:
+    receipt: int
+    outcome: str
+
+
+@dataclass(frozen=True, slots=True)
 class EvidenceCase:
     need: str
     stance: str
     claim: str
     inference: str
     citations: tuple[int, ...]
+    role_support: RoleSupport | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -151,7 +194,7 @@ class ReconcileProbe:
     citations: tuple[int, ...]
 
 
-TaskAction = EvidenceNeed | SearchEvidence | OpenEvidence | ProbeRoleLinks | EvidenceCase | ReconcileProbe
+TaskAction = EvidenceNeed | SearchEvidence | OpenEvidence | ProbeRoleLinks | ExploreRolePaths | EvidenceCase | ReconcileProbe
 
 
 @dataclass(frozen=True, slots=True)
@@ -175,8 +218,8 @@ class EvidenceRead:
 
 @dataclass(frozen=True, slots=True)
 class RoleEvidence:
-    request: ProbeRoleLinks
-    read: BindingLinkRead
+    request: ProbeRoleLinks | ExploreRolePaths
+    read: BindingLinkRead | BindingRoleDecision
     direction: tuple[float, ...] | None
     reconciliation: ReconcileProbe | None = None
 
@@ -213,6 +256,7 @@ class TaskDossier:
     role_work: int
     lexical_rows_scored: int
     assessment_scope: str = "PLANNER_ASSESSED"
+    role_transitions: int = 0
 
 
 def _text(value, label):
@@ -235,6 +279,20 @@ def _text_items(values, label):
     for value in frozen:
         _text(value, label)
     return frozen
+
+
+def _role_terminal_reads(read):
+    return read.terminal_reads if type(read) is BindingRoleDecision else (read,)
+
+
+def _read_covers_span(read, raw, pointer):
+    span = read.span
+    if (span.source_id != pointer.source_id or span.version_sha256 != pointer.version_sha256
+            or not span.start_byte <= pointer.start_byte < pointer.end_byte <= span.end_byte):
+        return False
+    start = pointer.start_byte - span.start_byte
+    end = pointer.end_byte - span.start_byte
+    return sha256(raw[start:end]) == pointer.span_sha256
 
 
 class TaskInvestigator:
@@ -270,7 +328,7 @@ class _Investigation:
         self.rejected = []
         self.investigated, self.exhausted, self.unavailable = set(), set(), set()
         self.steps = self.source_bytes = self.evidence_bytes = self.role_work = 0
-        self.lexical_rows = 0
+        self.lexical_rows = self.role_transitions = 0
 
     def _citations(self, values):
         ids = tuple(values)
@@ -279,11 +337,44 @@ class _Investigation:
             raise ValueError("citations must identify distinct verified reads from this investigation")
         return ids
 
+    def _verify_role_support(self, support, stance, citations, need):
+        if (type(support) is not RoleSupport or type(support.receipt) is not int
+                or not 0 <= support.receipt < len(self.role_evidence)
+                or type(support.outcome) is not str or not support.outcome
+                or stance not in ("supports", "defeats")):
+            raise ValueError("role support requires an existing receipt and a decisive outcome")
+        role = self.role_evidence[support.receipt]
+        if role.request.need != need or role.read.answer != support.outcome:
+            raise ValueError("role support requires a closed receipt for this need and outcome")
+        if role.request.source_observation is None or role.request.source_observation[0] not in citations:
+            raise ValueError("role support must cite the verified seed observation")
+        terminal_reads = _role_terminal_reads(role.read)
+        if self.world.pin.as_of is not None and any(read.as_of != self.world.pin.as_of for read in terminal_reads):
+            raise ValueError("role support must match the effective-time pin")
+        if not terminal_reads or any(not read.dependency_witnesses for read in terminal_reads):
+            raise ValueError("role support requires a complete joint role dependency receipt")
+
+        exact, whole = set(), set()
+        for read in terminal_reads:
+            for witness in read.dependency_witnesses:
+                whole.update(witness.unscoped_sources)
+                exact.update(witness.source_spans)
+                exact.update(witness.validity_spans)
+        verified = tuple(self.reads[i] for i in citations)
+        verified_whole = {read.span.source_id for read in verified
+                          if read.span.start_byte == 0 and read.span.end_byte == read.source_bytes_read}
+        texts = tuple((read, read.text.encode("utf8")) for read in verified)
+        if not whole <= verified_whole or any(
+            not any(_read_covers_span(read, raw, pointer) for read, raw in texts) for pointer in exact
+        ):
+            raise ValueError("role support citations must cover the premises, terminal and authority spans")
+
     def apply(self, action):
         if type(action) is EvidenceNeed:
             self._add_need(action)
         else:
-            if type(action) not in (SearchEvidence, OpenEvidence, ProbeRoleLinks, EvidenceCase, ReconcileProbe):
+            if type(action) not in (SearchEvidence, OpenEvidence, ProbeRoleLinks, ExploreRolePaths,
+                                    EvidenceCase, ReconcileProbe):
                 raise TypeError("invalid planner action")
             if action.need not in self.needs:
                 raise ValueError("action requires an existing evidence need")
@@ -297,6 +388,8 @@ class _Investigation:
                 self._open(action)
             elif type(action) is ProbeRoleLinks:
                 self._probe(action)
+            elif type(action) is ExploreRolePaths:
+                self._explore(action)
             elif type(action) is ReconcileProbe:
                 self._reconcile(action)
             else:
@@ -341,10 +434,10 @@ class _Investigation:
         elif opened["status"] != "VERIFIED_SOURCE_BYTES":
             self.unavailable.add(action.need)
         observations = ()
-        bindings = self.world._bindings
-        if (bindings is not None and opened["status"] == "VERIFIED_SOURCE_BYTES"
+        memory = self.world._memory
+        if (memory is not None and opened["status"] == "VERIFIED_SOURCE_BYTES"
                 and span.start_byte == 0 and span.end_byte == opened["source_bytes_read"]):
-            observations = tuple(mention.predicate for mention in bindings.memory.source_mentions(span.source_id) or ())
+            observations = tuple(mention.predicate for mention in memory.source_mentions(span.source_id) or ())
         self.reads.append(EvidenceRead(len(self.reads), action.need, span, opened["status"], opened.get("text"),
                                        opened["source_bytes_read"], observations))
 
@@ -356,7 +449,7 @@ class _Investigation:
                 or len(set(outcomes)) != len(outcomes)
                 or (action.condition is not None and type(action.condition) is not BindingLinkCondition)):
             raise ValueError("invalid role probe request")
-        bindings = self.world._bindings
+        memory = self.world._memory
         origin = None
         if action.source_observation is None:
             direction = tuple(map(float, action.direction)) if action.direction is not None else ()
@@ -365,33 +458,81 @@ class _Investigation:
         else:
             if action.direction is not None:
                 raise ValueError("choose one role probe input")
-            read_id, ordinal = action.source_observation
-            self._citations((read_id,))
-            evidence = self.reads[read_id]
-            if (type(ordinal) is not int or ordinal < 0 or evidence.span.start_byte != 0
-                    or evidence.span.end_byte != evidence.source_bytes_read):
-                raise ValueError("role source must identify an observation in a verified complete source")
-            origin, direction = (read_id, ordinal), None
-            if bindings is not None:
-                if ordinal >= len(evidence.observation_predicates):
-                    raise ValueError("role observation is unavailable on this pin")
-                mentions = bindings.memory.source_mentions(evidence.span.source_id)
-                direction = tuple(map(float, mentions[ordinal].vector))
+            origin = tuple(action.source_observation)
+            direction = self._observation_direction(origin)
         request = replace(action, direction=direction if origin is None else None, outcomes=outcomes, hops=hops,
                           source_observation=origin)
         remaining = self.budget.role_work - self.role_work
-        if bindings is None:
+        if memory is None:
             read = BindingLinkRead("no_memory", outcomes=outcomes, hops=hops, condition=action.condition)
         elif not remaining:
             read = BindingLinkRead("work_limit", outcomes=outcomes, hops=hops, condition=action.condition)
         else:
-            read = bindings.memory.read_role_links(direction, outcomes=outcomes, hops=hops,
-                                                   work_limit=remaining, condition=action.condition)
+            read = memory.read_role_links(direction, outcomes=outcomes, hops=hops,
+                                          work_limit=remaining, condition=action.condition)
             self.role_work += read.work
         if read.status == "work_limit":
             self.exhausted.add(action.need)
         self.investigated.add(action.need)
         self.role_evidence.append(RoleEvidence(request, read, direction))
+
+    def _observation_direction(self, origin):
+        read_id, ordinal = origin
+        self._citations((read_id,))
+        evidence = self.reads[read_id]
+        if (type(ordinal) is not int or ordinal < 0 or evidence.span.start_byte != 0
+                or evidence.span.end_byte != evidence.source_bytes_read):
+            raise ValueError("role source must identify an observation in a verified complete source")
+        if self.world._memory is None:
+            return None
+        if ordinal >= len(evidence.observation_predicates):
+            raise ValueError("role observation is unavailable on this pin")
+        mentions = self.world._memory.source_mentions(evidence.span.source_id)
+        return tuple(map(float, mentions[ordinal].vector))
+
+    def _explore(self, action):
+        origin, stages, outcomes = tuple(action.source_observation), tuple(action.stages), tuple(action.outcomes)
+        if (not stages or any(type(stage) is not int or stage < 0 for stage in stages)
+                or type(action.terminal_hops) is not int or action.terminal_hops < 1
+                or not outcomes or isinstance(action.outcomes, str)
+                or any(type(outcome) is not str or not outcome for outcome in outcomes)
+                or len(outcomes) != len(set(outcomes))):
+            raise ValueError("invalid joint role request")
+        memory, receiver = self.world._memory, self.world._receiver
+        if memory is not None and memory._role_links is not None:
+            outcomes = memory._role_outcomes(outcomes)
+        direction = self._observation_direction(origin)
+        work = self.budget.role_work - self.role_work
+        transitions = self.budget.role_transitions - self.role_transitions
+        branches = min(self.budget.role_branches, transitions // len(stages))
+        if memory is None:
+            result = BindingRoleDecision("no_memory", (), 0, 0, True)
+        elif receiver is None:
+            result = BindingRoleDecision("no_receiver", (), 0, 0, True)
+        elif not work or not branches:
+            status = "work_limit" if not work else "transition_limit"
+            result = BindingRoleDecision(status, (), 0, 0, True)
+        else:
+            if len(stages) > receiver._kernel._max_steps:
+                raise ValueError("role stages must fit the receiver horizon")
+            operations = tuple(None if stage == 0 else BindingRoleAdvance(stage) for stage in stages)
+            try:
+                state = receiver.start(direction, memory)
+                result = receiver.reason_role_links(
+                    state, stages=operations, outcomes=outcomes, work_limit=work,
+                    branch_limit=branches, terminal_hops=action.terminal_hops, retain_dependencies=True,
+                )
+            except BindingCapacityError as error:
+                result = BindingRoleDecision(getattr(error, "status", "source_observation_limit"), (), 0, 0, True)
+            except FloatingPointError:
+                result = BindingRoleDecision("numerical_failure", (), work, branches * len(stages), True)
+        self.role_work += result.work
+        self.role_transitions += result.transitions
+        if result.status in ("work_limit", "branch_limit", "transition_limit"):
+            self.exhausted.add(action.need)
+        self.investigated.add(action.need)
+        request = replace(action, source_observation=origin, stages=stages, outcomes=outcomes)
+        self.role_evidence.append(RoleEvidence(request, result, direction))
 
     def _reconcile(self, action):
         _text(action.rationale, "probe reconciliation rationale")
@@ -401,6 +542,9 @@ class _Investigation:
         if (role.request.need != action.need or role.read.status not in ("conflict", "unresolved")
                 or role.reconciliation is not None):
             raise ValueError("probe reconciliation requires an open role receipt for this need")
+        if (type(role.read) is BindingRoleDecision or role.read.supersessions or role.read.validity_open
+                or role.read.as_of is not None):
+            raise ValueError("an open joint or temporal role receipt needs new admissible computation")
         citations = self._citations(action.citations)
         if not citations:
             raise ValueError("probe reconciliation requires verified source evidence")
@@ -414,12 +558,15 @@ class _Investigation:
         citations = self._citations(case.citations)
         if not citations and case.stance != "hypothetical":
             raise ValueError("an observed case requires verified evidence")
+        if case.role_support is not None:
+            self._verify_role_support(case.role_support, case.stance, citations, case.need)
         self.cases[case.need].append(replace(case, citations=citations))
 
     def dossier(self, stop_reason):
         findings = {}
-        open_roles = {role.request.need for role in self.role_evidence
-                      if role.read.status in ("conflict", "unresolved") and role.reconciliation is None}
+        open_roles = {role.request.need for role in self.role_evidence if role.reconciliation is None and
+                      (role.read.status in ("conflict", "unresolved") or
+                       (type(role.read) is BindingRoleDecision and role.read.open_coverage))}
         for key, need in reversed(tuple(self.needs.items())):
             cases = tuple(self.cases[key])
             stances = {case.stance for case in cases}
@@ -442,4 +589,5 @@ class _Investigation:
         return TaskDossier(self.task, self.world.pin, tuple(findings[key] for key in self.needs),
                            tuple(self.searches), tuple(self.reads), tuple(self.role_evidence), tuple(self.rejected),
                            self.budget, stop_reason, self.steps,
-                           self.source_bytes, self.evidence_bytes, self.role_work, self.lexical_rows)
+                           self.source_bytes, self.evidence_bytes, self.role_work, self.lexical_rows,
+                           role_transitions=self.role_transitions)

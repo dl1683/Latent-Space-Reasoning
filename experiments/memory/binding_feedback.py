@@ -237,7 +237,8 @@ class BindingFeedback:
         return self._read_role_links(state, outcomes=outcomes, work_limit=work_limit, hops=hops,
                                      condition=condition)
 
-    def _read_role_links(self, state, *, outcomes, work_limit, hops, condition, branch_limit=None):
+    def _read_role_links(self, state, *, outcomes, work_limit, hops, condition, branch_limit=None,
+                         retain_dependencies=False):
         if type(state) is not BindingFeedbackState or state._receiver is not self:
             raise ValueError("state belongs to a different binding receiver")
         if state.memory is None:
@@ -246,7 +247,8 @@ class BindingFeedback:
             return BindingLinkRead("no_memory", hops=_role_hops(hops), condition=condition)
         read = state.memory._read_role_links(state.latest, outcomes=outcomes, work_limit=work_limit, hops=hops,
                                             condition=condition, prior_steps=state.role_steps,
-                                            prior_strength=state.role_strength, branch_limit=branch_limit)
+                                            prior_strength=state.role_strength, branch_limit=branch_limit,
+                                            retain_dependencies=retain_dependencies)
         if state._role_open:
             status = "unresolved" if read.status in ("supported", "no_link") else read.status
             return replace(read, status=status, inherited_open=True)
@@ -313,7 +315,7 @@ class BindingFeedback:
                                        tuple(effort.supersessions))
 
     def reason_role_links(self, state, *, stages, outcomes, work_limit, branch_limit,
-                          terminal_hops=1, terminal_condition=None):
+                          terminal_hops=1, terminal_condition=None, retain_dependencies=False):
         """Run a bounded population of hidden paths and resolve their joint late read.
 
         A stage is either a BindingRoleAdvance or None for an ordinary step.
@@ -340,6 +342,8 @@ class BindingFeedback:
         if isinstance(outcomes, str):
             raise ValueError("role-link outcomes require distinct nonstructural predicates")
         outcomes = tuple(outcomes)
+        if state.memory is not None and state.memory._role_links is not None:
+            outcomes = state.memory._role_outcomes(outcomes)
 
         population, work, transitions = (state,), 0, 0
         stage_no_links = []
@@ -385,7 +389,8 @@ class BindingFeedback:
                 return BindingRoleDecision("work_limit", (), work, transitions, True,
                                            tuple(stage_no_links), tuple(supersessions))
             read = self._read_role_links(branch, outcomes=outcomes, work_limit=limit - work,
-                                         hops=terminal_hops, condition=terminal_condition, branch_limit=branch_limit)
+                                         hops=terminal_hops, condition=terminal_condition, branch_limit=branch_limit,
+                                         retain_dependencies=retain_dependencies)
             work += read.work
             supersessions.update(dict.fromkeys(read.supersessions))
             if read.status in ("branch_limit", "work_limit"):
