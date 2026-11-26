@@ -57,8 +57,10 @@ def frame_evidence(system, payload):
     return [dict(role='system', content=system), dict(role='user', content=content)]
 
 
-def encode_messages(tokenizer, messages):
-    ids = tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, return_dict=False)
+def encode_messages(tokenizer, messages, *, chat_template=None):
+    options = {} if chat_template is None else {"chat_template": chat_template}
+    ids = tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, return_dict=False,
+                                        **options)
     if not isinstance(ids, list) or any(type(i) is not int for i in ids):
         raise TypeError('tokenizer must return a flat integer token list')
     return ids

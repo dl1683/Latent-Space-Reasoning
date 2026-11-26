@@ -61,6 +61,11 @@ span identifies the seed. It does not enumerate contributing sources
 or prove an answer.
 
 A raw task enters through the backbone's ordinary token embeddings.
+The caller can pin a chat template that frames the task as a user turn
+and opens the assistant response. Source ingestion uses ordinary source
+encoding. The publication fingerprint includes the resolved template
+body when task framing is enabled. Every read reserves its latent-step and output budgets before
+prefill and refuses an overlength task without truncation.
 Each latent step feeds the latest hidden state and optional retained
 contributions back as one continuous input, with a configurable relay
 gain. The native cache retains the earlier prefix and generated hidden
@@ -160,6 +165,22 @@ workers must earn autonomous selection on tasks with independently
 graded evidence, and compare it with more source-only reasoning at
 equal total work. The joint-state alternative can revise a group of
 competing paths together. [Worker and reader](../experiments/memory/native_latent_recurrence.py)
+
+#### Qualifying the native reader before attaching memory
+
+Start with `compare_greedy(task)` on the pinned causal model. It renders
+the task once and sends those IDs to the zero-step native path and to
+the model's ordinary cached forward with input IDs. The comparison uses
+plain argmax, explicit stop IDs and the same output-token cap. This
+excludes inherited generation processors. Retain both token sequences, the task
+prefix and native termination. A mismatch leaves the native decoding
+path unqualified even if the two strings look alike after decoding.
+
+A mechanical match qualifies the comparison interface. Useful language
+and the termination gate still require their own positive controls
+before comparing source-only recurrence and acquired continuations.
+Use the same task framing and context budget in the matched text arm.
+[Native reader](../experiments/memory/native_latent_recurrence.py)
 
 #### Sealing the native world for a late reader
 

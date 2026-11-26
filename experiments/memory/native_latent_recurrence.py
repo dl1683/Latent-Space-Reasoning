@@ -125,6 +125,17 @@ class NativeLatentRead:
     derived_omitted: bool = False
 
 
+@dataclass(frozen=True, slots=True)
+class NativeGreedyControl:
+    task_ids: tuple[int, ...]
+    native: NativeLatentRead
+    reference_ids: tuple[int, ...]
+
+    @property
+    def matches(self):
+        return self.native.token_ids == self.reference_ids
+
+
 def _require_cpu_eval(model):
     tensors = chain(model.parameters(), model.buffers())
     if any(layer.training for layer in model.modules()) or any(tensor.device.type != "cpu" for tensor in tensors):
@@ -142,7 +153,7 @@ class NativeLatentModel:
     def __init__(self, model, tokenizer, moments, *, source_chars, context_tokens, latent_steps,
                  output_tokens, representation_scale, memory_gain, null_weight, eos_ids,
                  relay_gain=1.0, derived_gain=0.5, top_k=None, tie_limit=16, temperature=0.1,
-                 score_margin=0):
+                 score_margin=0, task_template=None):
         _require_cpu_eval(model)
         embedding = model.get_input_embeddings()
         if (embedding.weight.device.type != "cpu" or model.get_output_embeddings() is None
@@ -159,7 +170,16 @@ class NativeLatentModel:
         if (any(not isfinite(gain) or gain <= 0 for gain in gains)
                 or not eos_ids or any(type(token) is not int or token < 0 for token in eos_ids)):
             raise ValueError("provide finite positive gains and explicit stop tokens")
+        if task_template is not None:
+            if (type(task_template) is not str or not task_template.strip()
+                    or not callable(getattr(tokenizer, "apply_chat_template", None))
+                    or not callable(getattr(tokenizer, "get_chat_template", None))):
+                raise ValueError("provide a nonempty task template and a chat tokenizer")
+            task_template = tokenizer.get_chat_template(task_template)
+            if type(task_template) is not str or not task_template.strip():
+                raise ValueError("task template must resolve to a nonempty body")
         self._model, self._tokenizer, self._moments = model, tokenizer, moments
+        self._task_template = task_template
         self._source_chars, self._context_tokens = source_chars, context_tokens
         self._steps, self._output_tokens = latent_steps, output_tokens
         self._scale, self._memory_gain, self._null_weight = representation_scale, memory_gain, null_weight
@@ -170,16 +190,46 @@ class NativeLatentModel:
             moments, top_k=top_k, tie_limit=tie_limit, temperature=temperature, score_margin=score_margin,
         ))
 
-    def _embed(self, text, limit):
-        import torch
-
-        ids = self._tokenizer.encode(text, add_special_tokens=True, truncation=False)
-        lookup = self._model.get_input_embeddings()
+    def _check_input_ids(self, ids, limit):
         if not ids or len(ids) > limit:
             raise ValueError("input must tokenize to a nonempty sequence inside its context bound")
-        if any(type(token) is not int or not 0 <= token < lookup.num_embeddings for token in ids):
+        vocabulary = self._model.get_input_embeddings().num_embeddings
+        if any(type(token) is not int or not 0 <= token < vocabulary for token in ids):
             raise ValueError("tokenizer returned an invalid native input ID")
+
+    def _embed_ids(self, ids):
+        import torch
+
+        lookup = self._model.get_input_embeddings()
         return lookup(torch.tensor([ids], dtype=torch.long, device=lookup.weight.device))
+
+    def _embed(self, text, limit):
+        ids = self._tokenizer.encode(text, add_special_tokens=True, truncation=False)
+        self._check_input_ids(ids, limit)
+        return self._embed_ids(ids)
+
+    def _step_budget(self, steps):
+        steps = self._steps if steps is None else steps
+        if type(steps) is not int or not 0 <= steps <= self._steps:
+            raise ValueError("requested latent steps exceed configured bounds")
+        return steps
+
+    def task_token_ids(self, task, *, steps=None):
+        """Return the exact task prefix used by the native reader, before latent steps."""
+        if type(task) is not str or not task.strip():
+            raise ValueError("task must be nonempty raw text")
+        limit = self._context_tokens - self._step_budget(steps) - self._output_tokens
+        if self._task_template is None:
+            ids = self._tokenizer.encode(task, add_special_tokens=True, truncation=False)
+        else:
+            from experiments.memory.verified_reader_bridge import encode_messages
+
+            if self._tokenizer.get_chat_template(self._task_template) != self._task_template:
+                raise ValueError("resolved task template changed")
+            ids = encode_messages(self._tokenizer, [{"role": "user", "content": task}],
+                                  chat_template=self._task_template)
+        self._check_input_ids(ids, limit)
+        return tuple(ids)
 
     def _backbone(self, embeddings, cache=None, *, retain_cache):
         import torch
@@ -458,19 +508,45 @@ class NativeLatentModel:
 
     def __call__(self, task: str, *, memory=None, steps=None):
         """Read raw task text through the same recurrent call with optional source memory."""
+        _require_cpu_eval(self._model)
+        if memory is not None:
+            self._check_memory(memory)
+        steps = self._step_budget(steps)
+        return self._read_ids(self.task_token_ids(task, steps=steps), memory, steps)
+
+    def compare_greedy(self, task: str):
+        """Compare zero-step native readout with the model's ordinary cached forward."""
         import torch
 
         _require_cpu_eval(self._model)
-        if type(task) is not str or not task.strip():
-            raise ValueError("task must be nonempty raw text")
-        if memory is not None:
-            self._check_memory(memory)
-        steps = self._steps if steps is None else steps
-        if type(steps) is not int or not 0 <= steps <= self._steps:
-            raise ValueError("requested latent steps exceed configured bounds")
-        limit = self._context_tokens - steps - self._output_tokens
+        ids = self.task_token_ids(task, steps=0)
+        device = self._model.get_input_embeddings().weight.device
+        inputs = torch.tensor([ids], dtype=torch.long, device=device)
+        reference, cache, prefix = [], None, 0
+        # Use input IDs and the full model head. GenerationConfig processors can
+        # otherwise change the greedy reference before the stop rule even runs.
         with torch.inference_mode():
-            hidden, cache = self._backbone(self._embed(task, limit), retain_cache=True)
+            for _ in range(self._output_tokens):
+                state = self._model(input_ids=inputs, past_key_values=cache, use_cache=True, return_dict=True)
+                prefix += inputs.shape[1]
+                cache = state.past_key_values
+                if cache is None or int(cache.get_seq_length()) != prefix:
+                    raise ValueError("ordinary forward did not retain the expected causal prefix")
+                logits = state.logits[0, -1]
+                if not torch.isfinite(logits).all():
+                    raise FloatingPointError("nonfinite reference vocabulary scores")
+                token = int(logits.argmax())
+                reference.append(token)
+                if token in self._eos:
+                    break
+                inputs = inputs.new_tensor([[token]])
+        return NativeGreedyControl(ids, self._read_ids(ids, None, 0), tuple(reference))
+
+    def _read_ids(self, input_ids, memory, steps):
+        import torch
+
+        with torch.inference_mode():
+            hidden, cache = self._backbone(self._embed_ids(input_ids), retain_cache=True)
             run = self._continue(hidden, cache, memory, steps)
             hidden, cache = run.hidden, run.cache
             ids = []

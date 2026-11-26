@@ -324,3 +324,93 @@ def test_transformers_llama_backbone_accepts_continuous_cached_inputs(tmp_path, 
         reopened = read_native_publication(directory, fresh, seal=seal, source_seal=feed.seal,
                                            runtime_sha256=runtime, max_bytes=65_536)
         assert fresh("What follows?", memory=reopened) == replace(with_memory, publication_seal=seal)
+
+
+def test_chat_task_matches_plain_greedy_and_pins_its_template(tmp_path, monkeypatch):
+    transformers = pytest.importorskip("transformers")
+    tokenizers = pytest.importorskip("tokenizers")
+    from experiments.memory.native_publication import read_native_publication, write_native_publication
+
+    words = ("<pad>", "<s>", "</s>", "<user>", "<assistant>", "Which", "route", "blue", "ends", "<unk>")
+    backend = tokenizers.Tokenizer(tokenizers.models.WordLevel(dict(zip(words, range(len(words)))),
+                                                                unk_token="<unk>"))
+    backend.pre_tokenizer = tokenizers.pre_tokenizers.WhitespaceSplit()
+    template = ("{{ bos_token }} <user> {{ messages[0].content }}"
+                "{% if add_generation_prompt %} <assistant>{% endif %}")
+    tokenizer = transformers.PreTrainedTokenizerFast(tokenizer_object=backend, chat_template=template,
+                                                     bos_token="<s>", eos_token="</s>", unk_token="<unk>")
+    config = transformers.LlamaConfig(vocab_size=len(words), hidden_size=6, intermediate_size=12, head_dim=6,
+                                      num_hidden_layers=1, num_attention_heads=1, num_key_value_heads=1,
+                                      max_position_embeddings=16, eos_token_id=2)
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(17)
+        model = transformers.LlamaForCausalLM(config).eval()
+
+    def make_reader(task_template, eos_ids=(2,)):
+        return NativeLatentModel(model, tokenizer, _kernel(), source_chars=32, context_tokens=16,
+                                 latent_steps=2, output_tokens=3, representation_scale=0.25,
+                                 memory_gain=1, null_weight=0.1, top_k=1, eos_ids=eos_ids,
+                                 task_template=task_template)
+
+    question = "Which route"
+    reader = make_reader(template)
+    pair = reader.compare_greedy(question)
+    assert pair.task_ids == (1, 3, 5, 6, 4)
+    assert pair.matches and pair.native == reader(question, steps=0)
+    assert pair.native.source_seal is None and pair.native.latent_steps == 0
+
+    # Use the actual first greedy token as an additional EOS to exercise early termination.
+    stop_id = pair.reference_ids[0]
+    stopped = make_reader(template, eos_ids=tuple({2, stop_id})).compare_greedy(question)
+    assert stopped.matches and stopped.reference_ids == (stop_id,) and stopped.native.terminated
+
+    model.generation_config.min_new_tokens = 2
+    reference_config = transformers.GenerationConfig(max_new_tokens=3, do_sample=False, use_cache=True,
+                                                     eos_token_id=[2, stop_id], pad_token_id=0)
+    input_ids = torch.tensor([pair.task_ids])
+    inherited = model.generate(input_ids=input_ids, attention_mask=torch.ones_like(input_ids),
+                               generation_config=reference_config)
+    assert int(inherited[0, len(pair.task_ids)]) != stop_id
+    assert make_reader(template, eos_ids=tuple({2, stop_id})).compare_greedy(question) == stopped
+
+    ordinary_forward = model.forward
+
+    def different_reference(**kwargs):
+        state = ordinary_forward(**kwargs)
+        changed = torch.zeros_like(state.logits)
+        changed[..., (stop_id + 1) % len(words)] = 1
+        state.logits = changed
+        return state
+
+    with monkeypatch.context() as patch:
+        patch.setattr(model, "forward", different_reference)
+        difference = reader.compare_greedy(question)
+        assert not difference.matches and difference.native == pair.native
+
+    long_question = " ".join(["route"] * 9)
+    assert len(reader.task_token_ids(long_question, steps=0)) == 12
+    with pytest.raises(ValueError, match="context bound"):
+        reader(long_question, steps=2)
+
+    # Source rows stay in the same plain encoding when task framing is enabled.
+    source = "a" * 32
+    feed = write_source_delta(tmp_path / "feed", {source: b"blue"})
+    world = reader.publish(tmp_path / "feed", feed.seal)
+    plain = make_reader(None)
+    plain_world = plain.publish(tmp_path / "feed", feed.seal)
+    np.testing.assert_array_equal(world._sources[source][0].row, plain_world._sources[source][0].row)
+    board, runtime = tmp_path / "sealed", sha256(b"greedy control test runtime")
+    seal = write_native_publication(board, reader, world, runtime_sha256=runtime, max_bytes=65_536)
+    changed_template = template.replace("<user>", "")
+    tokenizer.chat_template = {"default": template}
+    fresh = make_reader("default")
+    tokenizer.chat_template = {"default": changed_template}
+    assert reader.task_token_ids(question, steps=0) == pair.task_ids
+    assert fresh.task_token_ids(question, steps=0) == pair.task_ids
+    reopened = read_native_publication(board, fresh, seal=seal, source_seal=feed.seal,
+                                      runtime_sha256=runtime, max_bytes=65_536)
+    assert fresh(question, memory=reopened) == replace(reader(question, memory=world), publication_seal=seal)
+    for changed in (plain, make_reader("default")):
+        with pytest.raises(ValueError, match="reader differs"):
+            read_native_publication(board, changed, seal=seal, source_seal=feed.seal,
+                                    runtime_sha256=runtime, max_bytes=65_536)

@@ -24,6 +24,14 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Checkpoint defaults and template aliases can confound the
+receiver control, 26 November 2026.** A checkpoint generation option
+could suppress the first stop token even with an explicit token cap.
+The plain greedy comparator uses the full model forward and the
+reader's explicit stop IDs. A template alias can refer to different text
+in two runtimes, so the reader seals the resolved body.
+[Software control](RESULTS.md#qualifying-the-native-task-framing-26-november-2026)
+
 **A source seal alone cannot identify the computation used in a read,
 26 November 2026.** Two arms can share the same source descriptor while
 one has an acquired continuation disabled. Record the numeric publication

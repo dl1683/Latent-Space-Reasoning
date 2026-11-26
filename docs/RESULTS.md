@@ -4,6 +4,33 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Qualifying the native task framing, 26 November 2026
+
+**CPU software controls.** A small randomly initialized causal model
+received the same framed task IDs in the native zero-step call and in
+the full model's cached forward. The comparison detected a deliberately
+different reference token. The explicit greedy stop still worked when
+the checkpoint's generation defaults suppressed that token in
+`generate()`. The reader refused a task that exceeded its context
+allowance after reserving latent steps. A named template reopened when
+its resolved body matched and was rejected when the name pointed to a
+different body. Source encoding was identical with and without task
+framing.
+
+A separate check verified five public tokenizer and configuration
+blobs from the pinned SmolLM2-360M-Instruct repository. Two ordinary
+questions used 35 and 41 input tokens, matching a direct template
+render followed by tokenization without adding special tokens.
+With a randomly initialized backbone using that vocabulary, the native
+and full-model paths emitted the same six IDs for each task. Both
+reached the cap without a stop token. The source-attached call
+exercised the same task framing. No pretrained weights were loaded.
+The result qualifies framing and greedy comparison for these software
+controls. Language quality, termination on a pretrained receiver and
+the latent-versus-text task comparison remain open.
+[Control code](../experiments/memory/test_native_latent_recurrence.py)
+· [Pinned tokenizer files](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct/tree/a10cc1512eabd3dde888204e902eca88bddb4951)
+
 ## Composing a retained continuation, 26 November 2026
 
 **CPU software control.** On a six-document role fixture, one pass

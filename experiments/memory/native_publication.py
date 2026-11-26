@@ -62,6 +62,8 @@ def _reader_digest(reader):
     tokenizer = getattr(reader._tokenizer, "backend_tokenizer", None)
     if tokenizer is not None:
         add("tokenizer", "utf8", None, tokenizer.to_str().encode("utf8"))
+    if reader._task_template is not None:
+        add("task-template", "utf8", None, reader._task_template.encode("utf8"))
 
     value = kernel._observation_value
     arrays = [("query", kernel._query), ("key", kernel._integer_observation_key)]
