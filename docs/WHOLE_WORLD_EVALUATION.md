@@ -162,6 +162,16 @@ unresolved.
    bounded branches and versioned witness spans as readable candidates;
    `TaskInvestigator` remains useful for scripted typed actions and policy
    fixtures.
+   The optional `RecurrentTaskBridge` adds a `world_read` after a complete,
+   verified same-need source read; its returned paths are numeric routing
+   leads, and candidates still require ordinary evidence opens. Its readout
+   direction and thresholds are trusted caller inputs, so it does not yet
+   translate natural-language task needs into latent coordinates or establish
+   semantic support. A separate fixed-input publication trial now reopens a
+   source-complete pinned world in a late reader and checks one known route
+   with the operator active, removed, and restored. This verifies the handoff
+   and operator dependency for that route; it is not an independently authored
+   task result and does not qualify the adapter.
 4. **Grade independently.** A blinded evaluator scores obligation coverage,
    evidence chains, final answers and errors from the frozen gold. A policy's
    statement that a need is supported or reconciled is not itself proof.
@@ -171,6 +181,26 @@ unresolved.
    the historical pin, and query the unrelated region. Confirm that supported
    paths disappear and return where expected, while unrelated and historical
    outcomes remain stable.
+
+`RecurrentWorldMemory.without_source_transport()` and
+`without_source_constraints()` provide explicit in-memory removals that retain
+the observation arrays and discovery-coverage state; restoring the original
+memory object restores the exact publication without recompilation.
+`read_episode_pair(..., contrast="operator")` requires the exact same task pin,
+policy, readout, and retained-memory fingerprint, with exactly one published
+operator changing from active in the first episode to removed in the second.
+`contrast="operator_restore"` requires an active publication and identical
+bridge configuration in both episodes. These checks identify paired artifacts;
+they do not themselves replay a fixed task trace or grade the finding. A
+separate publication trial does replay one predetermined two-step route: the
+active arm supports it, operator removal leaves it unresolved after the second
+observation is absent, and restoration reproduces the active receipt. The
+source archive and source spans are checked, while the seed, target, and
+readout are supplied. The opening records the retained-memory fingerprint and
+number of bytes hashed, but not the bank artifact itself; retain or
+deterministically reconstruct that bank under its pinned encoder. Source
+reopening, operator discovery, model inference, and maintenance/update costs
+still need to be included in the full lifecycle ledger.
 
 The [information-boundary canary](WHOLE_LOOP_BOUNDARY_CONTROL.md)
 showed that an off-and-restore result can also come from a supplied route,
@@ -489,6 +519,15 @@ scope. This checks real source lineage and same-pin operator removal.
 The source format and developmental task generator are public. Worker
 and task execution share one trusted process, so the independent
 information-boundary and learned-acquisition tests remain open.
+
+The [source-complete publication trial](RESULTS.md#source-complete-publication-into-a-recurrent-task-world-26-november-2026)
+retains all unique source blobs needed by its journal pins. A separate late
+reader reconstructs `TaskWorld` and recurrent memory from that sealed bundle
+without Git, then reopens returned witness spans. One known task route loses
+support under same-pin operator removal and recovers the exact receipt when
+restored. This closes the data-plumbing gap for the software slice; the
+readout and route are fixed, and the trial supplies no independent task
+acquisition, semantic grade, or equal-information comparison.
 
 A separate [corpus-wide transport control](RESULTS.md#discovering-and-revising-a-transport-before-tasks-26-november-2026)
 lets a pre-task worker discover and revise an operation without enrolled

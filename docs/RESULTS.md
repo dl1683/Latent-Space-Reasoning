@@ -252,6 +252,48 @@ and the task's numerical input and readout. It checks query-independent
 operation discovery and causal use in the same software path.
 Learned acquisition, natural-language task inference and lifecycle
 advantage remain open. [Revision fixture](../experiments/memory/test_world_transport.py)
+## Compact task-planner failures, 26 November 2026
+
+Five bounded Qwen3-0.6B attempts repeated one visible counterfactual task.
+None completed an evidence-grounded final answer. The first three made zero
+verified reads; the fourth verified two sources (415 bytes) and the fifth
+verified three (760 bytes), but both still omitted the alternate-certificate
+condition and hit the 8,192-token input limit. The fifth used 7,559 input
+tokens and 255 generated tokens across five calls; its next prompt required
+2,408 tokens with 633 remaining. This is a task-planner/interface failure,
+not a result about the persistent world. The adapter is unqualified and the
+five runs do not count as five independent tasks. Preserve exact run
+denominators and ledger hashes in the [failure ledger](FAILURES.md#current-supporting-pilot-failures).
+
+## Source-complete publication into a recurrent task world, 26 November 2026
+
+**Fixed-input software control, one known route.** Publication schema v2
+bundles 134 distinct content-addressed source blobs (3,431,906 bytes) with the
+four-pin journal. The separate late reader reopens pin 2 without Git, verifies
+the complete 122-source catalogue (2,981,113 setup bytes), and uses the same
+journal pin for `TaskWorld` and recurrent memory. The existing four-arm
+publication trial still completed 104 reads and checked 54 attached witness
+spans against pinned Git blobs.
+
+The added task-world slice starts from the predetermined `context` mention in
+`experiments.memory._latent_factor_clusters` and uses the predetermined
+`experiments.memory.weight_program` coordinate as its readout. With the
+published transport installed, the two-step route is supported. Removing only
+that operator on the same pin leaves the second transition unobserved and the
+result unresolved; restoring it reproduces the exact receipt. The attached and
+removed arms have the same retained observation fingerprint, and all six
+returned witness spans reopen from the sealed archive. The bridge also keeps
+unbanked law mentions out of path observations while allowing exact law spans
+from validated discovery coverage in the uncertainty packet.
+
+This checks source-complete handoff and a causal operator dependency in one
+fixed, known route. The source-derived coordinates, seed, target and readout
+are supplied by the fixture. It has no independently authored task, language
+to-world addressing, semantic sufficiency judgment, matched iterative-RAG or
+incremental-join comparison, or lifecycle cost result. It therefore does not
+establish general task-directed reasoning or a latent-world advantage. The
+optional `run_episode` bridge remains an unqualified interface for those
+questions.
 
 ## Choosing a late scope for the same unit name, 26 November 2026
 

@@ -88,7 +88,8 @@ class TaskWorld:
             opened = tool.verify(span)
             if opened["status"] != "VERIFIED_SOURCE_BYTES":
                 raise ValueError("search catalogue contains an unverifiable span")
-            texts.append(opened["text"])
+            searchable_identity = span.source_id.replace(".", " ").replace("_", " ")
+            texts.append(f"{searchable_identity}\n{opened['text']}")
             setup_bytes += opened["source_bytes_read"]
             by_source.setdefault(span.source_id, []).append(span)
         catalogue = json.dumps([asdict(span) for span in spans], sort_keys=True, separators=(",", ":")).encode()

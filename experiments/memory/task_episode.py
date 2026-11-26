@@ -14,8 +14,23 @@ from experiments.memory.task_evidence import (
     ExploreRolePaths, OpenEvidence, ProbeRoleLinks, RoleSupport, TaskBudget, TaskWorld, _Investigation,
     _JOINT_STANCES, _read_covers_span, _role_terminal_reads,
 )
+from experiments.memory.recurrent_task_bridge import RecurrentTaskBridge, verify_recurrent_task_receipt
 from experiments.memory.verified_reader_bridge import encode_messages, frame_evidence
 from experiments.memory.verified_source_tool import require_digest, sha256
+
+
+_EPISODE_IMPLEMENTATION_FILES = (
+    "binding_links.py", "corpus_binding_journal.py", "corpus_bindings.py", "latent_feedback.py",
+    "recurrent_task_bridge.py",
+    "recurrent_world.py", "source_constraints.py", "task_episode.py", "task_evidence.py",
+    "repository_import_memory.py", "repository_transport_control.py", "verified_reader_bridge.py",
+    "verified_source_tool.py", "world_transport.py",
+)
+
+
+def _episode_implementation_manifest():
+    root = Path(__file__).parent
+    return {name: sha256((root / name).read_bytes()) for name in _EPISODE_IMPLEMENTATION_FILES}
 
 
 _SYSTEM = (
@@ -160,6 +175,16 @@ _COMPACT_JOINT_ROLE_INSTRUCTIONS = (
     '{"op":"role_spans","need_id":text,"receipt":integer,"offset":integer}. For a finding using the joint result, '
     'include role_support with its receipt and outcome. For conflict use stance "conflicted" and outcome "conflict"; '
     "if open_coverage is true, retain an open question for the unresolved branch or condition."
+)
+_RECURRENT_WORLD_INSTRUCTIONS = (
+    ' When recurrent_world_enabled, use {"op":"world_read","need_id":text,"read":integer,'
+    '"ordinal":integer,"steps":integer} only with a complete verified read for that same need. '
+    'If it returns next_offset, use {"op":"world_spans","need_id":text,"receipt":integer,'
+    '"offset":integer} to open the next page. A world result is a numeric routing lead, not entailment. '
+    "Its branch path_witness_ids are ordered witness IDs; dependency_witness_ids identify the source witnesses "
+    "used by a published operator. Candidate spans are navigation only: reopen relevant spans with ordinary read "
+    "actions, and cite only verified read IDs. If a route or candidate packet is incomplete, keep the affected "
+    "finding unresolved unless other opened evidence independently settles it."
 )
 
 
@@ -418,6 +443,35 @@ def read_episode(artifact):
             or any(row["kind"] in ("start", "finish") for row in records[1:-1])
             or parent != artifact.sha256):
         raise ValueError("episode is incomplete or does not match its bound digest")
+    recurrent_receipts = {}
+    recurrent_offsets = {}
+    for row in records[1:-1]:
+        if row["kind"] != "tool" or type(row["data"]) is not dict:
+            continue
+        request = row["data"].get("request")
+        result = row["data"].get("result")
+        if type(result) is dict and result.get("status") == "RECURRENT_WORLD_RESULT":
+            if type(request) is not dict or request.get("op") != "world_read":
+                raise ValueError("recurrent-world result is detached from its request")
+            verify_recurrent_task_receipt(request.get("need_id"), result)
+            receipt = result.get("receipt")
+            receipt_sha = result.get("receipt_sha256")
+            if (type(receipt) is not int or receipt < 0 or receipt in recurrent_receipts
+                    or result.get("bridge_receipt_sha256") != receipt_sha):
+                raise ValueError("recurrent-world opening page has an invalid receipt binding")
+            recurrent_receipts[receipt] = (request.get("need_id"), receipt_sha)
+            recurrent_offsets[receipt] = result.get("next_offset")
+        elif type(result) is dict and result.get("status") == "RECURRENT_WORLD_SPANS":
+            if type(request) is not dict or request.get("op") != "world_spans":
+                raise ValueError("recurrent-world page is detached from its request")
+            receipt, offset = request.get("receipt"), request.get("offset")
+            bound = recurrent_receipts.get(receipt)
+            if (bound is None or request.get("need_id") != bound[0]
+                    or result.get("receipt") != receipt or result.get("offset") != offset
+                    or recurrent_offsets.get(receipt) != offset
+                    or result.get("bridge_receipt_sha256") != bound[1]):
+                raise ValueError("recurrent-world page does not follow its bound receipt and offset")
+            recurrent_offsets[receipt] = result.get("next_offset")
     return tuple(records)
 
 
@@ -425,6 +479,8 @@ class _Tools:
     """Host-owned, budgeted task access shared by all policy state formats."""
 
     _field_sets = {"search": {"query"}, "read": {"candidate"},
+                   "world_read": {"read", "ordinal", "steps"},
+                   "world_spans": {"receipt", "offset"},
                    "probe": {"read", "ordinal", "outcomes", "hops"},
                    "reason": {"read", "ordinal", "outcomes", "stages", "terminal_hops"},
                    "role_spans": {"receipt", "offset"},
@@ -432,8 +488,18 @@ class _Tools:
                    "joint_state": {"read", "ordinal", "axis"},
                    "joint_spans": {"receipt", "offset"}}
 
-    def __init__(self, task, world, limits, probes_enabled, typed_needs=False):
+    def __init__(self, task, world, limits, probes_enabled, typed_needs=False, recurrent_bridge=None):
+        if recurrent_bridge is not None and (
+                type(recurrent_bridge) is not RecurrentTaskBridge
+                or recurrent_bridge._task_world is not world):
+            raise ValueError("the recurrent bridge must be bound to this exact TaskWorld")
         self._session = _Investigation(task, world, limits.access)
+        self._recurrent_bridge = recurrent_bridge
+        self._world_receipts = []
+        self._world_offsets = {}
+        self._world_candidate_spans_materialized = 0
+        self._world_span_pages = 0
+        self._world_calls = 0
         self._limits = {"search": limits.queries, "read": limits.reads, "probe": limits.probes}
         self._joint_role_limit = limits.joint_roles
         self._enabled = probes_enabled
@@ -467,6 +533,19 @@ class _Tools:
             counts.update(joint_updates=session.joint_updates, joint_tensor_cells=session.joint_tensor_cells,
                           joint_projection_cells=session.joint_projection_cells,
                           joint_candidate_spans=self.joint_candidate_spans)
+        if self._recurrent_bridge is not None:
+            results = [row["result"] for row in self._world_receipts]
+            counts.update(
+                recurrent_world_calls=self._world_calls,
+                recurrent_world_span_pages=self._world_span_pages,
+                recurrent_world_candidate_spans=self._world_candidate_spans_materialized,
+                recurrent_world_observation_scores=sum(row.observation_scores for row in results),
+                recurrent_world_feedback_scores=sum(row.feedback_scores for row in results),
+                recurrent_world_transition_writes=sum(row.transition_writes for row in results),
+                recurrent_world_block_evaluations=sum(row.block_evaluations for row in results),
+                recurrent_world_priority_scores=sum(row.priority_scores for row in results),
+                recurrent_world_reused_writes=sum(row.reused_writes for row in results),
+            )
         return counts
 
     @staticmethod
@@ -479,10 +558,12 @@ class _Tools:
         if type(request) is not dict or type(request.get("op")) is not str:
             return {"status": "INVALID_TOOL"}
         op = request["op"]
-        if op not in self._field_sets or (op in ("joint_check", "joint_state", "joint_spans") and not self.joint_state_enabled):
+        if (op not in self._field_sets
+                or (op in ("joint_check", "joint_state", "joint_spans") and not self.joint_state_enabled)
+                or (op in ("world_read", "world_spans") and self._recurrent_bridge is None)):
             return {"status": "INVALID_TOOL"}
         allowance = {"reason": "probe", "role_spans": "search", "joint_spans": "search",
-                     "joint_check": "joint_state"}.get(op, op)
+                     "joint_check": "joint_state", "world_read": "probe", "world_spans": "search"}.get(op, op)
         self.attempts[allowance] += 1
         if op == "role_spans":
             self.role_span_pages += 1
@@ -509,6 +590,10 @@ class _Tools:
                                                            or self.joint_state_enabled):
                     return self._read_batch(request["candidate"], need_id)
                 return self._read(request, need_id)
+            if op == "world_read":
+                return self._recurrent_world_read(request, need_id)
+            if op == "world_spans":
+                return self._recurrent_world_page(request["receipt"], request["offset"], need_id)
             if op == "reason":
                 return self._reason(request, need_id)
             if op in ("joint_check", "joint_state"):
@@ -600,6 +685,132 @@ class _Tools:
                 row = {"status": "SOURCE_ERROR", "reason": type(error).__name__}
             reads.append({"candidate": candidate, **row})
         return {"status": "READ_BATCH", "reads": reads}
+
+    def _recurrent_world_read(self, request, need_id):
+        """Resolve a verified same-need seed and register versioned world leads."""
+        session = self._session
+        read_id, ordinal, steps = request["read"], request["ordinal"], request["steps"]
+        if (type(need_id) is not str or not need_id or type(read_id) is not int
+                or not 0 <= read_id < len(session.reads)):
+            raise ValueError("recurrent world needs an existing task read and need ID")
+        session._citations((read_id,))
+        seed_read = session.reads[read_id]
+        if seed_read.need != need_id:
+            raise ValueError("recurrent world seed read belongs to another need")
+        result = self._recurrent_bridge.read(seed_read, need_id=need_id, ordinal=ordinal, steps=steps)
+        if result.task_pin != session.world.pin:
+            raise ValueError("recurrent world result escaped the task pin")
+
+        grouped = {}
+        for witness in result.witness_packet:
+            key = (witness.span, witness.source_generation)
+            row = grouped.setdefault(key, {
+                "span": witness.span, "source_generation": witness.source_generation,
+                "witness_ordinals": set(), "witness_ids": set(), "branch_ids": set(),
+                "dependency_roles": set(), "uncertain_route": False,
+            })
+            row["witness_ordinals"].add(witness.mention_ordinal)
+            row["witness_ids"].add(witness.candidate_id)
+            row["branch_ids"].update(witness.branch_ids)
+            row["dependency_roles"].update(witness.dependency_roles)
+            row["uncertain_route"] |= witness.uncertain_route
+        packet = tuple({
+            "span": row["span"], "source_generation": row["source_generation"],
+            "witness_ordinals": tuple(sorted(row["witness_ordinals"])),
+            "witness_ids": tuple(sorted(row["witness_ids"])),
+            "branch_ids": tuple(sorted(row["branch_ids"])),
+            "dependency_roles": tuple(sorted(row["dependency_roles"])),
+            "uncertain_route": row["uncertain_route"],
+        } for row in grouped.values())
+        receipt_id = len(self._world_receipts)
+        self._world_receipts.append({"need": need_id, "result": result, "packet": packet})
+        self._world_offsets[receipt_id] = 0
+        self._world_calls += 1
+        page = self._recurrent_world_page(receipt_id, 0, need_id)
+
+        branches = [asdict(branch) for branch in result.branches]
+        return {
+            **page,
+            "status": "RECURRENT_WORLD_RESULT",
+            "seed_read_id": read_id,
+            "seed": asdict(result.seed),
+            "task_pin": asdict(result.task_pin),
+            "operator_pins": [asdict(pin) for pin in result.operator_pins],
+            "operator_states": [asdict(state) for state in result.operator_states],
+            "operator_sha256": result.operator_sha256,
+            "kernel_sha256": result.kernel_sha256,
+            "readout_config_sha256": result.readout_config_sha256,
+            "readout_sha256": result.readout_sha256,
+            "memory_state_sha256": result.memory_state_sha256,
+            "memory_fingerprint_bytes": result.memory_fingerprint_bytes,
+            "receipt_sha256": result.receipt_sha256,
+            "readout_status": result.readout_status,
+            "readout_interpretation": "NUMERIC_ROUTING_ONLY",
+            "requested_steps": result.requested_steps,
+            "completed_steps": result.completed_steps,
+            "overflow": result.overflow,
+            "branches": branches,
+            "witness_packet": [asdict(witness) for witness in result.witness_packet],
+            "uncertain_witnesses": [asdict(witness) for witness in result.uncertain_witnesses],
+            "candidate_spans": len(packet),
+            "candidate_spans_truncated": page["candidate_spans_truncated"],
+            "uncertain_witnesses_truncated": result.uncertain_witnesses_truncated,
+            "unlocated_sources": list(result.unlocated_sources),
+            "unlocated_sources_count": result.unlocated_sources_count,
+            "unlocated_sources_truncated": result.unlocated_sources_truncated,
+            "observation_scores": result.observation_scores,
+            "feedback_scores": result.feedback_scores,
+            "transition_writes": result.transition_writes,
+            "block_evaluations": result.block_evaluations,
+            "priority_scores": result.priority_scores,
+            "reused_writes": result.reused_writes,
+            "operation_counts": {
+                "observation_scores": result.observation_scores,
+                "feedback_scores": result.feedback_scores,
+                "transition_writes": result.transition_writes,
+                "block_evaluations": result.block_evaluations,
+                "priority_scores": result.priority_scores,
+                "reused_writes": result.reused_writes,
+            },
+        }
+
+    def _recurrent_world_page(self, receipt, offset, need_id):
+        if (type(receipt) is not int or not 0 <= receipt < len(self._world_receipts)
+                or type(offset) is not int or self._world_offsets.get(receipt) != offset
+                or self._world_receipts[receipt]["need"] != need_id):
+            raise ValueError("recurrent world page requires the same need and next receipt offset")
+        rows = self._world_receipts[receipt]["packet"]
+        page_size = self._session.budget.candidates_per_search
+        cap = (self._session.budget.role_candidate_spans - self.role_candidate_spans_materialized
+               - self._world_candidate_spans_materialized)
+        start = offset
+        end = min(start + page_size, len(rows), start + max(0, cap))
+        candidates = []
+        for row in rows[start:end]:
+            pointer = self._candidates((row["span"],), need_id)[0]["candidate"]
+            span = row["span"]
+            candidates.append({
+                "candidate": pointer, "span": asdict(span),
+                "source_generation": row["source_generation"],
+                "witness_ordinals": list(row["witness_ordinals"]),
+                "witness_ids": list(row["witness_ids"]),
+                "branch_ids": list(row["branch_ids"]),
+                "dependency_roles": list(row["dependency_roles"]),
+                "uncertain_route": row["uncertain_route"],
+            })
+        self._world_candidate_spans_materialized += len(candidates)
+        self._world_span_pages += 1
+        next_offset = (end if end < len(rows) and end - start == page_size
+                       and self._world_candidate_spans_materialized + self.role_candidate_spans_materialized
+                       < self._session.budget.role_candidate_spans else None)
+        self._world_offsets[receipt] = next_offset
+        result = {"status": "RECURRENT_WORLD_SPANS", "receipt": receipt, "offset": offset,
+                  "candidate_spans": len(rows), "candidates": candidates,
+                  "candidate_spans_truncated": end < len(rows) and next_offset is None,
+                  "bridge_receipt_sha256": self._world_receipts[receipt]["result"].receipt_sha256}
+        if next_offset is not None:
+            result["next_offset"] = next_offset
+        return result
 
     def _probe(self, request, need_id=None):
         outcomes, hops = request["outcomes"], request.get("hops", 1)
@@ -746,6 +957,33 @@ class _Tools:
     @staticmethod
     def prompt_receipt(receipt):
         result = receipt["result"]
+        if result["status"] in ("RECURRENT_WORLD_RESULT", "RECURRENT_WORLD_SPANS"):
+            candidates = [{key: row[key] for key in (
+                "candidate", "source_generation", "witness_ordinals", "witness_ids", "branch_ids",
+                "uncertain_route", "dependency_roles",
+            )} | {"source_id": row["span"]["source_id"],
+                 "scope_bytes": [row["span"]["start_byte"], row["span"]["end_byte"]]}
+                          for row in result.get("candidates", ())]
+            if result["status"] == "RECURRENT_WORLD_SPANS":
+                public = {key: result[key] for key in (
+                    "status", "receipt", "offset", "candidate_spans", "candidate_spans_truncated",
+                )}
+            else:
+                public = {key: result[key] for key in (
+                    "status", "receipt", "readout_status", "readout_interpretation",
+                    "requested_steps", "completed_steps", "overflow", "candidate_spans",
+                    "candidate_spans_truncated", "uncertain_witnesses_truncated",
+                    "unlocated_sources_count", "unlocated_sources_truncated",
+                )}
+                public["branches"] = [{
+                    "id": branch["id"], "complete": branch["complete"], "readout": branch["readout"],
+                    "path_witness_ids": branch["path_witness_ids"],
+                    "dependency_witness_ids": branch["dependency_witness_ids"],
+                } for branch in result.get("branches", ())]
+            if "next_offset" in result:
+                public["next_offset"] = result["next_offset"]
+            public["candidates"] = candidates
+            return {"request": receipt["request"], "result": public}
         if result["status"] != "JOINT_ROLE_RESULT":
             return receipt
         read = result["read"]
@@ -858,7 +1096,8 @@ class _Tools:
 
 
 def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: EpisodeLimits,
-                tokenizer, generate: Callable[[PolicyCall], PolicyReply], output_path: Path) -> EpisodeArtifact:
+                tokenizer, generate: Callable[[PolicyCall], PolicyReply], output_path: Path, *,
+                recurrent_bridge: RecurrentTaskBridge | None = None) -> EpisodeArtifact:
     """Run one policy on a frozen world, writing a new host-owned receipt ledger.
 
     The trusted caller supplies the frozen backend and tokenizer. Their IDs must
@@ -869,6 +1108,10 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
     _nonempty(task, "task")
     if type(world) is not TaskWorld or type(policy) is not EpisodePolicy or type(limits) is not EpisodeLimits:
         raise TypeError("a pinned task world, policy and limits are required")
+    if recurrent_bridge is not None and (
+            type(recurrent_bridge) is not RecurrentTaskBridge
+            or recurrent_bridge._task_world is not world):
+        raise ValueError("the recurrent bridge must be bound to this exact TaskWorld")
     if not callable(generate):
         raise TypeError("a generation adapter is required")
 
@@ -876,7 +1119,11 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
     typed_needs = policy.state_kind == "typed_needs"
     compact_needs = policy.state_kind == "compact_needs"
     linked_needs = typed_needs or compact_needs
-    toolbox = _Tools(task, world, limits, policy.probes_enabled, linked_needs)
+    if recurrent_bridge is not None and (
+            not linked_needs or not policy.probes_enabled or limits.probes < 1):
+        raise ValueError("recurrent world episodes require linked needs and an enabled probe allowance")
+    toolbox = _Tools(task, world, limits, policy.probes_enabled, linked_needs,
+                     recurrent_bridge=recurrent_bridge)
     system = (_COMPACT_SYSTEM if compact_needs else
               _TYPED_SYSTEM if typed_needs else _SYSTEM + " " + _STATE_INSTRUCTIONS[policy.state_kind])
     if world._receiver is not None or toolbox.joint_state_enabled:
@@ -886,6 +1133,8 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                    _TYPED_JOINT_ROLE_INSTRUCTIONS if typed_needs else _JOINT_ROLE_INSTRUCTIONS)
     if toolbox.joint_state_enabled:
         system += _JOINT_STATE_INSTRUCTIONS
+    if recurrent_bridge is not None:
+        system += _RECURRENT_WORLD_INSTRUCTIONS
     state = ({"needs": [], "notes": ""} if typed_needs else
              {} if policy.state_kind == "needs" else "")
     state_type = type(state)
@@ -910,6 +1159,52 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
             del opening["limits"]["access"]["joint_state"]
         if toolbox.joint_state_enabled:
             opening["joint_state_version"] = 1
+        opening["experiment_implementation"] = _episode_implementation_manifest()
+        if recurrent_bridge is not None:
+            memory = recurrent_bridge._memory
+            arrays = [memory._key_map]
+            if memory._bank is not None:
+                arrays.extend((memory._bank._keys, memory._bank._observations))
+            for bank in memory._sources.values():
+                arrays.extend((bank.observations._keys, bank.observations._observations))
+            opening["recurrent_task_bridge"] = {
+                "task_pin": asdict(world.pin),
+                "operator_pins": [asdict(pin) for pin in recurrent_bridge._operator_pins],
+                "operator_states": [asdict(state) for state in recurrent_bridge._operator_states],
+                "operator_sha256": recurrent_bridge._operator_sha256,
+                "kernel_sha256": recurrent_bridge._kernel_sha256,
+                "readout_config_sha256": recurrent_bridge._readout_config_sha256,
+                "readout_sha256": recurrent_bridge._readout_sha256,
+                "memory_state_sha256": recurrent_bridge._memory_state_sha256,
+                "memory_fingerprint_bytes": recurrent_bridge._memory_fingerprint_bytes,
+                "allow_ablated_operators": recurrent_bridge._allow_ablated_operators,
+                "host_implementation_sha256": sha256(Path(__file__).read_bytes()),
+                "bridge_implementation_sha256": sha256(
+                    Path(__file__).with_name("recurrent_task_bridge.py").read_bytes()
+                ),
+                "readout_config": {
+                    "direction_dtype": recurrent_bridge._direction.dtype.str,
+                    "direction_shape": list(recurrent_bridge._direction.shape),
+                    "direction_bytes_hex": recurrent_bridge._direction.tobytes().hex(),
+                    "floor": recurrent_bridge._floor,
+                    "null_logit": recurrent_bridge._null_logit,
+                    "margin": recurrent_bridge._margin,
+                },
+                "limits": asdict(recurrent_bridge._limits),
+                "call_allowance": limits.probes,
+                "candidate_span_allowance": limits.access.role_candidate_spans,
+                "memory_manifest": {
+                    "encoder_version": memory.corpus.memory.encoder_version,
+                    "source_count": len(memory.corpus.memory.source_digests),
+                    "prepared_source_banks": len(memory._sources),
+                    "witness_count": len(memory._witnesses),
+                    "unlocated_source_count": len(memory.unlocated_sources),
+                    "projected_rows": memory.projected_rows,
+                    "packed_rows": memory.packed_rows,
+                    "numeric_array_bytes": sum(int(array.nbytes) for array in arrays),
+                    "fingerprint_bytes": recurrent_bridge._memory_fingerprint_bytes,
+                },
+            }
         if limits.access.bound_context:
             opening["context_completion_version"] = CONTEXT_COMPLETION_VERSION
         if limits.access.bound_hidden:
@@ -936,6 +1231,10 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                 framed["joint_roles_enabled"] = policy.probes_enabled
             if toolbox.joint_state_enabled:
                 framed["joint_state_enabled"] = True
+            if recurrent_bridge is not None:
+                framed["recurrent_world_enabled"] = True
+                framed["recurrent_world_max_steps"] = recurrent_bridge._limits.max_steps
+                framed["recurrent_world_call_limit"] = limits.probes
             messages = frame_evidence(system, framed)
             try:
                 input_ids = tuple(encode_messages(tokenizer, messages))
@@ -1080,7 +1379,7 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
     Matching declarations and valid terminal records do not establish a blind
     comparison or complete usage. Inspect both finish records before using costs.
     """
-    if contrast not in ("policy", "probes", "memory"):
+    if contrast not in ("policy", "probes", "memory", "operator", "operator_restore"):
         raise ValueError("unknown episode contrast")
     if left == right or left.sha256 == right.sha256:
         raise ValueError("compare separate episodes")
@@ -1097,6 +1396,9 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
         raise ValueError("episode recurrent bound policy differs")
     if a.get("joint_state_version") != b.get("joint_state_version"):
         raise ValueError("episode joint state policy differs")
+    if a.get("experiment_implementation") != b.get("experiment_implementation"):
+        raise ValueError("episode implementation differs")
+    bridge_a, bridge_b = a.get("recurrent_task_bridge"), b.get("recurrent_task_bridge")
     if contrast == "memory":
         source_fields = ("source_snapshot", "span_catalogue_sha256", "binding_source_revision")
         for field in source_fields:
@@ -1106,10 +1408,58 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
                 raise ValueError("memory comparison requires the same source pin")
         if any(a["pin"].get(field) != b["pin"].get(field) for field in ("receiver_sha256", "as_of")):
             raise ValueError("memory comparison requires the same receiver and effective time")
-        if a["pin"] == b["pin"] or a["policy"] != b["policy"]:
+        same_pin_toggle = a["pin"] == b["pin"] and ((bridge_a is None) != (bridge_b is None))
+        if (a["pin"] == b["pin"] and not same_pin_toggle) or a["policy"] != b["policy"]:
             raise ValueError("memory comparison must change only the retained state")
+    elif contrast in ("operator", "operator_restore"):
+        if a["pin"] != b["pin"] or a["policy"] != b["policy"]:
+            raise ValueError("operator comparisons require the exact same task pin and policy")
     elif a["pin"] != b["pin"]:
         raise ValueError("episode pin differs")
+    if contrast == "memory":
+        if bridge_a is not None and bridge_b is not None:
+            # The maintenance operator is the intended intervention, so its
+            # identity may differ. Hold the receiving kernel and task readout fixed.
+            fields = ("kernel_sha256", "readout_config_sha256", "limits", "call_allowance",
+                      "candidate_span_allowance", "readout_config")
+            if any(bridge_a.get(field) != bridge_b.get(field) for field in fields):
+                raise ValueError("memory comparison changes the recurrent task bridge configuration")
+    elif contrast == "operator":
+        if bridge_a is None or bridge_b is None:
+            raise ValueError("operator removal requires two recurrent-world episodes")
+        fields = ("task_pin", "kernel_sha256", "readout_config_sha256", "readout_config", "limits",
+                  "call_allowance", "candidate_span_allowance", "memory_state_sha256")
+        if any(bridge_a.get(field) != bridge_b.get(field) for field in fields):
+            raise ValueError("operator removal changes more than the installed computation")
+        states_a, states_b = bridge_a.get("operator_states"), bridge_b.get("operator_states")
+        if type(states_a) is not list or type(states_b) is not list or len(states_a) != len(states_b):
+            raise ValueError("operator removal lacks paired operator-state receipts")
+        normalize = lambda rows: [
+            {key: value for key, value in row.items() if key != "availability"}
+            for row in rows
+        ]
+        if normalize(states_a) != normalize(states_b):
+            raise ValueError("operator removal changes the declared operator or its provenance")
+        changed = [(left.get("availability"), right.get("availability"))
+                   for left, right in zip(states_a, states_b, strict=True)
+                   if left.get("availability") != right.get("availability")]
+        if (len(changed) != 1 or changed[0] != ("active", "removed")
+                or bridge_a.get("operator_sha256") == bridge_b.get("operator_sha256")
+                or bridge_a.get("operator_pins") == bridge_b.get("operator_pins")
+                or bridge_a.get("allow_ablated_operators") is not False
+                or bridge_b.get("allow_ablated_operators") is not True):
+            raise ValueError("operator comparison must order the active episode before its one-operator ablation")
+    elif contrast == "operator_restore":
+        if bridge_a is None or bridge_b is None or bridge_a != bridge_b:
+            raise ValueError("operator restoration requires identical recurrent-world configurations")
+        states = bridge_a.get("operator_states")
+        if type(states) is not list or not states or any(
+                state.get("availability") != "active" for state in states):
+            raise ValueError("operator restoration requires an active publication in both episodes")
+        if bridge_a.get("allow_ablated_operators") is not False:
+            raise ValueError("operator restoration must use an active, non-ablated bridge")
+    elif bridge_a != bridge_b:
+        raise ValueError("episode recurrent task bridge differs")
     if a["setup_source_bytes"] != b["setup_source_bytes"]:
         raise ValueError("episode source setup cost differs")
     a, b = a["policy"], b["policy"]

@@ -23,15 +23,21 @@ from experiments.memory.recurrent_world import RecurrentWorld
 from experiments.memory.repository_import_memory import (
     RepositoryImportMemory, _decode_python, _git, _module_imports, _module_tree, _read_blobs,
 )
-from experiments.memory.verified_source_tool import require_digest, sha256
+from experiments.memory.task_evidence import TaskWorld
+from experiments.memory.verified_source_tool import SourceSpan, VerifiedSourceTool, require_digest, sha256
 from experiments.memory.world_transport import DiscoveredTransportPolicy
 
 
 _MAX_COORDINATES = 256
 _MAX_REVISIONS = 8
 _MAX_JOURNAL_BYTES = 32 * 1024 * 1024
+_MAX_SOURCE_ARCHIVE_BYTES = 64 * 1024 * 1024
+_MAX_SOURCE_ARCHIVE_BLOBS = _MAX_COORDINATES * _MAX_REVISIONS
+_MAX_TASK_SOURCE_BYTES = 2 * 1024 * 1024
+_MAX_TASK_INDEX_BYTES = 8 * 1024 * 1024
 _MAX_JSON_BYTES = 1024 * 1024
-_PUBLICATION_SCHEMA = "lsr-committed-imports-publication-v1"
+_PUBLICATION_SCHEMA_V1 = "lsr-committed-imports-publication-v1"
+_PUBLICATION_SCHEMA = "lsr-committed-imports-publication-v2"
 _REASONING_ARGS = dict(steps=2, max_hypotheses=1, null_logit=8., margin=1.)
 _READOUT_FLOOR = .1
 _READ_CONTRACT = dict(_REASONING_ARGS, floor=_READOUT_FLOOR)
@@ -204,6 +210,98 @@ def _history(workspace, revision):
                                  max_payload_bytes=_MAX_JOURNAL_BYTES)
 
 
+def _verify_source_archive(directory, manifest):
+    """Check every content-addressed source file against the sealed inventory."""
+    if manifest["schema"] == _PUBLICATION_SCHEMA_V1:
+        return None
+    source_root = Path(directory) / "sources"
+    leaf_root = source_root / "leaves"
+    if source_root.is_symlink() or leaf_root.is_symlink() or not leaf_root.is_dir():
+        raise ValueError("publication source archive is unavailable")
+    expected = {f"{digest}.txt": size for digest, size in manifest["source_blobs"]}
+    entries = tuple(leaf_root.iterdir())
+    if (any(path.is_symlink() or not path.is_file() for path in entries)
+            or {path.name for path in entries} != set(expected)):
+        raise ValueError("publication source archive does not match its sealed inventory")
+    total = 0
+    for filename, size in expected.items():
+        raw = _bounded_read(leaf_root / filename, size)
+        if len(raw) != size or sha256(raw) != filename[:-4]:
+            raise ValueError("publication source blob does not match its content address")
+        total += len(raw)
+    if total != manifest["source_archive_bytes"]:
+        raise ValueError("publication source archive byte total is inconsistent")
+    return source_root
+
+
+def _verify_archive_covers_pins(workspace, manifest):
+    if manifest["schema"] == _PUBLICATION_SCHEMA_V1:
+        return
+    required = set()
+    for _, revision, digest in manifest["pins"]:
+        pin = _history(workspace, revision)
+        if pin.journal_sha256 != digest:
+            raise ValueError("publication source archive pin differs from journal history")
+        required.update(pin.memory.source_digests.values())
+    if required != {digest for digest, _ in manifest["source_blobs"]}:
+        raise ValueError("publication source archive is incomplete or contains unpinned blobs")
+
+
+@contextmanager
+def open_task_world(directory, seal, pin_index, *, arm="on"):
+    """Open one source-complete TaskWorld from a sealed publication, with no Git access."""
+    if type(pin_index) is not int or arm not in ("on", "operators-off"):
+        raise ValueError("task-world reader requires a pin index and supported operator arm")
+    directory = Path(directory)
+    manifest = _read_manifest(directory, seal)
+    source_root = _verify_source_archive(directory, manifest)
+    if source_root is None or not 0 <= pin_index < len(manifest["pins"]):
+        raise ValueError("task-world handoff requires a source-complete publication pin")
+    journal = _bounded_read(directory / "corpus.sqlite", _MAX_JOURNAL_BYTES)
+    if sha256(journal) != manifest["journal_sha256"]:
+        raise ValueError("publication journal digest mismatch")
+    encoder = _ImportEncoder(manifest["package"])
+    frame, world = _frame(encoder)
+    if (world._kernel_sha256 != manifest["kernel_sha256"]
+            or _frame_digest(frame).hex() != manifest["frame_sha256"]):
+        raise ValueError("publication frame or kernel does not match the task reader")
+    encoder.code = dict(zip(manifest["coordinates"], encoder.axes[:len(manifest["coordinates"])], strict=True))
+    commit, revision, expected_journal = manifest["pins"][pin_index]
+    with TemporaryDirectory(prefix="lsr-task-publication-") as scratch:
+        private_journal = Path(scratch) / "corpus.sqlite"
+        private_journal.write_bytes(journal)
+        if _content_digest(private_journal, manifest) != manifest["content_sha256"]:
+            raise ValueError("publication content digest mismatch")
+        workspace = JournaledCorpusWorkspace(private_journal, replace(frame, _encode=_forbid_encoding))
+        _verify_archive_covers_pins(workspace, manifest)
+        pin = _history(workspace, revision)
+        if pin.journal_sha256 != expected_journal:
+            raise ValueError("selected task pin differs from the sealed publication")
+        _verify_names(pin, encoder.code)
+        versions = dict(pin.memory.source_digests)
+        inventory = dict(manifest["source_blobs"])
+        if set(versions.values()) - inventory.keys():
+            raise ValueError("task pin references a source absent from the sealed archive")
+        active_bytes = sum(inventory[digest] for digest in versions.values())
+        if (active_bytes > _MAX_TASK_INDEX_BYTES
+                or any(inventory[digest] > _MAX_TASK_SOURCE_BYTES for digest in versions.values())):
+            raise ValueError("task source catalogue exceeds its setup or per-source read allowance")
+        spans = tuple(
+            SourceSpan(source, digest, 0, inventory[digest], digest)
+            for source, digest in sorted(versions.items())
+        )
+        if {span.source_id for span in spans} != set(versions):
+            raise ValueError("task search catalogue omits a pinned source")
+        tool = VerifiedSourceTool(source_root, versions)
+        task_world = TaskWorld(tool, spans, bindings=pin)
+        memory = world.prepare(pin, packed=False, operators=arm == "on")
+        if task_world.pin.binding_journal_sha256 != pin.journal_sha256:
+            raise ValueError("task source and recurrent world are not at the same journal pin")
+        yield dict(commit=commit, pin=pin, task_world=task_world, reasoner=world, memory=memory,
+                   encoder=encoder, source_archive_bytes=manifest["source_archive_bytes"],
+                   source_setup_bytes=task_world.setup_source_bytes)
+
+
 def run(repo, revisions, *, package):
     encoder = _ImportEncoder(package)
     frame, world = _frame(encoder)
@@ -254,6 +352,9 @@ def _content_digest(journal, manifest):
     """Hash the ordered source-derived event payloads independent of the stream UUID."""
     metadata = {key: manifest[key] for key in ("schema", "package", "coordinates", "frame_sha256",
                                                 "kernel_sha256", "read_contract")}
+    if manifest["schema"] == _PUBLICATION_SCHEMA:
+        metadata["source_blobs"] = manifest["source_blobs"]
+        metadata["source_archive_bytes"] = manifest["source_archive_bytes"]
     metadata["pins"] = [pin[:2] for pin in manifest["pins"]]
     digest = hashlib.sha256(_json(metadata))
     with closing(sqlite3.connect(f"{journal.resolve().as_uri()}?mode=ro", uri=True)) as db:
@@ -265,21 +366,44 @@ def _content_digest(journal, manifest):
 
 
 def publish(repo, revisions, destination, *, package):
-    """Write a source-only publication and return its custody and content digests."""
+    """Write a source-only publication and content-addressed text snapshot."""
     encoder = _ImportEncoder(package)
     frame, world = _frame(encoder)
     destination = Path(destination)
     destination.mkdir()
     journal = destination / "corpus.sqlite"
     workspace = JournaledCorpusWorkspace(journal, frame, create=True)
-    pins = [[commit, pin.revision, pin.journal_sha256]
-            for commit, pin, _, _ in _publications(repo, revisions, package, encoder, world, workspace)]
+    pins, source_blobs, current = [], {}, {}
+    for commit, pin, changes, _ in _publications(repo, revisions, package, encoder, world, workspace):
+        for name, contents in changes.items():
+            if contents is None:
+                current.pop(name, None)
+            else:
+                current[name] = contents
+                source_blobs.setdefault(sha256(contents), contents)
+        if (set(current) != set(pin.memory.source_digests)
+                or any(sha256(contents) != pin.memory.source_digests[name]
+                       for name, contents in current.items())):
+            raise ValueError("published text snapshot differs from the source journal pin")
+        pins.append([commit, pin.revision, pin.journal_sha256])
+    if not source_blobs or len(source_blobs) > _MAX_SOURCE_ARCHIVE_BLOBS:
+        raise ValueError("source snapshot exceeds its content-addressed blob allowance")
+    source_archive_bytes = sum(map(len, source_blobs.values()))
+    if source_archive_bytes > _MAX_SOURCE_ARCHIVE_BYTES:
+        raise ValueError("source snapshot exceeds its byte allowance")
+    leaves = destination / "sources" / "leaves"
+    leaves.mkdir(parents=True)
+    for digest, contents in sorted(source_blobs.items()):
+        with (leaves / f"{digest}.txt").open("xb") as handle:
+            handle.write(contents)
+    archive_inventory = [[digest, len(contents)] for digest, contents in sorted(source_blobs.items())]
     if any(journal.with_name(journal.name + suffix).exists() for suffix in ("-journal", "-wal", "-shm")):
         raise ValueError("publication requires a standalone finalized journal")
     data = dict(schema=_PUBLICATION_SCHEMA, package=package, coordinates=list(encoder.code),
                 journal_sha256=sha256(_bounded_read(journal, _MAX_JOURNAL_BYTES)),
                 frame_sha256=_frame_digest(frame).hex(), kernel_sha256=world._kernel_sha256,
-                read_contract=_READ_CONTRACT, pins=pins)
+                read_contract=_READ_CONTRACT, pins=pins, source_blobs=archive_inventory,
+                source_archive_bytes=source_archive_bytes)
     data["content_sha256"] = _content_digest(journal, data)
     manifest = _json(data)
     if len(manifest) > _MAX_JSON_BYTES:
@@ -289,7 +413,8 @@ def publish(repo, revisions, destination, *, package):
     with staging.open("xb") as handle:
         handle.write(manifest)
     staging.rename(destination / "publication.json")
-    return {"seal": sha256(manifest), "content_sha256": data["content_sha256"]}
+    return {"seal": sha256(manifest), "content_sha256": data["content_sha256"],
+            "source_archive_bytes": source_archive_bytes, "source_blob_count": len(archive_inventory)}
 
 
 def _read_manifest(directory, seal):
@@ -298,9 +423,14 @@ def _read_manifest(directory, seal):
     if sha256(raw) != seal:
         raise ValueError("publication seal mismatch")
     data = json.loads(raw)
-    fields = {"schema", "package", "coordinates", "pins", "journal_sha256", "kernel_sha256",
-              "frame_sha256", "content_sha256", "read_contract"}
-    if (type(data) is not dict or data.keys() != fields or data["schema"] != _PUBLICATION_SCHEMA
+    base_fields = {"schema", "package", "coordinates", "pins", "journal_sha256", "kernel_sha256",
+                   "frame_sha256", "content_sha256", "read_contract"}
+    if type(data) is not dict:
+        raise ValueError("invalid publication manifest")
+    fields = (base_fields if data.get("schema") == _PUBLICATION_SCHEMA_V1 else
+              base_fields | {"source_blobs", "source_archive_bytes"}
+              if data.get("schema") == _PUBLICATION_SCHEMA else set())
+    if (data.keys() != fields or data["schema"] not in (_PUBLICATION_SCHEMA_V1, _PUBLICATION_SCHEMA)
             or not _name(data["package"]) or data["read_contract"] != _READ_CONTRACT or _json(data) != raw):
         raise ValueError("invalid publication manifest")
     names, pins = data["coordinates"], data["pins"]
@@ -317,6 +447,19 @@ def _read_manifest(directory, seal):
         require_digest(pin[2])
     for field in ("journal_sha256", "kernel_sha256", "frame_sha256", "content_sha256"):
         require_digest(data[field])
+    if data["schema"] == _PUBLICATION_SCHEMA:
+        inventory = data["source_blobs"]
+        if (type(inventory) is not list or not 1 <= len(inventory) <= _MAX_SOURCE_ARCHIVE_BLOBS
+                or any(type(row) is not list or len(row) != 2 for row in inventory)
+                or any(type(row[0]) is not str or type(row[1]) is not int or row[1] <= 0 for row in inventory)
+                or [row[0] for row in inventory] != sorted({row[0] for row in inventory})):
+            raise ValueError("invalid source archive inventory")
+        for digest, _ in inventory:
+            require_digest(digest)
+        if (type(data["source_archive_bytes"]) is not int
+                or data["source_archive_bytes"] != sum(row[1] for row in inventory)
+                or data["source_archive_bytes"] > _MAX_SOURCE_ARCHIVE_BYTES):
+            raise ValueError("invalid source archive byte count")
     return data
 
 
@@ -415,6 +558,7 @@ def _replay_publication(directory, manifest):
         if _content_digest(copy, manifest) != manifest["content_sha256"]:
             raise ValueError("publication source content digest mismatch")
         workspace = JournaledCorpusWorkspace(copy, replace(frame, _encode=_forbid_encoding))
+        _verify_archive_covers_pins(workspace, manifest)
         tip = workspace.snapshot()
         pins = manifest["pins"]
         if (tip.revision, tip.journal_sha256) != tuple(pins[-1][1:]):
@@ -426,6 +570,7 @@ def verify_publication(directory, seal):
     """Check all retained pins before a controller releases tasks."""
     directory = Path(directory)
     manifest = _read_manifest(directory, seal)
+    _verify_source_archive(directory, manifest)
     with _replay_publication(directory, manifest) as (workspace, _, code, pins):
         for record in pins:
             _verified_pin(workspace, code, record)
@@ -437,10 +582,13 @@ def read_publication(directory, seal, questions_path, *, arm="on"):
         raise ValueError("invalid publication read arm")
     directory = Path(directory)
     manifest = _read_manifest(directory, seal)
+    source_root = _verify_source_archive(directory, manifest)
     questions, questions_digest = _questions(Path(questions_path), len(manifest["pins"]))
     with _replay_publication(directory, manifest) as (workspace, world, code, pins):
         results = _read_questions(workspace, world, code, pins, questions, arm)
-        return {"seal": seal, "questions_sha256": questions_digest, "results": results}
+        return {"seal": seal, "questions_sha256": questions_digest, "results": results,
+                "source_archive_bytes": manifest.get("source_archive_bytes", 0),
+                "source_archive_available": source_root is not None}
 
 
 def main(argv=None):

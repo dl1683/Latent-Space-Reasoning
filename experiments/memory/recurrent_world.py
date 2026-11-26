@@ -60,6 +60,18 @@ class RecurrentWorldMemory:
     def spans(self):
         return tuple(witness.span for witness in self._witnesses)
 
+    def without_source_transport(self):
+        """Remove only the published transport, retaining observations and coverage."""
+        if self._source_transports is None:
+            raise ValueError("memory has no published source transport to ablate")
+        return replace(self, _source_transports=None)
+
+    def without_source_constraints(self):
+        """Remove only the published constraints, retaining observations and policy."""
+        if self._source_constraints is None:
+            raise ValueError("memory has no published source constraints to ablate")
+        return replace(self, _source_constraints=None)
+
 
 @dataclass(frozen=True, eq=False)
 class RecurrentWorldRead:

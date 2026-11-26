@@ -61,10 +61,84 @@ def _refuse_subprocess(event, _):
         raise AssertionError("offline reader attempted to launch a subprocess")
 
 
+def _bundle_hashes(root):
+    return {
+        path.relative_to(root).as_posix(): sha256(path.read_bytes())
+        for path in root.rglob("*") if path.is_file()
+    }
+
+
 def _reader(arguments):
     sys.addaudithook(_refuse_subprocess)
     from experiments.memory.repository_transport_control import main
     main(["--read", *arguments])
+
+
+def _task_world_reader(directory, seal, pin_index):
+    sys.addaudithook(_refuse_subprocess)
+    from experiments.memory.recurrent_task_bridge import RecurrentTaskBridge, RecurrentTaskBridgeLimits
+    from experiments.memory.repository_transport_control import open_task_world
+    from experiments.memory.task_evidence import EvidenceRead
+
+    start = "experiments.memory._latent_factor_clusters"
+    target = "experiments.memory.weight_program"
+    with open_task_world(directory, seal, pin_index, arm="on") as opened:
+        pin, task_world = opened["pin"], opened["task_world"]
+        reasoner, memory, encoder = opened["reasoner"], opened["memory"], opened["encoder"]
+        source_span, = task_world._spans_by_source[start]
+        source = task_world._tool.verify(source_span, max_source_bytes=2 * 1024 * 1024)
+        if source["status"] != "VERIFIED_SOURCE_BYTES":
+            raise AssertionError("published task seed did not reopen from the source archive")
+        mentions = pin.memory.source_mentions(start)
+        ordinal = next(i for i, mention in enumerate(mentions) if mention.predicate == "context")
+        read = EvidenceRead(0, "n1", source_span, "VERIFIED_SOURCE_BYTES", source["text"],
+                            source["source_bytes_read"], tuple(mention.predicate for mention in mentions))
+        limits = RecurrentTaskBridgeLimits(max_steps=2, max_hypotheses=1)
+
+        def route(memory_state, *, allow_removed=False):
+            bridge = RecurrentTaskBridge(
+                task_world, reasoner, memory_state,
+                readout_direction=encoder.code[target], readout_floor=.1,
+                null_logit=8., margin=1., limits=limits,
+                allow_ablated_operators=allow_removed,
+            )
+            return bridge.read(read, need_id="n1", ordinal=ordinal, steps=2)
+
+        attached = route(memory)
+        removed = route(memory.without_source_transport(), allow_removed=True)
+        restored = route(memory)
+        if (attached.readout_status != "supported" or removed.readout_status != "unresolved"
+                or removed.completed_steps != 2 or removed.overflow
+                or any(branch.complete for branch in removed.branches)
+                or restored.receipt_sha256 != attached.receipt_sha256
+                or attached.memory_state_sha256 != removed.memory_state_sha256):
+            def summarize(result):
+                branches = tuple((branch.complete, branch.readout,
+                                  tuple(None if witness is None else witness.ordinal
+                                        for witness in branch.witnesses))
+                                 for branch in result.branches)
+                return (f"{result.readout_status} steps={result.completed_steps}/{result.requested_steps} "
+                        f"overflow={result.overflow} branches={branches}")
+
+            raise AssertionError(
+                "published task bridge failed the same-pin operator intervention: "
+                f"attached={summarize(attached)}, removed={summarize(removed)}, "
+                f"restored={summarize(restored)}, "
+                f"receipt_equal={restored.receipt_sha256 == attached.receipt_sha256}, "
+                f"memory_equal={attached.memory_state_sha256 == removed.memory_state_sha256}"
+            )
+        checked = 0
+        for witness in attached.witness_packet:
+            opened_witness = task_world._tool.verify(witness.span, max_source_bytes=2 * 1024 * 1024)
+            if opened_witness["status"] != "VERIFIED_SOURCE_BYTES":
+                raise AssertionError("task bridge returned a witness outside the published source archive")
+            checked += 1
+        return dict(pin=pin.journal_sha256, task_source_count=len(task_world._spans),
+                    task_setup_source_bytes=task_world.setup_source_bytes,
+                    status=attached.readout_status, removed_status=removed.readout_status,
+                    restored_receipt=restored.receipt_sha256,
+                    checked_witness_spans=checked,
+                    memory_fingerprint_bytes=attached.memory_fingerprint_bytes)
 
 
 def _witnesses(row, middle, contents):
@@ -137,17 +211,19 @@ def run(repo):
         retry = json.loads(child(_ENTRY, "--publish", "--repo", repo, "--output", root / "retry", *_PINS))
         assert retry["seal"] != receipt["seal"] and retry["content_sha256"] == receipt["content_sha256"]
         assert not questions.exists() and not gold.exists()
-        initial = {path.name: sha256(path.read_bytes()) for path in bundle.iterdir()}
+        initial = _bundle_hashes(bundle)
         child(_DRIVER, "--author", repo, questions, gold)
         seal = receipt["seal"]
         outputs = [json.loads(child(_DRIVER, "--reader", bundle, seal, questions, "--arm", arm)) for arm in _ARMS]
+        task_world = json.loads(child(_DRIVER, "--task-world", bundle, seal, 2))
         checked = _grade(repo, outputs, questions, gold, seal)
-        assert {path.name: sha256(path.read_bytes()) for path in bundle.iterdir()} == initial
+        assert _bundle_hashes(bundle) == initial
         return dict(**receipt, questions_sha256=outputs[0]["questions_sha256"], seed=_SEED,
                     journal_bytes=(bundle / "corpus.sqlite").stat().st_size,
                     attached_statuses=Counter(row["status"] for row in outputs[0]["results"]),
                     checked_attached_witnesses=checked,
-                    validated_reads=sum(len(result["results"]) for result in outputs))
+                    validated_reads=sum(len(result["results"]) for result in outputs),
+                    task_world_bridge=task_world)
 
 
 def main(argv=None):
@@ -156,6 +232,8 @@ def main(argv=None):
         _author(*map(Path, argv[1:]))
     elif argv[:1] == ["--reader"]:
         _reader(argv[1:])
+    elif argv[:1] == ["--task-world"]:
+        print(json.dumps(_task_world_reader(argv[1], argv[2], int(argv[3])), indent=2))
     else:
         parser = argparse.ArgumentParser(description=__doc__)
         parser.add_argument("--repo", type=Path, default=Path.cwd())

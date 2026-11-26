@@ -24,6 +24,30 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Five compact-planner attempts failed on one visible task, 26 November 2026.**
+All five repeated the `counterfactual-alternative` item; this is one task,
+not a calibration denominator. Run 02 duplicated a search and omitted an ask
+(7,456 input / 222 output tokens; zero reads). Run 03 declared both asks but
+guessed citation ID 1 four times before any read (8,045 / 584; zero reads).
+Run 04 repeated an unterminated candidate action (6,664 / 242; zero reads).
+Run 05 fixed numeric candidate parsing and opened two sources (415 bytes),
+but omitted the alternative-certificate evidence and ended at the input limit
+(7,133 / 504; no final finding). Run 06 accepted the plan without retries
+but again omitted that certificate, opened three sources including the
+unrelated backup fact under the qualification need (760 bytes), and hit the
+8,192-token input ceiling before a final (7,559 / 255; the next prompt needed
+2,408 tokens with only 633 remaining). These are obligation-inference and
+episode-budget failures, not evidence for or against the maintained world.
+Stop tuning this repeated item; return to the full maintenance-to-task loop
+and use a fresh, independently graded calibration when its interface is
+ready. The shared input SHA-256 is
+`582d4fe003ffd4e123eec26cbe406134b3e804de79dcb2260a9a9bc868f26d0f`.
+Ledger SHA-256 values, in run order: `50346e529e46343844800ade7202f1e247a4b676e31532c2b40a2387f168d757`,
+`5a41159d891b3f9e97d79ab1fea0d89fd25599928ec0891712ed518016d7ce71`,
+`8bc9bc080381dcbce6f121afc302a388577864b9d40422932a19aee1de475d24`,
+`aec15ba4261a86a042ed63aebb7e555d246941580e3ec2cea9362d01b3e9645c`, and
+`77d4bfe94bc583d8c1f3ca0116d1fa9bbb4e12288686c80e39d7133e92111717`.
+
 **A foreign alias can inject a different definition into a scope.**
 If a survey-defined alias follows a bare name in an international
 view, the alias could acquire a coefficient its declaration never
