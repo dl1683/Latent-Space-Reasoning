@@ -6,11 +6,12 @@ The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a
 
 ## Acquiring from committed mixed sources, 26 November 2026
 
-**Visible raw-source CPU software check.** The worker read tracked
-`.py` files from the Git object store instead of fixture text or
-task-specific paths. A source-aware AST encoder used canonical
-module identities, paired import clauses by original byte spans, and
-added one separately scoped module observation per document. The
+**Visible raw-source CPU software check.** The runner loaded tracked
+`.py` files from the Git object store and passed their bytes and canonical
+module identities to the worker. Module identities determine the one-hot
+source and ordinary observation coordinates and the late query addresses.
+The AST determines the imported target and its original byte span.
+Each module observation uses a separate span as a provenance anchor. The
 worker compiled and published functional paths before read tasks were
 generated. A cached exact adjacency reference used the same syntactic
 scope. Each of the two steps needs one distinct target in the AST
@@ -29,8 +30,8 @@ The signed support sets matched the exact reference across 419
 starting queries and 44,287 candidate readouts. The growth revision
 added a path from `_latent_factor_clusters` through `latent_feedback`
 to `weight_program`. Rolling the snapshot back withdrew that start.
-Each of the 33 supported reads lost support with its operation removed
-and its observation bank kept fixed. The 198 source witness checks
+Each of the 33 supported reads lost support with the transport publication
+disabled and its observation bank kept fixed. The 198 source witness checks
 matched stored scopes and current generations. Historical positive
 reads reopened with encoding disabled and the same name-to-coordinate
 map. The mixed-file fixture separately
