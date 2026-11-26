@@ -80,6 +80,13 @@ Search uses the existing BM25 scorer as a candidate source, and records how many
 
 An observed support, defeat or documented unknown requires verified reads from the investigation. A later verified case can settle a need despite an earlier rejected opening. A role probe can take a direction from a retained observation of a completely verified source, or take an explicit vector. The receipt includes the request and direction used. A conflicting or unresolved probe keeps the need open until a policy assessment reconciles it with verified text. The original result remains in the dossier alongside the reconciliation. A probe alone supplies no semantic verification or source citation. The dossier retains opposing cases, hypothetical cases, any unsatisfied child need and the record of failed attempts. Each stated case is a policy assessment of the cited material. The process provides no corpus-absence or semantic-completeness certificate.
 
+In the model-facing `run_episode` shell, a role-probe receipt also makes its
+versioned `BindingLinkWitness.source_spans` available as readable candidates
+before the terminal-source catalogue fallbacks. The model can open those
+exact clauses through the ordinary verified-read tool and cite the resulting
+read IDs. This exposes the scoped witnesses from a one-hop probe; it does not
+invoke the separate multi-stage `BindingFeedback.reason_role_links` operation.
+
 The capability target is discovering consequential needs and resolving or bounding them through justified source chains. Improvement requires better held-task findings or justified unknowns under matched access and full costs against competent iterative text RAG and plain search. Equivalent task outcomes at the same total cost would leave the structured planner with an engineering result on that family. The current fixture drives the action loop with a scripted policy. It checks assembly, reads, revision and uncertainty. The comparison of task inference remains unrun. [Task evidence fixtures](../experiments/memory/test_task_evidence.py)
 
 #### Comparing task policies on one tool surface

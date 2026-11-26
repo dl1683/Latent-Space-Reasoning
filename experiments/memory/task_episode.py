@@ -250,10 +250,12 @@ class _Tools:
         evidence = session.role_evidence[-1]
         sources = dict.fromkeys(witness.terminal_source for witness in evidence.read.witnesses)
         groups = [session.world._spans_by_source.get(source, ()) for source in sources]
-        spans = islice(chain.from_iterable(groups), session.budget.candidates_per_search)
+        exact = tuple(span for witness in evidence.read.witnesses for span in witness.source_spans)
+        available = tuple(dict.fromkeys((*exact, *chain.from_iterable(groups))))
+        spans = islice(available, session.budget.candidates_per_search)
         body = asdict(evidence)
         body["request"].pop("need")
-        return {"status": "ROLE_RESULT", **body, "candidate_spans": sum(map(len, groups)),
+        return {"status": "ROLE_RESULT", **body, "candidate_spans": len(available),
                 "candidates": self._candidates(spans)}
 
     def submission(self, report):

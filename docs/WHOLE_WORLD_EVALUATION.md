@@ -259,8 +259,9 @@ retrieval-recall win alone is not a pass.
 `TaskWorld` pins a verified source catalogue to an optional journaled
 `CorpusRevision`. The new `run_episode` tool surface provides bounded search,
 verified opens, and an optional retained-role probe that returns pinned
-terminal-source candidates. `TaskInvestigator` records the same actions as
-scripted policy receipts. The probe requires a verified complete-source
+terminal-source candidates plus prioritized exact `source_spans` from its
+role witnesses. `TaskInvestigator` records the same actions as scripted
+policy receipts. The probe requires a verified complete-source
 observation and caller-supplied outcome labels/hop count; there is still no
 task/need-to-latent query encoder or general language-to-world addressing.
 The branch also has two low-level building blocks that the task shell does not
@@ -270,12 +271,14 @@ versioned source clauses while retaining one document origin, and
 paths across declared stages, preserving conflicts and open branches. These
 use supplied directions, roles and stage/outcome definitions; the task-time
 planner cannot yet select or call the joint operation from typed needs. Its
-current probe returns terminal-source catalogue candidates rather than
-readable candidates for `BindingLinkWitness.source_spans`; therefore the model
-cannot open or cite the newly retained exact witness clauses through the
-normal tool path. The integration must expose each versioned witness span as
-a bounded readable candidate and preserve its exact pointer in the citation
-receipt.
+current one-hop probe can expose exact scoped witnesses through verified reads,
+but the joint operation remains unavailable. The next integration must provide
+a host-owned receiver/state configuration, bound stage and branch choices, and
+a task action that consumes one root while preserving the episode pin. It must
+also return the joint decision's versioned witness spans as readable
+candidates, preserve exact pointers in citation receipts, and separately
+account role work, hidden transitions and terminal reads. The independent
+need IDs and need-linked action receipts described below are also required.
 `run_episode` accepts JSON-state and text-notes policies, but its `needs` state
 is only checked as a dictionary; it is not a typed obligation validator. Its
 final findings have no stable need ID, and tool receipts do not identify which
