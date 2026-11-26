@@ -285,9 +285,9 @@ def _transport_encoding(raw):
         yield BindingMention(label, np.array(numbers[:-1], dtype=np.float64), float(numbers[-1]))
 
 
-def _transport_frame(encode=_transport_encoding):
+def _transport_frame(encode=_transport_encoding, *, width=6):
     return CorpusBindingMemory.prepare(
-        (*_ROLES, *_OUTCOMES), np.eye(6), {}, {}, encode=encode,
+        (*_ROLES, *_OUTCOMES), np.eye(width), {}, {}, encode=encode,
         encoder_version="transport-control", min_similarity=.7, gap=.05,
     )
 
@@ -355,7 +355,7 @@ class _DenseTransportJoin:
         votes, _ = self.inspect(direction, hops)
         return set(votes)
 
-    def inspect(self, direction, hops, condition=None):
+    def paths(self, direction, hops, condition=None):
         paths = [(direction / np.linalg.norm(direction), (), 1.)]
         for _ in range(hops):
             expanded = []
@@ -370,6 +370,10 @@ class _DenseTransportJoin:
         if condition is not None:
             axis, lower, upper = condition
             paths = [path for path in paths if lower <= self._dot(path[0], axis) <= upper]
+        return paths
+
+    def inspect(self, direction, hops, condition=None):
+        paths = self.paths(direction, hops, condition)
         unmatched = set(range(len(paths)))
         votes = {}
         for source in sorted(self.terminals):
@@ -674,3 +678,99 @@ def test_late_condition_keeps_adjacent_representable_directions_separate(tmp_pat
     with pytest.raises(ValueError, match="source frame width"):
         pin.memory.read_role_links(e[0], condition=BindingLinkCondition([1.], 0., 1.),
                                    outcomes=_OUTCOMES, work_limit=128)
+
+
+def test_conditioned_source_paths_feed_two_shared_hidden_transitions(tmp_path):
+    filename = tmp_path / "recurrent.sqlite"
+    frame = _transport_frame(width=7)
+    owner = JournaledCorpusWorkspace(filename, frame, create=True)
+    e = np.eye(7)
+
+    def link(entry, exit, *terminals):
+        return _mentions(("entry", e[entry], .8), ("exit", e[exit], .8), *terminals)
+
+    bridge = link(1, 2, ("accept", e[5], .8))
+    _write(owner, {
+        "start": link(0, 1), "bridge": bridge, "third": link(2, 3),
+        "decoy": link(0, 4), "side": link(4, 5), "return": link(5, 4),
+        "finish": link(6, 5), "independent": _mentions(("accept", e[5], .7)),
+    })
+    worker = JournaledCorpusWorkspace(filename, _transport_frame(_no_encoding, width=7))
+    worker.publish_program(_transport_program(worker, worker.snapshot()))
+    opening = owner.snapshot()
+    oracle = _DenseTransportJoin(opening.memory, "reflection")
+
+    # The query, interval, and readout are not supplied to the publishing worker.
+    keys, values = np.zeros((7, 1)), np.zeros((7, 7))
+    carry = np.diag([.25, 0., 0., 0., .25, 0., 0.])
+    carry[5, 6] = .9
+    observation_value = values.copy()
+    observation_value[3, 5], observation_value[4, 5] = .9, -.3
+    kernel = FeedbackKernel(query=keys, carry=carry, observation_key=keys, observation_value=observation_value,
+                            feedback_key=keys, feedback_value=values, max_steps=3)
+    receiver = BindingFeedback(kernel, frame, (("accept", 5),), query=keys, observation=np.zeros((6, 7)))
+    seed = .98 * e[0] + .2 * e[4]
+    condition = BindingLinkCondition(e[4], .15, .25)
+    options = dict(hops=3, work_limit=512, branch_limit=4)
+
+    def prefix(memory):
+        return receiver.step(receiver.start(seed, memory))
+
+    def continue_from(pin, gate=condition):
+        return receiver.continue_role_links(prefix(pin.memory), condition=gate, **options)
+
+    earlier = prefix(opening.memory)
+    selected = receiver.continue_role_links(earlier, condition=condition, **options)
+    branch, = selected.states
+    assert selected.status == "continued" and selected.condition_dots == 2
+    assert branch.memory is opening.memory
+    assert branch.feedback._history[0] is earlier.feedback._history[0]
+    assert tuple(step.source for step in branch.role_steps) == ("start", "bridge", "third")
+    assert branch.role_strength == .8
+
+    (direction, history, grade), = oracle.paths(earlier.latest, 3, (e[4], .15, .25))
+    assert tuple(step.source for step in branch.role_steps) == tuple(step[0] for step in history)
+    expected_intermediate = np.tanh(earlier.latest @ carry + direction @ observation_value)
+    expected_late = np.tanh(expected_intermediate @ carry)
+    np.testing.assert_allclose(branch.latest, expected_intermediate, atol=1e-12, rtol=0.)
+    later = receiver.step(branch)
+    np.testing.assert_allclose(later.latest, expected_late, atol=1e-12, rtol=0.)
+    assert branch.latest[6] == 0. and later.latest[6] > .5
+    assert later.role_steps == branch.role_steps and later.role_strength == grade
+    proof = receiver.read_role_links(later, outcomes=_OUTCOMES, work_limit=256)
+    assert proof.answer == "accept" and proof.witnesses[0].terminal_source == "independent"
+    assert proof.witnesses[0].strength == .7
+
+    ungated = continue_from(opening, None)
+    assert len(ungated.states) == 2
+    assert sorted(np.sign(receiver.step(state).latest[6]) for state in ungated.states) == [-1., 1.]
+    censored = continue_from(opening, BindingLinkCondition(e[4], .15, .97, uncertainty=.03))
+    assert censored.status == "unresolved" and censored.marginal and len(censored.states) == 1
+    censored_proof = receiver.read_role_links(receiver.step(censored.states[0]), outcomes=_OUTCOMES,
+                                               work_limit=256)
+    assert censored_proof.status == "unresolved" and censored_proof.witnesses == proof.witnesses
+    fallback = receiver.continue_role_links(prefix(None), condition=condition, **options)
+    assert fallback.status == "no_memory" and len(fallback.states) == 1
+    assert receiver.step(fallback.states[0]).latest[6] == 0.
+    fixed = _transport_program(owner, opening, "fixed").preview
+    fixed_run = receiver.continue_role_links(prefix(fixed), condition=condition, **options)
+    assert fixed_run.status == "no_link" and fixed_run.condition_dots == 2 and fixed_run.states == ()
+    operator_off = owner.prepare_role_links(opening, None).preview
+    absent = receiver.continue_role_links(prefix(operator_off), condition=condition, **options)
+    assert absent.status == "no_role_program" and len(absent.states) == 1
+    assert receiver.step(absent.states[0]).latest[6] == 0.
+
+    limited = receiver.continue_role_links(earlier, condition=condition, hops=3, work_limit=1, branch_limit=4)
+    assert limited.status == "work_limit" and limited.states == ()
+    limited = receiver.continue_role_links(earlier, hops=3, work_limit=512, branch_limit=1)
+    assert limited.status == "branch_limit" and limited.states == ()
+    without_terminal = _write(owner, {"independent": None})
+    only_shared = receiver.step(continue_from(without_terminal).states[0])
+    insufficient = receiver.read_role_links(only_shared, outcomes=_OUTCOMES, work_limit=256)
+    assert insufficient.status == "unresolved" and insufficient.witnesses == ()
+    withdrawn = _write(owner, {"bridge": None})
+    assert continue_from(withdrawn).status == "no_link"
+    _write(owner, {"bridge": bridge})
+    recovered = JournaledCorpusWorkspace(filename, _transport_frame(_no_encoding, width=7)).snapshot()
+    np.testing.assert_array_equal(receiver.step(continue_from(recovered).states[0]).latest, later.latest)
+    np.testing.assert_array_equal(receiver.step(continue_from(opening).states[0]).latest, later.latest)

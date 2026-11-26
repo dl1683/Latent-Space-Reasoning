@@ -8,10 +8,10 @@ from operator import index
 
 import numpy as np
 
-from experiments.memory.binding_links import BindingLinkCondition, BindingLinkRead, _role_hops
-from experiments.memory.binding_memory import BindingCapacityError, _ProofWork
+from experiments.memory.binding_links import BindingLinkCondition, BindingLinkRead, BindingLinkStep, _LinkReadWork, _role_hops
+from experiments.memory.binding_memory import BindingCapacityError, _ProofWork, _proof_work_limit
 from experiments.memory.corpus_bindings import CorpusBindingMemory, CorpusBindingRead, _DisjointBranchReads
-from experiments.memory.latent_feedback import ConditionalTerm, FeedbackKernel, FeedbackState, _frozen, _real_array
+from experiments.memory.latent_feedback import ConditionalTerm, FeedbackKernel, FeedbackState, _apply_value, _frozen, _real_array
 
 
 _STATE_CREATION_KEY = object()
@@ -60,6 +60,9 @@ class BindingFeedbackState:
     _memory: CorpusBindingMemory | None
     _creation_key: InitVar[object | None] = None
     _reads: tuple[BindingStepRead, ...] = ()
+    _role_steps: tuple[BindingLinkStep, ...] = ()
+    _role_strength: float = 1.
+    _role_open: bool = False
 
     def __post_init__(self, _creation_key):
         if _creation_key is not _STATE_CREATION_KEY:
@@ -80,6 +83,25 @@ class BindingFeedbackState:
     @property
     def latest(self):
         return self.feedback.latest
+
+    @property
+    def role_steps(self):
+        return self._role_steps
+
+    @property
+    def role_strength(self):
+        return self._role_strength
+
+
+@dataclass(frozen=True)
+class BindingRoleContinuation:
+    status: str
+    states: tuple[BindingFeedbackState, ...] = ()
+    work: int = 0
+    open_sources: int = 0
+    marginal: bool = False
+    condition: BindingLinkCondition | None = None
+    condition_dots: int = 0
 
 
 def _frame_contract(memory):
@@ -182,8 +204,61 @@ class BindingFeedback:
             if condition is not None and type(condition) is not BindingLinkCondition:
                 raise TypeError("role-link condition must be a BindingLinkCondition")
             return BindingLinkRead("no_memory", hops=_role_hops(hops), condition=condition)
-        return state.memory.read_role_links(state.latest, outcomes=outcomes, work_limit=work_limit, hops=hops,
-                                           condition=condition)
+        read = state.memory._read_role_links(state.latest, outcomes=outcomes, work_limit=work_limit, hops=hops,
+                                            condition=condition, prior_steps=state.role_steps,
+                                            prior_strength=state.role_strength)
+        if state._role_open and read.status in ("supported", "no_link"):
+            return replace(read, status="unresolved")
+        return read
+
+    def continue_role_links(self, state, *, hops=1, condition=None, work_limit, branch_limit):
+        """Run one ordinary hidden transition per admitted latent direction."""
+        if type(state) is not BindingFeedbackState or state._receiver is not self:
+            raise ValueError("state belongs to a different binding receiver")
+        self._kernel._require_state(state.feedback)
+        if len(state.feedback._history) >= self._kernel._max_steps:
+            raise RuntimeError("feedback step budget exhausted")
+        hops, limit, branch_limit = _role_hops(hops), _proof_work_limit(work_limit), index(branch_limit)
+        if branch_limit < 1:
+            raise ValueError("role continuation branch limit must be positive")
+        if condition is not None and type(condition) is not BindingLinkCondition:
+            raise TypeError("role-link condition must be a BindingLinkCondition")
+        links = None if state.memory is None else state.memory._role_links
+        if links is None:
+            status = "no_memory" if state.memory is None else "no_role_program"
+            return BindingRoleContinuation(status, (self.step(state),), condition=condition)
+
+        width = self._anchors.shape[1]
+        if self._kernel._width != width:
+            raise ValueError("role continuation requires matching source and hidden widths")
+        seed = links._seed_path(state.latest, width, condition, state.role_steps, state.role_strength)
+        if seed is None:
+            return BindingRoleContinuation("no_direction", condition=condition)
+        effort = _LinkReadWork(limit, links.floor, links.uncertainty)
+        states = ()
+        with np.errstate(over="raise", invalid="raise", under="ignore"):
+            try:
+                paths, _ = links._frontier(seed, hops=hops, condition=condition, width=width, effort=effort)
+            except BindingCapacityError:
+                status = "work_limit"
+            else:
+                open_coverage = bool(state._role_open or links.unresolved or effort.unavailable or effort.marginal)
+                status = "unresolved" if open_coverage else "no_link"
+                if len(paths) > branch_limit:
+                    status = "branch_limit"
+                elif paths:
+                    states = tuple(self._continue_role_path(state, path, open_coverage) for path in paths)
+                    if status == "no_link":
+                        status = "continued"
+        return BindingRoleContinuation(status, states, effort.work, len(links.unresolved) + len(effort.unavailable),
+                                       effort.marginal, condition, effort.condition_dots)
+
+    def _continue_role_path(self, state, path, open_coverage):
+        observation = _apply_value(self._kernel._observation_value, path.direction)
+        feedback, _, _ = self._kernel._advance(state.feedback, observation_extra=observation)
+        return replace(state, _feedback=feedback, _creation_key=_STATE_CREATION_KEY,
+                       _reads=(*state.reads, BindingStepRead("role_continuation")),
+                       _role_steps=path.steps, _role_strength=path.strength, _role_open=open_coverage)
 
     def _intervene_latest(self, state, hidden):
         """Replace the generated row and its feedback projections, leaving the proof trace pinned."""
@@ -284,7 +359,7 @@ class BindingFeedback:
                         if amount:
                             extra += (amount * (anchor @ anchor_axis)) * output
         feedback, _, _ = self._kernel._advance(state.feedback, observation_extra=extra, diagnostics=diagnostics)
-        return BindingFeedbackState(self, feedback, state.memory, _STATE_CREATION_KEY, state.reads + (read,))
+        return replace(state, _feedback=feedback, _creation_key=_STATE_CREATION_KEY, _reads=(*state.reads, read))
 
     def search_to(self, state, target, *, steps, route_limit):
         """Find a certain continuation to a fixed terminal address on this corpus pin."""
