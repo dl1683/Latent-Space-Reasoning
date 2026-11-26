@@ -159,8 +159,14 @@ def main(argv=None):
     else:
         parser = argparse.ArgumentParser(description=__doc__)
         parser.add_argument("--repo", type=Path, default=Path.cwd())
+        parser.add_argument("--isolated-output", type=Path, help="fresh private directory for Linux stage artifacts")
         options = parser.parse_args(argv)
-        print(json.dumps(run(options.repo), indent=2))
+        if options.isolated_output is None:
+            result = run(options.repo)
+        else:
+            from experiments.memory.repository_publication_isolation import run_isolated
+            result = run_isolated(options.repo, options.isolated_output)
+        print(json.dumps(result, indent=2))
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ support a separate question process with a digest-pinned source handoff.
 """
 
 import argparse
-from contextlib import closing
+from contextlib import closing, contextmanager
 from dataclasses import asdict, replace
 import hashlib
 import json
@@ -357,19 +357,22 @@ def _verify_names(pin, code):
             raise ValueError("publication named frame disagrees with the source observation")
 
 
+def _verified_pin(workspace, code, record):
+    _, revision, digest = record
+    pin = _history(workspace, revision)
+    if pin.journal_sha256 != digest:
+        raise ValueError("publication journal pin does not match the manifest")
+    _verify_names(pin, code)
+    return pin
+
+
 def _read_questions(workspace, world, code, pins, questions, arm):
-    tip = workspace.snapshot()
-    if (tip.revision, tip.journal_sha256) != tuple(pins[-1][1:]):
-        raise ValueError("publication journal tip does not match the manifest")
     prepared, reads, results = {}, {}, []
     for question in questions:
         number = question["pin"]
-        commit, revision, digest = pins[number]
+        commit, _, digest = pins[number]
         if number not in prepared:
-            pin = _history(workspace, revision)
-            if pin.journal_sha256 != digest:
-                raise ValueError("publication journal pin does not match the manifest")
-            _verify_names(pin, code)
+            pin = _verified_pin(workspace, code, pins[number])
             bank = None if arm == "memory-omitted" else world.prepare(pin, packed=False, operators=arm == "on")
             prepared[number] = (pin, bank)
         pin, bank = prepared[number]
@@ -393,13 +396,8 @@ def _read_questions(workspace, world, code, pins, questions, arm):
     return results
 
 
-def read_publication(directory, seal, questions_path, *, arm="on"):
-    """Read late questions from a pinned publication with no repository or encoder input."""
-    if arm not in ("on", "operators-off", "memory-omitted"):
-        raise ValueError("invalid publication read arm")
-    directory = Path(directory)
-    manifest = _read_manifest(directory, seal)
-    questions, questions_digest = _questions(Path(questions_path), len(manifest["pins"]))
+@contextmanager
+def _replay_publication(directory, manifest):
     journal = _bounded_read(directory / "corpus.sqlite", _MAX_JOURNAL_BYTES)
     if sha256(journal) != manifest["journal_sha256"]:
         raise ValueError("publication journal digest mismatch")
@@ -417,7 +415,31 @@ def read_publication(directory, seal, questions_path, *, arm="on"):
         if _content_digest(copy, manifest) != manifest["content_sha256"]:
             raise ValueError("publication source content digest mismatch")
         workspace = JournaledCorpusWorkspace(copy, replace(frame, _encode=_forbid_encoding))
-        results = _read_questions(workspace, world, code, manifest["pins"], questions, arm)
+        tip = workspace.snapshot()
+        pins = manifest["pins"]
+        if (tip.revision, tip.journal_sha256) != tuple(pins[-1][1:]):
+            raise ValueError("publication journal tip does not match the manifest")
+        yield workspace, world, code, pins
+
+
+def verify_publication(directory, seal):
+    """Check all retained pins before a controller releases tasks."""
+    directory = Path(directory)
+    manifest = _read_manifest(directory, seal)
+    with _replay_publication(directory, manifest) as (workspace, _, code, pins):
+        for record in pins:
+            _verified_pin(workspace, code, record)
+
+
+def read_publication(directory, seal, questions_path, *, arm="on"):
+    """Read late questions from a pinned publication with no repository or encoder input."""
+    if arm not in ("on", "operators-off", "memory-omitted"):
+        raise ValueError("invalid publication read arm")
+    directory = Path(directory)
+    manifest = _read_manifest(directory, seal)
+    questions, questions_digest = _questions(Path(questions_path), len(manifest["pins"]))
+    with _replay_publication(directory, manifest) as (workspace, world, code, pins):
+        results = _read_questions(workspace, world, code, pins, questions, arm)
         return {"seal": seal, "questions_sha256": questions_digest, "results": results}
 
 

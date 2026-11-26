@@ -33,8 +33,9 @@ The software fixture also rejects a changed manifest, a journal from
 a different stream with the same content fingerprint, an answer label
 in a question, and an altered name map even when its digests are
 recomputed. The question author and the publisher still use the same deterministic AST scope. Process separation, custody and replay are demonstrated in
-one trusted account. Independent semantic acquisition, file access
-isolation, evaluation on held tasks and lifecycle advantage remain open.
+one trusted account. The next section reports the separate Linux
+filesystem control. Independent semantic acquisition, evaluation on
+held tasks and lifecycle advantage remain open.
 
 The branch contributor's Linux canary was reproduced in local Ubuntu
 under WSL with Python 3.12.3. On its dictionary input, six episodes
@@ -61,6 +62,85 @@ python -m experiments.memory.repository_transport_control --read .\import-public
 [Runner](../experiments/memory/repository_transport_control.py) ·
 [Four-pin driver](../experiments/memory/repository_publication_trial.py) ·
 [Process fixture](../experiments/memory/test_repository_import_memory.py)
+
+## Isolating the real publication, 26 November 2026
+
+This round changed roughly 400 lines of custody and evaluation code and
+zero lines of the reasoning mechanism, using the code diff as the basis.
+
+**Visible CPU software verification.** Local Ubuntu under WSL ran the
+actual four-pin Git publication with bubblewrap, Python 3.12 and NumPy
+2.3.5. The publisher's scoped pack contained 146 Git objects and
+occupied 749,107 bytes. Those objects were three commits, nine trees
+and 134 Python blobs. Commit and tree records expose some names and
+object IDs outside the selected blobs. The controller retained the
+publisher's 2,785,280-byte SQLite journal and
+verified all four ordered pins before creating any task or label file.
+The trusted controller authored questions from the scoped pack and
+graded the witness bytes against the original Git object store.
+The publisher and reader used distinct unprivileged host UIDs. Each
+reader saw the question file and sealed publication through read-only
+mounts. The stage probes confirmed separate mount and network namespaces,
+loopback as the only interface, no supplementary groups, no effective
+capabilities, and only the three standard descriptors. The reader had
+no original checkout, source projection or grading-file mount.
+
+Four fresh readers completed 104 reads and reproduced the named
+control's nine supported, eight undecided, seven unresolved, one missing
+and one outside-pin outcomes in the attached arm. The grader accepts
+missing, undecided or unresolved when the declared two-step pattern
+supplies no support. Calibrated absence remains open. The grader checked the
+54 witness hashes against their original Git blobs. Removing compiled
+operations eliminated those nine positive supports, and restoring
+attachment reproduced the original packet. Each reader's raw output and
+hash were recorded before grading. Deliberately rejecting a second
+run retained the journal, all four raw proposals and their hashes.
+The rejection produced no successful grade record. The driver syncs
+proposal files and the containing directory before grading. The executed
+rejection check covers grader failure. Crash recovery remains untested.
+
+The namespace mounted twenty project Python modules alongside
+the controller's Python environment and Linux system programs.
+Of those modules, 12, 12, 19 and 12 paths also occurred in the four
+source pins. Six, six, ten and six files matched the mounted bytes
+exactly in this checkout. Ignoring CRLF line endings, the counts
+were six, six, fifteen and six, which also matched the staged Git
+blob comparisons. The added matches matter for this import task.
+This public instrument uses shared syntactic extraction and named inputs.
+The isolation covers the Git checkout and label artifacts. The shared
+runtime overlap and predictable task selection leave semantic blinding
+and any efficiency or quality advantage open. The memory-omitted arm
+still consults pin membership and names from the verified journal. It
+removes memory from the reasoning core for this ablation.
+
+Use a disposable Linux root controller with bubblewrap, setpriv and a
+Python virtual environment readable by both stage UIDs. The checkout
+must be trusted by Git for that controller. Choose a fresh output
+directory on a native Linux filesystem.
+
+```bash
+python -m experiments.memory.repository_publication_trial --repo "$SOURCE_CHECKOUT" --isolated-output "$NEW_CUSTODY_DIR"
+```
+
+To reproduce the failure check, export both variables with a fresh custody
+directory and force an exception after the proposal files have been captured.
+
+```python
+import os
+from pathlib import Path
+from unittest.mock import patch
+
+from experiments.memory.repository_publication_isolation import run_isolated
+
+with patch("experiments.memory.repository_publication_trial._grade",
+           side_effect=AssertionError("intentional rejection")):
+    run_isolated(Path(os.environ["SOURCE_CHECKOUT"]), Path(os.environ["NEW_CUSTODY_DIR"]))
+```
+
+The directory contains the sealed journal, stage captures, proposal
+hashes and grade when it succeeds. Keep these development artifacts
+outside the source tree. [Trial](../experiments/memory/repository_publication_trial.py)
+· [Isolation driver](../experiments/memory/repository_publication_isolation.py)
 
 ## Acquiring from committed mixed sources, 26 November 2026
 

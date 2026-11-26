@@ -2023,9 +2023,36 @@ Use the same named requests for the attached, operator-off and
 memory-omitted arms. Replay reconstructs the deterministic operations
 from the recorded observations. The seal authenticates bytes against
 an expected digest retained by a trusted evaluator. This procedure
-checks process and timing separation on public cases. Filesystem
-access isolation and protection against a publisher given the tasks
-require separate controls. [Runner](../experiments/memory/repository_transport_control.py)
+checks process and timing separation on public cases.
+[Runner](../experiments/memory/repository_transport_control.py)
+
+The Linux path creates a new filesystem, network and process namespace
+for each stage, drops host privileges to distinct publisher and reader
+identities, and exposes a fixed read-only code and runtime. The publisher
+gets a read-only bare Git projection containing the commit objects,
+scoped tree paths and accepted Python blobs. The controller inventories
+the complete projected object store. The source checkout, Git store and
+custody paths must fall outside the mounted runtime trees. Repositories
+using alternate object stores or symlinked object entries are refused.
+After the publisher exits, the controller
+copies and verifies two regular files, replays every ordered pin from the
+retained bytes, then creates the task and grade files. Fresh readers get
+read-only mounts of those publication and question bytes, and a private
+temporary directory for SQLite replay. The controller captures and
+hashes each process receipt before parsing proposals or grading. It
+syncs the captured files and their directory entries before checking
+the proposals. A failed grade leaves the raw proposals and receipts intact.
+The stage programs and Linux controller are trusted.
+
+The stage code is a small explicit allowlist. Its files and their
+overlap with the source pins are recorded. Parts of the historical
+corpus are present as runtime code, and the author still shares the
+source parser. The control establishes OS-level custody of the named
+Git task handoff. Semantic acquisition, independently authored
+questions, memory-free quality and comparisons against exact
+incremental computation and text agents remain separate gates.
+[Isolation driver](../experiments/memory/repository_publication_isolation.py)
+· [Results](RESULTS.md#isolating-the-real-publication-26-november-2026)
 
 #### Composing calibrated source spans
 

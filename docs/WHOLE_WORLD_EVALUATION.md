@@ -469,15 +469,16 @@ outside the reader. The fixture keeps the task vocabulary named and
 the source extractor deterministic. The benchmark driver checks
 returned witness bytes against Git after collecting all proposals.
 
-The [Linux process control](../experiments/memory/sealed_process_control.py)
-uses separate operating-system identities and private working
-directories. Its dictionary canary verified gold and cross-stage
-access denials, and the checker could accept or reject already-hashed
-proposals. Connect the real source publisher and recurrent reader to
-that controller before claiming operating-system separation for this
-handoff. The dictionary run establishes no acquisition or reasoning
-result on the Git sources. Independent task authorship and network
-controls remain open.
+The [isolated Git run](RESULTS.md#isolating-the-real-publication-26-november-2026)
+applies an OS boundary to the real journal. It uses distinct
+unprivileged identities, separate namespaces, a scoped Git object store
+for acquisition and read-only publication and task mounts for reasoning.
+It preserves raw proposal bytes before grading. The earlier
+[dictionary canary](../experiments/memory/sealed_process_control.py)
+checks access denials through account permissions on a small fixture.
+The next comparison needs a source corpus disjoint from executable
+code, separately specified tasks and an independent oracle.
+The public Git case shares a parser and uses deterministic named inputs.
 
 The [committed-source control](RESULTS.md#acquiring-from-committed-mixed-sources-26-november-2026)
 runs a visible precursor over the tracked Python package. The worker

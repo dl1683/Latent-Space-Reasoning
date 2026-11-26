@@ -1838,3 +1838,23 @@ def test_source_publication_is_readable_in_a_later_process(tmp_path):
     (bundle / "publication.json").write_bytes(forged_manifest)
     bad_axis = runner("--read", bundle, sha256(forged_manifest).hexdigest(), questions)
     assert bad_axis.returncode and "named frame disagrees" in bad_axis.stderr
+
+
+def test_isolated_publication_refuses_git_storage_in_reader_mounts(tmp_path):
+    from experiments.memory.repository_publication_isolation import _check_host_layout
+
+    checkout, runtime, output = (tmp_path / name for name in ("checkout", "runtime", "output"))
+    checkout.mkdir()
+    runtime.mkdir()
+    _git(checkout, "init", "-q", "--separate-git-dir", str(runtime / "moved.git"))
+    with pytest.raises(ValueError, match="Git storage"):
+        _check_host_layout(checkout, output, runtime)
+
+    ordinary = tmp_path / "ordinary"
+    ordinary.mkdir()
+    _git(ordinary, "init", "-q")
+    _check_host_layout(ordinary, output, runtime)
+    alternatives = ordinary / ".git" / "objects" / "info" / "alternates"
+    alternatives.write_text(str(runtime / "moved.git" / "objects") + "\n", encoding="utf8")
+    with pytest.raises(ValueError, match="without alternates"):
+        _check_host_layout(ordinary, output, runtime)
