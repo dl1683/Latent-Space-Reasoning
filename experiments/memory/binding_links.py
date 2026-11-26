@@ -31,6 +31,31 @@ class BindingLinkWitness:
 
 
 @dataclass(frozen=True)
+class BindingLinkCondition:
+    """A late interval test on the terminal latent direction."""
+
+    axis: tuple[float, ...]
+    lower: float
+    upper: float
+    uncertainty: float = 0.
+
+    def __post_init__(self):
+        axis = _real_array(self.axis)
+        if axis.ndim != 1 or not axis.size:
+            raise ValueError("role-link condition requires a nonzero vector axis")
+        direction = _unit_direction(axis)
+        if direction is None:
+            raise ValueError("role-link condition requires a nonzero vector axis")
+        lower, upper, uncertainty = map(float, (self.lower, self.upper, self.uncertainty))
+        if not -1. <= lower <= upper <= 1. or not 0. <= uncertainty <= 2.:
+            raise ValueError("role-link condition bounds or uncertainty are out of range")
+        object.__setattr__(self, "axis", tuple(map(float, direction)))
+        object.__setattr__(self, "lower", lower)
+        object.__setattr__(self, "upper", upper)
+        object.__setattr__(self, "uncertainty", uncertainty)
+
+
+@dataclass(frozen=True)
 class BindingLinkRead:
     status: str
     witnesses: tuple[BindingLinkWitness, ...] = ()
@@ -43,6 +68,8 @@ class BindingLinkRead:
     outside_outcomes: tuple[str, ...] = ()
     hops: int = 1
     transports: int = 0
+    condition: BindingLinkCondition | None = None
+    condition_dots: int = 0
 
     @property
     def answer(self):
@@ -146,17 +173,19 @@ class _RoleLinks:
         return _RoleLinks(self.roles, self.floor, self.uncertainty, self.compile_limit, self.transport,
                           MappingProxyType(pairs), frozenset(unresolved))
 
-    def read(self, direction, *, outcomes, mentions, limit, width, hops):
+    def read(self, direction, *, outcomes, mentions, limit, width, hops, condition):
         direction = _real_array(direction)
         if direction.shape != (width,):
             raise ValueError("role-link direction must match the source frame width")
+        if condition is not None and len(condition.axis) != width:
+            raise ValueError("role-link condition must match the source frame width")
         vocabulary = tuple(sorted(outcomes))
         direction = _unit_direction(direction)
         if direction is None:
-            return BindingLinkRead("no_direction", outcomes=vocabulary, hops=hops)
+            return BindingLinkRead("no_direction", outcomes=vocabulary, hops=hops, condition=condition)
 
         witnesses = {}
-        work = terminal_dots = transports = 0
+        work = terminal_dots = transports = condition_dots = 0
         marginal = False
         unmatched = set()
         outside = set()
@@ -205,6 +234,30 @@ class _RoleLinks:
                     if not frontier:
                         break
 
+                groups = ()
+                if condition is not None and frontier:
+                    axis = np.asarray(condition.axis)
+                    gate_results, retained, retained_groups = {}, [], []
+                    for path in frontier:
+                        charge(width)
+                        key = np.asarray(path.direction, dtype="<f8").tobytes()
+                        if key not in gate_results:
+                            charge(width)
+                            condition_dots += 1
+                            score = max(-1., min(1., axis @ path.direction))
+                            boundary = condition.uncertainty and (
+                                abs(score - condition.lower) <= condition.uncertainty
+                                or abs(score - condition.upper) <= condition.uncertainty
+                            )
+                            marginal |= bool(boundary)
+                            accepted = not boundary and condition.lower <= score <= condition.upper
+                            gate_results[key] = condition_dots if accepted else None
+                        group = gate_results[key]
+                        if group is not None:
+                            retained.append(path)
+                            retained_groups.append(group)
+                    frontier, groups = retained, retained_groups
+
                 if frontier:
                     unmatched.update(range(len(frontier)))
                     charge(len(mentions))
@@ -214,12 +267,22 @@ class _RoleLinks:
                             if outcome in self.roles:
                                 continue
                             terminal = np.frombuffer(raw_terminal, dtype="<f8")
+                            scores = {} if condition is not None else None
                             for position, path in enumerate(frontier):
                                 charge()
                                 if terminal_source in path.used:
                                     continue
-                                terminal_dots += 1
-                                if not qualifies(path.direction @ terminal):
+                                if scores is None:
+                                    terminal_dots += 1
+                                    matches = qualifies(path.direction @ terminal)
+                                else:
+                                    group = groups[position]
+                                    if group not in scores:
+                                        charge(width)
+                                        terminal_dots += 1
+                                        scores[group] = qualifies(path.direction @ terminal)
+                                    matches = scores[group]
+                                if not matches:
                                     continue
                                 if outcome not in outcomes:
                                     outside.add(outcome)
@@ -236,11 +299,12 @@ class _RoleLinks:
                                     )
         except BindingCapacityError:
             return BindingLinkRead("work_limit", work=work, open_sources=len(self.unresolved) + len(unavailable),
-                                   terminal_dots=terminal_dots, outcomes=vocabulary, hops=hops, transports=transports)
+                                   terminal_dots=terminal_dots, outcomes=vocabulary, hops=hops, transports=transports,
+                                   condition=condition, condition_dots=condition_dots)
         open_sources = len(self.unresolved) + len(unavailable)
         incomplete = open_sources or unmatched or marginal or outside
         status = ("conflict" if len(witnesses) > 1 else "unresolved" if incomplete
                   else "supported" if witnesses else "no_link")
         return BindingLinkRead(status, tuple(witnesses[key] for key in sorted(witnesses)), work,
                                open_sources, len(unmatched), marginal, terminal_dots,
-                               vocabulary, tuple(sorted(outside)), hops, transports)
+                               vocabulary, tuple(sorted(outside)), hops, transports, condition, condition_dots)

@@ -1,3 +1,4 @@
+from copy import copy
 from dataclasses import replace
 
 import numpy as np
@@ -5,6 +6,7 @@ import pytest
 
 from experiments.memory import corpus_binding_journal
 from experiments.memory.binding_feedback import BindingFeedback
+from experiments.memory.binding_links import BindingLinkCondition
 from experiments.memory.binding_maintenance import audit_source_observations
 from experiments.memory.binding_memory import BindingCapacityError
 from experiments.memory.corpus_binding_journal import JournaledCorpusWorkspace
@@ -307,6 +309,7 @@ class _DenseTransportJoin:
         self.transport = transport
         self.effects = {}
         self.terminals = {}
+        self._dots = {}
         self.update(memory, memory.source_digests)
 
     def update(self, memory, changed):
@@ -316,9 +319,11 @@ class _DenseTransportJoin:
             if source not in memory.source_digests:
                 continue
             observations = memory.source_mentions(source)
-            endpoints = {item.predicate: item.vector for item in observations}
+            endpoints = {item.predicate: (ordinal, item) for ordinal, item in enumerate(observations)}
             if "entry" in endpoints:
-                entry, exit = endpoints["entry"], endpoints["exit"]
+                first, start = endpoints["entry"]
+                last, end = endpoints["exit"]
+                entry, exit = start.vector, end.vector
                 eye = np.eye(len(entry))
                 if self.transport == "rotation":
                     normal = entry + exit
@@ -329,29 +334,54 @@ class _DenseTransportJoin:
                     delta = entry - exit
                     square = delta @ delta
                     matrix = eye - 2. * np.outer(delta, delta) / square if square else eye
-                self.effects[source] = entry, matrix
-            else:
-                self.terminals[source] = tuple((item.predicate, item.vector) for item in observations)
+                self.effects[source] = entry, matrix, (source, first, last), min(start.strength, end.strength)
+            self.terminals[source] = tuple((ordinal, item) for ordinal, item in enumerate(observations)
+                                           if item.predicate not in _ROLES)
+
+    def for_revision(self, memory, changed):
+        version = copy(self)
+        version.effects = self.effects.copy()
+        version.terminals = self.terminals.copy()
+        version.update(memory, changed)
+        return version
+
+    def _dot(self, state, vector):
+        key = (tuple(state), tuple(vector))
+        if key not in self._dots:
+            self._dots[key] = np.dot(state, vector)
+        return self._dots[key]
 
     def read(self, direction, hops):
-        paths = [(direction / np.linalg.norm(direction), frozenset())]
+        votes, _ = self.inspect(direction, hops)
+        return set(votes)
+
+    def inspect(self, direction, hops, condition=None):
+        paths = [(direction / np.linalg.norm(direction), (), 1.)]
         for _ in range(hops):
             expanded = []
-            for incoming, used in paths:
-                for source, (entry, matrix) in self.effects.items():
-                    if source in used or entry @ incoming <= .945:
+            for incoming, history, strength in paths:
+                for source in sorted(self.effects):
+                    entry, matrix, step, grade = self.effects[source]
+                    if any(source == link[0] for link in history) or entry @ incoming <= .945:
                         continue
                     state = matrix @ incoming
-                    expanded.append((state / np.linalg.norm(state), used | {source}))
+                    expanded.append((state / np.linalg.norm(state), (*history, step), min(strength, grade)))
             paths = expanded
-        return {
-            label
-            for state, used in paths
-            for source, observations in self.terminals.items()
-            if source not in used
-            for label, terminal in observations
-            if terminal @ state > .945
-        }
+        if condition is not None:
+            axis, lower, upper = condition
+            paths = [path for path in paths if lower <= self._dot(path[0], axis) <= upper]
+        unmatched = set(range(len(paths)))
+        votes = {}
+        for source in sorted(self.terminals):
+            for ordinal, item in self.terminals[source]:
+                for position, (state, history, strength) in enumerate(paths):
+                    if any(source == link[0] for link in history) or self._dot(state, item.vector) <= .945:
+                        continue
+                    unmatched.discard(position)
+                    grade = min(strength, item.strength)
+                    if item.predicate not in votes or grade > votes[item.predicate][-1]:
+                        votes[item.predicate] = history, source, ordinal, grade
+        return votes, len(unmatched)
 
 
 @pytest.mark.parametrize("transport", ["reflection", "rotation"])
@@ -513,3 +543,134 @@ def test_distinct_prefix_origins_preserve_incompatible_outcomes_after_convergenc
     ]
     limited = pin.memory.read_role_links(e[0], work_limit=result.work - 1, **options)
     assert limited.status == "work_limit" and not limited.witnesses
+
+
+def test_late_condition_factors_geometry_and_preserves_revisioned_origins(tmp_path):
+    filename = tmp_path / "conditional.sqlite"
+    frame = _transport_frame()
+    owner = JournaledCorpusWorkspace(filename, frame, create=True)
+    e = np.eye(6)
+
+    def link(entry, exit, *terminals, grade=.8):
+        return _mentions(("entry", e[entry], grade), ("exit", e[exit], grade), *terminals)
+
+    a = link(0, 1, ("accept", e[3], .8))
+    safe = _mentions(("accept", e[3], .8))
+    start = _write(owner, {
+        "a": a, "b": link(0, 1, ("review", .8 * e[3] + .6 * e[4], .8), grade=.3),
+        "middle": link(1, 2), "last": link(2, 3),
+        "alternate": link(0, 4), "out": link(4, 5), "back": link(5, 4),
+        "else": _mentions(("review", e[4], .8)), "safe": safe,
+    })
+    worker = JournaledCorpusWorkspace(filename, _transport_frame(_no_encoding))
+    worker.publish_program(_transport_program(worker, worker.snapshot()))
+    opening = owner.snapshot()
+    oracle = _DenseTransportJoin(opening.memory, "reflection")
+    keys, values = np.zeros((6, 1)), np.zeros((6, 6))
+    kernel = FeedbackKernel(query=keys, carry=np.eye(6) / 4., observation_key=keys, observation_value=values,
+                            feedback_key=keys, feedback_value=values, max_steps=2)
+    receiver = BindingFeedback(kernel, frame, (("accept", 3),), query=keys, observation=values)
+    condition = BindingLinkCondition(e[4], .15, .25)
+    seed = .98 * e[0] + .2 * e[4]
+    options = dict(outcomes=_OUTCOMES, hops=3)
+
+    def read(pin, gate=condition, limit=1024):
+        state = receiver.step(receiver.start(seed, pin.memory))
+        return receiver.read_role_links(state, condition=gate, work_limit=limit, **options)
+
+    def check_outcomes(result, reference):
+        expected, unmatched = reference.inspect(seed, 3, (e[4], .15, .25))
+        actual = {}
+        for witness in result.witnesses:
+            prefix = tuple((step.source, step.entry_ordinal, step.exit_ordinal) for step in witness.prefix)
+            last = (witness.link_source, witness.entry_ordinal, witness.exit_ordinal)
+            actual[witness.outcome] = (*prefix, last), witness.terminal_source, witness.terminal_ordinal, witness.strength
+        assert actual == expected and result.unmatched_links == unmatched
+        assert result.condition == condition and result.condition_dots == 2
+
+    initial = read(opening)
+    check_outcomes(initial, oracle)
+    assert initial.answer == "accept"
+    ungated = read(opening, None)
+    assert ungated.status == "conflict" and ungated.condition_dots == 0
+    assert initial.terminal_dots == 4 and ungated.terminal_dots == 10
+    fixed = _transport_program(owner, opening, "fixed").preview
+    opening_state = receiver.step(receiver.start(seed, opening.memory))
+    fixed_read = fixed.read_role_links(opening_state.latest, condition=condition, work_limit=1024, **options)
+    assert fixed_read.status == "no_link" and fixed_read.condition_dots == 2
+    edge = read(opening, BindingLinkCondition(e[4], .2, .25, uncertainty=.005))
+    assert edge.status == "unresolved" and edge.marginal and edge.witnesses == ()
+    partial = read(opening, BindingLinkCondition(e[4], .15, .97, uncertainty=.03))
+    assert partial.status == "unresolved" and partial.marginal and partial.answer is None
+    assert tuple(witness.outcome for witness in partial.witnesses) == ("accept",)
+
+    corrected = _write(owner, {"b": link(0, 1, ("review", e[3], .8), grade=.3)})
+    corrected_oracle = oracle.for_revision(corrected.memory, corrected.changed_sources)
+    assert corrected.memory._certain is opening.memory._certain
+    assert corrected.memory._possible is opening.memory._possible
+    contradiction = read(corrected)
+    check_outcomes(contradiction, corrected_oracle)
+    assert contradiction.status == "conflict" and contradiction.answer is None
+    assert [(w.outcome, w.prefix[0].source, w.terminal_source, w.strength) for w in contradiction.witnesses] == [
+        ("accept", "a", "safe", .8), ("review", "a", "b", .8),
+    ]
+
+    withdrawn = _write(owner, {"a": link(0, 1, ("accept", .8 * e[3] - .6 * e[4], .8)), "safe": None})
+    withdrawn_oracle = corrected_oracle.for_revision(withdrawn.memory, withdrawn.changed_sources)
+    assert opening.memory._role_links.pairs == withdrawn.memory._role_links.pairs
+    gap = read(withdrawn)
+    check_outcomes(gap, withdrawn_oracle)
+    assert gap.status == "unresolved" and gap.unmatched_links == 1 and gap.answer is None
+    witness, = gap.witnesses
+    assert witness.prefix[0].source == "a" and witness.terminal_source == "b"
+    cutoffs = [read(withdrawn, limit=limit) for limit in range(1, gap.work)]
+    assert all(result.status == "work_limit" and result.witnesses == () and result.condition == condition
+               for result in cutoffs)
+    assert any(result.condition_dots == 1 and result.terminal_dots == 0 for result in cutoffs)
+    assert cutoffs[-1].terminal_dots > 0
+    assert read(withdrawn, limit=gap.work) == gap
+    assert read(worker.snapshot()) == gap
+    reopened = JournaledCorpusWorkspace(filename, _transport_frame(_no_encoding)).snapshot()
+    assert read(reopened) == gap
+
+    restored = _write(owner, {"a": a, "safe": safe})
+    restored_oracle = withdrawn_oracle.for_revision(restored.memory, restored.changed_sources)
+    check_outcomes(read(restored), restored_oracle)
+    assert read(restored).status == "conflict"
+    assert read(opening) == initial and read(corrected) == contradiction and read(withdrawn) == gap
+    check_outcomes(read(opening), oracle)
+    check_outcomes(read(corrected), corrected_oracle)
+    check_outcomes(read(withdrawn), withdrawn_oracle)
+
+
+def test_late_condition_validates_and_copies_its_axis():
+    direction = np.array([3., 0.])
+    condition = BindingLinkCondition(direction, -1., 1.)
+    direction[0] = 0.
+    assert condition.axis == (1., 0.)
+    for axis in ([], [0.], [[1.]], [np.inf]):
+        with pytest.raises(ValueError):
+            BindingLinkCondition(axis, -1., 1.)
+    for lower, upper, band in ((.2, .1, 0.), (-1., 1., -1.), (-1., 2., 0.)):
+        with pytest.raises(ValueError):
+            BindingLinkCondition([1.], lower, upper, band)
+
+
+def test_late_condition_keeps_adjacent_representable_directions_separate(tmp_path):
+    owner = JournaledCorpusWorkspace(tmp_path / "adjacent.sqlite", _transport_frame(), create=True)
+    e = np.eye(6)
+    coordinate = 2. ** -40
+    adjacent = np.nextafter(coordinate, np.inf)
+    start = _write(owner, {
+        "a": _mentions(("entry", e[0], .3), ("exit", e[1] + coordinate * e[2], .3)),
+        "b": _mentions(("entry", e[0], .8), ("exit", e[1] + adjacent * e[2], .8)),
+        "terminal": _mentions(("accept", e[1], .8)),
+    })
+    pin = owner.publish_program(_transport_program(owner, start, "fixed"))
+    inclusive = BindingLinkCondition(e[2], 0., coordinate)
+    result = pin.memory.read_role_links(e[0], condition=inclusive, outcomes=_OUTCOMES, work_limit=128)
+    assert result.answer == "accept" and result.condition_dots == 2 and result.terminal_dots == 1
+    assert result.witnesses[0].link_source == "a"
+    with pytest.raises(ValueError, match="source frame width"):
+        pin.memory.read_role_links(e[0], condition=BindingLinkCondition([1.], 0., 1.),
+                                   outcomes=_OUTCOMES, work_limit=128)

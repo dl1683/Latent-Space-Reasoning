@@ -12,7 +12,7 @@ The shared-world slice now journals continuous source directions with their comp
 
 A worker can also [install continuous links directly from typed source observations](docs/ARCHITECTURE.md#installing-query-independent-source-links). A later feedback read can expose a weaker conflicting path after a correction that leaves the compiled relations unchanged. The result uses a declared relation grammar and supplied coordinates.
 
-A [state-dependent link program](docs/ARCHITECTURE.md#composing-state-dependent-source-transports) carries incoming distinctions across several source operations. The supplied-coordinate control separates two inputs at the third and fourth operations and compares two transports against fixed exits and a dense reference.
+A [state-dependent link program](docs/ARCHITECTURE.md#composing-state-dependent-source-transports) carries incoming distinctions across several source operations. A supplied-coordinate journal check adds a late conditional read and shares geometric comparisons across identical directions. Source histories still govern which independent witnesses survive corrections and reopen.
 
 The latest Rank 1 output had correct observed decisions in two worlds but failed the frozen terminal parser. Post-hoc rescoring is diagnostic only; **30/32 worlds and causal controls remain unrun**. Resuming requires explicit new finite authorization, frozen parser fixtures, fresh competence worlds, a passed operation-specific positive control and reconciled resources. Historical protocols do not authorize execution.
 

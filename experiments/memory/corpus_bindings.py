@@ -10,7 +10,7 @@ from types import MappingProxyType
 
 import numpy as np
 
-from experiments.memory.binding_links import BindingLinkRead, _RoleLinks, _role_hops
+from experiments.memory.binding_links import BindingLinkCondition, BindingLinkRead, _RoleLinks, _role_hops
 from experiments.memory.binding_memory import (
     BindingCapacityError, BindingMemory, BindingProof, _exclusions, _ProofWork, _proof_work_limit,
 )
@@ -218,12 +218,14 @@ class CorpusBindingMemory:
             roles, floor, uncertainty, limit, transport, self.source_digests, self._mentions,
         ))
 
-    def read_role_links(self, direction, *, outcomes, work_limit, hops=1):
+    def read_role_links(self, direction, *, outcomes, work_limit, hops=1, condition=None):
         """Apply installed directions and then compare against declared terminal predicates."""
         hops = _role_hops(hops)
+        if condition is not None and type(condition) is not BindingLinkCondition:
+            raise TypeError("role-link condition must be a BindingLinkCondition")
         links = self._role_links
         if links is None:
-            return BindingLinkRead("no_role_program", hops=hops)
+            return BindingLinkRead("no_role_program", hops=hops, condition=condition)
         if isinstance(outcomes, str):
             raise ValueError("role-link outcomes require distinct nonstructural predicates")
         labels = tuple(outcomes)
@@ -232,7 +234,8 @@ class CorpusBindingMemory:
                 or len(set(labels)) != len(labels)):
             raise ValueError("role-link outcomes require distinct nonstructural predicates")
         return links.read(direction, outcomes=frozenset(labels), mentions=self._mentions,
-                          limit=_proof_work_limit(work_limit), width=self._anchors.shape[1], hops=hops)
+                          limit=_proof_work_limit(work_limit), width=self._anchors.shape[1], hops=hops,
+                          condition=condition)
 
     def source_mentions(self, source):
         """Return a source's ordered normalized observations, or None for a legacy row-only source."""
