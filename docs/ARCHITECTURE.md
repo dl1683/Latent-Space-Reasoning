@@ -379,6 +379,49 @@ work unhelpful.
 [Software controls](RESULTS.md#carrying-native-alternatives-across-revisions-26-november-2026)
 [Worker interface](CONTEXT_TOOL.md#carrying-competing-native-forecasts)
 
+#### Using an existing text correction as a forecast witness
+
+[SLICE] A native forecast may designate an already published text
+source as a witness. The opening record fixes its content SHA-256,
+generation, ordered chunk digests, projected integer values and
+separate opening and introduced-row allowances. The worker freezes
+these before the verified feed releases the update. A witness must
+arrive as an edit to that text source at its declared direct epoch.
+Withdrawal, type change, an early edit, and a missed edit receive
+explicit dispositions.
+
+The worker subtracts the opening chunk digest multiset from the
+current chunks in document order. Equal-byte occurrences consume
+the old multiplicity first. Remaining occurrences identify the
+introduced encoded rows. An empty set or an exceeded allowance
+ends the trial without installing anything. Each prediction must
+fit every introduced row within its declared tolerance. The worker
+admits only one surviving candidate that rules out the source-only
+forecast and outruns same-source persistence on at least one edited
+witness. Persistence can explain an observation when every introduced
+row is within tolerance of some opening row from the same document.
+Both successful and failed comparisons still publish the source edit
+through the ordinary feed.
+
+V5 seals the opening inventory, all scored locations, and the
+ordered observation epoch seals. Reopening derives the current
+introduced spans, repeats the projection checks and revalidates
+the retained lineage. It checks the recent source seals where the
+current descriptor contains their parent link. Historical event
+ordering and opening values depend on the trusted host's pinned
+commitment and retained feed. The current publication carries only
+the facts needed for structural rechecking. A later dependency
+change withdraws the admission and its descendants.
+
+A new chunk can reflect changed boundaries around unchanged text.
+The comparison qualifies the declared projections at this pin.
+A later independently chosen task must establish semantic utility.
+Count all enrolled corrections and price opening projections, row
+matching, abandoned drafts, source rereads and task work. The
+same-source persistence veto complements a whole-corpus exact
+baseline and an independently assessed ordinary text arm.
+[Control result](RESULTS.md#qualifying-latent-work-on-an-existing-text-correction-26-november-2026)
+
 #### Admitting a binary source into the native reader
 
 [SLICE] A source epoch can carry explicitly declared binary assets under

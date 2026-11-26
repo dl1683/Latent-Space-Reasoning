@@ -12,8 +12,8 @@ import numpy as np
 from experiments.memory.latent_feedback import FactoredValue, _frozen
 from experiments.memory.linear_feedback import _LEVELS, _quantize
 from experiments.memory.native_forecast_set import (
-    NativeForecastSet, NativeForecastWitness, _ForecastAlternative, _ForecastSetCheck,
-    _MAX_ARMS, _MAX_WITNESSES, _forecast_error, _forecast_fields, _forecast_values,
+    NativeForecastSet, NativeForecastWitness, NativeRevisionWitness, _ForecastAlternative, _ForecastSetCheck,
+    _MAX_ARMS, _MAX_WITNESSES, _RevisionWitnessOpening, _forecast_error, _forecast_fields, _forecast_values,
     _payload_digest, _validate_witnesses,
 )
 from experiments.memory.native_latent_recurrence import (
@@ -33,6 +33,7 @@ _SCHEMA = "lsr-native-selective-v1"
 _COMPOSED_SCHEMA = "lsr-native-selective-v2"
 _FORECAST_SCHEMA = "lsr-native-selective-v3"
 _FORECAST_SET_SCHEMA = "lsr-native-selective-v4"
+_REVISION_WITNESS_SCHEMA = "lsr-native-selective-v5"
 _FIELDS = {"schema", "runtime", "reader", "source", "source_manifest", "documents", "queue",
            "attempted", "derived", "rows_bytes", "rows_sha256"}
 
@@ -134,13 +135,27 @@ def _step_metadata(frontiers, indices):
 
 def _forecast_set_metadata(check, indices):
     forecast = check.forecast
-    witnesses = [[indices[span], spec.features, spec.tolerance]
-                 for span, spec in zip(check.witness_spans, forecast.witnesses, strict=True)]
+    by_source = {}
+    for span in check.witness_spans:
+        by_source.setdefault(span.source_id, []).append(indices[span])
+    witnesses = []
+    for index, spec in enumerate(forecast.witnesses):
+        positions = by_source[spec.source_id]
+        opening = forecast._opening_at(index)
+        if opening is None:
+            witnesses.append([positions[0], spec.features, spec.tolerance])
+        else:
+            previous = [opening.version_sha256, opening.generation, spec.max_opening_rows,
+                        spec.max_changed_rows, opening.rows]
+            witnesses.append([positions, spec.features, spec.tolerance, previous])
     alternatives = [[indices[arm.parent], arm.parent_sha256, arm.payload_sha256, arm.predictions,
                      _step_metadata(arm.steps, indices)] for arm in forecast.alternatives]
-    return [indices[forecast.seed], forecast.commitment, forecast.opening_source, forecast.opening_epoch,
-            forecast.opening_publication, forecast._arm_limit, forecast._score_limit, witnesses,
-            forecast.baseline, _step_metadata(forecast._baseline_steps, indices), alternatives]
+    record = [indices[forecast.seed], forecast.commitment, forecast.opening_source, forecast.opening_epoch,
+              forecast.opening_publication, forecast._arm_limit, forecast._score_limit, witnesses,
+              forecast.baseline, _step_metadata(forecast._baseline_steps, indices), alternatives]
+    if forecast._revision_openings:
+        record.append(check.observation_seals)
+    return record
 
 
 def _metadata(reader, memory):
@@ -176,7 +191,8 @@ def _metadata(reader, memory):
                                       check.admission_epoch, check.features, check.tolerance, check.baseline]
                                      for seed, check in selective.forecasts.items())
     if selective.forecast_sets:
-        header["schema"] = _FORECAST_SET_SCHEMA
+        header["schema"] = (_REVISION_WITNESS_SCHEMA if any(check.forecast._revision_openings
+                            for check in selective.forecast_sets.values()) else _FORECAST_SET_SCHEMA)
         header.setdefault("forecasts", [])
         header["forecast_sets"] = sorted(_forecast_set_metadata(check, indices)
                                          for check in selective.forecast_sets.values())
@@ -461,15 +477,94 @@ def _read_predictions(records, specs):
     return tuple(map(tuple, records))
 
 
+def _read_revision_witness(record, seed, spans, sources, scope, opening_epoch, width):
+    positions, features, tolerance, old = record
+    if (type(positions) is not list or not positions
+            or any(not _between(idx, 0, len(spans) - 1) for idx in positions)
+            or type(features) is not list or type(old) is not list or len(old) != 5):
+        raise ValueError("native revision witness inventory is malformed")
+    old_digest, generation, opening_limit, changed_limit, inventory = old
+    require_digest(old_digest)
+    witness = spans[positions[0]]
+    source = witness.source_id
+    spec = NativeRevisionWitness(source, tuple(features), tolerance, opening_limit, changed_limit)
+    _validate_witnesses((spec,), width)
+    if (source == seed.source_id or source in scope.binary_sources
+            or old_digest == scope.manifest[source].sha256
+            or not _between(generation, 1, opening_epoch)
+            or type(inventory) is not list or len(inventory) > opening_limit
+            or (not inventory) != (old_digest == sha256(b""))):
+        raise ValueError("native revision witness opening source or row inventory differs")
+    rows = []
+    for digest, projection in inventory:
+        require_digest(digest)
+        rows.append((digest, _read_predictions([projection], (spec,))[0]))
+    if len(rows) == 1 and rows[0][0] != old_digest:
+        raise ValueError("native revision witness single opening row differs from its source")
+    opening = _RevisionWitnessOpening(old_digest, generation, tuple(rows))
+    introduced = opening.introduced_rows(sources[source], changed_limit)
+    if not introduced or tuple(item.span for item in introduced) != tuple(spans[idx] for idx in positions):
+        raise ValueError("native revision witness does not cover all introduced rows")
+    return spec, opening, introduced
+
+
+def _read_witnesses(records, seed, spans, sources, scope, opening_epoch, width, *, allow_revisions):
+    specs, openings, measured, observed = [], [], [], []
+    for position, record in enumerate(records, start=1):
+        if type(record) is not list or len(record) not in ((3, 4) if allow_revisions else (3,)):
+            raise ValueError("native forecast set witness record is malformed")
+        if len(record) == 4:
+            spec, opening, rows = _read_revision_witness(record, seed, spans, sources, scope, opening_epoch, width)
+        else:
+            witness_idx, features, tolerance = record
+            if not _between(witness_idx, 0, len(spans) - 1) or type(features) is not list:
+                raise ValueError("native forecast set witness index is invalid")
+            witness = spans[witness_idx]
+            spec = NativeForecastWitness(witness.source_id, tuple(features), tolerance)
+            _validate_witnesses((spec,), width)
+            rows = sources[witness.source_id]
+            if witness.source_id == seed.source_id or len(rows) != 1:
+                raise ValueError("native forecast set witness scope differs")
+            opening = None
+        if scope.manifest[spec.source_id].generation != opening_epoch + position:
+            raise ValueError("native forecast set witness generation differs")
+        projections = tuple(_forecast_values(item.row, spec.features) for item in rows)
+        specs.append(spec)
+        openings.append(opening)
+        measured.append(projections[0] if opening is None else projections)
+        observed.extend(item.span for item in rows)
+    _validate_witnesses(tuple(specs), width)
+    return (tuple(specs), tuple(openings) if any(opening is not None for opening in openings) else (),
+            tuple(measured), tuple(observed))
+
+
+def _read_observation_seals(seals, opening, opening_epoch, witnesses, scope):
+    if type(seals) is not list or len(seals) != len(witnesses):
+        raise ValueError("native forecast set observation chain is malformed")
+    for digest in seals:
+        require_digest(digest)
+    if len(set(seals)) != len(seals) or opening in seals:
+        raise ValueError("native forecast set observation chain repeats a seal")
+    final_epoch = opening_epoch + len(seals)
+    parent = json.loads(scope.descriptor)["parent"]
+    if scope.epoch == final_epoch and (seals[-1] != scope.seal or parent != (opening if len(seals) == 1 else seals[-2])):
+        raise ValueError("native forecast set observation chain differs from the live witness")
+    if scope.epoch == final_epoch + 1 and parent != seals[-1]:
+        raise ValueError("native forecast set observation chain differs from the predecessor")
+    return tuple(seals)
+
+
 def _read_forecast_sets(records, scope, sources, spans, acquired, parents, attempted,
-                        reader, reader_digest, read_steps):
+                        reader, reader_digest, read_steps, *, allow_revisions):
     if type(records) is not list or not records:
         raise ValueError("native forecast set inventory is malformed")
     order = {seed: index for index, seed in enumerate(acquired)}
     result, last = {}, -1
     for record in records:
+        if type(record) is not list or len(record) not in ((11, 12) if allow_revisions else (11,)):
+            raise ValueError("native forecast set record is malformed")
         (idx, commitment, opening, opening_epoch, publication, arm_limit, score_limit,
-         witnesses, baseline, baseline_steps, alternatives) = record
+         witnesses, baseline, baseline_steps, alternatives) = record[:11]
         if (not _between(idx, last + 1, len(spans) - 1)
                 or type(alternatives) is not list or not _between(arm_limit, 2, _MAX_ARMS)
                 or not 2 <= len(alternatives) <= arm_limit
@@ -483,21 +578,13 @@ def _read_forecast_sets(records, scope, sources, spans, acquired, parents, attem
         if (seed not in acquired or seed not in parents or opening == scope.seal
                 or scope.manifest[seed.source_id].generation > opening_epoch):
             raise ValueError("native forecast set seed is invalid")
-        specs, observed_spans, observations = [], [], []
-        for position, (witness_idx, features, tolerance) in enumerate(witnesses, start=1):
-            if not _between(witness_idx, 0, len(spans) - 1) or type(features) is not list:
-                raise ValueError("native forecast set witness index is invalid")
-            witness = spans[witness_idx]
-            version = scope.manifest[witness.source_id]
-            if (witness.source_id == seed.source_id or len(sources[witness.source_id]) != 1
-                    or version.generation != opening_epoch + position):
-                raise ValueError("native forecast set witness generation or scope differs")
-            specs.append(NativeForecastWitness(witness.source_id, tuple(features), tolerance))
-            observed_spans.append(witness)
-        specs = tuple(specs)
-        _validate_witnesses(specs, _shape(reader)[0])
-        for spec in specs:
-            observations.append(_forecast_values(sources[spec.source_id][0].row, spec.features))
+        specs, revision_openings, observations, observed_spans = _read_witnesses(
+            witnesses, seed, spans, sources, scope, opening_epoch, _shape(reader)[0], allow_revisions=allow_revisions,
+        )
+        if bool(revision_openings) != (len(record) == 12):
+            raise ValueError("native forecast set observation chain differs from its witness kind")
+        seals = (_read_observation_seals(record[-1], opening, opening_epoch, witnesses, scope)
+                 if revision_openings else ())
         arms, seen = [], set()
         for parent_idx, parent_digest, payload_digest, predictions, steps in alternatives:
             if not _between(parent_idx, 0, len(spans) - 1):
@@ -526,19 +613,23 @@ def _read_forecast_sets(records, scope, sources, spans, acquired, parents, attem
                 and json.loads(scope.descriptor)["parent"] != opening):
             raise ValueError("native forecast set opening source differs from the witness predecessor")
         forecast = NativeForecastSet(seed, specs, opening, opening_epoch, publication, reader_digest,
-                                     _read_predictions(baseline, specs), control, tuple(arms), arm_limit, score_limit)
+                                     _read_predictions(baseline, specs), control, tuple(arms),
+                                     arm_limit, score_limit, revision_openings)
         if commitment != forecast.commitment:
             raise ValueError("native forecast set commitment differs")
-        survivors = forecast._survivors(tuple(observations))
-        if survivors != (parents[seed],) or forecast._matches(forecast.baseline, tuple(observations)):
+        survivors = forecast._survivors(observations)
+        if (survivors != (parents[seed],) or forecast._matches(forecast.baseline, observations)
+                or forecast._persistence_matches(observations)):
             raise ValueError("native forecast set comparison does not support admission")
         winner = next(arm for arm in arms if arm.parent == parents[seed])
         predictions = tuple(_forecast_values(acquired[seed].value, spec.features) for spec in specs)
         if (winner.payload_sha256 != _payload_digest(acquired[seed]) or winner.predictions != predictions
                 or winner.steps != attempted[seed]):
             raise ValueError("native forecast set winner differs from its installed payload")
-        result[seed] = _ForecastSetCheck(forecast, tuple(observed_spans))
+        result[seed] = _ForecastSetCheck(forecast, observed_spans, seals)
         last = idx
+    if allow_revisions and not any(check.forecast._revision_openings for check in result.values()):
+        raise ValueError("native revision witness schema has no revision witnesses")
     return result
 
 
@@ -575,10 +666,11 @@ def _restore(header, reader, raw, seal, scope):
                if "parents" in header else {})
     forecasts = (_read_forecasts(header["forecasts"], scope, sources, spans, acquired, parents, attempted, width)
                  if header["schema"] == _FORECAST_SCHEMA or header.get("forecasts") else {})
-    if header["schema"] == _FORECAST_SET_SCHEMA and type(header["forecasts"]) is not list:
+    if "forecast_sets" in header and type(header["forecasts"]) is not list:
         raise ValueError("native forecast inventory is malformed")
     forecast_sets = (_read_forecast_sets(header["forecast_sets"], scope, sources, spans, acquired,
-                                         parents, attempted, reader, header["reader"], read_steps)
+                                         parents, attempted, reader, header["reader"], read_steps,
+                                         allow_revisions=header["schema"] == _REVISION_WITNESS_SCHEMA)
                      if "forecast_sets" in header else {})
     if forecasts.keys() & forecast_sets.keys():
         raise ValueError("native publication has multiple admissions for one seed")
@@ -621,7 +713,8 @@ def read_native_publication(directory, reader, *, seal, source_seal, runtime_sha
     header = json.loads(manifest)
     schemas = {_SCHEMA: _FIELDS, _COMPOSED_SCHEMA: _FIELDS | {"parents"},
                _FORECAST_SCHEMA: _FIELDS | {"parents", "forecasts"},
-               _FORECAST_SET_SCHEMA: _FIELDS | {"parents", "forecasts", "forecast_sets"}}
+               _FORECAST_SET_SCHEMA: _FIELDS | {"parents", "forecasts", "forecast_sets"},
+               _REVISION_WITNESS_SCHEMA: _FIELDS | {"parents", "forecasts", "forecast_sets"}}
     if (type(header) is not dict or type(header.get("schema")) is not str
             or schemas.get(header["schema"]) != set(header) or _encode(header) != manifest):
         raise ValueError("native publication manifest is malformed")

@@ -15,8 +15,9 @@ from experiments.memory.linear_feedback import (
     AssociationMemory, LinearFeedbackKernel, MomentMemory, _quantize,
 )
 from experiments.memory.native_forecast_set import (
-    NativeForecastSet, _ForecastAlternative, _ForecastSetCheck, _MAX_ARMS, _forecast_error,
-    _forecast_fields, _forecast_values, _payload_digest, _validate_witnesses,
+    NativeForecastObservation, NativeForecastSet, NativeRevisionWitness,
+    _ForecastAlternative, _ForecastSetCheck, _MAX_ARMS, _RevisionWitnessOpening,
+    _forecast_error, _forecast_fields, _forecast_values, _payload_digest, _validate_witnesses,
 )
 from experiments.memory.selective_continuations import (
     RetainedSelector, RowShard, SelectionReceipt, SelectionStep, frontier_survives,
@@ -210,7 +211,7 @@ class NativeForecastSetResolution:
     memory: NativeSourceMemory
     status: str
     survivors: tuple[SourceSpan, ...] = ()
-    observations: tuple[tuple[int, ...], ...] = ()
+    observations: tuple[NativeForecastObservation, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -218,7 +219,8 @@ class _ForecastCursor:
     memory: NativeSourceMemory
     payloads: tuple[_Continuation, ...]
     witness_spans: tuple[SourceSpan, ...] = ()
-    observations: tuple[tuple[int, ...], ...] = ()
+    observations: tuple[NativeForecastObservation, ...] = ()
+    observation_seals: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -755,8 +757,8 @@ class NativeLatentModel:
         lookup = self._model.get_input_embeddings().weight
         witnesses = tuple(witnesses)
         _validate_witnesses(witnesses, lookup.shape[1])
-        if any(spec.source_id in memory._scope.manifest for spec in witnesses):
-            raise ValueError("forecast set witnesses must be absent at the opening")
+        openings = tuple(self._witness_opening(memory, spec) for spec in witnesses)
+        revision_openings = openings if any(opening is not None for opening in openings) else ()
         if (type(max_candidates) is not int or not 2 <= max_candidates <= _MAX_ARMS
                 or type(max_parent_scores) is not int or not 1 <= max_parent_scores < 2 ** 63
                 or max_parent_scores < len(selective.acquired) * self._steps):
@@ -792,10 +794,27 @@ class NativeLatentModel:
             forecast = NativeForecastSet(item.span, witnesses, memory.seal, memory._scope.epoch,
                                          memory._publication_seal, memory._reader_fingerprint_sha256,
                                          control, baseline.source_steps, tuple(alternatives),
-                                         max_candidates, max_parent_scores)
+                                         max_candidates, max_parent_scores, revision_openings)
             self._pending_forecast = forecast
             self._forecast_cursor = _ForecastCursor(memory, tuple(payloads))
             return forecast
+
+    @staticmethod
+    def _witness_opening(memory, spec):
+        source = spec.source_id
+        version = memory._scope.manifest.get(source)
+        if not isinstance(spec, NativeRevisionWitness):
+            if version is not None:
+                raise ValueError("new-source witnesses must be absent at the opening")
+            return None
+        if version is None or source in memory._scope.binary_sources:
+            raise ValueError("a revision witness needs an existing text source")
+        rows = memory._sources[source]
+        if len(rows) > spec.max_opening_rows:
+            raise ValueError("revision witness exceeds its opening row allowance")
+        return _RevisionWitnessOpening(version.sha256, version.generation, tuple(
+            (item.span.span_sha256, _forecast_values(item.row, spec.features)) for item in rows
+        ))
 
     def advance_forecast_set(self, memory, forecast, epoch_directory, seal, *, commitment, max_source_bytes=None):
         """Compare one direct source revision against the opening forecast set."""
@@ -828,31 +847,57 @@ class NativeLatentModel:
                 or any(parent not in selective.acquired for parent in forecast.parents)
                 or not forecast._frontiers_survive(delta.changes, shards)):
             return NativeForecastSetResolution(revised, "dependencies_changed", (), observations), None
-        if any(later.source_id in delta.manifest for later in forecast.witnesses[index + 1:]):
+        if any(later.source_id in delta.changes for later in forecast.witnesses[index + 1:]):
             return NativeForecastSetResolution(revised, "witness_out_of_order", (), observations), None
-        witnesses = revised._sources.get(spec.source_id, ())
-        if not witnesses:
-            return NativeForecastSetResolution(revised, "witness_absent", (), observations), None
-        if len(witnesses) != 1:
-            return NativeForecastSetResolution(revised, "unscorable_witness", (), observations), None
-        witness, = witnesses
-        observations += (_forecast_values(witness.row, spec.features),)
+        opening = forecast._opening_at(index)
+        status, rows = self._observe_witness(cursor.memory, revised, delta, spec, opening)
+        if status is not None:
+            return NativeForecastSetResolution(revised, status, (), observations), None
+        measured = tuple(_forecast_values(item.row, spec.features) for item in rows)
+        observations += (measured[0] if opening is None else measured,)
         survivors = forecast._survivors(observations)
-        witness_spans = (*cursor.witness_spans, witness.span)
+        witness_spans = (*cursor.witness_spans, *(item.span for item in rows))
+        observation_seals = (*cursor.observation_seals, delta.seal)
         if not survivors:
             return NativeForecastSetResolution(revised, "disconfirmed", survivors, observations), None
         if len(observations) < len(forecast.witnesses):
-            progress = _ForecastCursor(revised, cursor.payloads, witness_spans, observations)
+            progress = _ForecastCursor(revised, cursor.payloads, witness_spans, observations, observation_seals)
             return NativeForecastSetResolution(revised, "pending", survivors, observations), progress
         if forecast._matches(forecast.baseline, observations):
             return NativeForecastSetResolution(revised, "baseline_confirmed", survivors, observations), None
+        if forecast._persistence_matches(observations):
+            return NativeForecastSetResolution(revised, "persistence_confirmed", survivors, observations), None
         if len(survivors) != 1:
             return NativeForecastSetResolution(revised, "ambiguous", survivors, observations), None
         position = forecast.parents.index(survivors[0])
         winner = forecast.alternatives[position]
+        seals = observation_seals if forecast._revision_openings else ()
         admitted = self._retain_forecast(revised, forecast.seed, winner.parent, winner.steps, cursor.payloads[position],
-                                          _ForecastSetCheck(forecast, witness_spans))
+                                          _ForecastSetCheck(forecast, witness_spans, seals))
         return NativeForecastSetResolution(admitted, "admitted", survivors, observations), None
+
+    @staticmethod
+    def _observe_witness(previous, revised, delta, spec, opening):
+        source = spec.source_id
+        current = revised._sources.get(source, ())
+        if opening is None:
+            if not current:
+                return "witness_absent", ()
+            return (None, current) if len(current) == 1 else ("unscorable_witness", ())
+        version = previous._scope.manifest.get(source)
+        if (version is None or version.generation != opening.generation
+                or version.sha256 != opening.version_sha256):
+            return "dependencies_changed", ()
+        if source not in delta.changes:
+            return "witness_unchanged", ()
+        if delta.changes[source] is None:
+            return "witness_withdrawn", ()
+        if source in delta.binary_sources:
+            return "unscorable_witness", ()
+        rows = opening.introduced_rows(current, spec.max_changed_rows)
+        if rows is None:
+            return "witness_change_limit", ()
+        return (None, rows) if rows else ("unscorable_witness", ())
 
     def _retain_forecast(self, memory, seed, parent, steps, continuation, check):
         selective = memory._selective

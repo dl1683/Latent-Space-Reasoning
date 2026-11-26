@@ -1164,3 +1164,162 @@ def test_content_defined_reuse_matches_cold_source_rows_after_reopen(tmp_path, r
     with pytest.raises(ValueError, match="unchanged source encoder"):
         write_native_publication(tmp_path / "drift", reader, revised, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
     assert model.calls == calls and not (tmp_path / "drift").exists()
+
+@pytest.mark.parametrize("outcome", [
+    "admitted", "persistence_confirmed", "disconfirmed", "witness_change_limit",
+    "deletion_only", "witness_unchanged", "witness_withdrawn", "witness_out_of_order",
+])
+def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, outcome):
+    import numpy as np
+    from experiments.memory.native_forecast_set import NativeForecastWitness, NativeRevisionWitness
+    from experiments.memory.native_isolated_stage import LABELS, _CausalControl, _reader
+    from experiments.memory.native_task_episode import NativeTaskWorldPin
+    from experiments.memory.task_evidence import TaskWorld
+
+    high, low, cue, bridge, answer, first = (letter * 32 for letter in "abcdef")
+    second, support = "face" * 8, "fedcba98" * 4
+    width, marker = len(LABELS), len(LABELS) + 10
+
+    class RevisionControl(_CausalControl):
+        def base_model(self, *, inputs_embeds, past_key_values, use_cache, return_dict):
+            result = super().base_model(inputs_embeds=inputs_embeds, past_key_values=past_key_values,
+                                        use_cache=use_cache, return_dict=return_dict)
+            hidden = result.last_hidden_state[0, 0]
+            if past_key_values is None and not use_cache and int(inputs_embeds[0, 0, -1]) == 4:
+                if hidden[7] > 0:
+                    hidden[1] = 0.25 * np.arctanh(0.5)
+                    hidden[7] = hidden[width + 8] = 0.25 * np.arctanh(0.9)
+                elif hidden[6] > 0:
+                    hidden[6] = 0
+                    hidden[marker] = -0.25 * np.arctanh(0.75)
+                else:
+                    hidden[:width] *= 0.25 * np.arctanh(0.75)
+            if past_key_values is not None and hidden[4] > 0:
+                hidden[marker] = -1
+                if past_key_values.address[0, 0, 2] > 0:
+                    hidden[4], hidden[5] = 0, 1
+            return result
+
+    def document(*lines):
+        return "".join(line.ljust(32) for line in lines).encode()
+
+    old_head = "follow  L04" if outcome == "persistence_confirmed" else "follow L09"
+    old_text = document(old_head, "follow L10", "follow L11")
+    new_tail = "follow L05" if outcome == "disconfirmed" else "follow   L04"
+    new_text = document("follow L04", new_tail, "follow L11")
+    if outcome == "deletion_only":
+        new_text = document(old_head, "follow L11")
+
+    model = RevisionControl().eval()
+    worker = _reader(model)
+    source_path = tmp_path / "source"
+    source = write_source_delta(source_path, {
+        high: b"link L02 L03", low: b"follow L07", cue: b"link L01 L02", bridge: b"link L03 L04",
+        answer: b"name L04 L06", support: b"link L08 L03", second: old_text,
+    }, max_bytes=_LIMIT)
+    opened = worker.publish(source_path, source.seal, max_source_bytes=_LIMIT)
+    warmed = worker.maintain(opened, max_seeds=2)
+    opening_path = tmp_path / "opening"
+    opening_seal = write_native_publication(opening_path, worker, warmed, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    opening = _read(opening_path, worker, opening_seal, source.seal)
+    seed, = opening.source_spans(cue)
+    high_parent, = opening.source_spans(high)
+    low_parent, = opening.source_spans(low)
+    witness = NativeRevisionWitness(second, (4, 5), 40, 3, 1 if outcome == "witness_change_limit" else 2)
+    fresh = NativeForecastWitness(first, (marker,), 40)
+    budgets = dict(max_candidates=2, max_parent_scores=4)
+    with pytest.raises(ValueError, match="opening row allowance"):
+        worker.forecast_set(opening, witnesses=(fresh, replace(witness, max_opening_rows=2)), **budgets)
+    draft = worker.forecast_set(opening, witnesses=(fresh, witness), **budgets)
+    commitment = draft.commitment
+    assert draft.parents == (high_parent, low_parent)
+    assert draft._opening_at(1).version_sha256 == sha256(old_text)
+    assert draft._opening_at(1).generation == 1
+
+    changes = {first: b"follow L06"}
+    if outcome == "witness_out_of_order":
+        changes[second] = new_text
+    first_dir = tmp_path / "first"
+    epoch = write_source_delta(first_dir, changes, previous=source, max_bytes=_LIMIT)
+    pending = worker.advance_forecast_set(opening, draft, first_dir, epoch.seal, commitment=commitment,
+                                         max_source_bytes=_LIMIT)
+    if outcome == "witness_out_of_order":
+        assert pending.status == outcome and seed not in pending.memory.derived_seeds
+        return
+    assert pending.status == "pending" and pending.survivors == (high_parent, low_parent)
+
+    changes = {second: new_text}
+    if outcome == "witness_unchanged":
+        changes = {"0" * 32: b"follow L11"}
+    elif outcome == "witness_withdrawn":
+        changes[second] = None
+    revision_path = tmp_path / "revision"
+    revision = write_source_delta(revision_path, changes, previous=epoch, max_bytes=_LIMIT)
+    resolution = worker.advance_forecast_set(pending.memory, draft, revision_path, revision.seal,
+                                             commitment=commitment, max_source_bytes=_LIMIT)
+    expected = "unscorable_witness" if outcome == "deletion_only" else outcome
+    assert resolution.status == expected and resolution.memory.seal == revision.seal
+    assert (seed in resolution.memory.derived_seeds) == (outcome == "admitted")
+    if outcome != "admitted":
+        return
+    assert resolution.observations == ((-95,), ((95, 0), (95, 0)))
+    assert resolution.survivors == (low_parent,)
+
+    destination = tmp_path / "admitted"
+    seal = write_native_publication(destination, worker, resolution.memory, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    reader = _reader(RevisionControl().eval())
+    restored = _read(destination, reader, seal, revision.seal)
+    assert restored.continuation_witnesses(seed) == (
+        *restored.source_spans(first), *restored.source_spans(second)[:2],
+    )
+    assert restored._selective.forecast_sets[seed].observation_seals == (epoch.seal, revision.seal)
+    unadmitted = worker.publish(revision_path, revision.seal, previous=pending.memory, max_source_bytes=_LIMIT)
+    assert set(resolution.memory.derived_seeds) - {seed} == set(unadmitted.derived_seeds)
+    assert all(resolution.memory._selective.acquired[span] is unadmitted._selective.acquired[span]
+               for span in unadmitted.derived_seeds)
+    baseline_path = tmp_path / "ordinary-revision"
+    baseline_seal = write_native_publication(baseline_path, worker, unadmitted,
+                                             runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    baseline = _read(baseline_path, reader, baseline_seal, revision.seal)
+    assert restored._sources.keys() == baseline._sources.keys()
+    source_caps = dict(max_feed_bytes=_LIMIT, max_source_bytes=_LIMIT, max_passages=64)
+    world = TaskWorld.from_source_epoch(source_path, source.seal, **source_caps)
+    world = TaskWorld.from_source_epoch(first_dir, epoch.seal, previous=world, **source_caps)
+    world = TaskWorld.from_source_epoch(revision_path, revision.seal, previous=world, **source_caps)
+    pin_options = dict(memory_view="active", latent_steps=2, expected_runtime_sha256=_RUNTIME,
+                       max_source_verification_bytes=_LIMIT)
+    full_pin = NativeTaskWorldPin.bind(world, reader, restored, **pin_options).to_record()
+    baseline_pin = NativeTaskWorldPin.bind(world, reader, baseline, **pin_options).to_record()
+    assert full_pin["native_span_catalogue_sha256"] == baseline_pin["native_span_catalogue_sha256"]
+    assert full_pin["native_derived_span_count"] == baseline_pin["native_derived_span_count"] + 1
+    for source_id in restored._sources:
+        for admitted_row, baseline_row in zip(restored._sources[source_id], baseline._sources[source_id], strict=True):
+            assert admitted_row.span == baseline_row.span
+            assert admitted_row.row.tobytes() == baseline_row.row.tobytes()
+    question = "follow L01"
+    assert reader(question, memory=restored).text == "L06"
+    assert reader(question, memory=baseline).text == reader(question).text == ""
+    assert reader(question, memory=restored).text == "L06"
+
+    manifest = destination / "manifest.json"
+    original = manifest.read_bytes()
+    assert json.loads(original)["schema"] == "lsr-native-selective-v5"
+    for attack in ("drop_row", "change_predecessor"):
+        forged = json.loads(original)
+        record, = forged["forecast_sets"]
+        if attack == "drop_row":
+            record[7][1][0].pop()
+            reason = "cover all introduced rows"
+        else:
+            record[-1][0] = "1" * 64
+            reason = "observation chain differs"
+        changed = _encode(forged)
+        manifest.write_bytes(changed)
+        with pytest.raises(ValueError, match=reason):
+            _read(destination, reader, sha256(changed), revision.seal)
+    manifest.write_bytes(original)
+    reverted_path = tmp_path / "reverted"
+    reverted = write_source_delta(reverted_path, {second: old_text}, previous=revision, max_bytes=_LIMIT)
+    retained = worker.publish(reverted_path, reverted.seal, previous=resolution.memory, max_source_bytes=_LIMIT)
+    assert seed not in retained.derived_seeds
+    assert reader(question, memory=_read(destination, reader, seal, revision.seal)).text == "L06"

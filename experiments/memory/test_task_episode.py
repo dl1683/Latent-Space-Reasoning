@@ -251,6 +251,8 @@ def test_compact_delivery_keeps_verified_paths_across_source_revisions(tmp_path)
             else:
                 decision["tool"]["need_id"] = "release"
                 decision["need_additions"] = []
+                if policy.compact_delivery:
+                    decision["state"] = ""
             return reply(**decision)
 
         return run_episode(TASK, pinned, policy, limits, Tokenizer(), generate, tmp_path / name)
@@ -496,7 +498,7 @@ def _joint_task_world(tmp_path, records, pin, *, memory=True):
     return TaskWorld(tool, spans, bindings=pin.corpus, factor_pin=pin if memory else None)
 
 
-def _compact_joint_policy(*, assume=None, rejected=False, query="commission"):
+def _compact_joint_policy(*, assume=None, rejected=False, query="commission", compact_delivery=False):
     attempted = []
     states = {"inconsistent": "conflicted", "compatible_in_registered_scope": "supports",
               "conditional_supported": "hypothetical"}
@@ -516,8 +518,8 @@ def _compact_joint_policy(*, assume=None, rejected=False, query="commission"):
             }])
 
         def act(op, **fields):
-            return reply(state="Check the commission rules.", need_additions=[],
-                         tool={"op": op, "need_id": "rule", **fields})
+            state = "" if compact_delivery else "Check the commission rules."
+            return reply(state=state, need_additions=[], tool={"op": op, "need_id": "rule", **fields})
 
         if phase == "act_after_plan":
             return act("search", query=query)
@@ -576,7 +578,8 @@ def test_compact_task_verifies_joint_conflict_withdrawal_and_restoration(tmp_pat
 
     def run(world, name, status, **options):
         artifact = run_episode("Can the commission follow all current rules?", world, policy, limits, Tokenizer(),
-                               _compact_joint_policy(**options), tmp_path / name)
+                               _compact_joint_policy(compact_delivery=compact_delivery, **options),
+                               tmp_path / name)
         ledger = read_episode(artifact)
         assert ledger[-1]["data"]["status"] == "completed"
         assert ledger[0]["data"]["joint_state_version"] == 1

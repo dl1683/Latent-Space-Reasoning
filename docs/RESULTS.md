@@ -4,6 +4,47 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Qualifying latent work on an existing text correction, 26 November 2026
+
+**Controlled native run.** A fresh witness fit both drafted operations.
+A later edit to a three-passage document introduced two passages, both
+with projection (95, 0). The lower-ranked operation's forecast was
+(127, 0), the higher-ranked forecast (0, 127). At tolerance 40, only the
+lower-ranked operation survived. A source-only baseline and the opening
+document's projections also missed. V5 reopened the ordered set of
+three exact source spans and checked the saved comparison.
+
+The controller published the same edit twice from the same pre-admission
+memory, once with the admitted operation and once through ordinary source
+revision. Both worlds had byte-identical source rows and the same existing
+continuations. The native task pin verified both on the same source seal.
+One reopened reader returned L06 with the added operation, empty with
+only that operation absent, and L06 again on restoring the original.
+It also returned empty without memory.
+
+Other fixtures withheld the operation when the old source explained
+the revision, the two introduced rows disagreed, the cap was exceeded,
+only a deletion occurred, a declared source stayed unchanged or was
+withdrawn, or the edit arrived early. Reopen rejected omitted witness
+rows and a substituted observed predecessor seal. A later correction
+retired the admission while the earlier publication stayed readable.
+
+**Public byte-only check.** At 512 characters, the implemented
+multiset rule selected 14 of 137 revised PEP chunk locations from
+133 opening chunks, covering 5,054 bytes. A cap of 13 refused the same
+edit. Repeating the opening inventory produced an empty introduced
+set. These are potential witness inputs. No pretrained scoring or
+quality evaluation ran on this correction.
+
+The supplied-backbone result verifies the maintenance-to-readout loop
+for this control. The separate pretrained task-addressing pilot applied
+zero derived steps, so the effect demonstrated here remains unverified
+with a pretrained reader. Compare against independently released edits,
+a competent ordinary text reader and warm exact reasoning before
+drawing a quality or cost conclusion.
+[Runtime control](../experiments/memory/test_native_publication.py)
+[Pretrained addressing gate](#native-world-task-addressing-gate-26-november-2026)
+
 ## Reusing native chunks after a text correction, 26 November 2026
 
 **Public byte-only check.** Run the actual chunker over all 655

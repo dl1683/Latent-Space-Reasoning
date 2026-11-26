@@ -824,6 +824,25 @@ publication APIs. Inspect their admission spans with
 `memory.continuation_witnesses(seed)`. The earlier one-witness API
 and its accessor remain available.
 
+## Observing a correction to an existing text source
+
+Include a `NativeRevisionWitness(source_id, features, tolerance,
+max_opening_rows, max_changed_rows)` in the `forecast_set` witness
+sequence. Import it from `experiments.memory.native_forecast_set`.
+The source must already be present as text at the sealed opening.
+The controller pins the draft commitment and releases each ordered
+source epoch independently.
+
+An edited witness yields a tuple of projections in current document
+order. A new-source witness still yields its single projection.
+The revised source is returned even when the worker withholds the
+operation. Outcomes include `witness_unchanged`,
+`witness_withdrawn`, `witness_change_limit`, `unscorable_witness`
+and `persistence_confirmed`. A deletion that introduces no encoded
+rows is unscorable. Use `memory.continuation_witnesses(seed)` to
+inspect the exact introduced spans in an admitted publication.
+Preserve the opening and direct source feeds for independent replay.
+
 ## Publishing binary native sources
 
 The publisher marks binary updates by source ID with

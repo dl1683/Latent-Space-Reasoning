@@ -24,6 +24,15 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**One changed passage can hide contradictory revision evidence, 26 November 2026.**
+A correction produced one introduced row compatible with each rival.
+Scoring either row alone would favor a different operation. Scoring
+the complete introduced set rejected both. A separate correction had
+different bytes but matched an opening projection, and persistence
+vetoed admission. A byte-new row can still reflect changed chunk
+boundaries. Independent late-task evidence remains necessary.
+[Revision witness control](RESULTS.md#qualifying-latent-work-on-an-existing-text-correction-26-november-2026)
+
 **Transient tokenizer settings can break an encoding pin, 26 November 2026.**
 A normal unpadded, untruncated call clears a fast tokenizer's preset
 backend padding and truncation. Those settings are outside the
