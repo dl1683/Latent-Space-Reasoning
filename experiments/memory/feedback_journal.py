@@ -9,11 +9,12 @@ from operator import index
 from pathlib import Path
 import sqlite3
 from struct import Struct
+from threading import Lock
 
 import numpy as np
 
 from experiments.memory.feedback_workspace import (
-    FeedbackMaintenanceRound, FeedbackProposal, FeedbackRepairAttempt, FeedbackWorkspace,
+    FeedbackMaintenanceRound, FeedbackProposal, FeedbackRepairAttempt, FeedbackRevision, FeedbackWorkspace,
     StaleFeedbackRevision, _split_candidate_kind,
 )
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, _frozen, _real_array
@@ -105,6 +106,33 @@ class FeedbackSearchShard:
     results: tuple[FeedbackCandidateData, ...]
 
 
+@dataclass(frozen=True, eq=False)
+class FeedbackOperatorTrial:
+    opening_revision: int
+    source_events: int
+    max_source_events: int
+    max_source_bytes: int
+
+
+@dataclass(frozen=True)
+class FeedbackOperatorTrialResult:
+    status: str
+    checked_revisions: tuple[int, ...] = ()
+    revision: FeedbackRevision | None = None
+    failed_revision: int | None = None
+    reason: str | None = None
+
+
+@dataclass(frozen=True, eq=False)
+class _OpenedOperatorTrial:
+    token: FeedbackOperatorTrial
+    opening: FeedbackRevision
+    digest: bytes
+    kind: str
+    probe: int
+    payload: bytes
+
+
 class JournaledFeedbackWorkspace(FeedbackWorkspace):
     """Share admitted revisions across processes using one trusted local SQLite file."""
 
@@ -149,6 +177,8 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         self._path = Path(path).resolve()
         self._root = self._root_digest(initial_sources, observations if self._tree_bound else None)
         self._tip = self._root
+        self._trial_lock = Lock()
+        self._operator_trial = None
         with closing(self._connect(create=create)) as db:
             if self._tree_bound and not create:
                 if not self._has_root_table(db):
@@ -349,6 +379,151 @@ class JournaledFeedbackWorkspace(FeedbackWorkspace):
         if kind == "tree_slots" and probe is None and self._tree_bound:
             return self._prepare_slot_revision(base, _decode_slots(payload, base.kernel._width))
         return self._prepare_operator_revision(self._decode_operator(base, kind, probe, payload))
+
+    def _journal_tip(self, db):
+        return db.execute("SELECT number, digest FROM feedback_events ORDER BY number DESC LIMIT 1").fetchone() or (
+            0, self._root,
+        )
+
+    def begin_operator_trial(self, proposal, *, source_events, max_source_events=None, max_source_bytes=1_048_576):
+        """Freeze a checked tree operator recipe before a bounded source-only window."""
+        if not self._tree_bound or any(isinstance(value, (bool, np.bool_))
+                                      for value in (source_events, max_source_events)):
+            raise ValueError("operator trials need a tree journal and a positive source-event horizon")
+        horizon = index(source_events)
+        event_limit = horizon if max_source_events is None else index(max_source_events)
+        if not 1 <= horizon <= event_limit:
+            raise ValueError("operator trials need positive, ordered source-event limits")
+        if isinstance(max_source_bytes, (bool, np.bool_)):
+            raise ValueError("operator trials need a positive source byte budget")
+        byte_limit = index(max_source_bytes)
+        if byte_limit < 1:
+            raise ValueError("operator trials need a positive source byte budget")
+        if type(proposal) is not FeedbackProposal:
+            raise TypeError("operator trials need a feedback proposal")
+        with self._trial_lock:
+            if self._operator_trial is not None:
+                raise ValueError("this workspace already has an open operator trial")
+            opening = proposal.base
+            self._require_current(opening)
+            kind, payload = self._encode_operator(proposal)
+            probe = proposal.probe
+            self._prepare_operator_revision(self._decode_operator(opening, kind, probe, payload))
+            with self._lock, closing(self._connect()) as db:
+                self._require_ready()
+                db.execute("BEGIN")
+                self._read_root(db)
+                if self._head is not opening or self._journal_tip(db) != (opening.number, self._tip):
+                    raise StaleFeedbackRevision("feedback journal changed before opening the operator trial")
+                token = FeedbackOperatorTrial(opening.number, horizon, event_limit, byte_limit)
+                self._operator_trial = _OpenedOperatorTrial(token, opening, self._tip, kind, probe, payload)
+            return token
+
+    def cancel_operator_trial(self, trial):
+        """Release this handle's open trial without publishing an edit."""
+        with self._trial_lock:
+            self._require_operator_trial(trial)
+            self._operator_trial = None
+
+    def _require_operator_trial(self, trial):
+        opened = self._operator_trial
+        if opened is None or opened.token is not trial:
+            raise ValueError("operator trial is closed or belongs to another workspace")
+        return opened
+
+    def finish_operator_trial(self, trial):
+        """Test the frozen recipe on each new source revision and publish on the exact tip."""
+        with self._trial_lock:
+            opened = self._require_operator_trial(trial)
+            result = self._judge_operator_trial(opened)
+            if result.status != "pending":
+                self._operator_trial = None
+            return result
+
+    def _judge_operator_trial(self, opened):
+        start = opened.opening.number
+        minimum = start + opened.token.source_events
+        maximum = start + opened.token.max_source_events
+        with closing(self._connect()) as db:
+            db.execute("BEGIN")
+            self._read_root(db)
+            if start and db.execute("SELECT digest FROM feedback_events WHERE number = ?", (start,)).fetchone() != (
+                opened.digest,
+            ):
+                raise ValueError("operator trial opening revision is missing from the journal")
+            number, tip = self._journal_tip(db)
+            if number > maximum:
+                return FeedbackOperatorTrialResult("expired")
+            if number < start:
+                raise ValueError("operator trial opening revision is ahead of the journal")
+            if number < minimum:
+                return FeedbackOperatorTrialResult("pending")
+            source_bytes, invalid_revision = db.execute("""
+                SELECT COALESCE(SUM(length(payload)), 0),
+                       MIN(CASE WHEN kind != 'tree_slots' OR probe IS NOT NULL THEN number END)
+                FROM feedback_events WHERE number > ? AND number <= ?
+            """, (start, number)).fetchone()
+            if invalid_revision is not None:
+                return FeedbackOperatorTrialResult("invalidated", failed_revision=invalid_revision,
+                                                   reason="trial requires only tree-slot source revisions")
+            if source_bytes > opened.token.max_source_bytes:
+                return FeedbackOperatorTrialResult("budget_exhausted", reason="trial source payload exceeds its cap")
+            events = tuple(db.execute("""
+                SELECT number, kind, probe, payload, digest FROM feedback_events
+                WHERE number > ? AND number <= ? ORDER BY number
+            """, (start, number)))
+
+        digest = opened.digest
+        for expected, event in enumerate(events, start + 1):
+            sequence, kind, probe, payload, stored = event
+            if sequence != expected or stored != _event_digest(digest, sequence, kind, probe, payload):
+                raise ValueError("invalid feedback journal history in the operator trial")
+            digest = stored
+        if (start + len(events), digest) != (number, tip):
+            raise ValueError("operator trial did not reach its pinned journal tip")
+        base, digest = opened.opening, opened.digest
+        checked = []
+        for event in events:
+            base, digest = self._replay_event(base, digest, event)
+            checked.append(base.number)
+            proposal = self._decode_operator(base, opened.kind, opened.probe, opened.payload)
+            try:
+                candidate = self._prepare_operator_revision(proposal)
+            except (ValueError, FloatingPointError) as error:
+                return FeedbackOperatorTrialResult("refused", tuple(checked), failed_revision=base.number,
+                                                   reason=str(error))
+        return self._publish_operator_trial(opened, base, digest, candidate, proposal, tuple(checked))
+
+    def _publish_operator_trial(self, opened, base, digest, candidate, proposal, checked):
+        with self._lock, closing(self._connect()) as db:
+            self._require_ready()
+            db.execute("BEGIN")
+            self._read_root(db)
+            if self._journal_tip(db) != (base.number, digest) or self._head.number > base.number:
+                return FeedbackOperatorTrialResult("stale", checked)
+            if self._head.number and db.execute(
+                "SELECT digest FROM feedback_events WHERE number = ?", (self._head.number,),
+            ).fetchone() != (self._tip,):
+                raise ValueError("feedback journal lost or replaced the local revision")
+            if self._head.number == base.number:
+                if self._tip != digest:
+                    raise ValueError("operator trial disagrees with the local journal tip")
+                current = self._head
+            else:
+                self._install(base, digest)
+                current = base
+        if current is not base:
+            proposal = self._decode_operator(current, opened.kind, opened.probe, opened.payload)
+            try:
+                candidate = self._prepare_operator_revision(proposal)
+            except (ValueError, FloatingPointError) as error:
+                return FeedbackOperatorTrialResult("refused", checked, failed_revision=current.number,
+                                                   reason=str(error))
+        try:
+            published = self._commit(current, candidate, proposal=proposal)
+        except StaleFeedbackRevision:
+            return FeedbackOperatorTrialResult("stale", checked)
+        return FeedbackOperatorTrialResult("committed", checked, published)
 
     def _search_base(self):
         base = self.snapshot()

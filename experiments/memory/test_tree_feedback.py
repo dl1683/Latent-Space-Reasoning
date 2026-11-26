@@ -8,7 +8,7 @@ import pytest
 from experiments.memory import tree_feedback
 from experiments.memory.feedback_journal import JournaledFeedbackWorkspace
 from experiments.memory.feedback_workspace import (
-    FeedbackProbe, FeedbackRoutingGoal, FeedbackSlotEvidence, FeedbackWorkspace, StaleFeedbackRevision,
+    FeedbackProbe, FeedbackProposal, FeedbackRoutingGoal, FeedbackSlotEvidence, FeedbackWorkspace, StaleFeedbackRevision,
 )
 from experiments.memory.latent_feedback import ConditionalTerm, FactoredValue, FeedbackKernel
 from experiments.memory.tree_feedback import (
@@ -1521,6 +1521,170 @@ def test_slot_evidence_freezes_a_reused_row_and_checks_a_genuinely_empty_slot():
     observed.shape = (1, 1)
     assert tree.observation_slot(revised.memory, 1).shape == (1,)
     assert revised.errors[0] < 1e-12
+
+
+def _operator_trial_inputs(path):
+    tree = TreeFeedbackKernel(depth=2, max_frontier=4, query=[[0.], [0.]], carry=None,
+                              observation_key=[[0.], [0.]], observation_value=np.zeros((2, 2)),
+                              feedback_key=[[0.], [0.]], feedback_value=np.zeros((2, 2)), max_steps=1)
+    rows = [[.25, .3], [.25, -.3]]
+    probes = (FeedbackProbe((1., 0.), 1, (.4, 0.)),)
+    guards = (FeedbackProbe((-1., 0.), 1, (0., 0.)),)
+    options = dict(guards=guards, max_update_norm=2., max_terms=1, allow_hinge=True)
+    recipe = ConditionalTerm((1., 0.), (1., 0.), (float(np.arctanh(.4) / .25), 0.), threshold=0.)
+    return (path, tree, rows, probes), options, recipe
+
+
+@pytest.mark.parametrize("catch_up_first", [False, True])
+def test_operator_trial_preserves_one_frozen_recipe_across_source_batches(tmp_path, monkeypatch, catch_up_first):
+    args, options, recipe = _operator_trial_inputs(tmp_path / "operator-trial.db")
+    worker = JournaledFeedbackWorkspace(*args, **options, create=True)
+    writer = JournaledFeedbackWorkspace(*args, **options)
+    opening = worker.snapshot()
+    trial = worker.begin_operator_trial(FeedbackProposal(opening, 0, term=recipe), source_events=2)
+    with pytest.raises(ValueError, match="another workspace"):
+        writer.finish_operator_trial(trial)
+    with pytest.raises(ValueError, match="open operator trial"):
+        worker.begin_operator_trial(FeedbackProposal(opening, 0, term=recipe), source_events=2)
+    assert worker.finish_operator_trial(trial).status == "pending"
+    assert writer.snapshot().number == opening.number
+    first = writer.revise_observation_slots(writer.snapshot(), {0: [.4, .8], 1: [.1, -.7]})
+    assert worker.finish_operator_trial(trial).status == "pending"
+    second = writer.revise_observation_slots(first, {0: [.1, -.4], 1: [.4, .5]})
+    if catch_up_first:
+        assert worker.snapshot().number == second.number
+
+    prepare = worker._prepare_operator_revision
+    measured = []
+
+    def observe(proposal):
+        measured.append((proposal.base.number, worker._encode_operator(proposal)))
+        return prepare(proposal)
+
+    monkeypatch.setattr(worker, "_prepare_operator_revision", observe)
+    result = worker.finish_operator_trial(trial)
+    assert result.status == "committed" and result.checked_revisions == (first.number, second.number)
+    expected_pins = [first.number, second.number, second.number] if catch_up_first else [first.number, second.number]
+    assert [number for number, _ in measured] == expected_pins
+    assert len({encoded for _, encoded in measured}) == 1
+    assert result.revision.number == second.number + 1 and result.revision.errors[0] < 1e-12
+    assert result.revision.guard_errors == (0.,) and opening.errors == (.4,)
+    seed = (.75, .3)
+    installed = result.revision
+    late = installed.kernel.step(installed.start(seed)).latest[0]
+    assert late == pytest.approx(np.tanh(.75 * np.arctanh(.4)))
+    assert second.kernel.step(second.start(seed)).latest[0] == 0.
+    withdrawn = installed.kernel.revise(installed.memory, {1: None})
+    assert installed.kernel.step(installed.kernel.start(seed, withdrawn)).latest[0] < late - .1
+    with pytest.raises(ValueError, match="closed"):
+        worker.finish_operator_trial(trial)
+    reopened = JournaledFeedbackWorkspace(*args, **options).snapshot()
+    assert reopened.number == result.revision.number and reopened.errors == result.revision.errors
+    assert reopened.guard_errors == result.revision.guard_errors
+
+
+def test_operator_trial_refuses_a_middle_regression_even_when_the_tip_would_pass(tmp_path):
+    args, options, recipe = _operator_trial_inputs(tmp_path / "operator-middle.db")
+    worker = JournaledFeedbackWorkspace(*args, **options, create=True)
+    writer = JournaledFeedbackWorkspace(*args, **options)
+    base = worker.snapshot()
+    trial = worker.begin_operator_trial(FeedbackProposal(base, 0, term=recipe), source_events=2)
+    first = writer.revise_observation_slots(writer.snapshot(), {0: [.23, 0.], 1: [.23, 0.]})
+    refitted = writer._prepare_operator_revision(writer.propose(first, 0, hinge=True))
+    assert refitted.errors[0] < 1e-12
+    last = writer.revise_observation_slots(first, {0: [.1, -.4], 1: [.4, .5]})
+    assert writer._prepare_operator_revision(FeedbackProposal(last, 0, term=recipe)).errors[0] < 1e-12
+
+    result = worker.finish_operator_trial(trial)
+    assert result.status == "refused" and result.checked_revisions == (first.number,)
+    assert result.failed_revision == first.number and "target probe" in result.reason
+    live = JournaledFeedbackWorkspace(*args, **options).snapshot()
+    assert live.number == last.number and live.errors == (.4,) and live.kernel.conditional_terms == 0
+
+
+@pytest.mark.parametrize("last_passes", [False, True])
+def test_operator_trial_checks_every_pin_within_its_predeclared_slack(tmp_path, last_passes):
+    args, options, recipe = _operator_trial_inputs(tmp_path / "operator-slack.db")
+    worker = JournaledFeedbackWorkspace(*args, **options, create=True)
+    writer = JournaledFeedbackWorkspace(*args, **options)
+    proposal = FeedbackProposal(worker.snapshot(), 0, term=recipe)
+    with pytest.raises(ValueError, match="ordered source-event limits"):
+        worker.begin_operator_trial(proposal, source_events=2, max_source_events=1)
+    trial = worker.begin_operator_trial(proposal, source_events=1, max_source_events=2)
+    first = writer.revise_observation_slots(writer.snapshot(), {0: [.4, 0.], 1: [.1, 0.]})
+    edits = {0: [.1, 0.], 1: [.4, 0.]} if last_passes else {0: [.23, 0.], 1: [.23, 0.]}
+    last = writer.revise_observation_slots(first, edits)
+    result = worker.finish_operator_trial(trial)
+    assert result.checked_revisions == (first.number, last.number)
+    if last_passes:
+        assert result.status == "committed" and result.revision.number == last.number + 1
+    else:
+        assert result.status == "refused" and result.failed_revision == last.number
+        assert worker.snapshot().number == last.number
+
+
+@pytest.mark.parametrize("competing_kind", ["operator", "whole_bank", "expired"])
+def test_operator_trial_requires_its_exact_source_only_window(tmp_path, competing_kind):
+    args, options, recipe = _operator_trial_inputs(tmp_path / "operator-window.db")
+    worker = JournaledFeedbackWorkspace(*args, **options, create=True)
+    writer = JournaledFeedbackWorkspace(*args, **options)
+    base = worker.snapshot()
+    trial = worker.begin_operator_trial(FeedbackProposal(base, 0, term=recipe), source_events=1)
+    if competing_kind == "operator":
+        winner = writer.publish(FeedbackProposal(writer.snapshot(), 0, term=recipe))
+    elif competing_kind == "whole_bank":
+        winner = writer.replace_observations(writer.snapshot(), [[.1, .0], [.4, .0]])
+    else:
+        first = writer.revise_observation_slots(writer.snapshot(), {0: [.1, 0.], 1: [.4, 0.]})
+        winner = writer.revise_observation_slots(first, {0: [.4, 0.], 1: [.1, 0.]})
+    result = worker.finish_operator_trial(trial)
+    assert result.status == ("expired" if competing_kind == "expired" else "invalidated")
+    assert result.revision is None and not result.checked_revisions
+    assert worker.snapshot().number == winner.number
+
+
+def test_operator_trial_loses_publication_race_and_can_release_its_open_pin(tmp_path, monkeypatch):
+    args, options, recipe = _operator_trial_inputs(tmp_path / "operator-trial-race.db")
+    worker = JournaledFeedbackWorkspace(*args, **options, create=True)
+    writer = JournaledFeedbackWorkspace(*args, **options)
+    proposal = FeedbackProposal(worker.snapshot(), 0, term=recipe)
+    cancelled = worker.begin_operator_trial(proposal, source_events=1)
+    worker.cancel_operator_trial(cancelled)
+    with pytest.raises(ValueError, match="closed"):
+        worker.finish_operator_trial(cancelled)
+    trial = worker.begin_operator_trial(proposal, source_events=1)
+    source = writer.revise_observation_slots(writer.snapshot(), {0: [.4, 0.], 1: [.1, 0.]})
+    commit = worker._commit
+
+    def compete(base, candidate, **kwargs):
+        writer.revise_observation_slots(writer.snapshot(), {0: [.1, 0.], 1: [.4, 0.]})
+        return commit(base, candidate, **kwargs)
+
+    monkeypatch.setattr(worker, "_commit", compete)
+    result = worker.finish_operator_trial(trial)
+    assert result.status == "stale" and result.checked_revisions == (source.number,)
+    reopened = JournaledFeedbackWorkspace(*args, **options).snapshot()
+    assert reopened.number == source.number + 1 and reopened.kernel.conditional_terms == 0
+
+
+def test_operator_trial_checks_payload_bytes_before_replaying_source_rows(tmp_path, monkeypatch):
+    args, options, recipe = _operator_trial_inputs(tmp_path / "operator-trial-bytes.db")
+    worker = JournaledFeedbackWorkspace(*args, **options, create=True)
+    writer = JournaledFeedbackWorkspace(*args, **options)
+    base = worker.snapshot()
+    trial = worker.begin_operator_trial(FeedbackProposal(base, 0, term=recipe),
+                                        source_events=1, max_source_bytes=49)
+    source = writer.revise_observation_slots(writer.snapshot(), {0: [.4, 0.], 1: [.1, 0.]})
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("oversized trial reached source replay")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(worker, "_replay_event", unexpected)
+        result = worker.finish_operator_trial(trial)
+    assert result.status == "budget_exhausted" and not result.checked_revisions
+    assert "payload" in result.reason and worker.snapshot().number == source.number
+    assert worker.snapshot().kernel.conditional_terms == 0
 
 
 def test_multiplicity_survives_a_huge_common_observation_and_history_logit():
