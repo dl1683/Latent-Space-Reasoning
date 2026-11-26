@@ -40,9 +40,12 @@ offsets, span hash and `byte_verified=true`. **This checks byte identity only.**
 Projection coordinates are not original PDF coordinates, and verification does
 not establish extraction fidelity. `open_span` accepts both old chunk IDs and
 new leaf and structural-unit IDs; `follow_reference` uses the original chunk's literal links.
-`unit` distinguishes `COMPLETE_TABLE`, `COMPLETE_SECTION` and
-`COMPLETE_EXTRACTED_LEAF`. Section/table completeness concerns the extracted unit,
-not the whole source, all related tables, or referenced financial notes.
+`unit` distinguishes `COMPLETE_TABLE`, `COMPLETE_SECTION`,
+`COMPLETE_EXTRACTED_LEAF`, `MARKDOWN_HEADING_BLOCK` and `MARKDOWN_TITLED_PROSE`.
+For structural units, `boundary_basis` describes how the source bounds were
+recognized and `completeness_scope` states what the quotation covers.
+Section and table completeness concerns the extracted unit. Referenced notes,
+linked contents and other source units may require separate reads.
 
 Joins, conflict detection, semantic/ingestion coverage and automatic readings are
 not computed in this step. Empty fields never mean that no conflicts exist.
@@ -342,6 +345,22 @@ Other launch errors are not silently retried or reclassified.
   Small sources and unmapped multi-leaf sources remain whole/atomic. Unrecognized
   or oversized units may still be withheld. These conservative structural rules are
   not a general PDF-table parser and do not repair missing extraction text.
+- Large single-leaf Markdown sources also recognize explicit, unindented ATX
+  headings outside fenced code. Each heading block ends at the next recognized
+  heading of any level. Its scope excludes nested sections and links. A long,
+  table-free heading block can offer single-line prose paragraphs with a bold
+  lead title and blank-line boundaries. Prefer the routed paragraph, then
+  select prose for surface facets and as-yet-uncovered query terms. The output
+  budget still applies. Each result carries exact UTF-8 bounds, a digest and
+  an explicit heading-body or paragraph scope. Graph bridges still require
+  full endpoint and witness containment in their heading blocks.
+  Ambiguous raw HTML, front matter, malformed or unclosed fences and unsupported
+  heading boundaries keep the source whole. Headingless Markdown with code or
+  other block containers also remains atomic. Reopen checks the same boundaries and
+  preserves scope across direct and graph continuation paths. Previously
+  issued structural IDs that no longer validate are refused; the original
+  routed span and exact source reads remain available. Restart clears
+  old process-local cursors.
 - Date/year catalog scoping proposes the latest admitted annual filing or a
   year-matched release before unrelated embedding hits. It does not prove the
   corpus contains the latest public filing or resolve revision authority.

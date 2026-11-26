@@ -4,7 +4,7 @@
 
 ## Current status
 
-Execution is **PAUSED** after Rank 1 reached its three-round unsuccessful-repair cap. The implemented context tool is a **navigation slice**: it returns bounded, byte-verified source evidence through Python, CLI and MCP. It does not establish useful general latent reasoning, whole-corpus completeness, calibrated absence, multimodal optional-memory operation or a complete efficiency advantage.
+Execution is **PAUSED** after Rank 1 reached its three-round unsuccessful-repair cap. The implemented context tool is a **navigation slice**: it returns bounded, byte-verified source evidence through Python, CLI and MCP. Large Markdown sources can return byte-verified heading blocks or titled prose from an oversized heading. General latent reasoning, whole-corpus completeness, calibrated absence, multimodal optional-memory operation and complete efficiency remain research objectives.
 
 The latest Rank 1 output had correct observed decisions in two worlds but failed the frozen terminal parser. Post-hoc rescoring is diagnostic only; **30/32 worlds and causal controls remain unrun**. Resuming requires explicit new finite authorization, frozen parser fixtures, fresh competence worlds, a passed operation-specific positive control and reconciled resources. Historical protocols do not authorize execution.
 

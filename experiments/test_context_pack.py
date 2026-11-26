@@ -495,3 +495,132 @@ def test_service_spawn_does_not_retry_unrelated_permission_errors(monkeypatch):
     monkeypatch.setattr(app.subprocess, "Popen", spawn)
     with pytest.raises(PermissionError):
         app.launch_service(["python"], creationflags=0)
+
+
+def test_markdown_ledger_recovers_exact_titled_prose_for_two_facets(corpus):
+    first = "**Frozen caf\u00e9 rule.** Refuse publication when a middle pin fails.\r\n"
+    second = "**Coupled publication rule.** Commit both the source and compensating operator together.\r\n"
+    fence = "~~~markdown\r\n# False heading\r\n\r\n**Fenced rule.** Frozen coupled publication example.\r\n~~~\r\n"
+    ledger = ("# Ledger\r\n## Decisions\r\n\r\n" + first + "\r\n" + second + "\r\n" + fence + "\r\n"
+              + "Background prose. " * 850 + "\r\n\r\n## Close\r\nOrdinary context.\r\n")
+    replace_first_leaf(corpus, ledger, "Refuse publication when a middle pin fails.")
+    memory = ContextMemory(corpus[0])
+    pack = memory.ask("Frozen middle pin publication? Coupled source and compensating operator together?",
+                      dict(k=4))
+    passages = [span for group in pack["facets"] for span in group["spans"] if span["file"] == "origin.md"]
+    quoted = {span["text"]: span for span in passages}
+    assert first in quoted and second in quoted
+    from experiments.context_compact import expand_compact
+
+    view = memory.context("Frozen middle pin publication? Coupled source and compensating operator together?",
+                          budget={"max_spans": 4}, format="compact")
+    expanded = {span["text"]: span for span in spans(expand_compact(view))}
+    for content in (first, second):
+        assert expanded[content]["unit"] == "MARKDOWN_TITLED_PROSE"
+        assert expanded[content]["completeness_scope"] == quoted[content]["completeness_scope"]
+    assert all(span.get("section_title") != "Fenced rule." for span in passages)
+    raw = ledger.encode()
+    for content in (first, second):
+        span = quoted[content]
+        assert span["unit"] == "MARKDOWN_TITLED_PROSE"
+        assert raw[span["start_byte"]:span["end_byte"]] == content.encode()
+        reopened = memory.open_span(span["id"])["passages"][0]
+        for field in ("text", "id", "sha256", "unit", "boundary_basis", "completeness_scope"):
+            assert reopened[field] == span[field]
+
+
+def test_markdown_titled_prose_remains_reopenable_through_graph_pagination(corpus):
+    first = "**Alpha frozen rule.** Refuse the bad middle pin.\n"
+    second = "**Alpha publication rule.** Publish both parts together.\n"
+    text = "# Ledger\n\n## Decisions\n\n" + first + "\n" + second + "\n" + "Background notes. " * 850
+    replace_first_leaf(corpus, text, "Refuse the bad middle pin.")
+    memory = ContextMemory(corpus[0])
+    page = memory.context("Alpha frozen middle pin? Alpha publication both parts?", strategy="ppr",
+                          budget={"max_spans": 1})
+    returned = [s["text"] for s in spans(page)]
+    for _ in range(4):
+        if not page["continuation"]:
+            break
+        page = memory.context(**page["continuation"]["arguments"])
+        returned.extend(s["text"] for s in spans(page))
+        if first in returned and second in returned:
+            break
+    assert first in returned and second in returned
+
+
+@pytest.mark.parametrize("header, row", [
+    ("| Product | Revenue |\n|---|---|", "| Alpha | 29 |"),
+    ("Product | Revenue\n--- | ---", "Alpha | 29"),
+    ("| Revenue\n| ---", "| Alpha"),
+    ("Product | Revenue\n- | -", "Alpha | 29"),
+])
+def test_markdown_table_block_does_not_yield_a_detached_titled_qualifier(corpus, header, row):
+    text = ("# Ledger\n\n## Alpha table\n\n" + header + "\n"
+            + ((row + "\n") * 5000)
+            + "\n**Units.** USD thousands, fiscal year 2025.\n\n## Close\nAlpha prose.\n")
+    replace_first_leaf(corpus, text, row)
+    pack = ContextMemory(corpus[0]).context("Alpha table units revenue")
+    assert not any("USD thousands" in s["text"] for s in spans(pack))
+    assert any(o["reason"] == "atomic_leaf_exceeds_output_budget" for o in pack["unresolved"])
+
+
+@pytest.mark.parametrize("ambiguous", [
+    "---\n# Front-matter comment\n---\n",
+    "<!--\n# Hidden heading\n-->\n",
+    "Opening prose <!--\n# Hidden heading\n-->\n",
+    "\x60\x60\x60invalid\x60suffix\n# Hidden heading\n\x60\x60\x60\n",
+])
+def test_ambiguous_markdown_does_not_certify_new_boundaries(corpus, ambiguous):
+    text = ambiguous + "\n# Alpha heading\n\n" + "Alpha chapter body. " * 3500
+    replace_first_leaf(corpus, text, "Alpha chapter body.")
+    memory = ContextMemory(corpus[0])
+    pack = memory.context("Alpha chapter")
+    assert not any(s["file"] == "origin.md" for s in spans(pack))
+    origin = memory.tool.corpus_id + ":U0_0_" + str(len(text.encode()))
+    with pytest.raises(ValueError, match="structural unit boundary"):
+        memory.open_span(origin)
+
+
+@pytest.mark.parametrize("sample", [
+    "~~~\n\nAlpha Rule\n\nAlpha sample.\n~~~\n\n",
+    "    Alpha Rule\n\n    Alpha sample.\n\n",
+])
+def test_code_in_headingless_markdown_does_not_use_legacy_headings(corpus, sample):
+    text = sample + "Other body. " * 6500
+    replace_first_leaf(corpus, text, "Alpha sample.")
+    memory = ContextMemory(corpus[0])
+    pack = memory.context("Alpha Rule")
+    assert not any(s["file"] == "origin.md" for s in spans(pack))
+    raw = text.encode()
+    guessed = memory.tool.corpus_id + f":U0_{raw.index(b'Alpha Rule')}_{len(raw)}"
+    with pytest.raises(ValueError, match="structural unit boundary"):
+        memory.open_span(guessed)
+
+
+def test_graph_source_cache_preserves_routed_paragraph_priority(corpus):
+    from experiments.memory.ppr_context import PPRNavigation
+
+    first = "**Alpha first.** Alpha first rule.\n"
+    second = "**Alpha second.** Alpha second rule.\n"
+    text = "# Ledger\n\n## Alpha rules\n\n" + first + "\n" + second + "\n" + "Background. " * 1200
+    replace_first_leaf(corpus, text, "Alpha first rule.")
+    config, _, index = corpus
+    rows = json.loads((index / "rows.json").read_text())
+    chunk = b"Alpha second rule."
+    offset = text.encode().index(chunk)
+    rows.append(dict(rows[0], start_byte=offset, end_byte=offset + len(chunk),
+                     span_sha256=sha(chunk), text=chunk.decode()))
+    put(index / "rows.json", rows)
+    np.save(index / "vectors.npy", np.ones((len(rows), 3), dtype=np.float32))
+    manifest = json.loads((index / "manifest.json").read_text())
+    manifest.update(rows_sha256=sha((index / "rows.json").read_bytes()),
+                    vector_sha256=sha((index / "vectors.npy").read_bytes()))
+    put(index / "manifest.json", manifest)
+    cfg = json.loads(config.read_text())
+    cfg["manifest_sha256"] = sha((index / "manifest.json").read_bytes())
+    put(config, cfg)
+    memory = ContextMemory(config)
+    navigation = PPRNavigation(memory)
+    root = memory.tool.corpus_id
+    assert navigation.source_units(root + ":S0", "Alpha rule")[0][0]["text"] == first
+    assert navigation.source_units(root + ":S2", "Alpha rule")[0][0]["text"] == second

@@ -156,7 +156,7 @@ class PPRNavigation:
     def source_units(self, span_id, question, *, anchors=()):
         row = self.tool.memory.rows[self.tool._index(span_id)]
         source_key = (row["source"], row["source_sha256"])
-        key = (source_key, question, anchors)
+        key = (source_key, span_id, question, anchors)
         if key in self._units_cache:
             return self._units_cache[key]
         if source_key not in self._leaves_cache:
@@ -186,7 +186,7 @@ class PPRNavigation:
     @stage("verification_reads")
     def reopen_units(self, ids):
         """Reverify retained units using the same structural boundaries on every arm."""
-        from experiments.context_spans import section_ranges
+        from experiments.context_spans import reopen_verified_unit
         result = []
         by_source = {}
         for span_id in ids:
@@ -209,16 +209,8 @@ class PPRNavigation:
             leaf = next(p for p in leaves if p["leaf_sha256"] == row["leaf_sha256"]
                         and p["page"] == row["page"])
             if ":U" in span_id:
-                _, a, b = span_id.rsplit(":U", 1)[1].split("_")
-                a, b = int(a), int(b)
-                boundary = next((r for r in section_ranges(leaf["text"]) if r[:2] == (a, b)), None)
-                if boundary is None:
-                    raise ValueError("unknown structural unit boundary")
-                raw = leaf["text"].encode()[a:b]
-                leaf = dict(leaf, id=span_id, origin_id=original, start_byte=a, end_byte=b,
-                            text=raw.decode(), sha256=digest(raw), unit=boundary[2],
-                            section_title=boundary[3])
-                self.access.costs["verification_hash_bytes"] += len(raw)
+                leaf = reopen_verified_unit(leaf, span_id, leaf_count=len(leaves))
+                self.access.costs["verification_hash_bytes"] += leaf["end_byte"] - leaf["start_byte"]
                 self.access.costs["verification_hash_checks"] += 1
             result.append(leaf)
         return result
