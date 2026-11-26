@@ -9,7 +9,7 @@ from types import MappingProxyType
 from uuid import uuid4
 
 from experiments.memory.git_source import git_read, read_blobs
-from experiments.memory.source_revision_feed import write_source_delta
+from experiments.memory.source_revision_feed import SourceDelta, write_source_delta
 from experiments.memory.verified_source_tool import SourceSpan, sha256
 from experiments.memory.versioned_relations import ExactRelationReader, Relation, RelationIndex, RelationStep
 
@@ -81,6 +81,18 @@ def _read_document(source, number, raw):
     return tuple(relations)
 
 
+def _proof_fragment(raw, span, version):
+    fragment = raw[span.start_byte:span.end_byte]
+    if (version != span.version_sha256 or span.end_byte > len(raw)
+            or sha256(fragment) != span.span_sha256):
+        raise ValueError("proof span does not match the pinned source bytes")
+    if span.start_character is not None:
+        mapped = SourceSpan.from_characters(span.source_id, raw, span.start_character, span.end_character)
+        if mapped != span:
+            raise ValueError("proof span character map differs from the pinned bytes")
+    return fragment
+
+
 @dataclass(frozen=True, slots=True)
 class PepRelationCorpus:
     """Warm typed view of one Git pin, with exact reopening available separately."""
@@ -122,11 +134,62 @@ class PepRelationCorpus:
         versions = {blob: sha256(raw) for blob, raw in blobs.items()}
         for span in spans:
             blob = self._blobs[span.source_id]
-            raw = blobs[blob]
-            if (versions[blob] != span.version_sha256 or span.end_byte > len(raw)
-                    or sha256(raw[span.start_byte:span.end_byte]) != span.span_sha256):
-                raise ValueError("proof span does not match the pinned source")
+            _proof_fragment(blobs[blob], span, versions[blob])
         return dict(checked_spans=len(spans), bytes_read=sum(map(len, blobs.values())))
+
+
+@dataclass(frozen=True, slots=True)
+class PepSourceCustody:
+    """Controller-side exact source reopening for native opaque span receipts."""
+
+    repo: Path
+    commit: str
+    seal: str
+    _blobs: MappingProxyType
+    _versions: MappingProxyType
+
+    @classmethod
+    def open(cls, repo, revision, record, scope):
+        """Bind an exported catalogue to its verified source feed epoch."""
+        if not isinstance(scope, SourceDelta) or record["seal"] != scope.seal:
+            raise ValueError("custody catalogue differs from the verified source seal")
+        repo = Path(repo).resolve()
+        commit, tree = _tree(repo, revision, allow_empty=True)
+        locators = record["sources"]
+        paths = {item["path"]: item["git_blob"] for item in locators.values()}
+        if (commit != record["commit"] or locators.keys() != scope.manifest.keys()
+                or len(paths) != len(locators) or paths != {path: blob for path, (_, blob) in tree.items()}):
+            raise ValueError("custody catalogue differs from the committed source inventory")
+        return cls(repo, commit, scope.seal,
+                   MappingProxyType({source: item["git_blob"] for source, item in locators.items()}), scope.manifest)
+
+    def reopen(self, source_seal, spans, *, max_source_bytes, max_returned_bytes):
+        """Return byte-verified excerpts for the requested seal and charge full blob reads."""
+        if source_seal != self.seal:
+            raise ValueError("source proof request names another epoch")
+        if any(type(limit) is not int or limit < 0 for limit in (max_source_bytes, max_returned_bytes)):
+            raise ValueError("source proof budgets must be nonnegative integers")
+        spans = tuple(spans)
+        for span in spans:
+            if type(span) is not SourceSpan or span.source_id not in self._versions:
+                raise ValueError("proof span is outside the pinned source scope")
+            if span.version_sha256 != self._versions[span.source_id].sha256:
+                raise ValueError("proof span belongs to another source version")
+        spans = tuple(dict.fromkeys(spans))
+        returned = sum(span.end_byte - span.start_byte for span in spans)
+        if returned > max_returned_bytes:
+            raise ValueError("proof spans exceed the returned byte budget")
+
+        blobs = read_blobs(self.repo, sorted({self._blobs[span.source_id] for span in spans}),
+                           max_bytes=max_source_bytes)
+        digests = {blob: sha256(raw) for blob, raw in blobs.items()}
+        passages = []
+        for span in spans:
+            blob = self._blobs[span.source_id]
+            fragment = _proof_fragment(blobs[blob], span, digests[blob])
+            passages.append(dict(span=asdict(span), text=fragment.decode("utf8")))
+        return dict(source_seal=self.seal, passages=passages, source_bytes_read=sum(map(len, blobs.values())),
+                    returned_utf8_bytes=returned)
 
 
 def export_source_feed(repo, revisions, output):

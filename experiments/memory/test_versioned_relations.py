@@ -6,7 +6,7 @@ import json
 import pytest
 
 from experiments.memory.git_source import git_read
-from experiments.memory.pep_relation_control import PepRelationCorpus, export_source_feed, run
+from experiments.memory.pep_relation_control import PepRelationCorpus, PepSourceCustody, export_source_feed, run
 from experiments.memory.source_revision_feed import read_source_delta, write_source_delta
 from experiments.memory.verified_source_tool import SourceSpan, sha256
 from experiments.memory.versioned_relations import ExactRelationReader, Relation, RelationIndex, RelationStep
@@ -78,7 +78,7 @@ def _init_pep_repo(tmp_path):
     (tmp_path / "peps").mkdir()
 
 
-def test_pep_control_reads_committed_headers_and_revises_without_query_input(tmp_path):
+def test_pep_control_reads_committed_headers_and_revises_without_query_input(tmp_path, monkeypatch):
     _init_pep_repo(tmp_path)
     original = ("PEP: 749\r\nTitle: Résumé\r\nStatus: Draft\r\nRequires: 649,\r\n          650\r\n"
                 "\r\nDraft body.\r\n\r\nRequires: 999\r\n").encode()
@@ -135,6 +135,7 @@ def test_pep_control_reads_committed_headers_and_revises_without_query_input(tmp
     custody = json.loads((feed_root / "custody.json").read_bytes())
     source = next(key for key, locator in custody[0]["sources"].items() if locator["path"] == "peps/pep-0749.rst")
     previous = None
+    verifiers = []
     for epoch, raw in enumerate((original, changed, original), 1):
         directory = feed_root / "epochs" / f"{epoch:04d}"
         assert sorted(path.name for path in directory.iterdir()) == ["manifest.json", "updates.json"]
@@ -146,7 +147,46 @@ def test_pep_control_reads_committed_headers_and_revises_without_query_input(tmp
         state = read_source_delta(directory, seal, previous=previous)
         assert state.epoch == epoch and state.changes[source] == raw
         assert state.manifest[source].sha256 == sha256(raw) and state.manifest[source].generation == epoch
+        verifiers.append(PepSourceCustody.open(tmp_path, (first, second, third)[epoch - 1],
+                                              custody[epoch - 1], state))
+        if epoch == 1:
+            with pytest.raises(ValueError, match="committed source inventory"):
+                PepSourceCustody.open(tmp_path, second, custody[0], state)
         previous = state
+
+    old, current, restored = verifiers
+    old_text = "Title: Résumé"
+    start = original.decode("utf8").index(old_text)
+    proof = SourceSpan.from_characters(source, original, start, start + len(old_text))
+    proof_bytes = len(old_text.encode("utf8"))
+    report = old.reopen(old.seal, (proof, proof), max_source_bytes=len(original), max_returned_bytes=proof_bytes)
+    assert report["source_bytes_read"] == len(original)
+    assert report["returned_utf8_bytes"] == proof_bytes
+    assert [row["text"] for row in report["passages"]] == [old_text]
+    with pytest.raises(ValueError, match="another epoch"):
+        current.reopen(old.seal, (proof,), max_source_bytes=len(original), max_returned_bytes=proof_bytes)
+    with pytest.raises(ValueError, match="another source version"):
+        current.reopen(current.seal, (proof,), max_source_bytes=len(original), max_returned_bytes=proof_bytes)
+    assert restored.reopen(restored.seal, (proof,), max_source_bytes=len(original),
+                           max_returned_bytes=proof_bytes)["passages"] == report["passages"]
+    with pytest.raises(ValueError, match="returned byte budget"):
+        old.reopen(old.seal, (proof,), max_source_bytes=len(original), max_returned_bytes=proof_bytes - 1)
+
+    from experiments.memory import git_source
+    requested = []
+
+    def record_git(repo, *args, **kwargs):
+        requested.append(args)
+        return git_read(repo, *args, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(git_source, "git_read", record_git)
+        with pytest.raises(ValueError, match="source byte budget"):
+            old.reopen(old.seal, (proof,), max_source_bytes=len(original) - 1, max_returned_bytes=proof_bytes)
+    assert requested == [("cat-file", "--batch-check")]
+    with pytest.raises(ValueError, match="pinned source bytes"):
+        old.reopen(old.seal, (replace(proof, span_sha256="0" * 64),),
+                   max_source_bytes=len(original), max_returned_bytes=proof_bytes)
 
     with pytest.raises(ValueError, match="retained scope and parent"):
         read_source_delta(feed_root / "epochs" / "0002", receipts[1]["seal"])

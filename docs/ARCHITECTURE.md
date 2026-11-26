@@ -262,6 +262,18 @@ outside its input. The direct-Git diagnostic uses Git paths and
 indexes explicit declarations. Future matched arms will consume the
 same model-proposed relations keyed by opaque IDs. Keep the diagnostic
 adapter, its tests and the oracle outside the learned runtime.
+
+A late read can export candidate spans from its reopened native
+publication. Include the direct read candidates, selected continuation
+seeds, and their source receipts and parent chains. Keep competing
+candidates in this list. The controller binds the custody catalogue
+to the independently requested Git pin and verified source epoch.
+It checks each claimed source version and opens only the requested
+blobs within separate raw and returned byte limits. The exact bytes
+give the grader a way to inspect citations and give the text
+comparator the same candidate evidence. Reopening leaves judgments
+of relevance, support and completeness to the evaluation.
+
 [Exact index](../experiments/memory/versioned_relations.py) ·
 [Source feed](../experiments/memory/source_revision_feed.py) ·
 [PEP calibration](PEP_VISIBLE_LATE_TASK.md)

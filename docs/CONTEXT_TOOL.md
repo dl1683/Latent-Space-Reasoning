@@ -712,6 +712,35 @@ historical records without rewriting them. Existing authenticated export locks a
 receipts remain unchanged and retain their original identities and hashes.
 
 
+## Reopening native candidate evidence
+
+After recording the raw answer, call `opened_memory.evidence_spans(read)`
+on its matching publication and intervention view. This returns opaque
+`SourceSpan` values from the late read and selected worker ancestry.
+It needs no source bytes and keeps unresolved candidates.
+
+For a PEP source feed, the controller opens
+`PepSourceCustody.open(repo, revision, catalogue_entry, verified_epoch)`.
+Use the independently selected Git revision, the controller catalogue,
+and the `SourceDelta` already verified against its expected seal. Keep
+the checkout and catalogue outside the reader. Reopen the exported
+spans with explicit byte allowances.
+
+```python
+evidence = custody.reopen(
+    read.source_seal, candidates,
+    max_source_bytes=128 * 1024, max_returned_bytes=4096,
+)
+```
+
+The result supplies the source seal, verified UTF-8 excerpts and both
+byte counts. A blob shared by multiple excerpts is read once per call.
+The source byte cap is checked with Git object sizes before requesting
+the bodies. A stale seal, stale document version or incorrect span
+digest refuses the request. For a historical answer, use the custody
+object for its earlier epoch.
+[PEP controller](../experiments/memory/pep_relation_control.py)
+
 ## Checking a joint state in a task
 
 Use `run_episode` with a current `TaskWorld` whose `bindings` and

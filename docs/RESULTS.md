@@ -4,6 +4,27 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Reopening native evidence on the PEP corpus, 26 November 2026
+
+**Source verification.** The controller reopened opaque span receipts
+on the 655-document opening, corrected and restored public Git
+snapshots. It selected one line that differed across the sole changed
+document. A duplicated request returned one excerpt at each pin, with
+101, 88 and 101 UTF-8 bytes. The corresponding full blobs charged
+47,181, 48,269 and 47,181 bytes. The restored bytes matched the opening
+excerpt under a new seal. The corrected snapshot rejected the old
+epoch and the old document version.
+
+**Native software control.** The attached three-worker fixture exported
+five distinct candidate spans, including an upstream bridge beyond the
+final worker's direct reads. Its same-pin derived-off arm exported two
+direct spans. A read from the wrong publication or intervention view
+was rejected. A separate Git fixture checked the byte cap using metadata
+only before the attempted full-blob read. These checks connect
+candidate provenance to exact source bytes. Learned routing, semantic
+support and comparative cost remain open.
+[Reopening interface](CONTEXT_TOOL.md#reopening-native-candidate-evidence)
+
 ## Qualifying the native task framing, 26 November 2026
 
 **CPU software controls.** A small randomly initialized causal model

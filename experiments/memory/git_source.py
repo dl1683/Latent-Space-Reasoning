@@ -19,10 +19,24 @@ def git_read(repo, *args, data=None):
     return result.stdout
 
 
-def read_blobs(repo, blobs):
+def read_blobs(repo, blobs, *, max_bytes=None):
+    if max_bytes is not None and (type(max_bytes) is not int or max_bytes < 0):
+        raise ValueError("Git blob byte budget must be a nonnegative integer")
+    blobs = tuple(blobs)
     if not blobs:
         return {}
-    response = BytesIO(git_read(repo, "cat-file", "--batch", data="\n".join((*blobs, "")).encode("ascii")))
+    request = "\n".join((*blobs, "")).encode("ascii")
+    if max_bytes is not None:
+        headers = git_read(repo, "cat-file", "--batch-check", data=request).decode("ascii").splitlines()
+        total = 0
+        for blob, line in zip(blobs, headers, strict=True):
+            header = line.split()
+            if len(header) != 3 or header[:2] != [blob, "blob"]:
+                raise ValueError("could not size a pinned Git blob")
+            total += int(header[2])
+        if total > max_bytes:
+            raise ValueError("pinned Git blobs exceed the source byte budget")
+    response = BytesIO(git_read(repo, "cat-file", "--batch", data=request))
     contents = {}
     for blob in blobs:
         header = response.readline().decode("ascii").split()

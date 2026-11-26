@@ -1,4 +1,4 @@
-from dataclasses import asdict
+from dataclasses import asdict, replace
 import json
 from pathlib import Path
 import subprocess
@@ -219,7 +219,7 @@ def test_reopened_workers_build_on_each_other_and_withdraw_dependents(tmp_path):
     from experiments.memory.native_isolated_stage import _CausalControl, _reader as make_reader
 
     # The first two source steps cannot reach the answer from the late cue.
-    root, relay, cue, bridge, _, idle = sources = tuple(letter * 32 for letter in "abcdef")
+    root, relay, cue, bridge, outcome, idle = sources = tuple(letter * 32 for letter in "abcdef")
     feed = write_source_delta(tmp_path / "opening", dict(zip(sources, (
         b"link L03 L04", b"link L02 L03", b"link L01 L02", b"link L04 L05",
         b"name L05 L06", b"name L08 L09",
@@ -269,7 +269,17 @@ def test_reopened_workers_build_on_each_other_and_withdraw_dependents(tmp_path):
                                     max_bytes=_LIMIT) == seal
     read = later("follow L01", memory=restored)
     assert read.text == "L06" and read.terminated and read.applied_derived_steps == 1
-    assert later("follow L01", memory=later.without_derived(restored)).text == ""
+    proof = restored.evidence_spans(read)
+    assert {span.source_id for span in proof} == {root, relay, cue, bridge, outcome}
+    assert len(proof) == 5
+    ablated = later.without_derived(restored)
+    removed = later("follow L01", memory=ablated)
+    assert removed.text == ""
+    assert {span.source_id for span in ablated.evidence_spans(removed)} == {cue, relay}
+    with pytest.raises(ValueError, match="matching reopened publication"):
+        restored.evidence_spans(removed)
+    with pytest.raises(ValueError, match="matching reopened publication"):
+        restored.evidence_spans(replace(read, publication_seal="0" * 64))
     assert later("follow L01", memory=restored) == read
 
     quiet = write_source_delta(tmp_path / "quiet", {idle: b"name L08 L10"}, previous=feed)

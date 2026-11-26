@@ -100,6 +100,26 @@ class NativeSourceMemory:
             raise KeyError(seed)
         return self._selective.parents.get(seed)
 
+    def evidence_spans(self, read):
+        """Collect candidate source spans for an attached read of this publication."""
+        if (not isinstance(read, NativeLatentRead) or self._publication_seal is None
+                or read.publication_seal != self._publication_seal or read.source_seal != self.seal
+                or read.derived_omitted != self._derived_off or read.omitted_sources != self.omitted_sources):
+            raise ValueError("evidence spans require a read from the matching reopened publication")
+
+        def selected(receipts):
+            return (hit.span for receipt in receipts for hit in receipt.selected)
+
+        spans = dict.fromkeys(selected(read.source_reads))
+        visited = set()
+        for seed in selected(read.derived_reads):
+            while seed is not None and seed not in visited:
+                visited.add(seed)
+                spans[seed] = None
+                spans.update(dict.fromkeys(selected(self.continuation_reads(seed))))
+                seed = self.continuation_parent(seed)
+        return tuple(spans)
+
     @property
     def pending_seeds(self):
         if self._selective is None or self.omitted_sources:
