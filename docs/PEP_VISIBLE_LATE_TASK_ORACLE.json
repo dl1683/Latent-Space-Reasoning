@@ -1,5 +1,5 @@
 {
-  "classification": "visible calibration only; single semantic annotator; public gold, not held",
+  "classification": "visible calibration only; public gold, not held; original task author plus two source audits (one partially unblinded); rubric revision 2",
   "source_repository": "python/peps",
   "scope": "all regular blobs matching ^peps/pep-[0-9]{4}\\.rst$; no executable, ancillary or external sources",
   "pins": [
@@ -61,7 +61,7 @@
       "blob": "286d8ee6b8892b9798cf1cb791673af09a771e40",
       "lines": [
         625,
-        630
+        631
       ],
       "anchor": "whitespace may be normalized"
     },
@@ -70,7 +70,7 @@
       "pin": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
       "blob": "286d8ee6b8892b9798cf1cb791673af09a771e40",
       "lines": [
-        708,
+        703,
         709
       ],
       "anchor": "automatically sets"
@@ -190,8 +190,8 @@
       "pin": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
       "blob": "dfed42a5d2e792e628fda5a4b35da886950a0aa0",
       "lines": [
-        186,
-        189
+        185,
+        193
       ],
       "anchor": "exact contents of the module are not yet specified"
     },
@@ -200,8 +200,8 @@
       "pin": "55cf374db5e04bd85be36148ff6b604e1ddbb7df",
       "blob": "5afd763a2d2f5d059a6855394c3dfa3dbb3739b6",
       "lines": [
-        188,
-        191
+        185,
+        193
       ],
       "anchor": "exact contents of the module are not yet specified"
     },
@@ -214,6 +214,26 @@
         1044
       ],
       "anchor": "SyntaxError"
+    },
+    "producer649": {
+      "path": "peps/pep-0649.rst",
+      "pin": "aced24fc3547bc57b862f6b8c264c5179c6496d1",
+      "blob": "286d8ee6b8892b9798cf1cb791673af09a771e40",
+      "lines": [
+        855,
+        868
+      ],
+      "anchor": "will call the object's"
+    },
+    "stale_spec1": {
+      "path": "peps/pep-0749.rst",
+      "pin": "55cf374db5e04bd85be36148ff6b604e1ddbb7df",
+      "blob": "5afd763a2d2f5d059a6855394c3dfa3dbb3739b6",
+      "lines": [
+        616,
+        620
+      ],
+      "anchor": "``SOURCE``"
     }
   },
   "tasks": [
@@ -234,13 +254,14 @@
           },
           "p1": {
             "status": "supported",
-            "claim": "The draft no longer overrides assignment: its quoted base rule clears __annotate__ on legal assignment, and its new explicit rule also clears it on deletion for functions, modules and classes. Do not claim the old draft remains governing.",
+            "claim": "The accepted PEP 649 assignment rule clears __annotate__ to None on legal assignment. At this pin the PEP 749 draft quotes that rule and drops its earlier proposed override. It separately proposes clearing __annotate__ on deletion for functions, modules and classes; deletion is not the assignment scenario. Neither pin establishes actual interpreter behavior.",
             "evidence": [
               "authority1",
               "set1",
               "set649"
             ]
-          }
+          },
+          "scope_note": "Deletion is a separately scoped proposed rule at p1; not mandatory for complete credit on the assignment question, but a claim that deletion and assignment are the same change is incorrect."
         },
         {
           "id": "A2",
@@ -254,10 +275,11 @@
           },
           "p1": {
             "status": "supported",
-            "claim": "The explicit rename says STRING, but legacy SOURCE examples remain in the same draft and base PEP. Recognize this discrepancy rather than counting the old spelling as a second supported format.",
+            "claim": "The explicit rename proposes STRING. Residual SOURCE wording in the revised specification's enum-value paragraph and a legacy example conflict with that rename; references to the earlier PEP's SOURCE are legitimate historical references. Neither residual wording establishes an alias or a second supported display format.",
             "evidence": [
               "name1",
               "stale1",
+              "stale_spec1",
               "base",
               "authority1"
             ]
@@ -266,15 +288,15 @@
         {
           "id": "A3",
           "p0": {
-            "status": "unresolved",
-            "claim": "Exact original spelling and spacing are not guaranteed; the proposal explicitly permits approximation and normalization. No particular exact output can be certified from the documents.",
+            "status": "supported",
+            "claim": "The specification explicitly permits approximation, whitespace normalization and constant optimization; no promise of exact spelling and spacing is warranted.",
             "evidence": [
               "approx"
             ]
           },
           "p1": {
-            "status": "unresolved",
-            "claim": "Same lack of exact-output guarantee, reinforced by the rename rationale. Do not infer verbatim text or actual runtime output.",
+            "status": "supported",
+            "claim": "Same lack of exact-source guarantee; the explicit STRING rename rationale confirms that original source may not be recoverable.",
             "evidence": [
               "approx",
               "name1"
@@ -289,6 +311,38 @@
             "claim": "No; mixing the two handler styles in the same try is a SyntaxError under PEP 654.",
             "evidence": [
               "side"
+            ]
+          }
+        },
+        {
+          "id": "A5",
+          "p0": {
+            "status": "supported",
+            "claim": "Under the opening draft's assignment override the deferred producer survives, so the producer-based source-like rendering route remains available if the producer supports the requested format or its documented fallback. This is not a guarantee of successful exact rendering.",
+            "evidence": [
+              "set0",
+              "producer649",
+              "name0"
+            ]
+          },
+          "p1": {
+            "status": "supported",
+            "claim": "Legal replacement clears the producer under the accepted base rule. Requesting STRING afterward does not reconstruct the original expression from that cleared producer; the documented source-like readout depends on the producer. Do not promise recovery merely by choosing a display format, or rule out separately retained original source.",
+            "evidence": [
+              "set649",
+              "set1",
+              "producer649",
+              "name1"
+            ]
+          }
+        },
+        {
+          "id": "A6",
+          "both": {
+            "status": "unresolved",
+            "claim": "The precise rendered string for the original expression is not established by these documents. Refuse to certify a particular spelling, spacing, or actual runtime output; state the supported non-guarantee separately in A3.",
+            "evidence": [
+              "approx"
             ]
           }
         }
@@ -332,10 +386,11 @@
           },
           "p1": {
             "status": "supported",
-            "claim": "FORWARDREF remains, STRING is the governing proposed display spelling; the surviving Format.SOURCE example conflicts with the explicit rename and is stale relative to that change. No runtime success is established.",
+            "claim": "FORWARDREF remains relevant; the explicit rename proposes STRING for display. Residual SOURCE wording in the specification and old example conflicts with that rename, not evidence of a supported alias. No actual runtime success is established.",
             "evidence": [
               "name1",
               "stale1",
+              "stale_spec1",
               "eval1"
             ]
           }
@@ -343,15 +398,15 @@
         {
           "id": "B3",
           "p0": {
-            "status": "unresolved",
-            "claim": "The draft expressly leaves exact annotationlib contents unspecified; the listed functions are proposed, not a complete API inventory.",
+            "status": "supported",
+            "claim": "The draft explicitly leaves the exact annotationlib contents unspecified. A complete API inventory cannot be frozen from this snapshot; the named functions are proposals.",
             "evidence": [
               "unknown0"
             ]
           },
           "p1": {
-            "status": "unresolved",
-            "claim": "Same explicit incompleteness; do not manufacture a complete inventory.",
+            "status": "supported",
+            "claim": "The revised draft retains the explicit limitation; a complete API inventory cannot be frozen from this snapshot.",
             "evidence": [
               "unknown1"
             ]
@@ -367,8 +422,31 @@
               "side"
             ]
           }
+        },
+        {
+          "id": "B5",
+          "p0": {
+            "status": "unresolved",
+            "claim": "The complete API inventory itself is unspecified; do not invent unlisted members or treat the proposed list as exhaustive.",
+            "evidence": [
+              "unknown0"
+            ]
+          },
+          "p1": {
+            "status": "unresolved",
+            "claim": "The complete API inventory itself remains unspecified; distinguish this unknown from the supported negative answer in B3.",
+            "evidence": [
+              "unknown1"
+            ]
+          }
         }
       ]
     }
-  ]
+  ],
+  "rubric_revision": 2,
+  "review": {
+    "source_comment": "https://github.com/dl1683/Latent-Space-Reasoning/issues/6#issuecomment-7198363545",
+    "scope": "Two source audits agreed on core facts and four changes. One saw the Markdown overview; not a fully task-only double-blind adjudication. No model or grader execution.",
+    "scoring": "Score supported limits separately from unresolved particulars. All task obligations are required for complete-task credit; unresolved means a justified refusal to infer a particular, not a refusal to state the supported limit. A5 is a new recoverability obligation; deletion is a separate scope note, not required for the assignment question. Evidence IDs are acceptable examples, not exclusive or lexical-match requirements. Cite stable blobs at either pin only if identical."
+  }
 }
