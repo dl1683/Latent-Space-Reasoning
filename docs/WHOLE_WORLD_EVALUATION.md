@@ -201,12 +201,13 @@ unresolved.
    task pin, policy, tokenizer, framing limits, and source setup agree.
    The native reader now accepts an optional per-call next-token allowlist
    over the exact prompt-plus-output prefix. `adapt_transformers_prefix_allowed_tokens_fn`
-   adapts the task harness's two-argument callback; the caller supplies a
-   declared decoder digest. This can enforce output shape; it cannot establish
-   valid need inference or evidence reasoning. The digest is not derived from
-   the callback, and `read_episode_pair(..., contrast="native_text")` cannot
-   verify that the text control used the same callback. The harness must pin
-   and check that match for a fair comparison.
+   adapts the task harness's two-argument callback. The caller declares the
+   constraint digest in `EpisodePolicy.output_constraint_sha256`; the native
+   opening pins the same value, and episode-pair validation requires equal
+   declarations across native and text arms. The digest is not derived from
+   the callback, so the runner still needs to bind that declaration to its
+   actual schema and parser configuration. This can enforce output shape; it
+   cannot establish valid need inference or evidence reasoning.
 4. **Grade independently.** A blinded evaluator scores obligation coverage,
    evidence chains, final answers and errors from the frozen gold. A policy's
    statement that a need is supported or reconciled is not itself proof.

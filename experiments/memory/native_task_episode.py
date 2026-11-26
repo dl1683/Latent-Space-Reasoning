@@ -286,8 +286,9 @@ class NativeTaskEpisodeBackend:
             raise ValueError("native backend is bound to a different task world")
         if (tokenizer is not self._reader._tokenizer
                 or policy.backend_id != self._backend_id or policy.tokenizer_id != self._tokenizer_id
+                or policy.output_constraint_sha256 != self._output_constraint_sha256
                 or limits.max_new_tokens > self._reader._output_tokens):
-            raise ValueError("episode policy or output allowance differs from the native backend")
+            raise ValueError("episode policy, output constraint or allowance differs from the native backend")
         if self._pin is None:
             self._pin = NativeTaskWorldPin.bind(
                 world, self._reader, self._base_memory, memory_view=self._memory_view,

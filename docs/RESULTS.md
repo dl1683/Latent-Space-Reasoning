@@ -1680,6 +1680,39 @@ generated tokens per call; the initial action failed before any of those tool
 budgets were used. This visible pilot is one task family across two pins, not
 the frozen eight-task calibration or evidence for broad latent planning.
 
+### Compact typed-planner canaries
+
+Five saved runs exercised `compact_needs` on the same visible
+`counterfactual-alternative` task using Qwen3-0.6B snapshot
+`c1899de289a04d12100db370d81485cdf75e47ca`, BF16/SDPA greedy decoding and
+`lm-format-enforcer` 0.11.3. All five ended at `input_limit` without a final
+submission. Their ledger and summary hashes matched the saved `SHA256SUMS.txt`
+before the artifacts were copied into the repository.
+
+| Run | Calls | Input tokens | Generated tokens | Searches | Verified reads | Evidence bytes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 02 | 5 | 7,456 | 222 | 3 | 0 | 0 |
+| 03 | 6 | 8,045 | 584 | 1 | 0 | 0 |
+| 04 | 5 | 6,664 | 242 | 1 | 0 | 0 |
+| 05 | 6 | 7,133 | 504 | 1 | 2 | 415 |
+| 06 | 5 | 7,559 | 255 | 1 | 3 | 760 |
+| **Total** | **27** | **36,857** | **1,807** | **7** | **5** | **1,175** |
+
+Runs 05 and 06 reached relevant source bytes, but neither reached a final
+assessment; no independent semantic grade was recorded. These are five
+instrument attempts on one task, not five independent tasks and not the
+preregistered eight-task gate. They do not establish need quality, answer
+quality, or use of maintained world state. The exact artifacts are in
+[`02`](../experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_02/),
+[`03`](../experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_03/),
+[`04`](../experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_04/),
+[`05`](../experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_05/), and
+[`06`](../experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_06/).
+Run 06's final call needed 2,408 input tokens with only 633 remaining under its
+8,192-token episode input allowance. Do not repeat this task with the same
+growing prompt/registry; resolve its input-budget failure before using a new
+frozen calibration set.
+
 ## Latent revision software verification, 24–25 November 2026
 
 The review branch's [latent field](../experiments/memory/latent_field.py) passed five focused CPU fixtures. An observation revision reached downstream states through a cycle and matched an independently assembled dense fixed-point reference within its declared residual bound. The fixtures also cover unrelated cells, earlier snapshots, restoration, aggregate contraction, inherited residuals and exhaustion without a write. The field initialized from supplied arrays and used no model weights.

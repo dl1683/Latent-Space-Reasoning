@@ -2,3 +2,4 @@
 * text=auto
 # Preserve the owner-authored README vision block byte for byte.
 /README.md -text whitespace=cr-at-eol
+experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_*/* -text whitespace=cr-at-eol

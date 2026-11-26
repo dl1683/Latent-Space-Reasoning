@@ -1,0 +1,384 @@
+{
+  "backend": "Qwen3-0.6B-c1899de289a04d12100db370d81485cdf75e47ca-bf16-sdpa-greedy-no-thinking",
+  "contract_failure": true,
+  "decoder": "lm-format-enforcer-0.11.3-compact-typed-object-json",
+  "experiment": "fresh visible compact task-planner calibration",
+  "final_gpu": "NVIDIA GeForce RTX 5070 Laptop GPU, 4846 MiB, 8151 MiB, 50 %, 59",
+  "generation_seconds": [
+    {
+      "new_tokens": 121,
+      "seconds": 53.70397470006719,
+      "task": "counterfactual-alternative"
+    },
+    {
+      "new_tokens": 54,
+      "seconds": 21.228520300006494,
+      "task": "counterfactual-alternative"
+    },
+    {
+      "new_tokens": 26,
+      "seconds": 1.103201000019908,
+      "task": "counterfactual-alternative"
+    },
+    {
+      "new_tokens": 27,
+      "seconds": 1.3547718999907374,
+      "task": "counterfactual-alternative"
+    },
+    {
+      "new_tokens": 27,
+      "seconds": 1.3715923998970538,
+      "task": "counterfactual-alternative"
+    }
+  ],
+  "git_head": "26d05d0c7faa780ae50014532ef913e9e7d22bf2",
+  "gpu_peak_allocated_bytes": 2248503808,
+  "gpu_telemetry_after_each_generation": [
+    "NVIDIA GeForce RTX 5070 Laptop GPU, 6284 MiB, 8151 MiB, 0 %, 55",
+    "NVIDIA GeForce RTX 5070 Laptop GPU, 6148 MiB, 8151 MiB, 98 %, 59",
+    "NVIDIA GeForce RTX 5070 Laptop GPU, 5826 MiB, 8151 MiB, 60 %, 61",
+    "NVIDIA GeForce RTX 5070 Laptop GPU, 5398 MiB, 8151 MiB, 57 %, 60",
+    "NVIDIA GeForce RTX 5070 Laptop GPU, 4846 MiB, 8151 MiB, 68 %, 64"
+  ],
+  "host_sha256": "8de0893f166650079c5a9a97cac93d0b5d122bcd373dd793002edddace0cf5c8",
+  "input_sha256": "582d4fe003ffd4e123eec26cbe406134b3e804de79dcb2260a9a9bc868f26d0f",
+  "limits": {
+    "aggregate_input_tokens_per_task": 8192,
+    "aggregate_output_tokens_per_task": 3136,
+    "calls_per_task": 7,
+    "per_call_output_tokens": 448,
+    "probes": 0,
+    "queries": 3,
+    "reads": 4
+  },
+  "lm_format_enforcer": "0.11.3",
+  "model_load_seconds": 0.9349120000842959,
+  "model_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+  "preflight": {
+    "free_gpu_bytes": 7353663488,
+    "free_ram_bytes": 42179637248,
+    "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU, 7778 MiB, 8151 MiB, 0 %, 56",
+    "input_sha256": "582d4fe003ffd4e123eec26cbe406134b3e804de79dcb2260a9a9bc868f26d0f",
+    "lm_format_enforcer": "0.11.3",
+    "model_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "phase_payload_tokens_including_eos": {
+      "action_add_search_host_valid_max": 306,
+      "action_read_with_add": 261,
+      "action_search_with_discovery_child": 305,
+      "action_search_with_parent_child": 306,
+      "action_search_with_task_child": 305,
+      "final_1_host_valid_schema_max": 200,
+      "final_2_host_valid_schema_max": 275,
+      "final_3_host_valid_schema_max": 347,
+      "final_4_host_valid_schema_max": 392,
+      "forced_first_search": 74,
+      "initial_plan": 431
+    },
+    "torch": "2.12.0+cu130",
+    "total_gpu_bytes": 8546484224,
+    "transformers": "5.12.1"
+  },
+  "qualification": "planner/tool instrument only; no latent-world or matched-control claim",
+  "run_order": [
+    "counterfactual-alternative"
+  ],
+  "run_seed": 20261126,
+  "runner_sha256": "aa953e3d25a17a5c0435f110705b6532a898c0d3bf77b718d8cf6a13777e198f",
+  "runs_completed_or_attempted": [
+    {
+      "ledger": "counterfactual-alternative.jsonl",
+      "ledger_sha256": "77d4bfe94bc583d8c1f3ca0116d1fa9bbb4e12288686c80e39d7133e92111717",
+      "need_registry": [
+        {
+          "alternatives": [],
+          "defeat_requirements": [],
+          "discovered_from": [],
+          "evidence_sought": [
+            "endorsement"
+          ],
+          "id": "n1",
+          "origin": "task_prompt",
+          "parent": null,
+          "relation": "qualification",
+          "support_requirements": [
+            "withdrawn"
+          ],
+          "target_or_event": "project",
+          "time_version_scope": "2026-11-26",
+          "unresolved_conditions": []
+        },
+        {
+          "alternatives": [],
+          "defeat_requirements": [],
+          "discovered_from": [],
+          "evidence_sought": [
+            "backup system"
+          ],
+          "id": "n2",
+          "origin": "task_prompt",
+          "parent": null,
+          "relation": "state",
+          "support_requirements": [],
+          "target_or_event": "backup system",
+          "time_version_scope": "2026-11-26",
+          "unresolved_conditions": []
+        }
+      ],
+      "pin": {
+        "as_of": null,
+        "binding_journal_sha256": null,
+        "binding_program_revision": null,
+        "binding_revision": null,
+        "binding_source_revision": null,
+        "receiver_sha256": null,
+        "source_snapshot": "4e2d5af139a9669990af31e2c8db6081d10f1865d58702d2496ef891a097c81d",
+        "span_catalogue_sha256": "96f7ff623985cd648df170435844eace9b9fa303ad6418767d479851fce9de53"
+      },
+      "rejections": [
+        {
+          "input_tokens": 2408,
+          "output_reservation": 448,
+          "reason": "input_limit"
+        }
+      ],
+      "status": "input_limit",
+      "submission": null,
+      "task_id": "counterfactual-alternative",
+      "tool_receipts": [
+        {
+          "request": {
+            "need_id": "n1",
+            "op": "search",
+            "query": "As of 2026-11-26, if the only endorsement is withdrawn, does the"
+          },
+          "result": {
+            "candidates": [
+              {
+                "candidate": 0,
+                "span": {
+                  "end_byte": 144,
+                  "end_character": 144,
+                  "source_id": "src-u2a9",
+                  "span_sha256": "2d3632d4b3c5aebfd0f8140425a764fda0ab420abe807896c684d6313589a19a",
+                  "start_byte": 0,
+                  "start_character": 0,
+                  "version_sha256": "2d3632d4b3c5aebfd0f8140425a764fda0ab420abe807896c684d6313589a19a"
+                }
+              },
+              {
+                "candidate": 1,
+                "span": {
+                  "end_byte": 271,
+                  "end_character": 271,
+                  "source_id": "src-d8f1",
+                  "span_sha256": "8a2b7a7c1548e8bfd96821bd4138e46849ff235ece34d3ea2bccf4e4714a3716",
+                  "start_byte": 0,
+                  "start_character": 0,
+                  "version_sha256": "8a2b7a7c1548e8bfd96821bd4138e46849ff235ece34d3ea2bccf4e4714a3716"
+                }
+              },
+              {
+                "candidate": 2,
+                "span": {
+                  "end_byte": 345,
+                  "end_character": 345,
+                  "source_id": "src-x5n3",
+                  "span_sha256": "52114a7c0f3547212fbb69f215c728e1e382d8e68cc7534761e62c7cf67ec0df",
+                  "start_byte": 0,
+                  "start_character": 0,
+                  "version_sha256": "52114a7c0f3547212fbb69f215c728e1e382d8e68cc7534761e62c7cf67ec0df"
+                }
+              }
+            ],
+            "matched": 3,
+            "status": "SEARCHED"
+          },
+          "usage": {
+            "attempts": {
+              "probe": 0,
+              "read": 0,
+              "search": 1
+            },
+            "duplicate_searches": 0,
+            "evidence_bytes": 0,
+            "joint_role_calls": 0,
+            "lexical_rows": 3,
+            "role_candidate_spans_examined": 0,
+            "role_candidate_spans_materialized": 0,
+            "role_span_pages": 0,
+            "role_transitions": 0,
+            "role_work": 0,
+            "source_bytes": 0
+          }
+        },
+        {
+          "request": {
+            "candidate": [
+              0
+            ],
+            "need_id": "n1",
+            "op": "read"
+          },
+          "result": {
+            "reads": [
+              {
+                "candidate": 0,
+                "id": 0,
+                "source_bytes_read": 144,
+                "span": {
+                  "end_byte": 144,
+                  "end_character": 144,
+                  "source_id": "src-u2a9",
+                  "span_sha256": "2d3632d4b3c5aebfd0f8140425a764fda0ab420abe807896c684d6313589a19a",
+                  "start_byte": 0,
+                  "start_character": 0,
+                  "version_sha256": "2d3632d4b3c5aebfd0f8140425a764fda0ab420abe807896c684d6313589a19a"
+                },
+                "status": "VERIFIED_SOURCE_BYTES",
+                "text": "BACKUP SYSTEM LOG. Backup system state is operational as of 2026-11-26 09:00. This status is independent of Project Lumen's qualification route."
+              }
+            ],
+            "status": "READ_BATCH"
+          },
+          "usage": {
+            "attempts": {
+              "probe": 0,
+              "read": 1,
+              "search": 1
+            },
+            "duplicate_searches": 0,
+            "evidence_bytes": 144,
+            "joint_role_calls": 0,
+            "lexical_rows": 3,
+            "role_candidate_spans_examined": 0,
+            "role_candidate_spans_materialized": 0,
+            "role_span_pages": 0,
+            "role_transitions": 0,
+            "role_work": 0,
+            "source_bytes": 144
+          }
+        },
+        {
+          "request": {
+            "candidate": [
+              1
+            ],
+            "need_id": "n1",
+            "op": "read"
+          },
+          "result": {
+            "reads": [
+              {
+                "candidate": 1,
+                "id": 1,
+                "source_bytes_read": 271,
+                "span": {
+                  "end_byte": 271,
+                  "end_character": 271,
+                  "source_id": "src-d8f1",
+                  "span_sha256": "8a2b7a7c1548e8bfd96821bd4138e46849ff235ece34d3ea2bccf4e4714a3716",
+                  "start_byte": 0,
+                  "start_character": 0,
+                  "version_sha256": "8a2b7a7c1548e8bfd96821bd4138e46849ff235ece34d3ea2bccf4e4714a3716"
+                },
+                "status": "VERIFIED_SOURCE_BYTES",
+                "text": "QUALIFICATION RULE. Project Lumen qualifies with either one current endorsement from an eligible authority, or an alternate route with a completed independent certificate. If the endorsement is withdrawn, the alternate route counts only when that certificate is complete."
+              }
+            ],
+            "status": "READ_BATCH"
+          },
+          "usage": {
+            "attempts": {
+              "probe": 0,
+              "read": 2,
+              "search": 1
+            },
+            "duplicate_searches": 0,
+            "evidence_bytes": 415,
+            "joint_role_calls": 0,
+            "lexical_rows": 3,
+            "role_candidate_spans_examined": 0,
+            "role_candidate_spans_materialized": 0,
+            "role_span_pages": 0,
+            "role_transitions": 0,
+            "role_work": 0,
+            "source_bytes": 415
+          }
+        },
+        {
+          "request": {
+            "candidate": [
+              2
+            ],
+            "need_id": "n1",
+            "op": "read"
+          },
+          "result": {
+            "reads": [
+              {
+                "candidate": 2,
+                "id": 2,
+                "source_bytes_read": 345,
+                "span": {
+                  "end_byte": 345,
+                  "end_character": 345,
+                  "source_id": "src-x5n3",
+                  "span_sha256": "52114a7c0f3547212fbb69f215c728e1e382d8e68cc7534761e62c7cf67ec0df",
+                  "start_byte": 0,
+                  "start_character": 0,
+                  "version_sha256": "52114a7c0f3547212fbb69f215c728e1e382d8e68cc7534761e62c7cf67ec0df"
+                },
+                "status": "VERIFIED_SOURCE_BYTES",
+                "text": "PROJECT LUMEN DOSSIER. The endorsement appears in two copied pages, both originating from the same review memo; they are one source, not independent endorsements. The sole endorsement is current in the observed record, but the question asks about its hypothetical withdrawal. No completed alternate-route certificate is recorded in this dossier."
+              }
+            ],
+            "status": "READ_BATCH"
+          },
+          "usage": {
+            "attempts": {
+              "probe": 0,
+              "read": 3,
+              "search": 1
+            },
+            "duplicate_searches": 0,
+            "evidence_bytes": 760,
+            "joint_role_calls": 0,
+            "lexical_rows": 3,
+            "role_candidate_spans_examined": 0,
+            "role_candidate_spans_materialized": 0,
+            "role_span_pages": 0,
+            "role_transitions": 0,
+            "role_work": 0,
+            "source_bytes": 760
+          }
+        }
+      ],
+      "usage": {
+        "attempts": {
+          "probe": 0,
+          "read": 3,
+          "search": 1
+        },
+        "calls": 5,
+        "duplicate_searches": 0,
+        "evidence_bytes": 760,
+        "input_tokens": 7559,
+        "joint_role_calls": 0,
+        "known_output_tokens": 255,
+        "lexical_rows": 3,
+        "output_usage_complete": true,
+        "role_candidate_spans_examined": 0,
+        "role_candidate_spans_materialized": 0,
+        "role_span_pages": 0,
+        "role_transitions": 0,
+        "role_work": 0,
+        "source_bytes": 760
+      }
+    }
+  ],
+  "schema_sha256": "726896162ce0801ae45082fb533d9b1141c55a4f4762b0c94fb18aee560c7524",
+  "selected_task_id": "counterfactual-alternative",
+  "token_tree_seconds": 2.2267917999997735,
+  "torch": "2.12.0+cu130",
+  "transformers": "5.12.1"
+}

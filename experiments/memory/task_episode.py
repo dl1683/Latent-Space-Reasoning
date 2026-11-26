@@ -371,11 +371,14 @@ class EpisodeLimits:
 
 @dataclass(frozen=True, slots=True)
 class EpisodePolicy:
+    """Episode identities, including a caller-declared output-constraint digest."""
+
     policy_id: str
     backend_id: str
     tokenizer_id: str
     state_kind: str
     probes_enabled: bool = False
+    output_constraint_sha256: str | None = None
 
     def __post_init__(self):
         for name in ("policy_id", "backend_id", "tokenizer_id"):
@@ -384,6 +387,8 @@ class EpisodePolicy:
             raise ValueError("invalid episode state format")
         if type(self.probes_enabled) is not bool:
             raise ValueError("invalid episode policy")
+        if self.output_constraint_sha256 is not None:
+            require_digest(self.output_constraint_sha256)
 
 
 @dataclass(frozen=True, slots=True)
@@ -405,6 +410,16 @@ class PolicyReply:
 class EpisodeArtifact:
     path: Path
     sha256: str
+
+
+def _episode_output_constraint_identity(opening_data):
+    policy = opening_data.get("policy")
+    if type(policy) is dict and "output_constraint_sha256" in policy:
+        return policy["output_constraint_sha256"]
+    native_pin = opening_data.get("native_world_pin")
+    if type(native_pin) is dict:
+        return native_pin.get("output_constraint_sha256")
+    return None
 
 
 class _Ledger:
@@ -478,6 +493,9 @@ def read_episode(artifact):
     opening_data = records[0]["data"]
     if type(opening_data) is not dict:
         raise ValueError("episode opening record is malformed")
+    policy_record = opening_data.get("policy")
+    if type(policy_record) is dict and policy_record.get("output_constraint_sha256") is not None:
+        require_digest(policy_record["output_constraint_sha256"])
     setup_fields = ("setup_source_bytes", "setup_native_source_verification_bytes", "setup_total_source_bytes")
     if any(field in opening_data for field in setup_fields):
         if any(type(opening_data.get(field)) is not int or opening_data[field] < 0 for field in setup_fields):
@@ -488,6 +506,13 @@ def read_episode(artifact):
             raise ValueError("episode total source setup bytes do not add up")
     native_pin = opening_data.get("native_world_pin")
     if native_pin is not None:
+        if type(native_pin) is not dict:
+            raise ValueError("native episode world pin is malformed")
+        if (type(policy_record) is not dict
+                or ("output_constraint_sha256" in policy_record
+                    and policy_record["output_constraint_sha256"]
+                    != native_pin.get("output_constraint_sha256"))):
+            raise ValueError("native output constraint differs from the episode policy declaration")
         from experiments.memory.native_task_episode import validate_native_episode_records
 
         validate_native_episode_records(records)
@@ -1147,6 +1172,8 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
         if type(native_backend) is not NativeTaskEpisodeBackend or generate is not native_backend:
             raise ValueError("native backend must be the generation adapter and receipt validator")
         native_opening = native_backend.opening_record(world, policy, limits, tokenizer)
+        if native_opening.get("output_constraint_sha256") != policy.output_constraint_sha256:
+            raise ValueError("native output constraint differs from the episode policy declaration")
     native_source_bytes = (0 if native_opening is None
                            else native_opening["source_verification_bytes"])
     total_setup_source_bytes = world.setup_source_bytes + native_source_bytes
@@ -1564,6 +1591,9 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
     a, b = a["policy"], b["policy"]
     if a["tokenizer_id"] != b["tokenizer_id"]:
         raise ValueError("episode tokenizer differs")
+    if (_episode_output_constraint_identity(first[0]["data"])
+            != _episode_output_constraint_identity(second[0]["data"])):
+        raise ValueError("episode output constraint identity differs")
     if contrast == "native_text":
         if any(a[field] != b[field] for field in ("policy_id", "state_kind", "probes_enabled")):
             raise ValueError("native-text comparison changes the episode policy")
