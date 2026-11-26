@@ -15,6 +15,14 @@ from experiments.memory.world_transport import (
 )
 
 
+def _within_relay_tolerance(actual, expected, tolerance):
+    expected_scale = np.max(np.abs(expected))
+    if expected_scale == 0.:
+        return False
+    scale = max(expected_scale, np.max(np.abs(actual)))
+    return np.max(np.abs(actual - expected)) <= tolerance * scale
+
+
 @dataclass(frozen=True, eq=False)
 class _SourceBank:
     version: tuple[str, int]
@@ -236,6 +244,9 @@ class RecurrentWorld:
         projected = 0
         prior = {} if previous is None else previous._sources
         for source in sorted(sources_in_scope):
+            if (policy is not None and policy.alignment is not None
+                    and any(row[0] in ("transport_entry", "transport_exit") for row in memory._mentions[source])):
+                raise ValueError("aligned calibration predicates require a declared calibration source")
             digest = memory.source_digests[source]
             version = digest, corpus._source_revisions[source]
             bank = prior.get(source)
@@ -503,6 +514,15 @@ class RecurrentWorld:
                 weights = np.exp(logits - logits.max())
             return (weights / weights.sum()) @ np.asarray([node._value for node in history]), len(history)
 
+    def _relay_key_matches(self, observation, expected, policy):
+        keys = self._kernel._observation_key
+        actual_key, expected_key = observation @ keys, expected @ keys
+        if policy.alignment is None:
+            return np.array_equal(actual_key, expected_key)
+        tolerance = policy.alignment.relay_tolerance
+        return (_within_relay_tolerance(observation, expected, tolerance)
+                and _within_relay_tolerance(actual_key, expected_key, tolerance))
+
     def _advance_joint(self, branch, observation, witness, feedback_value, transport, policy):
         kernel = self._kernel
         current, source = branch._hidden, branch._source_hidden
@@ -527,8 +547,7 @@ class RecurrentWorld:
         if complete and pending is not None:
             with np.errstate(over="raise", invalid="raise"):
                 complete = (witness.span.source_id in policy.relays
-                            and np.array_equal(observation @ kernel._observation_key,
-                                               pending @ kernel._observation_key))
+                            and self._relay_key_matches(observation, pending, policy))
         use = None
         if source_extra is not None or task_extra is not None:
             use = replace(transport.use, source_row=source_extra is not None, task_row=task_extra is not None)

@@ -29,7 +29,10 @@ from experiments.memory.corpus_bindings import (
 from experiments.memory.latent_feedback import ConditionalTerm
 from experiments.memory.role_validity import RoleSupersession
 from experiments.memory.verified_source_tool import SourceSpan
-from experiments.memory.world_transport import SourceTransportPolicy, compile_source_transports
+from experiments.memory.world_transport import (
+    SourceTransportPolicy, TransportAlignment, bind_transport_digest, compile_source_transports,
+    restore_transport_actions, transport_action_digest, transport_action_rows,
+)
 
 
 _SURROGATE_PAIR = re.compile(r"[\ud800-\udbff][\udc00-\udfff]")
@@ -461,12 +464,23 @@ def _replay_factor_identities(payload, pin):
     return _append_factor_identities(pin, value[1])
 
 
-def _transport_event(policy, kernel_sha256):
+def _check_transport_spec(policy, kernel_sha256):
     if (type(policy) is not SourceTransportPolicy or type(kernel_sha256) is not str
             or re.fullmatch(r"[0-9a-f]{64}", kernel_sha256) is None):
         raise ValueError("transport publication requires a policy and kernel fingerprint")
     _check_identifiers((*policy.authorities, *policy.contexts, *policy.relays))
-    return _json(["source_transport", 1, kernel_sha256, policy.wire()])
+
+
+def _transport_event(policy, kernel_sha256, actions=()):
+    _check_transport_spec(policy, kernel_sha256)
+    if policy.alignment is None:
+        if actions:
+            raise ValueError("exact transport events do not declare action vectors")
+        return _json(["source_transport", 1, kernel_sha256, policy.wire()])
+    if not actions or len(actions) > policy.max_terms:
+        raise ValueError("aligned transport events require bounded numerical actions")
+    return _json(["source_transport", 2, kernel_sha256, policy.wire(),
+                  (transport_action_digest(actions), actions)])
 
 
 def _with_source_transport(pin, publication):
@@ -475,17 +489,36 @@ def _with_source_transport(pin, publication):
 
 def _replay_source_transport(payload, pin, publication_sha256):
     record = json.loads(payload)
-    if (type(record) is not list or len(record) != 4 or record[:2] != ["source_transport", 1]
-            or type(record[3]) is not list or len(record[3]) != 6
+    if (type(record) is not list or len(record) not in (4, 5) or record[0] != "source_transport"
+            or type(record[1]) is not int or record[1] != len(record) - 3
+            or type(record[3]) is not list or len(record[3]) != len(record) + 2
             or any(type(group) is not list for group in record[3][:4])):
         raise ValueError("invalid source transport event")
-    first, second, contexts, relays, gain, capacity = record[3]
-    policy = SourceTransportPolicy(tuple(first), tuple(second), tuple(contexts), tuple(relays), gain, capacity)
-    if _transport_event(policy, record[2]) != payload:
+    first, second, contexts, relays, gain, capacity = record[3][:6]
+    alignment = None
+    actions = ()
+    if record[1] == 2:
+        spec = record[3][6]
+        if type(spec) is not list or len(spec) != 7 or any(type(group) is not list for group in spec[:3]):
+            raise ValueError("invalid alignment policy in transport event")
+        alignment = TransportAlignment(*(tuple(group) for group in spec[:3]), *spec[3:])
+        manifest = record[4]
+        if (type(manifest) is not list or len(manifest) != 2 or type(manifest[1]) is not list
+                or any(type(row) is not list or len(row) != 3 or any(type(value) is not str for value in row)
+                       for row in manifest[1])):
+            raise ValueError("invalid aligned transport action manifest")
+        actions = tuple(tuple(row) for row in manifest[1])
+        if transport_action_digest(actions) != manifest[0]:
+            raise ValueError("source transport action fingerprint does not match stored bytes")
+    policy = SourceTransportPolicy(tuple(first), tuple(second), tuple(contexts), tuple(relays), gain, capacity,
+                                   alignment=alignment)
+    if _transport_event(policy, record[2], actions) != payload:
         raise ValueError("noncanonical source transport event")
     publication = compile_source_transports(pin, policy, record[2], publication_sha256)
     if publication is None:
         raise ValueError("source transport event does not compile from its source pin")
+    if alignment is not None:
+        publication = restore_transport_actions(publication, actions)
     return _with_source_transport(pin, publication)
 
 
@@ -846,10 +879,14 @@ class JournaledCorpusWorkspace(CorpusBindingWorkspace):
     def maintain_source_transports(self, base, policy, *, kernel_sha256):
         """Compile and publish one bounded interaction batch at the exact source tip."""
         self._check_owner(base)
-        payload = _transport_event(policy, kernel_sha256)
+        _check_transport_spec(policy, kernel_sha256)
         parent = bytes.fromhex(base.journal_sha256)
-        publication_sha256 = _event_digest(parent, base.revision + 1, payload).hex()
-        publication = compile_source_transports(base, policy, kernel_sha256, publication_sha256)
+        publication = compile_source_transports(base, policy, kernel_sha256, "")
+        if publication is not None:
+            actions = () if policy.alignment is None else transport_action_rows(publication)
+            payload = _transport_event(policy, kernel_sha256, actions)
+            publication_sha256 = _event_digest(parent, base.revision + 1, payload).hex()
+            publication = bind_transport_digest(publication, publication_sha256)
         with self._lock, closing(self._connect()) as db:
             db.execute("BEGIN IMMEDIATE")
             self._require_current_pin(db, base)

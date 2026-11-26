@@ -354,6 +354,29 @@ source laws, authority labels, cache rights and evidence obligations.
 Charge compilation, storage, replay, invalidation, task computation
 and source reopens.
 
+For aligned transport, split source calibration fits and check sets
+before reading late tasks. Hold out new directions within identified
+domains. Include a geometry-preserving wrong pairing, mismatched
+intermediate spans, out-of-domain observations and competing relays.
+Give the warm comparator the same paired data, cutoffs, composition
+rights, scope and setup accounting. An exact coordinate join measures
+the value of fitting here. The warm numerical fit tests whether the
+latent carrier adds anything beyond that fit. Evaluate no-memory and
+operation-only removal at fixed task inputs before any learned
+capability claim.
+
+The separate partial-composition control identifies a scalar
+consequence when its sensitivity lies in the row span of the
+observed intermediate projections. Another consequence on the
+same task can remain open. A supplied 128-world check matched
+direct enumeration on 5,632 late reads and had 1,024 partially
+identified reads. In its sparse stream the lazy reference used
+eight preparations compared with 1,408 for the eager arm.
+These counts motivate a demand-aware comparator and carry no
+latency conclusion. Keep uncertainty per consequence and test a
+wrong-scope observation with the same numerical geometry.
+[Partial-composition control](../experiments/memory/partial_transport_composition_control.js)
+
 ## Executable gaps in the current branch
 
 `TaskWorld` pins a verified source catalogue to an optional journaled

@@ -4,6 +4,44 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Composed source alignment on held directions, 26 November 2026
+
+**Scripted CPU software verification.** Two separately calibrated
+maps used different bases of the same intermediate plane. The
+worker published two operations before task input. Two later
+context directions absent from the fit and check records reached
+different relays and opposite outcomes. The exact join published
+no operation. Removing the aligned operations at the same pin
+left both outcomes missing. A separately computed and cached
+least-squares composition matched both relay destinations.
+
+Swapping paired exits preserved the fit Gram and failed the held
+checks. An invalid end-to-end check, a singular fit and an
+intermediate span outside the next domain each withheld publication. An
+off-span context activated no operation. A nearby authorized
+relay outside projected-key tolerance produced a high score and
+left the outcome missing. An alternate authorized relay with
+the same projected key and a different raw vector left coverage
+unresolved. The valid relay retained support.
+
+Restart reconstructed the historical numerical action and
+provenance. A mismatched action digest failed replay. A tiny stored
+numerical deviation within replay tolerance was retained exactly,
+and a larger deviation with a valid digest was refused. Restoring
+a check's original bytes required a new generation and publication. The encodings, pairings and authority are supplied.
+The result verifies in-span composition. Learned acquisition,
+semantic generalization and full lifecycle advantage remain open.
+[Alignment controls](../experiments/memory/test_world_transport.py)
+
+A separate contributor control was rerun on its exact code.
+Across 128 supplied worlds its direct enumerator and warm exact
+arm matched 5,632 late reads, including 1,024 partially identified
+reads. Zero-filling unknown allocations would have falsely closed
+1,024 scalar consequences. This is separate from the integrated
+aligned transport fixture. It motivates certifying what remains
+observable when an entire intermediate map cannot be identified.
+[Partial-composition control](../experiments/memory/partial_transport_composition_control.js)
+
 ## Query-blind publication of a source transport, 26 November 2026
 
 **Scripted CPU software verification.** A worker composed two scoped

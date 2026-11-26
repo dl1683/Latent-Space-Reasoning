@@ -850,3 +850,21 @@ from retained observations. A source-only repair can continue to
 share an unchanged operation. A different effective operation
 requires a fresh task frontier. The supplied transport compiler
 refuses overlap with effective-time role supersessions.
+
+To enable fitted alignment, pass
+`alignment=TransportAlignment(first_checks, second_checks, chain_checks)` to
+`SourceTransportPolicy`. Fit and check sources emit the same
+typed pair format. Each declared fit has at least two independent
+entries. The held checks for each stage must cover the full fitted
+span. Chain checks cover the first fit's domain. The alignment
+policy declares fit, relay and replay tolerances and a conditioning
+limit before fitting. Both fits share the ambient intermediate frame.
+The declared fit and check sources stay outside the task observation
+bank. A task source carrying a reserved calibration predicate is
+refused in aligned mode.
+
+Use the same worker and joint call. The branch's
+`transport_uses` separates `evidence` from `validation`.
+An aligned journal event stores and checks its action vectors at
+replay. It uses the stored vectors after a compatible recomputation
+and refuses a discrepancy beyond replay tolerance.

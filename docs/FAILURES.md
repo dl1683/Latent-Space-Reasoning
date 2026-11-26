@@ -24,6 +24,15 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Preserved geometry can conceal a wrong correspondence.** Swapping
+exit partners left the fit Gram unchanged and failed disjoint
+held checks. A separate pair of valid stage fits also failed to
+compose when the first image span extended outside the next
+domain. Check held correspondence and both composition spans.
+A nearby relay can still produce a high score outside the
+admission tolerance. Retain explicit coverage and relay authority.
+[Alignment controls](RESULTS.md#composed-source-alignment-on-held-directions-26-november-2026)
+
 **A transported address can be mistaken for evidence.** A worker
 operation can make a hidden score large before the relevant terminal
 observation is read. A record with the same projected key can also

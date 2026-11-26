@@ -1885,6 +1885,51 @@ open. A warm provenance-aware composition index should receive the
 same laws, eligibility, update and cache rights in a matched comparison.
 [Transport compiler](../experiments/memory/world_transport.py)
 
+#### Composing calibrated source spans
+
+[SLICE] An opt-in worker fits two maps from paired source directions.
+The first map's output and the second map's input occupy a common
+ambient coordinate frame and can use different sampled bases.
+For entry rows X and exit rows Y, the map uses the coefficients
+of the input in the row span of X. It constructs the image with
+those same coefficients in Y. The fit requires independent entry
+rows and a lower bound on the relative Gram spectrum. It checks
+the exit Gram in orthonormalized entry coordinates. This tests the
+partial-isometry assumption across the fitted span.
+
+Each stage and the whole chain have disjoint held source checks
+whose inputs span the corresponding fitted domain. Check records
+with a fit record's digest are refused. These checks supply no
+coefficients. A separate residual bound checks that the image span
+of the first map fits the second map's domain. A context direction
+must also pass the residual check at both applications. The worker
+prepares the result for eligible declared contexts at publication,
+before task inputs arrive. It can transfer a signed in-span
+direction that appears in neither fit. The live block requires
+the positive hidden projection at the selected authorized context.
+
+The aligned event retains its fit and check policy, little-endian
+action vectors and their digest. Replay checks the bytes, verifies
+them against a recomputation on the publication pin within the
+declared replay tolerance, then uses the stored vectors. Exact
+event bytes retain their old schema. A fit, check, or context
+generation change invalidates the aligned publication. The trace
+separates fit and validation evidence. Cross-backend replay
+remains unverified. Calibration predicates are reserved for
+declared calibration sources in this mode.
+
+For a pending aligned operation, the next source witness must be
+an authorized relay within the declared symmetric relative
+maximum-coordinate tolerance of both the predicted observation
+and its projected key. A zero target key cannot complete it.
+An out-of-scope alternative can leave an otherwise supported route
+unresolved. Fit, relay and replay tolerances are declared separately.
+The exact mode retains exact projected-key equality. Calibration and geometric proximity do not establish
+semantic scope. Compare a warm numerical composer that fits and
+caches the same maps under identical authority, limits and source
+revisions.
+[Transport compiler](../experiments/memory/world_transport.py)
+
 ## Claims and evidence boundary (2026-10-15; not a new experiment)
 
 | Claim | Tag and current boundary | What is still required |

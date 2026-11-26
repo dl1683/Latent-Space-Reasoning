@@ -1,4 +1,5 @@
 from dataclasses import replace
+import json
 
 import numpy as np
 import pytest
@@ -9,7 +10,7 @@ from experiments.memory.latent_feedback import FeedbackKernel
 from experiments.memory.recurrent_world import RecurrentWorld
 from experiments.memory.role_validity import RoleSupersession
 from experiments.memory.verified_source_tool import VerifiedSourceTool
-from experiments.memory.world_transport import SourceTransportPolicy
+from experiments.memory.world_transport import SourceTransportPolicy, TransportAlignment, transport_action_rows
 
 
 def _publish(workspace, changes):
@@ -252,3 +253,199 @@ def test_effective_time_cutover_cannot_leave_an_overlapping_transport_live(tmp_p
     with pytest.raises(ValueError, match="effective-time role rules"):
         world.maintain_transports(owner, cutover)
     assert _read(world, old, axes[0]).read(axes[4], floor=.8).status == "supported"
+
+
+def _alignment_world(tmp_path):
+    axes = np.eye(10)
+    first_held = (axes[0] + axes[1]) / np.sqrt(2.)
+    first_image = (axes[2] + axes[3]) / np.sqrt(2.)
+    rotated_a = .8 * axes[2] + .6 * axes[3]
+    rotated_b = -.6 * axes[2] + .8 * axes[3]
+    second_image = .8 * axes[4] - .6 * axes[5]
+    context_a = .6 * axes[0] + .8 * axes[1]
+    context_b = -.8 * axes[0] + .6 * axes[1]
+    relay_a = .96 * axes[4] + .28 * axes[5]
+    relay_b = -.28 * axes[4] + .96 * axes[5]
+
+    # Inputs are supplied observations. The two middle bases do not share a row.
+    laws = {
+        "first-a": (axes[0], axes[2]),
+        "first-b": (axes[1], axes[3]),
+        "second-a": (rotated_a, axes[4]),
+        "second-b": (rotated_b, axes[5]),
+        "first-check": (first_held, first_image),
+        "first-check-2": ((-axes[0] + axes[1]) / np.sqrt(2.), (-axes[2] + axes[3]) / np.sqrt(2.)),
+        "second-check": (axes[2], second_image),
+        "second-check-2": (axes[3], .6 * axes[4] + .8 * axes[5]),
+        "chain-check": (.8 * axes[0] + .6 * axes[1], axes[4]),
+        "chain-check-2": (-.6 * axes[0] + .8 * axes[1], axes[5]),
+        "wrong-chain": (.8 * axes[0] + .6 * axes[1], -axes[4]),
+        "wrong-check": (axes[2], -second_image),
+        "duplicate-fit": (axes[0], axes[2]),
+        "swapped-a": (axes[0], axes[3]),
+        "swapped-b": (axes[1], axes[2]),
+        "shifted-a": (.8 * axes[2] + .6 * axes[6], axes[4]),
+        "shifted-b": (-.6 * axes[2] + .8 * axes[6], axes[5]),
+        "shifted-check": (axes[6], .6 * axes[4] + .8 * axes[5]),
+    }
+    observations = {
+        "entry-a": context_a, "entry-b": context_b, "off-plane": axes[6],
+        "relay-a": relay_a, "relay-b": relay_b, "relay-contrary": axes[9],
+        "bad-relay": relay_a + .001 * axes[9],
+    }
+    encodings = {name: (("transport_entry", a), ("transport_exit", b)) for name, (a, b) in laws.items()}
+    encodings.update((name, (("record", row),)) for name, row in observations.items())
+    raw = {name: ("Scoped observation in " + name + ".").encode() for name in encodings}
+    by_raw = {raw[name]: encoding for name, encoding in encodings.items()}
+
+    def encode(data):
+        return tuple(BindingMention(predicate, row, 1., (0, len(data))) for predicate, row in by_raw[data])
+
+    anchors = np.stack(tuple({row.tobytes(): row for rows in encodings.values() for _, row in rows}.values()))
+    frame = CorpusBindingMemory.prepare(("record", "transport_entry", "transport_exit"), anchors, {}, {},
+                                        encode=encode, encoder_version="alignment-fixture", min_similarity=.99, gap=0.)
+    owner = JournaledCorpusWorkspace(tmp_path / "alignment.sqlite", frame, create=True)
+    base = _publish(owner, {name: data for name, data in raw.items()
+                           if name not in ("wrong-check", "duplicate-fit", "bad-relay", "swapped-a", "swapped-b", "relay-contrary",
+                                           "shifted-a", "shifted-b", "shifted-check", "wrong-chain")})
+    checks = TransportAlignment(("first-check", "first-check-2"), ("second-check", "second-check-2"),
+                                ("chain-check", "chain-check-2"))
+    policy = SourceTransportPolicy(("first-a", "first-b"), ("second-a", "second-b"),
+                                   ("entry-a", "entry-b", "off-plane"), ("relay-a", "relay-b", "relay-contrary"),
+                                   gain=2., max_terms=2, alignment=checks)
+    values = 2. * np.outer(relay_a - relay_b - axes[9], axes[7])
+    keys = axes.copy()
+    keys[9] = relay_a
+    kernel = FeedbackKernel(query=30. * axes, carry=None, observation_key=keys, observation_value=values,
+                            feedback_key=axes, feedback_value=np.zeros_like(axes), max_steps=2)
+    world = RecurrentWorld(kernel, encoder_version=frame.encoder_version, max_observations=6,
+                           feedback=True, transport_policy=policy)
+    return owner, frame, base, world, raw, observations, axes
+
+
+def _aligned_read(world, bank, seed):
+    return world.reason_joint(seed, steps=2, max_hypotheses=2, null_logit=22., margin=1., memory=bank)
+
+
+def test_query_blind_alignment_reaches_relays_from_unseen_directions(tmp_path):
+    owner, frame, base, world, raw, rows, axes = _alignment_world(tmp_path)
+    exact = RecurrentWorld(world._kernel, encoder_version=frame.encoder_version, max_observations=9,
+                           feedback=True, transport_policy=replace(world._transport_policy, alignment=None))
+    assert exact.maintain_transports(owner, base) is base
+    published = world.maintain_transports(owner, base)
+    assert published.revision == base.revision + 1 and published.source_revision == base.source_revision
+    assert len(published._source_transports.operations) == 2
+    enabled = world.prepare(published, packed=False)
+    ablated = world.prepare(published, previous=enabled, packed=False, operators=False)
+    assert ablated._sources is enabled._sources
+
+    # A direct, warm numerical composer gets the same four paired fit rows.
+    maps = []
+    policy = world._transport_policy
+    for sources in (policy.first, policy.second):
+        pairs = [tuple(mention.vector for mention in base.memory.source_mentions(source)) for source in sources]
+        entry_rows, exit_rows = (np.stack(column) for column in zip(*pairs, strict=True))
+        maps.append(np.linalg.lstsq(entry_rows, exit_rows, rcond=None)[0])
+    direct = maps[0] @ maps[1]
+    for entry, relay, status in (("entry-a", "relay-a", "supported"), ("entry-b", "relay-b", "opposed")):
+        expected = rows[entry] @ direct
+        matches = [source for source in policy.relays if source in base.memory.source_digests
+                   and np.linalg.norm(rows[source] - expected) <= policy.alignment.tolerance]
+        assert matches == [relay]
+        result = _aligned_read(world, enabled, rows[entry])
+        assert result.read(axes[7], floor=.8).status == status
+        branch, = result.branches
+        assert tuple(w.span.source_id for w in branch.witnesses) == (entry, relay)
+        use, = branch.transport_uses
+        assert use.publication_sha256 == published.journal_sha256 and use.source_row
+        assert {w.span.source_id for w in use.evidence} == {"first-a", "first-b", "second-a", "second-b"}
+        assert {w.span.source_id for w in use.validation} == {
+            "first-check", "first-check-2", "second-check", "second-check-2", "chain-check", "chain-check-2",
+        }
+        assert _aligned_read(world, ablated, rows[entry]).read(axes[7], floor=.8).status == "missing"
+
+    unsupported = _aligned_read(world, enabled, rows["off-plane"])
+    assert unsupported.read(axes[7], floor=.8).status == "missing"
+    assert not unsupported.branches[0].transport_uses
+
+    def forbid_ingestion(_):
+        pytest.fail("aligned replay re-entered the source encoder")
+
+    reopened = JournaledCorpusWorkspace(tmp_path / "alignment.sqlite", replace(frame, _encode=forbid_ingestion))
+    recovered = _aligned_read(world, world.prepare(reopened.snapshot()), rows["entry-a"])
+    original = _aligned_read(world, enabled, rows["entry-a"])
+    np.testing.assert_array_equal(recovered.branches[0].history, original.branches[0].history)
+    assert recovered.branches[0].transport_uses == original.branches[0].transport_uses
+
+    actions = transport_action_rows(published._source_transports)
+    record = json.loads(_transport_event(world._transport_policy, world._kernel_sha256, actions))
+    record[4][0] = "a" * 64
+    replay_bad = json.dumps(record, separators=(",", ":")).encode("ascii")
+    with pytest.raises(ValueError, match="action fingerprint"):
+        _replay_source_transport(replay_bad, base, "b" * 64)
+
+    key, expected, output = actions[0]
+    padded = np.frombuffer(bytes.fromhex(expected), dtype="<f8").copy()
+    padded[8] = 5.e-14
+    adjacent_actions = ((key, padded.tobytes().hex(), output), *actions[1:])
+    event = _transport_event(world._transport_policy, world._kernel_sha256, adjacent_actions)
+    compatible = _replay_source_transport(event, base, "b" * 64)
+    assert transport_action_rows(compatible._source_transports) == adjacent_actions
+    padded[8] = .01
+    incompatible = ((key, padded.tobytes().hex(), output), *actions[1:])
+    event = _transport_event(world._transport_policy, world._kernel_sha256, incompatible)
+    with pytest.raises(ValueError, match="disagrees with replay"):
+        _replay_source_transport(event, base, "b" * 64)
+
+
+def test_alignment_rejects_a_wrong_check_a_singular_fit_and_a_near_relay(tmp_path):
+    owner, frame, base, world, raw, rows, axes = _alignment_world(tmp_path)
+    published = world.maintain_transports(owner, base)
+    changed = _publish(owner, {"relay-a": raw["bad-relay"]})
+    wrong_relay = _aligned_read(world, world.prepare(changed), rows["entry-a"])
+    assert wrong_relay.branches[0].source_hidden[7] > .8
+    assert wrong_relay.read(axes[7], floor=.8).status == "missing"
+    assert wrong_relay.branches[0].transport_uses[0].publication_sha256 == published.journal_sha256
+
+    competing = _publish(owner, {"relay-a": raw["relay-a"], "relay-contrary": raw["relay-contrary"]})
+    conflict = _aligned_read(world, world.prepare(competing), rows["entry-a"]).read(axes[7], floor=.8)
+    assert conflict.status == "unresolved"
+    assert conflict.support[0].witnesses[-1].span.source_id == "relay-a"
+    assert not conflict.opposition
+
+    failed = _publish(owner, {"first-b": raw["duplicate-fit"], "relay-contrary": None})
+    assert world.maintain_transports(owner, failed) is failed
+    wrong_pairing = _publish(owner, {"first-a": raw["swapped-a"], "first-b": raw["swapped-b"]})
+    assert world.maintain_transports(owner, wrong_pairing) is wrong_pairing
+    # Each shifted stage still has an independently valid calibration, but the
+    # first image contains a direction missing from the second domain.
+    shifted = _publish(owner, {"first-a": raw["first-a"], "first-b": raw["first-b"],
+                               "second-a": raw["shifted-a"], "second-b": raw["shifted-b"],
+                               "second-check-2": raw["shifted-check"]})
+    assert world.maintain_transports(owner, shifted) is shifted
+    wrong_chain = _publish(owner, {"second-a": raw["second-a"], "second-b": raw["second-b"],
+                                    "second-check-2": raw["second-check-2"], "chain-check": raw["wrong-chain"]})
+    assert world.maintain_transports(owner, wrong_chain) is wrong_chain
+    failed = _publish(owner, {"chain-check": raw["chain-check"], "second-check": raw["wrong-check"]})
+    assert world.maintain_transports(owner, failed) is failed
+    assert world.prepare(failed)._source_transports is None
+    restored = _publish(owner, {"second-check": raw["second-check"]})
+    assert world.prepare(restored)._source_transports is None
+    fresh = world.maintain_transports(owner, restored)
+    assert fresh is not restored and fresh.journal_sha256 != published.journal_sha256
+    result = _aligned_read(world, world.prepare(fresh), rows["entry-a"])
+    assert result.read(axes[7], floor=.8).status == "supported"
+
+    def forbid_ingestion(_):
+        pytest.fail("historical reconstruction re-entered source ingestion")
+
+    reopened = JournaledCorpusWorkspace(tmp_path / "alignment.sqlite", replace(frame, _encode=forbid_ingestion))
+    earlier = reopened.snapshot_at(published.revision, max_events=32, max_payload_bytes=2000000)
+    original = _aligned_read(world, world.prepare(earlier), rows["entry-a"])
+    assert original.read(axes[7], floor=.8).status == "supported"
+    assert original.branches[0].transport_uses[0].publication_sha256 == published.journal_sha256
+
+    copied = _publish(owner, {"off-plane": raw["first-a"]})
+    assert world.maintain_transports(owner, copied) is copied
+    with pytest.raises(ValueError, match="declared calibration source"):
+        world.prepare(copied)
