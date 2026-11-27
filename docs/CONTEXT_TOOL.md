@@ -1495,14 +1495,37 @@ batch is incomplete. Hand the
 sealed first-answer transcripts to the independent grader according
 to the custody protocol. [Independent limits](INDEPENDENT_ORDINARY_GATE_AND_SCALAR_BOUNDARY.md#frozen-ordinary-access-contract)
 
-On this controller, run the pinned Qwen3-0.6B CPU adapter with
-`python -m experiments.memory.run_independent_ordinary_gate --input <input-json> --output <new-private-directory>`.
-It verifies the frozen input digest and schema, rejects input/output paths
-inside the checkout, and writes a one-attempt marker in the output parent.
-It uses the cached model revision, FP32 weights, four CPU threads, a 45-minute
-process deadline, tokenizer EOS, and tokenizer padding ID. It does not accept
-a grader path or fetch model files from the network. The controller should
-preserve the separate grader with its custodian.
+On the authorized controller, use a dedicated private output parent and
+an external hard process deadline. For example, on Linux with GNU coreutils
+`timeout`, set the input and output variables to the confirmed input-only
+packet and a new output directory outside the checkout, then run:
+
+```sh
+umask 077
+timeout --signal=KILL 45m python -m experiments.memory.run_independent_ordinary_gate --input "$INPUT" --output "$OUTPUT"
+```
+
+The adapter verifies the frozen input digest and schema, rejects input/output
+paths inside the checkout, and writes a one-attempt marker in the output
+parent before the batch. It uses the cached model revision, FP32 weights,
+four CPU threads, tokenizer EOS and tokenizer padding ID. Its monotonic
+deadline is checked cooperatively, including between generated tokens;
+it cannot interrupt a blocked model load or forward. The external watchdog
+is therefore necessary to enforce the registered 45-minute process ceiling,
+including startup and loading. A watchdog kill can leave an incomplete
+ledger: preserve the marker and any partial artifacts, record the external
+termination as an incomplete gate, and do not retry or change output
+parents to obtain a replacement answer. Normal process exit alone is not
+evidence of a complete gate; check the batch finish seal and case dispositions.
+The adapter does not accept a grader path or fetch model files from the
+network. Preserve the separate grader with its custodian.
+
+A reviewer checked GNU timeout 9.7 on public, model-free subprocess
+surrogates: a deliberately blocked child was killed at 2.005 seconds under
+a 2-second ceiling and retained its started marker, while normal completion
+and a deliberate exit code 7 were propagated unchanged. This checks the
+watchdog mechanism, not the pinned model, the actual controller's resource
+profile, the first-answer ledger integration, or reader competence.
 
 ## Checking a joint state in a task
 
