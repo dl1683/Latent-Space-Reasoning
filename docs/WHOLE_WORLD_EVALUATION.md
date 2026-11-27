@@ -454,9 +454,14 @@ Use the [cross-source acquisition control](RESULTS.md#acquiring-continuations-af
 to separate an exhausted queue from self-dominated proposals. In the
 archive, direct exclusion exposes a unique outside winner more often
 than deflation on fixed queries. The larger screen must compare the
-two in live recurrence, alongside ordinary maintenance. Count
-external-value causal effects, retained row and role coverage and
-useful independently graded late answers separately.
+two in live recurrence, alongside ordinary maintenance. The
+[direct-exclusion control](RESULTS.md#comparing-source-exclusion-with-deflated-acquisition)
+uses scoped publication receipts and succeeds on a stand-in case
+where deflation acquires nothing. On the independent screen share
+opening pins and candidate order and charge both attempted
+trajectories and readback. Count external-value causal effects,
+retained row and role coverage and useful independently graded
+late answers separately.
 
 **Independent opening preflight, 27 November 2026.** The reviewer
 committed an [opening inventory](independent_operation_opening.json) at

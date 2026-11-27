@@ -826,6 +826,33 @@ backbone. A live source-exclusion comparison, independently graded
 answers, learned address coverage and full costs remain open.
 [CPU fixture](../experiments/memory/test_native_latent_recurrence.py)
 
+## Comparing source exclusion with deflated acquisition
+
+**CPU mechanism control.** On one three-source fixture, the seed read
+was collinear with its own key and each relevant outside row had a
+positive score. Ordinary maintenance and the deflated retry acquired
+zero. Direct source exclusion acquired two continuations using
+unmodified selection queries at their first step. The successful
+pass made 16 backbone calls including the controls. A fresh reader
+answered both supplied queries. Removing each continuation at the
+same pin or omitting memory left the corresponding query unresolved.
+
+On reopen the stored attempts identified their excluded source.
+Removing the scope field from the scoped format was refused on both
+the acquisition pin and a later epoch. Adding an outside row that
+reached one saved cutoff revoked just that continuation. A
+below-cutoff addition preserved both. Correcting the selected
+evidence revoked both rows. Retrying recovered both with the corrected
+answers, and the historical pin still answered from its old contents.
+
+This fixture uses a stand-in backbone and supplied queries. Deflation
+hits the 0.85 relative-shift guard when projection removes the useful
+direction. Direct exclusion keeps that direction. The 16 calls cover
+the successful retry pass and controls. Opening maintenance, the
+separate deflation pass, publication readback and late answers are
+additional work. Learned benefit and total cost remain unmeasured.
+[CPU fixture](../experiments/memory/test_native_latent_recurrence.py)
+
 ## Applying published visual operations to new grids
 
 **Public development control, 27 November 2026.** A source worker compiled

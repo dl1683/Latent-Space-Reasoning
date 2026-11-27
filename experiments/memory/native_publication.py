@@ -1,6 +1,6 @@
 """Bounded data-only handoff for the selective native latent state."""
 
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from hashlib import sha256 as hashing
 import json
 from os import fsync
@@ -37,8 +37,14 @@ _FORECAST_SCHEMA = "lsr-native-selective-v3"
 _FORECAST_SET_SCHEMA = "lsr-native-selective-v4"
 _REVISION_WITNESS_SCHEMA = "lsr-native-selective-v5"
 _WEIGHTED_WITNESS_SCHEMA = "lsr-native-selective-v6"
+_SOURCE_EXCLUSION_PREFIX = "lsr-native-source-exclusion-v1/"
 _FIELDS = {"schema", "runtime", "reader", "source", "source_manifest", "documents", "queue",
            "attempted", "derived", "rows_bytes", "rows_sha256"}
+
+
+@dataclass(frozen=True, slots=True)
+class SourceExclusionReceipt(SelectionReceipt):
+    excluded_source: str = ""
 
 
 def _record(*parts):
@@ -237,6 +243,17 @@ def _metadata(reader, memory):
         header.setdefault("forecasts", [])
         header["forecast_sets"] = sorted(_forecast_set_metadata(check, indices)
                                          for check in selective.forecast_sets.values())
+    exclusions = []
+    for seed, frontiers in selective.attempted.items():
+        scopes = {getattr(step.receipt, "excluded_source", None) for step in frontiers}
+        if scopes == {None}:
+            continue
+        if scopes != {seed.source_id} or seed not in selective.acquired or seed in selective.parents:
+            raise ValueError("native source exclusion must scope an acquired source-only attempt")
+        exclusions.append(indices[seed])
+    if exclusions:
+        header["schema"] = _SOURCE_EXCLUSION_PREFIX + header["schema"]
+        header["source_exclusions"] = sorted(exclusions)
     gate = getattr(selective, "operand_admission", None)
     if gate is not None:
         header["operand_admission"] = asdict(gate)
@@ -409,12 +426,15 @@ def _read_sources(documents, scope, rows, width, key_width, *, content_chunks):
     return sources, shards, spans, key_rows, value_rows
 
 
-def _read_steps(records, reader, spans, key_rows, value_rows, key_width, scope):
+def _read_steps(records, reader, spans, key_rows, value_rows, key_width, scope, *, excluded_source=None):
     if type(records) is not list or len(records) != reader._steps:
         raise ValueError("native publication attempt has the wrong step count")
     limit = reader._selector._tie_limit
     k, margin = reader._selector._k, reader._selector._margin
     maximum = key_width * _LEVELS ** 2
+    included = (() if excluded_source is None else
+                tuple(idx for idx, span in enumerate(spans) if span.source_id != excluded_source))
+    current_count = len(spans) if excluded_source is None else len(included)
     result = []
     origin = None
     for status, eligible, scored, hits, query_hex, cutoff, applied, source_seal in records:
@@ -449,13 +469,21 @@ def _read_steps(records, reader, spans, key_rows, value_rows, key_width, scope):
             seen.add(idx)
             previous_score = score
         nominal = selected[k - 1].score if len(selected) >= k else 1
-        if cutoff != max(1, nominal - margin) or (source_seal == scope.seal and scored != len(spans)):
+        if cutoff != max(1, nominal - margin) or (source_seal == scope.seal and scored != current_count):
             raise ValueError("native publication frontier cutoff or scope differs")
         if status in ("ready", "competing"):
             values = [value_rows[idx] for idx, _ in hits]
             if competing_values(selected, values, margin) != (status == "competing"):
                 raise ValueError("native publication competition status differs")
-        receipt = SelectionReceipt(status, tuple(selected), eligible, scored, source_seal)
+        if excluded_source is not None:
+            scores = ((idx, int(key_rows[idx] @ query_vector)) for idx in included)
+            expected = sorted(((idx, score) for idx, score in scores if score >= cutoff),
+                              key=lambda pair: -pair[1])
+            if (status not in ("ready", "empty") or expected != [tuple(hit) for hit in hits]):
+                raise ValueError("native source exclusion differs from its eligible frontier")
+            receipt = SourceExclusionReceipt(status, tuple(selected), eligible, scored, source_seal, excluded_source)
+        else:
+            receipt = SelectionReceipt(status, tuple(selected), eligible, scored, source_seal)
         result.append(SelectionStep(receipt, query, cutoff, applied))
     return tuple(result)
 
@@ -716,14 +744,22 @@ def _restore(header, reader, raw, seal, scope):
     sources, shards, spans, key_rows, value_rows = _read_sources(
         header["documents"], scope, rows, width, key_width, content_chunks=reader._source_chunking == "content",
     )
-    def read_steps(records):
-        return _read_steps(records, reader, spans, key_rows, value_rows, key_width, scope)
+    def read_steps(records, *, excluded_source=None):
+        return _read_steps(records, reader, spans, key_rows, value_rows, key_width, scope,
+                           excluded_source=excluded_source)
 
+    exclusions = header.get("source_exclusions", [])
+    if (type(exclusions) is not list or ("source_exclusions" in header and not exclusions)
+            or any(not _between(idx, 0, len(spans) - 1) for idx in exclusions)
+            or exclusions != sorted(set(exclusions))):
+        raise ValueError("native publication source exclusions are invalid")
+    excluded = set(exclusions)
     attempted, last = {}, -1
     for idx, records in header["attempted"]:
         if not _between(idx, last + 1, len(spans) - 1):
             raise ValueError("native publication attempt index is invalid")
-        attempted[spans[idx]] = read_steps(records)
+        seed = spans[idx]
+        attempted[seed] = read_steps(records, excluded_source=seed.source_id if idx in excluded else None)
         last = idx
     indices = header["derived"]
     if (any(not _between(idx, 0, len(spans) - 1) for idx in indices)
@@ -748,6 +784,9 @@ def _restore(header, reader, raw, seal, scope):
                      if "forecast_sets" in header else {})
     if forecasts.keys() & forecast_sets.keys():
         raise ValueError("native publication has multiple admissions for one seed")
+    if excluded - set(indices) or any(spans[idx] not in attempted or spans[idx] in parents
+                                      for idx in excluded):
+        raise ValueError("native source exclusion requires a retained source-only attempt")
     accepted = {seed for seed, steps in attempted.items()
                 if reader._installable(steps, seed.source_id, parents.get(seed))}
     if set(acquired) != accepted:
@@ -807,10 +846,17 @@ def _read_native_publication(directory, reader, *, seal, source_seal, runtime_sh
                _WEIGHTED_WITNESS_SCHEMA: _FIELDS | {"parents", "forecasts", "forecast_sets"}}
     if type(header) is not dict or type(header.get("schema")) is not str:
         raise ValueError("native publication manifest is malformed")
+    schema = header["schema"]
+    base_schema = schema.removeprefix(_SOURCE_EXCLUSION_PREFIX)
+    scoped = base_schema != schema
     fields = set(header)
+    if scoped and "source_exclusions" in fields:
+        fields.remove("source_exclusions")
+    elif scoped:
+        raise ValueError("native publication lacks its source exclusion scope")
     if getattr(reader, "_operand_admission_required", False):
         fields.discard("operand_admission")
-    if schemas.get(header["schema"]) != fields or _encode(header) != manifest:
+    if schemas.get(base_schema) != fields or _encode(header) != manifest:
         raise ValueError("native publication manifest is malformed")
     if header["source"] != source_seal or header["runtime"] != runtime_sha256:
         raise ValueError("native publication source or runtime differs")
@@ -824,6 +870,7 @@ def _read_native_publication(directory, reader, *, seal, source_seal, runtime_sh
             raise ValueError("native publication numeric bytes differ")
         if header["reader"] != _reader_digest(reader):
             raise ValueError("native publication reader differs")
-        return _restore(header, reader, raw, seal, scope)
+        restored_header = {**header, "schema": base_schema} if scoped else header
+        return _restore(restored_header, reader, raw, seal, scope)
     except (AttributeError, KeyError, TypeError) as error:
         raise ValueError("native publication metadata has an invalid shape") from error

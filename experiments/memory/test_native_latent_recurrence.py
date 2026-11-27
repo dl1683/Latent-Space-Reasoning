@@ -177,17 +177,24 @@ def test_source_only_maintenance_installs_a_useful_continuation_at_fixed_pin(tmp
     assert reader(question, memory=maintained) == enabled
 
 
-@pytest.mark.parametrize("erase_external", [False, True])
-def test_cross_source_retry_acquires_distinct_rows_and_tracks_their_shared_evidence(tmp_path, erase_external):
-    from experiments.memory.native_cross_source_acquisition import retry_cross_source_acquisition
+@pytest.mark.parametrize("mode", ["deflate", "no_effect", "exclude"])
+def test_cross_source_retry_acquires_distinct_rows_and_tracks_their_shared_evidence(tmp_path, mode):
+    from experiments.memory.native_cross_source_acquisition import (
+        retry_cross_source_acquisition, retry_excluding_seed_source,
+    )
     from experiments.memory.native_workspace import NativeWorkspace
+
+    exclusion = mode == "exclude"
+    erase_external = mode == "no_effect"
 
     class CrossSource(_StandIn):
         def base_model(self, *, inputs_embeds, past_key_values, use_cache, return_dict):
             result = super().base_model(inputs_embeds=inputs_embeds, past_key_values=past_key_values,
                                         use_cache=use_cache, return_dict=return_dict)
             state = result.last_hidden_state
-            if past_key_values is None and use_cache and bool(torch.any(state[..., (3, 5)])):
+            if exclusion and past_key_values is None and not use_cache and bool(torch.any(state[..., 4])):
+                state[..., (0, 2)] = 0.25 * np.arctanh(0.4)
+            if not exclusion and past_key_values is None and use_cache and bool(torch.any(state[..., (3, 5)])):
                 state[..., 1] = 0.25 * np.arctanh(0.8)
             if erase_external and past_key_values is not None:
                 state[..., 4] = 0
@@ -227,10 +234,17 @@ def test_cross_source_retry_acquires_distinct_rows_and_tracks_their_shared_evide
 
     original_selector = worker._selector
     settings = dict(max_seeds=3, max_source_rows=1)
-    refused = retry_cross_source_acquisition(workspace, worker, opening, max_relative_shift=0.25, **settings)
+    refusal_limit = 0.85 if exclusion else 0.25
+    refused = retry_cross_source_acquisition(workspace, worker, opening, max_relative_shift=refusal_limit, **settings)
     assert refused.tried == 3 and refused.acquired == () and refused.pin == workspace.head() == opening
     worker._model.calls.clear()
-    installed = retry_cross_source_acquisition(workspace, worker, opening, max_relative_shift=0.85, **settings)
+
+    def retry(pin):
+        if exclusion:
+            return retry_excluding_seed_source(workspace, worker, pin, **settings)
+        return retry_cross_source_acquisition(workspace, worker, pin, max_relative_shift=0.85, **settings)
+
+    installed = retry(opening)
     assert worker._model.calls == [("backbone", True, 1)] * 16
     assert installed.tried == 3 and {span.source_id for span in installed.acquired} == {first, second}
     assert worker._selector is original_selector and installed.pin.source_seal == opening.source_seal
@@ -247,7 +261,11 @@ def test_cross_source_retry_acquires_distinct_rows_and_tracks_their_shared_evide
         seed, = now.source_spans(source)
         trace, = now._selective.attempted[seed]
         ordinary, = earlier._selective.attempted[seed]
-        assert trace.query != ordinary.query and trace.receipt.rows_scored == now.rows
+        if exclusion:
+            assert trace.query == ordinary.query and trace.receipt.rows_scored == now.rows - 1
+            assert trace.receipt.excluded_source == source
+        else:
+            assert trace.query != ordinary.query and trace.receipt.rows_scored == now.rows
         assert [hit.span for hit in trace.receipt.selected] == [evidence_row]
         read = fresh(question, memory=now)
         assert read.text == "blue" and read.applied_derived_steps == 1
@@ -255,12 +273,48 @@ def test_cross_source_retry_acquires_distinct_rows_and_tracks_their_shared_evide
         cut = fresh._without_continuation(now, seed)
         assert fresh(question, memory=cut).text == fresh(question, memory=earlier).text == fresh(question).text == ""
 
+    active_pin, active_feed = installed.pin, original
+    if exclusion:
+        from json import loads
+
+        from experiments.memory.native_publication import read_native_publication
+        from experiments.memory.source_revision_feed import _encode
+
+        def assert_scope_required(pin):
+            publication = workspace._objects / pin.publication_seal
+            header = loads((publication / "manifest.json").read_bytes())
+            assert len(header.pop("source_exclusions")) == 2
+            altered = tmp_path / f"altered-publication-{pin.revision}"
+            altered.mkdir()
+            manifest = _encode(header)
+            (altered / "manifest.json").write_bytes(manifest)
+            (altered / "rows.bin").write_bytes((publication / "rows.bin").read_bytes())
+            with pytest.raises(ValueError, match="lacks its source exclusion scope"):
+                read_native_publication(altered, fresh, seal=sha256(manifest), source_seal=pin.source_seal,
+                                        runtime_sha256=runtime, max_bytes=limit)
+
+        assert_scope_required(installed.pin)
+
+        newcomer = "d" * 32
+        competition_path = tmp_path / "competition"
+        competition = write_source_delta(competition_path, {newcomer: "écho".encode()}, previous=original)
+        competing = fresh.publish(competition_path, competition.seal, previous=now, max_source_bytes=limit)
+        assert competing.derived_seeds == (second_seed,)
+
+        unrelated_path = tmp_path / "unrelated"
+        active_feed = write_source_delta(unrelated_path, {newcomer: b" "}, previous=original)
+        active_pin = workspace.revise(worker, installed.pin, unrelated_path, active_feed.seal, max_source_bytes=limit)
+        continued = workspace.attach(fresh, pin=active_pin)
+        assert continued.rows == now.rows + 1 and continued.derived_seeds == now.derived_seeds
+        assert tuple(fresh(question, memory=continued).text for question in questions) == ("blue", "blue")
+        assert_scope_required(active_pin)
+
     revised_path = tmp_path / "revision"
-    revision = write_source_delta(revised_path, {evidence: b"gold"}, previous=original)
-    changed = workspace.revise(worker, installed.pin, revised_path, revision.seal, max_source_bytes=limit)
+    revision = write_source_delta(revised_path, {evidence: b"gold"}, previous=active_feed)
+    changed = workspace.revise(worker, active_pin, revised_path, revision.seal, max_source_bytes=limit)
     assert workspace.attach(fresh, pin=changed).derived_seeds == ()
     replay = workspace.maintain(worker, changed, max_seeds=3)
-    again = retry_cross_source_acquisition(workspace, worker, replay, max_relative_shift=0.85, **settings)
+    again = retry(replay)
     assert {span.source_id for span in again.acquired} == {first, second}
     revised = workspace.attach(fresh, pin=again.pin)
     assert tuple(fresh(question, memory=revised).text for question in questions) == ("gold", "gold")

@@ -2,6 +2,7 @@
 
 from copy import copy
 from dataclasses import dataclass, replace
+from functools import partial
 from itertools import islice
 from math import isfinite
 from types import MappingProxyType
@@ -11,6 +12,7 @@ import numpy as np
 from experiments.memory.latent_feedback import _frozen
 from experiments.memory.linear_feedback import _quantize
 from experiments.memory.native_latent_recurrence import NativeLatentModel, _Continuation, _require_cpu_eval
+from experiments.memory.native_publication import SourceExclusionReceipt
 from experiments.memory.native_workspace import NativeWorkspacePin
 from experiments.memory.verified_source_tool import SourceSpan
 
@@ -54,6 +56,35 @@ class _DeflatedSourceReads:
         return value, mass, step
 
 
+@dataclass(frozen=True, slots=True)
+class _ExcludedSourceReads:
+    selector: object
+    source: str
+    withhold: bool = False
+
+    def read(self, latent, shards):
+        if not shards:
+            return self.selector.read(latent, shards)
+        outside = tuple(shard for shard in shards if shard.spans[0].source_id != self.source)
+        value, mass, step = self.selector.read(latent, outside)
+        if self.withhold and value is not None:
+            value = np.zeros_like(value)
+        receipt = step.receipt
+        scope = SourceExclusionReceipt(receipt.status, receipt.selected, receipt.eligible, receipt.rows_scored,
+                                       receipt.observed_source_seal, self.source)
+        return value, mass, replace(step, receipt=scope)
+
+
+def _deflated_policy(selector, source, own_keys, *, max_relative_shift):
+    left, singular, _ = np.linalg.svd(selector._kernel._query @ own_keys.T, full_matrices=False)
+    keep = singular > singular[0] / 1024
+    return (_DeflatedSourceReads(selector, source, left[:, keep], max_relative_shift) if np.any(keep) else None)
+
+
+def _exclusion_policy(selector, source, own_keys):
+    return _ExcludedSourceReads(selector, source)
+
+
 def _self_only(steps, source):
     return (any(step.applied for step in steps)
             and all(step.receipt.status in ("ready", "empty") for step in steps)
@@ -63,12 +94,23 @@ def _self_only(steps, source):
 def retry_cross_source_acquisition(workspace, reader, pin, *, max_seeds, max_source_rows,
                                    max_relative_shift):
     """Reopen self-only misses with a source-deflated query and publish actual changes."""
+    if (type(max_relative_shift) not in (int, float) or not isfinite(max_relative_shift)
+            or not 0 < max_relative_shift <= 1):
+        raise ValueError("cross-source acquisition requires a positive relative shift limit at most one")
+    policy = partial(_deflated_policy, max_relative_shift=max_relative_shift)
+    return _retry(workspace, reader, pin, max_seeds, max_source_rows, policy)
+
+
+def retry_excluding_seed_source(workspace, reader, pin, *, max_seeds, max_source_rows):
+    """Reopen self-only misses without their own source in the selection bank."""
+    return _retry(workspace, reader, pin, max_seeds, max_source_rows, _exclusion_policy)
+
+
+def _retry(workspace, reader, pin, max_seeds, max_source_rows, make_policy):
     import torch
 
     if (not isinstance(reader, NativeLatentModel) or type(max_seeds) is not int or max_seeds <= 0
-            or type(max_source_rows) is not int or max_source_rows <= 0
-            or type(max_relative_shift) not in (int, float) or not isfinite(max_relative_shift)
-            or not 0 < max_relative_shift <= 1):
+            or type(max_source_rows) is not int or max_source_rows <= 0):
         raise ValueError("cross-source acquisition requires finite positive limits")
     _require_cpu_eval(reader._model)
     memory = workspace._opening(reader, pin)
@@ -87,7 +129,6 @@ def retry_cross_source_acquisition(workspace, reader, pin, *, max_seeds, max_sou
     acquired, attempted = dict(selective.acquired), dict(selective.attempted)
     installed = []
     tried = 0
-    query = reader._selector._kernel._query
     with torch.inference_mode():
         for item in islice(candidates, max_seeds):
             tried += 1
@@ -95,12 +136,9 @@ def retry_cross_source_acquisition(workspace, reader, pin, *, max_seeds, max_sou
             address, baseline = reader._run_seed(item, source_only, lookup)
             if not _self_only(baseline.source_steps, source):
                 continue
-            own_keys = selective.shards[source].keys
-            left, singular, _ = np.linalg.svd(query @ own_keys.T, full_matrices=False)
-            keep = singular > singular[0] / 1024
-            if not np.any(keep):
+            policy = make_policy(reader._selector, source, selective.shards[source].keys)
+            if policy is None:
                 continue
-            policy = _DeflatedSourceReads(reader._selector, source, left[:, keep], max_relative_shift)
             worker._selector = policy
             try:
                 changed_address, run = worker._run_seed(item, source_only, lookup)

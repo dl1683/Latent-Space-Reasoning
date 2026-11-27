@@ -239,6 +239,32 @@ recorded routing. The workspace receipt records this run, and the
 publication does not independently replay the alternate worker.
 [CPU and archive checks](RESULTS.md#acquiring-continuations-after-self-only-reads)
 
+#### Retrying with the seed source excluded
+
+[SLICE] An exact source-exclusion worker takes the same eligible
+self-only misses and reruns recurrence with the seed's entire source
+shard absent from source selection. The seed input and address stay
+available to the worker. Source queries are unmodified at the selector
+boundary. Installation applies the same address, ordinary-run and
+value-withholding checks as the deflated retry.
+
+Scoped publications carry a versioned wrapper around their ordinary
+native format and bind each excluded attempt to its seed. Reopen
+recomputes the ranking and cutoff frontier on its eligible bank.
+It checks the recorded scored-row count for attempts made on the
+current source seal. For carried attempts it retains the original
+count and rechecks current eligibility. Reopening a carried receipt
+does not reconstruct the original bank. The original publication
+seal binds that observation. Changing the seed source still
+invalidates its computation because it supplied the initial state.
+The ordinary revision rules also withdraw changed selected evidence
+and reject new rows reaching the saved cutoff.
+
+Late reasoning attaches the same publication through the normal
+reader and uses the full live source bank. Source exclusion is a
+worker policy with additional readback work.
+[Matched software control](RESULTS.md#comparing-source-exclusion-with-deflated-acquisition)
+
 #### Applying a local operation from retained worker rows
 
 [SLICE] `NativeTransportModel` extends the optional-memory reader with

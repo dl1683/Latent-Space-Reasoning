@@ -1125,6 +1125,21 @@ seeds tried and acquired spans. An empty result leaves the head
 at its opening. The task reader uses the same call and memory
 interface as before.
 
+Use `retry_excluding_seed_source(workspace, reader, pin, max_seeds=...,
+max_source_rows=...)` for the direct-exclusion comparator. It shares
+the self-only eligibility, ordinary control and value intervention
+requirements of the deflated retry. It filters the entire seed source
+from worker selection and makes no query projection change at that
+boundary. `memory.continuation_reads(seed)` exposes the
+`excluded_source` on these acquired receipts.
+Reopen validates the eligible cutoff against the live source bank.
+On a later source epoch, `rows_scored` still counts the original
+eligible rows. Treat it as historical telemetry. Use a trusted workspace
+pin to verify the original scope. Both retry functions restart their
+candidate scan on each call. For a matched comparison, use a seed
+budget that covers the same candidate list in each opening workspace.
+Repeated smaller passes can stall on the same refused prefix.
+
 ## Holding later ordinary source inputs fixed
 
 Pass exact question token IDs, an intact reopened selective memory,

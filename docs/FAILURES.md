@@ -48,6 +48,14 @@ and unchanged maintenance under the same live recurrence before
 attributing any task effect to selection geometry.
 [Archive and CPU controls](RESULTS.md#acquiring-continuations-after-self-only-reads)
 
+**Removing a seed direction can remove the whole useful query.**
+When a seed query lies along its own key, orthogonal removal can
+discard its score on a positively aligned outside source as well.
+The live exact-exclusion fixture acquired two continuations where
+deflation acquired zero. Keep direct exclusion in the matched
+comparison and track the later answers and verification cost.
+[Matched control](RESULTS.md#comparing-source-exclusion-with-deflated-acquisition)
+
 **A contrast can separate two convenient rivals while leaving a third.**
 With three full operand bases, the discovered contrast predicted
 $+97$, $-97$ and $+97$. A capped or partial basis search could have
