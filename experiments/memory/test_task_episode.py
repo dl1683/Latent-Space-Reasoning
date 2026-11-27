@@ -1303,6 +1303,69 @@ def test_native_episode_withholds_only_the_pinned_leaf(tmp_path, monkeypatch):
         if address != "L00":
             continue
 
+        request = next(row["data"] for row in left if row["kind"] == "request")
+        input_ids = request["input_ids"]
+        controls = dict(memory=memory, steps=2, max_new_tokens=request["max_new_tokens"])
+        backbone = reader._backbone
+
+        def trace_read(**options):
+            inputs = []
+
+            def record(embeddings, cache=None, *, retain_cache):
+                inputs.append(embeddings.clone())
+                return backbone(embeddings, cache, retain_cache=retain_cache)
+
+            with monkeypatch.context() as patch:
+                patch.setattr(reader, "_backbone", record)
+                result = reader.read_token_ids(input_ids, **controls, **options)
+            return result, inputs
+
+        intact, intact_inputs = trace_read()
+        withheld, withheld_inputs = trace_read(withhold_continuation_value=target)
+        replay, _ = trace_read()
+        assert intact.json_record() == replay.json_record()
+        assert "value_withholding" not in intact.json_record()
+        effect = withheld.value_withholding
+        assert effect.seed == target and effect.step == 2 and effect.changed_input is True
+        assert withheld.json_record()["value_withholding"]["changed_input"] is True
+        assert json.loads(intact.text)["finish"]["open_questions"] == ["L06"]
+        assert json.loads(withheld.text)["finish"]["open_questions"] == ["unresolved"]
+        assert withheld.source_steps[:effect.step] == intact.source_steps[:effect.step]
+        for current, reference in zip(withheld.derived_steps[:effect.step],
+                                      intact.derived_steps[:effect.step], strict=True):
+            assert (current.receipt, current.query, current.cutoff) == (reference.receipt, reference.query,
+                                                                        reference.cutoff)
+        assert all(x.equal(y) for x, y in zip(withheld_inputs[:effect.step], intact_inputs[:effect.step], strict=True))
+        expected_delta = (withheld_inputs[effect.step].double() - intact_inputs[effect.step].double()).abs().max()
+        assert effect.input_max_abs_delta == float(expected_delta) > 0
+        assert not withheld_inputs[effect.step].equal(intact_inputs[effect.step])
+
+        both_values = reader._selector.read_withheld_value
+
+        def sham_value(hidden, shards, seed):
+            full, mass, trace, masked = both_values(hidden, shards, seed)
+            return full, mass, trace, full.copy() if masked is not None else None
+
+        with monkeypatch.context() as patch:
+            patch.setattr(reader._selector, "read_withheld_value", sham_value)
+            sham, sham_inputs = trace_read(withhold_continuation_value=target)
+        assert sham.value_withholding.step == effect.step
+        assert sham.value_withholding.changed_input is False and sham.value_withholding.input_max_abs_delta == 0.0
+        comparable = sham.json_record()
+        del comparable["value_withholding"]
+        assert comparable == intact.json_record()
+        assert all(x.equal(y) for x, y in zip(sham_inputs, intact_inputs, strict=True))
+        with pytest.raises(ValueError, match="matching reopened publication"):
+            memory.evidence_spans(withheld)
+        with pytest.raises(ValueError, match="installed leaf"):
+            trace_read(withhold_continuation_value=parent)
+        with pytest.raises(ValueError, match="intact sealed publication"):
+            reader.read_token_ids(input_ids, withhold_continuation_value=target)
+        unrelated = reader.read_token_ids(tokenizer.encode("follow L07", add_special_tokens=True, truncation=False),
+                                          withhold_continuation_value=target, **controls)
+        assert unrelated.value_withholding.step is None and unrelated.value_withholding.changed_input is None
+        assert json.loads(unrelated.text)["finish"]["open_questions"] == ["L09"]
+
         with pytest.raises(ValueError, match="read-only"):
             reader.maintain(backend._memory, max_seeds=1)
         with pytest.raises(ValueError, match="read-only"):

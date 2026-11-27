@@ -101,6 +101,14 @@ class RetainedSelector:
         return tuple(bank.spans[index] for index in indices[np.argsort(-scores[indices], kind="stable")])
 
     def read(self, hidden, shards):
+        value, mass, step, _ = self._read(hidden, shards)
+        return value, mass, step
+
+    def read_withheld_value(self, hidden, shards, seed):
+        """Also return a mixture with one selected value set to zero."""
+        return self._read(hidden, shards, withheld=seed)
+
+    def _read(self, hidden, shards, *, withheld=None):
         shards = tuple(shards)
         with np.errstate(over="raise", invalid="raise"):
             projected = np.clip(self._kernel._vector(hidden) @ self._kernel._query, -1, 1)
@@ -115,7 +123,7 @@ class RetainedSelector:
         eligible = len(indices)
         if not eligible:
             receipt = SelectionReceipt("empty", (), 0, len(scores))
-            return None, 0.0, SelectionStep(receipt, packed_query, cutoff)
+            return None, 0.0, SelectionStep(receipt, packed_query, cutoff), None
 
         if eligible > self._tie_limit:
             # Keep the greatest scores even when the cutoff group overflows.
@@ -140,13 +148,23 @@ class RetainedSelector:
         receipt = SelectionReceipt(status, tuple(selected), eligible, len(scores))
         trace = SelectionStep(receipt, packed_query, cutoff)
         if status != "ready":
-            return None, 0.0, trace
+            return None, 0.0, trace, None
 
         scores = scores[indices].astype(np.float64) / (_LEVELS ** 2)
         with np.errstate(over="ignore", under="ignore"):
             weights = np.exp((scores - scores[0]) / self._temperature)
         weights /= weights.sum()
-        return (weights @ np.asarray(values)) / _LEVELS, float(scores[0]), trace
+        values = np.asarray(values)
+        full = (weights @ values) / _LEVELS
+        masked = None
+        if withheld is not None:
+            for index, hit in enumerate(selected):
+                if hit.span == withheld:
+                    # Ambiguity and normalization were decided using the original rows.
+                    values[index] = 0
+                    masked = (weights @ values) / _LEVELS
+                    break
+        return full, float(scores[0]), trace, masked
 
 
 def frontier_survives(frontier, changed_sources, revised_shards):

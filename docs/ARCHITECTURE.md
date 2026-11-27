@@ -90,6 +90,14 @@ pin. Each new epoch clears it and leaves historical snapshots available. The add
 span identifies the seed. It does not enumerate contributing sources
 or prove an answer.
 
+For a causal diagnostic on a sealed selective publication, the reader
+can withhold a single leaf value after selection and normalization.
+Keep the keys, selected spans, weights and gain fixed at that step and
+allow later queries to follow the modified hidden state. This isolates
+one value injection. Removing an entire row can also change routing
+and tests a different intervention.
+[Scoped result](RESULTS.md#withholding-a-continuation-value-after-selection)
+
 A raw task enters through the backbone's ordinary token embeddings.
 The caller can pin a chat template that frames the task as a user turn
 and opens the assistant response. Source ingestion uses ordinary source

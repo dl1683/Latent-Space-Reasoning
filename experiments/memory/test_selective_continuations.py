@@ -54,6 +54,25 @@ def test_cutoff_ties_carry_witnesses_and_refuse_overflow():
     assert len(trace.receipt.selected) == 2
 
 
+def test_withholding_one_tied_value_preserves_ready_selection_and_weights():
+    _, selector = _selector(2, top_k=1, tie_limit=2)
+    target, other = _span("target"), _span("other")
+    shard = selector.shard((target, other), [[1, 0], [1, 0]], [[0, 1], [0, 1]])
+    query = [1, 0]
+    value, mass, trace = selector.read(query, (shard,))
+    full, masked_mass, masked_trace, masked = selector.read_withheld_value(query, (shard,), target)
+    assert trace == masked_trace and trace.receipt.status == "ready"
+    assert len(trace.receipt.selected) == 2 and mass == masked_mass == 1
+    np.testing.assert_array_equal(full, value)
+    np.testing.assert_array_equal(masked, [0, 0.5])
+    np.testing.assert_array_equal(shard.values, [[0, 127], [0, 127]])
+
+    conflicting = selector.shard((target, other), [[1, 0], [1, 0]], [[0, 1], [0, 0]])
+    value, mass, trace, masked = selector.read_withheld_value(query, (conflicting,), target)
+    assert trace.receipt.status == "competing" and mass == 0
+    assert value is masked is None
+
+
 def test_overflow_preserves_strict_winners_and_margin_checks_near_cutoff():
     kernel, selector = _selector(2, top_k=2, tie_limit=2)
     source_a = [_span(str(i)) for i in range(3)]

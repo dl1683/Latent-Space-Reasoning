@@ -82,6 +82,14 @@ class _SelectiveWorld:
     forecast_sets: Mapping[SourceSpan, _ForecastSetCheck] = field(default_factory=lambda: MappingProxyType({}))
 
 
+@dataclass(frozen=True, slots=True)
+class NativeValueWithholding:
+    seed: SourceSpan
+    step: int | None = None
+    changed_input: bool | None = None
+    input_max_abs_delta: float | None = None
+
+
 @dataclass(slots=True)
 class _LatentRun:
     hidden: object
@@ -93,6 +101,7 @@ class _LatentRun:
     source_steps: tuple[SelectionStep, ...] = ()
     derived_reads: tuple[SelectionReceipt, ...] = ()
     derived_steps: tuple[SelectionStep, ...] = ()
+    value_withholding: NativeValueWithholding | None = None
 
 
 @dataclass(frozen=True, slots=True, eq=False)
@@ -172,7 +181,8 @@ class NativeSourceMemory:
                 or read.publication_seal != self._publication_seal or read.source_seal != self.seal
                 or read.derived_omitted != self._derived_off or read.omitted_sources != self.omitted_sources
                 or read.omitted_continuation != self._omitted_continuation
-                or read.source_anchor_seed != self._source_anchor_seed):
+                or read.source_anchor_seed != self._source_anchor_seed
+                or read.value_withholding is not None):
             raise ValueError("evidence spans require a read from the matching reopened publication")
 
         def selected(receipts):
@@ -255,6 +265,7 @@ class NativeLatentRead:
 
     omitted_continuation: SourceSpan | None = None
     source_anchor_seed: SourceSpan | None = None
+    value_withholding: NativeValueWithholding | None = None
 
     def json_record(self):
         """Serialize a read receipt, preserving packed queries as hexadecimal."""
@@ -264,6 +275,8 @@ class NativeLatentRead:
             del record["omitted_continuation"]
         if self.source_anchor_seed is None:
             del record["source_anchor_seed"]
+        if self.value_withholding is None:
+            del record["value_withholding"]
         for name in ("source_steps", "derived_steps"):
             for step in record[name]:
                 step["query"] = step["query"].hex()
@@ -636,14 +649,16 @@ class NativeLatentModel:
         delta = torch.tensor(value, dtype=hidden.dtype, device=hidden.device)
         return (gain * weight) * delta
 
-    def _continue(self, hidden, cache, memory, steps):
+    def _continue(self, hidden, cache, memory, steps, *, withhold_continuation_value=None):
         import torch
 
         run = _LatentRun(hidden, cache)
+        if withhold_continuation_value is not None:
+            run.value_withholding = NativeValueWithholding(withhold_continuation_value)
         source_steps, derived_reads, derived_steps = [], [], []
         selective = None if memory is None else memory._selective
         shards = () if selective is None else tuple(selective.shards.values())
-        for _ in range(steps):
+        for step in range(1, steps + 1):
             relay = hidden * self._relay_gain
             thought = relay
             if memory is not None:
@@ -660,11 +675,17 @@ class NativeLatentModel:
                 if selective is not None:
                     receipt = replace(trace.receipt, observed_source_seal=memory.seal)
                     source_steps.append(replace(trace, receipt=receipt, applied=bool(torch.any(thought != relay))))
+                masked_association = None
                 if memory._derived is not None:
                     association, mass = self._moments.read_associations(query, memory._derived)
                     derived_trace = None
                 elif selective is not None and not memory._derived_off:
-                    association, mass, trace = self._selector.read(query, selective.derived)
+                    if withhold_continuation_value is None:
+                        association, mass, trace = self._selector.read(query, selective.derived)
+                    else:
+                        association, mass, trace, masked_association = self._selector.read_withheld_value(
+                            query, selective.derived, withhold_continuation_value,
+                        )
                     receipt = replace(trace.receipt, observed_source_seal=memory.seal)
                     derived_reads.append(receipt)
                     derived_trace = replace(trace, receipt=receipt)
@@ -673,7 +694,17 @@ class NativeLatentModel:
                     derived_trace = None
                 if mass > 0:
                     previous = thought
-                    thought = thought + self._memory_delta(hidden, association, mass, self._derived_gain)
+                    thought = previous + self._memory_delta(hidden, association, mass, self._derived_gain)
+                    if masked_association is not None:
+                        masked = previous + self._memory_delta(hidden, masked_association, mass, self._derived_gain)
+                        change = float(torch.max(torch.abs(thought.double() - masked.double())))
+                        if not isfinite(change):
+                            raise FloatingPointError("nonfinite value-withholding effect")
+                        run.value_withholding = NativeValueWithholding(
+                            withhold_continuation_value, step, change > 0, change,
+                        )
+                        thought = masked
+                        withhold_continuation_value = None
                     run.derived += 1
                     derived_applied = bool(torch.any(thought != previous))
                     run.applied_derived += derived_applied
@@ -1159,17 +1190,25 @@ class NativeLatentModel:
         return self._read_ids_with_limit(input_ids, memory, steps, self._output_tokens)
 
     def read_token_ids(self, input_ids, *, memory=None, steps=None, max_new_tokens=None,
-                       allowed_next_tokens=None):
+                       allowed_next_tokens=None, withhold_continuation_value=None):
         """Read an exact, already-tokenized prompt with a caller-owned output cap.
 
         This is the episode adapter boundary: it consumes the exact prepared
         token sequence rather than decoding and retokenizing its chat frame.
         An optional allowlist callback receives the full prompt-plus-generated
         prefix and returns the vocabulary IDs permitted at the next step.
+        For a diagnostic with an intact sealed publication, withhold one leaf's
+        value at its first ready selection. Later steps read memory normally.
         """
         _require_cpu_eval(self._model)
         if memory is not None:
-            self._check_memory(memory, for_read=True)
+            self._check_memory(memory, for_read=withhold_continuation_value is None)
+        if withhold_continuation_value is not None and (
+                memory is None or memory._publication_seal is None or memory._selective is None
+                or memory._derived_off or memory.omitted_sources
+                or not isinstance(withhold_continuation_value, SourceSpan)
+                or not memory._is_continuation_leaf(withhold_continuation_value)):
+            raise ValueError("withholding a value requires an installed leaf in an intact sealed publication")
         steps = self._step_budget(steps)
         output_limit = self._output_tokens if max_new_tokens is None else max_new_tokens
         if type(output_limit) is not int or not 1 <= output_limit <= self._output_tokens:
@@ -1179,14 +1218,16 @@ class NativeLatentModel:
         input_ids = tuple(input_ids)
         self._check_input_ids(input_ids, self._context_tokens - steps - output_limit)
         return self._read_ids_with_limit(input_ids, memory, steps, output_limit,
-                                         allowed_next_tokens=allowed_next_tokens)
+                                         allowed_next_tokens=allowed_next_tokens,
+                                         withhold_continuation_value=withhold_continuation_value)
 
-    def _read_ids_with_limit(self, input_ids, memory, steps, output_limit, *, allowed_next_tokens=None):
+    def _read_ids_with_limit(self, input_ids, memory, steps, output_limit, *, allowed_next_tokens=None,
+                             withhold_continuation_value=None):
         import torch
 
         with torch.inference_mode():
             hidden, cache = self._backbone(self._embed_ids(input_ids), retain_cache=True)
-            run = self._continue(hidden, cache, memory, steps)
+            run = self._continue(hidden, cache, memory, steps, withhold_continuation_value=withhold_continuation_value)
             hidden, cache = run.hidden, run.cache
             ids = []
             for step in range(output_limit):
@@ -1226,4 +1267,5 @@ class NativeLatentModel:
                                 False if memory is None else memory._derived_off,
                                 run.source_steps, run.derived_steps,
                                 None if memory is None else memory._omitted_continuation,
-                                None if memory is None else memory._source_anchor_seed)
+                                None if memory is None else memory._source_anchor_seed,
+                                run.value_withholding)

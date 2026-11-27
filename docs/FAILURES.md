@@ -471,6 +471,16 @@ tokens and subsequent decisions. Record the effect at phase, action
 and evidence-choice boundaries during generated calibration.
 [Shared decoder control](RESULTS.md#sharing-one-decoder-between-ordinary-and-native-episodes)
 
+**Removing a row also changes the selector, 26 November 2026.** In a
+two-row exact tie, removing either identical nonzero row renormalizes the
+survivor. Zeroing a stored row before the ambiguity gate makes the
+originally ready selection competing. Zeroing one value after the
+selection and normalization instead halves the original mixture. Use the
+[post-selection intervention](RESULTS.md#withholding-a-continuation-value-after-selection)
+when the question is whether the value at one recurrence step affected
+the output. A full-row removal still tests whether subsequent routes can
+recover.
+
 **Changing an address can change the route without changing the answer,
 26 November 2026.** The opening deterministic world left both tested
 prefixes unresolved with its original key. The source anchor let both

@@ -484,6 +484,32 @@ role grammar. The two prefixes share a target and provide no independent
 semantic grade, learned calibration or matched lifecycle advantage.
 [Paired fixture](../experiments/memory/test_task_episode.py)
 
+## Withholding a continuation value after selection
+
+**CPU software control.** On the reopened seven-source publication above, the
+ordinary two-step reader answered `L06` to `follow L00`. With the source pin,
+prompt, original selected spans, scores and softmax weights fixed through
+step two, withholding the worker-acquired leaf's value at that step changed
+the actual input passed to the backbone. The output became `unresolved`.
+A sham using the same intervention code with the intact mixture reproduced
+every backbone input and the ordinary read record apart from the receipt
+for the sham itself. Ordinary replay restored `L06`. The unrelated `L07`
+query never selected the masked target and retained its answer `L09`.
+
+A selector control used two tied rows with identical nonzero values. Both
+stayed selected with the same scores and `ready` decision. Masking one
+halved the mixture. A conflicting pair still produced `competing` and
+never applied the mask. The reader records the first masked step or its
+absence, and the maximum change at the input actually sent to the backbone.
+Subsequent steps can select the same row again. The diagnostic does not
+modify a publication and its receipt is refused by the evidence-span API.
+
+The intervention establishes a one-step numerical dependency on a
+pre-question worker contribution in the supplied role grammar. Independent
+task impact, learned acquisition and the full-cost comparison remain open.
+[Selector fixture](../experiments/memory/test_selective_continuations.py) ·
+[Sealed-reader fixture](../experiments/memory/test_task_episode.py)
+
 ## Reconciling a continuation bank without late tasks
 
 **CPU software control.** A source-only replay on the corrected

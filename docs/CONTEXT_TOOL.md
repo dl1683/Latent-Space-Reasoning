@@ -899,6 +899,25 @@ projected coordinates outside the native bounds. The controller
 verifies the encoder identity and calibration provenance. The wrapper
 does not certify the semantics or range coverage of in-span rows.
 
+## Withholding a continuation value after selection
+
+For a direct numerical diagnostic, call `reader.read_token_ids` with an
+intact reopened selective publication as `memory` and the installed leaf
+`SourceSpan` as `withhold_continuation_value`. The reader computes the
+ordinary receipt and normalized weights. At the first ready selection
+containing that leaf, it substitutes zero for just the leaf's value in
+the mixture. It keeps the selected set, scores, weights and gain at that
+step. Later steps use the resulting trajectory and read normally.
+
+The returned `value_withholding` records the requested span, the one-based
+step if it was reached, and the maximum absolute difference between the
+two inputs at the backbone's actual precision. `changed_input` describes
+that numerical change. If the target was never reached, the step,
+change flag and magnitude serialize as `null`. Inspect subsequent ordered derived selections to see whether
+the target was read again. Calls start a fresh private prefix cache. The
+read-only diagnostic uses the direct token reader and its receipt cannot
+reopen candidate evidence. Standard task episodes use the ordinary reader.
+
 ## Reopening native candidate evidence
 
 After recording the raw answer, call `opened_memory.evidence_spans(read)`
