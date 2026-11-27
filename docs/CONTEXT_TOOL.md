@@ -1079,9 +1079,19 @@ verification, remaining byte budgets and per-item error handling.
 
 The ordered `SCOPED_READ_BATCH` receipt records the owning `need_id`, candidate
 and ordinary read result for each item. Verified read IDs are available
-for ordinary citations as before. This opt-in is for scripted host work.
-The existing compact decoder refuses it.
-[Disjoint access control](RESULTS.md#opening-evidence-for-three-disjoint-needs-in-five-actions)
+for ordinary citations as before.
+
+Use `ScopedCompactSearchReadConstraint(tokenizer, limits)` from
+`experiments.memory.scoped_episode_constraint` for the grouped compact
+interface. It uses the same adapter wiring as the shared decoder and
+publishes its own digest. It builds the grouped allowlist from searches
+already recorded for each need and the host's remaining read allowance.
+The grouped branch uses ordered outer keys `state`, `need_additions` and
+`tool` with compact separators and exact compact serialization of the tool;
+the additions array uses the regular JSON parser. The ordinary compact
+decoder still refuses the grouped opt-in.
+[Disjoint access control](RESULTS.md#opening-evidence-for-three-disjoint-needs-in-five-actions) and
+[adapter replay](RESULTS.md#enforcing-grouped-reads-across-both-episode-adapters)
 
 ## Compact task-episode delivery
 

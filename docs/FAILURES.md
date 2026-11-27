@@ -471,6 +471,15 @@ tokens and subsequent decisions. Record the effect at phase, action
 and evidence-choice boundaries during generated calibration.
 [Shared decoder control](RESULTS.md#sharing-one-decoder-between-ordinary-and-native-episodes)
 
+**A valid schema can fail at decoder compilation, 26 November 2026.**
+The pinned LM Format Enforcer 0.11.3 rejected the Draft 7 positional
+items schema for two different need-scoped reads. The optional grouped
+decoder uses exact tool literals with the ordinary parser for need
+additions. A pinned tokenizer replay still needed smaller pieces for
+three combined punctuation tokens in the final response. Count masking
+effects on generated actions and reports separately from path feasibility.
+[Grouped decoder control](RESULTS.md#enforcing-grouped-reads-across-both-episode-adapters)
+
 **A sealed successor can still have a stale parent.** Independent native
 workers could produce individually valid snapshots from the same opening.
 Choosing a later artifact by arrival time could drop a newer source

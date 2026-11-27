@@ -2593,11 +2593,35 @@ These counts use Transformers 5.12.1 and a cached tokenizer only. The host
 fixture itself uses a different software tokenizer for dispatch.
 
 This establishes disjoint-access feasibility for the short ordinary host
-fixture. It leaves constrained decoding, full stress-token feasibility,
-native comparison, learned planning and evaluator scoring open. The existing
-compact decoder refuses this opt-in. The frozen v7 artifacts and held
-comparison retain their original paths.
+fixture. The frozen v7 artifacts and held comparison retain their original
+paths.
 [Software fixture](../experiments/memory/test_scoped_episode_reads.py)
+
+#### Enforcing grouped reads across both episode adapters
+
+A separate compact decoder enforces both search-to-need pairings for a
+grouped read and uses the host's remaining read allowance to exclude
+unaffordable reads. With deterministic stand-ins, the ordinary and native
+adapters produced identical token allowlists and exact outputs across all
+seven replies, including EOS. The short three-need fixture opened 82 verified
+source bytes in five actions and submitted citations for all three sources.
+
+A token-by-token replay using the cached SmolLM2 tokenizer at the revision
+above and LM Format Enforcer 0.11.3 fit the 8,192 input and 1,792 output
+episode limits and the 512 output limit per call. The seven calls used
+6,856 input tokens and 557 output tokens including EOS, with at most 161
+output tokens in one call. The final response required splitting three
+masked merged punctuation tokens into smaller legal tokens, preserving the
+exact decoded JSON. A separate parser check admitted a grouped reply with
+384 legal ordered pairs compiled from three disjoint sets of eight exposed
+candidates.
+
+These are software controls. The replay supplies the plan, actions and
+answer. Learned planning, effects of token masking on generation, coverage
+on the five-need worlds and the value of native memory remain unevaluated
+by this control. The existing compact decoder and the held comparison keep
+their original paths.
+[Decoder fixture](../experiments/memory/test_scoped_episode_constraint.py)
 
 ## Latent revision software verification, 24–25 November 2026
 

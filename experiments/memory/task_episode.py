@@ -1350,7 +1350,10 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
         decoder = (generate.constraint if isinstance(generate, _PlainCompactBackend)
                    else getattr(native_backend, "_output_token_allowlist", None))
         if isinstance(decoder, CompactSearchReadConstraint):
-            raise ValueError("the existing compact decoder does not support grouped reads")
+            from experiments.memory.scoped_episode_constraint import ScopedCompactSearchReadConstraint
+
+            if not isinstance(decoder, ScopedCompactSearchReadConstraint):
+                raise ValueError("the existing compact decoder does not support grouped reads")
     if isinstance(generate, _PlainCompactBackend):
         generate.constraint.check_episode(policy, limits, tokenizer)
     native_opening = None
@@ -1498,6 +1501,7 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                                              "act_after_plan" if plan_requires_action else "investigate")
             if limits.scoped_read_batches:
                 framed["scoped_read_batches_enabled"] = True
+                framed["scoped_reads_remaining"] = max(0, limits.reads - toolbox.attempts["read"])
             if world.pin.as_of is not None:
                 framed["as_of"] = world.pin.as_of
             if world._receiver is not None:
