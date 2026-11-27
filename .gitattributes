@@ -3,3 +3,5 @@
 # Preserve the owner-authored README vision block byte for byte.
 /README.md -text whitespace=cr-at-eol
 experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_*/* -text whitespace=cr-at-eol
+# Preserve the byte-level hashes of the whole-world planner preflight ledgers.
+experiments/results/whole_world_planner_preflight_2026-11-26_v7/** -text whitespace=cr-at-eol
