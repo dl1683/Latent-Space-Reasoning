@@ -517,6 +517,27 @@ direction. Which mechanism the trained reader uses remains open.
 [Selector fixture](../experiments/memory/test_selective_continuations.py) ·
 [Sealed-reader fixture](../experiments/memory/test_task_episode.py)
 
+## Distinguishing stored consequences from later source reads
+
+**Exact constructed control, independently rerun.** A PPM image specified
+a routing permutation and text supplied terminal labels. Across 552
+ordered image revisions and 4,416 constructed late fields, a reader that
+followed a retained route and a reader that consumed a retained terminal
+both matched the source-aware reference. Replacing each value with its
+alternate changed both answers as predicted on all 3,456 changed fields.
+On those same fields, holding the later ordinary source choice fixed
+prevented the route-mediated change while the terminal reader still
+followed the alternate. The 960 unaffected fields retained their answers.
+
+The rerun checks a finite supplied grammar and an exact mechanism
+distinction. The native forecast workspace control demonstrates an
+answer that depends on a published operation. Identifying the stored
+operation as a terminal computation would additionally require tracing
+or intervening on the later reads that could supply its content. A useful
+maintained route can be judged directly on task quality and full cost
+against an equally warm exact join.
+[Reviewed executable construction](../experiments/memory/multimodal_suffix_causality_control.js)
+
 ## Sharing a native workspace across workers
 
 **CPU software control.** Two handles shared a native publication history.

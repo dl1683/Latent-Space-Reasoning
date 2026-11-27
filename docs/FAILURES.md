@@ -499,6 +499,14 @@ candidate. A publication digest can identify identical source and
 numeric bytes in different workspaces. Bind the forecast to the full
 workspace pin before releasing the witness. [Forecast commit control](RESULTS.md#committing-a-forecast-with-its-source-revision)
 
+An equal-norm value replacement can switch a later ordinary read and
+thereby change the answer. Record the post-intervention source and
+derived selections. For a claim of stored terminal computation, hold
+later source selection fixed or remove the terminal observation under
+a separate read-only diagnostic. The normal rerouting arm continues
+to measure useful maintained links.
+[Multimodal control](RESULTS.md#distinguishing-stored-consequences-from-later-source-reads)
+
 **Exact sharing can lose to ordinary compression.** The eight-pin native
 fixture retained far fewer numeric file bytes with immutable shared blocks
 than with full copies. Independently compressing each sparse stand-in
