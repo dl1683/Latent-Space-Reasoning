@@ -538,6 +538,37 @@ deterministic source grammar. Every successor currently stores a complete
 snapshot. Full lifecycle cost, partitioned worker efficiency, independently
 graded learned answers and storage durability under power loss remain open.
 
+## Sharing unchanged native rows across history
+
+**CPU software control.** The opt-in shared layout and full-copy workspace
+produced equal source seals, publication seals, manifest bytes, numeric bytes
+and late read receipts at all eight pins. The workload used duplicate source
+bodies under separate IDs, inserted a source before the existing rows,
+withdrew a premise, restored its bytes and resumed maintenance. The
+maintained answer was `L06`, disappeared after withdrawal and returned
+after restoration and maintenance. Reintroducing identical source bytes
+staged no additional numeric blocks. A stale worker did not install its
+unique extra block. Process exits were exercised with a block alone, with a
+publication before its SQL commit, and after a successful commit.
+
+| Retained bytes over eight pins | Flat snapshots | Shared blocks | Independently compressed payloads |
+| --- | ---: | ---: | ---: |
+| Numeric file bytes | 37,212 | 6,016 | 1,012 |
+| Recipe file bytes | 0 | 3,952 | 0 |
+| Allocated bytes across numeric files and recipes | 57,344 | 34,496 | 1,048 |
+| Allocated bytes in the whole workspace | 110,592 | 91,840 | unmeasured |
+
+Both workspace layouts stored 30,198 manifest bytes. The allocation counts
+are sums for the retained files from Windows FileStandardInfo and exclude
+directory metadata and original source files. The compressed column uses
+independent zlib level 6 output from each flat numeric file. It measures
+payload storage only, without a compressed workspace reader. The shared
+layout staged exactly its 6,016 unique numeric bytes in the successful
+eight-pin control. The native model stand-in emits highly compressible
+rows. Shared storage's full-cost advantage and learned task value remain
+open. Cold reads still reconstruct, hash and restore all numeric bytes.
+[Parity and recovery fixtures](../experiments/memory/test_native_workspace.py)
+
 ## Reconciling a continuation bank without late tasks
 
 **CPU software control.** A source-only replay on the corrected

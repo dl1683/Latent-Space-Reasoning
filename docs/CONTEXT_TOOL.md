@@ -923,6 +923,16 @@ An interrupted first creation without a head can be restarted from the same
 opening snapshot in a new directory. This is a cooperating local filesystem
 interface with process-exit tests. Power-loss durability remains unverified.
 
+For a new workspace, `share_rows=True` enables immutable numeric block
+storage. The default uses a full numeric file per publication. Existing
+workspaces keep their stored layout. Shared workspaces require their block
+directory, and a committed pin uses the same logical byte allowance in
+either layout. Keep the manifest, recipe, blocks, database and source feed
+when preserving history. A cold attach reconstructs and verifies the entire
+numeric payload. Missing or corrupt blocks refuse the associated reads.
+Interrupted installs can leave unreferenced blocks. These are retained for
+possible reuse, and current readers verify their content before use.
+
 ## Withholding a continuation value after selection
 
 For a direct numerical diagnostic, call `reader.read_token_ids` with an

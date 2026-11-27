@@ -8,7 +8,11 @@ import sqlite3
 from tempfile import TemporaryDirectory
 from uuid import uuid4
 
-from experiments.memory.native_publication import _enforce_limit, read_native_publication, write_native_publication
+from experiments.memory.native_publication import (
+    _enforce_limit, _read_native_publication, _write_native_publication, read_native_publication,
+    write_native_publication,
+)
+from experiments.memory.native_workspace_rows import SharedNativeRows
 from experiments.memory.verified_source_tool import require_digest, sha256
 
 
@@ -58,16 +62,24 @@ class NativeWorkspace:
         self._configure(directory, runtime_sha256, max_bytes)
         with closing(self._connect()) as db:
             self._workspace_id = self._binding(db)
+            self._share_rows = self._has_shared_layout(db)
+            if self._share_rows and not self._blocks.is_dir():
+                raise ValueError("native shared numeric store is missing")
             if self._head(db) is None:
                 raise ValueError("native workspace has no committed publication")
 
     @classmethod
-    def create(cls, directory, reader, memory, *, runtime_sha256, max_bytes):
+    def create(cls, directory, reader, memory, *, runtime_sha256, max_bytes, share_rows=False):
         """Create a new workspace from an intact selective snapshot."""
+        if type(share_rows) is not bool:
+            raise ValueError("native workspace row sharing flag must be a boolean")
         workspace = cls.__new__(cls)
         workspace._configure(directory, runtime_sha256, max_bytes)
         workspace._directory.mkdir(mode=0o700)
         workspace._objects.mkdir(mode=0o700)
+        workspace._share_rows = share_rows
+        if share_rows:
+            workspace._blocks.mkdir(mode=0o700)
         workspace._workspace_id = sha256(uuid4().bytes)
         with closing(workspace._connect(create=True)) as db:
             db.execute("BEGIN IMMEDIATE")
@@ -84,6 +96,9 @@ class NativeWorkspace:
                 CHECK ((revision = 0 AND parent_seal IS NULL AND operation = 'open') OR
                        (revision > 0 AND parent_seal IS NOT NULL AND operation IN ('maintain', 'revise')))
             )""")
+            if share_rows:
+                db.execute("CREATE TABLE native_numeric_layout (version INTEGER NOT NULL)")
+                db.execute("INSERT INTO native_numeric_layout VALUES (1)")
             db.execute("COMMIT")
         workspace._commit(reader, memory, None, operation="open")
         return workspace
@@ -93,10 +108,12 @@ class NativeWorkspace:
         _enforce_limit(max_bytes)
         self._directory = Path(directory).resolve()
         self._objects = self._directory / "objects"
+        self._blocks = self._directory / "numeric-blocks"
         self._database = self._directory / "publications.sqlite3"
         self._runtime = runtime_sha256
         self._max_bytes = max_bytes
         self._workspace_id = None
+        self._share_rows = False
 
     def _connect(self, *, create=False):
         mode = "rwc" if create else "rw"
@@ -111,6 +128,16 @@ class NativeWorkspace:
             db.close()
             raise
         return db
+
+    @staticmethod
+    def _has_shared_layout(db):
+        present = db.execute("SELECT 1 FROM sqlite_master WHERE type = 'table' "
+                             "AND name = 'native_numeric_layout'").fetchone()
+        if present is None:
+            return False
+        if db.execute("SELECT version FROM native_numeric_layout").fetchall() != [(1,)]:
+            raise ValueError("unknown native shared numeric layout")
+        return True
 
     def _binding(self, db):
         record = db.execute("SELECT runtime, workspace_id FROM native_workspace WHERE id = 1").fetchone()
@@ -156,10 +183,15 @@ class NativeWorkspace:
                 raise ValueError("native workspace pin is not committed in this history")
         return self._read(self._objects / pin.publication_seal, reader, pin)
 
-    def _read(self, directory, reader, pin):
-        return read_native_publication(directory, reader, seal=pin.publication_seal,
-                                       source_seal=pin.source_seal, runtime_sha256=self._runtime,
-                                       max_bytes=self._max_bytes)
+    def _read(self, directory, reader, pin, *, shared=None):
+        options = dict(seal=pin.publication_seal, source_seal=pin.source_seal,
+                       runtime_sha256=self._runtime, max_bytes=self._max_bytes)
+        if self._share_rows:
+            if not self._blocks.is_dir():
+                raise ValueError("native shared numeric store is missing")
+            shared = shared if shared is not None else SharedNativeRows(self._blocks, self._max_bytes)
+            return _read_native_publication(directory, reader, **options, read_rows=shared.read_rows)
+        return read_native_publication(directory, reader, **options)
 
     @staticmethod
     def _expect(expected, current):
@@ -200,10 +232,19 @@ class NativeWorkspace:
             raise ValueError("native revision must extend its opening source seal")
         with TemporaryDirectory(prefix=".draft-", dir=self._objects) as temporary:
             staged = Path(temporary) / "publication"
-            seal = write_native_publication(staged, reader, memory, runtime_sha256=self._runtime,
-                                            max_bytes=self._max_bytes)
+            options = dict(runtime_sha256=self._runtime, max_bytes=self._max_bytes)
+            shared = None
+            if self._share_rows:
+                if not self._blocks.is_dir():
+                    raise ValueError("native shared numeric store is missing")
+                draft = Path(temporary) / "numeric"
+                draft.mkdir(mode=0o700)
+                shared = SharedNativeRows(self._blocks, self._max_bytes, draft=draft)
+                seal = _write_native_publication(staged, reader, memory, **options, write_rows=shared.write_rows)
+            else:
+                seal = write_native_publication(staged, reader, memory, **options)
             pin = NativeWorkspacePin(self._workspace_id, revision, memory.seal, seal)
-            verified = self._read(staged, reader, pin)
+            verified = self._read(staged, reader, pin, shared=shared)
             if opening_reader_sha256 is not None and verified._reader_fingerprint_sha256 != opening_reader_sha256:
                 raise ValueError("native workspace successor changed the opening reader")
             destination = self._objects / seal
@@ -218,6 +259,8 @@ class NativeWorkspace:
                     if not found:
                         if destination.exists():
                             continue
+                        if shared is not None:
+                            shared.install()
                         staged.rename(destination)
                     db.execute("INSERT INTO native_publications VALUES (?, ?, ?, ?, ?)",
                                (pin.revision, pin.source_seal, pin.publication_seal, parent_seal, operation))

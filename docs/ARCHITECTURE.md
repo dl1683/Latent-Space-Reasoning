@@ -931,6 +931,16 @@ hands workers sealed pins is the simpler comparator. Learned worker value,
 distributed storage and power-loss recovery remain open.
 [Workspace control](RESULTS.md#sharing-a-native-workspace-across-workers)
 
+The optional shared-row layout keeps the canonical sealed manifest and
+orders the same numeric payload by references to immutable blocks. Each
+block covers one nonempty source shard or one acquired continuation.
+Sources with equal blocks retain their own versions, spans and provenance.
+The layout is pinned in workspace metadata. A late reader verifies each
+block, recomputes the complete payload hash and invokes the ordinary
+native restore path. Sparse changes can reduce writes. Cold attachment
+still reads and verifies all referenced rows. A changed source shard
+stores a new block. [Storage comparison](RESULTS.md#sharing-unchanged-native-rows-across-history)
+
 ### Recurrent numerical revision candidate
 
 [SLICE] The NumPy [latent field](../experiments/memory/latent_field.py) implements an initial operation for revising coupled numerical state. Each cell holds a drive $b_i$ and a width-$d$ state $z_i$. A directed weight block $W_{ij}$ maps a message from cell $j$ into cell $i$. The shared synchronous transition computes $z_i' = \tanh(b_i + \sum_j W_{ij}z_j)$ coordinatewise. The caller supplies the drives and weights. Relation provenance and source text stay outside the transition.

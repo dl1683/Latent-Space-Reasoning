@@ -481,6 +481,15 @@ outside committed history. A corrupted orphan blocks reuse of that
 object. The guarded head also refuses a staged successor whose reader changed
 since opening. [Workspace control](RESULTS.md#sharing-a-native-workspace-across-workers)
 
+**Exact sharing can lose to ordinary compression.** The eight-pin native
+fixture retained far fewer numeric file bytes with immutable shared blocks
+than with full copies. Independently compressing each sparse stand-in
+payload used fewer bytes still. A corrupt shared block can affect several
+pins, and cold attachment continues to verify complete payloads. Keep the
+flat layout as default and charge allocation, recipes, verification and
+orphan retention in realistic histories.
+[Storage comparison](RESULTS.md#sharing-unchanged-native-rows-across-history)
+
 **Removing a row also changes the selector, 26 November 2026.** In a
 two-row exact tie, removing either identical nonzero row renormalizes the
 survivor. Zeroing a stored row before the ambiguity gate makes the

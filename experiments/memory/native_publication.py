@@ -208,19 +208,38 @@ def _metadata(reader, memory):
     return header
 
 
-def _numeric_blocks(memory):
+def _numeric_groups(memory):
     selective = memory._selective
     for source, items in sorted(memory._sources.items()):
         if items:
-            yield np.asarray([item.row for item in items], dtype="<f8")
-            yield selective.shards[source].keys
+            yield (np.asarray([item.row for item in items], dtype="<f8"), selective.shards[source].keys)
     if selective.derived:
         for seed in selective.derived[0].spans:
-            yield _continuation_rows(selective.acquired[seed])
+            yield (_continuation_rows(selective.acquired[seed]),)
+
+
+def _write_flat_rows(directory, groups, size):
+    digest = hashing()
+    with (directory / "rows.bin").open("xb") as handle:
+        for group in groups:
+            for array in group:
+                block = memoryview(array).cast("B")
+                handle.write(block)
+                digest.update(block)
+        if handle.tell() != size:
+            raise ValueError("native publication numeric sizes differ")
+        handle.flush()
+        fsync(handle.fileno())
+    return digest.hexdigest()
 
 
 def write_native_publication(directory, reader, memory, *, runtime_sha256, max_bytes):
     """Write a selective snapshot to a new directory and return its external seal."""
+    return _write_native_publication(directory, reader, memory, runtime_sha256=runtime_sha256,
+                                     max_bytes=max_bytes, write_rows=_write_flat_rows)
+
+
+def _write_native_publication(directory, reader, memory, *, runtime_sha256, max_bytes, write_rows):
     require_digest(runtime_sha256)
     _enforce_limit(max_bytes)
     reader._check_memory(memory)
@@ -241,17 +260,7 @@ def write_native_publication(directory, reader, memory, *, runtime_sha256, max_b
         raise ValueError("native publication exceeds its byte allowance")
     root = Path(directory)
     root.mkdir(mode=0o700)
-    payload_hash = hashing()
-    with (root / "rows.bin").open("xb") as handle:
-        for array in _numeric_blocks(memory):
-            block = memoryview(array).cast("B")
-            handle.write(block)
-            payload_hash.update(block)
-        if handle.tell() != payload_bytes:
-            raise ValueError("native publication numeric sizes differ")
-        handle.flush()
-        fsync(handle.fileno())
-    header["rows_sha256"] = payload_hash.hexdigest()
+    header["rows_sha256"] = write_rows(root, _numeric_groups(memory), payload_bytes)
     manifest = _encode(header)
     pending = root / "manifest.pending"
     with pending.open("xb") as handle:
@@ -732,6 +741,16 @@ def _restore(header, reader, raw, seal, scope):
 
 def read_native_publication(directory, reader, *, seal, source_seal, runtime_sha256, max_bytes):
     """Attach a trusted publication to a matching live reader without backbone work."""
+    return _read_native_publication(directory, reader, seal=seal, source_seal=source_seal,
+                                    runtime_sha256=runtime_sha256, max_bytes=max_bytes,
+                                    read_rows=_read_flat_rows)
+
+
+def _read_flat_rows(root, size):
+    return _read_bounded(root / "rows.bin", size)
+
+
+def _read_native_publication(directory, reader, *, seal, source_seal, runtime_sha256, max_bytes, read_rows):
     for digest in (seal, source_seal, runtime_sha256):
         require_digest(digest)
     _enforce_limit(max_bytes)
@@ -755,7 +774,7 @@ def read_native_publication(directory, reader, *, seal, source_seal, runtime_sha
         rows_bytes = header["rows_bytes"]
         if not _between(rows_bytes, 0, max_bytes - len(manifest)):
             raise ValueError("native publication exceeds its byte allowance")
-        raw = _read_bounded(root / "rows.bin", rows_bytes)
+        raw = read_rows(root, rows_bytes)
         if len(raw) != rows_bytes or sha256(raw) != header["rows_sha256"]:
             raise ValueError("native publication numeric bytes differ")
         if header["reader"] != _reader_digest(reader):
