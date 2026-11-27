@@ -1,0 +1,72 @@
+{
+  "schema": "lsr-independent-operation-packet-v1",
+  "classification": "synthetic independently authored source-event diagnostic; no learned result",
+  "calibration_sources": [
+    {
+      "id": "50f7ed727e007ddb2e5e55ca968d247e",
+      "text": "South yard independent role notation: Primary is the upper labeled row; Reserve is the lower labeled row. A row's printed label determines its role, not the color or its position in a sentence. READY and HOLD are state labels."
+    },
+    {
+      "id": "9953455e8cc37b391f1607aafa226973",
+      "text": "South yard sample inspection: Reserve=HOLD, Primary=READY. This means upper labeled row READY and lower labeled row HOLD."
+    },
+    {
+      "id": "00150a1034d0220bf6c5c37de5834987",
+      "text": "South yard sample inspection: Primary=HOLD, Reserve=READY. This means upper labeled row HOLD and lower labeled row READY."
+    }
+  ],
+  "opening_sources": [
+    {
+      "id": "9b488ab774b2d467044cb76dc70c277a",
+      "text": "North quay controller manual: a board has Primary and Reserve channels. Each displays READY or HOLD. Exchange interchanges the two existing channel states. Override writes the requested state to Primary and leaves Reserve unchanged. A batch executes both actions exactly once. Firmware families differ only in whether exchange precedes override or override precedes exchange. This archived manual does not identify which family is installed."
+    },
+    {
+      "id": "4143f4fcb1cdffb95cc75741df6acd91",
+      "text": "Commissioning record: the installed North quay controller completed a batch starting with Primary=HOLD and Reserve=HOLD, requesting override HOLD. The final board showed HOLD on both channels. A second batch started with both READY and requested override READY; the final board showed READY on both channels. These observations certify neither firmware family."
+    },
+    {
+      "id": "088e8c47a1dfd61f7e23a69fe2f08cec",
+      "text": "Audit policy: only the independent final board photograph attached to a field replay request is authoritative for the outcome of that request. A maintenance notice announcing a different execution order supersedes earlier installation records at its effective revision; identical notices with a different order are not equivalent. Historical revision questions use the order effective at the requested pin. A withdrawn notice is not affirmative evidence of either order."
+    }
+  ],
+  "event_cards": [
+    {
+      "source": {
+        "id": "cc87a5a2a23036def428a6654620fb2a",
+        "text": "Field replay request. Before the batch, Primary=READY; Reserve=READY. The override request sets Primary=HOLD. Apply the installed controller's batch of one exchange and one override, then inspect the final board."
+      },
+      "release_sha256": "f2cd089539b80c4abe39c7f18c12e0e65399e313141d12c5614d9f581c187083"
+    },
+    {
+      "source": {
+        "id": "553cb897e1f313b1b7cc431343c911e3",
+        "text": "Field replay request. Before the batch, Primary=READY; Reserve=READY. The override request sets Primary=READY. Apply the installed controller's batch of one exchange and one override, then inspect the final board."
+      },
+      "release_sha256": "13f45a63cc795b06557a564ad17025a11f4d8f01496d390355f4cf5cbd033cb4"
+    },
+    {
+      "source": {
+        "id": "e101395370d5d5b9b75991b41cff0db1",
+        "text": "Field replay request. Before the batch, Primary=HOLD; Reserve=HOLD. The override request sets Primary=READY. Apply the installed controller's batch of one exchange and one override, then inspect the final board."
+      },
+      "release_sha256": "c4fdb194ab57961e17f47391fb6ef0094d425a8f609c67c6bf7d1c4cb00d408e"
+    },
+    {
+      "source": {
+        "id": "ca36dff17148ad83c83d20063ddc7585",
+        "text": "Field replay request. Before the batch, Primary=HOLD; Reserve=HOLD. The override request sets Primary=HOLD. Apply the installed controller's batch of one exchange and one override, then inspect the final board."
+      },
+      "release_sha256": "998f371a3b9f355e71f0a4c58543fb662c2da10cebc49716b141e51bb93cb16f"
+    }
+  ],
+  "neutral_only_control_ids": [
+    "553cb897e1f313b1b7cc431343c911e3",
+    "ca36dff17148ad83c83d20063ddc7585"
+  ],
+  "held_commitments": {
+    "late-tasks.json": "89c8c66ea6cd3914c39957f0564ac2afd445b069a5b2e99e50d559fa59a2d096",
+    "revision.json": "c162dbb5f3722d6217cb887584870b05e49d39b3fd36430d412d74fb817f1082",
+    "restoration.json": "fa6eb010edcaa0d41906c1c06c1a6eae0cd3b79993ff98edd36452cb8c95f4c4",
+    "grader.json": "d7f33de1a8dec4bb9e1590bf5f21f3a6752d09d3318efc5e614c872e276c340e"
+  }
+}
