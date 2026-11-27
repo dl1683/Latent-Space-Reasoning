@@ -1495,15 +1495,13 @@ batch is incomplete. Hand the
 sealed first-answer transcripts to the independent grader according
 to the custody protocol. [Independent limits](INDEPENDENT_ORDINARY_GATE_AND_SCALAR_BOUNDARY.md#frozen-ordinary-access-contract)
 
-On the authorized controller, use a dedicated private output parent and
-an external hard process deadline. For example, on Linux with GNU coreutils
-`timeout`, set the input and output variables to the confirmed input-only
-packet and a new output directory outside the checkout, then run:
-
-```sh
-umask 077
-timeout --signal=KILL 45m python -m experiments.memory.run_independent_ordinary_gate --input "$INPUT" --output "$OUTPUT"
-```
+**Execution hold.** The current standalone controller still pins the earlier
+Linux and Qwen profile. Reconcile that pin with the authorized, policy-compliant
+model and the host's runtime before launch. Obtain the confirmed input-only
+packet and explicit one-time authorization. Use a private output parent outside
+the checkout and an external hard process deadline covering model load and
+blocked forwards. The [prior Linux command](https://github.com/dl1683/Latent-Space-Reasoning/blob/a67277de262c80ac6d726fe55046a35f71002691/docs/CONTEXT_TOOL.md#running-the-four-case-ordinary-calibration)
+records how the earlier profile was wrapped.
 
 The adapter verifies the frozen input digest and schema, rejects input/output
 paths inside the checkout, and writes a one-attempt marker in the output

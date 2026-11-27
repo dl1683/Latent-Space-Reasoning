@@ -19,7 +19,7 @@ Scope: this is a bound on distinct *registered need IDs with nonempty citations*
 
 ## Audit of all 22 recorded episodes
 
-Read the archived [v7 ledgers](../experiments/results/whole_world_planner_preflight_2026-11-26_v7/) at the pinned commit via the repository API. All 22 (11 source pins, full and compact delivery) declared five need IDs, performed four successful byte-verified reads (two each under n1 and n2), cited only n1 and n2, and ended with five scripted unknown findings. Across the archive:
+Read the archived [v7 ledgers](https://github.com/dl1683/Latent-Space-Reasoning/tree/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/results/whole_world_planner_preflight_2026-11-26_v7) at the pinned commit via the repository API. All 22 (11 source pins, full and compact delivery) declared five need IDs, performed four successful byte-verified reads (two each under n1 and n2), cited only n1 and n2, and ended with five scripted unknown findings. Across the archive:
 
 | Quantity | Count |
 | --- | ---: |

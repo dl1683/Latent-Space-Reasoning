@@ -163,7 +163,7 @@ calibration, hold the qualified operator fixed while testing routing,
 then supply its identity while testing separately acquired operand
 directions or separate role projections. This distinguishes lack of
 coverage from an operator that cannot compute on the incoming state.
-[Archived bound](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-one-shared-coordinate-change-supply-both-operands)
+[Archived bound](https://github.com/dl1683/Latent-Space-Reasoning/blob/a67277de262c80ac6d726fe55046a35f71002691/docs/ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-one-shared-coordinate-change-supply-both-operands)
 
 #### Bounding a consequence when the operand is outside the span
 
@@ -558,7 +558,7 @@ recomputation controls before treating a fit as support. The local
 regression analogy also suggests a fitted-at-maintenance comparator.
 [Prototype result](RESULTS.md#applying-a-retained-operation-to-a-new-latent-input) · [Local Linear Attention](https://proceedings.iclr.cc/paper_files/paper/2026/hash/f9af970430ac401594ce01022fccb049-Abstract-Conference.html) · [Test-time regression](https://www.jmlr.org/papers/v27/25-0903.html)
 
-The [archived identity-grid analysis](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
+The [archived identity-grid analysis](https://github.com/dl1683/Latent-Space-Reasoning/blob/a67277de262c80ac6d726fe55046a35f71002691/docs/ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
 rules out reconstruction with the unchanged bank for both recorded late
 queries. A candidate successor separates the operation key from the input
 it receives. The task state $h$ would bind source-demonstrated roles
@@ -1063,7 +1063,7 @@ while holding the acquired operation and verification opportunity fixed.
 A source-anchor key is a control for a learned task-compatible key. Judge
 both by task outcomes and rerouting side effects after edits. Retain current
 hidden-state addressing as the comparator.
-[Archived diagnosis](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md) · [Software control](RESULTS.md#isolating-one-retained-computation-across-a-source-revision)
+[Archived diagnosis](https://github.com/dl1683/Latent-Space-Reasoning/blob/a67277de262c80ac6d726fe55046a35f71002691/docs/ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md) · [Software control](RESULTS.md#isolating-one-retained-computation-across-a-source-revision)
 
 #### Separating a retained value from a later ordinary read
 

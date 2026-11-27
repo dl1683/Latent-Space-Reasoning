@@ -34,8 +34,6 @@ MODEL_PATH = Path(os.environ.get(
     HF_CACHE_ROOT / "hub" / "models--Qwen--Qwen3-0.6B" / "snapshots" / MODEL_REVISION,
 ))
 VISIBLE = Path(__file__).with_name("whole_world_calibration_visible.json")
-DEFAULT_OUTPUT = (Path(__file__).parents[1] / "results"
-                  / "whole_world_planner_preflight_2026-11-26_v7" / "summary.json")
 INPUT_LIMIT = 32768
 CONTEXT_LIMIT = 8192
 OUTPUT_LIMIT = AGGREGATE_OUTPUT_TOKENS
@@ -539,7 +537,8 @@ def preflight(tokenizer, base_tokenizer, ledger_dir):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--output", type=Path, required=True,
+                        help="Path to summary.json in a new output directory")
     args = parser.parse_args(argv)
     if not MODEL_PATH.is_dir():
         raise FileNotFoundError(f"pinned local tokenizer snapshot is unavailable: {MODEL_PATH}")

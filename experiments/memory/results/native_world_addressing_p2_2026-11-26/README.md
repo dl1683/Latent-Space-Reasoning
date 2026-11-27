@@ -59,4 +59,4 @@ Neither ordinary Qwen full-text nor the native full-text arm solved it, and the
 active derived route was unused. It cannot compare latent memory against a
 competent text reasoner. Stop this fixture here. A later broad T8 one-shot also
 missed its critical needs, so the competence gate remains unmet; see the
-[separate T8 record](../whole_world_t8_direct_text_2026-11-26/README.md).
+[separate T8 record](https://github.com/dl1683/Latent-Space-Reasoning/blob/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/memory/results/whole_world_t8_direct_text_2026-11-26/README.md).

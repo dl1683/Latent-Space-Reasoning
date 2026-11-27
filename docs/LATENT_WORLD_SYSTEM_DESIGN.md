@@ -528,12 +528,14 @@ criteria. Preserve the separate Rank 1 pause and the sealed independent grader.
 
 ### Gate 1 — Qualify the ordinary reader
 
-First obtain the frozen input-only packet through its custodian; do not infer
-missing input from public fixtures. On the actual execution host, verify the
-pinned model and tokenizer checkpoints, digest, and at least 12 GiB of free RAM
-before loading. If the host fails that floor, record `NOT_RUN` and preserve the
-packet. Run once with the pinned 0.6B CPU generation contract and an external
-45-minute hard watchdog, which must cover loading and blocked model calls. The
+Obtain explicit one-time owner authorization and the frozen input-only packet
+through its custodian. Resolve the earlier controller profile against the
+owner's current model policy before launching. On the actual execution host,
+verify the compliant model and tokenizer pins, digest, and at least 12 GiB
+of free RAM before loading. If the host fails that floor, record `NOT_RUN`
+and preserve the packet. Run once with the authorized CPU generation contract
+and an external hard watchdog covering loading and blocked model calls. See
+the [controller contract](CONTEXT_TOOL.md#running-the-four-case-ordinary-calibration). The
 packet tests two direct and two composed tasks, including source revision and
 lookup keys absent from task wording. Grade after first answers are sealed;
 do not retry or tune against the grader. Require 4/4 complete, grounded
@@ -554,6 +556,8 @@ the calibration matrix or use model-generated plans. The 8-task model planner
 gate remains unqualified. Require every legal calibration path to fit before
 inference; if one does not, revise the wire or the budget identically across
 all comparison arms.
+For a fresh software preflight, pass `--output` with a new summary path to the
+[planner preflight runner](../experiments/memory/whole_world_planner_preflight.py).
 Require parseable termination, no missing critical needs, correct citations,
 and justified unknowns. Do not count scripted calls as model competence.
 
@@ -747,7 +751,7 @@ not complete this design or establish a latent-world advantage. See the
 and [latest reader result](RESULTS.md#fresh-06b-reader-competence-screen-27-november-2026).
 
 The planner's current five-need wire preflight is also still failing its
-registered budget. Details are in the [failure ledger](FAILURES.md#compact-task-planner-failures-26-november-2026)
+registered budget. Details are in the [failure ledger](FAILURES.md#five-need-planner-budget-failure)
 and [schema/token preflight](RESULTS.md#five-need-whole-world-schema-and-token-preflight).
 These are engineering and competence prerequisites; neither yet supplies the
 missing learned task-to-world addressing evidence.

@@ -134,7 +134,7 @@ reconstruct both operands at one exact address. Each probe alone
 admits a tailored orthogonal split in the relaxed calculation.
 Calibrate address and operand roles separately before pursuing a
 shared-space repair on fresh inputs.
-[Exact archived bound](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-one-shared-coordinate-change-supply-both-operands)
+[Exact archived bound](https://github.com/dl1683/Latent-Space-Reasoning/blob/a67277de262c80ac6d726fe55046a35f71002691/docs/ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-one-shared-coordinate-change-supply-both-operands)
 
 **A projected center can make a decision the retained rows do not support.**
 Two bounded linear rows agreed on every retained basis value and
@@ -708,7 +708,7 @@ reconstruction error as the missed worker key. Keep the source anchor
 as a routing control. Compare a separate operand representation with
 on-demand recomputation before expecting route changes to recover a
 bounded signed operation.
-[Exact archive replay](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
+[Exact archive replay](https://github.com/dl1683/Latent-Space-Reasoning/blob/a67277de262c80ac6d726fe55046a35f71002691/docs/ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
 
 **A maintained visual rule can be correct on too few inputs to scale.**
 The frozen geometry-and-palette family solved seven of 400 public
@@ -1201,8 +1201,9 @@ same action cap while charging each read. The short scripted result does
 not qualify the existing decoder or the five-need stress workload.
 [Disjoint host control](RESULTS.md#opening-evidence-for-three-disjoint-needs-in-five-actions)
 
-**The five-need planner contract exceeds the registered episode budget, 26
-November 2026.** A visible-only, scripted preflight completed 22/22 episodes
+### Five-need planner budget failure
+
+On 26 November 2026, a visible-only, scripted preflight completed 22/22 episodes
 over 11 source pins under exploratory ceilings of 32,768 input tokens and
 4,096 output tokens. The maximum legal two-need plan was 927 tokens, the
 five-need final was 806, and the seven-call output bound was 3,376. Against
@@ -1222,7 +1223,7 @@ for its scope and exact structural counts. Keep the gate closed until the
 wire format, evidence-sharing semantics and capacity for disjoint needs are
 qualified, or all comparison arms receive a documented budget revision. Exact
 ledgers, summary and checksums are in
-[`whole_world_planner_preflight_2026-11-26_v7`](../experiments/results/whole_world_planner_preflight_2026-11-26_v7/).
+[`whole_world_planner_preflight_2026-11-26_v7`](https://github.com/dl1683/Latent-Space-Reasoning/tree/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/results/whole_world_planner_preflight_2026-11-26_v7).
 
 A [matched retokenization](RESULTS.md#where-the-compact-five-need-budget-goes)
 found that packing field names alone left all 11 serialized compact traces
@@ -1244,7 +1245,7 @@ grounding. No native maintenance arm ran. It does not measure a latent-memory
 effect or a general model ceiling. Do not tune or rerun this task; choose a
 fresh task with separately gradeable generated findings that a competent text
 or iterative-RAG control can solve before opening the maintenance comparison.
-[Frozen record](../experiments/memory/results/native_world_fresh_gate_2026-11-26/README.md)
+[Frozen record](https://github.com/dl1683/Latent-Space-Reasoning/blob/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/memory/results/native_world_fresh_gate_2026-11-26/README.md)
 
 **A small 0.6B reader screen found direct facts but failed composed conclusions, 27 November 2026.**
 Across 18 sessions on six fresh synthetic task-pins, no U, neutral-obligation,

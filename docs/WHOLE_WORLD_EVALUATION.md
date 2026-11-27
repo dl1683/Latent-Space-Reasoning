@@ -434,7 +434,7 @@ template and framing on those examples. Token counts on the actual
 independent cases and learned performance remain unmeasured.
 The input and grader stay in separate custody.
 
-The [reviewer's competence diagnostic](FRESH_REASONER_COMPETENCE_DIAGNOSTIC.md)
+The [reviewer's competence diagnostic](https://github.com/dl1683/Latent-Space-Reasoning/blob/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/docs/FRESH_REASONER_COMPETENCE_DIAGNOSTIC.md)
 separates unassisted need inference and answer generation from two
 assisted diagnostic arms. Only an unassisted, supported answer qualifies
 ordinary competence. The operation screen requires at least two late
@@ -445,7 +445,7 @@ uses two supplied bindings for the mechanism check. Geometric support
 and accurate consequences on independently chosen inputs remain
 separate gates.
 
-The [archived span check](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
+The [archived span check](https://github.com/dl1683/Latent-Space-Reasoning/blob/a67277de262c80ac6d726fe55046a35f71002691/docs/ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
 makes a route-only repair insufficient for the existing signed fit on
 these task states. Retain source anchors as a routing control. For the
 operation comparison, freeze a separate encoding of task operands on

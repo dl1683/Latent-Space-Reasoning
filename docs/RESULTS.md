@@ -156,6 +156,10 @@ inference, task-level finding support, the planner's search/read loop, or an
 iterative-RAG/exact-join comparison. The 0.6B competence gate and whole-world
 evaluation remain unpassed.
 
+## Closed codec equivalence controls
+
+The UTF-8 quotient saved 71–76% of revised membership reads against an unabstracted cold fit. With the stronger adaptive cold learner, warm retention saved 2.6–4.0% on two Base64 revisions and cost up to 26% more on six Base32 revisions. All 18 arms agreed on their respective finite test panels. Acceptance-equivalent Base32 settings could still return different decoded bytes. The codec line is closed. Carry forward the readout-dependent equivalence boundary and equal adaptive cold comparison into corpus-derived operations. [UTF-8 evidence](https://github.com/dl1683/Latent-Space-Reasoning/blob/a67277de262c80ac6d726fe55046a35f71002691/docs/REVISION_STABLE_OPERATION_EQUIVALENCE.md) · [Adaptive cold controls](https://github.com/dl1683/Latent-Space-Reasoning/blob/a67277de262c80ac6d726fe55046a35f71002691/docs/ADAPTIVE_COLD_OPERATION_EQUIVALENCE.md) · [Frozen codec runner](https://github.com/dl1683/Latent-Space-Reasoning/blob/a67277de262c80ac6d726fe55046a35f71002691/experiments/memory/adaptive_operation_quotient_pilot.py)
+
 ## Qualifying a byte-weighted revision forecast, 26 November 2026
 
 **Software controls.** Two newly introduced rows of 32 and 10 bytes
@@ -536,7 +540,7 @@ After generation, manual application of the frozen T8 criteria scored
 false-closure cases**. The run used the pinned Qwen3-0.6B snapshot on an RTX
 5070 Laptop GPU, with no memory, tools, latent recurrence, or constrained
 answer format. It used 2.62 seconds for generation and peaked at 1.27 GB
-allocated VRAM. [Raw run, score, and prompt hashes](../experiments/memory/results/whole_world_t8_direct_text_2026-11-26/README.md)
+allocated VRAM. [Raw run, score, and prompt hashes](https://github.com/dl1683/Latent-Space-Reasoning/blob/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/memory/results/whole_world_t8_direct_text_2026-11-26/README.md)
 preserve the input and the single output.
 
 This broad task canary failed to show that the raw one-shot reader inferred a
@@ -575,7 +579,7 @@ wrong route. Do not tune or rerun this task. A later maintenance comparison
 needs separately gradeable generated findings with claim-level provenance,
 and a different task that the ordinary full-text or iterative-RAG control
 solves, followed by same-pin removal and restoration with source-selection
-traces. [Frozen inputs, output, hashes and score](../experiments/memory/results/native_world_fresh_gate_2026-11-26/README.md)
+traces. [Frozen inputs, output, hashes and score](https://github.com/dl1683/Latent-Space-Reasoning/blob/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/memory/results/native_world_fresh_gate_2026-11-26/README.md)
 
 ## Giving the text and latent arms the same verified read access
 
@@ -931,7 +935,7 @@ on the retained address. Its next recurrent step scored positively on
 that address and stayed outside the rounding bound. Eight earlier worker queries carried into this pin
 also exceeded the bound in the cross-epoch check. There was no new
 pretrained execution or answer grading.
-[Inputs, exact replay, and scope](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
+[Inputs, exact replay, and scope](https://github.com/dl1683/Latent-Space-Reasoning/blob/a67277de262c80ac6d726fe55046a35f71002691/docs/ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
 
 **Archive inventory check.** The three p2 publication manifests list
 one acquired continuation at opening, zero after correction, and one
@@ -953,7 +957,7 @@ the acquired key exactly in the relaxed geometry. The run used two
 steps from the same frozen trajectory and performed no new inference
 or grading. Compare role-specific encoding or new operand directions
 with the raw shared split on fresh work.
-[Derivation and replay](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-one-shared-coordinate-change-supply-both-operands)
+[Derivation and replay](https://github.com/dl1683/Latent-Space-Reasoning/blob/a67277de262c80ac6d726fe55046a35f71002691/docs/ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-one-shared-coordinate-change-supply-both-operands)
 
 ## Composing separately qualified latent operations
 
@@ -3043,7 +3047,7 @@ need ID; these episodes used the older untyped interface, and the new mode has
 not been calibrated. The next adapter gate requires a frozen
 schema-constrained decoder and an eight-task calibration of the typed
 need/finding interface before any held panel. The three prompt-only runners and hash-chained ledgers are preserved in
-[`experiments/results/task_episode_calibration_2026-11-26`](../experiments/results/task_episode_calibration_2026-11-26/).
+[`experiments/results/task_episode_calibration_2026-11-26`](https://github.com/dl1683/Latent-Space-Reasoning/tree/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/results/task_episode_calibration_2026-11-26).
 
 ### Constrained-decoding follow-up
 
@@ -3080,7 +3084,7 @@ uncalibrated. The runner remains unqualified for the held whole-world panel
 until the eight-task calibration passes and an independent evaluator is
 available. The no-op, forced-search and staged runners and
 hash-chained ledgers are preserved in
-[`experiments/results/task_episode_calibration_2026-11-26`](../experiments/results/task_episode_calibration_2026-11-26/); file hashes are listed in its `SHA256SUMS.txt`.
+[`experiments/results/task_episode_calibration_2026-11-26`](https://github.com/dl1683/Latent-Space-Reasoning/tree/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/results/task_episode_calibration_2026-11-26); file hashes are listed in its `SHA256SUMS.txt`.
 
 ### Typed-need contract canaries
 
@@ -3130,7 +3134,7 @@ joint-role calls**. Both typed need objects contained no evidence, support,
 defeat, alternative, or unresolved-condition requirements; they also invented
 the relation `urgent` and the date `2023-04-01`. No finding was accepted. The
 GPU peak allocation was 1,539,900,416 bytes; model generation took 88.73
-seconds total. The [raw ledgers and summary](../experiments/results/task_episode_calibration_2026-11-26/typed_geometry_world_pilot_2026-11-26/)
+seconds total. The [raw ledgers and summary](https://github.com/dl1683/Latent-Space-Reasoning/tree/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/results/task_episode_calibration_2026-11-26/typed_geometry_world_pilot_2026-11-26)
 record both pins, the 0.6B model revision, usage and hashes. The runner hash
 matches the preserved `typed_geometry_world_pilot_v1_snapshot.py`.
 
@@ -3142,7 +3146,7 @@ measure. The corrected v2 protocol removes those values, asks the planner to
 reformulate a zero-result search, requires nonempty evidence/support/defeat and
 alternative fields for this task, pins the version scope without inventing a
 date, exposes every returned candidate, and excludes seed/role metadata from
-outcome choices. The v2 source is [typed_geometry_world_pilot.py](../experiments/memory/typed_geometry_world_pilot.py).
+outcome choices. The v2 source is [typed_geometry_world_pilot.py](https://github.com/dl1683/Latent-Space-Reasoning/blob/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/memory/typed_geometry_world_pilot.py).
 
 **The corrected v2 run also failed as an instrument.** On both pins the first
 policy call generated 256 tokens from an 838-token input, did not terminate,
@@ -3153,7 +3157,7 @@ and full typed need consumed the call before its initial action could close;
 the task outcome and evidence use are therefore unscored. The run took 25.41
 seconds of generation and peaked at 1,475,739,136 allocated GPU bytes. Its
 runner hash matches the committed code at `81004c9`; see the [v2 raw ledgers
-and summary](../experiments/results/task_episode_calibration_2026-11-26/typed_geometry_world_pilot_2026-11-26_v2/).
+and summary](https://github.com/dl1683/Latent-Space-Reasoning/tree/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/results/task_episode_calibration_2026-11-26/typed_geometry_world_pilot_2026-11-26_v2).
 
 This locates the remaining failure at the task-planning interface: under the
 registered 256-token per-call ceiling, this receiver cannot finish a complete
@@ -3214,11 +3218,11 @@ assessment; no independent semantic grade was recorded. These are five
 instrument attempts on one task, not five independent tasks and not the
 preregistered eight-task gate. They do not establish need quality, answer
 quality, or use of maintained world state. The exact artifacts are in
-[`02`](../experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_02/),
-[`03`](../experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_03/),
-[`04`](../experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_04/),
-[`05`](../experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_05/), and
-[`06`](../experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_06/).
+[`02`](https://github.com/dl1683/Latent-Space-Reasoning/tree/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_02),
+[`03`](https://github.com/dl1683/Latent-Space-Reasoning/tree/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_03),
+[`04`](https://github.com/dl1683/Latent-Space-Reasoning/tree/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_04),
+[`05`](https://github.com/dl1683/Latent-Space-Reasoning/tree/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_05), and
+[`06`](https://github.com/dl1683/Latent-Space-Reasoning/tree/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/results/task_episode_calibration_2026-11-26/compact_task_planner_calibration_20261126_06).
 Run 06's final call needed 2,408 input tokens with only 633 remaining under its
 8,192-token episode input allowance. Do not repeat this task with the same
 growing prompt/registry; resolve its input-budget failure before using a new
@@ -3237,11 +3241,11 @@ counts, and answer quality. It does not turn those failed runs into successes,
 qualify compact delivery, or qualify a planner. Do not tune again on this
 repeated task. Use a fresh frozen calibration and the registered paired
 full/compact delivery control. The reconstruction is reproducible with
-[`compact_delivery_counterfactual.py`](../experiments/memory/compact_delivery_counterfactual.py);
+[`compact_delivery_counterfactual.py`](https://github.com/dl1683/Latent-Space-Reasoning/blob/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/memory/compact_delivery_counterfactual.py);
 its hash-checked output is
-[`summary.json`](../experiments/results/task_episode_calibration_2026-11-26/compact_delivery_counterfactual_20261126/summary.json).
+[`summary.json`](https://github.com/dl1683/Latent-Space-Reasoning/blob/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/results/task_episode_calibration_2026-11-26/compact_delivery_counterfactual_20261126/summary.json).
 Verify the analysis script and artifact with
-[`SHA256SUMS.txt`](../experiments/results/task_episode_calibration_2026-11-26/compact_delivery_counterfactual_20261126/SHA256SUMS.txt).
+[`SHA256SUMS.txt`](https://github.com/dl1683/Latent-Space-Reasoning/blob/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/results/task_episode_calibration_2026-11-26/compact_delivery_counterfactual_20261126/SHA256SUMS.txt).
 
 ### Five-need whole-world schema and token preflight
 
@@ -3284,7 +3288,7 @@ change token merges. They identify repeated need state as a major cost target
 while preserving source text and provenance in the next compact-state study.
 
 The hashed summary and all 22 hash-chained ledgers are preserved in
-[`whole_world_planner_preflight_2026-11-26_v7`](../experiments/results/whole_world_planner_preflight_2026-11-26_v7/).
+[`whole_world_planner_preflight_2026-11-26_v7`](https://github.com/dl1683/Latent-Space-Reasoning/tree/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/results/whole_world_planner_preflight_2026-11-26_v7).
 This preflight is an interface-cost diagnostic for the broad task-directed
 planning goal. It does not establish latent-world reasoning, material-need
 inference, evidence sufficiency, or an advantage over iterative RAG or an
@@ -3338,7 +3342,7 @@ evidence-action limit is also independent. Token counts reflect this
 maximum-text scripted workload, and the matched-input comparison uses a
 different tokenizer from the original preflight.
 
-Reproduce the input counts with `python -m experiments.memory.planner_state_cost`
+The [archived input-count replay](https://github.com/dl1683/Latent-Space-Reasoning/blob/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/memory/planner_state_cost.py) uses `python -m experiments.memory.planner_state_cost` at the pinned checkout
 and the tokenizer-only snapshot at
 [revision a10cc151](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct/tree/a10cc1512eabd3dde888204e902eca88bddb4951).
 The program prints per-call counts and reads the existing v7 archive. The
@@ -3854,7 +3858,7 @@ independent blind grade. The runner did not load evaluator gold, though the
 gold file was not protected by an OS-level access boundary. Treat this as
 instrument-development data, not a benchmark or a general 0.6B capability
 claim. The original score and corrected score are both preserved with the
-[second review record](../experiments/memory/results/fresh_reasoner_competence_2026-11-27/second_content_review.json).
+[second review record](https://github.com/dl1683/Latent-Space-Reasoning/blob/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/memory/results/fresh_reasoner_competence_2026-11-27/second_content_review.json).
 
 **Decision.** This is a reader-competence diagnostic, not evidence for or
 against latent maintenance. It identifies a concrete baseline prerequisite:
@@ -3865,7 +3869,7 @@ graded text or iterative-RAG control demonstrates complete task-level
 competence on an appropriate new panel. Do not tune on these six task-pins.
 The authored protocol/data and full run records, including raw generations,
 assignment and initial and corrected scores, are archived under
-[`fresh_reasoner_competence_2026-11-27`](../experiments/memory/results/fresh_reasoner_competence_2026-11-27/README.md).
+[`fresh_reasoner_competence_2026-11-27`](https://github.com/dl1683/Latent-Space-Reasoning/blob/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13/experiments/memory/results/fresh_reasoner_competence_2026-11-27/README.md).
 The evaluator gold file is tracked with the protocol but was not loaded by the
 runner.
 
@@ -3950,6 +3954,8 @@ Historical summaries preserve original evidence qualifications. Raw report avail
 
 
 ## Evidence and recovery
+
+Closed calibration packets and their retired runners are pinned at [b2dbbcc8](https://github.com/dl1683/Latent-Space-Reasoning/tree/b2dbbcc8d9d5f3e70c153cdb546f860cc5fc6b13). Follow the links from the result you need. Replay from that revision with its original runner and input bytes.
 
 This release contains a selective source library and source-reported evidence summaries. Historical raw inputs and outputs are not bundled; their availability has not been independently reverified for this release. The documentation consolidation preserved 123 source-document hashes and 197 compact evidence records; these counts are provenance descriptions, not new semantic audits. Historical LSR, GEN/e347, MNM and NCM namespaces remain distinct.
 
