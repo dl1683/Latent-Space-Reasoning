@@ -104,6 +104,15 @@ Calibrate address and operand roles separately before pursuing a
 shared-space repair on fresh inputs.
 [Exact archived bound](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-one-shared-coordinate-change-supply-both-operands)
 
+**A projected center can make a decision the retained rows do not support.**
+Two bounded linear rows agreed on every retained basis value and
+disagreed at a threshold on the same out-of-span operand. The
+conditional check withheld that decision. A looser threshold
+on the same operand stayed fixed across the feasible rows.
+Freeze the law class and gain assumption before evaluating outcomes.
+Seek a prospective source witness for the missing direction.
+[CPU mechanism control](RESULTS.md#bounding-a-retained-operations-consequence-outside-its-span)
+
 **A separating projection is conditional on the forecast roster.**
 A worker can reject a descriptor whose tolerance regions overlap without
 seeing its outcome. An informative projection can still fail because no

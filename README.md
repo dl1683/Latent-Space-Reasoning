@@ -69,6 +69,12 @@ from the retained keys at one common address under a shared
 invertible affine map. The next comparison should test routing and
 operand encoding separately on fresh tasks.
 
+A [bounded operand diagnostic](docs/RESULTS.md#bounding-a-retained-operations-consequence-outside-its-span)
+checks whether one witnessed output coordinate stays on the same
+side of a threshold when the query extends outside a retained
+operation's span. The bound is conditional on a declared linear law
+and gain cap. Learned operand coverage remains open.
+
 A [cross-source acquisition control](docs/RESULTS.md#acquiring-continuations-after-self-only-reads)
 retries seeds whose ordinary maintenance read only their own source.
 Two such retries acquired continuations that a fresh reader used.

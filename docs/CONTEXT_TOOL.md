@@ -1134,6 +1134,26 @@ acquired bank or witness suspends that operator and keeps unrelated
 admissions. The workspace must retain the committed openings and
 release manifests needed to replay historical qualification on attach.
 
+For a conditional scalar check, call
+`check_native_operand_consequence(reader, memory, address=..., query=...,
+coordinate=..., threshold=..., gain_squared=...)` from
+`experiments.memory.native_operand_consequence`. Pass a committed
+attached inventory and a packed signed Q8 query such as
+`read.derived_steps[i].query`. The requested address is a supplied
+operation identity. The returned `query_address` records address
+agreement separately from the scalar decision. Threshold and
+`gain_squared` are rational values. The threshold uses Q8 output
+units. Squared gain uses the square of the output-to-operand ratio.
+
+The result includes the source and publication seals and any
+continuation or derived-bank omission. Available results include
+cohort spans, witness, squared residual, minimum squared gain,
+center and squared radius. `above` and `below` mean that the entire
+conditional scalar interval clears the strict threshold. `unresolved`
+includes an interval endpoint equal to the threshold. An unavailable
+operation returns no scalar estimate. The diagnostic does not apply
+an operation inside the recurrent model.
+
 Use `retry_cross_source_acquisition(workspace, reader, pin,
 max_seeds=..., max_source_rows=..., max_relative_shift=...)` from
 `experiments.memory.native_cross_source_acquisition` to retry

@@ -165,6 +165,52 @@ directions or separate role projections. This distinguishes lack of
 coverage from an operator that cannot compute on the incoming state.
 [Archived bound](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-one-shared-coordinate-change-supply-both-operands)
 
+#### Bounding a consequence when the operand is outside the span
+
+[SLICE] The conditional diagnostic evaluates one witnessed output
+coordinate of an admitted operation at a known address. Use the
+captured packed Q8 query. The result records both the tested operation
+and the address in that query so address success remains separately
+observable.
+
+Let $K$ hold the distinct operand columns and $v$ their retained
+values at the chosen output coordinate. Assume one linear row $f$
+with $K^\top f=v$ and a prespecified Euclidean gain cap $G$.
+With $H=K^\top K$, compute $f_0=KH^{-1}v$ and
+$r=q-KH^{-1}K^\top q$. All admissible rows are $f_0+w$ with
+$K^\top w=0$ and $\|w\|_2^2\le G^2-\|f_0\|_2^2$. The attainable
+interval for $f^\top q$ has center $f_0^\top q$ and squared
+radius $(G^2-\|f_0\|_2^2)\|r\|_2^2$. The endpoints follow from
+choosing $w$ parallel or antiparallel to $r$. A negative gain
+headroom makes the assumed family empty. A decision requires the
+entire interval strictly on one side of the threshold.
+[Optimal recovery in Hilbert spaces](https://arxiv.org/abs/2111.02601)
+
+Use exact Q8 arithmetic and keep the native conditioning and
+projected coefficient cap. The retained basis supplies the exact
+constraints in this calculation. The admission witness determines
+which output coordinates can be checked. Published forecasts
+qualify the cohort under their own tolerances. The gain and
+off-span linearity are additional assumptions for this diagnostic.
+The ordinary recurrent read still requires exact operand support.
+
+An unresolved threshold identifies missing information. A prospective
+source witness with an operand residual aligned to the missing
+direction can constrain it. A competing design independently
+calibrates a role map and verifies the consequence after dropping
+dimensions. Compare observed extra directions with lossy role encoding
+on fresh cases including opposite operands and scope withdrawals.
+Require an independently graded downstream benefit before using a
+scalar certificate to justify any recurrent intervention.
+[CPU check](RESULTS.md#bounding-a-retained-operations-consequence-outside-its-span)
+
+A scalar from today's winning law is insufficient for carrying a
+projection across source revisions. Preserve the distinctions needed
+by the full set of source-supported consequence maps. The independent
+role-span audit gives a linear rank condition and a concrete role
+contrast the public opening cards cannot separate.
+[Semantic sufficiency and independent screen](ROLE_SUFFICIENCY_AND_INDEPENDENT_SCREEN.md)
+
 #### Admitting a retained operation on a source revision
 
 [SLICE] The opt-in gated reader keeps proposed basis cohorts in the

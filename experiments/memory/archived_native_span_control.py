@@ -8,6 +8,8 @@ from math import isqrt, sqrt
 from pathlib import Path
 from struct import unpack_from
 
+from experiments.memory.exact_latent_linear import dot as _dot, gram as _gram, solve_gram as _solve
+
 
 _ARCHIVE = Path(__file__).with_name("results") / "native_world_addressing_p2_2026-11-26"
 _INDEX_DIGEST = "0a8840c0c8716d6c51017db73883e73f14ba15e33680e9ed4340a04dd82f9994"
@@ -24,34 +26,6 @@ def _pinned_bytes(path, digest, *, normalize_newlines=False):
     if sha256(data).hexdigest() != digest:
         raise ValueError(f"archive digest differs for {path.name}")
     return data
-
-
-def _dot(left, right):
-    return sum(a * b for a, b in zip(left, right, strict=True))
-
-
-def _solve(matrix, rhs):
-    """Solve a small invertible Gram system over rationals."""
-    gram = [
-        [*map(Fraction, row), Fraction(target)]
-        for row, target in zip(matrix, rhs, strict=True)
-    ]
-    for column in range(len(gram)):
-        pivot = next((index for index in range(column, len(gram)) if gram[index][column]), None)
-        if pivot is None:
-            raise ValueError("expected an independent Gram basis")
-        gram[column], gram[pivot] = gram[pivot], gram[column]
-        divisor = gram[column][column]
-        gram[column] = [value / divisor for value in gram[column]]
-        for index, row in enumerate(gram):
-            if index != column and row[column]:
-                factor = row[column]
-                gram[index] = [value - factor * ref for value, ref in zip(row, gram[column], strict=True)]
-    return [row[-1] for row in gram]
-
-
-def _gram(vectors):
-    return [[_dot(vector, other) for other in vectors] for vector in vectors]
 
 
 def _span_distance_squared(query, keys):

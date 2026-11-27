@@ -833,6 +833,30 @@ that mechanism. It supplies no learned address discovery, independent
 task grading or end-to-end cost comparison.
 [CPU fixture](../experiments/memory/test_native_operator_inventory.py)
 
+## Bounding a retained operation's consequence outside its span
+
+**CPU mechanism control.** The ordinary read reached an admitted
+address and declined its out-of-span operand. Using that packed
+query, the conditional check evaluated the witnessed output
+coordinate with a squared gain cap of one. The projected center
+was $81/2$ in Q8 output units. The squared radius was $295/64$
+in squared Q8 output units.
+All compatible linear rows exceeded 38. At threshold 40, two
+explicit row completions satisfied the same cap and retained
+basis and gave opposite decisions. Endpoint equality also
+left the check unresolved. In-span input gave radius zero.
+
+The check refused an infeasible gain cap, excessive projected
+coefficients and an unwitnessed coordinate. Removing the winning
+continuation at the same pin removed the estimate, while removing
+the other operation preserved it. Withdrawing the witness removed
+it. A fresh proposal restored it and the historical pin reproduced
+its original certificate. The fixture supplies the coordinate,
+gain cap and deterministic backbone. It establishes a conditional
+scalar result before recurrence. Learned cap validity, downstream
+answers and total costs remain unmeasured.
+[CPU fixture](../experiments/memory/test_native_operator_inventory.py)
+
 ## Acquiring continuations after self-only reads
 
 **Frozen archive geometry.** Each of the three p2 manifests has all
