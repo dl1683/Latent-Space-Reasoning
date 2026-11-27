@@ -75,6 +75,12 @@ side of a threshold when the query extends outside a retained
 operation's span. The bound is conditional on a declared linear law
 and gain cap. Learned operand coverage remains open.
 
+A [prospective operand probe](docs/RESULTS.md#selecting-the-next-operand-observation-before-release)
+chooses one source card for how much of a calibration operand's
+missing direction it can measure. In the CPU fixture, an exact
+measurement resolved the scalar decision. A source correction withdrew
+that result while the historical publication preserved it.
+
 A [cross-source acquisition control](docs/RESULTS.md#acquiring-continuations-after-self-only-reads)
 retries seeds whose ordinary maintenance read only their own source.
 Two such retries acquired continuations that a fresh reader used.

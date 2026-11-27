@@ -857,6 +857,38 @@ scalar result before recurrence. Learned cap validity, downstream
 answers and total costs remain unmeasured.
 [CPU fixture](../experiments/memory/test_native_operator_inventory.py)
 
+## Selecting the next operand observation before release
+
+**CPU mechanism control.** A source-only calibration card was
+unresolved at a witnessed operation address. The worker compared a
+redundant operand with a candidate whose residual covered the missing
+direction. Both decoy cards scored higher by raw dot-product alignment.
+The prospective rule chose the other card in both input orders
+and reduced the squared-radius upper bound from $295/64$ to zero,
+conditional on a feasible exact observation. A third card
+offered the same geometric reduction and failed the coefficient
+allowance before release.
+
+The released Q8 scalar was 42. With it, the calibration operand's
+exact value was 39. The added measurement spans the remaining
+axis in this two-dimensional fixture. A distinct probe previously
+unresolved at the same threshold reached $1287/32$. A contradictory release of
+80 on a matched opening made the declared squared gain cap
+infeasible. The negative control kept that source in history and
+withheld the scalar decision.
+
+A wrong source, wrong commitment and stale opening failed the
+release checks. An unrelated addition preserved the decision.
+Correcting, withdrawing and later reissuing the
+same bytes each left the old observation unavailable at the head.
+A new draft also rejected the previously observed outcome after
+its withdrawal. The historical release still reproduced the narrow result.
+Qualifying a different operation at the same address kept the
+earlier observation out of its decisions. The fixture supplies
+the calibration cards and exact measurement law. Learned source
+selection and later causal use in recurrence remain unmeasured.
+[CPU fixture](../experiments/memory/test_native_operator_inventory.py)
+
 ## Acquiring continuations after self-only reads
 
 **Frozen archive geometry.** Each of the three p2 manifests has all

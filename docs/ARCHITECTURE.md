@@ -211,6 +211,48 @@ role-span audit gives a linear rank condition and a concrete role
 contrast the public opening cards cannot separate.
 [Semantic sufficiency and independent screen](ROLE_SUFFICIENCY_AND_INDEPENDENT_SCREEN.md)
 
+#### Choosing the next source observation for an unresolved operand
+
+[SLICE] Fix one admitted address, output coordinate and source-only
+calibration operand before receiving outcomes. Let $P$ project onto
+the retained operand span, $r=(I-P)q$ be the calibration residual,
+and $u=(I-P)x$ the residual of a candidate source card. With an exact
+measurement along $x$, the squared residual available to an
+unconstrained row decreases by $(r^\top u)^2/\|u\|_2^2$. A card
+in the old span has zero guaranteed reduction. If the prior squared
+gain headroom is $h$, multiply the remaining squared residual by
+$h$ for a worst-case squared radius after any feasible observation.
+An observed innovation can spend headroom and tighten the interval
+further. A smaller interval can still touch or straddle the threshold.
+[Goal-oriented experimental design](https://arxiv.org/abs/2411.07532)
+
+A worker ranks up to eight source cards behind one opening pin.
+It checks the projected coefficient allowance before spending the
+release and checks earlier source epochs for a previously known
+outcome. Equal geometric scores break ties by opaque source ID.
+The commitment binds the cards, fixed calibration query source,
+coordinate, threshold, gain cap and exact scores. The direct
+successor adds only the selected outcome. A later diagnostic checks
+that release, the measured row's version, the chosen input version
+and the original operation. It adds one exact scalar constraint to
+the conditional problem. Corrected or reissued evidence requires a
+fresh qualification. Outcomes remain part of the ordinary source
+history even when they refute the assumed gain cap.
+
+The target is a supplied source calibration card. An independent
+controller records the commitment before release and keeps later
+tasks outside the worker. Proof of pre-release timing comes from
+that independent record. Workspace replay confirms the declared
+inputs and successor. The plan assumes an exact scalar measurement
+on the same grid-linear law. Actual lossy or noisy measurements
+need interval observation constraints. The rank criterion for all
+permitted revisions still applies to any shared role encoder.
+Compare projected selection with candidate order and raw alignment
+under matched one-observation cost. Account for opening and history
+replay. Independently graded downstream
+use and cost remain open.
+[CPU outcome and withdrawal](RESULTS.md#selecting-the-next-operand-observation-before-release)
+
 #### Admitting a retained operation on a source revision
 
 [SLICE] The opt-in gated reader keeps proposed basis cohorts in the

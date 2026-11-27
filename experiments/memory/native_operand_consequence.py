@@ -39,6 +39,14 @@ def check_native_operand_consequence(reader, memory, *, address, query, coordina
     The packed query comes from the existing read boundary. The known address
     can differ from the query address to separate operand checks from routing.
     """
+    result, problem = _consequence_problem(reader, memory, address=address, query=query, coordinate=coordinate,
+                                           threshold=threshold, gain_squared=gain_squared)
+    if problem is None:
+        return result
+    return _bound_consequence(result, *problem, coefficient_limit=reader._selector._transport_l1)
+
+
+def _consequence_problem(reader, memory, *, address, query, coordinate, threshold, gain_squared):
     if type(reader) is not NativeOperatorInventoryModel:
         raise TypeError("operand consequence requires the native inventory reader")
     reader._check_memory(memory, for_read=True)
@@ -64,37 +72,41 @@ def check_native_operand_consequence(reader, memory, *, address, query, coordina
     groups = reader._operand_groups(memory)
     prepared = groups[0].by_address.get(address) if groups else None
     if entry is None or not prepared:
-        return result
+        return result, None
     if coordinate not in entry.admission.draft.coordinates:
-        return replace(result, status="unwitnessed_coordinate")
+        return replace(result, status="unwitnessed_coordinate"), None
     inventory, = prepared
     if len(inventory.groups) != 1:
-        return replace(result, status="unsupported_basis")
+        return replace(result, status="unsupported_basis"), None
     group, = inventory.groups
     if tuple(group.address) != address or group.coefficient_map is None:
-        return replace(result, status="unsupported_basis")
+        return replace(result, status="unsupported_basis"), None
 
     operand = tuple(packed[axis] for axis in reader._selector._operands)
-    keys = [tuple(map(int, column)) for column in group.keys.T]
+    keys = tuple(tuple(map(int, column)) for column in group.keys.T)
     values = tuple(map(int, group.values[:, coordinate]))
+    result = replace(result, cohort_spans=group.spans, witness=entry.admission.witness)
+    return result, (operand, keys, values)
+
+
+def _bound_consequence(result, operand, keys, values, *, coefficient_limit):
     system = gram(keys)
     rhs = [dot(key, operand) for key in keys]
     coefficients = solve_gram(system, rhs)
     projected_l1 = sum(map(abs, coefficients))
     residual_squared = dot(operand, operand) - dot(rhs, coefficients)
-    result = replace(result, cohort_spans=group.spans, witness=entry.admission.witness,
-                     projected_l1=projected_l1, residual_squared=residual_squared)
-    if projected_l1 > Fraction(reader._selector._transport_l1):
+    result = replace(result, projected_l1=projected_l1, residual_squared=residual_squared)
+    if projected_l1 > Fraction(coefficient_limit):
         return replace(result, status="coefficient_limit")
 
     minimum_gain_squared = dot(values, solve_gram(system, values))
     result = replace(result, minimum_gain_squared=minimum_gain_squared)
-    headroom = gain_squared - minimum_gain_squared
+    headroom = result.gain_squared - minimum_gain_squared
     if headroom < 0:
         return replace(result, status="inconsistent_gain")
     center = dot(values, coefficients)
     radius_squared = headroom * residual_squared
-    margin = center - threshold
+    margin = center - result.threshold
     status = "unresolved"
     if margin ** 2 > radius_squared:
         status = "above" if margin > 0 else "below"

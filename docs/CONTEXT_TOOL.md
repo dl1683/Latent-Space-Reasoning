@@ -1154,6 +1154,30 @@ includes an interval endpoint equal to the threshold. An unavailable
 operation returns no scalar estimate. The diagnostic does not apply
 an operation inside the recurrent model.
 
+For one new scalar observation, call
+`draft_native_operand_probe(workspace, reader, pin, address=...,
+reference_source=..., candidates=..., coordinate=..., threshold=...,
+gain_squared=...)` from `experiments.memory.native_operand_probe`.
+The reference and candidate sources each encode one span at the same
+admitted address. Give the worker only source-side calibration
+material. Record the draft's commitment before the selected outcome
+is released. A draft with zero guaranteed reduction has no source
+to release. The draft also refuses a release that appeared earlier
+in the committed workspace, including an observation since withdrawn.
+
+Pass the direct successor feed and original commitment to
+`resolve_native_operand_probe`. It commits the selected source
+outcome and returns the release pin. Retain the draft, commitment
+and release pin for later diagnosis. Call
+`read_native_operand_probe(workspace, reader, draft, release,
+commitment=..., pin=..., query=...)` with a packed Q8 query and a
+committed reading pin. The diagnostic replays the opening plan and
+checks the exact release and current source versions. If its
+observation is gone or revised and the operation is still current,
+it returns the scalar bound without that observation. A different operation cannot
+reuse the old probe. The ordinary reader still uses signed exact
+transport.
+
 Use `retry_cross_source_acquisition(workspace, reader, pin,
 max_seeds=..., max_source_rows=..., max_relative_shift=...)` from
 `experiments.memory.native_cross_source_acquisition` to retry

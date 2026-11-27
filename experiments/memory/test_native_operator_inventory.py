@@ -2,7 +2,7 @@ from dataclasses import replace
 from fractions import Fraction
 import json
 from shutil import copytree
-from struct import pack
+from struct import pack, unpack
 from types import SimpleNamespace
 
 import numpy as np
@@ -12,6 +12,10 @@ from experiments.memory.linear_feedback import LinearFeedbackKernel
 from experiments.memory.native_latent_recurrence import _ForecastCheck
 from experiments.memory.native_operand_admission import _restrict
 from experiments.memory.native_operand_consequence import check_native_operand_consequence
+from experiments.memory.native_operand_discovery import operand_outcome_id
+from experiments.memory.native_operand_probe import (
+    _card_query, draft_native_operand_probe, read_native_operand_probe, resolve_native_operand_probe,
+)
 from experiments.memory.native_operator_inventory import (
     NativeOperatorInventoryModel, discover_native_operator, resolve_native_operator, resolve_native_operators,
 )
@@ -98,6 +102,146 @@ def _reader(transport_l1):
         derived_gain=1, eos_ids=(0,), top_k=1, tie_limit=2, address_axes=(2,), derived_transport_l1=transport_l1,
         source_ingress=_ingress, source_ingress_sha256=sha256(b"eight supplied grayscale coordinates"),
     )
+
+
+@pytest.mark.parametrize("measurement", (42, 80))
+def test_source_probe_selects_a_missing_direction_and_loses_it_when_evidence_is_withdrawn(tmp_path, measurement):
+    a, ar, support_a, support_ar, reference, redundant, useful, narrow = (char * 32 for char in "12345670")
+    opening_sources = {
+        a: _image(96, 0, 8, 0, 0, 0, 0, 127), ar: _image(-96, 0, 8, 0, 0, 0, 0, 127),
+        support_a: _image(127, 0, 8, 90, 0, 0, 0, 0), support_ar: _image(-127, 0, 8, 90, 0, 0, 0, 0),
+    }
+    limit, runtime = 131_072, sha256(b"one prospective source observation fixture")
+
+    def epoch(label, changes, previous=None):
+        path = tmp_path / label
+        binary = tuple(source for source, raw in changes.items() if raw is not None)
+        delta = write_source_delta(path, changes, previous=previous, binary_sources=binary, max_bytes=limit)
+        return path, delta
+
+    source_path, original = epoch("opening", opening_sources)
+    reader = _reader(2)
+    folder = tmp_path / "world"
+    memory = reader.publish(source_path, original.seal, max_source_bytes=limit)
+    world = NativeWorkspace.create(folder, reader, memory, runtime_sha256=runtime, max_bytes=limit,
+                                   share_rows=True)
+    opening = world.maintain(reader, world.head(), max_seeds=16)
+    candidate = discover_native_operator(world, reader, opening, cards=(a,), coordinates=(4,), tolerance=0).draft
+    admit_path, admit_delta = epoch("admission", {candidate.source: _image(0, 0, 0, 0, 81, 0, 0, 0)}, original)
+    admission = resolve_native_operator(world, reader, candidate, admit_path, admit_delta.seal,
+                                       commitment=candidate.commitment, max_source_bytes=limit)
+    assert admission.status == "admitted"
+
+    cards = {
+        reference: _image(48, 4, 8, 0, 0, 0, 0, 0),
+        redundant: _image(48, 0, 8, 0, 0, 0, 0, 0),
+        useful: _image(48, -4, 8, 0, 0, 0, 0, 0),
+        narrow: _image(48, 1, 8, 0, 0, 0, 0, 0),
+    }
+    cards_path, cards_delta = epoch("probe-cards", cards, admit_delta)
+    calibration = world.revise(reader, admission.pin, cards_path, cards_delta.seal, max_source_bytes=limit)
+    settings = dict(address=(8,), reference_source=reference, coordinate=4, threshold=40, gain_squared=1)
+    draft = draft_native_operand_probe(world, reader, calibration, candidates=(redundant, useful, narrow), **settings)
+    assert draft == draft_native_operand_probe(world, reader, calibration,
+                                               candidates=(narrow, useful, redundant), **settings)
+    assert draft.opening_radius_squared == Fraction(295, 64)
+    assert draft.selected.card.source_id == useful
+    assert draft.selected.residual_reduction_squared == 16 and draft.selected.radius_squared_upper == 0
+    refused = draft.candidates[0]
+    assert refused.card.source_id == narrow and refused.residual_reduction_squared == 16
+    assert refused.projected_l1_after == Fraction(11, 2) and not refused.eligible
+    calibration_memory = world.attach(reader, pin=calibration)
+    packed_cards = {source: unpack("3b", _card_query(reader, calibration_memory, source)[1]) for source in cards}
+    alignment = {source: np.dot(packed_cards[reference], packed_cards[source]) for source in (redundant, useful, narrow)}
+    assert alignment[redundant] > alignment[useful] and alignment[narrow] > alignment[useful]
+    unhelpful = draft_native_operand_probe(world, reader, calibration, candidates=(redundant,), **settings)
+    assert unhelpful.source is None and unhelpful.candidates[0].radius_squared_upper == draft.opening_radius_squared
+
+    wrong_source = operand_outcome_id(draft.candidates[0].card)
+    wrong_path, wrong = epoch("wrong-release", {wrong_source: _image(0, 0, 0, 0, 42, 0, 0, 0)}, cards_delta)
+    with pytest.raises(ValueError, match="only the selected"):
+        resolve_native_operand_probe(world, reader, draft, wrong_path, wrong.seal,
+                                     commitment=draft.commitment, max_source_bytes=limit)
+    with pytest.raises(ValueError, match="informative committed draft"):
+        resolve_native_operand_probe(world, reader, unhelpful, wrong_path, wrong.seal,
+                                     commitment=unhelpful.commitment, max_source_bytes=limit)
+    with pytest.raises(ValueError, match="informative committed draft"):
+        resolve_native_operand_probe(world, reader, draft, wrong_path, wrong.seal,
+                                     commitment=sha256(b"incorrect commitment"), max_source_bytes=limit)
+    assert world.head() == calibration
+
+    outcome = _image(0, 0, 0, 0, measurement, 0, 0, 0)
+    release_path, release_delta = epoch("release", {draft.source: outcome}, cards_delta)
+    release = resolve_native_operand_probe(world, _reader(2), draft, release_path, release_delta.seal,
+                                           commitment=draft.commitment, max_source_bytes=limit)
+    with pytest.raises(StaleNativeWorkspace):
+        resolve_native_operand_probe(world, reader, draft, release_path, release_delta.seal,
+                                     commitment=draft.commitment, max_source_bytes=limit)
+
+    cold = NativeWorkspace(folder, runtime_sha256=runtime, max_bytes=limit)
+    serving = _reader(2)
+    opened = cold.attach(serving, pin=release)
+    read = serving("off span", memory=opened, steps=1)
+    assert read.derived_reads[0].status == "unsupported"
+    query = read.derived_steps[0].query
+
+    def check(pin, probe_query=query):
+        return read_native_operand_probe(cold, serving, draft, release, commitment=draft.commitment,
+                                        pin=pin, query=probe_query)
+
+    with pytest.raises(ValueError, match="exact direct release"):
+        check(calibration)
+    with pytest.raises(ValueError, match="publication reader differs"):
+        read_native_operand_probe(cold, _reader(1), draft, release,
+                                  commitment=draft.commitment, pin=release, query=query)
+    baseline = check_native_operand_consequence(serving, opened, address=(8,), query=query,
+                                                coordinate=4, threshold=40, gain_squared=1)
+    assert baseline.status == "unresolved"
+    observed = check(release)
+    assert observed.status == "observed" and observed.observation.source_id == draft.source
+    if measurement == 80:
+        assert observed.consequence.status == "inconsistent_gain"
+        assert observed.consequence.center is None and observed.consequence.radius_squared is None
+        return
+    assert observed.consequence.status == "below" and observed.consequence.center == 39
+    assert observed.consequence.radius_squared == 0
+    opposite = check(release, pack("3b", 48, -4, 8))
+    assert opposite.consequence.status == "above" and opposite.consequence.center == 42
+    changed_input = pack("3b", 49, 3, 8)
+    assert check_native_operand_consequence(serving, opened, address=(8,), query=changed_input,
+                                            coordinate=4, threshold=40, gain_squared=1).status == "unresolved"
+    assert check(release, changed_input).consequence.center == Fraction(1287, 32)
+    assert check(release, changed_input).consequence.status == "above"
+
+    unrelated_path, unrelated = epoch("unrelated", {"8" * 32: _image(0, 0, 0, 0, 0, 0, 0, 0)}, release_delta)
+    carried = world.revise(reader, release, unrelated_path, unrelated.seal, max_source_bytes=limit)
+    assert check(carried).observation == observed.observation
+    assert check(carried).consequence.center == observed.consequence.center
+
+    correct_path, corrected = epoch("correct", {draft.source: _image(0, 0, 0, 0, 43, 0, 0, 0)}, unrelated)
+    rival = world.revise(reader, carried, correct_path, corrected.seal, max_source_bytes=limit)
+    assert check(rival).status == "observation_withdrawn"
+    withdraw_path, withdrawn = epoch("withdraw", {draft.source: None}, corrected)
+    retired = world.revise(reader, rival, withdraw_path, withdrawn.seal, max_source_bytes=limit)
+    reopened = check(retired)
+    assert reopened.status == "observation_withdrawn" and reopened.consequence.status == "unresolved"
+    with pytest.raises(ValueError, match="already released in this history"):
+        draft_native_operand_probe(world, reader, retired, candidates=(useful,), **settings)
+    reissue_path, reissued = epoch("reissue", {draft.source: outcome}, withdrawn)
+    reissue = world.revise(reader, retired, reissue_path, reissued.seal, max_source_bytes=limit)
+    assert check(reissue).status == "observation_withdrawn"
+    assert check(release) == observed
+
+    revoke_path, revoke = epoch("revoke-operator", {candidate.source: None}, reissued)
+    revoked = world.revise(reader, reissue, revoke_path, revoke.seal, max_source_bytes=limit)
+    assert check(revoked).status == "operation_unavailable"
+    replacement = discover_native_operator(world, reader, revoked, cards=(a,), coordinates=(4,), tolerance=0).draft
+    flip_path, flip = epoch("opposite-operation", {replacement.source: _image(0, 0, 0, 0, -81, 0, 0, 0)}, revoke)
+    flipped = resolve_native_operator(world, reader, replacement, flip_path, flip.seal,
+                                     commitment=replacement.commitment, max_source_bytes=limit)
+    assert flipped.status == "admitted"
+    changed = check(flipped.pin)
+    assert changed.status == "operation_changed" and changed.consequence.center is None
 
 
 @pytest.mark.parametrize("transport_l1", (1, 2))

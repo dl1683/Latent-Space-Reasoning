@@ -113,6 +113,15 @@ Freeze the law class and gain assumption before evaluating outcomes.
 Seek a prospective source witness for the missing direction.
 [CPU mechanism control](RESULTS.md#bounding-a-retained-operations-consequence-outside-its-span)
 
+**A similar source card can repeat a known direction.**
+Raw alignment ranked a redundant card above the card that could
+reduce uncertainty. The projected residual identified the latter
+without seeing either outcome. A deliberately inconsistent outcome
+also showed that geometric coverage alone cannot qualify the law.
+Compare candidate ordering at equal observation cost and test
+the source measurement against the declared assumptions.
+[Prospective probe control](RESULTS.md#selecting-the-next-operand-observation-before-release)
+
 **A separating projection is conditional on the forecast roster.**
 A worker can reject a descriptor whose tolerance regions overlap without
 seeing its outcome. An informative projection can still fail because no
