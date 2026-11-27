@@ -386,6 +386,16 @@ the text or iterative-RAG control demonstrates correct direct-support
 competence before the latent maintenance contrast can answer the intended
 question.
 
+A six-task-pin U/N/E reader diagnostic subsequently returned no complete,
+correct, source-grounded answer in 18 sessions. The 0.6B reader repeatedly
+found an explicit package-to-schedule edge in eight of nine route sessions,
+but failed to ground the next schedule-to-pier edge in all nine. The packet
+was fully visible, and no latent maintenance arm ran. This synthetic, small
+screen does not establish a model
+ceiling or a memory effect; it strengthens the reason to qualify the reader
+control before opening the maintenance comparison. Its exact scope and
+blinding and format limitations are recorded in [RESULTS](RESULTS.md#fresh-06b-reader-competence-screen-27-november-2026).
+
 The [reviewer's competence diagnostic](FRESH_REASONER_COMPETENCE_DIAGNOSTIC.md)
 separates unassisted need inference and answer generation from two
 assisted diagnostic arms. Only an unassisted, supported answer qualifies

@@ -1,0 +1,19 @@
+{
+  "schema": "lsr-fresh-reasoner-constrained-decoder-stop-v1",
+  "classification": "adapter-throughput diagnostic only; not a semantic model outcome",
+  "planned_sessions": 18,
+  "completed_sessions": 1,
+  "session_id": "r01",
+  "task_id": "control_card",
+  "arm": "E",
+  "input_tokens": 613,
+  "output_tokens": 774,
+  "terminated": true,
+  "schema_valid": true,
+  "generation_seconds": 319.33977640001103,
+  "constrained_tokens_per_second": 2.424,
+  "prior_same_gpu_unconstrained_rate_tokens_per_second": 24.465,
+  "gold_opened": false,
+  "reason_stopped": "one LMFE prefix-masked call took 319.34 seconds for 774 tokens; projected 18-session runtime was not a useful bounded diagnostic. The run was stopped and the identical task/arm set was re-preflighted for ordinary greedy output with post-generation format validation.",
+  "partial_ledger": "sessions.jsonl.pending"
+}

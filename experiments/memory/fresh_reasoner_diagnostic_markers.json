@@ -1,0 +1,67 @@
+{
+  "schema": "lsr-fresh-reasoner-verbatim-markers-v1",
+  "markers": [
+    {
+      "task_id": "inventory_close",
+      "spans": [
+        {"source_id": "I01", "text": "ends the shift with 18 sealed P-4 packs. This closing figure already reflects the four P-4 packs transferred out at 16:00."},
+        {"source_id": "I02", "text": "Four sealed P-4 packs moved from Bay East shelf C to Bay North shelf D."},
+        {"source_id": "I03", "text": "began with 22 sealed P-4 packs, before the 16:00 transfer."},
+        {"source_id": "I04", "text": "ends the shift with 11 sealed P-4 packs."},
+        {"source_id": "I05", "text": "has 29 sealed P-3 packs. This is a different pack model from P-4."}
+      ]
+    },
+    {
+      "task_id": "control_card",
+      "spans": [
+        {"source_id": "C01", "text": "unit R-62 on West Platform is set to CONTINGENCY. CN-4 supersedes unsigned draft CN-3 for that unit and platform only."},
+        {"source_id": "C02", "text": "unit R-62 on West Platform is set to STANDBY pending review. This draft is unsigned."},
+        {"source_id": "C03", "text": "unit R-26 on West Platform is set to CONTINGENCY."},
+        {"source_id": "C04", "text": "unit R-62 on East Platform remains STANDBY. The West Platform change notice does not cover this platform."}
+      ]
+    },
+    {
+      "task_id": "revisioned_pier_p0",
+      "spans": [
+        {"source_id": "V01", "text": "Package Q-17 is assigned under schedule H31 for pier allocation."},
+        {"source_id": "V02", "text": "Schedule H31 routes cargo to pier C."},
+        {"source_id": "V03", "text": "Pier C accepts Class A cargo with a current hatch seal test."},
+        {"source_id": "V04", "text": "Cargo class: A. Hatch seal test: PASS, valid through 31 May."},
+        {"source_id": "V06", "text": "Package Q-18 is Class B cargo assigned to schedule H13. This record is for Q-18, not Q-17."}
+      ]
+    },
+    {
+      "task_id": "revisioned_pier_p1",
+      "spans": [
+        {"source_id": "V01", "text": "For package Q-17, schedule H13 replaces schedule H31 for pier allocation."},
+        {"source_id": "V02", "text": "Schedule H13 routes cargo to pier F."},
+        {"source_id": "V03", "text": "Pier F accepts only Class B cargo and requires a current hatch seal test plus a signed weight receipt."},
+        {"source_id": "V04", "text": "Cargo class: A. Hatch seal test: PASS, valid through 31 May."},
+        {"source_id": "V05", "text": "signed by an inspector on 27 May 2026 for Q-17, 950 kg. Current through the 31 May departure window."},
+        {"source_id": "V06", "text": "Package Q-18 is Class B cargo assigned to schedule H13. This record is for Q-18, not Q-17."}
+      ]
+    },
+    {
+      "task_id": "revisioned_pier_p2",
+      "spans": [
+        {"source_id": "V01", "text": "The 28 May correction is withdrawn. Package Q-17 returns to schedule H31 for pier allocation."},
+        {"source_id": "V02", "text": "Schedule H31 routes cargo to pier C."},
+        {"source_id": "V03", "text": "Pier C accepts Class A cargo with a current hatch seal test."},
+        {"source_id": "V04", "text": "Cargo class: A. Hatch seal test: PASS, valid through 31 May."},
+        {"source_id": "V06", "text": "Package Q-18 is Class B cargo assigned to schedule H13. This record is for Q-18, not Q-17."}
+      ]
+    },
+    {
+      "task_id": "unknown_gate",
+      "spans": [
+        {"source_id": "G01", "text": "Case X-33 is assigned to leg L5. Case X-34 is assigned to leg L6."},
+        {"source_id": "G02", "text": "Leg L5 ends at West Gate, Zone K. Leg L6 ends at South Gate, Zone R."},
+        {"source_id": "G03", "text": "At West Gate, refrigerated cases in Zone K may clear only with a current temperature certificate and an entered two-person audit. Audit records are required even if a certificate is current."},
+        {"source_id": "G04", "text": "Refrigerated case; PASS; valid through 30 June 2026."},
+        {"source_id": "G05", "text": "X-33 has NO ENTRY for a two-person audit. This register covers all West Gate dispatch audits; no entry means no audit was recorded by this cutoff. It does not establish whether an unrecorded physical audit occurred."},
+        {"source_id": "G06", "text": "West Gate is open and Zone K is active. Gate availability does not establish that a case-level audit requirement was met."},
+        {"source_id": "G07", "text": "This certificate is for X-34, not X-33."}
+      ]
+    }
+  ]
+}

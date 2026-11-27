@@ -3521,6 +3521,75 @@ Three additional CPU cases checked context term retirement. The worker refused t
 
 Four additional CPU cases checked context term restoration. A removed term offered no gain while its evidence was weak. When the evidence returned, the worker restored the archived term ahead of a newer live term. The stored event referenced the original publication and its retirement, and a cold restart recovered both terms in their original order. The worker refused an insufficient weight cap and an attempt to restore the same already-live occurrence. A separate draft lost its minimum gain on a middle source pin and was refused even though the final pin supported the expected proof. Explicit prior guards still apply to a restoration's own target, and inheriting a positive target leaves its role intact after publication and reopen. The worker and receiver replay refused to install identical factors that were already live under another birth. These are bounded synthetic software controls. Recovery delay and fully charged work relative to a receiver that retains cached terms remain unmeasured. [Restoration controls](../experiments/memory/test_binding_feedback.py)
 
+## Fresh 0.6B reader-competence screen, 27 November 2026
+
+**Question.** Before comparing query-independent latent maintenance with
+ordinary reasoning, can the fixed 0.6B reader answer fresh direct and composed
+questions from complete pinned text? Six authored task-pins were evaluated in
+three stateless prompt conditions: U received the broad task and full source
+packet; N added a neutral list of obligations; E added verbatim highlighted
+source spans. This gives 18 sessions (6 per condition): two direct task-pins,
+three revisions of one package-to-pier route, and one separate gate/audit case.
+The model saw the full packet in every session. There was no retrieval, latent
+memory, maintenance worker, or removal/restoration comparison.
+
+**Run and output contract.** Qwen3-0.6B at snapshot
+`c1899de289a04d12100db370d81485cdf75e47ca` ran greedy full-forward generation
+on the RTX 5070 Laptop GPU. Prompts were 526–838 tokens under an 8,192-token
+context limit; generation was capped at 1,024 tokens per session. The 18
+unmasked generations took 493.42 seconds total. JSON was requested in the
+prompt but not enforced by the sampler. All 18 outputs failed the registered
+strict JSON contract; 17 parsed after removing a Markdown fence, 17/18
+terminated, and only 4 included an `answer` field. A token-mask adapter trial
+was stopped after one session because 774 output tokens took 319 seconds
+(about 2.4 tokens/second); it supplies no semantic score. The scored run used
+ordinary unmasked generation and post-generation validation.
+
+**Content results.** No session produced a complete, correct,
+source-grounded answer across the requested obligations (0/18; 0/6 in each
+condition). The reader outputs contained the correct East and North inventory
+numbers in all three presentations (3/3 each), though one response
+contradicted itself; it explained transfer accounting in none (0/3) and
+produced no complete inventory answer. It named the correct West
+Platform mode in all three control-card presentations (3/3), but never gave a
+complete, correct revision-and-scope account. On the nine package-route
+sessions, it made an explicit, correct package-to-schedule link in eight of
+nine, but grounded no schedule-to-pier connection (0/9) and reached no
+complete staging verdict (0/9). It gave one false positive at the corrected
+pin. On the three gate sessions, none reached the correct verdict while preserving the physical
+event versus missing-record distinction; one truncated response falsely
+treated an open gate as proof that the audit condition had been satisfied.
+
+The presentation variants had no complete-answer wins: U 0/6, N 0/6, E 0/6.
+E had two `partial_correct` grades and U one; N had none. This is descriptive
+only. The same six task-pins were reused across conditions, the route panel
+contains three revisions of one case, and the preflight transcript exposed
+the randomized arm schedule. The scoring view omitted arm labels, but grading
+was not fully isolated. The tasks, evaluator gold, and initial qualitative
+scores were authored or assigned by this agent and were not independently
+adjudicated. A second AI content review upheld 0/18 complete answers and
+corrected the explicit package-to-schedule count from 9/9 to 8/9 because r16
+mentions H13 only as an alternative. That reviewer also saw the preflight
+schedule but did not use arm labels; this is a content recheck, not an
+independent blind grade. The runner did not load evaluator gold, though the
+gold file was not protected by an OS-level access boundary. Treat this as
+instrument-development data, not a benchmark or a general 0.6B capability
+claim. The original score and corrected score are both preserved with the
+[second review record](../experiments/memory/results/fresh_reasoner_competence_2026-11-27/second_content_review.json).
+
+**Decision.** This is a reader-competence diagnostic, not evidence for or
+against latent maintenance. It identifies a concrete baseline prerequisite:
+the model can recover some direct facts but did not reliably join a
+revision-sensitive relation through to a destination and a supported
+decision. Keep the maintenance comparison closed until a fresh, independently
+graded text or iterative-RAG control demonstrates complete task-level
+competence on an appropriate new panel. Do not tune on these six task-pins.
+The authored protocol/data and full run records, including raw generations,
+assignment and initial and corrected scores, are archived under
+[`fresh_reasoner_competence_2026-11-27`](../experiments/memory/results/fresh_reasoner_competence_2026-11-27/README.md).
+The evaluator gold file is tracked with the protocol but was not loaded by the
+runner.
+
 ## Study result table
 
 These are source-reported experiment results. Publication preparation independently checked Git, inventories, process metadata, ACLs, package structure and the integration suite; model outputs and judgments were not independently checked.

@@ -1,0 +1,112 @@
+{
+  "schema": "lsr-fresh-reasoner-evaluator-gold-v1",
+  "evaluator_only": true,
+  "cases": [
+    {
+      "task_id": "inventory_close",
+      "task_class": "direct",
+      "expected_conclusion": "Bay East shelf C had 18 sealed P-4 packs at the 18:00 close. The close figure already includes the four-pack transfer; do not subtract four again. The separate Bay North shelf D close count is 11 P-4 packs.",
+      "required_claims": [
+        {"claim_id": "east_close", "criterion": "States 18 P-4 packs at East shelf C at 18:00 close.", "citation_options": [["I01"]]},
+        {"claim_id": "transfer_accounted", "criterion": "States that the close figure already reflects the transfer, so it is not reduced again; opening 22 is not the close value.", "citation_options": [["I01"], ["I02", "I03"]]},
+        {"claim_id": "north_side_fact", "criterion": "Reports 11 P-4 packs at separate North shelf D at close.", "citation_options": [["I04"]]}
+      ],
+      "need_rubric": [
+        "Target must distinguish pack model P-4, Bay East shelf C, and the 18:00 close.",
+        "A material need must reconcile the earlier count and 16:00 transfer without double-subtracting.",
+        "A separate location count is a distinct side obligation, not evidence for Bay East.",
+        "P-3 at Bay East and P-4 at Bay North are plausible entity/location alternatives to reject."
+      ],
+      "forbidden_or_unsupported": ["Answer 14 by subtracting the transfer twice.", "Use the P-3 count as the P-4 count.", "Use Bay North's count as Bay East's count."]
+    },
+    {
+      "task_id": "control_card",
+      "task_class": "direct",
+      "expected_conclusion": "R-62 on West Platform is CONTINGENCY under signed CN-4 dated 3 November. CN-4 supersedes unsigned draft CN-3 for that unit and platform only. R-62 on East Platform remains STANDBY; the West change does not establish settings for other platforms.",
+      "required_claims": [
+        {"claim_id": "west_mode", "criterion": "States CONTINGENCY for R-62 on West Platform.", "citation_options": [["C01"]]},
+        {"claim_id": "revision_controls", "criterion": "Uses signed CN-4 to supersede the unsigned older draft CN-3.", "citation_options": [["C01", "C02"]]},
+        {"claim_id": "scope", "criterion": "Limits the change to R-62 on West Platform and does not generalize it to East Platform or unit R-26.", "citation_options": [["C01", "C03", "C04"]]}
+      ],
+      "need_rubric": [
+        "Target must bind unit R-62, West Platform, and 3 November.",
+        "A material need must compare revision authority, signature status, and supersession.",
+        "A material need must preserve platform and unit scope.",
+        "R-26 and R-62 on East Platform are alternatives to reject."
+      ],
+      "forbidden_or_unsupported": ["Report STANDBY for R-62 West from the superseded draft.", "Transfer R-26's mode to R-62.", "Claim the West change controls the East Platform."]
+    },
+    {
+      "task_id": "revisioned_pier_p0",
+      "task_class": "composed",
+      "expected_conclusion": "Q-17 maps to H31, which routes to pier C. Pier C accepts Class A cargo with a current hatch seal test; Q-17 is Class A and its test passes through 31 May. It may be staged for the 30 May departure. Q-18's Class B/H13 record is not Q-17's record.",
+      "required_claims": [
+        {"claim_id": "assignment", "criterion": "Traces Q-17 to H31 and then pier C.", "citation_options": [["V01", "V02"]]},
+        {"claim_id": "rule_and_certificate", "criterion": "Applies pier C's Class A plus current hatch-test rule and confirms Q-17 meets it.", "citation_options": [["V03", "V04"]]},
+        {"claim_id": "decision", "criterion": "Says Q-17 may be staged on 30 May and does not substitute Q-18.", "citation_options": [["V01", "V02", "V03", "V04"]]}
+      ],
+      "need_rubric": [
+        "Infer the package-to-schedule-to-pier dependency.",
+        "Infer the destination-specific acceptance rule and compare class and test evidence.",
+        "Check date validity for the 30 May departure.",
+        "Keep Q-18 as an entity alternative, not Q-17 evidence."
+      ],
+      "forbidden_or_unsupported": ["Apply pier F's Class B rule at pier C.", "Treat Q-18's class as Q-17's class.", "Call the receipt a missing prerequisite at pier C."]
+    },
+    {
+      "task_id": "revisioned_pier_p1",
+      "task_class": "composed",
+      "expected_conclusion": "The correction maps Q-17 to H13 and pier F. Pier F requires Class B, a current hatch seal test, and a signed weight receipt. Q-17 is Class A, so it may not be staged even though its test and receipt are current. Q-18's Class B record is not Q-17's record.",
+      "required_claims": [
+        {"claim_id": "assignment", "criterion": "Traces Q-17 to H13 and then pier F using the corrected pin.", "citation_options": [["V01", "V02"]]},
+        {"claim_id": "rule_and_class_conflict", "criterion": "Applies the pier F Class B requirement and identifies Q-17's Class A mismatch.", "citation_options": [["V03", "V04"]]},
+        {"claim_id": "other_conditions", "criterion": "Recognizes the hatch test and weight receipt are current but do not cure the class mismatch.", "citation_options": [["V03", "V04", "V05"]]},
+        {"claim_id": "decision", "criterion": "Says Q-17 may not be staged and does not transfer Q-18's Class B status.", "citation_options": [["V01", "V02", "V03", "V04", "V06"]]}
+      ],
+      "need_rubric": [
+        "Infer the corrected package-to-schedule-to-pier dependency.",
+        "Infer all three pier F requirements and compare each with Q-17's evidence.",
+        "Treat class mismatch as defeating even though test and receipt pass.",
+        "Keep Q-18 as an entity alternative, not Q-17 evidence."
+      ],
+      "forbidden_or_unsupported": ["Apply pier C's Class A rule after the correction.", "Treat the receipt as curing the class mismatch.", "Use Q-18's Class B status as Q-17 evidence."]
+    },
+    {
+      "task_id": "revisioned_pier_p2",
+      "task_class": "composed",
+      "expected_conclusion": "The correction is withdrawn and Q-17 returns to H31 and pier C. Pier C accepts Class A cargo with a current hatch seal test; Q-17's class and test meet that rule for 30 May. It may be staged. Q-18 remains a separate package.",
+      "required_claims": [
+        {"claim_id": "restored_assignment", "criterion": "Recognizes the correction is withdrawn and traces Q-17 back to H31 and pier C.", "citation_options": [["V01", "V02"]]},
+        {"claim_id": "rule_and_certificate", "criterion": "Applies the pier C Class A plus current hatch-test rule and confirms Q-17 meets it.", "citation_options": [["V03", "V04"]]},
+        {"claim_id": "decision", "criterion": "Says Q-17 may be staged and does not substitute Q-18.", "citation_options": [["V01", "V02", "V03", "V04"]]}
+      ],
+      "need_rubric": [
+        "Infer the restoration and package-to-schedule-to-pier dependency.",
+        "Infer the destination-specific acceptance rule and compare class and test evidence.",
+        "Check date validity for the 30 May departure.",
+        "Keep Q-18 as an entity alternative, not Q-17 evidence."
+      ],
+      "forbidden_or_unsupported": ["Carry the p1 H13 correction into the restored pin.", "Apply pier F's Class B rule at pier C.", "Use Q-18's class as Q-17's class."]
+    },
+    {
+      "task_id": "unknown_gate",
+      "task_class": "composed",
+      "expected_conclusion": "X-33 maps to leg L5 and West Gate, Zone K. Gate Rule 8 applies to this refrigerated case and requires both a current temperature certificate and an entered two-person audit. The certificate is current, but the audit register has no entry by 18:00, so the case is not authorized to clear at this cutoff. The record does not establish whether a physical audit occurred without entry. Gate-open status and X-34's certificate do not satisfy X-33's case-level requirements.",
+      "required_claims": [
+        {"claim_id": "path", "criterion": "Traces X-33 to L5 and West Gate Zone K, not X-34 to South Gate Zone R.", "citation_options": [["G01", "G02"]]},
+        {"claim_id": "rule_scope", "criterion": "Applies Gate Rule 8 to a refrigerated case in Zone K and states both certificate and entered audit are required.", "citation_options": [["G03", "G04"]]},
+        {"claim_id": "audit_gap", "criterion": "States no audit entry exists at the cutoff and this fails the documentary release condition.", "citation_options": [["G03", "G05"]]},
+        {"claim_id": "epistemic_boundary", "criterion": "Does not claim the physical audit definitely did or did not occur; identifies that fact as unknown from the register.", "citation_options": [["G05"]]},
+        {"claim_id": "decision", "criterion": "Says X-33 is not authorized to clear at 18:00 despite the current certificate or open gate.", "citation_options": [["G03", "G04", "G05", "G06"]]}
+      ],
+      "need_rubric": [
+        "Infer the case-to-leg-to-gate/zone dependency.",
+        "Infer the refrigerated Zone K scope and both release requirements.",
+        "Check the certificate and audit evidence separately.",
+        "Distinguish missing registry evidence from the unknown physical history.",
+        "Reject X-34's route or certificate as evidence about X-33."
+      ],
+      "forbidden_or_unsupported": ["Authorize X-33 because the gate is open.", "Treat a current certificate as satisfying the audit requirement.", "State that a physical audit certainly occurred or certainly did not occur.", "Use X-34's certificate for X-33."]
+    }
+  ]
+}

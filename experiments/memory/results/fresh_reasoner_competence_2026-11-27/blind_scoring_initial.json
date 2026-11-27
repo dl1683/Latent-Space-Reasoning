@@ -1,0 +1,162 @@
+{
+  "schema": "lsr-fresh-reasoner-blind-content-scores-v1",
+  "grading_basis": "Frozen evaluator-only gold/rubric; raw output view omitted arm labels and prompts. Scored before opening run assignment file.",
+  "blinding_limit": "The preflight transcript exposed the randomized arm schedule, so this was procedurally blind in the scoring view but not a fully isolated blind grading process.",
+  "session_denominator": 18,
+  "strict_output_contract_valid": 0,
+  "parseable_json_after_removing_markdown_fence": 17,
+  "terminated": 17,
+  "complete_correct_source_grounded_task_results": 0,
+  "direct_inventory": {
+    "task_pins": 3,
+    "correct_east_close_count": 3,
+    "correct_north_close_count": 3,
+    "explicitly_correct_transfer_accounting": 0,
+    "complete_grounded_answers": 0
+  },
+  "direct_control": {
+    "task_pins": 3,
+    "correct_west_mode_claim": 3,
+    "complete_correct_revision_and_scope_report": 0
+  },
+  "composed_revisioned_route": {
+    "task_pins": 9,
+    "correct_package_to_schedule_edge": 9,
+    "grounded_schedule_to_pier_edge": 0,
+    "complete_correct_verdicts": 0
+  },
+  "composed_unknown_gate": {
+    "task_pins": 3,
+    "complete_correct_verdict_with_epistemic_boundary": 0,
+    "false_release_or_audit_closure": 1
+  },
+  "records": [
+    {
+      "session_id": "r01",
+      "task_id": "control_card",
+      "content_grade": "partial_correct",
+      "full_task_answer_grounded": false,
+      "blind_note": "Correct West mode and identifies CN-4, but findings label known claims unknown and do not cleanly state the West-only supersession scope."
+    },
+    {
+      "session_id": "r02",
+      "task_id": "revisioned_pier_p1",
+      "content_grade": "unresolved",
+      "full_task_answer_grounded": false,
+      "blind_note": "Recognizes Q-17 to H13 and its Class A certificate, but treats the H13-to-pier map and Pier F conditions as unknown; no verdict."
+    },
+    {
+      "session_id": "r03",
+      "task_id": "revisioned_pier_p0",
+      "content_grade": "unresolved",
+      "full_task_answer_grounded": false,
+      "blind_note": "Recognizes Q-17 to H31 and its Class A test, but falsely says the destination is absent despite the H31-to-Pier-C map; no verdict."
+    },
+    {
+      "session_id": "r04",
+      "task_id": "unknown_gate",
+      "content_grade": "unresolved",
+      "full_task_answer_grounded": false,
+      "blind_note": "Does not connect the case to the gate and rule; repeats that known leg/zone facts are unavailable; no audit finding or verdict."
+    },
+    {
+      "session_id": "r05",
+      "task_id": "revisioned_pier_p2",
+      "content_grade": "unresolved",
+      "full_task_answer_grounded": false,
+      "blind_note": "Recognizes restoration to H31 and some certificate facts, but says the destination/rule are unknown; no verdict."
+    },
+    {
+      "session_id": "r06",
+      "task_id": "unknown_gate",
+      "content_grade": "partial_incorrect",
+      "full_task_answer_grounded": false,
+      "blind_note": "Finds L5, West Gate/Zone K, Rule 8 and the certificate, but does not give a release verdict and conflates absence of an audit record with a physical event."
+    },
+    {
+      "session_id": "r07",
+      "task_id": "inventory_close",
+      "content_grade": "partial_correct",
+      "full_task_answer_grounded": false,
+      "blind_note": "Correctly reports 18 East P-4 and 11 North P-4, but omits that the close count already includes the transfer and adds unsupported 16:00 counts."
+    },
+    {
+      "session_id": "r08",
+      "task_id": "revisioned_pier_p1",
+      "content_grade": "unresolved",
+      "full_task_answer_grounded": false,
+      "blind_note": "Recognizes the H13 correction and Class A evidence, but says destination-specific acceptance is unknown; no verdict."
+    },
+    {
+      "session_id": "r09",
+      "task_id": "control_card",
+      "content_grade": "partial_incorrect",
+      "full_task_answer_grounded": false,
+      "blind_note": "Correctly reports CONTINGENCY for West R-62, but incorrectly says the stated effective scope is unknown."
+    },
+    {
+      "session_id": "r10",
+      "task_id": "revisioned_pier_p0",
+      "content_grade": "partial_unsupported",
+      "full_task_answer_grounded": false,
+      "blind_note": "States the correct positive staging outcome, but cannot identify which pier or apply the Class A rule; citation does not support the full route."
+    },
+    {
+      "session_id": "r11",
+      "task_id": "control_card",
+      "content_grade": "contradictory",
+      "full_task_answer_grounded": false,
+      "blind_note": "Reports CONTINGENCY but also says the superseded CN-3 still controls, contradicting CN-4 and its own statement."
+    },
+    {
+      "session_id": "r12",
+      "task_id": "revisioned_pier_p2",
+      "content_grade": "partial_unsupported",
+      "full_task_answer_grounded": false,
+      "blind_note": "States the correct positive staging outcome, but leaves the pier mapping and rule application unresolved; citation does not support the full route."
+    },
+    {
+      "session_id": "r13",
+      "task_id": "inventory_close",
+      "content_grade": "partial_correct",
+      "full_task_answer_grounded": false,
+      "blind_note": "Findings contain the two correct counts, but repeat the North count three times, omit transfer accounting, and omit the answer field."
+    },
+    {
+      "session_id": "r14",
+      "task_id": "revisioned_pier_p2",
+      "content_grade": "unresolved",
+      "full_task_answer_grounded": false,
+      "blind_note": "Recognizes Q-17 returns to H31, but treats the pier and acceptance rule as unknown; no verdict."
+    },
+    {
+      "session_id": "r15",
+      "task_id": "unknown_gate",
+      "content_grade": "truncated_false_closure",
+      "full_task_answer_grounded": false,
+      "blind_note": "Did not terminate; partial output says an open gate indicates the case-level audit condition was met, which is false."
+    },
+    {
+      "session_id": "r16",
+      "task_id": "revisioned_pier_p1",
+      "content_grade": "incorrect_false_positive",
+      "full_task_answer_grounded": false,
+      "blind_note": "Says Q-17 can stage at Pier C after the correction assigns it to H13/Pier F; no valid route or rule join."
+    },
+    {
+      "session_id": "r17",
+      "task_id": "revisioned_pier_p0",
+      "content_grade": "partial_unsupported",
+      "full_task_answer_grounded": false,
+      "blind_note": "States Pier C but cites only the packing slip, not the schedule map or acceptance rule; does not give a supported staging verdict."
+    },
+    {
+      "session_id": "r18",
+      "task_id": "inventory_close",
+      "content_grade": "partial_incorrect",
+      "full_task_answer_grounded": false,
+      "blind_note": "Reports the correct East close count, but then calls the documented North close count unknown and cites the transfer slip for it; no transfer explanation."
+    }
+  ],
+  "gold_opened_by_reader": false
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "lsr-fresh-reasoner-second-content-review-v1",
+  "review_type": "second AI content review; not human adjudication",
+  "assignment_file_used": false,
+  "preflight_file_accidentally_opened": true,
+  "blinding_note": "The preflight file exposed the randomized arm schedule. The reviewer did not use, correlate, or report arm assignments; treat this as a content-only review, not isolated blind grading.",
+  "complete_correct_source_grounded_answers": {
+    "count": 0,
+    "denominator": 18
+  },
+  "confirmed_components": {
+    "inventory_east_count_in_outputs": "3/3",
+    "inventory_north_count_in_outputs": "3/3",
+    "control_card_west_mode": "3/3",
+    "grounded_schedule_to_pier_edge": "0/9",
+    "complete_revisioned_route_verdict": "0/9",
+    "false_audit_closure": "1/3"
+  },
+  "corrected_component": {
+    "metric": "correct_package_to_schedule_edge",
+    "initial_score": "9/9",
+    "reviewed_score": "8/9",
+    "session_id": "r16",
+    "reason": "r16 mentions H13 as a question or alternative and mixes it with Q-18's H13 assignment; it does not explicitly identify the Q-17 to H13 edge."
+  },
+  "interpretation": "The robust signal is partial extraction of direct facts without a grounded cross-document route and supported final decision. This review does not establish a general 0.6B limit or a latent-memory effect."
+}

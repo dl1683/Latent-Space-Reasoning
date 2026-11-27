@@ -9,6 +9,15 @@ text competence result: answer candidates prewrite the claims, and the model
 still selected the wrong route (0/1). No native maintenance arm ran.
 [Frozen run and limits](experiments/memory/results/native_world_fresh_gate_2026-11-26/README.md).
 
+A follow-up fresh-reader screen ran 18 Qwen3-0.6B sessions over six task-pins
+with full source packets. Simple counts and a control mode were often found,
+but complete grounded answers were 0/18; an explicit package-to-schedule
+link was present 8/9 times and the decisive schedule-to-pier join 0/9. This is a small
+synthetic reader-baseline diagnostic, not a latent-memory comparison or a
+general model ceiling. The ordinary text/RAG control still needs to show
+competence before a memory advantage can be measured.
+[Run and limits](docs/RESULTS.md#fresh-06b-reader-competence-screen-27-november-2026).
+
 An opt-in v2 compact search/read wire now fits one scripted six-source route through the ordinary and sealed native adapters under the registered caps. Both use the same token constraint and can cite any verified episode read. The registered planner gate remains **NOT PASSED** pending broader feasibility and independently graded generated answers. The next research step is a fresh, independently scored maintenance-to-late-task screen with same-pin removal/restoration and matched text and exact-join controls; see the [evaluation plan](docs/WHOLE_WORLD_EVALUATION.md).
 
 The Rank 1 receiver run remains **PAUSED** after its three-round unsuccessful-repair cap. Separately, bounded task-directed whole-world research is active on `research-review`. The implemented context tool is a **navigation slice**: it returns bounded, byte-verified source evidence through Python, CLI and MCP. Large Markdown sources can return byte-verified heading blocks or titled prose from an oversized heading. General latent reasoning, whole-corpus completeness, calibrated absence, multimodal optional-memory operation and complete efficiency remain research objectives.

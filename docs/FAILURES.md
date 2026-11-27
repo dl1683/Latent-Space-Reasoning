@@ -1144,6 +1144,23 @@ fresh task with separately gradeable generated findings that a competent text
 or iterative-RAG control can solve before opening the maintenance comparison.
 [Frozen record](../experiments/memory/results/native_world_fresh_gate_2026-11-26/README.md)
 
+**A small 0.6B reader screen found direct facts but failed composed conclusions, 27 November 2026.**
+Across 18 sessions on six fresh synthetic task-pins, no U, neutral-obligation,
+or highlighted-evidence response gave a complete grounded answer. The reader
+found an explicit first package-to-schedule edge 8/9 times and the following
+schedule-to-pier edge 0/9 times. A second AI content review corrected the
+first-edge count because r16 mentions H13 only as an alternative. It recovered simple counts and a control mode,
+but did not account for transfer or revision scope. One truncated gate answer
+made a false audit closure. The sampler did not enforce JSON; strict output
+validity was 0/18, and only 17 outputs parsed after removing fences. The
+randomization schedule was visible in the preflight transcript, so the arm
+comparison is not a clean blind result. This is a narrow synthetic
+competence diagnostic, not a general model-ceiling or latent-memory finding.
+Do not tune these cases or use them to justify a maintenance advantage.
+Qualify a fresh text or iterative-RAG control on complete, source-grounded
+answers before running the matched maintenance comparison.
+[Frozen result](RESULTS.md#fresh-06b-reader-competence-screen-27-november-2026)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.
