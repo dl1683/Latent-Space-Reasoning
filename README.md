@@ -42,6 +42,12 @@ on that operation. Withdrawing its evidence disabled the answers at the
 head and kept the historical answer available. The rival definitions,
 operands and late fixtures were supplied.
 
+A [source-only discovery control](docs/RESULTS.md#finding-rival-operations-from-retained-source-rows)
+derives competing bases from one retained address and reads the event
+operands from pinned source cards. It selected a useful event in one
+fixture and abstained when an additional valid basis made the contrast
+inconclusive. The input cards and operand coordinate policy were supplied.
+
 An [archived learned-state check](docs/ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs) found that even all six retained keys cannot reconstruct either late input from the retired p2 run. The next design needs to distinguish selecting a reusable operation from encoding the operands it will act on.
 
 A [visual operation check](docs/RESULTS.md#applying-published-visual-operations-to-new-grids)

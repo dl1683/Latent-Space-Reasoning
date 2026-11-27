@@ -210,11 +210,12 @@ def test_operand_group_preserves_duplicate_origins_and_refuses_conflicting_value
     assert selector.read(operand, rival)[2].receipt.status == "competing"
 
 
-@pytest.mark.parametrize("mode", ["legacy", "operand", "admission"])
+@pytest.mark.parametrize("mode", ["legacy", "operand", "admission", "discovery", "oblique-discovery"])
 def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_path, mode):
     from experiments.memory.native_operand_admission import (
         NativeAdmittedOperandModel, draft_operand_admission, resolve_operand_admission,
     )
+    from experiments.memory.native_operand_discovery import admitted_operand_inputs, discover_operand_admission
     from experiments.memory.native_operand_model import NativeOperandModel
     from experiments.memory.native_task_episode import NativeTaskWorldPin
     from experiments.memory.native_transport_model import NativeTransportModel
@@ -222,7 +223,7 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
     from experiments.memory.task_evidence import TaskWorld
 
     separate_address = mode != "legacy"
-    admitted = mode == "admission"
+    admitted = mode in ("admission", "discovery", "oblique-discovery")
 
     class Tokenizer:
         def encode(self, text, **_):
@@ -254,7 +255,8 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
                 rows[6, :2] = torch.atanh(torch.tensor([-48, 40]) / 127)
             if admitted:
                 rows[1:3, 5] = torch.atanh(torch.tensor(8 / 127))
-                rows[9, 1] = torch.atanh(torch.tensor(-50 / 127))
+                first_role = 40 if mode == "oblique-discovery" else 0
+                rows[9, :2] = torch.atanh(torch.tensor([first_role, -50]) / 127)
                 rows[9, 5], rows[9, 7] = rows[1, 5], 1
             self.lookup = torch.nn.Embedding.from_pretrained(rows)
 
@@ -304,7 +306,8 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
             return (0, 100 / 127, 0, 0, sign, 0, 0, 0.5)
         if admitted and source == shadow_image and raw == opening_pixel:
             return (0, -100 / 127, 0, 0, 1, 0, 0, 0.5)
-        if separate_address and source == outcome_source and raw[:-3] == pixmap and raw[-3] <= 254:
+        if (separate_address and source not in (image, shadow_image)
+                and raw[:-3] == pixmap and raw[-3] <= 254):
             return (0, 0, 0, 0, 0, 0, (raw[-3] - 127) / 127, 0)
         return None
 
@@ -348,6 +351,75 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
         a, b, c = (original.source_spans(source)[0] for source in (cue_a, cue_b, cue_c))
         cohorts = ((a, b), (a, c))
         assert set(original.derived_seeds) == {a, b, c}
+        if mode in ("discovery", "oblique-discovery"):
+            cards = (cue_a, cue_b)
+            settings = dict(cards=cards, coordinates=(6,), tolerance=0)
+            found = discover_operand_admission(reopened, worker, opening, **settings)
+            assert (found.address_rows, found.operand_rank, found.basis_combinations) == (3, 2, 3)
+            (neutral_outcome, neutral_input), (discovered_outcome, contrast_input) = found.inputs
+            assert (neutral_input, contrast_input) == (a, b)
+            draft = found.draft
+            if mode == "oblique-discovery":
+                assert found.status == "no_separator"
+                assert draft.cohorts == ((a, b), (a, c), (b, c))
+                assert draft.options == ((discovered_outcome, 0, ((97,), (-97,), (97,))),)
+                assert reopened.head() == opening
+                return
+
+            assert found.status == "ready"
+            assert draft.cohorts == cohorts
+            assert draft.source == discovered_outcome
+            assert draft.events == ((neutral_outcome, (100, 0, 0, 0, 0, 8, 0, 97)),
+                                    (discovered_outcome, (0, 50, 0, 0, 0, 8, 0, 97)))
+            assert draft.options == ((neutral_outcome, 0, ((0,), (0,))),
+                                     (discovered_outcome, 0, ((97,), (-97,))))
+
+            partial = discover_operand_admission(reopened, worker, opening, max_combinations=2, **settings)
+            assert partial.status == "combination_limit" and partial.draft is None
+            assert partial.basis_combinations == 3
+            limited = discover_operand_admission(reopened, worker, opening, max_address_rows=2, **settings)
+            assert limited.status == "row_limit" and limited.draft is None
+            neutral_only = discover_operand_admission(reopened, worker, opening, cards=cards[:1],
+                                                       coordinates=(6,), tolerance=0)
+            assert neutral_only.status == "no_separator" and neutral_only.draft.source is None
+            assert reopened.head() == opening
+
+            commitment_path = tmp_path / "discovered-draft-commitment"
+            commitment_path.write_text(draft.commitment, encoding="ascii")
+            outcome_path = tmp_path / "discovered-source-event"
+            assert not outcome_path.exists()
+            outcome = write_source_delta(outcome_path, {discovered_outcome: pixmap + bytes((30, 0, 0))},
+                                         previous=original_feed, binary_sources=(discovered_outcome,),
+                                         max_bytes=limit)
+            resolved = resolve_operand_admission(
+                reopened, reader(l1=2), draft, outcome_path, outcome.seal,
+                commitment=commitment_path.read_text(encoding="ascii"), max_source_bytes=limit)
+            assert resolved.status == "admitted" and resolved.survivors == (1,)
+            serving = reader(l1=2)
+            live = reopened.attach(serving, pin=resolved.pin)
+            assert admitted_operand_inputs(live) == found.inputs
+            earlier = reopened.attach(serving, pin=opening)
+            questions = ("new late input", "other late input")
+            for question, expected in zip(questions, ("gold", "blue"), strict=True):
+                read = serving(question, memory=live)
+                assert read.text == expected
+                assert {hit.span for hit in read.derived_reads[0].selected} == {a, c}
+                evidence = serving.operation_evidence(live, read)
+                assert {a, c, resolved.witness} <= set(evidence)
+                assert serving(question, memory=earlier).text == serving(question).text == ""
+
+            removal_path = tmp_path / "withdraw-input-card"
+            removal = write_source_delta(removal_path, {cue_b: None}, previous=outcome, max_bytes=limit)
+            retired = reopened.revise(worker, resolved.pin, removal_path, removal.seal, max_source_bytes=limit)
+            without_card = reopened.attach(serving, pin=retired)
+            assert admitted_operand_inputs(without_card) == ()
+            assert set(without_card.derived_seeds) == {a, c}
+            assert all(serving(question, memory=without_card).text == "" for question in questions)
+            historical = reopened.attach(serving, pin=resolved.pin)
+            assert admitted_operand_inputs(historical) == found.inputs
+            assert tuple(serving(question, memory=historical).text for question in questions) == ("gold", "blue")
+            return
+
         questions = ("new late input", "other late input")
         assert all(fresh(question, memory=original).text == "" for question in questions)
         events = ((neutral, (32, 0, 0, 0, 0, 8, 0, 0)), (outcome_source, (16, 32, 0, 0, 0, 8, 0, 0)))

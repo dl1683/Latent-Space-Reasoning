@@ -731,6 +731,36 @@ descriptors. Learned acquisition, independent task grading and full
 lifecycle cost were outside this control.
 [CPU fixture](../experiments/memory/test_native_latent_recurrence.py)
 
+### Finding rival operations from retained source rows
+
+**CPU integration control.** From three acquired rows at one opening,
+the proposer found operand rank two and considered all three possible
+row pairs. Two were full bases, and neither was supplied by the caller.
+The worker used two existing source cards to predict their withheld
+outcomes. The rivals agreed on the first card and predicted $+97$ and
+$-97$ on the second. A row cap of two or a combination cap of two
+refused the proposal before release. The first card alone led to
+abstention.
+
+The controller recorded the draft commitment and released a verified
+image with value $-97$ under the outcome ID derived from the selected
+card's exact span. A fresh resolver published the matching operator.
+A different reader gave the expected answers on both supplied late inputs.
+The historical opening and memory-omitted calls left both unresolved.
+Reopen recovered both card links and their encoded inputs. Withdrawing
+the selected card removed the losing basis and revoked admission despite
+both winning rows remaining live. The historical admitted pin still
+served both answers.
+
+A second fixture changed the third row to an oblique direction.
+All three row pairs were valid full bases. The contrast gave predictions
+of $+97$, $-97$ and $+97$, so it left two rivals indistinguishable and
+the worker did not admit an operation. The neutral input was outside
+one rival's bounded coefficient domain. The fixtures supplied the
+source cards, routing and projection policy, and stand-in backbone.
+Independent task grading and full costs remain open.
+[CPU fixtures](../experiments/memory/test_native_latent_recurrence.py)
+
 ### Checking the signed fit on archived learned states
 
 **Offline exact arithmetic, one exposed task.** Across both active
@@ -750,6 +780,14 @@ that address and stayed outside the rounding bound. Eight earlier worker queries
 also exceeded the bound in the cross-epoch check. There was no new
 pretrained execution or answer grading.
 [Inputs, exact replay, and scope](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
+
+**Archive inventory check.** The three p2 publication manifests list
+one acquired continuation at opening, zero after correction, and one
+after restoration. No address split of those rows can yield two
+distinct nonempty rival bases at any of the three pins. This is a
+metadata check on one archived case with no new execution. It leaves
+coverage on a newly acquired bank open.
+[Opening](../experiments/memory/results/native_world_addressing_p2_2026-11-26/publications/opening-p0/manifest.json) · [Correction](../experiments/memory/results/native_world_addressing_p2_2026-11-26/publications/corrected-p1/manifest.json) · [Restoration](../experiments/memory/results/native_world_addressing_p2_2026-11-26/publications/restored-p2/manifest.json)
 
 ## Applying published visual operations to new grids
 

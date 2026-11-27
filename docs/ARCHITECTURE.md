@@ -185,6 +185,34 @@ available per gated workspace. Inferring cohorts, operand roles and
 event candidates from a general corpus remains open.
 [CPU results](RESULTS.md#admitting-an-operation-from-one-open-workspace-pin)
 
+#### Finding rival bases at a retained operation address
+
+[SLICE] The source-only proposer reads one acquired singleton span per
+candidate input card. It quantizes the retained source row as the event
+operand. The cards must share one exact, nonzero address. A domain-tagged
+digest of the exact source span names the withheld outcome. It is stable
+when the same card bytes and boundaries are reissued.
+
+The proposer gathers the acquired rows at that address and bundles exact
+operand key/value duplicates without dropping their source origins. It
+finds the rank of the full operand span by exact rational elimination.
+Projection to its pivot columns is injective on that span, so it checks
+each candidate basis in those coordinates. An independent full-span
+basis supplies one rival. Physical origin, basis search and rival count
+limits refuse the proposal as a whole when exceeded. The existing
+operand reader checks rank tolerance, reconstruction and the L1 bound
+when predicting with every rival. A card can separate rivals only when
+each has a representable prediction.
+
+The resulting draft goes through ordinary source-gated admission. The
+opening seal binds its inputs and rows, and an attached reader can audit
+the linkage by re-deriving the outcome ID from its live card span and
+checking the recorded Q8 input. The selected card is part of the compared
+row inventory. Its withdrawal invalidates the corresponding rival and
+the admission. This search covers the declared address on its opening
+pin. A new rival at a later pin requires separate qualification.
+[CPU results](RESULTS.md#finding-rival-operations-from-retained-source-rows)
+
 #### Applying a local operation from retained worker rows
 
 [SLICE] `NativeTransportModel` extends the optional-memory reader with

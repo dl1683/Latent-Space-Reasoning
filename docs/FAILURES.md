@@ -37,6 +37,15 @@ direct query and left a query through an extra alias link unresolved. Keep
 the two-unseen-operand criterion for the main screen.
 [Handoff control](RESULTS.md#transferring-a-forecast-between-worker-processes)
 
+**A contrast can separate two convenient rivals while leaving a third.**
+With three full operand bases, the discovered contrast predicted
+$+97$, $-97$ and $+97$. A capped or partial basis search could have
+hidden the overlap and submitted a separating draft. The worker
+withheld admission after considering all bases at the declared address.
+Equivalent bases beyond exact duplicates can also cause abstention,
+and a later pin can add candidates to the address.
+[Discovery controls](RESULTS.md#finding-rival-operations-from-retained-source-rows)
+
 **An open rival inventory cannot serve as an admitted operation.**
 The gated reader withholds all proposed cohorts before a separating
 event. A verified but nonmatching observation advances the source

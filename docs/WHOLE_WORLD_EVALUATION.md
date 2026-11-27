@@ -429,6 +429,17 @@ screen still requires independently chosen late role bindings, a
 receiver with demonstrated ordinary competence and a bounded, equivalent
 acquisition opportunity for the reused-block and exact comparators.
 
+A [source-only discovery control](RESULTS.md#finding-rival-operations-from-retained-source-rows)
+now constructs the full basis alternatives at an opening address and
+uses pinned cards as operands. It includes a third-rival abstention,
+so the outcome can qualify the complete declared inventory. The next
+screen needs independent input cards and late tasks plus a frozen role
+encoder that produces useful operand directions from raw sources. Count
+operative rival groups and input coverage before measuring selection.
+The three archived p2 pins have at most one acquired row each and
+cannot supply a rival comparison. Charge enumeration and refused
+events to both matched evaluators.
+
 The [signed admission bound](SIGNED_OPERATION_ADMISSION_BOUND.md) gives two
 exact controls for this design. A negative role coordinate can be necessary
 even when the full bank has a bounded exact fit. Adding coherent duplicate

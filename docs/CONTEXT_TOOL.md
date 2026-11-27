@@ -1095,6 +1095,25 @@ with optional memory. For a read that used the selected operation,
 `reader.operation_evidence(memory, read)` adds the admission witness to
 its candidate evidence.
 
+To derive the candidate bases, call
+`discover_operand_admission(workspace, reader, pin, cards=...,
+coordinates=..., tolerance=..., max_address_rows=..., max_combinations=...)`
+from `experiments.memory.native_operand_discovery`. Cards are one to
+eight live source IDs with one acquired span each at a shared address.
+The return includes the draft or a refusal, outcome-to-input references,
+physical row count, operand rank and the number of possible basis
+combinations. Row and rank counts at their respective limits can be
+one-past-cap lower bounds. An incomplete basis search produces no draft.
+A completed search can report abstention when the cards fail to separate
+all rivals.
+
+Use `operand_outcome_id(input_span)` to name a card's outcome and
+`resolve_operand_admission` with the returned draft and pre-release
+commitment. `admitted_operand_inputs(memory)` reconstructs and checks
+the outcome links and Q8 input rows for a discovered admission. The
+controller still supplies the cards, output coordinates and the
+verified release chronology.
+
 ## Holding later ordinary source inputs fixed
 
 Pass exact question token IDs, an intact reopened selective memory,
