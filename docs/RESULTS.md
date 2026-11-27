@@ -26,6 +26,28 @@ calibration still requires cases, passage and tokenizer budgets that
 fit its actual frames, and a qualified backend.
 [Reader interface](CONTEXT_TOOL.md#four-call-ordinary-text-calibration).
 
+## Using a maintained observation in the native model
+
+**CPU software control.** A worker picked a source card before its
+measurement was released and installed one additional direction
+alongside the source. A cold reader used it on two distinct operands.
+Both produced the expected token with the extension and an unresolved
+answer with the extension disabled at the same source and publication pin.
+The ordinary source-routing receipts matched before the affected step.
+The first operand matched a source calibration card. The second used a
+different, supplied hidden operand. The existing in-span call preserved
+its tokens and derived receipts with the extension disabled.
+
+A measurement outside the declared gain cap remained a source
+observation without an install. An unrelated revision preserved the
+extension. Editing the card or measurement or withdrawing the base
+operator's witness removed it. Reissuing the original measurement did
+not revive it, and the old publication still reproduced its answer.
+A forged commitment failed readback. These checks use supplied
+grayscale coordinates and a scripted backbone. A learned reasoner,
+independently chosen tasks and lifecycle cost comparisons are pending.
+[Operation contract](ARCHITECTURE.md#using-a-source-observation-to-extend-the-serving-operation).
+
 ## Qualifying a byte-weighted revision forecast, 26 November 2026
 
 **Software controls.** Two newly introduced rows of 32 and 10 bytes

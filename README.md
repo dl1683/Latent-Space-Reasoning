@@ -86,6 +86,11 @@ chooses one source card for how much of a calibration operand's
 missing direction it can measure. In the CPU fixture, an exact
 measurement resolved the scalar decision. A source correction withdrew
 that result while the historical publication preserved it.
+With an opt-in installation, the same optional-memory model can use
+the measurement to extend the retained operation. On a supplied CPU
+fixture, switching off just that observation at the same publication
+removed the answer for two distinct supplied operands.
+[Native observation control](docs/RESULTS.md#using-a-maintained-observation-in-the-native-model).
 
 A [cross-source acquisition control](docs/RESULTS.md#acquiring-continuations-after-self-only-reads)
 retries seeds whose ordinary maintenance read only their own source.

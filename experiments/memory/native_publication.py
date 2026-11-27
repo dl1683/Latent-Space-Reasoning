@@ -102,7 +102,8 @@ def _reader_digest(reader):
     if getattr(reader, "_operator_inventory_enabled", False):
         implementations = {
             name: sha256(Path(__file__).with_name(name).read_bytes().replace(b"\r\n", b"\n"))
-            for name in ("native_operand_admission.py", "native_operand_discovery.py", "native_operator_inventory.py")
+            for name in ("native_operand_admission.py", "native_operand_discovery.py", "native_operator_inventory.py",
+                         "native_operand_probe.py")
         }
         add("operator-inventory", "json", None, _record(
             "lsr-operator-inventory-v1", reader._max_operators, implementations,
@@ -268,6 +269,9 @@ def _metadata(reader, memory):
     operators = getattr(selective, "operator_inventory", ())
     if operators:
         header["operator_inventory"] = [asdict(entry) for entry in operators]
+    observations = getattr(selective, "operand_observations", ())
+    if observations:
+        header["operand_observations"] = [asdict(record) for record in observations]
     return header
 
 
@@ -831,6 +835,10 @@ def _restore(header, reader, raw, seal, scope):
         from experiments.memory.native_operator_inventory import restore_operator_inventory
 
         memory = restore_operator_inventory(reader, memory, header["operator_inventory"])
+    if "operand_observations" in header:
+        from experiments.memory.native_operand_probe import restore_operand_observations
+
+        memory = restore_operand_observations(reader, memory, header["operand_observations"])
     return memory
 
 
@@ -873,6 +881,7 @@ def _read_native_publication(directory, reader, *, seal, source_seal, runtime_sh
         fields.discard("operand_admission")
     if getattr(reader, "_operator_inventory_enabled", False):
         fields.discard("operator_inventory")
+        fields.discard("operand_observations")
     if schemas.get(base_schema) != fields or _encode(header) != manifest:
         raise ValueError("native publication manifest is malformed")
     if header["source"] != source_seal or header["runtime"] != runtime_sha256:

@@ -18,7 +18,7 @@ from experiments.memory.native_operand_model import NativeOperandModel, _Operand
 from experiments.memory.native_workspace import _preserve_source_tokenizer_settings
 from experiments.memory.selective_continuations import SelectionReceipt, SelectionStep
 from experiments.memory.source_revision_feed import _encode
-from experiments.memory.verified_source_tool import require_digest, sha256
+from experiments.memory.verified_source_tool import SourceSpan, require_digest, sha256
 
 
 @dataclass(frozen=True, slots=True)
@@ -46,11 +46,15 @@ class _ActiveOperator:
 @dataclass(frozen=True, slots=True, eq=False)
 class _OperatorWorld(_SelectiveWorld):
     operator_inventory: tuple[_ActiveOperator, ...] = ()
+    operand_observations: tuple = ()
+    omitted_operand_observation: SourceSpan | None = None
 
 
-def _with_inventory(world, entries):
+def _with_inventory(world, entries, observations=None):
+    if observations is None:
+        observations = getattr(world, "operand_observations", ())
     return _OperatorWorld(**{field.name: getattr(world, field.name) for field in fields(_SelectiveWorld)},
-                          operator_inventory=tuple(entries))
+                          operator_inventory=tuple(entries), operand_observations=tuple(observations))
 
 
 def _entries(world):
@@ -60,21 +64,37 @@ def _entries(world):
 @dataclass(frozen=True, slots=True)
 class _PreparedOperators:
     by_address: MappingProxyType
+    extended: MappingProxyType
 
 
 class _InventorySelector(_OperandSelector):
+    def _project_query(self, hidden):
+        with np.errstate(over="raise", invalid="raise"):
+            return _quantize(np.clip(self._kernel._vector(hidden) @ self._kernel._query, -1, 1))
+
     def _read(self, hidden, shards, *, substitution=None):
         shards = tuple(shards)
-        if shards and isinstance(shards[0], _PreparedOperators):
-            inventory, = shards
-            with np.errstate(over="raise", invalid="raise"):
-                query = _quantize(np.clip(self._kernel._vector(hidden) @ self._kernel._query, -1, 1))
-            address = tuple(map(int, query[list(self._operand_address_axes)]))
-            shards = inventory.by_address.get(address)
-            if shards is None:
-                receipt = SelectionReceipt("empty", (), 0, 0)
-                return None, 0.0, SelectionStep(receipt, query.astype(np.int8).tobytes(), 1), None
-        return super()._read(hidden, shards, substitution=substitution)
+        if not shards or not isinstance(shards[0], _PreparedOperators):
+            return super()._read(hidden, shards, substitution=substitution)
+        inventory, = shards
+        query = self._project_query(hidden)
+        address = tuple(map(int, query[list(self._operand_address_axes)]))
+        prepared = inventory.by_address.get(address)
+        if prepared is None:
+            receipt = SelectionReceipt("empty", (), 0, 0)
+            return None, 0.0, SelectionStep(receipt, query.astype(np.int8).tobytes(), 1), None
+        result = super()._read(hidden, prepared, substitution=substitution)
+        extended = inventory.extended.get(address)
+        if extended is None or result[2].receipt.status != "unsupported":
+            return result
+        group, = prepared[0].groups
+        operand = query[list(self._operands)]
+        coefficients = group.coefficient_map @ operand
+        if np.allclose(group.keys @ coefficients, operand, rtol=0, atol=1e-7):
+            return result  # preserve a refusal inside the original span
+        value, mass, trace, alternate = super()._read(hidden, extended, substitution=substitution)
+        receipt = replace(trace.receipt, rows_scored=trace.receipt.rows_scored + result[2].receipt.rows_scored)
+        return value, mass, replace(trace, receipt=receipt), alternate
 
 
 class NativeOperatorInventoryModel(NativeOperandModel):
@@ -96,30 +116,55 @@ class NativeOperatorInventoryModel(NativeOperandModel):
         self._selector = _InventorySelector(self._selector, address_axes=options["address_axes"],
                                             transport_l1=derived_transport_l1)
 
-    def _operand_groups(self, memory):
+    def _operand_groups(self, memory, *, include_observations=True):
         self._check_memory(memory, for_read=True)
         entries = _entries(memory._selective)
         if not entries or memory._derived_off:
             return ()
         bank = memory._selective.derived
+        observations = memory._selective.operand_observations if include_observations else ()
+        altered_seed = memory._omitted_continuation or memory._source_anchor_seed
+        omitted = memory._selective.omitted_operand_observation
         cached = self._compiled_operand_groups
-        if cached is None or cached[0] is not bank or cached[1] is not entries:
+        if (cached is None or cached[0] is not bank or cached[1] is not entries
+                or cached[2] is not observations or cached[3:5] != (omitted, altered_seed)):
             by_address = {}
+            extended = {}
+            altered_addresses = set()
             for entry in entries:
                 gate = entry.admission
-                active = _restrict(bank, gate.draft.cohorts[gate.winner])
+                cohort = gate.draft.cohorts[gate.winner]
+                if altered_seed in cohort:
+                    altered_addresses.add(entry.address)
+                active = _restrict(bank, cohort)
                 if active:
                     by_address[entry.address] = self._selector.prepare(active)
-            groups = (_PreparedOperators(MappingProxyType(by_address)),)
-            cached = (bank, entries, groups)
+            if observations:
+                from experiments.memory.native_operand_probe import _prepare_observed_operand
+
+                for record in observations:
+                    if record.measurement == omitted or record.address in altered_addresses:
+                        continue
+                    extended[record.address] = _prepare_observed_operand(self, memory, record)
+            groups = (_PreparedOperators(MappingProxyType(by_address), MappingProxyType(extended)),)
+            cached = (bank, entries, observations, omitted, altered_seed, groups)
             self._compiled_operand_groups = cached
-        return cached[2]
+        return cached[-1]
 
     def _read_ids_with_limit(self, input_ids, memory, steps, output_limit, **options):
         if memory is not None:
             groups = self._operand_groups(memory)
             memory = replace(memory, _selective=replace(memory._selective, derived=groups))
         return NativeLatentModel._read_ids_with_limit(self, input_ids, memory, steps, output_limit, **options)
+
+    def without_operand_observation(self, memory, measurement):
+        """Read the same source publication with one installed observation disabled."""
+        self._check_memory(memory)
+        state = memory._selective
+        if (memory._publication_seal is None or memory._derived_off or memory.omitted_sources
+                or not any(record.measurement == measurement for record in getattr(state, "operand_observations", ()))):
+            raise ValueError("operand observation removal requires its intact attached publication")
+        return replace(memory, _selective=replace(state, omitted_operand_observation=measurement))
 
     def operation_evidence(self, memory, read):
         """Return candidate source spans with witnesses of the operators actually applied."""
@@ -135,7 +180,11 @@ class NativeOperatorInventoryModel(NativeOperandModel):
     def _revise_selection(self, previous, sources, changed):
         revised = super()._revise_selection(previous, sources, changed)
         retained = tuple(entry for entry in _entries(previous) if entry.admission.witness.source_id not in changed)
-        return self._retain_operators(_with_inventory(revised, retained)) if retained else revised
+        if not retained:
+            return revised
+        observations = (record for record in previous.operand_observations
+                        if record.card.source_id not in changed and record.measurement.source_id not in changed)
+        return self._retain_operators(_with_inventory(revised, retained, observations))
 
     def _maintain_selection(self, memory, max_seeds, parent, max_parent_scores):
         revised = super()._maintain_selection(memory, max_seeds, parent, max_parent_scores)
@@ -155,7 +204,14 @@ class NativeOperatorInventoryModel(NativeOperandModel):
             return world
         banks = _rival_digests(self, world, {entry.address for entry in entries})
         retained = tuple(entry for entry in entries if banks.get(entry.address) == entry.rivals_sha256)
-        return world if len(retained) == len(entries) else _with_inventory(world, retained)
+        observations = world.operand_observations
+        if observations:
+            digests = {entry.address: sha256(_encode(asdict(entry))) for entry in retained}
+            observations = tuple(record for record in observations if digests.get(record.address) == record.operator_sha256
+                                 and record.measurement not in world.acquired)
+        if len(retained) == len(entries) and len(observations) == len(world.operand_observations):
+            return world
+        return _with_inventory(world, retained, observations)
 
 
 def _rival_digests(reader, world, addresses):

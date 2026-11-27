@@ -253,6 +253,52 @@ replay. Independently graded downstream
 use and cost remain open.
 [CPU outcome and withdrawal](RESULTS.md#selecting-the-next-operand-observation-before-release)
 
+#### Using a source observation to extend the serving operation
+
+[SLICE] A worker can precommit to installing one additional direction
+per admitted address. The selected source card is projected by the
+serving query map. The measurement's encoded Q8 value supplies one
+declared output coordinate. The other encoded coordinates do not
+declare measurements. The worker stages the new source and the
+new operation together. An inconsistent observation remains in the
+source world with no operation extension.
+
+Let $P$ project onto the old operand span and $M$ be the old map on
+that span. A selected card $x$ gives $u=(I-P)x$. If the witnessed
+coordinate is $j$ and its measured value is $y$, the candidate map is
+
+$$
+M_{\rm new}(q)=M(Pq)+e_j\,[y-(M(Px))_j]\,\frac{u^\top q}{\|u\|_2^2}.
+$$
+
+This declares a zero residual correction on unmeasured output
+coordinates. Their projected old output is still present. The added
+squared row norm in coordinate $j$ is the squared measured innovation
+divided by $\|u\|_2^2$. Check it against the prior cap using rational
+arithmetic and require a spare row, bounded output values and a
+conditioned augmented basis.
+The serving path tries the old basis first. A query in that span keeps
+the same computation, including an existing coefficient-limit refusal.
+An off-span query must reconstruct in the augmented basis within the
+same signed coefficient allowance before the model receives its value.
+
+A cold attachment rebuilds from the encoded card and measurement and
+checks the recorded opening and direct release. A change to either
+version or the underlying operation retracts the extension. The old
+publication remains readable. A read-only view suppresses only the
+extension and preserves the ordinary source observations at its pin.
+
+This constructs a reusable latent write with an explicitly supplied
+coordinate and linear law. It can fail on real hidden states that
+remain outside the extended span, or when a residual matters to more
+than the one measured output. Compare the same observation under a
+reused recurrent block with a frozen prediction and under incremental
+exact computation. A separately chosen operand must change the
+grounded answer in the same optional-memory model when the extension
+is removed and restored. Charge source encoding, selection, history
+replay, compilation and later readout. [Software control](RESULTS.md#using-a-maintained-observation-in-the-native-model)
+· [Recurrent-depth alternative](https://arxiv.org/abs/2502.05171)
+
 #### Admitting a retained operation on a source revision
 
 [SLICE] The opt-in gated reader keeps proposed basis cohorts in the

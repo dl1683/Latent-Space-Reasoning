@@ -220,7 +220,8 @@ class NativeWorkspace:
             memory = read_native_publication(directory, reader, **options)
         gate = getattr(memory._selective, "operand_admission", None)
         operators = getattr(memory._selective, "operator_inventory", ())
-        if check_history and (gate is not None or operators):
+        observations = getattr(memory._selective, "operand_observations", ())
+        if check_history and (gate is not None or operators or observations):
             admissions = (gate,) if gate is not None else tuple(entry.admission for entry in operators)
             with closing(self._connect()) as db:
                 for admission in admissions:
@@ -230,6 +231,10 @@ class NativeWorkspace:
                         raise ValueError("operand admission opening is not in this workspace history")
                 if operators:
                     self._check_operator_releases(db, reader, pin, memory._scope, operators)
+                if observations:
+                    from experiments.memory.native_operand_probe import check_operand_observation_history
+
+                    check_operand_observation_history(self, db, reader, pin, memory, observations)
         return memory
 
     def _check_operator_releases(self, db, reader, pin, scope, operators):

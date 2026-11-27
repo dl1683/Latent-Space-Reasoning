@@ -28,7 +28,7 @@ torch = pytest.importorskip("torch")
 
 
 class _Tokenizer:
-    _ids = {"join": 1, "first": 2, "second": 3, "note": 4, "off span": 7}
+    _ids = {"join": 1, "first": 2, "second": 3, "note": 4, "off span": 7, "different operand": 8}
 
     def encode(self, text, **_):
         return [self._ids[text]]
@@ -41,9 +41,10 @@ class _Backbone(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.config = SimpleNamespace(max_position_embeddings=12)
-        rows = torch.zeros(8, 8)
+        rows = torch.zeros(9, 8)
         rows[1:4, :3] = torch.atanh(torch.tensor([[48, 0, 8], [48, 0, 8], [0, 48, 112]]) / 127)
         rows[7, :3] = torch.atanh(torch.tensor([48, 4, 8]) / 127)
+        rows[8, :3] = torch.atanh(torch.tensor([49, 3, 8]) / 127)
         rows[1, 6] = 1
         self.lookup = torch.nn.Embedding.from_pretrained(rows)
 
@@ -104,8 +105,12 @@ def _reader(transport_l1):
     )
 
 
-@pytest.mark.parametrize("measurement", (42, 80))
-def test_source_probe_selects_a_missing_direction_and_loses_it_when_evidence_is_withdrawn(tmp_path, measurement):
+@pytest.mark.parametrize("measurement, install, dependency", (
+    (42, False, "measurement"), (80, False, "measurement"), (80, True, "measurement"),
+    (42, True, "measurement"), (42, True, "card"), (42, True, "operator"),
+))
+def test_source_probe_selects_a_missing_direction_and_loses_it_when_evidence_is_withdrawn(
+        tmp_path, measurement, install, dependency):
     a, ar, support_a, support_ar, reference, redundant, useful, narrow = (char * 32 for char in "12345670")
     opening_sources = {
         a: _image(96, 0, 8, 0, 0, 0, 0, 127), ar: _image(-96, 0, 8, 0, 0, 0, 0, 127),
@@ -140,7 +145,8 @@ def test_source_probe_selects_a_missing_direction_and_loses_it_when_evidence_is_
     }
     cards_path, cards_delta = epoch("probe-cards", cards, admit_delta)
     calibration = world.revise(reader, admission.pin, cards_path, cards_delta.seal, max_source_bytes=limit)
-    settings = dict(address=(8,), reference_source=reference, coordinate=4, threshold=40, gain_squared=1)
+    settings = dict(address=(8,), reference_source=reference, coordinate=4, threshold=40, gain_squared=1,
+                    install=install)
     draft = draft_native_operand_probe(world, reader, calibration, candidates=(redundant, useful, narrow), **settings)
     assert draft == draft_native_operand_probe(world, reader, calibration,
                                                candidates=(narrow, useful, redundant), **settings)
@@ -182,8 +188,61 @@ def test_source_probe_selects_a_missing_direction_and_loses_it_when_evidence_is_
     serving = _reader(2)
     opened = cold.attach(serving, pin=release)
     read = serving("off span", memory=opened, steps=1)
-    assert read.derived_reads[0].status == "unsupported"
+    installed = install and measurement == 42
+    assert read.derived_reads[0].status == ("ready" if installed else "unsupported")
     query = read.derived_steps[0].query
+    if installed:
+        measurement_span, = opened.source_spans(draft.source)
+        disabled = serving.without_operand_observation(opened, measurement_span)
+        control = serving("off span", memory=disabled, steps=1)
+        assert (read.text, control.text, serving("off span", steps=1).text) == ("gold", "", "")
+        assert read.source_steps == control.source_steps and read.derived_steps[0].applied
+        assert read.publication_seal == control.publication_seal == release.publication_seal
+        later = serving("different operand", memory=opened, steps=1)
+        later_control = serving("different operand", memory=disabled, steps=1)
+        assert later.derived_steps[0].query != read.derived_steps[0].query
+        assert later.source_steps == later_control.source_steps and later.derived_steps[0].applied
+        assert (later.text, later_control.text) == ("gold", "")
+        assert serving("off span", memory=opened, steps=1) == read
+        no_base = serving._without_continuation(opened, opened.source_spans(a)[0])
+        assert serving("off span", memory=no_base, steps=1).text == ""
+        no_rival = serving._without_continuation(opened, opened.source_spans(ar)[0])
+        assert serving("off span", memory=no_rival, steps=1).text == "gold"
+        rival_value_off = serving.read_token_ids(
+            (7,), memory=opened, steps=1, withhold_continuation_value=opened.source_spans(ar)[0],
+        )
+        assert rival_value_off.token_ids == read.token_ids
+        assert rival_value_off.value_withholding.step is None
+        assert serving("off span", memory=opened, steps=1) == read
+        for operand, expected in (((48, 4, 8), 39), ((49, 3, 8), 1287 / 32)):
+            latent = np.asarray((*operand, 0, 0, 0, 0, 0)) / 127
+            value, receipt = serving.predict_operation(opened, latent)
+            assert receipt.status == "ready" and value[4] * 127 == pytest.approx(expected)
+        oversized = np.asarray((127, 16, 8, 0, 0, 0, 0, 0)) / 127
+        assert serving.predict_operation(opened, oversized)[1].status == "unsupported"
+        assert {measurement_span, draft.selected.card, admission.witness} <= set(serving.operation_evidence(opened, read))
+        assert measurement_span not in serving.operation_evidence(disabled, control)
+        with pytest.raises(ValueError, match="matching reopened publication"):
+            opened.evidence_spans(control)
+        with pytest.raises(ValueError, match="read-only"):
+            serving.maintain(disabled, max_seeds=1)
+        before = cold.attach(serving, pin=calibration)
+        assert serving("off span", memory=before, steps=1).text == ""
+        original_in_span = serving("first", memory=opened, steps=1)
+        masked_in_span = serving("first", memory=disabled, steps=1)
+        assert original_in_span.token_ids == masked_in_span.token_ids
+        assert original_in_span.derived_steps == masked_in_span.derived_steps
+        assert measurement_span not in serving.operation_evidence(opened, original_in_span)
+
+        forged_path = tmp_path / "forged-observation"
+        copytree(cold._objects / release.publication_seal, forged_path)
+        manifest_file = forged_path / "manifest.json"
+        forged = json.loads(manifest_file.read_bytes())
+        forged["operand_observations"][0]["commitment"] = sha256(b"other commitment")
+        data = _encode(forged)
+        manifest_file.write_bytes(data)
+        with pytest.raises(ValueError, match="informative committed draft"):
+            cold._read(forged_path, serving, replace(release, publication_seal=sha256(data)))
 
     def check(pin, probe_query=query):
         return read_native_operand_probe(cold, serving, draft, release, commitment=draft.commitment,
@@ -217,10 +276,26 @@ def test_source_probe_selects_a_missing_direction_and_loses_it_when_evidence_is_
     carried = world.revise(reader, release, unrelated_path, unrelated.seal, max_source_bytes=limit)
     assert check(carried).observation == observed.observation
     assert check(carried).consequence.center == observed.consequence.center
+    if installed:
+        assert serving("off span", memory=cold.attach(serving, pin=carried), steps=1).text == "gold"
+        if dependency != "measurement":
+            source = useful if dependency == "card" else candidate.source
+            change = _image(48, -5, 8, 0, 0, 0, 0, 0) if dependency == "card" else None
+            lost_path, lost_delta = epoch("change-live-dependency", {source: change}, unrelated)
+            lost_pin = world.revise(reader, carried, lost_path, lost_delta.seal, max_source_bytes=limit)
+            lost = cold.attach(serving, pin=lost_pin)
+            assert serving("off span", memory=lost, steps=1).text == ""
+            assert serving("first", memory=lost, steps=1).text == ("gold" if dependency == "card" else "")
+            assert serving("off span", memory=cold.attach(serving, pin=carried), steps=1).text == "gold"
+            return
 
     correct_path, corrected = epoch("correct", {draft.source: _image(0, 0, 0, 0, 43, 0, 0, 0)}, unrelated)
     rival = world.revise(reader, carried, correct_path, corrected.seal, max_source_bytes=limit)
     assert check(rival).status == "observation_withdrawn"
+    if installed:
+        corrected_memory = cold.attach(serving, pin=rival)
+        assert serving("off span", memory=corrected_memory, steps=1).text == ""
+        assert serving("first", memory=corrected_memory, steps=1).text == original_in_span.text
     withdraw_path, withdrawn = epoch("withdraw", {draft.source: None}, corrected)
     retired = world.revise(reader, rival, withdraw_path, withdrawn.seal, max_source_bytes=limit)
     reopened = check(retired)
@@ -231,6 +306,9 @@ def test_source_probe_selects_a_missing_direction_and_loses_it_when_evidence_is_
     reissue = world.revise(reader, retired, reissue_path, reissued.seal, max_source_bytes=limit)
     assert check(reissue).status == "observation_withdrawn"
     assert check(release) == observed
+    if installed:
+        assert serving("off span", memory=cold.attach(serving, pin=reissue), steps=1).text == ""
+        assert serving("off span", memory=cold.attach(serving, pin=release), steps=1).text == "gold"
 
     revoke_path, revoke = epoch("revoke-operator", {candidate.source: None}, reissued)
     revoked = world.revise(reader, reissue, revoke_path, revoke.seal, max_source_bytes=limit)

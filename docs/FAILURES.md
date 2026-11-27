@@ -132,6 +132,16 @@ Compare candidate ordering at equal observation cost and test
 the source measurement against the declared assumptions.
 [Prospective probe control](RESULTS.md#selecting-the-next-operand-observation-before-release)
 
+**A scalar diagnostic leaves the serving model's basis unchanged.**
+The released observation can resolve a scalar outside the old span
+while the ordinary native call still refuses the operand. The optional
+extension installs its measured residual in the serving basis and
+preserves the original path for old in-span queries. The install
+assumes zero residual change in other output coordinates. One
+additional direction cannot support a late query outside the enlarged
+span. Check that scope on independently chosen operands before further
+fit work. [Native observation control](RESULTS.md#using-a-maintained-observation-in-the-native-model)
+
 **A separating projection is conditional on the forecast roster.**
 A worker can reject a descriptor whose tolerance regions overlap without
 seeing its outcome. An informative projection can still fail because no

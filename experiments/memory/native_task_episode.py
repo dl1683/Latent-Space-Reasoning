@@ -440,7 +440,8 @@ class NativeTaskEpisodeBackend:
         )
         expected_omission = self._intervention_seed if self._memory_view == "continuation_off" else None
         expected_anchor = self._intervention_seed if self._memory_view == "source_anchor" else None
-        if read.omitted_continuation != expected_omission or read.source_anchor_seed != expected_anchor:
+        if (read.omitted_continuation != expected_omission or read.source_anchor_seed != expected_anchor
+                or read.omitted_operand_observation is not None):
             raise ValueError("native read differs from the pinned continuation intervention")
         receipt = {
             "schema": _READ_SCHEMA,

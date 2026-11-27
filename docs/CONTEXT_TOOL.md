@@ -1178,6 +1178,20 @@ it returns the scalar bound without that observation. A different operation cann
 reuse the old probe. The ordinary reader still uses signed exact
 transport.
 
+Declare `install=True` when drafting the probe to opt into extending
+the native operation on the release. The measured value is the
+encoded Q8 value at the declared output coordinate. The extension
+only corrects that coordinate on the newly observed residual direction.
+A matching workspace attachment verifies both source versions and
+reconstructs the operation. Call the reader as usual with
+`reader(task, memory=workspace.attach(reader, pin=release))`.
+For a same-pin control pass the measurement span to
+`reader.without_operand_observation(memory, measurement_span)`
+and read with the returned view. It preserves the ordinary source
+contributions. Read receipts identify that intervention.
+The matching implementation and reader fingerprint are required when
+reopening older sealed publications.
+
 Use `retry_cross_source_acquisition(workspace, reader, pin,
 max_seeds=..., max_source_rows=..., max_relative_shift=...)` from
 `experiments.memory.native_cross_source_acquisition` to retry

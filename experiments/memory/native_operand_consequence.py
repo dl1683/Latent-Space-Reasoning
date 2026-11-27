@@ -69,7 +69,7 @@ def _consequence_problem(reader, memory, *, address, query, coordinate, threshol
     )
     entries = _entries(memory._selective)
     entry = next((entry for entry in entries if entry.address == address), None)
-    groups = reader._operand_groups(memory)
+    groups = reader._operand_groups(memory, include_observations=False)
     prepared = groups[0].by_address.get(address) if groups else None
     if entry is None or not prepared:
         return result, None

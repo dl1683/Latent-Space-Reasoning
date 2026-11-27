@@ -224,6 +224,7 @@ class NativeSourceMemory:
                 or read.derived_omitted != self._derived_off or read.omitted_sources != self.omitted_sources
                 or read.omitted_continuation != self._omitted_continuation
                 or read.source_anchor_seed != self._source_anchor_seed
+                or read.omitted_operand_observation != getattr(self._selective, "omitted_operand_observation", None)
                 or read.value_withholding is not None or read.value_substitution is not None):
             raise ValueError("evidence spans require a read from the matching reopened publication")
 
@@ -232,9 +233,16 @@ class NativeSourceMemory:
 
         spans = dict.fromkeys(selected(read.source_reads))
         visited = set()
+        observations = {record.measurement: record.card
+                        for record in getattr(self._selective, "operand_observations", ())}
+        applied = set(selected(step.receipt for step in read.derived_steps if step.applied)) if observations else ()
         for seed in selected(read.derived_reads):
             while seed is not None and seed not in visited:
                 visited.add(seed)
+                if seed in observations:
+                    if seed in applied:
+                        spans.update(dict.fromkeys((seed, observations[seed])))
+                    break
                 spans[seed] = None
                 spans.update(dict.fromkeys(selected(self.continuation_reads(seed))))
                 seed = self.continuation_parent(seed)
@@ -309,6 +317,7 @@ class NativeLatentRead:
     source_anchor_seed: SourceSpan | None = None
     value_withholding: NativeValueWithholding | None = None
     value_substitution: NativeValueSubstitution | None = None
+    omitted_operand_observation: SourceSpan | None = None
 
     def json_record(self):
         """Serialize a read receipt, preserving packed queries as hexadecimal."""
@@ -322,6 +331,8 @@ class NativeLatentRead:
             del record["value_withholding"]
         if self.value_substitution is None:
             del record["value_substitution"]
+        if self.omitted_operand_observation is None:
+            del record["omitted_operand_observation"]
         for name in ("source_steps", "derived_steps"):
             for step in record[name]:
                 step["query"] = step["query"].hex()
@@ -593,7 +604,8 @@ class NativeLatentModel:
     def _check_memory(self, memory, *, for_read=False):
         if type(memory) is not NativeSourceMemory or memory._owner is not self._owner:
             raise ValueError("source memory belongs to a different native reader")
-        if not for_read and (memory._omitted_continuation is not None or memory._source_anchor_seed is not None):
+        if not for_read and (memory._omitted_continuation is not None or memory._source_anchor_seed is not None
+                             or getattr(memory._selective, "omitted_operand_observation", None) is not None):
             raise ValueError("an intervention view is read-only")
 
     def publish(self, epoch_directory: Path, seal: str, *, previous=None, max_source_bytes=None):
@@ -1489,4 +1501,5 @@ class NativeLatentModel:
                                 run.source_steps, run.derived_steps,
                                 None if memory is None else memory._omitted_continuation,
                                 None if memory is None else memory._source_anchor_seed,
-                                run.value_withholding, run.value_substitution)
+                                run.value_withholding, run.value_substitution,
+                                None if memory is None else getattr(memory._selective, "omitted_operand_observation", None))
