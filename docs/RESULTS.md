@@ -2199,6 +2199,25 @@ Run 06's final call needed 2,408 input tokens with only 633 remaining under its
 growing prompt/registry; resolve its input-budget failure before using a new
 frozen calibration set.
 
+**Compact-delivery counterfactual.** A deterministic re-tokenization rebuilt
+all 27 archived request frames with the current `compact_delivery` phase
+instructions, episode-local span handles, and the same pinned Qwen3-0.6B
+tokenizer/template. Every archived request's original input IDs reproduced
+exactly before rebuilding. Across the five traces, reconstructed input fell
+from 36,857 to 18,521 tokens; per-trace totals were 3,324–4,182, leaving at
+least 4,010 of the 8,192-token allowance after the same recorded calls. The
+input-budget failure therefore has a plausible framing repair. This was not
+model generation: changed instructions can change actions, receipts, call
+counts, and answer quality. It does not turn those failed runs into successes,
+qualify compact delivery, or qualify a planner. Do not tune again on this
+repeated task. Use a fresh frozen calibration and the registered paired
+full/compact delivery control. The reconstruction is reproducible with
+[`compact_delivery_counterfactual.py`](../experiments/memory/compact_delivery_counterfactual.py);
+its hash-checked output is
+[`summary.json`](../experiments/results/task_episode_calibration_2026-11-26/compact_delivery_counterfactual_20261126/summary.json).
+Verify the analysis script and artifact with
+[`SHA256SUMS.txt`](../experiments/results/task_episode_calibration_2026-11-26/compact_delivery_counterfactual_20261126/SHA256SUMS.txt).
+
 ## Latent revision software verification, 24–25 November 2026
 
 The review branch's [latent field](../experiments/memory/latent_field.py) passed five focused CPU fixtures. An observation revision reached downstream states through a cycle and matched an independently assembled dense fixed-point reference within its declared residual bound. The fixtures also cover unrelated cells, earlier snapshots, restoration, aggregate contraction, inherited residuals and exhaustion without a write. The field initialized from supplied arrays and used no model weights.

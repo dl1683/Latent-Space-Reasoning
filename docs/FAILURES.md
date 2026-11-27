@@ -442,6 +442,15 @@ The schema-constrained follow-up narrowed but did not remove the failure. A perm
 
 **Compact typed-planner canaries exhausted the shared input budget, 26 November 2026.** Five saved Qwen3-0.6B runs used `compact_needs` on the same `counterfactual-alternative` task; all five ended at `input_limit` without a final submission. The combined traces used 27 calls, 36,857 input tokens, and 1,807 generated tokens. They executed seven searches and five verified reads totaling 1,175 evidence bytes; the last two runs reached sources but still could not finish. In run 06, the final prompt needed 2,408 input tokens with only 633 left under the 8,192-token episode allowance. This is one repeated instrument task, not a five-task result or the eight-task calibration. It does not grade need quality or establish maintained-world use. Do not retry it with the same growing prompt/registry; diagnose the input-budget failure and use a new frozen calibration set. Exact hash-checked artifacts are preserved in [RESULTS.md](RESULTS.md#compact-typed-planner-canaries).
 
+The archived input-limit failure remains a failure. A separate pinned-tokenizer
+reconstruction of the same 27 request frames with current `compact_delivery`
+formatting reduced their aggregate input from 36,857 to 18,521 tokens, but it
+did not regenerate model actions or validate a final answer. Treat this as a
+plausible framing repair only; keep the repeated task closed to tuning and
+qualify on a fresh frozen set with the paired full/compact control. Details and
+the reproducible artifact are in
+[the compact-planner result](RESULTS.md#compact-typed-planner-canaries).
+
 ## Decisions carried forward
 
 1. **Central object:** one useful retained-state consequence/revision with a competent equally exposed conventional comparator; keep recurrence and feedback distinct. Receiver perfection on arbitrary tasks is not required, but the selected operation's positive control is.
