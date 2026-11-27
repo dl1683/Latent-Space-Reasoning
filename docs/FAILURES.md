@@ -24,6 +24,19 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Process-local forecast drafts tied resolution to their proposer.**
+The original workspace call required the same pending Python objects at
+the opening and at source release. A separate fresh reader could only
+read the published result. A bounded packet now carries the original
+one-event draft to another process. Recording both hashes before release
+remains a controller responsibility. Treat the frozen values and the set
+of omitted replay candidates as proposer claims unless independently
+replayed. Independent process execution alone does not establish learned or
+adversarially verified discovery. The same pinned computation answered a
+direct query and left a query through an extra alias link unresolved. Keep
+the two-unseen-operand criterion for the main screen.
+[Handoff control](RESULTS.md#transferring-a-forecast-between-worker-processes)
+
 **Repeated evidence fields can exhaust the planner before it can answer, 26 November 2026.**
 The original v2 prompt spent 5,798 input tokens finding and opening six short
 sources. It needed another 2,552 tokens to ask for the first final batch,

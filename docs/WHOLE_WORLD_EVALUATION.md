@@ -411,6 +411,26 @@ operand of matched scale that predicts a distinct gradeable result.
 Also withhold and restore the selected value. The fresh two-input test and warm recomputation control decide
 whether that representation carries a useful operation.
 
+The [signed admission bound](SIGNED_OPERATION_ADMISSION_BOUND.md) gives two
+exact controls for this design. A negative role coordinate can be necessary
+even when the full bank has a bounded exact fit. Adding coherent duplicate
+evidence can make the coefficients nonunique while leaving the prediction
+unique. Freeze role coordinates before release. Give both workers the same
+inventory of source-event descriptors with outcomes withheld. Score each
+event by the separation of the rival predicted effects in operand
+coordinates, commit the chosen event and predictions, then release only
+that verified outcome. Include a same-norm event that the rivals agree on
+and a feed with no discriminating event. Record event coverage, prediction
+accuracy and late task success separately. Retain separate source identities
+for coherent duplicates and unresolved rivals for conflicts.
+
+A [process handoff control](RESULTS.md#transferring-a-forecast-between-worker-processes)
+lets the proposer exit before release and lets a separate challenger use
+the frozen proposal. Use it to separate worker lifecycles. The separating
+event's witness definition was supplied in that control. The evaluation
+still needs the challenger to find the discriminating evidence and the
+reader to apply the selected operation to two unseen operand bindings.
+
 The [public visual operation check](RESULTS.md#applying-published-visual-operations-to-new-grids)
 demonstrates a worker publishing before independently authored late
 inputs and repairing an answer after evidence withdrawal. The reader

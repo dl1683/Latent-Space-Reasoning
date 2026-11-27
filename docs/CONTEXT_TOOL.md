@@ -952,6 +952,29 @@ after evaluation consumes it. Call `reader.cancel_forecast(draft.forecast)`
 only while pending and build replacements against the new opening.
 Concurrent workers use separate compatible reader instances.
 
+To transfer a pending one-event draft, call
+`native_forecast_handoff.write_forecast_handoff(path, workspace, reader, draft,
+max_bytes=...)` and record its returned seal and `draft.commitment`
+before source release. The packet has a canonical header and two Float64
+rows per alternative. It contains no future source bytes. Start a separate
+compatible reader and call `read_forecast_handoff(path, workspace, reader,
+seal=..., commitment=..., max_bytes=..., max_verification_scores=...)`.
+Use the **same challenger reader** and returned draft for `revise_forecast`.
+The original caller may close or cancel its pending draft after export.
+Export refuses to replace an existing packet, and the workspace can commit
+only against the unchanged opening pin.
+
+The verification score allowance covers a full opening-span scan and up
+to one tie-limit of listed scores per baseline and alternative step, plus
+one retained-parent scan per baseline step. The reader rechecks selected
+source rows, the parent shortlist order
+and each candidate's observation against its saved latent value. It checks
+arithmetic and integrity. The trusted pre-release record determines timing,
+and the saved baseline predictions and rows come from the proposer. A
+challenger that requires independent computation can replay the draft from
+the pinned opening and compare the commitment. Compatible model weights
+are still required, and revising the source encodes new chunks as usual.
+
 A controller attaches the current state with `attach(reader)` or a fixed
 historical state with `attach(reader, pin=workspace.pin_at(revision))`, then
 calls the ordinary model with that memory. For historical exact evidence,

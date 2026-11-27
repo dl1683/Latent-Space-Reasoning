@@ -1,4 +1,4 @@
-from dataclasses import replace
+from dataclasses import asdict, replace
 import json
 from pathlib import Path
 import subprocess
@@ -1306,28 +1306,14 @@ def test_content_defined_reuse_matches_cold_source_rows_after_reopen(tmp_path, r
         write_native_publication(tmp_path / "drift", reader, revised, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
     assert model.calls == calls and not (tmp_path / "drift").exists()
 
-@pytest.mark.parametrize(("outcome", "workspace_layout"), [
-    (outcome, None) for outcome in (
-        "admitted", "persistence_confirmed", "disconfirmed", "witness_change_limit",
-        "deletion_only", "witness_unchanged", "witness_withdrawn", "witness_out_of_order",
-        "weighted_admitted", "weighted_persistence", "weighted_cap", "same_edit_all_rows",
-    )
-] + [
-    ("weighted_admitted", "flat"), ("weighted_admitted", "shared"),
-    ("weighted_persistence", "flat"), ("weighted_admitted", "racing"), ("weighted_admitted", "stale"),
-])
-def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, outcome, workspace_layout, monkeypatch):
-    import numpy as np
-    from experiments.memory.native_forecast_set import (
-        NativeForecastWitness, NativeRevisionWitness, NativeWeightedRevisionWitness,
-    )
-    from experiments.memory.native_isolated_stage import LABELS, _CausalControl, _reader
-    from experiments.memory.native_task_episode import NativeTaskWorldPin
-    from experiments.memory.task_evidence import TaskWorld
 
-    high, low, cue, bridge, answer, first = (letter * 32 for letter in "abcdef")
-    second, support = "face" * 8, "fedcba98" * 4
+def _revision_forecast_reader(binary_parent):
+    import numpy as np
+    from experiments.memory.native_isolated_stage import LABELS, _CausalControl, _reader
+
+    low = "b" * 32
     width, marker = len(LABELS), len(LABELS) + 10
+    photo = b"P6\n1 1\n255\n" + bytes((255, 0, 0))
 
     class RevisionControl(_CausalControl):
         def base_model(self, *, inputs_embeds, past_key_values, use_cache, return_dict):
@@ -1349,6 +1335,81 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
                     hidden[4], hidden[5] = 0, 1
             return result
 
+    def image_ingress(source_id, payload):
+        if source_id != low or payload != photo:
+            return None
+        row = np.zeros(3 * width + 1)
+        row[1], row[7], row[width + 8] = 0.5, 0.9, 0.9
+        return row
+
+    options = (dict(source_ingress=image_ingress, source_ingress_sha256=sha256(b"forecast red pixel fixture"))
+               if binary_parent else {})
+    reader = _reader(RevisionControl().eval(), **options)
+    if binary_parent:
+        tokenizers = pytest.importorskip("tokenizers")
+        backend = tokenizers.Tokenizer(tokenizers.models.WordLevel({"[UNK]": 0}, unk_token="[UNK]"))
+        backend.enable_padding(pad_id=0, pad_token="[UNK]", length=4)
+        backend.enable_truncation(max_length=5)
+        reader._tokenizer.backend_tokenizer = backend
+    return reader
+
+
+def _forecast_proposer_child(directory, packet, witness_source):
+    from experiments.memory.native_forecast_handoff import write_forecast_handoff
+    from experiments.memory.native_forecast_set import NativeWeightedRevisionWitness
+    from experiments.memory.native_workspace import NativeWorkspace
+
+    reader = _revision_forecast_reader(True)
+    workspace = NativeWorkspace(directory, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    witness = NativeWeightedRevisionWitness(witness_source, (4, 5), 60, 3, 2)
+    draft = workspace.draft_forecast(reader, workspace.head(), witness=witness,
+                                     max_candidates=2, max_parent_scores=4)
+    seal = write_forecast_handoff(packet, workspace, reader, draft, max_bytes=_LIMIT)
+    return [seal, draft.commitment]
+
+
+def _forecast_handoff_child(directory, packet, packet_seal, commitment, revision, source_seal):
+    from experiments.memory.native_forecast_handoff import read_forecast_handoff
+    from experiments.memory.native_workspace import NativeWorkspace
+
+    def no_draft(*args, **kwargs):
+        raise AssertionError("a fresh challenger recomputed a pre-event draft")
+
+    reader = _revision_forecast_reader(True)
+    reader.forecast_set = no_draft
+    reader._run_seed = no_draft
+    workspace = NativeWorkspace(directory, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    draft = read_forecast_handoff(packet, workspace, reader, seal=packet_seal,
+                                  commitment=commitment, max_bytes=_LIMIT, max_verification_scores=128)
+    assert reader._model.calls == 0
+    receipt = workspace.revise_forecast(reader, draft, revision, source_seal,
+                                        commitment=commitment, max_source_bytes=_LIMIT)
+    assert reader._model.calls == 2  # Both revised chunks are new at this opening.
+    return asdict(receipt)
+
+
+@pytest.mark.parametrize(("outcome", "workspace_layout"), [
+    (outcome, None) for outcome in (
+        "admitted", "persistence_confirmed", "disconfirmed", "witness_change_limit",
+        "deletion_only", "witness_unchanged", "witness_withdrawn", "witness_out_of_order",
+        "weighted_admitted", "weighted_persistence", "weighted_cap", "same_edit_all_rows",
+    )
+] + [
+    ("weighted_admitted", "flat"), ("weighted_admitted", "shared"), ("weighted_admitted", "handoff"),
+    ("weighted_persistence", "flat"), ("weighted_admitted", "racing"), ("weighted_admitted", "stale"),
+])
+def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, outcome, workspace_layout, monkeypatch):
+    from experiments.memory.native_forecast_set import (
+        NativeForecastWitness, NativeRevisionWitness, NativeWeightedRevisionWitness,
+    )
+    from experiments.memory.native_isolated_stage import LABELS
+    from experiments.memory.native_task_episode import NativeTaskWorldPin
+    from experiments.memory.task_evidence import TaskWorld
+
+    high, low, cue, bridge, answer, first = (letter * 32 for letter in "abcdef")
+    second, support = "face" * 8, "fedcba98" * 4
+    marker = len(LABELS) + 10
+
     def document(*lines):
         return "".join(line.ljust(32) for line in lines).encode()
 
@@ -1366,26 +1427,12 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
         old_text = document("follow  L04") + b"follow  L05"
 
     photo = b"P6\n1 1\n255\n" + bytes((255, 0, 0))
-    binary_parent = workspace_layout == "shared"
-
-    def image_ingress(source_id, payload):
-        if source_id != low or payload != photo:
-            return None
-        row = np.zeros(3 * width + 1)
-        row[1], row[7], row[width + 8] = 0.5, 0.9, 0.9
-        return row
+    binary_parent = workspace_layout in ("shared", "handoff")
 
     def make_reader():
-        options = (dict(source_ingress=image_ingress, source_ingress_sha256=sha256(b"forecast red pixel fixture"))
-                   if binary_parent else {})
-        reader = _reader(RevisionControl().eval(), **options)
-        if binary_parent:
-            tokenizers = pytest.importorskip("tokenizers")
-            backend = tokenizers.Tokenizer(tokenizers.models.WordLevel({"[UNK]": 0}, unk_token="[UNK]"))
-            backend.enable_padding(pad_id=0, pad_token="[UNK]", length=4)
-            backend.enable_truncation(max_length=5)
-            reader._tokenizer.backend_tokenizer = backend
-        return reader
+        from experiments.memory.test_native_publication import _revision_forecast_reader as stable_reader
+
+        return stable_reader(binary_parent)
 
     worker = make_reader()
     source_path = tmp_path / "source"
@@ -1393,6 +1440,7 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
         high: b"link L02 L03", low: photo if binary_parent else b"follow L07",
         cue: b"link L01 L02", bridge: b"link L03 L04", answer: b"name L04 L06",
         support: b"link L08 L03", second: old_text,
+        **({"fc" * 16: b"link L00 L01"} if workspace_layout == "handoff" else {}),
     }, binary_sources=(low,) if binary_parent else (), max_bytes=_LIMIT)
     opened = worker.publish(source_path, source.seal, max_source_bytes=_LIMIT)
     warmed = worker.maintain(opened, max_seeds=2)
@@ -1407,7 +1455,7 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
                                share_rows=workspace_layout == "shared")
         workspace = NativeWorkspace(workspace_dir, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
         opening_pin = workspace.head()
-        if workspace_layout == "flat":
+        if workspace_layout in ("flat", "handoff"):
             identical = NativeWorkspace.create(tmp_path / "identical", worker, warmed, runtime_sha256=_RUNTIME,
                                                max_bytes=_LIMIT)
             identical_pin = identical.head()
@@ -1440,6 +1488,42 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
     if outcome == "weighted_persistence":
         assert draft._opening_at(0).persistence == (71, 24)
 
+    if workspace_layout == "handoff":
+        from experiments.memory.native_forecast_handoff import read_forecast_handoff
+
+        packet = tmp_path / "frozen-forecast"
+        proposed = subprocess.check_output([
+            sys.executable, "-c",
+            "import json,sys; from experiments.memory.test_native_publication import _forecast_proposer_child;"
+            "print(json.dumps(_forecast_proposer_child(*sys.argv[1:])))",
+            str(workspace_dir), str(packet), second,
+        ], timeout=60)
+        packet_seal, proposed_commitment = json.loads(proposed)
+        assert proposed_commitment == commitment
+        rival_worker = make_reader()
+        rival_draft = identical.draft_forecast(rival_worker, identical_pin, witness=witness, **budgets)
+        reader = make_reader()
+        corrupt = tmp_path / "altered-forecast"
+        raw = packet.read_bytes()
+        corrupt.write_bytes(raw[:-1] + bytes((raw[-1] ^ 1,)))
+        with pytest.raises(ValueError, match="handoff seal"):
+            read_forecast_handoff(corrupt, workspace, reader, seal=packet_seal,
+                                  commitment=commitment, max_bytes=_LIMIT, max_verification_scores=128)
+        with pytest.raises(ValueError, match="alternative"):
+            read_forecast_handoff(corrupt, workspace, reader, seal=sha256(corrupt.read_bytes()),
+                                  commitment=commitment, max_bytes=_LIMIT, max_verification_scores=128)
+        with pytest.raises(ValueError, match="allowance"):
+            read_forecast_handoff(packet, workspace, reader, seal=packet_seal,
+                                  commitment=commitment, max_bytes=1, max_verification_scores=128)
+        with pytest.raises(StaleNativeWorkspace, match="head changed"):
+            read_forecast_handoff(packet, identical, reader, seal=packet_seal,
+                                  commitment=commitment, max_bytes=_LIMIT, max_verification_scores=128)
+        with pytest.raises(ValueError, match="score allowance"):
+            read_forecast_handoff(packet, workspace, reader, seal=packet_seal,
+                                  commitment=commitment, max_bytes=_LIMIT, max_verification_scores=1)
+        assert reader._pending_forecast is None and reader._model.calls == 0
+        worker.cancel_forecast(draft)
+
     previous_memory, epoch = opening, source
     if fresh:
         changes = {first: b"follow L06"}
@@ -1466,6 +1550,40 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
         with pytest.raises(ValueError, match="source feed exceeds the byte budget"):
             worker.advance_forecast_set(previous_memory, draft, revision_path, revision.seal,
                                         commitment=commitment, max_source_bytes=1)
+    if workspace_layout == "handoff":
+        resolved = subprocess.check_output([
+            sys.executable, "-c",
+            "import json,sys; from experiments.memory.test_native_publication import _forecast_handoff_child;"
+            "print(json.dumps(_forecast_handoff_child(*sys.argv[1:])))",
+            str(workspace_dir), str(packet), packet_seal, commitment, str(revision_path), revision.seal,
+        ], timeout=60)
+        receipt = json.loads(resolved)
+        parity = identical.revise_forecast(rival_worker, rival_draft, revision_path, revision.seal,
+                                           commitment=rival_draft.commitment, max_source_bytes=_LIMIT)
+        assert receipt["status"] == parity.status == "admitted"
+        assert receipt["survivors"] == [asdict(low_parent)]
+        assert receipt["observations"] == [[73, 23]]
+        head = workspace.head()
+        assert asdict(head) == receipt["pin"]
+        assert head.publication_seal == parity.pin.publication_seal
+        reader = make_reader()
+        current = workspace.attach(reader, pin=head)
+        prior = workspace.attach(reader, pin=opening_pin)
+        assert current.continuation_parent(seed) == low_parent
+        assert current.continuation_witnesses(seed) == current.source_spans(second)
+        removed = reader._without_continuation(current, seed)
+        question = "follow L01"
+        read = reader(question, memory=current)
+        assert read.text == "L06" and read.applied_derived_steps == 1
+        assert low_parent in current.evidence_spans(read)
+        assert reader(question, memory=removed).text == reader(question, memory=prior).text == ""
+        assert reader(question).text == ""
+        assert reader("follow L00", memory=current).text == ""
+        with pytest.raises(StaleNativeWorkspace, match="head changed"):
+            read_forecast_handoff(packet, workspace, reader, seal=packet_seal,
+                                  commitment=commitment, max_bytes=_LIMIT, max_verification_scores=128)
+        return
+
     if workspace_layout:
         def resolve(store=workspace, attempt=workspace_draft, digest=commitment, max_bytes=_LIMIT):
             return store.revise_forecast(worker, attempt, revision_path, revision.seal,
@@ -1595,7 +1713,7 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
 
     destination = tmp_path / "admitted"
     seal = write_native_publication(destination, worker, resolution.memory, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
-    reader = _reader(RevisionControl().eval())
+    reader = make_reader()
     restored = _read(destination, reader, seal, revision.seal)
     first_spans = restored.source_spans(first) if fresh else ()
     assert restored.continuation_witnesses(seed) == (*first_spans, *restored.source_spans(second)[:2])

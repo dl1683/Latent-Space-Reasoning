@@ -822,6 +822,34 @@ discovery, natural task quality, addressing reliability on the
 authentic chronology or lifecycle cost.
 [Publication fixture](../experiments/memory/test_native_publication.py)
 
+## Transferring a forecast between worker processes
+
+**CPU software control.** One process drafted two alternatives from a shared
+text-and-image corpus and exited. The controller recorded the packet seal
+and forecast commitment before releasing the next source epoch. A second
+process attached the original state with a compatible reader and used the
+frozen alternatives. Attachment made zero backbone calls. Resolution
+encoded the two new text chunks. It kept the lower-ranked image parent
+with text witness observation `(73, 23)` and committed a publication whose
+seal matched the in-process control.
+
+A fresh reader answered `L06` on the supplied direct route and returned the
+exact image span as evidence. The two revised text chunks were recorded as
+admission witnesses. Removing the retained continuation at the new pin,
+reopening the historical pin, and leaving memory out of the same call each
+left the direct route unresolved. A query through one extra alias link also
+remained unresolved at the new pin. The control refused altered payload bytes,
+an identical publication in another workspace, reduced byte and score limits,
+and reuse after the head advanced.
+
+This establishes process handoff with a deterministic backbone and a supplied
+witness and a single successful late input. The controller establishes
+chronology. Baseline predictions,
+latent rows and replay-based candidate omissions remain proposer-supplied.
+Attachment and publication still load and fingerprint the compatible reader.
+The experiment establishes no total cost or learned-quality gain.
+[Publication fixture](../experiments/memory/test_native_publication.py)
+
 ## Sharing unchanged native rows across history
 
 **CPU software control.** The opt-in shared layout and full-copy workspace
