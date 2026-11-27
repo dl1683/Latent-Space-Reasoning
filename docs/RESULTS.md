@@ -850,6 +850,37 @@ Attachment and publication still load and fingerprint the compatible reader.
 The experiment establishes no total cost or learned-quality gain.
 [Publication fixture](../experiments/memory/test_native_publication.py)
 
+## Choosing a witness before its outcome
+
+**CPU software control.** The mixed text-and-image world offered two source
+descriptors with their outcomes withheld. The first projected equal rival
+predictions. An independent process received only the descriptor IDs,
+tolerances and rival predictions. It selected the second descriptor. With
+only the first descriptor, the chooser abstained and released the pending
+cursor. A custom chooser that forced the first descriptor was refused.
+Drafting over both descriptors made the same number of backbone calls as
+drafting directly for the selected one on the matched opening.
+
+For predictions (p_i,p_j) and inclusive tolerance (t), a pair of
+integer coordinate boxes shares an observation exactly when
+(max_k |p_{ik}-p_{jk}| leq 2t). The default chooses the descriptor with
+the greatest positive minimum gap across rival pairs. An exact interval
+check covered overlap, a boundary touch, disjoint boxes, a tie and one
+overlapping pair in a three-rival roster with empty joint intersection.
+The rule follows the disagreement principle in active learning and
+certifies only that a scorable observation fits at most one drafted rival.
+[Query by Committee](https://doi.org/10.1145/130385.130417)
+
+The controller recorded the roster commitment and one-event handoff seals
+before releasing the selected text revision. A fresh resolver published
+the same state as the fixed-witness control. The direct late answer used
+the image evidence, disappeared under same-pin removal or omitted memory,
+and returned when the retained row was available again. The extra alias
+query remained unresolved. The two descriptors and coordinates were
+supplied. Learned descriptor discovery, distinct new operand bindings
+and matched full costs were outside this control.
+[Publication fixture](../experiments/memory/test_native_publication.py)
+
 ## Sharing unchanged native rows across history
 
 **CPU software control.** The opt-in shared layout and full-copy workspace

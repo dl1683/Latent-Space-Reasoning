@@ -427,9 +427,16 @@ for coherent duplicates and unresolved rivals for conflicts.
 A [process handoff control](RESULTS.md#transferring-a-forecast-between-worker-processes)
 lets the proposer exit before release and lets a separate challenger use
 the frozen proposal. Use it to separate worker lifecycles. The separating
-event's witness definition was supplied in that control. The evaluation
-still needs the challenger to find the discriminating evidence and the
-reader to apply the selected operation to two unseen operand bindings.
+event's witness definition was supplied in that control. In a follow-on
+[selection control](RESULTS.md#choosing-a-witness-before-its-outcome), a
+separate chooser selected from two supplied descriptors, committed before
+release, and enabled the same direct late answer as the fixed-witness control.
+The interval oracle verifies the past predictions' separation. The main
+trial still needs genuinely new descriptors from the source stream, independently
+graded outcomes and correct consequences on two unseen operand bindings.
+Compare selection coverage and abstention against the same descriptor roster
+under the exact comparator, including chances to separate only a subset of
+rivals.
 
 The [public visual operation check](RESULTS.md#applying-published-visual-operations-to-new-grids)
 demonstrates a worker publishing before independently authored late

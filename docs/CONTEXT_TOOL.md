@@ -975,6 +975,28 @@ challenger that requires independent computation can replay the draft from
 the pinned opening and compare the commitment. Compatible model weights
 are still required, and revising the source encodes new chunks as usual.
 
+Call
+`native_witness_selection.draft_discriminating_forecast(workspace, reader, pin,
+witnesses=..., max_candidates=..., max_parent_scores=...)` to choose among
+up to eight prospective descriptors at the same opening. Use an outcome-free
+roster of source IDs, coordinate sets, tolerances and applicable row bounds.
+The reader drafts the rival trajectories once and projects each through
+all descriptors. The optional chooser may run in another process. It sees
+only each source ID, its tolerance and the ordered rival predictions. A
+custom chooser may abstain or pick any descriptor whose rival tolerance
+regions are pairwise disjoint. The default maximizes the smallest
+pairwise separation and breaks ties by source ID.
+
+The selection result carries the one-event draft, full roster commitment
+and outcome-free chooser input. If no witness is selected, the result keeps
+the roster commitment and options and releases the pending cursor. If no
+rival draft exists, the result contains no draft or commitment and its
+options are empty. Record the supplied descriptors, selection result and
+any handoff seal before releasing the chosen event.
+The selected draft uses the existing `revise_forecast` and packet interfaces.
+The roster digest is a commitment to the batch forecast, and the one-event
+packet carries the selected projection. Keep the chooser's record for audit.
+
 A controller attaches the current state with `attach(reader)` or a fixed
 historical state with `attach(reader, pin=workspace.pin_at(revision))`, then
 calls the ordinary model with that memory. For historical exact evidence,

@@ -1388,6 +1388,30 @@ def _forecast_handoff_child(directory, packet, packet_seal, commitment, revision
     return asdict(receipt)
 
 
+def test_witness_choice_matches_exact_pairwise_interval_intersection():
+    from itertools import combinations
+
+    from experiments.memory.native_witness_selection import choose_forecast_witness, witness_separation
+
+    options = (
+        ("overlap", 2, ((0,), (3,))),
+        ("touch", 2, ((0,), (4,))),
+        ("b", 2, ((0, 5), (1, 0))),
+        ("a", 2, ((0, 5), (1, 0))),
+        ("pair_only", 2, ((0,), (4,), (9,))),
+    )
+    for option in options:
+        _, tolerance, predictions = option
+        disjoint = all(
+            any(max(x - tolerance, y - tolerance) > min(x + tolerance, y + tolerance)
+                for x, y in zip(left, right, strict=True))
+            for left, right in combinations(predictions, 2)
+        )
+        assert (witness_separation(option) > 0) == disjoint
+    assert choose_forecast_witness(options) == "a"
+    assert choose_forecast_witness((options[0], options[1], options[-1])) is None
+
+
 @pytest.mark.parametrize(("outcome", "workspace_layout"), [
     (outcome, None) for outcome in (
         "admitted", "persistence_confirmed", "disconfirmed", "witness_change_limit",
@@ -1396,7 +1420,8 @@ def _forecast_handoff_child(directory, packet, packet_seal, commitment, revision
     )
 ] + [
     ("weighted_admitted", "flat"), ("weighted_admitted", "shared"), ("weighted_admitted", "handoff"),
-    ("weighted_persistence", "flat"), ("weighted_admitted", "racing"), ("weighted_admitted", "stale"),
+    ("weighted_admitted", "selection"), ("weighted_persistence", "flat"),
+    ("weighted_admitted", "racing"), ("weighted_admitted", "stale"),
 ])
 def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, outcome, workspace_layout, monkeypatch):
     from experiments.memory.native_forecast_set import (
@@ -1427,7 +1452,8 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
         old_text = document("follow  L04") + b"follow  L05"
 
     photo = b"P6\n1 1\n255\n" + bytes((255, 0, 0))
-    binary_parent = workspace_layout in ("shared", "handoff")
+    frozen_handoff = workspace_layout in ("handoff", "selection")
+    binary_parent = workspace_layout == "shared" or frozen_handoff
 
     def make_reader():
         from experiments.memory.test_native_publication import _revision_forecast_reader as stable_reader
@@ -1440,7 +1466,7 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
         high: b"link L02 L03", low: photo if binary_parent else b"follow L07",
         cue: b"link L01 L02", bridge: b"link L03 L04", answer: b"name L04 L06",
         support: b"link L08 L03", second: old_text,
-        **({"fc" * 16: b"link L00 L01"} if workspace_layout == "handoff" else {}),
+        **({"fc" * 16: b"link L00 L01"} if frozen_handoff else {}),
     }, binary_sources=(low,) if binary_parent else (), max_bytes=_LIMIT)
     opened = worker.publish(source_path, source.seal, max_source_bytes=_LIMIT)
     warmed = worker.maintain(opened, max_seeds=2)
@@ -1455,7 +1481,7 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
                                share_rows=workspace_layout == "shared")
         workspace = NativeWorkspace(workspace_dir, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
         opening_pin = workspace.head()
-        if workspace_layout in ("flat", "handoff"):
+        if workspace_layout == "flat" or frozen_handoff:
             identical = NativeWorkspace.create(tmp_path / "identical", worker, warmed, runtime_sha256=_RUNTIME,
                                                max_bytes=_LIMIT)
             identical_pin = identical.head()
@@ -1475,33 +1501,76 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
     too_small = replace(witness, max_opening_rows=len(opening.source_spans(second)) - 1)
     with pytest.raises(ValueError, match="opening row allowance"):
         worker.forecast_set(opening, witnesses=(*fresh, too_small), **budgets)
-    if workspace_layout:
+    calls_before_draft = worker._model.calls
+    if workspace_layout == "selection":
+        from experiments.memory.native_witness_selection import draft_discriminating_forecast
+
+        distractor = NativeForecastWitness(first, (11,), 0)
+        abstaining = make_reader()
+        abstention = draft_discriminating_forecast(
+            workspace, abstaining, opening_pin, witnesses=(distractor,), **budgets)
+        assert abstention.draft is None and abstention.roster_commitment
+        assert len(abstention.options) == 1 and abstaining._pending_forecast is None
+        assert workspace.head() == opening_pin
+
+        def choose_in_worker(options):
+            from experiments.memory.native_witness_selection import witness_separation
+
+            assert [option[0] for option in options] == [first, second]
+            assert witness_separation(options[0]) <= 0 < witness_separation(options[1])
+            selected = subprocess.check_output([
+                sys.executable, "-c",
+                "import json,sys; from experiments.memory.native_witness_selection import choose_forecast_witness;"
+                "print(json.dumps(choose_forecast_witness(json.load(sys.stdin))))",
+            ], input=json.dumps(options).encode(), timeout=30)
+            return json.loads(selected)
+
+        with pytest.raises(ValueError, match="does not separate"):
+            draft_discriminating_forecast(workspace, abstaining, opening_pin,
+                                          witnesses=(distractor, witness), choose=lambda options: first, **budgets)
+        assert abstaining._pending_forecast is None and workspace.head() == opening_pin
+        selection = draft_discriminating_forecast(
+            workspace, worker, opening_pin, witnesses=(distractor, witness), choose=choose_in_worker, **budgets)
+        workspace_draft = selection.draft
+        draft = workspace_draft.forecast
+        commitment = workspace_draft.commitment
+        assert draft.witnesses == (witness,)
+        assert selection.roster_commitment not in (commitment, abstention.roster_commitment)
+        assert selection.options[:1] == abstention.options
+    elif workspace_layout:
         workspace_draft = workspace.draft_forecast(worker, opening_pin, witness=witness, **budgets)
         draft = workspace_draft.forecast
         commitment = workspace_draft.commitment
     else:
         draft = worker.forecast_set(opening, witnesses=(*fresh, witness), **budgets)
         commitment = draft.commitment
+    draft_calls = worker._model.calls - calls_before_draft
     assert draft.parents == (high_parent, low_parent)
     assert draft._opening_at(len(fresh)).version_sha256 == sha256(old_text)
     assert draft._opening_at(len(fresh)).generation == 1
     if outcome == "weighted_persistence":
         assert draft._opening_at(0).persistence == (71, 24)
 
-    if workspace_layout == "handoff":
-        from experiments.memory.native_forecast_handoff import read_forecast_handoff
+    if frozen_handoff:
+        from experiments.memory.native_forecast_handoff import read_forecast_handoff, write_forecast_handoff
 
         packet = tmp_path / "frozen-forecast"
-        proposed = subprocess.check_output([
-            sys.executable, "-c",
-            "import json,sys; from experiments.memory.test_native_publication import _forecast_proposer_child;"
-            "print(json.dumps(_forecast_proposer_child(*sys.argv[1:])))",
-            str(workspace_dir), str(packet), second,
-        ], timeout=60)
-        packet_seal, proposed_commitment = json.loads(proposed)
-        assert proposed_commitment == commitment
+        if workspace_layout == "selection":
+            packet_seal = write_forecast_handoff(packet, workspace, worker, workspace_draft, max_bytes=_LIMIT)
+        else:
+            proposed = subprocess.check_output([
+                sys.executable, "-c",
+                "import json,sys; from experiments.memory.test_native_publication import _forecast_proposer_child;"
+                "print(json.dumps(_forecast_proposer_child(*sys.argv[1:])))",
+                str(workspace_dir), str(packet), second,
+            ], timeout=60)
+            packet_seal, proposed_commitment = json.loads(proposed)
+            assert proposed_commitment == commitment
         rival_worker = make_reader()
+        calls_before_rival = rival_worker._model.calls
         rival_draft = identical.draft_forecast(rival_worker, identical_pin, witness=witness, **budgets)
+        assert draft_calls == rival_worker._model.calls - calls_before_rival
+        assert draft.commitment == rival_draft.forecast.commitment
         reader = make_reader()
         corrupt = tmp_path / "altered-forecast"
         raw = packet.read_bytes()
@@ -1550,7 +1619,7 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
         with pytest.raises(ValueError, match="source feed exceeds the byte budget"):
             worker.advance_forecast_set(previous_memory, draft, revision_path, revision.seal,
                                         commitment=commitment, max_source_bytes=1)
-    if workspace_layout == "handoff":
+    if frozen_handoff:
         resolved = subprocess.check_output([
             sys.executable, "-c",
             "import json,sys; from experiments.memory.test_native_publication import _forecast_handoff_child;"
@@ -1579,9 +1648,24 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
         assert reader(question, memory=removed).text == reader(question, memory=prior).text == ""
         assert reader(question).text == ""
         assert reader("follow L00", memory=current).text == ""
+        assert reader(question, memory=current).text == read.text
         with pytest.raises(StaleNativeWorkspace, match="head changed"):
             read_forecast_handoff(packet, workspace, reader, seal=packet_seal,
                                   commitment=commitment, max_bytes=_LIMIT, max_verification_scores=128)
+        if workspace_layout == "selection":
+            racing = NativeWorkspace.create(tmp_path / "racing-selection", reader, prior,
+                                            runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+            race_pin = racing.head()
+            proposer = make_reader()
+
+            def move_head(options):
+                assert racing.maintain(make_reader(), race_pin, max_seeds=1) != race_pin
+                return second
+
+            with pytest.raises(StaleNativeWorkspace, match="head changed"):
+                draft_discriminating_forecast(racing, proposer, race_pin, witnesses=(distractor, witness),
+                                              choose=move_head, **budgets)
+            assert proposer._pending_forecast is None and proposer._forecast_cursor is None
         return
 
     if workspace_layout:

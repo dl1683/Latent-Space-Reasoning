@@ -37,6 +37,17 @@ direct query and left a query through an extra alias link unresolved. Keep
 the two-unseen-operand criterion for the main screen.
 [Handoff control](RESULTS.md#transferring-a-forecast-between-worker-processes)
 
+**A separating projection is conditional on the forecast roster.**
+A worker can reject a descriptor whose tolerance regions overlap without
+seeing its outcome. An informative projection can still fail because no
+rival matches, baseline or persistence explains it, or a dependency changes.
+The selector compares projections of the same frozen latent values across
+descriptors. A wider coordinate set or a tighter tolerance can increase the
+margin even if the predicted event carries no new operands. The score
+provides no evidence of role-conditioned application or coverage of the
+real source stream.
+[Selection control](RESULTS.md#choosing-a-witness-before-its-outcome)
+
 **Repeated evidence fields can exhaust the planner before it can answer, 26 November 2026.**
 The original v2 prompt spent 5,798 input tokens finding and opening six short
 sources. It needed another 2,552 tokens to ask for the first final batch,

@@ -21,8 +21,10 @@ A [forecast handoff](docs/RESULTS.md#transferring-a-forecast-between-worker-proc
 lets a proposer exit before a fresh challenger receives the source revision.
 On a supplied text-and-image control, the challenger resolved the frozen
 alternatives without replay and published the same state as an in-process
-control. The witness was supplied. Finding decisive evidence independently
-and using the surviving operation on new operands remain open.
+control. A [witness-selection control](docs/RESULTS.md#choosing-a-witness-before-its-outcome)
+lets a separate worker select a distinguishing event from supplied descriptors
+before the outcome is visible. Inferring descriptors from the corpus and
+using the surviving operation on new operands remain open.
 
 A [bounded latent operation](docs/RESULTS.md#applying-a-retained-operation-to-a-new-latent-input) now combines query-blind worker outputs with signed coefficients on a new task input. On the supplied text-and-image fixture it recovered the expected result where positive averaging did not, then changed it after a source correction while the original pin stayed readable. The test uses a deterministic backbone and supplied coordinates. Real-model address coverage and independently graded answers remain open.
 
