@@ -153,6 +153,20 @@ recomputation controls before treating a fit as support. The local
 regression analogy also suggests a fitted-at-maintenance comparator.
 [Prototype result](RESULTS.md#applying-a-retained-operation-to-a-new-latent-input) · [Local Linear Attention](https://proceedings.iclr.cc/paper_files/paper/2026/hash/f9af970430ac401594ce01022fccb049-Abstract-Conference.html) · [Test-time regression](https://www.jmlr.org/papers/v27/25-0903.html)
 
+The [archived identity-grid analysis](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
+rules out reconstruction with the unchanged bank for both recorded late
+queries. A candidate successor separates the operation key from the input
+it receives. The task state $h$ would bind source-demonstrated roles
+into $z$ and the selected operation would contribute $U W z$ at a fixed
+layer. Workers would fit and revise $W$ from source events with no task
+prompt, retain the dependency for each accepted update, and withdraw a
+stale contribution before admitting its successor. Independent erase and
+write gates in fast-weight memory are one design precedent. For this
+proposal, evidence for a write and evidence requiring withdrawal are
+distinct source events. Compare with unchanged recurrent reuse and an
+ordinary warmed exact fit on the same source demonstrations.
+[Gated DeltaNet-2](https://arxiv.org/abs/2605.22791)
+
 #### Reusing an interior residual block
 
 [SLICE] An opt-in eager reader captures the last-position output of a

@@ -661,6 +661,26 @@ eligible derived reads across two active steps, so it cannot evaluate
 this operation.
 [CPU fixtures](../experiments/memory/test_native_latent_recurrence.py) · [Frozen p2 gate](../experiments/memory/results/native_world_addressing_p2_2026-11-26/README.md)
 
+### Checking the signed fit on archived learned states
+
+**Offline exact arithmetic, one exposed task.** Across both active
+steps on the restored p2 publication, the least possible L2 residual
+using all five source keys and the acquired key was 3,500.06 and
+3,556.08 Q8 units. The 1,024-dimensional identity grid and the maximum
+coefficient L1 of four bound post-clipping rounding at 80 L2 units.
+This is an uncertainty bound. The signed fitter requires a residual
+below $10^{-7}$ per coordinate. Both inputs come from the unchanged
+archived trajectory. The acquired key
+had negative score at both steps. Using the seed's source key for the
+single derived candidate would clear the positive-score floor on these
+fixed queries and still leave almost the whole input outside its span.
+The same seed ranks fifth in the ordinary source bank at both steps. One of the two same-pin worker queries was an exact hit
+on the retained address. Its next recurrent step scored positively on
+that address and stayed outside the rounding bound. Eight earlier worker queries carried into this pin
+also exceeded the bound in the cross-epoch check. There was no new
+pretrained execution or answer grading.
+[Inputs, exact replay, and scope](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
+
 ## Sharing a native workspace across workers
 
 **CPU software control.** Two handles shared a native publication history.

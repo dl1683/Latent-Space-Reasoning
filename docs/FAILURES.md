@@ -534,6 +534,16 @@ source-derived outcome or on-demand recomputation. The old p2 gate has
 zero eligible derived reads and supplies no accepted late direction.
 [Retained operation control](RESULTS.md#applying-a-retained-operation-to-a-new-latent-input)
 
+**A positive address can leave the task input outside the retained span.**
+On the archived p2 trace, granting every source and worker key still
+left more than 98% of each task vector's L2 norm outside their span.
+The seed's source key scored positively and had nearly the same
+reconstruction error as the missed worker key. Keep the source anchor
+as a routing control. Compare a separate operand representation with
+on-demand recomputation before expecting route changes to recover a
+bounded signed operation.
+[Exact archive replay](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
+
 **Exact sharing can lose to ordinary compression.** The eight-pin native
 fixture retained far fewer numeric file bytes with immutable shared blocks
 than with full copies. Independently compressing each sparse stand-in

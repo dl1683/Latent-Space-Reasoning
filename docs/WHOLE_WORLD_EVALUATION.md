@@ -397,6 +397,20 @@ uses two supplied bindings for the mechanism check. Geometric support
 and accurate consequences on independently chosen inputs remain
 separate gates.
 
+The [archived span check](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
+makes a route-only repair insufficient for the existing signed fit on
+these task states. Retain source anchors as a routing control. For the
+operation comparison, freeze a separate encoding of task operands on
+source-only demonstrations that vary roles and entities independently.
+Compare a reused block with a source-derived, state-dependent low-rank
+update in operand coordinates while holding the address and readout
+fixed. Include a constant retained-value control. Measure
+operation selection, operand binding, and correct consequences
+separately. A fixed-address intervention should substitute a wrong-role
+operand of matched scale that predicts a distinct gradeable result.
+Also withhold and restore the selected value. The fresh two-input test and warm recomputation control decide
+whether that representation carries a useful operation.
+
 Set `TaskBudget` to at most 24 actions, eight candidates per search, 8,192
 returned evidence bytes, 2 MiB source bytes, and 512 aggregate role-work units
 across ordinary probes and joint role-link calls. A maintenance round gets at most two calls per

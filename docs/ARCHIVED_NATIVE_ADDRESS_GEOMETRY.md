@@ -34,7 +34,8 @@ are byte-identical, with identical source selections and output IDs; the
 derived read did not alter this trajectory.
 
 Contrast: the retained derived address has **positive** dot products on all
-10 archived source-only maintenance query steps at p2 (range 1,449,189 to
+10 source-only maintenance query steps preserved at p2, including the
+eight carried from older epochs (range 1,449,189 to
 11,301,814). These are not held-out queries, and the original source-only
 steps did not route against the acquired row. The comparison is geometric
 only. It shows that this address is compatible with those worker-state
@@ -81,6 +82,54 @@ queries are in the active read's source_steps and derived_steps. Compute
 cosine as dot divided by both Euclidean norms of the quantized vectors.
 Do not replay p0/p1 using p2 queries and label the result as an actual task
 read.
+
+## Can reweighting recover the two archived task inputs?
+
+**27 November 2026. Exact read-only replay.** The restored publication
+contains five ordinary keys and one acquired continuation key. I granted
+a solver access to all six keys with arbitrary signed coefficients and no
+shortlist. It still left 98.64% and 99.52% of the two task queries' L2
+norms unexplained. The projection captures 2.69% and 0.96% of the squared
+query norms. Six independent columns cover six directions of the
+1,024-dimensional space at this pin.
+
+| Active step | Query L2 | Acquired key alone | Seed source key alone | Best residual across all six |
+| --- | ---: | ---: | ---: | ---: |
+| 1 | 3,548.19 | 3,542.85 | 3,539.37 | 3,500.06 |
+| 2 | 3,573.35 | 3,572.84 | 3,571.51 | 3,556.08 |
+
+Here $q$ is the saved integer query and $K$ holds the integer keys as
+columns. The replay solves $(K^\top K)c=K^\top q$ over rational numbers
+and compares the exact squared residual with the bound. Displayed
+norms are rounded. Rounding each clipped input to the archived identity
+grid incurs at most 16 L2 units over 1,024 coordinates. The residual
+vector of a fit with $\|c\|_1\le4$ can therefore differ from its pre-rounding
+equivalent by at most $16(1+4)=80$ L2 units. The all-six residuals
+exceed that upper bound by over 43 times at both steps. The actual
+prototype requires reconstruction within $10^{-7}$ per grid coordinate.
+The archive predates that prototype. This replay grants all six keys
+to each fixed query for a lower bound on its error. The second query
+belongs to the original trajectory. A live change to the first read
+could produce a different second query.
+
+The same six-key projection exactly reconstructs one of the ten
+preserved source-only query steps. It is the freshly computed seed
+query that equals the retained address. The next step has a positive
+score of 3,750,450 against that address and leaves a residual of
+3,412.62. The worker did not route against the acquired row on either step. The other eight worker
+steps were carried forward from earlier source epochs, and all exceed
+the rounding bound against this bank. Those cross-epoch checks measure
+geometry of carried traces, not reads executed at the restored pin.
+
+Reproduce with `python -m experiments.memory.archived_native_span_control`.
+It checks the pinned index, trace, manifest, source descriptor and
+payload digests before using saved Q8 states. Only the JSONL trace
+normalizes checkout line endings. It opens no model or
+grading data. The result is confined to one exposed task, one restored
+publication and one coordinate system. Delivering the acquired payload
+by another address could still help the task. Query reconstruction
+alone cannot judge that effect.
+[Exact replay](../experiments/memory/archived_native_span_control.py)
 
 ## Decision and next discriminator
 
