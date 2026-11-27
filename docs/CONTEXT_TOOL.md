@@ -913,6 +913,24 @@ for an immediate source update. Both calls consume source state only.
 settings. A changed reader fingerprint refuses publication. The
 library dispatches no background work.
 
+For a one-event forecast, call
+`draft_forecast(reader, pin, witness=..., max_candidates=..., max_parent_scores=...)`
+before the source release. It attaches the exact opening, and returns
+`None` if no draft qualifies. Otherwise the controller records
+`draft.commitment`, which binds the workspace identity, revision, source
+seal, publication seal and reader forecast. After release, use the same
+reader for `revise_forecast(reader, draft, epoch_directory, source_seal,
+commitment=..., max_source_bytes=...)`. It returns the committed pin,
+outcome, surviving parents and observations. A valid negative outcome
+advances the source without installing a forecast. The controller
+retains negative outcome receipts. The sealed publication keeps admitted
+forecast evidence.
+
+A stale check before evaluation leaves the draft pending. A lost commit
+after evaluation consumes it. Call `reader.cancel_forecast(draft.forecast)`
+only while pending and build replacements against the new opening.
+Concurrent workers use separate compatible reader instances.
+
 A controller attaches the current state with `attach(reader)` or a fixed
 historical state with `attach(reader, pin=workspace.pin_at(revision))`, then
 calls the ordinary model with that memory. For historical exact evidence,

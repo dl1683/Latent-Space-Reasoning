@@ -1306,12 +1306,17 @@ def test_content_defined_reuse_matches_cold_source_rows_after_reopen(tmp_path, r
         write_native_publication(tmp_path / "drift", reader, revised, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
     assert model.calls == calls and not (tmp_path / "drift").exists()
 
-@pytest.mark.parametrize("outcome", [
-    "admitted", "persistence_confirmed", "disconfirmed", "witness_change_limit",
-    "deletion_only", "witness_unchanged", "witness_withdrawn", "witness_out_of_order",
-    "weighted_admitted", "weighted_persistence", "weighted_cap", "same_edit_all_rows",
+@pytest.mark.parametrize(("outcome", "workspace_layout"), [
+    (outcome, None) for outcome in (
+        "admitted", "persistence_confirmed", "disconfirmed", "witness_change_limit",
+        "deletion_only", "witness_unchanged", "witness_withdrawn", "witness_out_of_order",
+        "weighted_admitted", "weighted_persistence", "weighted_cap", "same_edit_all_rows",
+    )
+] + [
+    ("weighted_admitted", "flat"), ("weighted_admitted", "shared"),
+    ("weighted_persistence", "flat"), ("weighted_admitted", "racing"), ("weighted_admitted", "stale"),
 ])
-def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, outcome):
+def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, outcome, workspace_layout, monkeypatch):
     import numpy as np
     from experiments.memory.native_forecast_set import (
         NativeForecastWitness, NativeRevisionWitness, NativeWeightedRevisionWitness,
@@ -1360,18 +1365,57 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
     if outcome == "weighted_persistence":
         old_text = document("follow  L04") + b"follow  L05"
 
-    model = RevisionControl().eval()
-    worker = _reader(model)
+    photo = b"P6\n1 1\n255\n" + bytes((255, 0, 0))
+    binary_parent = workspace_layout == "shared"
+
+    def image_ingress(source_id, payload):
+        if source_id != low or payload != photo:
+            return None
+        row = np.zeros(3 * width + 1)
+        row[1], row[7], row[width + 8] = 0.5, 0.9, 0.9
+        return row
+
+    def make_reader():
+        options = (dict(source_ingress=image_ingress, source_ingress_sha256=sha256(b"forecast red pixel fixture"))
+                   if binary_parent else {})
+        reader = _reader(RevisionControl().eval(), **options)
+        if binary_parent:
+            tokenizers = pytest.importorskip("tokenizers")
+            backend = tokenizers.Tokenizer(tokenizers.models.WordLevel({"[UNK]": 0}, unk_token="[UNK]"))
+            backend.enable_padding(pad_id=0, pad_token="[UNK]", length=4)
+            backend.enable_truncation(max_length=5)
+            reader._tokenizer.backend_tokenizer = backend
+        return reader
+
+    worker = make_reader()
     source_path = tmp_path / "source"
     source = write_source_delta(source_path, {
-        high: b"link L02 L03", low: b"follow L07", cue: b"link L01 L02", bridge: b"link L03 L04",
-        answer: b"name L04 L06", support: b"link L08 L03", second: old_text,
-    }, max_bytes=_LIMIT)
+        high: b"link L02 L03", low: photo if binary_parent else b"follow L07",
+        cue: b"link L01 L02", bridge: b"link L03 L04", answer: b"name L04 L06",
+        support: b"link L08 L03", second: old_text,
+    }, binary_sources=(low,) if binary_parent else (), max_bytes=_LIMIT)
     opened = worker.publish(source_path, source.seal, max_source_bytes=_LIMIT)
     warmed = worker.maintain(opened, max_seeds=2)
     opening_path = tmp_path / "opening"
     opening_seal = write_native_publication(opening_path, worker, warmed, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
     opening = _read(opening_path, worker, opening_seal, source.seal)
+    if workspace_layout:
+        from experiments.memory.native_workspace import NativeWorkspace, StaleNativeWorkspace
+
+        workspace_dir = tmp_path / "workspace"
+        NativeWorkspace.create(workspace_dir, worker, warmed, runtime_sha256=_RUNTIME, max_bytes=_LIMIT,
+                               share_rows=workspace_layout == "shared")
+        workspace = NativeWorkspace(workspace_dir, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+        opening_pin = workspace.head()
+        if workspace_layout == "flat":
+            identical = NativeWorkspace.create(tmp_path / "identical", worker, warmed, runtime_sha256=_RUNTIME,
+                                               max_bytes=_LIMIT)
+            identical_pin = identical.head()
+            assert identical_pin.workspace_id != opening_pin.workspace_id
+            assert identical_pin.publication_seal == opening_pin.publication_seal
+            assert identical_pin.source_seal == opening_pin.source_seal
+        worker = make_reader()
+        opening = workspace.attach(worker, pin=opening_pin)
     seed, = opening.source_spans(cue)
     high_parent, = opening.source_spans(high)
     low_parent, = opening.source_spans(low)
@@ -1383,8 +1427,13 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
     too_small = replace(witness, max_opening_rows=len(opening.source_spans(second)) - 1)
     with pytest.raises(ValueError, match="opening row allowance"):
         worker.forecast_set(opening, witnesses=(*fresh, too_small), **budgets)
-    draft = worker.forecast_set(opening, witnesses=(*fresh, witness), **budgets)
-    commitment = draft.commitment
+    if workspace_layout:
+        workspace_draft = workspace.draft_forecast(worker, opening_pin, witness=witness, **budgets)
+        draft = workspace_draft.forecast
+        commitment = workspace_draft.commitment
+    else:
+        draft = worker.forecast_set(opening, witnesses=(*fresh, witness), **budgets)
+        commitment = draft.commitment
     assert draft.parents == (high_parent, low_parent)
     assert draft._opening_at(len(fresh)).version_sha256 == sha256(old_text)
     assert draft._opening_at(len(fresh)).generation == 1
@@ -1413,10 +1462,118 @@ def test_forecast_set_qualifies_an_edit_to_an_existing_text_document(tmp_path, o
         changes[second] = None
     revision_path = tmp_path / "revision"
     revision = write_source_delta(revision_path, changes, previous=epoch, max_bytes=_LIMIT)
-    if outcome == "weighted_admitted":
+    if outcome == "weighted_admitted" and not workspace_layout:
         with pytest.raises(ValueError, match="source feed exceeds the byte budget"):
             worker.advance_forecast_set(previous_memory, draft, revision_path, revision.seal,
                                         commitment=commitment, max_source_bytes=1)
+    if workspace_layout:
+        def resolve(store=workspace, attempt=workspace_draft, digest=commitment, max_bytes=_LIMIT):
+            return store.revise_forecast(worker, attempt, revision_path, revision.seal,
+                                         commitment=digest, max_source_bytes=max_bytes)
+
+        with pytest.raises(ValueError, match="opening or commitment differs"):
+            resolve(attempt=replace(workspace_draft, _opening=opening))
+        with pytest.raises(ValueError, match="workspace forecast commitment differs"):
+            resolve(digest=draft.commitment)
+        with pytest.raises(ValueError, match="one-event forecast"):
+            resolve(attempt=replace(workspace_draft, forecast=replace(draft, witnesses=(witness, witness))))
+        with pytest.raises(ValueError, match="source feed exceeds the byte budget"):
+            resolve(max_bytes=1)
+        assert workspace.head() == opening_pin
+
+        if workspace_layout == "flat":
+            with pytest.raises(StaleNativeWorkspace, match="head changed"):
+                resolve(store=identical)
+            with pytest.raises(ValueError, match="workspace forecast commitment differs"):
+                resolve(store=identical, attempt=replace(workspace_draft, pin=identical_pin))
+            skipped_path = tmp_path / "non-direct"
+            skipped = write_source_delta(skipped_path, {"0" * 32: b"follow L11"}, previous=revision)
+            with pytest.raises(ValueError, match="parent|ancestor|epoch"):
+                workspace.revise_forecast(worker, workspace_draft, skipped_path, skipped.seal,
+                                          commitment=commitment, max_source_bytes=_LIMIT)
+            assert workspace.head() == opening_pin and identical.head() == identical_pin
+
+        if workspace_layout == "stale":
+            workspace.revise(make_reader(), opening_pin, revision_path, revision.seal, max_source_bytes=_LIMIT)
+            with pytest.raises(StaleNativeWorkspace, match="head changed"):
+                resolve()
+            worker.cancel_forecast(draft)
+            return
+
+        if workspace_layout == "racing":
+            advance = worker.advance_forecast_set
+
+            def competing_revision(*args, **kwargs):
+                result = advance(*args, **kwargs)
+                assert result.status == "admitted"
+                peer = NativeWorkspace(workspace_dir, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+                peer.revise(make_reader(), opening_pin, revision_path, revision.seal,
+                            max_source_bytes=_LIMIT)
+                return result
+
+            monkeypatch.setattr(worker, "advance_forecast_set", competing_revision)
+            with pytest.raises(StaleNativeWorkspace, match="head changed"):
+                resolve()
+            assert workspace.head().revision == 1
+            assert workspace.head().source_seal == revision.seal
+            assert seed not in workspace.attach(make_reader()).derived_seeds
+            with pytest.raises(ValueError, match="no longer pending"):
+                worker.cancel_forecast(draft)
+            assert {item.name for item in (workspace_dir / "objects").iterdir()} == {
+                opening_pin.publication_seal, workspace.head().publication_seal,
+            }
+            return
+
+        if binary_parent:
+            backend = worker._tokenizer.backend_tokenizer
+            settings = backend.padding, backend.truncation
+            advance = worker.advance_forecast_set
+
+            def clear_tokenizer_settings(*args, **kwargs):
+                result = advance(*args, **kwargs)
+                backend.no_padding()
+                backend.no_truncation()
+                return result
+
+            monkeypatch.setattr(worker, "advance_forecast_set", clear_tokenizer_settings)
+        receipt = resolve()
+        if binary_parent:
+            assert (backend.padding, backend.truncation) == settings
+        fresh_reader = make_reader()
+        reopened = NativeWorkspace(workspace_dir, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+        assert reopened.head() == receipt.pin == reopened.pin_at(1)
+        historical = reopened.attach(fresh_reader, pin=opening_pin)
+        current = reopened.attach(fresh_reader, pin=receipt.pin)
+        assert historical.seal == source.seal and seed not in historical.derived_seeds
+        assert current.seal == revision.seal
+        assert receipt.observations == ((73, 23),) and receipt.survivors == (low_parent,)
+        question = "follow L01"
+        assert fresh_reader(question, memory=historical).text == fresh_reader(question).text == ""
+        if outcome == "weighted_persistence":
+            assert receipt.status == "persistence_confirmed" and seed not in current.derived_seeds
+            assert fresh_reader(question, memory=current).text == ""
+            return
+
+        assert receipt.status == "admitted" and seed in current.derived_seeds
+        assert current.continuation_parent(seed) == low_parent
+        assert current.continuation_witnesses(seed) == current.source_spans(second)
+        read = fresh_reader(question, memory=current)
+        assert read.text == "L06" and read.terminated and read.applied_derived_steps > 0
+        assert fresh_reader(question, memory=fresh_reader._without_continuation(current, seed)).text == ""
+        if binary_parent:
+            assert low_parent in current.evidence_spans(read)
+            assert low_parent.span_sha256 == sha256(photo)
+        corrected_path = tmp_path / "corrected"
+        correction = {low: None} if binary_parent else {second: old_text}
+        corrected = write_source_delta(corrected_path, correction, previous=revision, max_bytes=_LIMIT)
+        corrected_pin = workspace.revise(worker, receipt.pin, corrected_path, corrected.seal,
+                                         max_source_bytes=_LIMIT)
+        assert corrected_pin == reopened.head()
+        revised = reopened.attach(fresh_reader, pin=corrected_pin)
+        assert seed not in revised.derived_seeds and fresh_reader(question, memory=revised).text == ""
+        assert fresh_reader(question, memory=reopened.attach(fresh_reader, pin=receipt.pin)).text == "L06"
+        return
+
     resolution = worker.advance_forecast_set(previous_memory, draft, revision_path, revision.seal,
                                              commitment=commitment, max_source_bytes=_LIMIT)
     expected = {

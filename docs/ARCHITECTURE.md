@@ -931,6 +931,19 @@ hands workers sealed pins is the simpler comparator. Learned worker value,
 distributed storage and power-loss recovery remain open.
 [Workspace control](RESULTS.md#sharing-a-native-workspace-across-workers)
 
+One-event prospective admission now shares that head. A worker attaches
+a committed opening, drafts competing continuations from its sources,
+and keeps the draft on that reader until the controller releases the
+next source epoch. The draft commitment covers the full workspace pin.
+The new source and any admitted continuation are committed under the
+same full-head check. A negative forecast advances the source and returns
+a receipt for the controller to retain. If a competing revision wins,
+the losing result cannot install a continuation. A later worker can open
+the resulting pin while its earlier source and computation history remain
+addressable. The first software control exercises an image-derived parent
+and an edited text witness. The learned addressing gap remains open.
+[Forecast workspace control](RESULTS.md#committing-a-forecast-with-its-source-revision)
+
 The optional shared-row layout keeps the canonical sealed manifest and
 orders the same numeric payload by references to immutable blocks. Each
 block covers one nonempty source shard or one acquired continuation.

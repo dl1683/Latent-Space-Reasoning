@@ -490,6 +490,15 @@ outside committed history. A corrupted orphan blocks reuse of that
 object. The guarded head also refuses a staged successor whose reader changed
 since opening. [Workspace control](RESULTS.md#sharing-a-native-workspace-across-workers)
 
+A forecast can evaluate successfully while a competing source revision
+wins the shared head. Its evaluation remains attempted work. The draft
+cannot move to a different opening, and a late reader must open the
+committed winner's pin. A numeric witness that the opening text already
+predicts still advances the source but supplies no reason to install the
+candidate. A publication digest can identify identical source and
+numeric bytes in different workspaces. Bind the forecast to the full
+workspace pin before releasing the witness. [Forecast commit control](RESULTS.md#committing-a-forecast-with-its-source-revision)
+
 **Exact sharing can lose to ordinary compression.** The eight-pin native
 fixture retained far fewer numeric file bytes with immutable shared blocks
 than with full copies. Independently compressing each sparse stand-in

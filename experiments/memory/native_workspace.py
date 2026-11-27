@@ -1,19 +1,22 @@
 """Publish source-only native work to one recoverable snapshot history."""
 
 from contextlib import closing, contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 from pathlib import Path
 import sqlite3
 from tempfile import TemporaryDirectory
 from uuid import uuid4
 
+from experiments.memory.native_forecast_set import NativeForecastObservation, NativeForecastSet
+from experiments.memory.native_latent_recurrence import NativeSourceMemory
 from experiments.memory.native_publication import (
     _enforce_limit, _read_native_publication, _write_native_publication, read_native_publication,
     write_native_publication,
 )
 from experiments.memory.native_workspace_rows import SharedNativeRows
-from experiments.memory.verified_source_tool import require_digest, sha256
+from experiments.memory.source_revision_feed import _encode
+from experiments.memory.verified_source_tool import SourceSpan, require_digest, sha256
 
 
 @contextmanager
@@ -49,6 +52,28 @@ class NativeWorkspacePin:
             raise ValueError("native workspace revision must be a nonnegative integer")
         for digest in (self.workspace_id, self.source_seal, self.publication_seal):
             require_digest(digest)
+
+
+@dataclass(frozen=True, slots=True)
+class NativeWorkspaceForecastDraft:
+    pin: NativeWorkspacePin
+    forecast: NativeForecastSet
+    _opening: NativeSourceMemory = field(repr=False)
+
+    @property
+    def commitment(self):
+        return sha256(_encode([
+            "lsr-workspace-forecast-v1", self.pin.workspace_id, self.pin.revision,
+            self.pin.source_seal, self.pin.publication_seal, self.forecast.commitment,
+        ]))
+
+
+@dataclass(frozen=True, slots=True)
+class NativeWorkspaceForecast:
+    pin: NativeWorkspacePin
+    status: str
+    survivors: tuple[SourceSpan, ...]
+    observations: tuple[NativeForecastObservation, ...]
 
 
 class StaleNativeWorkspace(RuntimeError):
@@ -222,6 +247,40 @@ class NativeWorkspace:
             after = reader.publish(epoch_directory, source_seal, previous=before, max_source_bytes=max_source_bytes)
         return self._commit(reader, after, expected, operation="revise",
                             opening_reader_sha256=before._reader_fingerprint_sha256)
+
+    def draft_forecast(self, reader, expected, *, witness, max_candidates, max_parent_scores):
+        """Open the current pin and draft from its source state before release."""
+        opening = self._opening(reader, expected)
+        forecast = reader.forecast_set(opening, witnesses=(witness,), max_candidates=max_candidates,
+                                       max_parent_scores=max_parent_scores)
+        if forecast is None:
+            return None
+        return NativeWorkspaceForecastDraft(expected, forecast, opening)
+
+    def revise_forecast(self, reader, draft, epoch_directory, source_seal, *, commitment, max_source_bytes):
+        """Commit a checked one-event forecast and its source revision together."""
+        if type(draft) is not NativeWorkspaceForecastDraft or type(draft.pin) is not NativeWorkspacePin:
+            raise TypeError("a native workspace forecast draft is required")
+        expected, forecast, opening = draft.pin, draft.forecast, draft._opening
+        self._expect(expected, self.head())
+        _enforce_limit(max_source_bytes)
+        if (type(forecast) is not NativeForecastSet or len(forecast.witnesses) != 1
+                or type(opening) is not NativeSourceMemory
+                or forecast.opening_publication != expected.publication_seal
+                or opening._publication_seal != expected.publication_seal
+                or forecast.opening_source != expected.source_seal
+                or opening.seal != expected.source_seal
+                or forecast.opening_epoch != opening._scope.epoch
+                or forecast.reader_sha256 != opening._reader_fingerprint_sha256):
+            raise ValueError("a one-event forecast must bind the exact workspace opening")
+        if commitment != draft.commitment:
+            raise ValueError("the workspace forecast commitment differs")
+        with _preserve_source_tokenizer_settings(reader):
+            result = reader.advance_forecast_set(opening, forecast, epoch_directory, source_seal,
+                                                 commitment=forecast.commitment, max_source_bytes=max_source_bytes)
+        pin = self._commit(reader, result.memory, expected, operation="revise",
+                           opening_reader_sha256=opening._reader_fingerprint_sha256)
+        return NativeWorkspaceForecast(pin, result.status, result.survivors, result.observations)
 
     def _commit(self, reader, memory, expected, *, operation, opening_reader_sha256=None):
         revision = 0 if expected is None else expected.revision + 1

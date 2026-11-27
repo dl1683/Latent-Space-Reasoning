@@ -545,6 +545,36 @@ deterministic source grammar. Every successor currently stores a complete
 snapshot. Full lifecycle cost, partitioned worker efficiency, independently
 graded learned answers and storage durability under power loss remain open.
 
+## Committing a forecast with its source revision
+
+**CPU software control.** An initial worker published two competing
+parents. A separate worker attached that publication and drafted a reply
+to a one-event source forecast before the later text was released. The
+admitted outcome retained the lower-ranked parent, two exact text spans
+as its witness and the new source epoch. A fresh reader reopened the
+committed pin and answered L06. Removing just the admitted computation
+at that pin or omitting memory left the answer unresolved.
+
+The flat workspace withdrew the computation when the text witness was
+reverted. In the shared-row workspace, the lower-ranked parent came
+from a single-pixel PPM image with a supplied ingress. The reader's
+evidence included that exact image span. Removing the image withdrew
+the computation and answer. In both layouts the earlier committed
+answer remained readable after that change. A separate negative control
+advanced the source while withholding the computation because the
+opening text already predicted the witness. A competing ordinary revision
+won after the forecast had evaluated. The stale writer produced neither
+a new object nor a successful commit receipt. Another worker found its
+opening stale before evaluation and could cancel the still-pending draft.
+The same commitment was refused on a separate workspace with identical
+source and publication bytes.
+
+These are deterministic coordination and causal wiring checks for a
+supplied backbone and source grammar. They do not address learned
+discovery, natural task quality, addressing reliability on the
+authentic chronology or lifecycle cost.
+[Publication fixture](../experiments/memory/test_native_publication.py)
+
 ## Sharing unchanged native rows across history
 
 **CPU software control.** The opt-in shared layout and full-copy workspace
