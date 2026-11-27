@@ -411,6 +411,16 @@ operand of matched scale that predicts a distinct gradeable result.
 Also withhold and restore the selected value. The fresh two-input test and warm recomputation control decide
 whether that representation carries a useful operation.
 
+The [public visual operation check](RESULTS.md#applying-published-visual-operations-to-new-grids)
+demonstrates a worker publishing before independently authored late
+inputs and repairing an answer after evidence withdrawal. The reader
+receives the operation ID. Only seven of 400 development tasks passed,
+with no complete two-input success. Keep this check separate from the
+learned panel. A useful mixed-corpus trial must allow a second worker
+to challenge a proposed rule with a new source event and let the reader
+select and apply the surviving rule on unseen bindings. Compare with a
+warm exact evaluator that can maintain the same verified constraints.
+
 Set `TaskBudget` to at most 24 actions, eight candidates per search, 8,192
 returned evidence bytes, 2 MiB source bytes, and 512 aggregate role-work units
 across ordinary probes and joint role-link calls. A maintenance round gets at most two calls per

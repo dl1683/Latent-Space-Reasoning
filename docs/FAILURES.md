@@ -544,6 +544,16 @@ on-demand recomputation before expecting route changes to recover a
 bounded signed operation.
 [Exact archive replay](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
 
+**A maintained visual rule can be correct on too few inputs to scale.**
+The frozen geometry-and-palette family solved seven of 400 public
+development tasks, with no complete success on a task with multiple
+late inputs. Keeping every per-demonstration constraint for retraction
+cost more source checks than pruned raw recomputation at the two tested
+views. Retain the bounded causal reuse result. The next whole-world
+test requires richer source-supported operations and task-driven
+selection on an independent panel.
+[Public visual control](RESULTS.md#applying-published-visual-operations-to-new-grids)
+
 **Exact sharing can lose to ordinary compression.** The eight-pin native
 fixture retained far fewer numeric file bytes with immutable shared blocks
 than with full copies. Independently compressing each sparse stand-in

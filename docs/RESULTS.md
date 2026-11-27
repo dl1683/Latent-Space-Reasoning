@@ -681,6 +681,89 @@ also exceeded the bound in the cross-epoch check. There was no new
 pretrained execution or answer grading.
 [Inputs, exact replay, and scope](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs)
 
+## Applying published visual operations to new grids
+
+**Public development control, 27 November 2026.** A source worker compiled
+the demonstration pairs for all 400 ARC-AGI-1 public training tasks. The
+frozen family covers eight orientations, with unchanged size, nearest
+enlargement by two or three, or periodic tiling by two or three. A
+deterministic palette map is fitted from observed colors. The reader
+applies the geometry and map to the current grid. It abstains when the
+demonstrations admit no operation, a needed color is unbound, or the
+admitted operations predict different outputs. The task ID supplies the
+operation address. [Pinned public split](https://github.com/fchollet/ARC-AGI/tree/399030444e0ab0cc8b4e199870fb20b863846f34/data/training)
+
+Preparation split demonstrations, late inputs and official expected
+outputs. Three separate worker commands published the opening state,
+withdrew the first demonstration, and merged its retained constraints
+back into the withdrawn state. Revision commands opened the compiled
+bank and its pinned history. The opening record binds the family ID and
+geometry order. The evaluator opened late inputs after
+those seals existed and evaluated answers before opening the separately
+stored public labels. This is functional input separation in a trusted
+process environment. The demonstration order is the published order.
+Withdrawal is an intervention on that sequence.
+
+| Opening measure | Observed |
+| --- | ---: |
+| Tasks admitting any operation from demonstrations | 14 / 400 |
+| Fully correct tasks | 7 / 400 |
+| Fully correct tasks with two or more official late inputs | 0 |
+| Correct late-grid predictions | 7 / 416 |
+| Abstentions for no admissible program / unbound color | 402 / 7 |
+| Incorrect predictions among the seven answered grids | 0 |
+| Late cases whose expected output appeared among demonstrations | 17 / 416 |
+| Last demonstration output copy / identity input copy | 6 / 0 out of 416 |
+
+All 416 late grids differed from their task's demonstration inputs.
+All seven correct outputs also differed from every demonstration output
+for their own task. Four of the seven used new input shapes. None used
+new input colors. The unchanged program table matched the per-pin
+pruned raw-demonstration reference. Removing a demonstration withdrew
+two correct answers and made one different refusal change from
+no program to unbound color. Restoration recovered all opening outcomes
+and the identical operation tables.
+
+The opening worker tried 52,080 raw candidates and examined 896,816
+color pairs. Pruned raw recomputation for the two distinct source views
+tried 32,152 candidates and examined 585,302 pairs. The compiled join
+inspected 52,080 entries at opening, 36,080 at withdrawal, and 16,000 at
+restoration. The opening, withdrawal and restoration artifacts occupy
+358,254, 85,761 and 85,744 bytes. Readout is shared. This counts work
+without claiming an end-to-end speed comparison.
+
+This symbolic slice shows reuse under a genuine external late input.
+It supplies routing and operator family, and uses neither a pretrained
+reader nor a multimodal answer generator. It clears no independent
+two-input or trained-reader gate. The pruned raw baseline performed
+fewer candidate and cell checks on these distinct views. Keep this result as a limited
+development control for visual operands.
+[Replay commands and integrity](#reproducing-the-visual-operation-check) ·
+[Executable control](../experiments/memory/visual_operator_control.py)
+
+### Reproducing the visual operation check
+
+Use a checkout of the pinned public split and an empty directory for
+prepared data. Run the following from the LSR root. The uppercase names
+on the last two commands stand for the SHA-256 strings returned by the
+preceding commands. Compute `LABELS` from the prepared `labels.json`.
+Keep the reports and public dataset outside the project checkout.
+
+```text
+python -m experiments.memory.visual_operator_control prepare ARC_CHECKOUT RUN
+python -m experiments.memory.visual_operator_control publish RUN/sources.json RUN/opening.json
+python -m experiments.memory.visual_operator_control revise RUN/opening.json OPEN RUN/withdrawn.json
+python -m experiments.memory.visual_operator_control revise RUN/opening.json OPEN RUN/restored.json --previous RUN/withdrawn.json --previous-sha256 WITHDRAWN
+python -m experiments.memory.visual_operator_control grade RUN/sources.json RUN/late.json RUN/opening.json RUN/withdrawn.json RUN/restored.json RUN/labels.json OPEN WITHDRAWN RESTORED LABELS
+```
+
+The first candidate family was written before loading the corpus and
+was informed by the public benchmark description and example. The run
+preserves all 400 tasks as the denominator. The source projection was
+`ccf968210027ab84f6e1de48c7c937e607134e2a9b79c4e2267e9bc57e8ffd06`.
+The opening artifact with work counters is
+`957743bd367e4338b34f4bf980b16a1ac9b3437e294b9ec5a078cfbcac5fa237`.
+
 ## Sharing a native workspace across workers
 
 **CPU software control.** Two handles shared a native publication history.
