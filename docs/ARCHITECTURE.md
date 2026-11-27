@@ -213,6 +213,44 @@ the admission. This search covers the declared address on its opening
 pin. A new rival at a later pin requires separate qualification.
 [CPU results](RESULTS.md#finding-rival-operations-from-retained-source-rows)
 
+#### Composing separately qualified latent operations
+
+[SLICE] The opt-in operator inventory keeps several source-qualified
+operations in one native publication. Workers can draft independent
+addresses on the same opening. One direct successor releases exactly
+the committed set of outcome sources. The installer regenerates the
+source-card forecasts and bounded rival search from that opening.
+It publishes all outcomes and each supported admission in one
+workspace transaction. A refusal at one address leaves other valid
+admissions eligible.
+
+Serving looks up the exact Q8 address before solving for the signed
+operand. Only the chosen basis is passed to the latent transition.
+A higher-norm address cannot displace an exact match. Later steps
+may address a different operation as the hidden state changes.
+Evidence includes a witness when its operation affected an applied
+step. The source-only worker and optional-memory call remain shared.
+
+Each admission binds its complete acquired bank at that address,
+including rows outside the winning basis. A revision or maintenance
+addition that changes this bank suspends that operation, even for a
+coherent duplicate. Withdrawing a witness also suspends its operation.
+Workspace reopen replays source-card discovery at the committed
+opening and checks each retained forecast, bank and release. A
+standalone publication has only its supplied seal and current rows.
+The legacy single-operation reader retains its original policy and
+format. Opening replay and cold attach are part of cost.
+
+Separately routed edits and individually reversible edits have
+precedents in model editing. The harder test here is whether the
+consequences compose after corpus revisions. Keep agreement among
+surviving rival operators as an alternative to first committing to
+one winner. It would use accumulated observations to eliminate
+incompatible laws and abstain when the survivors disagree on an
+unseen operand. It needs its own matched evidence and cost check.
+[SoLA](https://arxiv.org/abs/2603.11239) · [MQuAKE](https://arxiv.org/abs/2305.14795)
+· [CPU composition check](RESULTS.md#composing-separately-qualified-latent-operations)
+
 #### Retrying a self-only source continuation
 
 [SLICE] A source-only worker can retry a previously attempted,

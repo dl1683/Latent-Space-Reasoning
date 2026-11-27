@@ -74,6 +74,16 @@ available. The current rule is intentionally conservative about
 reusing a decision after its comparison changes.
 [Admission controls](RESULTS.md#admitting-an-operation-from-one-open-workspace-pin)
 
+**Independent operation admission does not transfer to a changed rival bank.**
+The first gated reader allowed one active operation, and its checked
+cohorts did not account for newly acquired rivals at the same address.
+The inventory fixture adds a live same-address continuation whose
+operand and payload disagree with the admitted law. It revokes that
+operation and preserves the other. This conservative rule also drops
+admissions when new rows are redundant. Test observational agreement
+among surviving rivals before adopting a more selective carry rule.
+[Composition and revocation control](RESULTS.md#composing-separately-qualified-latent-operations)
+
 **Joint address and operand selection can exclude an indispensable row.**
 In the fixed-address CPU control the positive-key neighborhood excluded a
 required direction on both role inputs. The separated reader solved the

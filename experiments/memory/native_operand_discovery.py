@@ -1,9 +1,12 @@
 """Find rival operand bases and source-backed event inputs on one native pin."""
 
+from __future__ import annotations
+
 from dataclasses import asdict, dataclass
 from fractions import Fraction
 from itertools import combinations, islice
 from math import comb
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -14,11 +17,14 @@ from experiments.memory.native_operand_admission import (
 from experiments.memory.source_revision_feed import _OPAQUE_ID, _encode
 from experiments.memory.verified_source_tool import SourceSpan, sha256
 
+if TYPE_CHECKING:
+    from experiments.memory.native_operator_inventory import NativeOperatorProposal
+
 
 @dataclass(frozen=True, slots=True)
 class NativeOperandDiscovery:
     status: str
-    draft: NativeOperandDraft | None
+    draft: NativeOperandDraft | NativeOperatorProposal | None
     inputs: tuple[tuple[str, SourceSpan], ...]
     address_rows: int
     operand_rank: int
@@ -101,14 +107,19 @@ def discover_operand_admission(workspace, reader, pin, *, cards, coordinates, to
     """
     if type(reader) is not NativeAdmittedOperandModel:
         raise TypeError("operand discovery requires the gated native operand reader")
+    opening = workspace._opening(reader, pin)
+    if _admission(opening._selective) is not None:
+        raise ValueError("withdraw the admitted operation before drafting another")
+    return _discover_operand(reader, opening, pin, cards, coordinates, tolerance,
+                             max_address_rows, max_combinations)
+
+
+def _discover_operand(reader, opening, pin, cards, coordinates, tolerance, max_address_rows, max_combinations):
     cards = tuple(islice(cards, 9))
     if (not 1 <= len(cards) <= 8 or any(type(card) is not str or not _OPAQUE_ID.fullmatch(card) for card in cards)
             or len(set(cards)) != len(cards) or type(max_address_rows) is not int or not 1 <= max_address_rows <= 32
             or type(max_combinations) is not int or not 1 <= max_combinations <= 4096):
         raise ValueError("operand discovery needs bounded cards, rows and basis combinations")
-    opening = workspace._opening(reader, pin)
-    if _admission(opening._selective) is not None:
-        raise ValueError("withdraw the admitted operation before drafting another")
     inputs, events, address = _event_inputs(reader, opening, cards)
     axes = list(reader._selector._operand_address_axes)
     operand_axes = reader._selector._operands

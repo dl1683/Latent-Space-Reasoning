@@ -789,6 +789,36 @@ metadata check on one archived case with no new execution. It leaves
 coverage on a newly acquired bank open.
 [Opening](../experiments/memory/results/native_world_addressing_p2_2026-11-26/publications/opening-p0/manifest.json) · [Correction](../experiments/memory/results/native_world_addressing_p2_2026-11-26/publications/corrected-p1/manifest.json) · [Restoration](../experiments/memory/results/native_world_addressing_p2_2026-11-26/publications/restored-p2/manifest.json)
 
+## Composing separately qualified latent operations
+
+**CPU mechanism control.** Two source-card proposals on one opening
+each enumerated two incompatible bases. The worker published both
+forecast outcomes in one successor. A fresh reader answered the
+two direct probes and the joined probe. The join used two latent
+steps and applied a different admitted operation at each step. The
+first operation's output determined the second address. Each direct
+read cited only its own operator witness. The joined read cited both.
+
+Disabling either operation's retained leaf at the same source pin
+removed the joined answer while preserving the other direct answer.
+The opening and memory-omitted calls left the join unresolved.
+Withdrawing the first outcome preserved only the second operation.
+Reissuing the first outcome after a fresh proposal restored the join.
+Acquiring a contradictory new continuation at the first address
+suspended it again. A new source alone left the operation active
+until maintenance turned that source into a retained rival. The old
+pin still returned the original receipt. Duplicate, stale and forged
+proposals were refused.
+
+At the exact first address the ungated signed-transport control
+refused the two conflicting bases. It succeeded when given the
+coherent basis alone. The fixture uses supplied image feature rows,
+a text source and a stand-in backbone with a specified second-hop
+transition. It establishes composition and selective withdrawal on
+that mechanism. It supplies no learned address discovery, independent
+task grading or end-to-end cost comparison.
+[CPU fixture](../experiments/memory/test_native_operator_inventory.py)
+
 ## Acquiring continuations after self-only reads
 
 **Frozen archive geometry.** Each of the three p2 manifests has all

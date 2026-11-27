@@ -99,6 +99,14 @@ def _reader_digest(reader):
         add("operand-admission", "json", None, _record(
             "lsr-operand-admission-v1", sha256(implementation.replace(b"\r\n", b"\n")),
         ))
+    if getattr(reader, "_operator_inventory_enabled", False):
+        implementations = {
+            name: sha256(Path(__file__).with_name(name).read_bytes().replace(b"\r\n", b"\n"))
+            for name in ("native_operand_admission.py", "native_operand_discovery.py", "native_operator_inventory.py")
+        }
+        add("operator-inventory", "json", None, _record(
+            "lsr-operator-inventory-v1", reader._max_operators, implementations,
+        ))
     tokenizer = getattr(reader._tokenizer, "backend_tokenizer", None)
     if reader._source_chunking == "content" or reader._residual_layer is not None:
         if callable(getattr(tokenizer, "to_str", None)):
@@ -257,6 +265,9 @@ def _metadata(reader, memory):
     gate = getattr(selective, "operand_admission", None)
     if gate is not None:
         header["operand_admission"] = asdict(gate)
+    operators = getattr(selective, "operator_inventory", ())
+    if operators:
+        header["operator_inventory"] = [asdict(entry) for entry in operators]
     return header
 
 
@@ -816,6 +827,10 @@ def _restore(header, reader, raw, seal, scope):
         from experiments.memory.native_operand_admission import restore_operand_admission
 
         memory = restore_operand_admission(reader, memory, header["operand_admission"])
+    if "operator_inventory" in header:
+        from experiments.memory.native_operator_inventory import restore_operator_inventory
+
+        memory = restore_operator_inventory(reader, memory, header["operator_inventory"])
     return memory
 
 
@@ -856,6 +871,8 @@ def _read_native_publication(directory, reader, *, seal, source_seal, runtime_sh
         raise ValueError("native publication lacks its source exclusion scope")
     if getattr(reader, "_operand_admission_required", False):
         fields.discard("operand_admission")
+    if getattr(reader, "_operator_inventory_enabled", False):
+        fields.discard("operator_inventory")
     if schemas.get(base_schema) != fields or _encode(header) != manifest:
         raise ValueError("native publication manifest is malformed")
     if header["source"] != source_seal or header["runtime"] != runtime_sha256:

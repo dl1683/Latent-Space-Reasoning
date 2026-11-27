@@ -57,6 +57,12 @@ operands from pinned source cards. It selected a useful event in one
 fixture and abstained when an additional valid basis made the contrast
 inconclusive. The input cards and operand coordinate policy were supplied.
 
+A [composed operation control](docs/RESULTS.md#composing-separately-qualified-latent-operations)
+lets two source workers qualify operations in one publication before
+the task. A later read uses both in sequence and loses its answer
+when either is disabled at the same source pin. The fixture supplies
+the latent coordinates and backbone. Learned composition remains open.
+
 A [cross-source acquisition control](docs/RESULTS.md#acquiring-continuations-after-self-only-reads)
 retries seeds whose ordinary maintenance read only their own source.
 Two such retries acquired continuations that a fresh reader used.

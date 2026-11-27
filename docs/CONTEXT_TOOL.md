@@ -1114,6 +1114,26 @@ the outcome links and Q8 input rows for a discovered admission. The
 controller still supplies the cards, output coordinates and the
 verified release chronology.
 
+Use `NativeOperatorInventoryModel` from
+`experiments.memory.native_operator_inventory` to qualify multiple
+addresses on one native workspace. For each address, call
+`discover_native_operator(workspace, reader, pin, cards=..., coordinates=...,
+tolerance=...)`. Record the returned draft's commitment before seeing
+the selected outcome. Pass drafts and commitments in matching order to
+`resolve_native_operators(workspace, reader, proposals, directory, source_seal,
+commitments=..., max_source_bytes=...)`. The proposals share one opening
+and have distinct addresses and outcome IDs. The direct successor feed
+contains exactly these outcomes. Every returned outcome carries the same
+committed pin. `resolve_native_operator` uses the same path for one draft.
+The reader capacity defaults to 16 and is pinned at construction.
+
+Use the usual call with optional `memory`. A later recurrence step can use
+another admitted address in the same call. `operation_evidence(memory, read)`
+adds each applied operator's witness. A later change to an address's
+acquired bank or witness suspends that operator and keeps unrelated
+admissions. The workspace must retain the committed openings and
+release manifests needed to replay historical qualification on attach.
+
 Use `retry_cross_source_acquisition(workspace, reader, pin,
 max_seeds=..., max_source_rows=..., max_relative_shift=...)` from
 `experiments.memory.native_cross_source_acquisition` to retry

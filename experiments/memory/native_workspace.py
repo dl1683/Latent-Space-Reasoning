@@ -1,7 +1,7 @@
 """Publish source-only native work to one recoverable snapshot history."""
 
 from contextlib import closing, contextmanager
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 import json
 from pathlib import Path
 import sqlite3
@@ -11,7 +11,7 @@ from uuid import uuid4
 from experiments.memory.native_forecast_set import NativeForecastObservation, NativeForecastSet
 from experiments.memory.native_latent_recurrence import NativeSourceMemory
 from experiments.memory.native_publication import (
-    _enforce_limit, _read_native_publication, _write_native_publication, read_native_publication,
+    _enforce_limit, _read_bounded, _read_native_publication, _write_native_publication, read_native_publication,
     write_native_publication,
 )
 from experiments.memory.native_workspace_rows import SharedNativeRows
@@ -208,7 +208,7 @@ class NativeWorkspace:
                 raise ValueError("native workspace pin is not committed in this history")
         return self._read(self._objects / pin.publication_seal, reader, pin)
 
-    def _read(self, directory, reader, pin, *, shared=None):
+    def _read(self, directory, reader, pin, *, shared=None, check_history=True):
         options = dict(seal=pin.publication_seal, source_seal=pin.source_seal,
                        runtime_sha256=self._runtime, max_bytes=self._max_bytes)
         if self._share_rows:
@@ -219,13 +219,48 @@ class NativeWorkspace:
         else:
             memory = read_native_publication(directory, reader, **options)
         gate = getattr(memory._selective, "operand_admission", None)
-        if gate is not None:
-            opening = gate.draft.pin
+        operators = getattr(memory._selective, "operator_inventory", ())
+        if check_history and (gate is not None or operators):
+            admissions = (gate,) if gate is not None else tuple(entry.admission for entry in operators)
             with closing(self._connect()) as db:
-                if (opening.workspace_id != pin.workspace_id or opening.revision >= pin.revision
-                        or self._at(db, opening.revision) != opening):
-                    raise ValueError("operand admission opening is not in this workspace history")
+                for admission in admissions:
+                    opening = admission.draft.pin
+                    if (opening.workspace_id != pin.workspace_id or opening.revision >= pin.revision
+                            or self._at(db, opening.revision) != opening):
+                        raise ValueError("operand admission opening is not in this workspace history")
+                if operators:
+                    self._check_operator_releases(db, reader, pin, memory._scope, operators)
         return memory
+
+    def _check_operator_releases(self, db, reader, pin, scope, operators):
+        from experiments.memory.native_operator_inventory import NativeOperatorProposal, _check_proposal
+
+        openings = {}
+        releases = {}
+        for entry in operators:
+            draft = entry.admission.draft
+            opening = draft.pin
+            if opening not in openings:
+                path = self._objects / opening.publication_seal
+                # Replay the proposal at this opening without recursing into its own history.
+                openings[opening] = self._read(path, reader, opening, check_history=False)
+            proposal = NativeOperatorProposal(draft, entry.address, entry.rivals_sha256)
+            _check_proposal(reader, openings[opening], proposal)
+            release_revision = opening.revision + 1
+            if release_revision == pin.revision:
+                # The release can be staged before its workspace transaction.
+                if scope.epoch != draft.opening_epoch + 1:
+                    raise ValueError("operator witness was not released at its admitted epoch")
+                continue
+            if release_revision not in releases:
+                release = self._at(db, release_revision)
+                manifest = _read_bounded(self._objects / release.publication_seal / "manifest.json",
+                                         self._max_bytes)
+                if sha256(manifest) != release.publication_seal:
+                    raise ValueError("operator release publication seal differs")
+                releases[release_revision] = tuple(map(_encode, json.loads(manifest).get("operator_inventory", ())))
+            if _encode(asdict(entry)) not in releases[release_revision]:
+                raise ValueError("operator admission is absent from its release revision")
 
     @staticmethod
     def _expect(expected, current):
@@ -292,6 +327,8 @@ class NativeWorkspace:
         return NativeWorkspaceForecast(pin, result.status, result.survivors, result.observations)
 
     def _commit(self, reader, memory, expected, *, operation, opening_reader_sha256=None):
+        if operation == "maintain" and getattr(memory._selective, "operator_inventory", ()):
+            memory = reader._suspend_outdated(memory)
         revision = 0 if expected is None else expected.revision + 1
         parent_seal = None if expected is None else expected.publication_seal
         if operation == "maintain" and memory.seal != expected.source_seal:
