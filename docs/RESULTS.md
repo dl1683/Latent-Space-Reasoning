@@ -507,6 +507,13 @@ modify a publication and its receipt is refused by the evidence-span API.
 The intervention establishes a one-step numerical dependency on a
 pre-question worker contribution in the supplied role grammar. Independent
 task impact, learned acquisition and the full-cost comparison remain open.
+
+An exact eight-coordinate counterexample shows that zeroing a stored value
+can disable an answer already carried by the relay or observations. Across
+26,496 relabelings of the construction, an equal-norm replacement preserved
+the gate-only answer and changed the answer of the reader using the stored
+direction. Which mechanism the trained reader uses remains open.
+[Counterexample and verifier](CONTINUATION_CONTENT_CAUSALITY.md)
 [Selector fixture](../experiments/memory/test_selective_continuations.py) ·
 [Sealed-reader fixture](../experiments/memory/test_task_episode.py)
 
