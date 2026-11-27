@@ -105,6 +105,11 @@ In the supplied control, a contradictory new measurement withdrew the
 extension while the model kept using the base operation and the old
 publication still served its original answer.
 
+An [exact composition control](docs/RESULTS.md#bounding-a-downstream-decision-from-partial-operator-evidence)
+keeps unmeasured output uncertainty through a declared linear read.
+It can select a useful additional scalar observation without filling
+the whole output vector. The learned comparison remains pending.
+
 A [cross-source acquisition control](docs/RESULTS.md#acquiring-continuations-after-self-only-reads)
 retries seeds whose ordinary maintenance read only their own source.
 Two such retries acquired continuations that a fresh reader used.

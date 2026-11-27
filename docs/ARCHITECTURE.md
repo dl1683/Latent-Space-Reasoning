@@ -336,6 +336,55 @@ the tested input. Compare against ordinary source revision,
 the exact comparator using equal evidence and a reused block that
 also precommits its predictions. [Challenge control](RESULTS.md#withdrawing-a-latent-extension-after-a-contradictory-observation)
 
+#### Bounding a downstream decision from partial operator evidence
+
+[SLICE] The exact control follows one partially observed linear map
+$L$ under a squared Frobenius cap $C$ declared before measurement.
+A measurement $y_i =
+a_i^\top L x_i$ is a linear constraint with representer
+$P_i=a_ix_i^\top$. Store the two vectors, an inverse Gram matrix
+and the coefficients of the minimum-norm solution $L_*$.
+The Gram entries $G_{ij}=(a_i^\top a_j)(x_i^\top x_j)$ avoid
+forming the outer products or materializing $L_*$. The cap here
+is on the whole matrix. Per-row caps require a separate conversion
+to a justified joint bound.
+
+A downstream scalar $b^\top Lq$ has representer $T=bq^\top$.
+Let $r=T-\Pi T$ be its residual after projection into the current
+probe span. All feasible matrices are $L_*+D$ with $D$ orthogonal
+to that span and $\|D\|_F^2 \le C-\|L_*\|_F^2$. The sharp
+center is $\langle L_*,T\rangle_F$ and the squared radius is
+$(C-\|L_*\|_F^2)\|r\|_F^2$. Extremal real matrices align
+$D$ with either sign of $r$. Compare squared margin with squared
+radius to certify a strict side using rational arithmetic. A
+threshold touch leaves that strict comparison unresolved.
+[Optimal recovery from linear data](https://par.nsf.gov/servlets/purl/10533991)
+
+For another proposed measurement with probe residual $s$, the
+value-independent drop in squared residual is
+$\langle r,s\rangle_F^2/\|s\|_F^2$ when $s\ne0$. This lets
+a worker compare which measurements remove uncertainty directions
+before seeing their values. The observed innovation also spends
+norm headroom, so the geometric score alone does not determine
+the final interval or strict decision. If the release is consistent, a Schur
+update retains the old snapshot and adds the constraint. Redundant
+measurements reuse the state. Dependent contradictions or values
+requiring a larger norm refuse the new state. Conflict attribution
+requires the source records of the conflicting set. A future
+revision controller would retain every source witness, including
+those redundant at admission, to rebuild after withdrawal or correction.
+
+`LinearOperatorEvidence` in
+[exact_latent_linear.py](../experiments/memory/exact_latent_linear.py)
+implements the state. Its rank-$k$ inverse uses $O(k^2)$ rational
+entries. Updates and reads charge the feature inner products and
+quadratic arithmetic. Rational bit growth, repeated snapshots and
+source provenance also matter at scale. This control assumes a
+fixed, known linear downstream form and exact measurements. The
+learned model must establish which consequences need that form and
+whether the assumed linear law applies to its hidden state.
+[Composition result](RESULTS.md#bounding-a-downstream-decision-from-partial-operator-evidence)
+
 #### Admitting a retained operation on a source revision
 
 [SLICE] The opt-in gated reader keeps proposed basis cohorts in the

@@ -83,6 +83,24 @@ committed disposition. These are supplied-input controls on a
 scripted backbone. Independent custody and learned answers remain
 unmeasured. [Challenge contract](ARCHITECTURE.md#challenging-an-installed-direction-with-new-source-evidence).
 
+## Bounding a downstream decision from partial operator evidence
+
+**Exact software control.** Under a declared squared Frobenius cap
+of 3, the public two-coordinate example fixes the first coordinate
+of $L(2,1)$ at 3. The sum of both coordinates still lies in $[2,4]$.
+At threshold 3 the strict decision is unresolved. Measuring the
+known coordinate again has zero benefit. One measurement of the
+sum at the second basis input removes the remaining uncertainty.
+Two alternative releases give 2 and 4 for the late read, with the
+original measured coordinate fixed in both worlds.
+
+The incremental Gram update matched a dense exact solve on four
+nonorthogonal measurements. A consistent dependent measurement
+reused the old state. A contradictory one and a release beyond the
+fixed norm cap refused. This is a linear reference for the later
+comparison, with supplied forms, known norms and exact observations.
+[Control and scope](ARCHITECTURE.md#bounding-a-downstream-decision-from-partial-operator-evidence)
+
 ## Qualifying a byte-weighted revision forecast, 26 November 2026
 
 **Software controls.** Two newly introduced rows of 32 and 10 bytes

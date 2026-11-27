@@ -142,6 +142,13 @@ additional direction cannot support a late query outside the enlarged
 span. Check that scope on independently chosen operands before further
 fit work. [Native observation control](RESULTS.md#using-a-maintained-observation-in-the-native-model)
 
+**A downstream read can depend on a coordinate the observation missed.**
+The public scalar example leaves the summed output in $[2,4]$ even
+when its measured first coordinate is exactly 3. A threshold inside
+that interval needs another useful witness or an unresolved result.
+Repeating the same scalar does not narrow that interval.
+[Composition control](RESULTS.md#bounding-a-downstream-decision-from-partial-operator-evidence)
+
 **Valid original dependencies can survive a contradictory new measurement.**
 An ordinary source addition preserved the installed extension even
 when its new measured value disagreed with the predeclared prediction.
