@@ -2370,6 +2370,53 @@ its hash-checked output is
 Verify the analysis script and artifact with
 [`SHA256SUMS.txt`](../experiments/results/task_episode_calibration_2026-11-26/compact_delivery_counterfactual_20261126/SHA256SUMS.txt).
 
+### Five-need whole-world schema and token preflight
+
+A scripted, visible-only preflight exercised both delivery arms over the 11
+source pins from the eight-task calibration matrix: **22/22 episodes completed**
+under exploratory limits of 32,768 aggregate input tokens, 4,096 aggregate
+output tokens, and 1,024 output tokens per call. Each trace used seven calls,
+four verified reads, and the same fixed scripted actions in the full and
+compact arms. The pinned Qwen3-0.6B tokenizer and LMFE 0.11.3 parser accepted
+maximum-sized plan, action, read-batch, and final fixtures. No model weights
+were loaded and evaluator gold was not opened.
+
+The bounded contract permits five needs total, at most two in the initial plan,
+one addition per action, and up to four individually charged reads in batches
+of two. Maximum legal fixture sizes were 927 tokens for the two-need plan, 529
+for one added need plus search, 28 for a two-candidate read, and 806 for a
+five-need final. The maximum legal seven-call output path is 3,376 tokens; the
+scripted episodes used 3,236.4 tokens on average and at most 3,241.
+
+This does **not** pass the registered whole-world protocol, which allows 512
+tokens per call, 1,792 aggregate output tokens, and 8,192 aggregate prompt
+tokens. The maximum plan alone exceeds the per-call cap at 927 tokens, and the
+legal output path exceeds the aggregate cap at 3,376 tokens. Under the exact
+scripted path, **0/22 episodes** fit all three registered ceilings. The
+exploratory input totals also exceeded 8,192 in both arms: full delivery
+averaged 25,400.5 tokens (max 28,106), while compact delivery averaged
+18,330.1 (max 19,415), a 27.8% reduction. This is a prompt-framing result;
+both totals still exceed the registered budget, and the identical scripted
+outputs contain no planning or answer-quality signal.
+
+Tokenizing prompt components independently estimates that the complete need
+registry accounts for 121,847 tokens across the full-delivery traces (43.6% of
+their exact total), because it is repeated on every call. Compact delivery's
+receipt framing reduces search/read receipt input from an estimated 102,021 to
+45,861 tokens across the traces; the verified read text itself is about 4,152
+tokens in either arm. These component counts are attribution estimates, not an
+additive decomposition: tokenization across JSON and chat boundaries can
+change token merges. They identify repeated need state as a major cost target
+while preserving source text and provenance in the next compact-state study.
+
+The hashed summary and all 22 hash-chained ledgers are preserved in
+[`whole_world_planner_preflight_2026-11-26_v7`](../experiments/results/whole_world_planner_preflight_2026-11-26_v7/).
+This preflight is an interface-cost diagnostic for the broad task-directed
+planning goal. It does not establish latent-world reasoning, material-need
+inference, evidence sufficiency, or an advantage over iterative RAG or an
+equal-information join. Do not start model inference until a schema-bound
+trace fits the registered limits or the protocol is revised for every arm.
+
 ## Latent revision software verification, 24–25 November 2026
 
 The review branch's [latent field](../experiments/memory/latent_field.py) passed five focused CPU fixtures. An observation revision reached downstream states through a cycle and matched an independently assembled dense fixed-point reference within its declared residual bound. The fixtures also cover unrelated cells, earlier snapshots, restoration, aggregate contraction, inherited residuals and exhaustion without a write. The field initialized from supplied arrays and used no model weights.

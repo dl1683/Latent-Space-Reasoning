@@ -918,6 +918,24 @@ root a carried checkpoint at the latest verified publication.
 Historical frontiers on their own cannot identify the whole successor
 bank. [Revision controls](RESULTS.md#carrying-reconciliation-trajectories-across-source-edits)
 
+**The five-need planner contract exceeds the registered episode budget, 26
+November 2026.** A visible-only, scripted preflight completed 22/22 episodes
+over 11 source pins under exploratory ceilings of 32,768 input tokens and
+4,096 output tokens. The maximum legal two-need plan was 927 tokens, the
+five-need final was 806, and the seven-call output bound was 3,376. Against
+the registered 512-token per-call, 1,792-token aggregate-output and
+8,192-token aggregate-input ceilings, **0/22 scripted paths fit all limits**.
+The prompt-only full/compact input means were 25,400.5 and 18,330.1 tokens;
+compact delivery reduced input by 27.8% but still exceeded the registered
+budget. A four-candidate batch boundary was not accepted by the pinned LMFE
+parser, so the interface caps batches at two while retaining four total read
+slots. No model weights or evaluator gold were used. This is an output and
+context-budget failure, not a model-planning or latent-world result. Keep the
+gate closed until the need/receipt wire format fits the protocol or all
+comparison arms receive a documented budget revision. Exact ledgers, summary
+and checksums are in
+[`whole_world_planner_preflight_2026-11-26_v7`](../experiments/results/whole_world_planner_preflight_2026-11-26_v7/).
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

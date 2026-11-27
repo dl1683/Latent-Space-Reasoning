@@ -331,10 +331,18 @@ former 256-token cap. The per-call increase redistributes the same episode
 budget; it does not increase aggregate output tokens. Pretokenize every legal
 plan, action and final for all eight visible tasks before inference, and revise
 the instrument if any output exceeds its reservation or episode ceiling.
-A [scripted envelope](RESULTS.md#giving-the-text-and-latent-arms-the-same-verified-read-access)
-fits the limits for one trace per visible source pin using pinned tokenization.
-Before model execution, verify the frozen runtime's own tokenizer and
-template. The model still has to choose and ground the actions.
+The earlier [scripted envelope](RESULTS.md#giving-the-text-and-latent-arms-the-same-verified-read-access)
+covered a shorter, one-need trace. The current [five-need preflight](RESULTS.md#five-need-whole-world-schema-and-token-preflight)
+completed all 22 scripted full/compact traces only under expanded exploratory
+ceilings. Its maximum legal plan, final, and seven-call output exceed the
+registered 512-token per-call and 1,792-token aggregate output ceilings; the
+fixed traces also exceed the 8,192-token aggregate input allowance. The
+registered planner gate therefore remains **NOT PASSED**. This preflight does
+not qualify model execution under the registered protocol. Reduce the
+wire/prompt cost or revise the protocol for every compared arm before loading
+model weights. Then verify the
+frozen runtime's tokenizer and template, since the model still has to choose
+and ground the actions.
 Set `TaskBudget` to at most 24 actions, eight candidates per search, 8,192
 returned evidence bytes, 2 MiB source bytes, and 512 aggregate role-work units
 across ordinary probes and joint role-link calls. A maintenance round gets at most two calls per
