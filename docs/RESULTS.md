@@ -445,6 +445,27 @@ a complete local comparison. Learned task transfer, coverage beyond the
 stored rows and net lifecycle savings remain open.
 [Control fixture](../experiments/memory/test_task_episode.py)
 
+## Reusing unaffected continuation trajectories
+
+**Deterministic CPU control.** The optional shortcut preserved the full
+comparison of seven stored rows and three eligible leaf removals. It
+reused 18 of the 21 trajectories from complete intact selection
+receipts. It replayed the remaining three and ran the source-only check
+for the one anchor with a strict gain. Actual forwards fell from 175 to
+55 and selector row scores fell from 1,344 to 456. Candidate dispositions
+matched the exhaustive pass. Both produced the same publication seal
+and identical retained row bytes. A fresh reader recovered the corrected
+answer from the optimized publication.
+
+Caps one forward or one row score below the completed run refused the
+retirement and returned the intact world. The fixture also hid a leaf in
+a truncated overflow receipt. Removing that leaf changed the state, and
+the shortcut correctly required replay. A separate fixed-seed selector
+check reproduced 5,281 complete one-row exclusions across ready, empty
+and competing cases. The comparison holds on the verified deterministic
+runtime. Learned replay stability and wider lifecycle costs remain open.
+[Control fixture](../experiments/memory/test_task_episode.py)
+
 ## Qualifying a continuation before a late task, 26 November 2026
 
 **CPU software control.** A native worker drafted one pending

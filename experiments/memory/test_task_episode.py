@@ -968,7 +968,7 @@ def test_native_episode_withholds_only_the_pinned_leaf(tmp_path, monkeypatch):
     from experiments.memory.native_task_episode import (
         NativeTaskEpisodeBackend, NativeTaskWorldPin, _validate_native_read,
     )
-    from experiments.memory.native_reconciliation import reconcile_native_continuations
+    from experiments.memory.native_reconciliation import _trace, reconcile_native_continuations
     from experiments.memory.source_revision_feed import write_source_delta
     from experiments.memory.verified_source_tool import sha256
 
@@ -1158,10 +1158,55 @@ def test_native_episode_withholds_only_the_pinned_leaf(tmp_path, monkeypatch):
             assert stopped.status == "budget_exceeded" and stopped.memory is current and stopped.backbone_calls == 0
         assert audit_reader._model.calls == 0 and observed_scores == 0
         result = reconcile_native_continuations(audit_reader, current, **replay)
-    assert result.status == "retired" and result.retired == alias_seed
+        assert result.backbone_calls == audit_reader._model.calls == 175
+        assert result.row_scores == observed_scores == 1344
+        efficient = {**replay, "use_frontiers": True, "max_backbone_calls": 55, "max_row_scores": 456}
+        optimized = reconcile_native_continuations(audit_reader, current, **efficient)
+        assert optimized.backbone_calls == audit_reader._model.calls - result.backbone_calls == 55
+        assert optimized.row_scores == observed_scores - result.row_scores == 456
+        assert optimized.reused_pairs == 18 and result.reused_pairs == 0
+        for budget_name in ("max_backbone_calls", "max_row_scores"):
+            starting_calls, starting_scores = audit_reader._model.calls, observed_scores
+            reduced = {**efficient, budget_name: efficient[budget_name] - 1}
+            stopped = reconcile_native_continuations(audit_reader, current, **reduced)
+            assert stopped.status == "budget_exceeded" and stopped.memory is current
+            assert stopped.backbone_calls == audit_reader._model.calls - starting_calls == 50
+            assert stopped.row_scores == observed_scores - starting_scores == 416
+            assert not stopped.comparisons and stopped.retired is None
+
+    # The selector can truncate an overflow receipt and hide a causal leaf.
+    selective = current._selective
+    shard, = selective.derived
+    keys = shard.keys.copy()
+    keys[shard.spans.index(target)] = keys[shard.spans.index(alias_seed)]
+    duplicate_key_bank = (replace(shard, keys=keys),)
+    overflowing = replace(current, _selective=replace(selective, derived=duplicate_key_bank))
+    with monkeypatch.context() as overflow:
+        import torch
+
+        overflow.setattr(audit_reader._selector, "_tie_limit", 1)
+        item, = current._sources[alias]
+        with torch.inference_mode():
+            incomplete = _trace(audit_reader, item, overflowing, 1)
+            without = _trace(audit_reader, item, audit_reader._without_continuation(overflowing, alias_seed), 1)
+        assert target in incomplete.selected and alias_seed not in incomplete.selected
+        assert not incomplete.unaffected_by(alias_seed)
+        assert not np.array_equal(incomplete.states[0], without.states[0])
+
+    run_step = audit_reader._continue
+
+    def missing_receipt(*args):
+        run = run_step(*args)
+        run.derived_reads = ()
+        return run
+
+    with monkeypatch.context() as absent, torch.inference_mode():
+        absent.setattr(audit_reader, "_continue", missing_receipt)
+        assert not _trace(audit_reader, item, current, 1).unaffected_by(alias_seed)
+
+    assert optimized.status == result.status == "retired" and optimized.retired == result.retired == alias_seed
+    assert optimized.comparisons == result.comparisons
     assert result.opening_publication_sha256 == after_seal and result.anchor_count == 7
-    assert result.backbone_calls == audit_reader._model.calls == 175
-    assert result.row_scores == observed_scores == 1344
     assert {row.seed: row.status for row in result.comparisons} == {
         target: "endpoint_disagreement", other: "short_regression", alias_seed: "qualified",
     }
@@ -1170,8 +1215,12 @@ def test_native_episode_withholds_only_the_pinned_leaf(tmp_path, monkeypatch):
     assert result.memory.derived_seeds == tuple(seed for seed in current.derived_seeds if seed != alias_seed)
     assert result.memory.pending_seeds == current.pending_seeds + 1 and alias_seed in current.derived_seeds
     reconciled_path = tmp_path / "reconciled-publication"
-    reconciled_seal = write_native_publication(reconciled_path, audit_reader, result.memory, runtime_sha256=runtime,
-                                                max_bytes=budget)
+    reconciled_seal = write_native_publication(reconciled_path, audit_reader, optimized.memory,
+                                                runtime_sha256=runtime, max_bytes=budget)
+    reference_path = tmp_path / "exhaustive-publication"
+    assert write_native_publication(reference_path, audit_reader, result.memory, runtime_sha256=runtime,
+                                    max_bytes=budget) == reconciled_seal
+    assert (reference_path / "rows.bin").read_bytes() == (reconciled_path / "rows.bin").read_bytes()
     late_reader = make_reader()
     reopened = read_native_publication(reconciled_path, late_reader, seal=reconciled_seal, source_seal=correction.seal,
                                        runtime_sha256=runtime, max_bytes=budget)

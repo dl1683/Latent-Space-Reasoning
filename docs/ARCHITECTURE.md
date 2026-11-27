@@ -610,6 +610,24 @@ routes available to a latent verifier at task time. Compare the two
 under the same backbone and total lifecycle allowance.
 [Control](RESULTS.md#reconciling-a-continuation-bank-without-late-tasks)
 
+The optional replay shortcut preserves the census of source rows and
+eligible leaves. It reuses an intact trajectory when every derived
+selection receipt is complete and the removed leaf is absent throughout.
+With the fixed signed selector, an absent row in a complete receipt
+scored below the effective cutoff. Deleting it cannot remove a row among
+the top positive scores, because the nonnegative margin keeps those
+scores eligible. If fewer than the requested number of positive scores
+exist, the cutoff stays at one. The eligible rows retain their order,
+values and scores, which preserves the update and its next state for a
+deterministic backbone. Overflow or a missing receipt requires replay.
+
+The shortcut also runs the source-only comparison on demand when a
+changed trajectory first shows a strict gain. Keep exhaustive replay as
+the reference and qualify fixed-input determinism before using the
+shortcut on a learned runtime. The fast path may complete within a work
+cap that the exhaustive path cannot fit.
+[Measured comparison](RESULTS.md#reusing-unaffected-continuation-trajectories)
+
 ### Warm exact control on a separate corpus
 
 [SLICE] The exact relation index stores immutable forward and reverse

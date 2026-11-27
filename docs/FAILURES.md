@@ -873,6 +873,14 @@ produces a new checkpoint. The pass now defers when that worker has a
 pending forecast. The regression verifies zero replay calls and normal
 resolution of the original forecast.
 
+**An overflow receipt can hide a leaf that changes the next state.**
+A derived selection with tied keys emitted only its capped prefix.
+Withholding an unreported leaf cleared the overflow and changed the
+hidden state. Reuse now requires complete receipts throughout the
+intact trajectory. Replay remains necessary when overflow obscures
+the active candidates.
+[Comparison](RESULTS.md#reusing-unaffected-continuation-trajectories)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

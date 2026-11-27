@@ -950,6 +950,13 @@ opening publication and the decision record for replay. The returned
 state retains pending work, including the retired seed. A later
 maintenance pass can reconsider it.
 
+Set `use_frontiers=True` after checking deterministic replay on the
+pinned runtime. Complete intact traces can cover an unaffected leaf and
+source pair, and the source-only check runs only when needed. The result
+counts consumed forwards and scored rows. Exhausting a staged budget
+returns the original publication without a retirement decision.
+Omitting `use_frontiers` keeps the exhaustive preflight and replay.
+
 ## Compact task-episode delivery
 
 Set `EpisodePolicy(..., state_kind="compact_needs", compact_delivery=True)`
