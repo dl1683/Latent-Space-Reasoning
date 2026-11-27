@@ -92,7 +92,9 @@ At threshold 3 the strict decision is unresolved. Measuring the
 known coordinate again has zero benefit. One measurement of the
 sum at the second basis input removes the remaining uncertainty.
 Two alternative releases give 2 and 4 for the late read, with the
-original measured coordinate fixed in both worlds.
+original measured coordinate fixed in both worlds. A third release
+pins the late read to exactly 3 and leaves the strict comparison
+unresolved.
 
 The incremental Gram update matched a dense exact solve on four
 nonorthogonal measurements. A consistent dependent measurement

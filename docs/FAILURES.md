@@ -144,7 +144,7 @@ fit work. [Native observation control](RESULTS.md#using-a-maintained-observation
 
 **A downstream read can depend on a coordinate the observation missed.**
 The public scalar example leaves the summed output in $[2,4]$ even
-when its measured first coordinate is exactly 3. A threshold inside
+when its first coordinate is determined to be exactly 3. A threshold in
 that interval needs another useful witness or an unresolved result.
 Repeating the same scalar does not narrow that interval.
 [Composition control](RESULTS.md#bounding-a-downstream-decision-from-partial-operator-evidence)

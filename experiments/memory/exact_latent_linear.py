@@ -1,6 +1,6 @@
 """Exact arithmetic for small Gram systems over quantized latent rows."""
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field
 from fractions import Fraction
 
 
@@ -65,10 +65,10 @@ class LinearOperatorEvidence:
     input_width: int
     output_width: int
     frobenius_cap_squared: int | Fraction
-    _basis: tuple[_OperatorFunctional, ...] = ()
-    _inverse: tuple[tuple[Fraction, ...], ...] = ()
-    _coefficients: tuple[Fraction, ...] = ()
-    minimum_norm_squared: Fraction = Fraction(0)
+    _basis: tuple[_OperatorFunctional, ...] = field(default=(), init=False)
+    _inverse: tuple[tuple[Fraction, ...], ...] = field(default=(), init=False)
+    _coefficients: tuple[Fraction, ...] = field(default=(), init=False)
+    minimum_norm_squared: Fraction = field(default=Fraction(0), init=False)
 
     def __post_init__(self):
         if any(type(width) is not int or width < 1 for width in (self.input_width, self.output_width)):
@@ -109,8 +109,12 @@ class LinearOperatorEvidence:
         inverse += (tuple(-weight / residual for weight in weights) + (1 / residual,),)
         coefficients = tuple(coefficient - adjustment * weight for coefficient, weight in
                              zip(self._coefficients, weights, strict=True)) + (adjustment,)
-        return replace(self, _basis=(*self._basis, probe), _inverse=inverse, _coefficients=coefficients,
-                       minimum_norm_squared=updated_norm)
+        successor = LinearOperatorEvidence(self.input_width, self.output_width, self.frobenius_cap_squared)
+        object.__setattr__(successor, "_basis", (*self._basis, probe))
+        object.__setattr__(successor, "_inverse", inverse)
+        object.__setattr__(successor, "_coefficients", coefficients)
+        object.__setattr__(successor, "minimum_norm_squared", updated_norm)
+        return successor
 
     def bound(self, operand, output_form):
         """Return the sharp interval in center and squared-radius form."""

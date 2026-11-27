@@ -20,8 +20,12 @@ def test_one_scalar_preserves_only_supported_downstream_consequences():
     assert (downstream.center, downstream.radius_squared, downstream.residual_squared) == (3, 1, 1)
     assert downstream.strict_side(3) == downstream.strict_side(2) == "unresolved"
     assert downstream.strict_side(Fraction(3, 2)) == "above"
+    assert downstream.strict_side(4) == "unresolved"
+    assert downstream.strict_side(5) == "below"
 
     assert scalar.residual_reduction(query, combined, candidate_operand=second,
+                                     candidate_output_form=first) == 0
+    assert scalar.residual_reduction(query, combined, candidate_operand=query,
                                      candidate_output_form=first) == 0
     assert scalar.residual_reduction(query, combined, candidate_operand=second,
                                      candidate_output_form=combined) == 1
@@ -34,11 +38,15 @@ def test_one_scalar_preserves_only_supported_downstream_consequences():
         assert evidence.bound(query, first) == measured
     assert scalar.rank == 3 and opening.rank == 2
     assert scalar.bound(query, combined) == downstream
+    tied = scalar.observe(second, combined, 1).bound(query, combined)
+    assert (tied.center, tied.radius_squared, tied.strict_side(3)) == (3, 0, "unresolved")
     with pytest.raises(ValueError, match="declared norm cap"):
         scalar.observe(second, combined, 3)
 
 
 def test_exhausted_norm_cap_can_settle_an_off_span_read():
+    with pytest.raises(TypeError, match="minimum_norm_squared"):
+        LinearOperatorEvidence(2, 1, 1, minimum_norm_squared=2)
     evidence = LinearOperatorEvidence(2, 1, 1).observe((1, 0), (1,), 1)
     off_span = evidence.bound((0, 1), (1,))
     assert (off_span.center, off_span.radius_squared, off_span.residual_squared) == (0, 0, 1)
@@ -72,6 +80,7 @@ def test_incremental_gram_matches_a_dense_exact_map_with_nonorthogonal_observati
     assert evidence.minimum_norm_squared == minimum
     assert bound.center == dot(solve_gram(matrix, values), cross)
     assert bound.radius_squared == (20 - minimum) * residual
+    assert (value(operand, output) - bound.center) ** 2 <= bound.radius_squared
 
     assert evidence.observe((1, 2, 1), (1, 1), value((1, 2, 1), (1, 1))) is evidence
     with pytest.raises(ValueError, match="contradicts"):

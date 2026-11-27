@@ -107,7 +107,7 @@ publication still served its original answer.
 
 An [exact composition control](docs/RESULTS.md#bounding-a-downstream-decision-from-partial-operator-evidence)
 keeps unmeasured output uncertainty through a declared linear read.
-It can select a useful additional scalar observation without filling
+It can score additional scalar observations without filling
 the whole output vector. The learned comparison remains pending.
 
 A [cross-source acquisition control](docs/RESULTS.md#acquiring-continuations-after-self-only-reads)

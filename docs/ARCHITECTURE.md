@@ -340,8 +340,7 @@ also precommits its predictions. [Challenge control](RESULTS.md#withdrawing-a-la
 
 [SLICE] The exact control follows one partially observed linear map
 $L$ under a squared Frobenius cap $C$ declared before measurement.
-A measurement $y_i =
-a_i^\top L x_i$ is a linear constraint with representer
+A measurement $y_i = a_i^\top L x_i$ is a linear constraint with representer
 $P_i=a_ix_i^\top$. Store the two vectors, an inverse Gram matrix
 and the coefficients of the minimum-norm solution $L_*$.
 The Gram entries $G_{ij}=(a_i^\top a_j)(x_i^\top x_j)$ avoid
@@ -364,9 +363,11 @@ For another proposed measurement with probe residual $s$, the
 value-independent drop in squared residual is
 $\langle r,s\rangle_F^2/\|s\|_F^2$ when $s\ne0$. This lets
 a worker compare which measurements remove uncertainty directions
-before seeing their values. The observed innovation also spends
-norm headroom, so the geometric score alone does not determine
-the final interval or strict decision. If the release is consistent, a Schur
+before seeing their values. Holding the current headroom fixed gives
+an upper bound on the squared radius after release. An innovation
+$e$ spends $e^2/\|s\|_F^2$ of that headroom as well. A known
+value may lie exactly at the threshold, leaving no strict side.
+If the release is consistent, a Schur
 update retains the old snapshot and adds the constraint. Redundant
 measurements reuse the state. Dependent contradictions or values
 requiring a larger norm refuse the new state. Conflict attribution
