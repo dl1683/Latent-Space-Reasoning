@@ -789,6 +789,43 @@ metadata check on one archived case with no new execution. It leaves
 coverage on a newly acquired bank open.
 [Opening](../experiments/memory/results/native_world_addressing_p2_2026-11-26/publications/opening-p0/manifest.json) · [Correction](../experiments/memory/results/native_world_addressing_p2_2026-11-26/publications/corrected-p1/manifest.json) · [Restoration](../experiments/memory/results/native_world_addressing_p2_2026-11-26/publications/restored-p2/manifest.json)
 
+## Acquiring continuations after self-only reads
+
+**Frozen archive geometry.** Each of the three p2 manifests has all
+five source rows attempted and no pending sources. The 26 applied
+steps of the unacquired seeds selected their own source only.
+Scoring each saved Q8 query after omitting its own row reveals a
+unique positive outside winner on 26/26 steps. Orthogonal subtraction
+in the archived identity grid leaves all 26 residuals outside Q8 range
+before rescaling. Uniform rescaling and requantizing exposes a unique
+outside winner on 4/8 opening, 6/10 corrected and 5/8 restored steps.
+These are different query selections on frozen hidden states. Neither
+arm was applied to the archived backbone or graded for relevance.
+
+Reproduce the archive counts with
+`python -m experiments.memory.native_cross_source_acquisition`.
+
+**CPU acquisition control.** Ordinary maintenance attempted three seeds
+and acquired zero. The bounded worker retried all three and acquired
+two at distinct addresses, each reading the same outside evidence.
+Zeroing the external values while preserving the first applied routing
+removed the final Q8 effect. A separate fixture erased the live outside
+effect inside the backbone. It reached the value-withheld replay and the
+worker refused publication. A tighter displacement bound also acquired
+zero. The successful retry pass made 16 backbone calls, including the ordinary
+and value-withheld controls. Ordinary acquisition from the same three
+seeds required six calls in the one-step fixture.
+
+A fresh reader answered blue on two supplied queries. Removing the
+corresponding continuation at the same source pin, using the opening
+publication or omitting memory left each query unresolved. Correcting
+the evidence withdrew both rows. A second retry acquired both again
+and the answers became gold. The historical admitted state still
+answered blue. This is deterministic software evidence from a stand-in
+backbone. A live source-exclusion comparison, independently graded
+answers, learned address coverage and full costs remain open.
+[CPU fixture](../experiments/memory/test_native_latent_recurrence.py)
+
 ## Applying published visual operations to new grids
 
 **Public development control, 27 November 2026.** A source worker compiled

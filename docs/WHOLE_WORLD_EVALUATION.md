@@ -440,6 +440,32 @@ The three archived p2 pins have at most one acquired row each and
 cannot supply a rival comparison. Charge enumeration and refused
 events to both matched evaluators.
 
+Use the [cross-source acquisition control](RESULTS.md#acquiring-continuations-after-self-only-reads)
+to separate an exhausted queue from self-dominated proposals. In the
+archive, direct exclusion exposes a unique outside winner more often
+than deflation on fixed queries. The larger screen must compare the
+two in live recurrence, alongside ordinary maintenance. Count
+external-value causal effects, retained row and role coverage and
+useful independently graded late answers separately.
+
+**Independent opening preflight, 27 November 2026.** The reviewer
+committed an [opening inventory](independent_operation_opening.json) at
+`92384589`. A controller-only check projected it into two disjoint
+source feeds and round-tripped their exact bytes. Calibration has three
+sources and 468 UTF-8 bytes. The worker opening has seven sources and
+2,117 UTF-8 bytes, including four event cards. The projection passes
+only each source's opaque ID and text. The wrapper, control IDs and
+release commitments stay with the controller. The held capsule and
+outcomes were outside this check. There was no model execution.
+
+Freeze the encoder on the calibration feed. Bind the selected source
+event to the opening and its predicted outcome before the independent
+release. Keep late tasks with the custodian until publication and
+restart. An opening feed round trip checks serialization. The separate
+execution still needs process isolation, competent ordinary answers
+and independent grading.
+[Reviewer handoff](https://github.com/dl1683/Latent-Space-Reasoning/issues/6#issuecomment-7211839307)
+
 The [signed admission bound](SIGNED_OPERATION_ADMISSION_BOUND.md) gives two
 exact controls for this design. A negative role coordinate can be necessary
 even when the full bank has a bounded exact fit. Adding coherent duplicate

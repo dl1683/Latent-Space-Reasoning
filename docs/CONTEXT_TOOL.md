@@ -1114,6 +1114,17 @@ the outcome links and Q8 input rows for a discovered admission. The
 controller still supplies the cards, output coordinates and the
 verified release chronology.
 
+Use `retry_cross_source_acquisition(workspace, reader, pin,
+max_seeds=..., max_source_rows=..., max_relative_shift=...)` from
+`experiments.memory.native_cross_source_acquisition` to retry
+self-only misses at a pinned selective workspace. Limits apply per
+call. The worker keeps the original source snapshot and address
+and publishes only after both ordinary-baseline and external-value
+controls pass. The result contains the committed pin, number of
+seeds tried and acquired spans. An empty result leaves the head
+at its opening. The task reader uses the same call and memory
+interface as before.
+
 ## Holding later ordinary source inputs fixed
 
 Pass exact question token IDs, an intact reopened selective memory,

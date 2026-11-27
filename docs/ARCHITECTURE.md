@@ -213,6 +213,32 @@ the admission. This search covers the declared address on its opening
 pin. A new rival at a later pin requires separate qualification.
 [CPU results](RESULTS.md#finding-rival-operations-from-retained-source-rows)
 
+#### Retrying a self-only source continuation
+
+[SLICE] A source-only worker can retry a previously attempted,
+unacquired seed whose applied reads selected only its own source.
+It repeats ordinary maintenance at the current opening before trying
+an alternate source query. For each source key $k$, the query projection
+$Q$ gives a normal $Qk$ in normalized hidden coordinates. The worker
+removes the span of these normals with one fixed SVD projector for the
+seed, rescales the remainder to stay in range, and applies a relative
+L2 displacement cap. It still scores the entire current source bank
+with the native Q8 selector. A selected self row or excessive
+displacement refuses the candidate.
+
+The accepted retry keeps the original address, uses an external source
+value and changes the final Q8 row. A second steered run zeros source
+values with scoring unchanged. The first applied read must match its
+selection and prefix, and the final Q8 effect must survive comparison
+with the withheld run. The suffix remains live after that intervention.
+Only the successful full-bank trajectory replaces the live attempt.
+Normal source revision invalidates it on changes to the seed or selected
+evidence, or when a new key reaches its saved cutoff. The historical
+publication keeps the earlier attempt. Native restore checks the
+recorded routing. The workspace receipt records this run, and the
+publication does not independently replay the alternate worker.
+[CPU and archive checks](RESULTS.md#acquiring-continuations-after-self-only-reads)
+
 #### Applying a local operation from retained worker rows
 
 [SLICE] `NativeTransportModel` extends the optional-memory reader with

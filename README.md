@@ -48,6 +48,12 @@ operands from pinned source cards. It selected a useful event in one
 fixture and abstained when an additional valid basis made the contrast
 inconclusive. The input cards and operand coordinate policy were supplied.
 
+A [cross-source acquisition control](docs/RESULTS.md#acquiring-continuations-after-self-only-reads)
+retries seeds whose ordinary maintenance read only their own source.
+Two such retries acquired continuations that a fresh reader used.
+The archived worker had attempted all five rows at each pin.
+Direct source exclusion remains a stronger routing control on that archive.
+
 An [archived learned-state check](docs/ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs) found that even all six retained keys cannot reconstruct either late input from the retired p2 run. The next design needs to distinguish selecting a reusable operation from encoding the operands it will act on.
 
 A [visual operation check](docs/RESULTS.md#applying-published-visual-operations-to-new-grids)

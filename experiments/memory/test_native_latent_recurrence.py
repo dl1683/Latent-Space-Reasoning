@@ -177,6 +177,97 @@ def test_source_only_maintenance_installs_a_useful_continuation_at_fixed_pin(tmp
     assert reader(question, memory=maintained) == enabled
 
 
+@pytest.mark.parametrize("erase_external", [False, True])
+def test_cross_source_retry_acquires_distinct_rows_and_tracks_their_shared_evidence(tmp_path, erase_external):
+    from experiments.memory.native_cross_source_acquisition import retry_cross_source_acquisition
+    from experiments.memory.native_workspace import NativeWorkspace
+
+    class CrossSource(_StandIn):
+        def base_model(self, *, inputs_embeds, past_key_values, use_cache, return_dict):
+            result = super().base_model(inputs_embeds=inputs_embeds, past_key_values=past_key_values,
+                                        use_cache=use_cache, return_dict=return_dict)
+            state = result.last_hidden_state
+            if past_key_values is None and use_cache and bool(torch.any(state[..., (3, 5)])):
+                state[..., 1] = 0.25 * np.arctanh(0.8)
+            if erase_external and past_key_values is not None:
+                state[..., 4] = 0
+            return result
+
+        def _scores(self, hidden):
+            scores = super()._scores(hidden)
+            scores[..., 9] = -1
+            return scores
+
+    def make_reader():
+        return _reader(CrossSource().eval(), latent_steps=1, top_k=1, tie_limit=1, derived_gain=1)
+
+    first, second, evidence = (symbol * 32 for symbol in "abc")
+    limit, runtime = 65_536, sha256(b"cross-source acquisition fixture")
+    opening_path = tmp_path / "opening"
+    original = write_source_delta(opening_path, {first: "écho".encode(), second: b"side", evidence: b"blue"})
+    worker = make_reader()
+    workspace = NativeWorkspace.create(tmp_path / "workspace", worker, worker.publish(opening_path, original.seal),
+                                       runtime_sha256=runtime, max_bytes=limit)
+    worker._model.calls.clear()
+    opening = workspace.maintain(worker, workspace.head(), max_seeds=3)
+    assert worker._model.calls == [("backbone", True, 1)] * 6
+    baseline = workspace.attach(worker, pin=opening)
+    assert baseline.derived_seeds == () and len(baseline._selective.attempted) == 3
+    for span, steps in baseline._selective.attempted.items():
+        assert all(step.applied and {hit.span.source_id for hit in step.receipt.selected} == {span.source_id}
+                   for step in steps)
+
+    if erase_external:
+        worker._model.calls.clear()
+        refused = retry_cross_source_acquisition(workspace, worker, opening, max_seeds=1,
+                                                 max_source_rows=1, max_relative_shift=0.85)
+        assert worker._model.calls == [("backbone", True, 1)] * 6
+        assert refused.tried == 1 and refused.acquired == () and refused.pin == workspace.head() == opening
+        return
+
+    original_selector = worker._selector
+    settings = dict(max_seeds=3, max_source_rows=1)
+    refused = retry_cross_source_acquisition(workspace, worker, opening, max_relative_shift=0.25, **settings)
+    assert refused.tried == 3 and refused.acquired == () and refused.pin == workspace.head() == opening
+    worker._model.calls.clear()
+    installed = retry_cross_source_acquisition(workspace, worker, opening, max_relative_shift=0.85, **settings)
+    assert worker._model.calls == [("backbone", True, 1)] * 16
+    assert installed.tried == 3 and {span.source_id for span in installed.acquired} == {first, second}
+    assert worker._selector is original_selector and installed.pin.source_seal == opening.source_seal
+
+    questions = ("What follows?", "What else?")
+    fresh = make_reader()
+    now = workspace.attach(fresh, pin=installed.pin)
+    earlier = workspace.attach(fresh, pin=opening)
+    first_seed, second_seed = installed.acquired
+    assert not np.array_equal(now._selective.acquired[first_seed].address,
+                              now._selective.acquired[second_seed].address)
+    evidence_row, = now.source_spans(evidence)
+    for question, source in zip(questions, (first, second), strict=True):
+        seed, = now.source_spans(source)
+        trace, = now._selective.attempted[seed]
+        ordinary, = earlier._selective.attempted[seed]
+        assert trace.query != ordinary.query and trace.receipt.rows_scored == now.rows
+        assert [hit.span for hit in trace.receipt.selected] == [evidence_row]
+        read = fresh(question, memory=now)
+        assert read.text == "blue" and read.applied_derived_steps == 1
+        assert {seed, evidence_row} <= set(now.evidence_spans(read))
+        cut = fresh._without_continuation(now, seed)
+        assert fresh(question, memory=cut).text == fresh(question, memory=earlier).text == fresh(question).text == ""
+
+    revised_path = tmp_path / "revision"
+    revision = write_source_delta(revised_path, {evidence: b"gold"}, previous=original)
+    changed = workspace.revise(worker, installed.pin, revised_path, revision.seal, max_source_bytes=limit)
+    assert workspace.attach(fresh, pin=changed).derived_seeds == ()
+    replay = workspace.maintain(worker, changed, max_seeds=3)
+    again = retry_cross_source_acquisition(workspace, worker, replay, max_relative_shift=0.85, **settings)
+    assert {span.source_id for span in again.acquired} == {first, second}
+    revised = workspace.attach(fresh, pin=again.pin)
+    assert tuple(fresh(question, memory=revised).text for question in questions) == ("gold", "gold")
+    historical = workspace.attach(fresh, pin=installed.pin)
+    assert tuple(fresh(question, memory=historical).text for question in questions) == ("blue", "blue")
+
+
 def test_operand_group_preserves_duplicate_origins_and_refuses_conflicting_values():
     from experiments.memory.native_operand_model import _OperandSelector
     from experiments.memory.selective_continuations import RetainedSelector, RowShard

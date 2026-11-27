@@ -37,6 +37,17 @@ direct query and left a query through an extra alias link unresolved. Keep
 the two-unseen-operand criterion for the main screen.
 [Handoff control](RESULTS.md#transferring-a-forecast-between-worker-processes)
 
+**Ordinary maintenance can exhaust its queue while routing to itself.**
+All five rows were attempted on each archived p2 pin. The rejected
+seeds routed and applied self-only reads at both steps. Every saved
+query could select a unique positive outside row if the seed's source
+were removed. A full-bank deflated query recovered such a winner on
+15/26 steps. Increasing the seed-attempt budget alone would find no
+more work on those pins. Evaluate source exclusion, deflated routing
+and unchanged maintenance under the same live recurrence before
+attributing any task effect to selection geometry.
+[Archive and CPU controls](RESULTS.md#acquiring-continuations-after-self-only-reads)
+
 **A contrast can separate two convenient rivals while leaving a third.**
 With three full operand bases, the discovered contrast predicted
 $+97$, $-97$ and $+97$. A capped or partial basis search could have
