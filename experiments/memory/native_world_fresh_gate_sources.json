@@ -1,0 +1,28 @@
+{
+  "schema": "lsr-native-world-source-stream-v1",
+  "stream_id": "juniper-cold-chain-fresh-gate-v1",
+  "worlds": [
+    {
+      "pin": "juniper-p0-opening",
+      "changes": {
+        "11a7c03db6fe4a9282c14d57e8b63901": "Depot Juniper log. The red-seal crate S-4 is entered under manifest M-18. The blue-seal crate S-8 is entered under M-81.",
+        "22b8d14ec70f5ba339d25e68f9c74012": "Route card. M-18 travels to North Clinic; M-81 travels to East Clinic. If the assigned clinic cannot accept the crate, the other clinic is a fallback, but it must sign its own intake line.",
+        "33c9e25fd8106cb44ae36f790ad85123": "Circular 14. Only the regional chief may release a cross-county crate. This rule remains in force unless a later circular states a scoped exception.",
+        "44da0360e9217dc55bf4708a1be96234": "Storm Notice 3. For a crate classified RED-ALERT, the night supervisor may release it after the receiving clinic signs the intake line. This notice overrides Circular 14 only for RED-ALERT crates.",
+        "55eb1471fa328ed66c05819b2fa73456": "Handoff packet. S-4 is classified RED-ALERT. The intake line is blank; no signed receipt is attached. Depot Juniper has six charged radio packs."
+      }
+    },
+    {
+      "pin": "juniper-p1-correction",
+      "changes": {
+        "11a7c03db6fe4a9282c14d57e8b63901": "Correction to the Depot Juniper log at p1: red-seal crate S-4 is entered under manifest M-81, replacing M-18. Blue-seal crate S-8 is entered under M-18."
+      }
+    },
+    {
+      "pin": "juniper-p2-restoration",
+      "changes": {
+        "11a7c03db6fe4a9282c14d57e8b63901": "Restoration at p2: withdraw the p1 correction. Red-seal crate S-4 is again entered under manifest M-18; blue-seal crate S-8 is entered under M-81."
+      }
+    }
+  ]
+}

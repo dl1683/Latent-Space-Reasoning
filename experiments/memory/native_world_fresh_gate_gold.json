@@ -1,0 +1,15 @@
+{
+  "schema": "lsr-native-world-evaluator-gold-v1",
+  "answers": {
+    "juniper-opening": "2",
+    "juniper-correction": "1",
+    "juniper-restoration": "2"
+  },
+  "critical_source_ids": [
+    "11a7c03db6fe4a9282c14d57e8b63901",
+    "22b8d14ec70f5ba339d25e68f9c74012",
+    "33c9e25fd8106cb44ae36f790ad85123",
+    "44da0360e9217dc55bf4708a1be96234",
+    "55eb1471fa328ed66c05819b2fa73456"
+  ]
+}

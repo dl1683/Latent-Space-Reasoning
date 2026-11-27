@@ -396,6 +396,35 @@ still requires a full preflight of all eight legal plans, actions, and finals
 before the visible episode calibration; only a passing visible task gate would
 justify the next held comparison.
 
+## Fresh cold-chain bridge forced-choice smoke gate, 26 November 2026
+
+**One-case forced-choice smoke gate.** Ordinary greedy Qwen3-0.6B received a
+new synthetic task with all five pinned source bodies and three complete
+candidate recommendations. The 784-token full-text prompt included every
+source named by the options. Because each option prewrote the bridge,
+authority, missing receipt, fallback, counterfactual, stock count and
+aggregate source-title list, the model only selected a label. The unrelated
+stock detail shared the handoff source. This does not test inferred
+obligations, generated findings or claim-level citation grounding.
+
+The constrained answer selected option `1`; the frozen source-derived key was
+`2`. Option 1 named East Clinic through M-81, while the p0 log and route card
+map S-4's red seal through M-18 to North Clinic. The output terminated
+normally. The label-only score was **0/1** despite receiving **5/5** critical
+source IDs. Tokenization and CPU generation took 0.34 and 3.85 seconds;
+model loading took 0.47 seconds. The source-only publisher, native memory
+arms and maintenance comparison were not run after the forced-choice smoke
+gate failed, so
+this result says nothing about latent memory's effect.
+
+This is a newly authored, visible one-case screen, not a held evaluation. It
+does not establish a general 0.6B ceiling or answer why the model chose the
+wrong route. Do not tune or rerun this task. A later maintenance comparison
+needs separately gradeable generated findings with claim-level provenance,
+and a different task that the ordinary full-text or iterative-RAG control
+solves, followed by same-pin removal and restoration with source-selection
+traces. [Frozen inputs, output, hashes and score](../experiments/memory/results/native_world_fresh_gate_2026-11-26/README.md)
+
 ## Giving the text and latent arms the same verified read access
 
 **CPU software and tokenizer preflight.** A scripted T8 episode searched all

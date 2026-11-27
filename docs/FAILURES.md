@@ -1020,6 +1020,19 @@ prompt. A warm-text comparison needs equal evidence access and must
 account for cache reuse, storage, and readout. Every archived output path still
 exceeded the per-call and episode output limits.
 
+**A forced-choice text smoke gate selected the wrong bridge, 26 November
+2026.** On a new cold-chain task, ordinary Qwen3-0.6B saw the task, three
+complete prewritten candidate answers and all five pinned sources in 784
+tokens. It selected the option sending a red-seal crate to East Clinic
+through M-81; the explicit source chain maps that crate through M-18 to North
+Clinic. The label-level score was 0/1, with all five source IDs in the prompt.
+This does not test obligation inference, generated findings or claim-level
+grounding. No native maintenance arm ran. It does not measure a latent-memory
+effect or a general model ceiling. Do not tune or rerun this task; choose a
+fresh task with separately gradeable generated findings that a competent text
+or iterative-RAG control can solve before opening the maintenance comparison.
+[Frozen record](../experiments/memory/results/native_world_fresh_gate_2026-11-26/README.md)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

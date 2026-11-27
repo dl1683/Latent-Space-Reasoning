@@ -372,6 +372,17 @@ newly authored sources, tasks, and grades; do not use the exposed T8 or repeated
 counterfactual canaries for tuning. A small screen is a stop/continue decision,
 not the held whole-world evaluation.
 
+A first fresh one-case full-text forced-choice smoke gate has since failed:
+the pinned 0.6B reader selected the wrong clinic despite receiving all five
+source bodies and complete candidate answers. Its label-level result is
+recorded in [RESULTS](RESULTS.md#fresh-cold-chain-bridge-forced-choice-smoke-gate-26-november-2026).
+No native maintenance comparison ran on that task, and it does not qualify
+task-level text competence. Do not use it for tuning; the larger screen still
+needs a separate task with separately gradeable generated findings on which
+the text or iterative-RAG control demonstrates correct direct-support
+competence before the latent maintenance contrast can answer the intended
+question.
+
 Set `TaskBudget` to at most 24 actions, eight candidates per search, 8,192
 returned evidence bytes, 2 MiB source bytes, and 512 aggregate role-work units
 across ordinary probes and joint role-link calls. A maintenance round gets at most two calls per
