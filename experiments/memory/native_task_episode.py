@@ -790,13 +790,17 @@ def _validate_span_membership(span, proof, source_versions, source_lengths, span
 
 
 def _validate_selection_reads(reads, source_versions, source_lengths, source_seal, span_root,
-                              span_count, scored_count, tie_limit, excluded_index=None, signed_keys=False):
+                              span_count, scored_count, tie_limit, excluded_index=None, signed_keys=False,
+                              allow_unsupported=False):
     if type(reads) is not list:
         raise ValueError("native selection receipts must be a list")
+    statuses = {"empty", "ready", "competing", "overflow"}
+    if allow_unsupported:
+        statuses.add("unsupported")
     for receipt in reads:
         if (type(receipt) is not dict
                 or set(receipt) != {"status", "selected", "eligible", "rows_scored", "observed_source_seal"}
-                or receipt["status"] not in {"empty", "ready", "competing", "overflow"}
+                or receipt["status"] not in statuses
                 or type(receipt["eligible"]) is not int or receipt["eligible"] < 0
                 or type(receipt["rows_scored"]) is not int or receipt["rows_scored"] < 0
                 or (scored_count is not None and receipt["rows_scored"] != scored_count)
@@ -809,7 +813,7 @@ def _validate_selection_reads(reads, source_versions, source_lengths, source_sea
             raise ValueError("native selection receipt status differs from its coverage")
         selected_count = len(receipt["selected"])
         if ((receipt["status"] == "empty" and selected_count != 0)
-                or (receipt["status"] in {"ready", "competing"}
+                or (receipt["status"] in {"ready", "competing", "unsupported"}
                     and (selected_count != receipt["eligible"] or selected_count > tie_limit))
                 or (receipt["status"] == "competing" and selected_count < 2)
                 or (receipt["status"] == "overflow"
@@ -854,7 +858,8 @@ def _selection_receipt(receipt, pin, *, derived=False):
 
 
 def _validate_selection_steps(steps, reads, *, source_versions, source_lengths, source_seal,
-                              span_root, span_count, scored_count, tie_limit, excluded_index=None, signed_keys=False):
+                              span_root, span_count, scored_count, tie_limit, excluded_index=None, signed_keys=False,
+                              allow_unsupported=False):
     if type(steps) is not list or len(steps) != len(reads):
         raise ValueError("native ordered selection steps differ from their receipts")
     for step, receipt in zip(steps, reads, strict=True):
@@ -871,7 +876,8 @@ def _validate_selection_steps(steps, reads, *, source_versions, source_lengths, 
         if query.hex() != step["query_hex"]:
             raise ValueError("native selection query is not canonical")
     _validate_selection_reads(reads, source_versions, source_lengths, source_seal,
-                              span_root, span_count, scored_count, tie_limit, excluded_index, signed_keys)
+                              span_root, span_count, scored_count, tie_limit, excluded_index, signed_keys,
+                              allow_unsupported=allow_unsupported)
     if any(hit["score"] < step["cutoff"]
            for step in steps for hit in step["receipt"]["selected"]):
         raise ValueError("native selected score is below its recorded cutoff")
@@ -1112,7 +1118,8 @@ def _validate_native_read(pin, request, response):
                                   scored_count=(None if pin.get("task_reader_policy") == "native-operator-inventory-v1"
                                                 else pin["native_derived_span_count"] - (excluded_index is not None)),
                                   tie_limit=pin["selector_tie_limit"], excluded_index=excluded_index,
-                                  signed_keys="source_anchor_address" in pin)
+                                  signed_keys="source_anchor_address" in pin,
+                                  allow_unsupported=pin.get("task_reader_policy") == "native-operator-inventory-v1")
     if "source_anchor_address" in pin:
         _validate_anchor_scores(pin, receipt)
     source_ready = sum(step["receipt"]["status"] == "ready" for step in receipt["source_steps"])

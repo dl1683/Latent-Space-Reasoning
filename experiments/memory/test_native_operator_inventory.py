@@ -772,14 +772,14 @@ def test_text_operator_inventory_pins_and_receipts_bind_each_applied_operation(t
     limits = EpisodeLimits(1, 1, 1, 0, 12, 12, 1, 1, access=TaskBudget(source_bytes=limit))
     call = PolicyCall((('user', 'join'),), tuple(serving._tokenizer.encode("join")), 1)
 
-    def read(view, seed=None):
+    def read(view, seed=None, *, request=call, steps=2):
         backend = NativeTaskEpisodeBackend(
             task_world, serving, memory, backend_id=policy.backend_id, tokenizer_id=policy.tokenizer_id,
-            expected_runtime_sha256=runtime, steps=2, memory_view=view, intervention_seed=seed,
+            expected_runtime_sha256=runtime, steps=steps, memory_view=view, intervention_seed=seed,
         )
         backend.opening_record(task_world, policy, limits, serving._tokenizer)
-        reply = backend(call)
-        backend.validate_reply(call, reply)
+        reply = backend(request)
+        backend.validate_reply(request, reply)
         return reply
 
     active = read("active")
@@ -798,3 +798,11 @@ def test_text_operator_inventory_pins_and_receipts_bind_each_applied_operation(t
     assert restored.backend_receipt["operator_uses"] == active_uses
     assert read("derived_off").backend_receipt["operator_uses"] == []
     assert read("memory_omitted").backend_receipt["operator_uses"] == []
+
+    # A known address with an out-of-span operand is a valid abstention, not a broken read.
+    off_span_call = PolicyCall((('user', 'off span'),), tuple(serving._tokenizer.encode("off span")), 1)
+    refused = read("active", request=off_span_call, steps=1)
+    assert refused.backend_receipt["derived_reads"][0]["status"] == "unsupported"
+    assert refused.backend_receipt["derived_reads"][0]["selected"]
+    assert refused.backend_receipt["applied_derived_steps"] == 0
+    assert refused.backend_receipt["operator_uses"] == []
