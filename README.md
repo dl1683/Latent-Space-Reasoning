@@ -23,6 +23,10 @@ verifies passages between model calls. Scripted checks followed three newly
 discovered links and surfaced an unresolved premise after a source withdrawal.
 Independent model answers and the maintenance comparison are still pending.
 [Four-call reader checks](docs/RESULTS.md#opening-a-newly-discovered-source-within-four-reader-calls).
+The independent reviewer has frozen four calibration cases outside this
+repository and checked path feasibility on all four. The learned gate
+is pending a bounded run and independent grading.
+[Independent calibration protocol](docs/INDEPENDENT_ORDINARY_GATE_AND_SCALAR_BOUNDARY.md).
 
 An opt-in v2 compact search/read wire now fits one scripted six-source route through the ordinary and sealed native adapters under the registered caps. Both use the same token constraint and can cite any verified episode read. The registered planner gate remains **NOT PASSED** pending broader feasibility and independently graded generated answers. The next research step is a fresh, independently scored maintenance-to-late-task screen with same-pin removal/restoration and matched text and exact-join controls; see the [evaluation plan](docs/WHOLE_WORLD_EVALUATION.md).
 
@@ -91,6 +95,12 @@ the measurement to extend the retained operation. On a supplied CPU
 fixture, switching off just that observation at the same publication
 removed the answer for two distinct supplied operands.
 [Native observation control](docs/RESULTS.md#using-a-maintained-observation-in-the-native-model).
+
+A [prospective challenge](docs/RESULTS.md#withdrawing-a-latent-extension-after-a-contradictory-observation)
+lets a second worker test the installed extension on a different input.
+In the supplied control, a contradictory new measurement withdrew the
+extension while the model kept using the base operation and the old
+publication still served its original answer.
 
 A [cross-source acquisition control](docs/RESULTS.md#acquiring-continuations-after-self-only-reads)
 retries seeds whose ordinary maintenance read only their own source.

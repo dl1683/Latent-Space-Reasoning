@@ -1192,6 +1192,20 @@ contributions. Read receipts identify that intervention.
 The matching implementation and reader fingerprint are required when
 reopening older sealed publications.
 
+Use `draft_native_operand_challenge(workspace, reader, pin, address=...,
+card_source=..., tolerance_q8=...)` from
+`experiments.memory.native_operand_challenge` to freeze a prediction for
+one separately chosen card. A ready response exposes the reserved
+outcome ID, grid prediction and commitment. Other statuses preserve
+refused cards without requesting an outcome. Keep the commitment and
+draft with the independent controller before measurement release.
+`resolve_native_operand_challenge(..., commitment=..., max_source_bytes=...)`
+takes that draft and a verified direct successor feed containing just
+the measurement. The result records its disposition and committed pin.
+`reopen_native_operand_challenge(workspace, reader, draft, release,
+commitment=...)` verifies that direct release and reconstructs the
+result from the two pins.
+
 Use `retry_cross_source_acquisition(workspace, reader, pin,
 max_seeds=..., max_source_rows=..., max_relative_shift=...)` from
 `experiments.memory.native_cross_source_acquisition` to retry

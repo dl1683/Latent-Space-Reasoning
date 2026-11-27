@@ -419,6 +419,21 @@ removed, and regain it when restored while the ordinary source world stays
 fixed. Compare against warm exact computation and charge the cost to build,
 revise, verify and query the retained operation across repeated use.
 
+The [independent review](INDEPENDENT_ORDINARY_GATE_AND_SCALAR_BOUNDARY.md)
+froze all four reader cases and a separate grader out of band. Its
+scripted replay found feasible paths for 4/4 cases, with 11 calls and six
+reads across the four paths. This supplies an independently authored
+panel. The next learned run uses that panel once, keeps the grader
+outside execution, and stops before the separate operation trial if any
+of the four tasks fails.
+
+A tokenizer-only check for a [350M CPU candidate](https://huggingface.co/LiquidAI/LFM2.5-350M/tree/9921cd4d82c0e3986887aa4b376f9446729ef8a3)
+rendered 686 search tokens and 693 answer tokens on public example
+frames with four 512-byte passages. This checks the shipped chat
+template and framing on those examples. Token counts on the actual
+independent cases and learned performance remain unmeasured.
+The input and grader stay in separate custody.
+
 The [reviewer's competence diagnostic](FRESH_REASONER_COMPETENCE_DIAGNOSTIC.md)
 separates unassisted need inference and answer generation from two
 assisted diagnostic arms. Only an unassisted, supported answer qualifies

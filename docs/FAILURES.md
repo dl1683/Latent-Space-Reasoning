@@ -142,6 +142,14 @@ additional direction cannot support a late query outside the enlarged
 span. Check that scope on independently chosen operands before further
 fit work. [Native observation control](RESULTS.md#using-a-maintained-observation-in-the-native-model)
 
+**Valid original dependencies can survive a contradictory new measurement.**
+An ordinary source addition preserved the installed extension even
+when its new measured value disagreed with the predeclared prediction.
+Challenge a new input at a frozen tolerance and withdraw the
+extension on a verified contradiction, preserving the evidence and
+base operation. A passing challenge establishes agreement at that
+one input. [Challenge control](RESULTS.md#withdrawing-a-latent-extension-after-a-contradictory-observation)
+
 **A separating projection is conditional on the forecast roster.**
 A worker can reject a descriptor whose tolerance regions overlap without
 seeing its outcome. An informative projection can still fail because no

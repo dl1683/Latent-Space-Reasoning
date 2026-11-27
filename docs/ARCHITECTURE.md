@@ -272,8 +272,13 @@ M_{\rm new}(q)=M(Pq)+e_j\,[y-(M(Px))_j]\,\frac{u^\top q}{\|u\|_2^2}.
 $$
 
 This declares a zero residual correction on unmeasured output
-coordinates. Their projected old output is still present. The added
-squared row norm in coordinate $j$ is the squared measured innovation
+coordinates. Their projected old output is still present. The
+[independent counterexample](INDEPENDENT_ORDINARY_GATE_AND_SCALAR_BOUNDARY.md#one-scalar-witness-does-not-identify-a-full-vector-extension)
+shows that two different completions can agree on every measured
+value and disagree after a downstream operation. Certifying a composed
+consequence requires that the next operation be invariant to the
+unmeasured variation, or that a justified bound cover its effect.
+The added squared row norm in coordinate $j$ is the squared measured innovation
 divided by $\|u\|_2^2$. Check it against the prior cap using rational
 arithmetic and require a spare row, bounded output values and a
 conditioned augmented basis.
@@ -298,6 +303,38 @@ grounded answer in the same optional-memory model when the extension
 is removed and restored. Charge source encoding, selection, history
 replay, compilation and later readout. [Software control](RESULTS.md#using-a-maintained-observation-in-the-native-model)
 · [Recurrent-depth alternative](https://arxiv.org/abs/2502.05171)
+
+#### Challenging an installed direction with new source evidence
+
+[SLICE] A worker selects a pinned source card separate from the
+extension's calibration cards. Freeze the opening, both source
+identities, the measured output coordinate, prediction and tolerance
+before the outcome. Check that the serving selector can answer with
+the extension and refuses with only the extension disabled. Separate a
+copy of a calibration operand from genuine new input and report cases
+the serving selector cannot apply. Use a rational grid prediction only
+when it agrees with the serving value.
+
+The direct source successor adds the expected outcome. If the observed
+coordinate differs from the prediction by more than the frozen
+tolerance, store the source and remove only that extension in the
+same workspace commit. A supporting observation keeps it active.
+A measurement must use the installed observation's modality and
+encode as one row to be scored.
+Reopen both committed pins to replay the pointwise verdict and check
+the inventory after ordinary source invalidation. Readback catches
+both ingestions that skipped the verdict and extra removals. Workspace
+history confirms absence of the reserved outcome ID at or before the
+opening. An independent controller must keep the outcome from the
+worker and record the commitment before release, including when there
+could be alternate encodings or identities for the same fact.
+
+Contradiction tests one declared coordinate at one input. It gives a
+reason to stop serving the candidate within its declared scope. A
+replacement needs its own evidence and a passing challenge supports
+the tested input. Compare against ordinary source revision,
+the exact comparator using equal evidence and a reused block that
+also precommits its predictions. [Challenge control](RESULTS.md#withdrawing-a-latent-extension-after-a-contradictory-observation)
 
 #### Admitting a retained operation on a source revision
 

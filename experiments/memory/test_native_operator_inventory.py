@@ -11,13 +11,17 @@ import pytest
 from experiments.memory.linear_feedback import LinearFeedbackKernel
 from experiments.memory.native_latent_recurrence import _ForecastCheck
 from experiments.memory.native_operand_admission import _restrict
+from experiments.memory.native_operand_challenge import (
+    draft_native_operand_challenge, reopen_native_operand_challenge, resolve_native_operand_challenge,
+)
 from experiments.memory.native_operand_consequence import check_native_operand_consequence
 from experiments.memory.native_operand_discovery import operand_outcome_id
 from experiments.memory.native_operand_probe import (
     _card_query, draft_native_operand_probe, read_native_operand_probe, resolve_native_operand_probe,
 )
 from experiments.memory.native_operator_inventory import (
-    NativeOperatorInventoryModel, discover_native_operator, resolve_native_operator, resolve_native_operators,
+    NativeOperatorInventoryModel, _with_inventory, discover_native_operator,
+    resolve_native_operator, resolve_native_operators,
 )
 from experiments.memory.native_workspace import NativeWorkspace, StaleNativeWorkspace
 from experiments.memory.source_revision_feed import _encode, write_source_delta
@@ -108,6 +112,8 @@ def _reader(transport_l1):
 @pytest.mark.parametrize("measurement, install, dependency", (
     (42, False, "measurement"), (80, False, "measurement"), (80, True, "measurement"),
     (42, True, "measurement"), (42, True, "card"), (42, True, "operator"),
+    (42, True, "challenge-support"), (42, True, "challenge-contradict"), (42, True, "ordinary-contradiction"),
+    (42, True, "challenge-wrong-modality"), (42, True, "challenge-collateral-removal"),
 ))
 def test_source_probe_selects_a_missing_direction_and_loses_it_when_evidence_is_withdrawn(
         tmp_path, measurement, install, dependency):
@@ -278,7 +284,7 @@ def test_source_probe_selects_a_missing_direction_and_loses_it_when_evidence_is_
     assert check(carried).consequence.center == observed.consequence.center
     if installed:
         assert serving("off span", memory=cold.attach(serving, pin=carried), steps=1).text == "gold"
-        if dependency != "measurement":
+        if dependency in ("card", "operator"):
             source = useful if dependency == "card" else candidate.source
             change = _image(48, -5, 8, 0, 0, 0, 0, 0) if dependency == "card" else None
             lost_path, lost_delta = epoch("change-live-dependency", {source: change}, unrelated)
@@ -287,6 +293,85 @@ def test_source_probe_selects_a_missing_direction_and_loses_it_when_evidence_is_
             assert serving("off span", memory=lost, steps=1).text == ""
             assert serving("first", memory=lost, steps=1).text == ("gold" if dependency == "card" else "")
             assert serving("off span", memory=cold.attach(serving, pin=carried), steps=1).text == "gold"
+            return
+        if dependency.startswith(("challenge", "ordinary")):
+            card_id, duplicate, unsupported = (char * 32 for char in "bcd")
+            challenge_path, challenge_epoch = epoch("challenge-cards", {
+                card_id: _image(49, 3, 8, 0, 0, 0, 0, 0),
+                duplicate: cards[reference],
+                unsupported: _image(1, 0, 9, 0, 0, 0, 0, 0),
+            }, unrelated)
+            challenge_pin = world.revise(reader, carried, challenge_path, challenge_epoch.seal, max_source_bytes=limit)
+
+            def predict(source, pin=challenge_pin):
+                return draft_native_operand_challenge(world, reader, pin, address=(8,), card_source=source,
+                                                      tolerance_q8=1)
+
+            assert predict(duplicate).status == "calibration_input"
+            assert predict(unsupported).status == "unsupported"
+            challenge = predict(card_id)
+            assert challenge.prediction_q8 == "1287/32" and challenge.status == "ready"
+            assert (challenge.intact_status, challenge.ablated_status) == ("ready", "unsupported")
+            assert float.fromhex(challenge.serving_prediction_hex) == pytest.approx(1287 / 32)
+            measured = 40 if dependency == "challenge-support" else 47
+            if dependency == "challenge-wrong-modality":
+                evidence_path = tmp_path / "challenge-release"
+                evidence = write_source_delta(evidence_path, {challenge.source: b"note"},
+                                              previous=challenge_epoch, max_bytes=limit)
+            else:
+                evidence_path, evidence = epoch("challenge-release", {
+                    challenge.source: _image(0, 0, 0, 0, measured, 0, 0, 0)
+                }, challenge_epoch)
+            if dependency == "ordinary-contradiction":
+                bypass = world.revise(reader, challenge_pin, evidence_path, evidence.seal, max_source_bytes=limit)
+                assert serving("different operand", memory=cold.attach(serving, pin=bypass), steps=1).text == "gold"
+                with pytest.raises(ValueError, match="required observation disposition"):
+                    reopen_native_operand_challenge(cold, serving, challenge, bypass, commitment=challenge.commitment)
+                return
+            if dependency == "challenge-collateral-removal":
+                opening_memory = world.attach(reader, pin=challenge_pin)
+                revised = reader.publish(evidence_path, evidence.seal, previous=opening_memory, max_source_bytes=limit)
+                damaged = replace(revised, _selective=_with_inventory(revised._selective, (), ()))
+                removed_too_much = world._commit(reader, damaged, challenge_pin, operation="revise")
+                with pytest.raises(ValueError, match="required observation disposition"):
+                    reopen_native_operand_challenge(cold, serving, challenge, removed_too_much,
+                                                   commitment=challenge.commitment)
+                return
+            with pytest.raises(ValueError, match="committed opening prediction"):
+                resolve_native_operand_challenge(world, reader, challenge, evidence_path, evidence.seal,
+                                                 commitment="0" * 64, max_source_bytes=limit)
+            assert world.head() == challenge_pin
+            resolved = resolve_native_operand_challenge(world, _reader(2), challenge, evidence_path, evidence.seal,
+                                                        commitment=challenge.commitment, max_source_bytes=limit)
+            assert reopen_native_operand_challenge(cold, serving, challenge, resolved.pin,
+                                                   commitment=challenge.commitment) == resolved
+            if dependency == "challenge-wrong-modality":
+                assert resolved.status == "unscorable" and resolved.measurement is None
+                current = cold.attach(serving, pin=resolved.pin)
+                assert current.source_spans(challenge.source)
+                assert serving("different operand", memory=current, steps=1).text == "gold"
+                return
+            assert resolved.status == ("supports" if measured == 40 else "contradicts")
+            assert resolved.measured_q8 == measured and resolved.measurement.source_id == challenge.source
+            current = cold.attach(serving, pin=resolved.pin)
+            assert current.source_spans(challenge.source) == (resolved.measurement,)
+            assert serving("first", memory=current, steps=1).text == "gold"
+            assert serving("different operand", memory=current, steps=1).text == ("gold" if measured == 40 else "")
+            assert serving("different operand", memory=cold.attach(serving, pin=challenge_pin), steps=1).text == "gold"
+            if measured == 40:
+                with pytest.raises(ValueError, match="already known"):
+                    predict(card_id, resolved.pin)
+                remove_path, remove = epoch("hide-known-outcome", {challenge.source: None}, evidence)
+                no_outcome = world.revise(reader, resolved.pin, remove_path, remove.seal, max_source_bytes=limit)
+                with pytest.raises(ValueError, match="already known"):
+                    predict(card_id, no_outcome)
+            else:
+                with pytest.raises(StaleNativeWorkspace):
+                    resolve_native_operand_challenge(world, reader, challenge, evidence_path, evidence.seal,
+                                                     commitment=challenge.commitment, max_source_bytes=limit)
+                later_path, later = epoch("after-challenge", {"e" * 32: _image(0, 0, 0, 0, 0, 0, 0, 0)}, evidence)
+                next_pin = world.revise(reader, resolved.pin, later_path, later.seal, max_source_bytes=limit)
+                assert serving("different operand", memory=cold.attach(serving, pin=next_pin), steps=1).text == ""
             return
 
     correct_path, corrected = epoch("correct", {draft.source: _image(0, 0, 0, 0, 43, 0, 0, 0)}, unrelated)

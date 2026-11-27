@@ -48,6 +48,25 @@ grayscale coordinates and a scripted backbone. A learned reasoner,
 independently chosen tasks and lifecycle cost comparisons are pending.
 [Operation contract](ARCHITECTURE.md#using-a-source-observation-to-extend-the-serving-operation).
 
+## Withdrawing a latent extension after a contradictory observation
+
+**CPU software control.** The installed extension predicted
+`1287/32` Q8 units on a card distinct from the original calibration
+cards. With an opening tolerance of one grid unit, a measured value
+of 40 kept it active. A measured value of 47 withdrew it. In both
+cases the measurement remained in the committed source world and the
+base operation still answered its old in-span input. An ordinary
+revision of the same contradictory source left the extension active
+and failed challenge readback. The older pin retained its answer.
+
+The draft refused a copied calibration operand and a card outside its
+address. It refused a known outcome even after withdrawal. A changed
+commitment failed before publication. A measurement of a different
+modality remained an unscorable source. A fresh reader reproduced each
+committed disposition. These are supplied-input controls on a
+scripted backbone. Independent custody and learned answers remain
+unmeasured. [Challenge contract](ARCHITECTURE.md#challenging-an-installed-direction-with-new-source-evidence).
+
 ## Qualifying a byte-weighted revision forecast, 26 November 2026
 
 **Software controls.** Two newly introduced rows of 32 and 10 bytes
