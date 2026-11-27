@@ -959,6 +959,242 @@ def test_plain_compact_episode_batches_verified_reads_with_per_candidate_cost(tm
     assert limited["status"] == "TOOL_ATTEMPT_LIMIT" and not tools._session.reads
 
 
+def test_source_anchor_changes_only_one_continuation_address(tmp_path):
+    from copy import deepcopy
+    from dataclasses import asdict
+
+    from experiments.memory.native_isolated_stage import LABELS, _CausalControl, _Tokenizer, _reader
+    from experiments.memory.native_latent_recurrence import NativeLatentModel
+    from experiments.memory.native_publication import read_native_publication, write_native_publication
+    from experiments.memory.native_task_episode import (
+        NativeTaskEpisodeBackend, _address_bank_digest, _digest_record, _validate_native_read,
+    )
+    from experiments.memory.source_revision_feed import write_source_delta
+    from experiments.memory.verified_source_tool import sha256
+
+    class EpisodeTokenizer(_Tokenizer):
+        def apply_chat_template(self, messages, *, tokenize, add_generation_prompt, return_dict):
+            task = json.loads(messages[-1]["content"])["task"]
+            return self.encode(task, add_special_tokens=True, truncation=False)
+
+        def decode(self, ids, *, skip_special_tokens):
+            label = super().decode(ids, skip_special_tokens=skip_special_tokens)
+            return json.dumps({"finish": {"findings": [], "open_questions": [label or "unresolved"]}})
+
+    class RoleSplitControl(_CausalControl):
+        def base_model(self, *, inputs_embeds, past_key_values, use_cache, return_dict):
+            result = super().base_model(inputs_embeds=inputs_embeds, past_key_values=past_key_values,
+                                        use_cache=use_cache, return_dict=return_dict)
+            if past_key_values is None and result.last_hidden_state[0, 0, 1] > 0:
+                role = int(inputs_embeds[0, 0, -1])
+                if role in (0, 2):
+                    result.last_hidden_state[0, 0, len(LABELS) - 1] = 1
+                if role == 0:
+                    result.last_hidden_state[0, 0, 1] = -0.20
+            return result
+
+    tokenizer = EpisodeTokenizer()
+
+    def reader():
+        model = RoleSplitControl().eval()
+        return NativeLatentModel(model, tokenizer, _reader(model)._moments, source_chars=32, context_tokens=12,
+                                 latent_steps=3, output_tokens=2, representation_scale=0.25, memory_gain=1,
+                                 null_weight=0.1, eos_ids=(0,), top_k=1)
+
+    seed_id, unrelated, bridge, name, alias, unrelated_name = (c * 32 for c in "123456")
+    opening = tmp_path / "sources"
+    source = write_source_delta(opening, {
+        seed_id: b"link L01 L02", bridge: b"link L02 L03", name: b"name L03 L06",
+        alias: b"link L00 L01", unrelated: b"link L07 L08",
+        unrelated_name: b"name L08 L09",
+    })
+    runtime = sha256(b"source-anchor contrast software control")
+    writer, receiver = reader(), reader()
+    budget = 64 * 1024
+    source_limits = dict(max_feed_bytes=budget, max_source_bytes=budget, max_passages=16)
+    published = writer.maintain(writer.publish(opening, source.seal), max_seeds=2)
+    seed, = published.source_spans(seed_id)
+    independent, = published.source_spans(unrelated)
+    assert published.derived_seeds == (seed, independent)
+    path = tmp_path / "publication"
+    seal = write_native_publication(path, writer, published, runtime_sha256=runtime, max_bytes=budget)
+    memory = read_native_publication(path, receiver, seal=seal, source_seal=source.seal,
+                                     runtime_sha256=runtime, max_bytes=budget)
+    pinned = TaskWorld.from_source_epoch(opening, source.seal, **source_limits)
+    original, position, anchor_key = receiver._source_anchor_keys(memory, seed)
+    assert original.keys[position, 1] < 0 < anchor_key[1]
+
+    policy = EpisodePolicy("controller", "native-anchor-control", "fixture-tokenizer", "notes")
+    limits = EpisodeLimits(1, 1, 1, 0, 12, 12, 2, 2)
+
+    def episode(task, file, view, *, control=True, world=pinned, attached=memory):
+        backend = NativeTaskEpisodeBackend(world, receiver, attached, backend_id=policy.backend_id,
+                                           tokenizer_id=policy.tokenizer_id, expected_runtime_sha256=runtime,
+                                           steps=2, memory_view=view, intervention_seed=seed,
+                                           source_anchor_control=control)
+        artifact = run_episode(task, world, policy, limits, tokenizer, backend, tmp_path / file,
+                               native_backend=backend)
+        return artifact, backend
+
+    for query, expected in (("L00", ("unresolved", "L06")), ("L01", ("unresolved", "L06")),
+                            ("L07", ("L09", "L09"))):
+        task = f"follow {query}"
+        active, _ = episode(task, query + "-active", "active")
+        assigned, backend = episode(task, query + "-source", "source_anchor")
+        off, _ = episode(task, query + "-off", "continuation_off")
+        restored, _ = episode(task, query + "-restored", "source_anchor")
+        original_again, _ = episode(task, query + "-original-again", "active")
+        assert active.path.read_bytes() == original_again.path.read_bytes()
+        native, reassigned = read_episode_pair(active, assigned, contrast="address")
+        _, without = read_episode_pair(active, off, contrast="memory")
+        assert assigned.path.read_bytes() == restored.path.read_bytes()
+        for ledger, label in zip((native, reassigned, without), (*expected, expected[0]), strict=True):
+            assert ledger[-1]["data"]["status"] == "completed"
+            assert ledger[-1]["data"]["submission"]["open_questions"] == [label]
+        assert backend._memory._selective.acquired is memory._selective.acquired
+        assert backend._memory._selective.shards is memory._selective.shards
+        bank, = backend._memory._selective.derived
+        assert bank.spans == original.spans and bank.values is original.values and bank.keys.nbytes == 24
+        address = reassigned[0]["data"]["native_world_pin"]["source_anchor_address"]
+        assert address["original_bank_sha256"] == _address_bank_digest(original)
+        assert address["source_anchor_bank_sha256"] == _address_bank_digest(bank)
+        recovered_keys = bank.keys.copy()
+        recovered_keys[position] = original.keys[position]
+        assert _address_bank_digest(replace(bank, keys=recovered_keys)) == address["original_bank_sha256"]
+        np.testing.assert_array_equal(bank.keys[position], anchor_key)
+        np.testing.assert_array_equal(np.delete(bank.keys, position, axis=0), np.delete(original.keys, position, axis=0))
+        on_read = next(row["data"] for row in reassigned if row["kind"] == "response")
+        active_read = next(row["data"] for row in native if row["kind"] == "response")
+        expected_query_step = 1 if query == "L00" else 0
+        on_trace = on_read["backend_receipt"]["derived_steps"][expected_query_step]
+        active_trace = active_read["backend_receipt"]["derived_steps"][expected_query_step]
+        for index in range(expected_query_step + 1):
+            assert (on_read["backend_receipt"]["derived_steps"][index]["query_hex"]
+                    == active_read["backend_receipt"]["derived_steps"][index]["query_hex"])
+        if query != "L07":
+            assert active_trace["receipt"]["status"] == "empty" and on_trace["applied"]
+            assert on_trace["receipt"]["selected"][0]["span"]["source_id"] == seed_id
+            query_q8 = np.frombuffer(bytes.fromhex(on_trace["query_hex"]), dtype=np.int8).astype(np.int64)
+            assert (query_q8 @ original.keys[position], query_q8 @ anchor_key) == (-10668, 16129)
+        else:
+            for kind in ("source_steps", "derived_steps"):
+                left = deepcopy(on_read["backend_receipt"][kind])
+                right = deepcopy(active_read["backend_receipt"][kind])
+                for step in (*left, *right):
+                    for hit in step["receipt"]["selected"]:
+                        hit.pop("key_proof")
+                assert left == right
+            assert on_trace["receipt"]["selected"][0]["span"]["source_id"] == unrelated
+        for data in (on_read, active_read):
+            assert [step["rows_scored"] for step in data["backend_receipt"]["derived_reads"]] == [2, 2]
+
+    task = "follow L01"
+    legacy, _ = episode(task, "legacy", "active", control=False)
+    assigned, backend = episode(task, "controlled", "source_anchor")
+    with pytest.raises(ValueError, match="fixed publication and address"):
+        read_episode_pair(legacy, assigned, contrast="address")
+    with pytest.raises(ValueError, match="read-only"):
+        receiver.maintain(backend._memory, max_seeds=1)
+    with pytest.raises(ValueError, match="read-only"):
+        write_native_publication(tmp_path / "refused", receiver, backend._memory,
+                                 runtime_sha256=runtime, max_bytes=budget)
+    raw_read = receiver(task, memory=backend._memory, steps=2)
+    assert raw_read.source_anchor_seed == seed
+    with pytest.raises(ValueError, match="matching reopened publication"):
+        memory.evidence_spans(raw_read)
+    assert seed in backend._memory.evidence_spans(raw_read)
+
+    records = read_episode(assigned)
+    pin = records[0]["data"]["native_world_pin"]
+    request = next(row["data"] for row in records if row["kind"] == "request")
+    forged = deepcopy(next(row["data"] for row in records if row["kind"] == "response"))
+    receipt = forged["backend_receipt"]
+    receipt["derived_steps"][0]["receipt"]["selected"][0]["score"] += 1
+    receipt["derived_reads"][0]["selected"][0]["score"] += 1
+    receipt["derived_steps"][0]["cutoff"] += 1
+    with pytest.raises(ValueError, match="score differs from the pinned key"):
+        _validate_native_read(pin, request, forged)
+    forged_empty = deepcopy(next(row["data"] for row in records if row["kind"] == "response"))
+    receipt = forged_empty["backend_receipt"]
+    for selection in (receipt["derived_reads"][0], receipt["derived_steps"][0]["receipt"]):
+        selection.update(status="empty", selected=[], eligible=0)
+    receipt["derived_steps"][0]["cutoff"] = 20_000
+    with pytest.raises(ValueError, match="cutoff differs from the reported selection"):
+        _validate_native_read(pin, request, forged_empty)
+
+    narrow_pin = deepcopy(pin)
+    narrow_pin["selector_tie_limit"] = 1
+    narrow_pin["pin_sha256"] = _digest_record({k: v for k, v in narrow_pin.items() if k != "pin_sha256"})
+    crowded = deepcopy(next(row["data"] for row in records if row["kind"] == "response"))
+    receipt = crowded["backend_receipt"]
+    receipt["pin_sha256"] = narrow_pin["pin_sha256"]
+    frontiers = (receipt["derived_reads"][0], receipt["derived_steps"][0]["receipt"])
+    tied = {"span": asdict(independent), "score": 16129,
+            "span_proof": backend._pin.span_proof(independent, derived=True),
+            **backend._pin.selector_key_receipt(independent, derived=True)}
+    for selection in frontiers:
+        selection["eligible"] = 2
+        selection["selected"].append(tied)
+    with pytest.raises(ValueError, match="status differs from its selected rows"):
+        _validate_native_read(narrow_pin, request, crowded)
+    for selection in frontiers:
+        selection.update(status="overflow", selected=[tied])
+    with pytest.raises(ValueError, match="omitted a qualifying pinned key"):
+        _validate_native_read(narrow_pin, request, crowded)
+
+    inflated = deepcopy(next(row["data"] for row in records if row["kind"] == "response"))
+    receipt = inflated["backend_receipt"]
+    for hit in (receipt["derived_reads"][0], receipt["derived_steps"][0]["receipt"]):
+        hit["selected"] = [{**tied, "score": 20_000}]
+    receipt["derived_steps"][0]["cutoff"] = 20_000
+    with pytest.raises(ValueError, match="score differs from its committed key"):
+        _validate_native_read(pin, request, inflated)
+
+    correction = tmp_path / "correction"
+    corrected = write_source_delta(correction, {name: b"name L03 L10"}, previous=source)
+    revised = writer.publish(correction, corrected.seal, previous=published)
+    assert revised.derived_seeds == (independent,)
+    withdrawn = tmp_path / "withdrawn"
+    withdrawn_seal = write_native_publication(withdrawn, writer, revised, runtime_sha256=runtime,
+                                              max_bytes=budget)
+    attached = read_native_publication(withdrawn, receiver, seal=withdrawn_seal, source_seal=corrected.seal,
+                                       runtime_sha256=runtime, max_bytes=budget)
+    with pytest.raises(ValueError, match="installed leaf"):
+        receiver._with_source_anchor_address(attached, seed)
+
+    repaired = revised
+    for _ in range(revised.pending_seeds):
+        repaired = writer.maintain(repaired, max_seeds=1)
+        if seed in repaired.derived_seeds:
+            break
+    assert seed in repaired.derived_seeds
+    successor = tmp_path / "successor"
+    successor_seal = write_native_publication(successor, writer, repaired, runtime_sha256=runtime,
+                                              max_bytes=budget)
+    reopened = read_native_publication(successor, receiver, seal=successor_seal, source_seal=corrected.seal,
+                                       runtime_sha256=runtime, max_bytes=budget)
+    new_world = TaskWorld.from_source_epoch(correction, corrected.seal, previous=pinned, **source_limits)
+    for query in ("L00", "L01"):
+        task = f"follow {query}"
+        original_arm, _ = episode(task, query + "-revised-active", "active", world=new_world, attached=reopened)
+        addressed, _ = episode(task, query + "-revised-source", "source_anchor", world=new_world, attached=reopened)
+        left, right = read_episode_pair(original_arm, addressed, contrast="address")
+        assert left[-1]["data"]["submission"]["open_questions"] == ["L10"]
+        assert right[-1]["data"]["submission"]["open_questions"] == ["L10"]
+        expected_other = alias if query == "L00" else bridge
+        for rows in (left, right):
+            response = next(row["data"] for row in rows if row["kind"] == "response")
+            applied = {hit["span"]["source_id"] for step in response["backend_receipt"]["derived_steps"]
+                       if step["applied"] for hit in step["receipt"]["selected"]}
+            assert expected_other in applied
+            assert (seed_id in applied) == (rows is right and query == "L01")
+    with pytest.raises(ValueError, match="source epoch differs"):
+        read_episode_pair(assigned, addressed, contrast="address")
+    historic, _ = episode("follow L01", "historic-replay", "source_anchor")
+    assert historic.path.read_bytes() == assigned.path.read_bytes()
+
+
+
 def test_native_episode_withholds_only_the_pinned_leaf(tmp_path, monkeypatch):
     from copy import deepcopy
 

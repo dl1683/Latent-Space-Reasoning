@@ -5,6 +5,8 @@ from hashlib import sha256 as _hash_bytes
 import json
 from types import MappingProxyType
 
+import numpy as np
+
 from experiments.memory.native_latent_recurrence import NativeLatentModel, NativeSourceMemory
 from experiments.memory.native_publication import _reader_digest
 from experiments.memory.source_revision_feed import (
@@ -17,7 +19,7 @@ from experiments.memory.verified_source_tool import SourceSpan, require_digest, 
 
 _PIN_SCHEMA = "lsr-native-task-world-pin-v1"
 _READ_SCHEMA = "lsr-native-task-read-v1"
-_MEMORY_VIEWS = {"active", "derived_off", "memory_omitted", "continuation_off"}
+_MEMORY_VIEWS = {"active", "derived_off", "memory_omitted", "continuation_off", "source_anchor"}
 _EMPTY_SPAN_ROOT = sha256(b"lsr-native-span-empty-v1")
 
 
@@ -45,7 +47,7 @@ def _span_leaf(span):
     return sha256(b"\x00" + _packed(asdict(span)).encode("utf8"))
 
 
-def _span_merkle(spans):
+def _span_merkle(spans, keys=None):
     ordered = tuple(sorted(spans, key=lambda span: (span.source_id, span.start_byte, span.end_byte,
                                                      span.version_sha256, span.span_sha256)))
     if len(set(ordered)) != len(ordered):
@@ -53,7 +55,8 @@ def _span_merkle(spans):
     indices = MappingProxyType({span: index for index, span in enumerate(ordered)})
     if not ordered:
         return _EMPTY_SPAN_ROOT, indices, ()
-    levels = [tuple(bytes.fromhex(_span_leaf(span)) for span in ordered)]
+    levels = [tuple(bytes.fromhex(_span_leaf(span) if keys is None else
+                                 _span_leaf_dict(asdict(span), keys[span])) for span in ordered)]
     while len(levels[-1]) > 1:
         current = levels[-1]
         parents = []
@@ -79,14 +82,14 @@ def _span_proof(span, indices, levels):
     return {"index": indices[span], "siblings": proof}
 
 
-def _verify_span_proof(span, proof, root, count):
+def _verify_span_proof(span, proof, root, count, *, key=None):
     if (type(count) is not int or count < 1
             or type(proof) is not dict or set(proof) != {"index", "siblings"}
             or type(proof["index"]) is not int or not 0 <= proof["index"] < count
             or type(proof["siblings"]) is not list
             or len(proof["siblings"]) != (count - 1).bit_length()):
         return False
-    current = bytes.fromhex(_span_leaf_dict(span))
+    current = bytes.fromhex(_span_leaf_dict(span, key))
     index, width = proof["index"], count
     for item in proof["siblings"]:
         if type(item) is not dict or set(item) != {"side", "sha256"}:
@@ -111,8 +114,11 @@ def _verify_span_proof(span, proof, root, count):
     return current.hex() == root
 
 
-def _span_leaf_dict(span):
-    return sha256(b"\x00" + _packed(span).encode("utf8"))
+def _span_leaf_dict(span, key=None):
+    encoded = _packed(span).encode("utf8")
+    if key is None:
+        return sha256(b"\x00" + encoded)
+    return sha256(b"\x02" + bytes.fromhex(sha256(encoded)) + key)
 
 
 def _task_source_versions(world, memory):
@@ -131,6 +137,25 @@ def _task_source_versions(world, memory):
     return versions
 
 
+def _address_bank_digest(bank, replacement=None):
+    digest = _hash_bytes(_packed({
+        "spans": [asdict(span) for span in bank.spans],
+        "keys": (bank.keys.shape, bank.keys.dtype.str),
+        "values": (bank.values.shape, bank.values.dtype.str),
+    }).encode("utf8"))
+    if replacement is None:
+        digest.update(memoryview(bank.keys).cast("B"))
+    else:
+        index, key = replacement
+        if index:
+            digest.update(memoryview(bank.keys[:index]).cast("B"))
+        digest.update(memoryview(key).cast("B"))
+        if index + 1 < len(bank.spans):
+            digest.update(memoryview(bank.keys[index + 1:]).cast("B"))
+    digest.update(memoryview(bank.values).cast("B"))
+    return digest.hexdigest()
+
+
 @dataclass(frozen=True, slots=True)
 class NativeTaskWorldPin:
     """One task catalogue and one sealed native publication over identical bytes."""
@@ -141,10 +166,12 @@ class NativeTaskWorldPin:
     _merkle_levels: tuple
     _derived_span_indices: MappingProxyType
     _derived_merkle_levels: tuple
+    _selector_proofs: tuple | None = None
 
     @classmethod
     def bind(cls, world, reader, memory, *, memory_view, latent_steps, expected_runtime_sha256,
-             output_constraint_sha256=None, max_source_verification_bytes, intervention_seed=None):
+             output_constraint_sha256=None, max_source_verification_bytes, intervention_seed=None,
+             source_anchor_control=False):
         if type(world) is not TaskWorld or type(reader) is not NativeLatentModel:
             raise TypeError("a TaskWorld and native latent reader are required")
         if type(memory) is not NativeSourceMemory:
@@ -159,6 +186,10 @@ class NativeTaskWorldPin:
             raise ValueError("unsupported native memory intervention")
         if memory_view == "continuation_off" and intervention_seed is None:
             raise ValueError("disabling a continuation requires a pinned seed")
+        if (type(source_anchor_control) is not bool or (memory_view == "source_anchor" and not source_anchor_control)
+                or (source_anchor_control and (intervention_seed is None
+                    or memory_view not in ("active", "source_anchor", "continuation_off")))):
+            raise ValueError("source-anchor addressing requires an explicit single-leaf control")
         if intervention_seed is not None:
             if type(intervention_seed) is not SourceSpan or intervention_seed not in memory._selective.acquired:
                 raise ValueError("native intervention seed must be an installed continuation")
@@ -245,9 +276,43 @@ class NativeTaskWorldPin:
                 "span": asdict(intervention_seed),
                 "span_proof": _span_proof(intervention_seed, derived_indices, derived_levels),
             }
+        selector_proofs = None
+        if source_anchor_control:
+            bank, position, source_key = reader._source_anchor_keys(memory, intervention_seed)
+            source_order = (span for shard in memory._selective.shards.values() for span in shard.spans)
+            if (any(span_indices[span] != index for index, span in enumerate(source_order))
+                    or any(derived_indices[span] != index for index, span in enumerate(bank.spans))):
+                raise ValueError("native source-anchor banks require canonical catalogue order")
+            source_keys = {span: key.tobytes() for shard in memory._selective.shards.values()
+                           for span, key in zip(shard.spans, shard.keys, strict=True)}
+            original_keys = {span: key.tobytes() for span, key in zip(bank.spans, bank.keys, strict=True)}
+            anchor_keys = {**original_keys, intervention_seed: source_key.tobytes()}
+            source_key_root, _, source_key_levels = _span_merkle(source_keys, source_keys)
+            original_key_root, _, original_key_levels = _span_merkle(original_keys, original_keys)
+            anchor_key_root, _, anchor_key_levels = _span_merkle(anchor_keys, anchor_keys)
+            effective_keys, effective_levels = ((anchor_keys, anchor_key_levels) if memory_view == "source_anchor"
+                                                else (original_keys, original_key_levels))
+            selector_proofs = ((MappingProxyType(source_keys), source_key_levels),
+                               (MappingProxyType(effective_keys), effective_levels))
+            record["source_anchor_address"] = {
+                "source_span_proof": _span_proof(intervention_seed, span_indices, merkle_levels),
+                "original_key_hex": bank.keys[position].tobytes().hex(),
+                "source_key_hex": source_key.tobytes().hex(),
+                "value_sha256": sha256(bank.values[position].tobytes()),
+                "original_bank_sha256": _address_bank_digest(bank),
+                "source_anchor_bank_sha256": _address_bank_digest(bank, (position, source_key)),
+                "top_k": reader._selector._k,
+                "score_margin": reader._selector._margin,
+                "source_key_root": source_key_root,
+                "original_key_root": original_key_root,
+                "anchor_key_root": anchor_key_root,
+                "source_key_proof": _span_proof(intervention_seed, span_indices, source_key_levels),
+                "original_key_proof": _span_proof(intervention_seed, derived_indices, original_key_levels),
+                "anchor_key_proof": _span_proof(intervention_seed, derived_indices, anchor_key_levels),
+            }
         record["pin_sha256"] = _digest_record(record)
         return cls(_packed(record), record["pin_sha256"], span_indices, merkle_levels,
-                   derived_indices, derived_levels)
+                   derived_indices, derived_levels, selector_proofs)
 
     def to_record(self):
         return json.loads(self._serialized)
@@ -256,6 +321,13 @@ class NativeTaskWorldPin:
         indices = self._derived_span_indices if derived else self._span_indices
         levels = self._derived_merkle_levels if derived else self._merkle_levels
         return _span_proof(span, indices, levels)
+
+    def selector_key_receipt(self, span, *, derived):
+        if self._selector_proofs is None:
+            return {}
+        keys, levels = self._selector_proofs[derived]
+        indices = self._derived_span_indices if derived else self._span_indices
+        return {"key_hex": keys[span].hex(), "key_proof": _span_proof(span, indices, levels)}
 
     @property
     def sha256(self):
@@ -267,7 +339,8 @@ class NativeTaskEpisodeBackend:
 
     def __init__(self, world, reader, memory, *, backend_id, tokenizer_id,
                  expected_runtime_sha256, output_token_allowlist=None,
-                 output_constraint_sha256=None, steps=None, memory_view="active", intervention_seed=None):
+                 output_constraint_sha256=None, steps=None, memory_view="active", intervention_seed=None,
+                 source_anchor_control=False):
         if type(backend_id) is not str or not backend_id.strip():
             raise ValueError("a stable native backend identifier is required")
         if type(tokenizer_id) is not str or not tokenizer_id.strip():
@@ -290,6 +363,7 @@ class NativeTaskEpisodeBackend:
         self._pin = None
         self._opened = False
         self._intervention_seed = intervention_seed
+        self._source_anchor_control = source_anchor_control
         self._memory = None
 
     def opening_record(self, world, policy, limits, tokenizer):
@@ -312,8 +386,15 @@ class NativeTaskEpisodeBackend:
                 latent_steps=self._steps, expected_runtime_sha256=self._expected_runtime_sha256,
                 output_constraint_sha256=self._output_constraint_sha256,
                 max_source_verification_bytes=limits.access.source_bytes, intervention_seed=self._intervention_seed,
+                source_anchor_control=self._source_anchor_control,
             )
             self._pin_memory_view()
+            address = pin.to_record().get("source_anchor_address")
+            if address is not None and self._memory_view in ("active", "source_anchor"):
+                bank, = self._memory._selective.derived
+                field = "original_bank_sha256" if self._memory_view == "active" else "source_anchor_bank_sha256"
+                if _address_bank_digest(bank) != address[field]:
+                    raise ValueError("native read bank differs from the pinned address control")
             self._pin = pin
         elif self._pin.to_record()["source_verification_byte_limit"] != limits.access.source_bytes:
             raise ValueError("native backend was already pinned under a different source byte budget")
@@ -327,6 +408,8 @@ class NativeTaskEpisodeBackend:
             self._memory = self._reader.without_derived(self._base_memory)
         elif self._memory_view == "continuation_off":
             self._memory = self._reader._without_continuation(self._base_memory, self._intervention_seed)
+        elif self._memory_view == "source_anchor":
+            self._memory = self._reader._with_source_anchor_address(self._base_memory, self._intervention_seed)
         else:
             self._memory = None
 
@@ -347,7 +430,8 @@ class NativeTaskEpisodeBackend:
             max_new_tokens=call.max_new_tokens, allowed_next_tokens=allowed_next_tokens,
         )
         expected_omission = self._intervention_seed if self._memory_view == "continuation_off" else None
-        if read.omitted_continuation != expected_omission:
+        expected_anchor = self._intervention_seed if self._memory_view == "source_anchor" else None
+        if read.omitted_continuation != expected_omission or read.source_anchor_seed != expected_anchor:
             raise ValueError("native read differs from the pinned continuation intervention")
         receipt = {
             "schema": _READ_SCHEMA,
@@ -397,7 +481,7 @@ def _validate_pin(record):
         "memory_view", "latent_steps",
         "stop_token_ids", "pin_sha256",
     }
-    optional = {"output_constraint_sha256", "intervention_seed"}
+    optional = {"output_constraint_sha256", "intervention_seed", "source_anchor_address"}
     if (type(record) is not dict or not expected <= record.keys() <= expected | optional
             or record["schema"] != _PIN_SCHEMA):
         raise ValueError("native task world pin has an invalid shape")
@@ -515,6 +599,43 @@ def _validate_pin(record):
                                   record["native_derived_span_count"])
     elif record["memory_view"] == "continuation_off":
         raise ValueError("native continuation intervention lacks a pinned seed")
+    if "source_anchor_address" in record:
+        address = record["source_anchor_address"]
+        if (type(address) is not dict
+                or set(address) != {"source_span_proof", "original_key_hex", "source_key_hex", "value_sha256",
+                                    "original_bank_sha256", "source_anchor_bank_sha256", "top_k", "score_margin",
+                                    "source_key_root", "original_key_root", "anchor_key_root",
+                                    "source_key_proof", "original_key_proof", "anchor_key_proof"}
+                or record["memory_view"] not in ("active", "source_anchor", "continuation_off")
+                or "intervention_seed" not in record
+                or type(address["top_k"]) is not int or not 1 <= address["top_k"] <= record["selector_tie_limit"]
+                or type(address["score_margin"]) is not int or address["score_margin"] < 0):
+            raise ValueError("native source-anchor address receipt is malformed")
+        _validate_span_membership(record["intervention_seed"]["span"], address["source_span_proof"],
+                                  versions, source_lengths, record["native_span_catalogue_sha256"],
+                                  record["native_span_count"])
+        if len(_address_key(address["original_key_hex"])) != len(_address_key(address["source_key_hex"])):
+            raise ValueError("native source-anchor address key widths differ")
+        for field in ("value_sha256", "original_bank_sha256", "source_anchor_bank_sha256",
+                      "source_key_root", "original_key_root", "anchor_key_root"):
+            require_digest(address[field])
+        target = record["intervention_seed"]
+        for name, key_field, proof, count in (
+            ("source", "source_key_hex", address["source_span_proof"], record["native_span_count"]),
+            ("original", "original_key_hex", target["span_proof"], record["native_derived_span_count"]),
+            ("anchor", "source_key_hex", target["span_proof"], record["native_derived_span_count"]),
+        ):
+            key_proof = address[f"{name}_key_proof"]
+            if (type(key_proof) is not dict or key_proof.get("index") != proof["index"]
+                    or not _verify_span_proof(target["span"], key_proof, address[f"{name}_key_root"], count,
+                                              key=_address_key(address[key_field]))):
+                raise ValueError("native source-anchor target key proof differs from the opening pin")
+        same_key = address["original_key_hex"] == address["source_key_hex"]
+        if (same_key != (address["original_bank_sha256"] == address["source_anchor_bank_sha256"])
+                or same_key != (address["original_key_root"] == address["anchor_key_root"])):
+            raise ValueError("native source-anchor keys and bank digests disagree")
+    elif record["memory_view"] == "source_anchor":
+        raise ValueError("native source-anchor view lacks a pinned address")
     snapshot = sha256(json.dumps(versions, sort_keys=True, separators=(",", ":"),
                                 ensure_ascii=False).encode("utf8"))
     if snapshot != record["source_snapshot_sha256"]:
@@ -538,7 +659,7 @@ def _validate_span_membership(span, proof, source_versions, source_lengths, span
 
 
 def _validate_selection_reads(reads, source_versions, source_lengths, source_seal, span_root,
-                              span_count, scored_count, tie_limit, excluded_index=None):
+                              span_count, scored_count, tie_limit, excluded_index=None, signed_keys=False):
     if type(reads) is not list:
         raise ValueError("native selection receipts must be a list")
     for receipt in reads:
@@ -557,15 +678,18 @@ def _validate_selection_reads(reads, source_versions, source_lengths, source_sea
         selected_count = len(receipt["selected"])
         if ((receipt["status"] == "empty" and selected_count != 0)
                 or (receipt["status"] in {"ready", "competing"}
-                    and selected_count != receipt["eligible"])
+                    and (selected_count != receipt["eligible"] or selected_count > tie_limit))
                 or (receipt["status"] == "competing" and selected_count < 2)
                 or (receipt["status"] == "overflow"
                     and not 0 < selected_count == tie_limit < receipt["eligible"])):
             raise ValueError("native selection receipt status differs from its selected rows")
         seen_indices = set()
         previous_score = None
+        fields = {"span", "score", "span_proof"}
+        if signed_keys:
+            fields |= {"key_hex", "key_proof"}
         for hit in receipt["selected"]:
-            if (type(hit) is not dict or set(hit) != {"span", "score", "span_proof"}
+            if (type(hit) is not dict or set(hit) != fields
                     or type(hit["score"]) is not int):
                 raise ValueError("native selected span receipt is invalid")
             if previous_score is not None and hit["score"] > previous_score:
@@ -591,13 +715,14 @@ def _selection_step(step, pin, *, derived=False):
 def _selection_receipt(receipt, pin, *, derived=False):
     return {"status": receipt.status,
             "selected": [{"span": asdict(hit.span), "score": hit.score,
-                          "span_proof": pin.span_proof(hit.span, derived=derived)} for hit in receipt.selected],
+                          "span_proof": pin.span_proof(hit.span, derived=derived),
+                          **pin.selector_key_receipt(hit.span, derived=derived)} for hit in receipt.selected],
             "eligible": receipt.eligible, "rows_scored": receipt.rows_scored,
             "observed_source_seal": receipt.observed_source_seal}
 
 
 def _validate_selection_steps(steps, reads, *, source_versions, source_lengths, source_seal,
-                              span_root, span_count, scored_count, tie_limit, excluded_index=None):
+                              span_root, span_count, scored_count, tie_limit, excluded_index=None, signed_keys=False):
     if type(steps) is not list or len(steps) != len(reads):
         raise ValueError("native ordered selection steps differ from their receipts")
     for step, receipt in zip(steps, reads, strict=True):
@@ -614,10 +739,74 @@ def _validate_selection_steps(steps, reads, *, source_versions, source_lengths, 
         if query.hex() != step["query_hex"]:
             raise ValueError("native selection query is not canonical")
     _validate_selection_reads(reads, source_versions, source_lengths, source_seal,
-                              span_root, span_count, scored_count, tie_limit, excluded_index)
+                              span_root, span_count, scored_count, tie_limit, excluded_index, signed_keys)
     if any(hit["score"] < step["cutoff"]
            for step in steps for hit in step["receipt"]["selected"]):
         raise ValueError("native selected score is below its recorded cutoff")
+
+
+def _address_key(text):
+    if type(text) is not str:
+        raise ValueError("native source-anchor address key is invalid")
+    key = bytes.fromhex(text)
+    if not key or key.hex() != text or 128 in key:
+        raise ValueError("native source-anchor address key is invalid")
+    return key
+
+
+def _validate_anchor_scores(pin, receipt):
+    address = pin["source_anchor_address"]
+    source = np.frombuffer(_address_key(address["source_key_hex"]), dtype=np.int8).astype(np.int64)
+    derived = np.frombuffer(_address_key(address["original_key_hex"]), dtype=np.int8).astype(np.int64)
+    if pin["memory_view"] == "source_anchor":
+        derived = source
+    source_index = address["source_span_proof"]["index"]
+    derived_index = pin["intervention_seed"]["span_proof"]["index"]
+    k = address["top_k"]
+    derived_root = address["anchor_key_root"] if pin["memory_view"] == "source_anchor" else address["original_key_root"]
+    for source_step, derived_step in zip(receipt["source_steps"], receipt["derived_steps"], strict=True):
+        if source_step["query_hex"] != derived_step["query_hex"]:
+            raise ValueError("native source-anchor read uses different queries in the two banks")
+        for step in (source_step, derived_step):
+            selection = step["receipt"]
+            cutoff = (1 if selection["eligible"] < k else
+                      max(1, selection["selected"][k - 1]["score"] - address["score_margin"]))
+            if cutoff != step["cutoff"]:
+                raise ValueError("native source-anchor cutoff differs from the reported selection")
+            hits = selection["selected"]
+            if any(a["score"] == b["score"] and a["span_proof"]["index"] > b["span_proof"]["index"]
+                   for a, b in zip(hits, hits[1:])):
+                raise ValueError("native source-anchor ties differ from canonical bank order")
+        query = np.frombuffer(_address_key(source_step["query_hex"]), dtype=np.int8)
+        if query.shape != source.shape:
+            raise ValueError("native source-anchor query width differs")
+        banks = [(source, source_step, source_index)]
+        if pin["memory_view"] != "continuation_off":
+            banks.append((derived, derived_step, derived_index))
+        for key, step, index in banks:
+            score = int(key @ query)
+            selection = step["receipt"]
+            hits = selection["selected"]
+            hit = next((row for row in hits if row["span_proof"]["index"] == index), None)
+            if hit is not None and hit["score"] != score:
+                raise ValueError("native source-anchor selected score differs from the pinned key")
+            if hit is None and score >= step["cutoff"]:
+                if selection["status"] != "overflow" or (score, -index) > (
+                        hits[-1]["score"], -hits[-1]["span_proof"]["index"]):
+                    raise ValueError("native source-anchor selection omitted a qualifying pinned key")
+        for step, root, count in (
+            (source_step, address["source_key_root"], pin["native_span_count"]),
+            (derived_step, derived_root, pin["native_derived_span_count"]),
+        ):
+            for hit in step["receipt"]["selected"]:
+                raw_key = _address_key(hit["key_hex"])
+                proof = hit["key_proof"]
+                if (type(proof) is not dict or proof.get("index") != hit["span_proof"]["index"]
+                        or not _verify_span_proof(hit["span"], proof, root, count, key=raw_key)):
+                    raise ValueError("native selector key proof differs from its committed row")
+                key = np.frombuffer(raw_key, dtype=np.int8).astype(np.int64)
+                if key.shape != query.shape or hit["score"] != int(key @ query):
+                    raise ValueError("native selection score differs from its committed key")
 
 
 def _validate_native_read(pin, request, response):
@@ -719,8 +908,8 @@ def _validate_native_read(pin, request, response):
                                   source_seal=pin["source_seal"],
                                   span_root=pin["native_span_catalogue_sha256"],
                                   span_count=pin["native_span_count"],
-                                  scored_count=pin["native_span_count"],
-                                  tie_limit=pin["selector_tie_limit"])
+                                  scored_count=pin["native_span_count"], tie_limit=pin["selector_tie_limit"],
+                                  signed_keys="source_anchor_address" in pin)
         excluded_index = (pin["intervention_seed"]["span_proof"]["index"]
                           if pin["memory_view"] == "continuation_off" else None)
         _validate_selection_steps(receipt["derived_steps"], receipt["derived_reads"],
@@ -729,7 +918,10 @@ def _validate_native_read(pin, request, response):
                                   span_root=pin["native_derived_span_catalogue_sha256"],
                                   span_count=pin["native_derived_span_count"],
                                   scored_count=pin["native_derived_span_count"] - (excluded_index is not None),
-                                  tie_limit=pin["selector_tie_limit"], excluded_index=excluded_index)
+                                  tie_limit=pin["selector_tie_limit"], excluded_index=excluded_index,
+                                  signed_keys="source_anchor_address" in pin)
+    if "source_anchor_address" in pin:
+        _validate_anchor_scores(pin, receipt)
     source_ready = sum(step["receipt"]["status"] == "ready" for step in receipt["source_steps"])
     derived_ready = sum(step["receipt"]["status"] == "ready" for step in receipt["derived_steps"])
     if (source_ready != receipt["routed_memory_steps"]

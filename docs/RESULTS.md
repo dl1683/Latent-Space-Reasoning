@@ -451,6 +451,39 @@ another route after publication. The result uses a deterministic backbone
 and supplied tasks. Learned coverage, generalization and a full-cost
 advantage remain open.
 
+## Changing a continuation's address with its value fixed
+
+**Scripted CPU software control.** A query-blind source worker installed
+two continuations in a six-source world. A fresh reader reopened the
+publication and replaced one derived key with the Q8 key of its verified
+seed source. The derived values, other key, corpus and selector were
+held fixed. The opening comparison scored two derived rows at each
+of two latent steps per arm. The rekey copied a 24-byte key matrix.
+Opening hashes and checks, source reads, and output forwards are
+separate from these counts.
+
+On two late prefixes, the original key scored `-10,668` and the
+source key scored `16,129` at the same first affected query. The
+anchor view applied the retained row and returned `L06` on both.
+The original-key and leaf-withheld arms were unresolved on both,
+and replaying the anchored view restored `L06`. Reopening the original
+view reproduced its earlier ledger. An unrelated query kept `L09`
+and identical selection traces. Validation rejected a forged score,
+inflated cutoffs, an over-cap ready selection and a forged overflow
+that hid the earlier tied target. A different row with a valid span
+proof could not pass with an invented score.
+
+Correcting a terminal source withdrew the stale operation while
+preserving the unrelated continuation. A later source-only worker
+reacquired the seed and installed other usable routes. Both address
+arms then returned `L10` for both prefixes. One anchored read still
+applied the target, while the original arm reached the same answer
+through another continuation. The historical anchored answer replayed
+byte for byte. This checks access and causality in a supplied numeric
+role grammar. The two prefixes share a target and provide no independent
+semantic grade, learned calibration or matched lifecycle advantage.
+[Paired fixture](../experiments/memory/test_task_episode.py)
+
 ## Reconciling a continuation bank without late tasks
 
 **CPU software control.** A source-only replay on the corrected

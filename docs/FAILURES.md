@@ -471,6 +471,15 @@ tokens and subsequent decisions. Record the effect at phase, action
 and evidence-choice boundaries during generated calibration.
 [Shared decoder control](RESULTS.md#sharing-one-decoder-between-ordinary-and-native-episodes)
 
+**Changing an address can change the route without changing the answer,
+26 November 2026.** The opening deterministic world left both tested
+prefixes unresolved with its original key. The source anchor let both
+use the retained operation. After a source-only repair, additional
+continuations recovered the corrected answer with either address.
+An applied route remains diagnostic until withdrawal, alternative
+routes and independent task outcomes are checked on the same source
+pin. [Address control](RESULTS.md#changing-a-continuations-address-with-its-value-fixed)
+
 ## Decisions carried forward
 
 1. **Central object:** one useful retained-state consequence/revision with a competent equally exposed conventional comparator; keep recurrence and feedback distinct. Receiver perfection on arbitrary tasks is not required, but the selected operation's positive control is.

@@ -1622,7 +1622,7 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
     Matching declarations and valid terminal records do not establish a blind
     comparison or complete usage. Inspect both finish records before using costs.
     """
-    if contrast not in ("policy", "probes", "memory", "native_text", "operator", "operator_restore"):
+    if contrast not in ("policy", "probes", "memory", "native_text", "operator", "operator_restore", "address"):
         raise ValueError("unknown episode contrast")
     if left == right or left.sha256 == right.sha256:
         raise ValueError("compare separate episodes")
@@ -1663,6 +1663,14 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
             native_toggle = True
             if bridge_a != bridge_b:
                 raise ValueError("native memory comparison also changes the recurrent task bridge")
+    elif contrast == "address":
+        if native_a is None or native_b is None or bridge_a is not None or bridge_b is not None:
+            raise ValueError("source-anchor comparison requires two native episodes without a second bridge")
+        body_a = {key: value for key, value in native_a.items() if key not in ("memory_view", "pin_sha256")}
+        body_b = {key: value for key, value in native_b.items() if key not in ("memory_view", "pin_sha256")}
+        views = {native_a["memory_view"], native_b["memory_view"]}
+        if views != {"active", "source_anchor"} or "source_anchor_address" not in body_a or body_a != body_b:
+            raise ValueError("source-anchor comparison requires one fixed publication and address control")
     elif contrast == "native_text":
         if (native_a is None) == (native_b is None):
             raise ValueError("native-text comparison needs one native episode and one text episode")
@@ -1686,9 +1694,9 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
         same_pin_toggle = a["pin"] == b["pin"] and (bridge_toggle or native_toggle)
         if (a["pin"] == b["pin"] and not same_pin_toggle) or a["policy"] != b["policy"]:
             raise ValueError("memory comparison must change only the retained state")
-    elif contrast in ("operator", "operator_restore"):
+    elif contrast in ("operator", "operator_restore", "address"):
         if a["pin"] != b["pin"] or a["policy"] != b["policy"]:
-            raise ValueError("operator comparisons require the exact same task pin and policy")
+            raise ValueError("intervention comparisons require the exact same task pin and policy")
     elif contrast == "native_text":
         if a["pin"] != b["pin"]:
             raise ValueError("native-text comparison requires the exact same source evidence pin")

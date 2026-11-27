@@ -113,6 +113,7 @@ class NativeSourceMemory:
     _publication_runtime_sha256: str | None = None
     _reader_fingerprint_sha256: str | None = None
     _omitted_continuation: SourceSpan | None = None
+    _source_anchor_seed: SourceSpan | None = None
 
     @property
     def seal(self):
@@ -170,7 +171,8 @@ class NativeSourceMemory:
         if (not isinstance(read, NativeLatentRead) or self._publication_seal is None
                 or read.publication_seal != self._publication_seal or read.source_seal != self.seal
                 or read.derived_omitted != self._derived_off or read.omitted_sources != self.omitted_sources
-                or read.omitted_continuation != self._omitted_continuation):
+                or read.omitted_continuation != self._omitted_continuation
+                or read.source_anchor_seed != self._source_anchor_seed):
             raise ValueError("evidence spans require a read from the matching reopened publication")
 
         def selected(receipts):
@@ -252,6 +254,7 @@ class NativeLatentRead:
     derived_steps: tuple[SelectionStep, ...] = ()
 
     omitted_continuation: SourceSpan | None = None
+    source_anchor_seed: SourceSpan | None = None
 
     def json_record(self):
         """Serialize a read receipt, preserving packed queries as hexadecimal."""
@@ -259,6 +262,8 @@ class NativeLatentRead:
         record["omitted_sources"] = sorted(self.omitted_sources)
         if self.omitted_continuation is None:
             del record["omitted_continuation"]
+        if self.source_anchor_seed is None:
+            del record["source_anchor_seed"]
         for name in ("source_steps", "derived_steps"):
             for step in record[name]:
                 step["query"] = step["query"].hex()
@@ -446,7 +451,7 @@ class NativeLatentModel:
     def _check_memory(self, memory, *, for_read=False):
         if type(memory) is not NativeSourceMemory or memory._owner is not self._owner:
             raise ValueError("source memory belongs to a different native reader")
-        if memory._omitted_continuation is not None and not for_read:
+        if not for_read and (memory._omitted_continuation is not None or memory._source_anchor_seed is not None):
             raise ValueError("an intervention view is read-only")
 
     def publish(self, epoch_directory: Path, seal: str, *, previous=None, max_source_bytes=None):
@@ -593,6 +598,25 @@ class NativeLatentModel:
         bank = (replace(shard, spans=shard.spans[:index] + shard.spans[index + 1:],
                         keys=_frozen(shard.keys[kept]), values=_frozen(shard.values[kept])),) if kept else ()
         return replace(memory, _selective=replace(selective, derived=bank), _omitted_continuation=seed)
+
+    def _source_anchor_keys(self, memory, seed):
+        self._check_memory(memory)
+        if (memory._publication_seal is None or memory._selective is None or memory._derived_off
+                or memory.omitted_sources or not isinstance(seed, SourceSpan)
+                or not memory._is_continuation_leaf(seed)):
+            raise ValueError("source-anchor addressing requires a sealed publication and an installed leaf")
+        derived, = memory._selective.derived
+        source = memory._selective.shards[seed.source_id]
+        position = derived.spans.index(seed)
+        return derived, position, source.keys[source.spans.index(seed)]
+
+    def _with_source_anchor_address(self, memory, seed):
+        """Change one derived selector key for a read-only counterfactual."""
+        derived, position, anchor = self._source_anchor_keys(memory, seed)
+        keys = derived.keys.copy()
+        keys[position] = anchor
+        bank = (replace(derived, keys=_frozen(keys)),)
+        return replace(memory, _selective=replace(memory._selective, derived=bank), _source_anchor_seed=seed)
 
     def without_derived(self, memory):
         """Keep the source observations and disable their acquired associations."""
@@ -1201,4 +1225,5 @@ class NativeLatentModel:
                                 run.applied_derived, None if memory is None else memory._publication_seal,
                                 False if memory is None else memory._derived_off,
                                 run.source_steps, run.derived_steps,
-                                None if memory is None else memory._omitted_continuation)
+                                None if memory is None else memory._omitted_continuation,
+                                None if memory is None else memory._source_anchor_seed)

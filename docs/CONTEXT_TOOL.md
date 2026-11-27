@@ -938,6 +938,18 @@ the original sealed publication tests restoration. Use
 `memory_view="memory_omitted"` with the same declaration for the
 optional-memory control.
 
+To compare one retained leaf's address, configure both backends with
+`source_anchor_control=True` and the same `intervention_seed`. Bind
+`memory_view="active"` and `memory_view="source_anchor"` on the same
+intact verified publication and use `read_episode_pair(...,
+contrast="address")`. The source-anchor view copies the seed's exact
+source selector key for that leaf only. Use a third
+`memory_view="continuation_off"` episode and compare it with active via
+`contrast="memory"`. Restore by opening the same anchored view again.
+All arms use the same task, policy and allowances. A new source pin
+must requalify the seed. Account for view creation, numerical hashes
+and verification separately from the selector rows scored.
+
 For source-only maintenance, call
 `reconcile_native_continuations` from
 `experiments.memory.native_reconciliation` with an intact attached

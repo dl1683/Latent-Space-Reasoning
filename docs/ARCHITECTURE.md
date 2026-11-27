@@ -582,6 +582,37 @@ both by task outcomes and rerouting side effects after edits. Retain current
 hidden-state addressing as the comparator.
 [Archived diagnosis](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md) · [Software control](RESULTS.md#isolating-one-retained-computation-across-a-source-revision)
 
+#### Changing only a continuation's address
+
+[SLICE] The source-anchor control replaces one installed leaf's derived
+Q8 key with the exact source key for its own seed span. It uses the
+same ordered derived values, other keys, source observations, model
+and selector. The view is read-only. It cannot be used as a publication
+or as input to worker maintenance. A new source epoch must supply a
+fresh, intact publication and a currently installed leaf.
+
+The episode pins the seed in both catalogues and binds the original and
+alternate key bytes, the unchanged value and the two effective derived
+banks. This commitment covers ordering, shapes, dtypes and numerical
+bytes. The reader verifies the actual bank it attaches. A recorded
+query can be rescored against both keys even if neither appears in a
+selection receipt. Separate key proofs bind each reported selected
+row to its pinned selector bank. The validator recomputes every
+reported score from its key and the recorded query. It checks the reported cutoff,
+selection bounds and canonical tie order, including whether an omitted
+hit should precede the weakest reported overflow hit.
+The selector may still suppress a competing or truncated group.
+
+At the first common query where the views diverge, a selected and
+applied target can isolate an access failure in the original key.
+A key change also affects rank, mixture and effective feedback strength.
+Later queries may differ as a result of recurrence. Freeze the seed
+and this rule before revealing late tasks. Report the no-op case if
+both keys match. Pair the address change with same-pin leaf withholding,
+restoration, an unrelated task and a source revision. The test can
+succeed on routing while leaving the graded answer unchanged when
+another continuation supplies the same result. [Software control](RESULTS.md#changing-a-continuations-address-with-its-value-fixed)
+
 #### Reconciling continuations before a new publication
 
 A separate maintenance pass reads an intact sealed native world and
