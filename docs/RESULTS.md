@@ -2430,6 +2430,47 @@ restore cross-need citation and include a capacity case with three needs that
 require distinct sources. Shared citations alone will not prove that the
 retriever can acquire disjoint evidence for every obligation.
 
+#### Where the compact five-need budget goes
+
+An offline reconstruction retokenized the original compact prompts and
+counterfactual deliveries for the same 77 calls across 11 visible pins. It used
+the same SmolLM2-360M-Instruct tokenizer and chat template for both sides.
+It verified the v7 archive and checked that every proposed delta reconstructed
+the exact original input lists. No model ran.
+
+| Input frame | Mean tokens per episode | Largest episode | Serialized episodes at or below 8,192 tokens |
+| --- | ---: | ---: | ---: |
+| Original compact frame, retokenized | 21,113.9 | 22,316 | 0/11 |
+| Need records as positional arrays with field names listed once per frame | 20,201.9 | 21,404 | 0/11 |
+| Need IDs only, with complete receipts | 8,375.9 | 9,578 | 5/11 |
+| Complete needs, with receipt span metadata omitted | 17,809.5 | 18,041 | 0/11 |
+| Need IDs only and receipt span metadata omitted | 5,071.5 | 5,303 | 11/11 |
+| Append-only need and receipt deltas | 7,816.0 | 8,229 | 10/11 |
+
+The serialized delta prompts used 63.0% fewer tokens than the original
+compact prompts, with at most 1,570 tokens on a single call. They carry each
+need and receipt once in each episode, with the prior entry counts. A host
+can reconstruct the full original prompts from earlier state. The current
+planner meters the full prompt it sends. Delivering earlier state to the
+model at the smaller token count remains open. A fair warm-text comparison
+would give both arms equivalent evidence access and account for cache
+reuse, state storage, and readout. The omission rows isolate costs and
+withhold content.
+
+Output is a separate constraint. The **unchanged archived replies** used
+3,232 to 3,241 tokens per episode in the archive's original tokenizer. All 11
+exceeded 1,792 in total, and all 11 had a 927-token call against the 512 cap.
+Fewer input tokens alone cannot make those replies fit. The existing
+evidence-action limit is also independent. Token counts reflect this
+maximum-text scripted workload, and the matched-input comparison uses a
+different tokenizer from the original preflight.
+
+Reproduce the input counts with `python -m experiments.memory.planner_state_cost`
+and the tokenizer-only snapshot at
+[revision a10cc151](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct/tree/a10cc1512eabd3dde888204e902eca88bddb4951).
+The program prints per-call counts and reads the existing v7 archive. The
+reported reconstruction used Transformers 5.12.1.
+
 ## Latent revision software verification, 24–25 November 2026
 
 The review branch's [latent field](../experiments/memory/latent_field.py) passed five focused CPU fixtures. An observation revision reached downstream states through a cycle and matched an independently assembled dense fixed-point reference within its declared residual bound. The fixtures also cover unrelated cells, earlier snapshots, restoration, aggregate contraction, inherited residuals and exhaustion without a write. The field initialized from supplied arrays and used no model weights.

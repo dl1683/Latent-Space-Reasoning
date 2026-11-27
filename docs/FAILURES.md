@@ -941,6 +941,15 @@ qualified, or all comparison arms receive a documented budget revision. Exact
 ledgers, summary and checksums are in
 [`whole_world_planner_preflight_2026-11-26_v7`](../experiments/results/whole_world_planner_preflight_2026-11-26_v7/).
 
+A [matched retokenization](RESULTS.md#where-the-compact-five-need-budget-goes)
+found that packing field names alone left all 11 serialized compact traces
+above 8,192 input tokens. Serialized need and receipt deltas totaled at most
+8,192 tokens on 10/11 archived compact traces. Recovering the original
+frames requires host-retained state, and the live planner meters the full
+prompt. A warm-text comparison needs equal evidence access and must
+account for cache reuse, storage, and readout. Every archived output path still
+exceeded the per-call and episode output limits.
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.
