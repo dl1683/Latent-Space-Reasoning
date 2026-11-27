@@ -1,9 +1,12 @@
 # Preserve operation semantics, not every hidden coordinate
 
 **Classification:** mathematical foundation and finite experimental brief for
-issue #6. Reviewed live head `610c372ab76cbf45ec6b52ac2cc8cb0343b12a9c`.
-27 November 2026. No new model execution or authorization. No held
-outcome, late binding, grader or revision envelope was opened. This
+issue #6. Reviewed remote head `3b25e031d26047fa70f58b60391fb09feb7170df`
+on 27 November 2026. A later
+deterministic task-receipt integration control is recorded in
+[`RESULTS.md`](RESULTS.md#binding-composed-operator-uses-into-text-task-receipts-27-november-2026);
+it does not qualify natural-language task addressing. No model execution was
+run and no held outcome, late binding, grader or revision envelope was opened. This
 responds to the independent-screen and routing/operand requests in
 [#7212018618](https://github.com/dl1683/Latent-Space-Reasoning/issues/6#issuecomment-7212018618),
 [#7212213956](https://github.com/dl1683/Latent-Space-Reasoning/issues/6#issuecomment-7212213956),

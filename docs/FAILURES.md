@@ -34,6 +34,28 @@ verification between retrieval turns for a bounded ordinary iterative
 control. The original compact v2 protocol keeps its existing envelope.
 [Evaluation plan](WHOLE_WORLD_EVALUATION.md).
 
+**Applied operator uses previously lacked their admission witness in task receipts.**
+The operator reader exposed an `operation_evidence` helper, but the native task
+backend recorded only the selected continuation rows. That left the task read
+without a validated link from an applied step to the source event that admitted
+its operation. The task pin now records each exact inventory entry, winning
+cohort and witness span; every applied step references that pinned entry, and
+the receipt validator checks the query address and selected cohort. A
+deterministic text-backed two-operation control passed active, same-pin
+continuation removal, restoration, derived-off and memory-omitted checks.
+This repairs the receipt path for that software fixture only. The witness is
+not yet a task finding citation, and no pretrained addressing or answer
+quality was measured. See [the bounded integration result](RESULTS.md#binding-composed-operator-uses-into-text-task-receipts-27-november-2026).
+
+**Task receipts do not yet cover scalar observation extensions.** An installed
+measurement can extend an operator outside its original witnessed cohort, but
+the current task receipt schema binds only the admitted cohort and witness.
+Active and continuation-off task pins now refuse such publications rather than
+reporting an incomplete evidence chain. The scalar completion also assumes
+unmeasured residual coordinates are zero; provenance alone would not establish
+those coordinates. Carry a sound consequence interval or obtain the missing
+witness before exposing the extension to task reads.
+
 **Process-local forecast drafts tied resolution to their proposer.**
 The original workspace call required the same pending Python objects at
 the opening and at source release. A separate fresh reader could only

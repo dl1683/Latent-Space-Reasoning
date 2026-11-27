@@ -42,6 +42,41 @@ def reply(**value):
     return PolicyReply(text, len(text.encode()), True)
 
 
+def test_native_task_reader_allowlist_is_explicit():
+    from experiments.memory.native_latent_recurrence import NativeLatentModel
+    from experiments.memory.native_operator_inventory import NativeOperatorInventoryModel
+    from experiments.memory.native_task_episode import _supports_task_episode_reader
+
+    class UnregisteredReader(NativeLatentModel):
+        pass
+
+    assert _supports_task_episode_reader(object.__new__(NativeLatentModel))
+    assert _supports_task_episode_reader(object.__new__(NativeOperatorInventoryModel))
+    assert not _supports_task_episode_reader(object.__new__(UnregisteredReader))
+
+
+def test_native_task_episode_admits_operator_inventory_reader(tmp_path):
+    from experiments.memory.native_publication import _reader_digest
+    from experiments.memory.native_task_episode import NativeTaskEpisodeBackend, NativeTaskWorldPin
+    from experiments.memory.test_native_operator_inventory import _reader as inventory_reader
+    from experiments.memory.verified_source_tool import sha256
+
+    pinned = world(tmp_path)
+    reader = inventory_reader(2)
+    runtime = sha256(b"operator inventory task episode")
+    backend = NativeTaskEpisodeBackend(
+        pinned, reader, None, backend_id="inventory", tokenizer_id="fixture",
+        expected_runtime_sha256=runtime,
+    )
+    assert backend._reader is reader
+    assert len(_reader_digest(reader)) == 64
+    with pytest.raises(TypeError, match="native source publication"):
+        NativeTaskWorldPin.bind(
+            pinned, reader, None, memory_view="active", latent_steps=2,
+            expected_runtime_sha256=runtime, max_source_verification_bytes=8192,
+        )
+
+
 def investigate(kind):
     def generate(call):
         frame = json.loads(dict(call.messages)["user"])

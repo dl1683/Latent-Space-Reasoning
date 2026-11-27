@@ -23,6 +23,44 @@ _MEMORY_VIEWS = {"active", "derived_off", "memory_omitted", "continuation_off", 
 _EMPTY_SPAN_ROOT = sha256(b"lsr-native-span-empty-v1")
 
 
+def _is_operator_inventory_reader(reader):
+    from experiments.memory.native_operator_inventory import NativeOperatorInventoryModel
+
+    return type(reader) is NativeOperatorInventoryModel
+
+
+def _supports_task_episode_reader(reader):
+    """Allow only native reader policies whose task receipt path is fingerprinted."""
+    return type(reader) is NativeLatentModel or _is_operator_inventory_reader(reader)
+
+
+def _operator_inventory_record(reader, memory, source_indices, source_levels, derived_indices, derived_levels):
+    from experiments.memory.native_operator_inventory import operator_entry_sha256
+
+    entries = getattr(memory._selective, "operator_inventory", ())
+    serialized = []
+    for entry in sorted(entries, key=lambda item: item.address):
+        gate = entry.admission
+        cohort = gate.draft.cohorts[gate.winner]
+        serialized.append({
+            "operator_sha256": operator_entry_sha256(entry),
+            "address": list(entry.address),
+            "rivals_sha256": entry.rivals_sha256,
+            "winner": gate.winner,
+            "candidate_count": len(gate.draft.cohorts),
+            "cohort": [{"span": asdict(span),
+                        "span_proof": _span_proof(span, derived_indices, derived_levels)}
+                       for span in cohort],
+            "witness": {"span": asdict(gate.witness),
+                        "span_proof": _span_proof(gate.witness, source_indices, source_levels)},
+        })
+    return {
+        "address_axes": list(reader._selector._operand_address_axes),
+        "max_operators": reader._max_operators,
+        "entries": serialized,
+    }
+
+
 def adapt_transformers_prefix_allowed_tokens_fn(prefix_allowed_tokens_fn):
     """Adapt Transformers' two-argument generation callback to the native prefix API."""
     if not callable(prefix_allowed_tokens_fn):
@@ -172,18 +210,23 @@ class NativeTaskWorldPin:
     def bind(cls, world, reader, memory, *, memory_view, latent_steps, expected_runtime_sha256,
              output_constraint_sha256=None, max_source_verification_bytes, intervention_seed=None,
              source_anchor_control=False):
-        if type(world) is not TaskWorld or type(reader) is not NativeLatentModel:
-            raise TypeError("a TaskWorld and native latent reader are required")
+        if type(world) is not TaskWorld or not _supports_task_episode_reader(reader):
+            raise TypeError("a TaskWorld and supported native latent reader are required")
         if type(memory) is not NativeSourceMemory:
             raise TypeError("a native source publication is required")
+        if memory_view not in _MEMORY_VIEWS:
+            raise ValueError("unsupported native memory intervention")
+        if (_is_operator_inventory_reader(reader) and memory_view in ("active", "continuation_off")
+                and getattr(memory._selective, "operand_observations", ())):
+            raise ValueError("task episodes do not yet bind scalar observation evidence")
         reader._check_memory(memory)
         if memory._scope.binary_sources:
             raise ValueError("text TaskWorld episodes cannot yet open typed binary source evidence")
         if (memory._selective is None or memory.omitted_sources or memory._derived_off
                 or memory._publication_seal is None):
             raise ValueError("task episodes require an intact, sealed selective publication")
-        if memory_view not in _MEMORY_VIEWS:
-            raise ValueError("unsupported native memory intervention")
+        if _is_operator_inventory_reader(reader) and (memory_view == "source_anchor" or source_anchor_control):
+            raise ValueError("operator inventory task episodes do not support source-anchor controls")
         if memory_view == "continuation_off" and intervention_seed is None:
             raise ValueError("disabling a continuation requires a pinned seed")
         if (type(source_anchor_control) is not bool or (memory_view == "source_anchor" and not source_anchor_control)
@@ -271,6 +314,11 @@ class NativeTaskWorldPin:
             "latent_steps": latent_steps,
             "stop_token_ids": sorted(reader._eos),
         }
+        if _is_operator_inventory_reader(reader):
+            record["task_reader_policy"] = "native-operator-inventory-v1"
+            record["operator_inventory"] = _operator_inventory_record(
+                reader, memory, span_indices, merkle_levels, derived_indices, derived_levels,
+            )
         if intervention_seed is not None:
             record["intervention_seed"] = {
                 "span": asdict(intervention_seed),
@@ -345,8 +393,8 @@ class NativeTaskEpisodeBackend:
             raise ValueError("a stable native backend identifier is required")
         if type(tokenizer_id) is not str or not tokenizer_id.strip():
             raise ValueError("a stable native tokenizer identifier is required")
-        if type(world) is not TaskWorld or type(reader) is not NativeLatentModel:
-            raise TypeError("a TaskWorld and native latent reader are required")
+        if type(world) is not TaskWorld or not _supports_task_episode_reader(reader):
+            raise TypeError("a TaskWorld and supported native latent reader are required")
         if (output_token_allowlist is not None) != (output_constraint_sha256 is not None):
             raise ValueError("token constraints require a paired stable decoder digest")
         if output_token_allowlist is not None:
@@ -468,6 +516,9 @@ class NativeTaskEpisodeBackend:
             "omitted_sources": sorted(read.omitted_sources),
             "derived_omitted": read.derived_omitted,
         }
+        if _is_operator_inventory_reader(self._reader):
+            receipt["operator_uses"] = ([] if self._memory is None
+                                        else list(self._reader.operation_uses(self._memory, read)))
         reply = PolicyReply(read.text, len(read.token_ids), read.terminated, receipt)
         _validate_native_read(self._pin.to_record(), asdict(call), asdict(reply))
         return reply
@@ -478,6 +529,65 @@ class NativeTaskEpisodeBackend:
         decoded = self._reader._tokenizer.decode(receipt["output_token_ids"], skip_special_tokens=True)
         if decoded != reply.text:
             raise ValueError("native reply text differs from its output token IDs")
+
+
+def _validate_operator_inventory(record, versions, source_lengths):
+    from experiments.memory.native_operator_inventory import operator_entry_sha256_fields
+
+    inventory = record.get("operator_inventory")
+    if (type(inventory) is not dict or set(inventory) != {"address_axes", "max_operators", "entries"}
+            or type(inventory["max_operators"]) is not int
+            or not 1 <= inventory["max_operators"] <= 64
+            or type(inventory["address_axes"]) is not list
+            or not inventory["address_axes"]
+            or any(type(axis) is not int or axis < 0 for axis in inventory["address_axes"])
+            or inventory["address_axes"] != sorted(set(inventory["address_axes"]))
+            or type(inventory["entries"]) is not list
+            or len(inventory["entries"]) > inventory["max_operators"]):
+        raise ValueError("native task operator inventory is malformed")
+    previous_address, seen_ids = None, set()
+    for entry in inventory["entries"]:
+        expected_fields = {"operator_sha256", "address", "rivals_sha256", "winner", "candidate_count",
+                           "cohort", "witness"}
+        if (type(entry) is not dict or set(entry) != expected_fields
+                or type(entry["address"]) is not list
+                or len(entry["address"]) != len(inventory["address_axes"])
+                or any(type(value) is not int or not -127 <= value <= 127 for value in entry["address"])
+                or type(entry["winner"]) is not int or type(entry["candidate_count"]) is not int
+                or entry["candidate_count"] < 2 or not 0 <= entry["winner"] < entry["candidate_count"]
+                or type(entry["cohort"]) is not list or not entry["cohort"]
+                or type(entry["witness"]) is not dict
+                or set(entry["witness"]) != {"span", "span_proof"}):
+            raise ValueError("native task operator entry is malformed")
+        address = tuple(entry["address"])
+        if previous_address is not None and address <= previous_address:
+            raise ValueError("native task operator addresses are not unique and ordered")
+        previous_address = address
+        require_digest(entry["operator_sha256"])
+        require_digest(entry["rivals_sha256"])
+        if entry["operator_sha256"] in seen_ids:
+            raise ValueError("native task operator identities are duplicated")
+        seen_ids.add(entry["operator_sha256"])
+        cohort_spans, seen_spans = [], set()
+        for item in entry["cohort"]:
+            if type(item) is not dict or set(item) != {"span", "span_proof"}:
+                raise ValueError("native task operator cohort receipt is malformed")
+            _validate_span_membership(item["span"], item["span_proof"], versions, source_lengths,
+                                      record["native_derived_span_catalogue_sha256"],
+                                      record["native_derived_span_count"])
+            key = _packed(item["span"])
+            if key in seen_spans:
+                raise ValueError("native task operator cohort contains duplicate rows")
+            seen_spans.add(key)
+            cohort_spans.append(item["span"])
+        _validate_span_membership(entry["witness"]["span"], entry["witness"]["span_proof"], versions,
+                                  source_lengths, record["native_span_catalogue_sha256"],
+                                  record["native_span_count"])
+        computed = operator_entry_sha256_fields(
+            address, entry["rivals_sha256"], entry["winner"], cohort_spans, entry["witness"]["span"],
+        )
+        if computed != entry["operator_sha256"]:
+            raise ValueError("native task operator identity differs from its pinned admission")
 
 
 def _validate_pin(record):
@@ -491,7 +601,8 @@ def _validate_pin(record):
         "memory_view", "latent_steps",
         "stop_token_ids", "pin_sha256",
     }
-    optional = {"output_constraint_sha256", "intervention_seed", "source_anchor_address"}
+    optional = {"output_constraint_sha256", "intervention_seed", "source_anchor_address",
+                "task_reader_policy", "operator_inventory"}
     if (type(record) is not dict or not expected <= record.keys() <= expected | optional
             or record["schema"] != _PIN_SCHEMA):
         raise ValueError("native task world pin has an invalid shape")
@@ -600,6 +711,16 @@ def _validate_pin(record):
             or type(record["selector_tie_limit"]) is not int or record["selector_tie_limit"] < 1):
         raise ValueError("native derived span catalogue or selector limit is invalid")
     versions = {source_id: pair[0] for source_id, pair in observed.items()}
+    reader_policy = record.get("task_reader_policy")
+    if reader_policy is None:
+        if "operator_inventory" in record:
+            raise ValueError("native task operator inventory lacks its reader policy")
+    elif reader_policy == "native-operator-inventory-v1":
+        if "operator_inventory" not in record or record["memory_view"] == "source_anchor":
+            raise ValueError("native task operator inventory is missing or uses an unsupported view")
+        _validate_operator_inventory(record, versions, source_lengths)
+    else:
+        raise ValueError("native task reader policy is unsupported")
     if "intervention_seed" in record:
         seed = record["intervention_seed"]
         if type(seed) is not dict or set(seed) != {"span", "span_proof"}:
@@ -677,7 +798,8 @@ def _validate_selection_reads(reads, source_versions, source_lengths, source_sea
                 or set(receipt) != {"status", "selected", "eligible", "rows_scored", "observed_source_seal"}
                 or receipt["status"] not in {"empty", "ready", "competing", "overflow"}
                 or type(receipt["eligible"]) is not int or receipt["eligible"] < 0
-                or type(receipt["rows_scored"]) is not int or receipt["rows_scored"] != scored_count
+                or type(receipt["rows_scored"]) is not int or receipt["rows_scored"] < 0
+                or (scored_count is not None and receipt["rows_scored"] != scored_count)
                 or receipt["eligible"] > receipt["rows_scored"]
                 or type(receipt["selected"]) is not list
                 or len(receipt["selected"]) > receipt["eligible"]
@@ -753,6 +875,64 @@ def _validate_selection_steps(steps, reads, *, source_versions, source_lengths, 
     if any(hit["score"] < step["cutoff"]
            for step in steps for hit in step["receipt"]["selected"]):
         raise ValueError("native selected score is below its recorded cutoff")
+
+
+def _validate_operator_uses(pin, receipt):
+    if pin.get("task_reader_policy") != "native-operator-inventory-v1":
+        if "operator_uses" in receipt:
+            raise ValueError("non-inventory native reader reported operator uses")
+        return
+    uses = receipt.get("operator_uses")
+    entries = pin["operator_inventory"]["entries"]
+    axes = pin["operator_inventory"]["address_axes"]
+    by_id = {entry["operator_sha256"]: entry for entry in entries}
+    by_address = {tuple(entry["address"]): entry for entry in entries}
+    excluded_span = (pin.get("intervention_seed", {}).get("span")
+                     if pin["memory_view"] == "continuation_off" else None)
+    if type(uses) is not list or any(type(use) is not dict or set(use) != {"step_index", "operator_sha256"}
+                                     for use in uses):
+        raise ValueError("native applied operator evidence is malformed")
+    step_indices = [use["step_index"] for use in uses]
+    if (any(type(index) is not int for index in step_indices)
+            or len(set(step_indices)) != len(step_indices)):
+        raise ValueError("native applied operator steps are duplicated or malformed")
+    applied_indices = [index for index, step in enumerate(receipt["derived_steps"]) if step["applied"]]
+    for step in receipt["derived_steps"]:
+        try:
+            query = np.frombuffer(bytes.fromhex(step["query_hex"]), dtype=np.int8)
+        except (TypeError, ValueError) as error:
+            raise ValueError("native operator query is malformed") from error
+        if not axes or max(axes) >= len(query):
+            raise ValueError("native operator query has no valid address coordinates")
+        address = tuple(map(int, query[axes]))
+        entry = by_address.get(address)
+        expected_rows = 0
+        if entry is not None:
+            cohort = { _packed(item["span"]) for item in entry["cohort"] }
+            expected_rows = len(cohort) - int(
+                excluded_span is not None and _packed(excluded_span) in cohort
+            )
+        if step["receipt"]["rows_scored"] != expected_rows:
+            raise ValueError("native operator row count differs from its pinned address inventory")
+    if sorted(step_indices) != applied_indices:
+        raise ValueError("native applied operator evidence omits or adds an applied step")
+    for use in uses:
+        entry = by_id.get(use["operator_sha256"])
+        index = use["step_index"]
+        if entry is None or not 0 <= index < len(receipt["derived_steps"]):
+            raise ValueError("native applied operator is outside the pinned inventory")
+        step = receipt["derived_steps"][index]
+        try:
+            query = np.frombuffer(bytes.fromhex(step["query_hex"]), dtype=np.int8)
+        except (TypeError, ValueError) as error:
+            raise ValueError("native operator query is malformed") from error
+        if (not axes or max(axes) >= len(query)
+                or tuple(map(int, query[axes])) != tuple(entry["address"])):
+            raise ValueError("native operator address differs from its applied task query")
+        allowed = {_packed(item["span"]) for item in entry["cohort"]}
+        selected = {_packed(item["span"]) for item in step["receipt"]["selected"]}
+        if not selected or not selected <= allowed:
+            raise ValueError("native applied operator selected a row outside its witnessed cohort")
 
 
 def _address_key(text):
@@ -833,6 +1013,8 @@ def _validate_native_read(pin, request, response):
         "routed_memory_steps", "applied_memory_steps",
         "routed_derived_steps", "applied_derived_steps", "omitted_sources", "derived_omitted",
     }
+    if pin.get("task_reader_policy") == "native-operator-inventory-v1":
+        expected.add("operator_uses")
     optional = {"output_constraint_sha256"}
     if (set(receipt) not in (expected, expected | optional)
             or receipt["schema"] != _READ_SCHEMA):
@@ -927,7 +1109,8 @@ def _validate_native_read(pin, request, response):
                                   source_seal=pin["source_seal"],
                                   span_root=pin["native_derived_span_catalogue_sha256"],
                                   span_count=pin["native_derived_span_count"],
-                                  scored_count=pin["native_derived_span_count"] - (excluded_index is not None),
+                                  scored_count=(None if pin.get("task_reader_policy") == "native-operator-inventory-v1"
+                                                else pin["native_derived_span_count"] - (excluded_index is not None)),
                                   tie_limit=pin["selector_tie_limit"], excluded_index=excluded_index,
                                   signed_keys="source_anchor_address" in pin)
     if "source_anchor_address" in pin:
@@ -942,6 +1125,7 @@ def _validate_native_read(pin, request, response):
     if (sum(step["applied"] for step in receipt["derived_steps"])
             != receipt["applied_derived_steps"]):
         raise ValueError("native applied-derived count differs from its ordered selection trace")
+    _validate_operator_uses(pin, receipt)
 
 
 def validate_native_episode_records(records):

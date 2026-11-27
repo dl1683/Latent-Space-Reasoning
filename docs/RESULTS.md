@@ -103,6 +103,38 @@ fixed norm cap refused. This is a linear reference for the later
 comparison, with supplied forms, known norms and exact observations.
 [Control and scope](ARCHITECTURE.md#bounding-a-downstream-decision-from-partial-operator-evidence)
 
+## Binding composed operator uses into text task receipts, 27 November 2026
+
+**Deterministic software control.** The native task host now admits the exact
+`NativeOperatorInventoryModel` reader alongside the base native reader; other
+subclasses remain rejected. Its task pin records the operator address axes,
+capacity, admitted address, selected cohort, and source admission witness with
+Merkle proofs. Each applied derived step carries an operator identity. The
+receipt validator checks that the task query addresses that pinned operator,
+the selected rows belong to its admitted cohort, and the witness and cohort
+spans belong to the pinned source and derived catalogues. Operator-specific
+row counts are checked against the addressed cohort rather than the entire
+derived bank.
+
+A text-backed fixture with a deterministic supplied backbone admitted two
+operations and exercised the real task-pin and native-receipt validators. The
+active `join` read applied both and returned `blue`; removing one continuation
+at the same pin returned an empty output and removed its operator-use record;
+restoring the active pin recovered `blue` and both records. The derived-off
+and memory-omitted controls recorded no operator uses. A wrong operator ID was
+rejected by the address check. Source-anchor controls remain unsupported for
+this reader. Active and continuation-off task pins refuse publications with a
+scalar operand observation until its evidence and uncertainty are represented
+in the task receipt.
+
+The integrated focused suites passed **42 tests** across `test_native_operator_inventory.py`
+and `test_task_episode.py`. This is a CPU software integration result, not a
+pretrained model run. The fixture supplies its coordinates, labels, operations
+and output behavior; it does not test natural-language task-to-address
+inference, task-level finding support, the planner's search/read loop, or an
+iterative-RAG/exact-join comparison. The 0.6B competence gate and whole-world
+evaluation remain unpassed.
+
 ## Qualifying a byte-weighted revision forecast, 26 November 2026
 
 **Software controls.** Two newly introduced rows of 32 and 10 bytes

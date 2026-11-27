@@ -61,6 +61,26 @@ def _entries(world):
     return getattr(world, "operator_inventory", ())
 
 
+def operator_entry_sha256_fields(address, rivals_sha256, winner, cohort, witness):
+    """Identify one address, admitted cohort and source witness."""
+    span_record = lambda span: span if type(span) is dict else asdict(span)
+    return sha256(_encode([
+        "lsr-task-operator-entry-v1", list(address), rivals_sha256,
+        winner, [span_record(span) for span in cohort], span_record(witness),
+    ]))
+
+
+def operator_entry_sha256(entry):
+    """Identify one pinned address, admitted cohort and source witness."""
+    if type(entry) is not _ActiveOperator:
+        raise TypeError("operator identity requires an active inventory entry")
+    gate = entry.admission
+    return operator_entry_sha256_fields(
+        entry.address, entry.rivals_sha256, gate.winner,
+        gate.draft.cohorts[gate.winner], gate.witness,
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class _PreparedOperators:
     by_address: MappingProxyType
@@ -176,6 +196,30 @@ class NativeOperatorInventoryModel(NativeOperandModel):
             if applied.intersection(gate.draft.cohorts[gate.winner]):
                 evidence[gate.witness] = None
         return tuple(evidence)
+
+    def operation_uses(self, memory, read):
+        """Bind each applied task read step to its admitted operator and witness."""
+        self._check_memory(memory, for_read=True)
+        entries = {entry.address: entry for entry in _entries(memory._selective)}
+        axes = list(self._selector._operand_address_axes)
+        uses = []
+        for step_index, step in enumerate(read.derived_steps):
+            if not step.applied:
+                continue
+            query = np.frombuffer(step.query, dtype=np.int8)
+            if not axes or max(axes) >= len(query):
+                raise ValueError("applied operator step has no valid address query")
+            address = tuple(map(int, query[axes]))
+            entry = entries.get(address)
+            if entry is None:
+                raise ValueError("applied operator step has no pinned inventory entry")
+            gate = entry.admission
+            cohort = set(gate.draft.cohorts[gate.winner])
+            selected = {hit.span for hit in step.receipt.selected}
+            if not selected or not selected <= cohort:
+                raise ValueError("applied operator step selected rows outside its admitted cohort")
+            uses.append({"step_index": step_index, "operator_sha256": operator_entry_sha256(entry)})
+        return tuple(uses)
 
     def _revise_selection(self, previous, sources, changed):
         revised = super()._revise_selection(previous, sources, changed)

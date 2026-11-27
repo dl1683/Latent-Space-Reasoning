@@ -31,6 +31,14 @@ The [CPU runner](docs/CONTEXT_TOOL.md#running-the-four-case-ordinary-calibration
 checks the input digest, opens each requested source epoch, and
 records first-answer or resource-stop outcomes for the four case IDs.
 
+The native task adapter now pins admitted operator cohorts and their source
+witnesses, then links each applied read step to its operation. A deterministic
+text fixture composed two operations, lost its output after same-pin removal,
+and recovered it after restoration; 42 focused software checks passed. This
+verifies the task-receipt integration only: it provides no pretrained
+task-addressing result or comparison against competent text/RAG.
+[Details and limits](docs/RESULTS.md#binding-composed-operator-uses-into-text-task-receipts-27-november-2026).
+
 An opt-in v2 compact search/read wire now fits one scripted six-source route through the ordinary and sealed native adapters under the registered caps. Both use the same token constraint and can cite any verified episode read. The registered planner gate remains **NOT PASSED** pending broader feasibility and independently graded generated answers. The next research step is a fresh, independently scored maintenance-to-late-task screen with same-pin removal/restoration and matched text and exact-join controls; see the [evaluation plan](docs/WHOLE_WORLD_EVALUATION.md).
 
 The Rank 1 receiver run remains **PAUSED** after its three-round unsuccessful-repair cap. Separately, bounded task-directed whole-world research is active on `research-review`. The implemented context tool is a **navigation slice**: it returns bounded, byte-verified source evidence through Python, CLI and MCP. Large Markdown sources can return byte-verified heading blocks or titled prose from an oversized heading. General latent reasoning, whole-corpus completeness, calibrated absence, multimodal optional-memory operation and complete efficiency remain research objectives.

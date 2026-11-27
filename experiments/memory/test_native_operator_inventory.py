@@ -1,4 +1,4 @@
-from dataclasses import replace
+from dataclasses import asdict, replace
 from fractions import Fraction
 import json
 from shutil import copytree
@@ -34,6 +34,10 @@ torch = pytest.importorskip("torch")
 class _Tokenizer:
     _ids = {"join": 1, "first": 2, "second": 3, "note": 4, "off span": 7, "different operand": 8}
 
+    def __init__(self, ids=None):
+        self._ids = dict(type(self)._ids)
+        self._ids.update(ids or {})
+
     def encode(self, text, **_):
         return [self._ids[text]]
 
@@ -42,14 +46,17 @@ class _Tokenizer:
 
 
 class _Backbone(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, extra_rows=None):
         super().__init__()
         self.config = SimpleNamespace(max_position_embeddings=12)
-        rows = torch.zeros(9, 8)
+        rows = torch.zeros(64, 8)
         rows[1:4, :3] = torch.atanh(torch.tensor([[48, 0, 8], [48, 0, 8], [0, 48, 112]]) / 127)
         rows[7, :3] = torch.atanh(torch.tensor([48, 4, 8]) / 127)
         rows[8, :3] = torch.atanh(torch.tensor([49, 3, 8]) / 127)
         rows[1, 6] = 1
+        for token, vector in (extra_rows or {}).items():
+            bounded = torch.tensor(np.clip(np.asarray(vector, dtype=np.float64), -0.99999, 0.99999))
+            rows[token] = torch.atanh(bounded)
         self.lookup = torch.nn.Embedding.from_pretrained(rows)
 
     def get_input_embeddings(self):
@@ -57,7 +64,7 @@ class _Backbone(torch.nn.Module):
 
     def get_output_embeddings(self):
         def scores(hidden):
-            logits = hidden.new_full((1, 1, 7), -1)
+            logits = hidden.new_full((1, 1, self.lookup.num_embeddings), -1)
             logits[..., 0] = 0.12
             logits[..., 5] = hidden[..., 5]
             logits[..., 6] = -hidden[..., 5]
@@ -69,6 +76,8 @@ class _Backbone(torch.nn.Module):
         state = inputs_embeds.clone()
         prefix = 0 if past_key_values is None else past_key_values.get_seq_length()
         worker = bool(state[..., 7].any()) if prefix == 0 else past_key_values.worker
+        if not use_cache:
+            worker = False
         if worker and not prefix:
             state[..., :3] = torch.atanh(state[..., :3])
         if worker and prefix:
@@ -107,6 +116,51 @@ def _reader(transport_l1):
         derived_gain=1, eos_ids=(0,), top_k=1, tie_limit=2, address_axes=(2,), derived_transport_l1=transport_l1,
         source_ingress=_ingress, source_ingress_sha256=sha256(b"eight supplied grayscale coordinates"),
     )
+
+
+def _text_reader(transport_l1, source_texts, source_vectors):
+    ids = {text: index for index, text in enumerate(source_texts.values(), start=8)}
+    vectors = {ids[text]: np.asarray(source_vectors[source], dtype=np.float64) / 127
+               for source, text in source_texts.items()}
+    tokenizer = _Tokenizer(ids)
+    projection = np.eye(8, 3)
+    observation = np.diag((0, 0, 0, 1, 0, 0, 0, 0))
+    kernel = LinearFeedbackKernel(query=projection, carry=None, observation_key=projection,
+                                  observation_value=observation, feedback_key=projection,
+                                  feedback_value=np.zeros((8, 8)), max_steps=2)
+    reader = NativeOperatorInventoryModel(
+        _Backbone(vectors).eval(), tokenizer, kernel, source_chars=16, context_tokens=12, latent_steps=2,
+        output_tokens=1, representation_scale=1, memory_gain=1, null_weight=0.001,
+        derived_gain=1, eos_ids=(0,), top_k=1, tie_limit=2, address_axes=(2,),
+        derived_transport_l1=transport_l1,
+    )
+    return reader
+
+
+def test_task_receipt_counts_unomitted_rows_in_a_partial_operator_cohort():
+    from experiments.memory.native_task_episode import _validate_operator_uses
+    from experiments.memory.verified_source_tool import SourceSpan
+
+    spans = (
+        SourceSpan("a" * 32, sha256(b"version-a"), 0, 1, sha256(b"row-a")),
+        SourceSpan("b" * 32, sha256(b"version-b"), 0, 1, sha256(b"row-b")),
+    )
+    entry = {"address": [8], "operator_sha256": sha256(b"operator"),
+             "cohort": [{"span": asdict(span)} for span in spans]}
+    pin = {
+        "task_reader_policy": "native-operator-inventory-v1",
+        "memory_view": "continuation_off", "intervention_seed": {"span": asdict(spans[0])},
+        "operator_inventory": {"address_axes": [0], "entries": [entry]},
+    }
+    receipt = {
+        "operator_uses": [],
+        "derived_steps": [{"applied": False, "query_hex": bytes((8,)).hex(),
+                            "receipt": {"rows_scored": 1, "selected": []}}],
+    }
+    _validate_operator_uses(pin, receipt)
+    receipt["derived_steps"][0]["receipt"]["rows_scored"] = 0
+    with pytest.raises(ValueError, match="row count differs"):
+        _validate_operator_uses(pin, receipt)
 
 
 @pytest.mark.parametrize("measurement, install, dependency", (
@@ -499,6 +553,43 @@ def test_source_workers_add_and_withdraw_independent_operations_in_one_reasoner(
     assert admitted_b.witness in serving.operation_evidence(both, second_read)
     assert {admitted_a.witness, admitted_b.witness} <= set(serving.operation_evidence(both, joined))
 
+    from experiments.memory.native_task_episode import (
+        _operator_inventory_record, _span_merkle, _validate_operator_inventory, _validate_operator_uses,
+    )
+
+    source_spans = tuple(item.span for rows in both._sources.values() for item in rows)
+    derived_spans = tuple(both._selective.acquired)
+    source_root, source_indices, source_levels = _span_merkle(source_spans)
+    derived_root, derived_indices, derived_levels = _span_merkle(derived_spans)
+    inventory_record = _operator_inventory_record(
+        serving, both, source_indices, source_levels, derived_indices, derived_levels,
+    )
+    versions = {source: version.sha256 for source, version in both._scope.manifest.items()}
+    source_lengths = {source: max(item.span.end_byte for item in rows)
+                      for source, rows in both._sources.items()}
+    _validate_operator_inventory({
+        "operator_inventory": inventory_record,
+        "native_span_catalogue_sha256": source_root,
+        "native_span_count": len(source_spans),
+        "native_derived_span_catalogue_sha256": derived_root,
+        "native_derived_span_count": len(derived_spans),
+    }, versions, source_lengths)
+    operator_uses = serving.operation_uses(both, joined)
+    assert len(operator_uses) == joined.applied_derived_steps == 2
+    task_pin = {"memory_view": "active", "task_reader_policy": "native-operator-inventory-v1",
+                "operator_inventory": inventory_record}
+    receipt_steps = [{
+        "applied": step.applied,
+        "query_hex": step.query.hex(),
+        "receipt": {"rows_scored": step.receipt.rows_scored,
+                    "selected": [{"span": asdict(hit.span)} for hit in step.receipt.selected]},
+    } for step in joined.derived_steps]
+    _validate_operator_uses(task_pin, {"operator_uses": list(operator_uses), "derived_steps": receipt_steps})
+    wrong_use = list(operator_uses)
+    wrong_use[0] = {**wrong_use[0], "operator_sha256": wrong_use[1]["operator_sha256"]}
+    with pytest.raises(ValueError, match="address differs"):
+        _validate_operator_uses(task_pin, {"operator_uses": wrong_use, "derived_steps": receipt_steps})
+
     missing_a = serving._without_continuation(both, a_span)
     b_span = both.source_spans(br)[0]
     missing_b = serving._without_continuation(both, b_span)
@@ -599,3 +690,111 @@ def test_source_workers_add_and_withdraw_independent_operations_in_one_reasoner(
     assert latest.source_spans(newcomer)[0] in latest.derived_seeds
     assert serving("join", memory=latest).text == ""
     assert serving("second", memory=latest, steps=1).text == "blue"
+
+
+def test_text_operator_inventory_pins_and_receipts_bind_each_applied_operation(tmp_path):
+    from experiments.memory.native_task_episode import NativeTaskEpisodeBackend
+    from experiments.memory.native_workspace import NativeWorkspace
+    from experiments.memory.source_revision_feed import write_source_delta
+    from experiments.memory.task_episode import EpisodeLimits, EpisodePolicy, PolicyCall
+    from experiments.memory.task_evidence import TaskBudget, TaskWorld
+    from experiments.memory.verified_source_tool import SourceSpan
+
+    a, ar, b, br, support_a, support_ar, support_b, support_br, note = (
+        char * 32 for char in "123456789"
+    )
+    vectors = {
+        a: (96, 0, 8, 0, 0, 0, 0, 127), ar: (-96, 0, 8, 0, 0, 0, 0, 127),
+        b: (0, 96, 112, 0, 0, 0, 0, 127), br: (0, -96, 112, 0, 0, 0, 0, 127),
+        support_a: (127, 0, 8, 90, 0, 0, 0, 0), support_ar: (-127, 0, 8, 90, 0, 0, 0, 0),
+        support_b: (0, 127, 127, 90, 0, 0, 0, 0), support_br: (0, -127, 127, 90, 0, 0, 0, 0),
+        note: (0, 0, 0, 0, 0, 0, 0, 0),
+    }
+    source_texts = {source: f"row{index:02d}" for index, source in enumerate(vectors)}
+    opening_raw = {source: source_texts[source].encode() for source in vectors}
+    limit, runtime = 131_072, sha256(b"text operator task receipt fixture")
+    opening_dir = tmp_path / "opening-feed"
+    opening_epoch = write_source_delta(opening_dir, opening_raw, max_bytes=limit)
+    event_a = operand_outcome_id(SourceSpan(
+        a, opening_epoch.manifest[a].sha256, 0, len(opening_raw[a]), sha256(opening_raw[a]),
+    ))
+    event_b = operand_outcome_id(SourceSpan(
+        b, opening_epoch.manifest[b].sha256, 0, len(opening_raw[b]), sha256(opening_raw[b]),
+    ))
+    source_texts[event_a], source_texts[event_b] = "eventA", "eventB"
+    vectors[event_a], vectors[event_b] = (0, 0, 0, 0, 81, 0, 0, 0), (0, 0, 0, 0, -81, 0, 0, 0)
+
+    worker = _text_reader(2, source_texts, vectors)
+    workspace = NativeWorkspace.create(
+        tmp_path / "workspace", worker,
+        worker.publish(opening_dir, opening_epoch.seal, max_source_bytes=limit),
+        runtime_sha256=runtime, max_bytes=limit, share_rows=True,
+    )
+    opening = workspace.maintain(worker, workspace.head(), max_seeds=16)
+    source_only = workspace.attach(worker, pin=opening)
+    a_span = source_only.source_spans(a)[0]
+
+    first = discover_native_operator(
+        workspace, worker, opening, cards=(a,), coordinates=(4,), tolerance=0,
+    ).draft
+    second = discover_native_operator(
+        workspace, worker, opening, cards=(b,), coordinates=(4,), tolerance=0,
+    ).draft
+    assert first is not None and second is not None and (first.address, second.address) == ((8,), (112,))
+    outcome_dir = tmp_path / "outcome-feed"
+    outcome_epoch = write_source_delta(
+        outcome_dir, {event_a: source_texts[event_a].encode(), event_b: source_texts[event_b].encode()},
+        previous=opening_epoch, max_bytes=limit,
+    )
+    admitted_a, admitted_b = resolve_native_operators(
+        workspace, worker, (first, second), outcome_dir, outcome_epoch.seal,
+        commitments=(first.commitment, second.commitment), max_source_bytes=limit,
+    )
+    assert admitted_a.status == admitted_b.status == "admitted"
+
+    serving = _text_reader(2, source_texts, vectors)
+    memory = NativeWorkspace(tmp_path / "workspace", runtime_sha256=runtime, max_bytes=limit).attach(
+        serving, pin=admitted_b.pin,
+    )
+    task_world = TaskWorld.from_source_epoch(
+        outcome_dir, outcome_epoch.seal, previous=TaskWorld.from_source_epoch(
+            opening_dir, opening_epoch.seal, max_feed_bytes=limit, max_source_bytes=limit, max_passages=64,
+        ), max_feed_bytes=limit, max_source_bytes=limit, max_passages=64,
+    )
+    from experiments.memory.native_task_episode import NativeTaskWorldPin
+    unbound_observation = replace(memory, _selective=replace(memory._selective, operand_observations=(object(),)))
+    with pytest.raises(ValueError, match="do not yet bind scalar observation evidence"):
+        NativeTaskWorldPin.bind(
+            task_world, serving, unbound_observation, memory_view="active", latent_steps=2,
+            expected_runtime_sha256=runtime, max_source_verification_bytes=limit,
+        )
+    policy = EpisodePolicy("test", "inventory-reader", "inventory-tokenizer", "notes")
+    limits = EpisodeLimits(1, 1, 1, 0, 12, 12, 1, 1, access=TaskBudget(source_bytes=limit))
+    call = PolicyCall((('user', 'join'),), tuple(serving._tokenizer.encode("join")), 1)
+
+    def read(view, seed=None):
+        backend = NativeTaskEpisodeBackend(
+            task_world, serving, memory, backend_id=policy.backend_id, tokenizer_id=policy.tokenizer_id,
+            expected_runtime_sha256=runtime, steps=2, memory_view=view, intervention_seed=seed,
+        )
+        backend.opening_record(task_world, policy, limits, serving._tokenizer)
+        reply = backend(call)
+        backend.validate_reply(call, reply)
+        return reply
+
+    active = read("active")
+    pin = active.backend_receipt["pin_sha256"]
+    assert active.text == "blue"
+    assert active.backend_receipt["applied_derived_steps"] == 2
+    assert len(active.backend_receipt["operator_uses"]) == 2
+    assert len({entry["operator_sha256"] for entry in active.backend_receipt["operator_uses"]}) == 2
+    active_uses = active.backend_receipt["operator_uses"]
+    removed = read("continuation_off", a_span)
+    assert removed.text == ""
+    assert removed.backend_receipt["pin_sha256"] != pin
+    assert len(removed.backend_receipt["operator_uses"]) < len(active_uses)
+    restored = read("active")
+    assert restored.text == active.text
+    assert restored.backend_receipt["operator_uses"] == active_uses
+    assert read("derived_off").backend_receipt["operator_uses"] == []
+    assert read("memory_omitted").backend_receipt["operator_uses"] == []
