@@ -420,6 +420,15 @@ after freezing both predictions. The winner was already published. The
 main screen still needs admission and withdrawal tied to a verified
 event and independent late bindings on the same newly published state.
 
+A [source-gated admission control](RESULTS.md#admitting-an-operation-from-one-open-workspace-pin)
+now starts both rival cohorts on one opening and publishes the selected
+operation only after a verifying event. Both supplied late answers
+respond to the cohort intervention and disappear when admission is
+withdrawn. Use this as the lifecycle positive control. The decisive
+screen still requires independently chosen late role bindings, a
+receiver with demonstrated ordinary competence and a bounded, equivalent
+acquisition opportunity for the reused-block and exact comparators.
+
 The [signed admission bound](SIGNED_OPERATION_ADMISSION_BOUND.md) gives two
 exact controls for this design. A negative role coordinate can be necessary
 even when the full bank has a bounded exact fit. Adding coherent duplicate

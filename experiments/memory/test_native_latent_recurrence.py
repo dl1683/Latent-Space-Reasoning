@@ -210,18 +210,24 @@ def test_operand_group_preserves_duplicate_origins_and_refuses_conflicting_value
     assert selector.read(operand, rival)[2].receipt.status == "competing"
 
 
-@pytest.mark.parametrize("separate_address", [False, True])
-def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_path, separate_address):
+@pytest.mark.parametrize("mode", ["legacy", "operand", "admission"])
+def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_path, mode):
+    from experiments.memory.native_operand_admission import (
+        NativeAdmittedOperandModel, draft_operand_admission, resolve_operand_admission,
+    )
     from experiments.memory.native_operand_model import NativeOperandModel
     from experiments.memory.native_task_episode import NativeTaskWorldPin
     from experiments.memory.native_transport_model import NativeTransportModel
-    from experiments.memory.native_workspace import NativeWorkspace
+    from experiments.memory.native_workspace import NativeWorkspace, StaleNativeWorkspace
     from experiments.memory.task_evidence import TaskWorld
+
+    separate_address = mode != "legacy"
+    admitted = mode == "admission"
 
     class Tokenizer:
         def encode(self, text, **_):
             ids = {"cue-a": 1, "cue-b": 2, "witness-a": 3, "new late input": 4,
-                   "unsupported input": 5, "other late input": 6}
+                   "unsupported input": 5, "other late input": 6, "cue-c": 9}
             return [ids[text]]
 
         def decode(self, ids, **_):
@@ -231,7 +237,7 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
         def __init__(self):
             super().__init__()
             self.config = SimpleNamespace(max_position_embeddings=12)
-            rows = torch.zeros(9, 8)
+            rows = torch.zeros(10 if admitted else 9, 8)
             rows[1, :2] = torch.atanh(torch.tensor([100, 0]) / 127)
             rows[2, :2] = torch.atanh(torch.tensor([40, 50]) / 127)
             rows[3, :2] = torch.atanh(torch.tensor([80, -20]) / 127)
@@ -246,6 +252,10 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
                 rows[4:7, 5] = torch.atanh(torch.tensor(8 / 127))
                 rows[4:6, :2] = torch.atanh(torch.tensor([40, -48]) / 127)
                 rows[6, :2] = torch.atanh(torch.tensor([-48, 40]) / 127)
+            if admitted:
+                rows[1:3, 5] = torch.atanh(torch.tensor(8 / 127))
+                rows[9, 1] = torch.atanh(torch.tensor(-50 / 127))
+                rows[9, 5], rows[9, 7] = rows[1, 5], 1
             self.lookup = torch.nn.Embedding.from_pretrained(rows)
 
         def get_input_embeddings(self):
@@ -282,7 +292,9 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
                 cache.worker = worker
             return SimpleNamespace(last_hidden_state=state, past_key_values=cache)
 
-    cue_a, cue_b, text, image, outcome_source = (character * 32 for character in "abcde")
+    cue_a, cue_b, text, image, outcome_source, cue_c, shadow_image, neutral = (
+        character * 32 for character in "abcdef78"
+    )
     pixmap = b"P6\n1 1\n255\n"
     opening_pixel, corrected_pixel = pixmap + bytes((0, 0, 255)), pixmap + bytes((255, 192, 0))
 
@@ -290,6 +302,8 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
         if source == image and raw in (opening_pixel, corrected_pixel):
             sign = 1 if raw == opening_pixel else -1
             return (0, 100 / 127, 0, 0, sign, 0, 0, 0.5)
+        if admitted and source == shadow_image and raw == opening_pixel:
+            return (0, -100 / 127, 0, 0, 1, 0, 0, 0.5)
         if separate_address and source == outcome_source and raw[:-3] == pixmap and raw[-3] <= 254:
             return (0, 0, 0, 0, 0, 0, (raw[-3] - 127) / 127, 0)
         return None
@@ -303,7 +317,7 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
         model = NativeLatentModel if l1 is None else NativeTransportModel
         transport = {} if l1 is None else {"derived_transport_l1": l1}
         if separate_address and l1 is not None and not legacy:
-            model = NativeOperandModel
+            model = NativeAdmittedOperandModel if admitted else NativeOperandModel
             transport["address_axes"] = (3,)
         return model(Backbone().eval(), Tokenizer(), kernel, source_chars=12, context_tokens=12,
                      latent_steps=1 if separate_address else 2, output_tokens=2, representation_scale=1,
@@ -314,17 +328,157 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
 
     limit, runtime = 65_536, sha256(b"isolated local transport fixture")
     p0, p1 = tmp_path / "p0", tmp_path / "p1"
-    original_feed = write_source_delta(
-        p0, {cue_a: b"cue-a", cue_b: b"cue-b", text: b"witness-a", image: opening_pixel},
-        binary_sources=(image,), max_bytes=limit,
-    )
+    opening_sources = {cue_a: b"cue-a", cue_b: b"cue-b", text: b"witness-a", image: opening_pixel}
+    binaries = (image,)
+    if admitted:
+        opening_sources.update({cue_c: b"cue-c", shadow_image: opening_pixel})
+        binaries = (*binaries, shadow_image)
+    original_feed = write_source_delta(p0, opening_sources, binary_sources=binaries, max_bytes=limit)
     correction = write_source_delta(p1, {image: corrected_pixel}, previous=original_feed,
                                     binary_sources=(image,), max_bytes=limit)
     worker = reader(l1=2)
     source = worker.publish(p0, original_feed.seal, max_source_bytes=limit)
     directory = tmp_path / "workspace"
     workspace = NativeWorkspace.create(directory, worker, source, runtime_sha256=runtime, max_bytes=limit)
-    opening = workspace.maintain(worker, workspace.head(), max_seeds=4)
+    opening = workspace.maintain(worker, workspace.head(), max_seeds=6 if admitted else 4)
+    if admitted:
+        reopened = NativeWorkspace(directory, runtime_sha256=runtime, max_bytes=limit)
+        fresh = reader(l1=2)
+        original = reopened.attach(fresh, pin=opening)
+        a, b, c = (original.source_spans(source)[0] for source in (cue_a, cue_b, cue_c))
+        cohorts = ((a, b), (a, c))
+        assert set(original.derived_seeds) == {a, b, c}
+        questions = ("new late input", "other late input")
+        assert all(fresh(question, memory=original).text == "" for question in questions)
+        events = ((neutral, (32, 0, 0, 0, 0, 8, 0, 0)), (outcome_source, (16, 32, 0, 0, 0, 8, 0, 0)))
+        draft = draft_operand_admission(reopened, worker, opening, cohorts=cohorts, events=events,
+                                        coordinates=(6,), tolerance=0)
+        no_contrast = draft_operand_admission(reopened, worker, opening, cohorts=cohorts, events=events[:1],
+                                              coordinates=(6,), tolerance=0)
+        assert no_contrast.source is None and reopened.head() == opening
+        assert draft.source == outcome_source
+        assert draft.options == ((neutral, 0, ((0,), (0,))), (outcome_source, 0, ((62,), (-62,))))
+
+        negative = NativeWorkspace.create(tmp_path / "disconfirmed", fresh, original,
+                                          runtime_sha256=runtime, max_bytes=limit)
+        negative_draft = draft_operand_admission(negative, worker, negative.head(), cohorts=cohorts,
+                                                 events=events, coordinates=(6,), tolerance=0)
+        neutral_path = tmp_path / "disconfirming-image"
+        false_witness = write_source_delta(neutral_path, {outcome_source: pixmap + bytes((127, 0, 0))},
+                                           previous=original_feed, binary_sources=(outcome_source,),
+                                           max_bytes=limit)
+        disconfirmed = resolve_operand_admission(
+            negative, worker, negative_draft, neutral_path, false_witness.seal,
+            commitment=negative_draft.commitment, max_source_bytes=limit)
+        assert disconfirmed.status == "disconfirmed" and not disconfirmed.survivors
+        denied = negative.attach(fresh, pin=disconfirmed.pin)
+        assert all(fresh(question, memory=denied).text == "" for question in questions)
+
+        commitment_path = tmp_path / "operand-draft-commitment"
+        commitment_path.write_text(draft.commitment, encoding="ascii")
+        outcome_path = tmp_path / "admitting-image"
+        assert not outcome_path.exists()
+        outcome = write_source_delta(outcome_path, {outcome_source: pixmap + bytes((65, 0, 0))},
+                                     previous=original_feed, binary_sources=(outcome_source,), max_bytes=limit)
+        racing = NativeWorkspace.create(tmp_path / "racing-admission", fresh, original,
+                                        runtime_sha256=runtime, max_bytes=limit)
+        racing_draft = draft_operand_admission(racing, worker, racing.head(), cohorts=cohorts, events=events,
+                                               coordinates=(6,), tolerance=0)
+        intervening_path = tmp_path / "intervening-source"
+        intervening = write_source_delta(intervening_path, {neutral: b""}, previous=original_feed, max_bytes=limit)
+        racing_resolver = reader(l1=2)
+        apply_revision = racing_resolver._apply_source_revision
+
+        def advance_other_writer(delta, before):
+            candidate = apply_revision(delta, before)
+            racing.revise(worker, racing_draft.pin, intervening_path, intervening.seal, max_source_bytes=limit)
+            return candidate
+
+        racing_resolver._apply_source_revision = advance_other_writer
+        with pytest.raises(StaleNativeWorkspace, match="head changed"):
+            resolve_operand_admission(racing, racing_resolver, racing_draft, outcome_path, outcome.seal,
+                                      commitment=racing_draft.commitment, max_source_bytes=limit)
+        assert racing.head().source_seal == intervening.seal
+        assert all(fresh(question, memory=racing.attach(fresh)).text == "" for question in questions)
+
+        forged = replace(draft, payload_digests=(draft.payload_digests[1], draft.payload_digests[0]))
+        with pytest.raises(ValueError, match="pinned cohorts"):
+            resolve_operand_admission(reopened, worker, forged, outcome_path, outcome.seal,
+                                      commitment=forged.commitment, max_source_bytes=limit)
+        commitment = commitment_path.read_text(encoding="ascii")
+        resolver = reader(l1=2)
+        resolution = resolve_operand_admission(reopened, resolver, draft, outcome_path, outcome.seal,
+                                               commitment=commitment, max_source_bytes=limit)
+        assert resolution.status == "admitted" and resolution.survivors == (1,)
+        assert reopened.head() == resolution.pin
+        with pytest.raises(StaleNativeWorkspace, match="head changed"):
+            resolve_operand_admission(reopened, worker, draft, outcome_path, outcome.seal,
+                                      commitment=commitment, max_source_bytes=limit)
+
+        live_reader = reader(l1=2)
+        live = reopened.attach(live_reader, pin=resolution.pin)
+        with pytest.raises(ValueError, match="opening is not in this workspace history"):
+            NativeWorkspace.create(tmp_path / "foreign-grant", live_reader, live,
+                                   runtime_sha256=runtime, max_bytes=limit)
+        assert set(live.derived_seeds) == {a, b, c}
+        reads = tuple(live_reader(question, memory=live) for question in questions)
+        assert tuple(read.text for read in reads) == ("gold", "blue")
+        for read in reads:
+            assert {hit.span for hit in read.derived_reads[0].selected} == {a, c}
+            assert resolution.witness in live_reader.operation_evidence(live, read)
+        off = live_reader.without_derived(live)
+        cut = live_reader._without_continuation(live, c)
+        assert all(live_reader(question, memory=off).text == live_reader(question, memory=cut).text
+                   == live_reader(question).text == "" for question in questions)
+        bad_address = np.array([16, 32, 0, 0, 0, 9, 0, 0]) / 127
+        value, receipt = live_reader.predict_operation(live, bad_address)
+        assert value is None and receipt.status == "empty"
+        other_cohort = replace(live._selective.operand_admission, winner=0)
+        wrong = replace(live, _publication_seal=None,
+                        _selective=replace(live._selective, operand_admission=other_cohort))
+        wrong_reads = tuple(live_reader(question, memory=wrong) for question in questions)
+        assert tuple(read.text for read in wrong_reads) == ("blue", "gold")
+        with pytest.raises(ValueError, match="matching reopened publication"):
+            live_reader.operation_evidence(live, wrong_reads[0])
+        assert tuple(live_reader(question, memory=live) for question in questions) == reads
+
+        withdrawn_path = tmp_path / "withdraw-witness"
+        withdrawal = write_source_delta(withdrawn_path, {outcome_source: None}, previous=outcome, max_bytes=limit)
+        retired = reopened.revise(worker, resolution.pin, withdrawn_path, withdrawal.seal, max_source_bytes=limit)
+        inactive = reopened.attach(live_reader, pin=retired)
+        assert set(inactive.derived_seeds) == {a, b, c}
+        assert all(live_reader(question, memory=inactive).text == "" for question in questions)
+        historical = reopened.attach(live_reader, pin=resolution.pin)
+        assert tuple(live_reader(question, memory=historical) for question in questions) == reads
+
+        retry = draft_operand_admission(reopened, worker, retired, cohorts=cohorts, events=events,
+                                        coordinates=(6,), tolerance=0)
+        reissue_path = tmp_path / "reissue-witness"
+        reissue = write_source_delta(reissue_path, {outcome_source: pixmap + bytes((65, 0, 0))},
+                                     previous=withdrawal, binary_sources=(outcome_source,), max_bytes=limit)
+        revived = resolve_operand_admission(reopened, worker, retry, reissue_path, reissue.seal,
+                                            commitment=retry.commitment, max_source_bytes=limit)
+        assert revived.status == "admitted" and revived.survivors == (1,)
+        renewed = reopened.attach(live_reader, pin=revived.pin)
+        assert tuple(live_reader(question, memory=renewed).text for question in questions) == ("gold", "blue")
+        assert renewed.seal == revived.pin.source_seal != live.seal
+
+        extra_path = tmp_path / "unrelated-source"
+        extra = write_source_delta(extra_path, {neutral: b""}, previous=reissue, max_bytes=limit)
+        carried = reopened.revise(worker, revived.pin, extra_path, extra.seal, max_source_bytes=limit)
+        assert tuple(live_reader(question, memory=reopened.attach(live_reader, pin=carried)).text
+                     for question in questions) == ("gold", "blue")
+
+        losing_support_path = tmp_path / "withdraw-losing-support"
+        lost_rival = write_source_delta(losing_support_path, {image: None}, previous=extra, max_bytes=limit)
+        invalidated = reopened.revise(worker, carried, losing_support_path, lost_rival.seal,
+                                      max_source_bytes=limit)
+        no_loser = reopened.attach(live_reader, pin=invalidated)
+        assert set(no_loser.derived_seeds) == {a, c}
+        assert all(live_reader(question, memory=no_loser).text == "" for question in questions)
+        assert tuple(live_reader(question, memory=renewed).text for question in questions) == ("gold", "blue")
+        return
+
     revised = workspace.revise(worker, opening, p1, correction.seal, max_source_bytes=limit)
     updated = workspace.maintain(worker, revised, max_seeds=1)
 

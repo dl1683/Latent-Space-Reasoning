@@ -215,8 +215,17 @@ class NativeWorkspace:
             if not self._blocks.is_dir():
                 raise ValueError("native shared numeric store is missing")
             shared = shared if shared is not None else SharedNativeRows(self._blocks, self._max_bytes)
-            return _read_native_publication(directory, reader, **options, read_rows=shared.read_rows)
-        return read_native_publication(directory, reader, **options)
+            memory = _read_native_publication(directory, reader, **options, read_rows=shared.read_rows)
+        else:
+            memory = read_native_publication(directory, reader, **options)
+        gate = getattr(memory._selective, "operand_admission", None)
+        if gate is not None:
+            opening = gate.draft.pin
+            with closing(self._connect()) as db:
+                if (opening.workspace_id != pin.workspace_id or opening.revision >= pin.revision
+                        or self._at(db, opening.revision) != opening):
+                    raise ValueError("operand admission opening is not in this workspace history")
+        return memory
 
     @staticmethod
     def _expect(expected, current):

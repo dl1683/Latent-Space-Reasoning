@@ -157,6 +157,34 @@ rule. Distinct real operations can collide under that rule. A learned
 address and operand encoder must demonstrate held-out validity.
 [CPU results](RESULTS.md#separating-the-operation-address-from-its-operands)
 
+#### Admitting a retained operation on a source revision
+
+[SLICE] The opt-in gated reader keeps proposed basis cohorts in the
+native acquired bank. The ordinary late call exposes no derived rows
+until there is an admission. It then exposes only the winning cohort
+and requires an exact quantized operation address. This is a serving
+gate. Query-blind construction continues to use the ordinary worker
+recurrence and can use raw continuation parents.
+
+A bounded forecast applies each cohort from the same workspace pin to
+each supplied event operand. The controller commits the opening,
+versions, payload digests, predictions and deterministic selection
+before release. The controller provides chronology. The commitment
+alone verifies the draft's contents. A separating event requires all rivals to have
+representable predictions with pairwise disjoint tolerance boxes.
+A verified direct successor carrying exactly that new source and one
+encoded observation can admit a unique surviving rival.
+
+The workspace commits the new source and admission together. On reopen it
+reproduces the predictions from the retained rows, rechecks the witness
+and checks that the opening pin belongs to its history. A source revision
+withdraws admission when the witness or a rival dependency ceases to be
+valid. The historical publication keeps its earlier permission. A new
+admission requires a new forecast and source event. One admission is
+available per gated workspace. Inferring cohorts, operand roles and
+event candidates from a general corpus remains open.
+[CPU results](RESULTS.md#admitting-an-operation-from-one-open-workspace-pin)
+
 #### Applying a local operation from retained worker rows
 
 [SLICE] `NativeTransportModel` extends the optional-memory reader with

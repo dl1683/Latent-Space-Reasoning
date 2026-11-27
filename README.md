@@ -35,6 +35,13 @@ maintenance. Historical rivals also made different predictions for an
 event's operand before its supplied outcome was released. The coordinate
 split is supplied. Independent acquisition and grading remain open.
 
+A [source-gated operation control](docs/RESULTS.md#admitting-an-operation-from-one-open-workspace-pin)
+keeps both candidates in one workspace before either can answer a task.
+A verified image admitted one candidate. Both late answers then depended
+on that operation. Withdrawing its evidence disabled the answers at the
+head and kept the historical answer available. The rival definitions,
+operands and late fixtures were supplied.
+
 An [archived learned-state check](docs/ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs) found that even all six retained keys cannot reconstruct either late input from the retired p2 run. The next design needs to distinguish selecting a reusable operation from encoding the operands it will act on.
 
 A [visual operation check](docs/RESULTS.md#applying-published-visual-operations-to-new-grids)

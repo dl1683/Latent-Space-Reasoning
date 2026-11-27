@@ -37,6 +37,15 @@ direct query and left a query through an extra alias link unresolved. Keep
 the two-unseen-operand criterion for the main screen.
 [Handoff control](RESULTS.md#transferring-a-forecast-between-worker-processes)
 
+**An open rival inventory cannot serve as an admitted operation.**
+The gated reader withholds all proposed cohorts before a separating
+event. A verified but nonmatching observation advances the source
+without admitting a candidate. Withdrawal of the losing dependency
+also revokes the trial's decision, even when the winning rows stay
+available. The current rule is intentionally conservative about
+reusing a decision after its comparison changes.
+[Admission controls](RESULTS.md#admitting-an-operation-from-one-open-workspace-pin)
+
 **Joint address and operand selection can exclude an indispensable row.**
 In the fixed-address CPU control the positive-key neighborhood excluded a
 required direction on both role inputs. The separated reader solved the

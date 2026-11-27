@@ -1071,6 +1071,30 @@ The direct reader path exercises this prototype. The task-episode adapter
 does not support it.
 [Address and operand contract](ARCHITECTURE.md#separating-operand-computation-from-the-operation-address)
 
+Use `NativeAdmittedOperandModel` with the same `address_axes` and
+`derived_transport_l1` arguments to require source admission on an
+exact Q8 operation address. In
+`experiments.memory.native_operand_admission`, call
+`draft_operand_admission(workspace, reader, pin, cohorts=..., events=...,
+coordinates=..., tolerance=...)`. Provide two to eight rival cohorts of
+live continuation spans sharing one address, and one to eight
+`(source_id, q8_input)` event descriptors. Each input has the model's
+hidden width. Event outcome sources must be absent at the opening.
+The draft supplies its predicted options, its selected source or
+abstention, and a commitment. Record the commitment before source
+release.
+
+Call `resolve_operand_admission(workspace, reader, draft, directory,
+source_seal, commitment=..., max_source_bytes=...)` with a direct source
+successor containing just the selected new document. It commits the
+verified source and reports the status, provisional witness and survivors.
+A singleton supported outcome admits its cohort in that same publication.
+A disconfirmation, invalidated dependency or unscorable event leaves the
+new source available without admitting a cohort. Call the usual reader
+with optional memory. For a read that used the selected operation,
+`reader.operation_evidence(memory, read)` adds the admission witness to
+its candidate evidence.
+
 ## Holding later ordinary source inputs fixed
 
 Pass exact question token IDs, an intact reopened selective memory,

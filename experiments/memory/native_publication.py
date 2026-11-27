@@ -1,5 +1,6 @@
 """Bounded data-only handoff for the selective native latent state."""
 
+from dataclasses import asdict
 from hashlib import sha256 as hashing
 import json
 from os import fsync
@@ -86,6 +87,11 @@ def _reader_digest(reader):
         implementation = Path(__file__).with_name("native_operand_model.py").read_bytes()
         add("operand-operation", "json", None, _record(
             "q8-address-operand-v1", address_axes, sha256(implementation.replace(b"\r\n", b"\n")),
+        ))
+    if getattr(reader, "_operand_admission_required", False):
+        implementation = Path(__file__).with_name("native_operand_admission.py").read_bytes()
+        add("operand-admission", "json", None, _record(
+            "lsr-operand-admission-v1", sha256(implementation.replace(b"\r\n", b"\n")),
         ))
     tokenizer = getattr(reader._tokenizer, "backend_tokenizer", None)
     if reader._source_chunking == "content" or reader._residual_layer is not None:
@@ -231,6 +237,9 @@ def _metadata(reader, memory):
         header.setdefault("forecasts", [])
         header["forecast_sets"] = sorted(_forecast_set_metadata(check, indices)
                                          for check in selective.forecast_sets.values())
+    gate = getattr(selective, "operand_admission", None)
+    if gate is not None:
+        header["operand_admission"] = asdict(gate)
     return header
 
 
@@ -760,10 +769,15 @@ def _restore(header, reader, raw, seal, scope):
                                         changed_sources=later, revised_shards=late_shards)
                for parent in forecast.parents):
             raise ValueError("native forecast set has conflicting or incomplete parent lineage")
-    return NativeSourceMemory(reader._owner, scope, None, MappingProxyType(sources),
-                              derived_seeds=tuple(acquired), _selective=selective, _publication_seal=seal,
-                              _publication_runtime_sha256=header["runtime"],
-                              _reader_fingerprint_sha256=header["reader"])
+    memory = NativeSourceMemory(reader._owner, scope, None, MappingProxyType(sources),
+                                derived_seeds=tuple(acquired), _selective=selective, _publication_seal=seal,
+                                _publication_runtime_sha256=header["runtime"],
+                                _reader_fingerprint_sha256=header["reader"])
+    if "operand_admission" in header:
+        from experiments.memory.native_operand_admission import restore_operand_admission
+
+        memory = restore_operand_admission(reader, memory, header["operand_admission"])
+    return memory
 
 
 def read_native_publication(directory, reader, *, seal, source_seal, runtime_sha256, max_bytes):
@@ -791,8 +805,12 @@ def _read_native_publication(directory, reader, *, seal, source_seal, runtime_sh
                _FORECAST_SET_SCHEMA: _FIELDS | {"parents", "forecasts", "forecast_sets"},
                _REVISION_WITNESS_SCHEMA: _FIELDS | {"parents", "forecasts", "forecast_sets"},
                _WEIGHTED_WITNESS_SCHEMA: _FIELDS | {"parents", "forecasts", "forecast_sets"}}
-    if (type(header) is not dict or type(header.get("schema")) is not str
-            or schemas.get(header["schema"]) != set(header) or _encode(header) != manifest):
+    if type(header) is not dict or type(header.get("schema")) is not str:
+        raise ValueError("native publication manifest is malformed")
+    fields = set(header)
+    if getattr(reader, "_operand_admission_required", False):
+        fields.discard("operand_admission")
+    if schemas.get(header["schema"]) != fields or _encode(header) != manifest:
         raise ValueError("native publication manifest is malformed")
     if header["source"] != source_seal or header["runtime"] != runtime_sha256:
         raise ValueError("native publication source or runtime differs")

@@ -697,6 +697,40 @@ within an attached bank. Whole-corpus costs, independently chosen
 bindings and competing mechanisms on learned coordinates remain open.
 [CPU fixtures](../experiments/memory/test_native_latent_recurrence.py)
 
+### Admitting an operation from one open workspace pin
+
+**CPU integration control.** Three continuation rows formed two rival
+two-row operations on one text-and-image opening. The opening served
+neither of two late inputs. Both rivals predicted zero on the neutral
+event operand and gave Q8 predictions of $+62$ and $-62$ on the contrast.
+The controller recorded the chosen forecast before creating the outcome
+image. A fresh resolver verified its $-62$ observation. The new workspace head retained
+all three rows and admitted only the matching cohort. A separate outcome
+of zero disconfirmed both rivals and left its branch unresolved.
+
+A fresh reader reopened the admitted publication and answered gold and
+blue at the same operation address. Its selected span identities matched
+the winner, and its candidate evidence included the outcome image.
+A detached intervention at the same source revision reversed both
+answers by showing the other cohort and could not claim the publication's
+evidence. Removing one winning row, disabling derived memory and
+omitting memory left both queries unresolved. A nearby address failed to
+read the raw operation.
+An altered payload commitment, a stale draft and copying the admission
+to a different history were refused. Another source writer won after
+outcome encoding. The delayed resolver could not commit over it.
+
+Withdrawing the witness disabled both answers while all three rows
+remained stored. The historical pin retained both answers. A new forecast
+and a later reissue of the same image bytes admitted the operation again.
+An unrelated source addition preserved the decision. Withdrawing only
+the losing operation's image dependency then revoked
+admission even though the winning rows remained present. This is a
+deterministic fixture with supplied bindings, cohorts and source
+descriptors. Learned acquisition, independent task grading and full
+lifecycle cost were outside this control.
+[CPU fixture](../experiments/memory/test_native_latent_recurrence.py)
+
 ### Checking the signed fit on archived learned states
 
 **Offline exact arithmetic, one exposed task.** Across both active
