@@ -51,8 +51,10 @@ def _reader_digest(reader):
     model = reader._model
     _require_cpu_eval(model)
     selector, kernel = reader._selector, reader._moments
-    if selector is None:
+    if selector is None and reader._residual_layer is None:
         raise ValueError("native publication requires the selective reader")
+    selection = ((None,) * 4 if selector is None else
+                 (selector._k, selector._tie_limit, selector._temperature, selector._margin))
     config = dict(model.config.to_dict() if hasattr(model.config, "to_dict") else vars(model.config))
     for key in ("_name_or_path", "transformers_version"):
         config.pop(key, None)
@@ -64,14 +66,14 @@ def _reader_digest(reader):
                         reader._source_chars, reader._context_tokens, reader._steps, reader._output_tokens,
                         reader._scale, reader._memory_gain, reader._null_weight, reader._relay_gain,
                         reader._derived_gain, sorted(reader._eos),
-                        selector._k, selector._tie_limit, selector._temperature, selector._margin))
+                        *selection))
 
     def add(name, dtype, shape, raw):
         h.update(_record(name, dtype, shape, len(raw)))
         h.update(raw)
 
     tokenizer = getattr(reader._tokenizer, "backend_tokenizer", None)
-    if reader._source_chunking == "content":
+    if reader._source_chunking == "content" or reader._residual_layer is not None:
         if callable(getattr(tokenizer, "to_str", None)):
             settings = json.loads(tokenizer.to_str())
             # Source inputs are unpadded and untruncated. Fast tokenizer calls
@@ -82,8 +84,9 @@ def _reader_digest(reader):
             options = {key: getattr(reader._tokenizer, key, None)
                        for key in ("split_special_tokens", "add_bos_token", "add_eos_token")}
             add("tokenizer-options", "json", None, _encode(options))
-        require_digest(reader._source_tokenizer_sha256)
-        add("source-tokenizer", "sha256", None, reader._source_tokenizer_sha256.encode("ascii"))
+        if reader._source_chunking == "content" or reader._source_tokenizer_sha256 is not None:
+            require_digest(reader._source_tokenizer_sha256)
+            add("source-tokenizer", "sha256", None, reader._source_tokenizer_sha256.encode("ascii"))
     elif tokenizer is not None:
         add("tokenizer", "utf8", None, tokenizer.to_str().encode("utf8"))
     if reader._task_template is not None:
@@ -92,6 +95,13 @@ def _reader_digest(reader):
         add("source-ingress", "sha256", None, reader._source_ingress_sha256.encode("ascii"))
     if reader._source_chunking == "content":
         add("source-chunking", "utf8", None, b"content-v1")
+    if reader._residual_layer is not None:
+        layer = reader._model.base_model.layers[reader._residual_layer]
+        implementation = sha256(Path(__file__).with_name("native_latent_recurrence.py").read_bytes())
+        add("residual-recurrence", "json", None, _record(
+            "layer-in-out-zero-carrier-v1", reader._residual_layer,
+            type(layer).__module__, type(layer).__qualname__, implementation,
+        ))
 
     value = kernel._observation_value
     arrays = [("query", kernel._query), ("key", kernel._integer_observation_key)]
@@ -253,8 +263,9 @@ def _write_native_publication(directory, reader, memory, *, runtime_sha256, max_
     if payload_bytes > max_bytes:
         raise ValueError("native publication exceeds its byte allowance")
     header = _metadata(reader, memory)
-    if reader._source_chunking == "content" and header["reader"] != memory._reader_fingerprint_sha256:
-        raise ValueError("content-defined publication requires the unchanged source encoder")
+    if ((reader._source_chunking == "content" or reader._residual_layer is not None)
+            and header["reader"] != memory._reader_fingerprint_sha256):
+        raise ValueError("native publication requires the unchanged source encoder")
     header.update(runtime=runtime_sha256, rows_bytes=payload_bytes, rows_sha256="0" * 64)
     if len(_encode(header)) + payload_bytes > max_bytes:
         raise ValueError("native publication exceeds its byte allowance")

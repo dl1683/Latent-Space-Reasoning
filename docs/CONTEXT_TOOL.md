@@ -712,6 +712,27 @@ historical records without rewriting them. Existing authenticated export locks a
 receipts remain unchanged and retain their original identities and hashes.
 
 
+## Using an interior residual block
+
+Pass `residual_layer=L` to the native reader for a zero-based interior
+layer in an eager CPU backbone that exposes `base_model.layers`. The
+selected block must accept and return compatible residual tensors.
+Supply source ingress in the selected coordinates for binary data.
+Omit the argument for final-layer feedback. A residual reader reuses
+the same publish, maintain and optional-memory call with a distinct
+fingerprint. Set a selective read limit to use the sealed workspace path.
+Supply the explicit source tokenizer identity for a custom tokenizer.
+Fast tokenizer padding and truncation are transient.
+Reopen with the identical weights, runtime,
+layer, scale and gains. Residual readers refuse revisions and writes
+from rows produced by a different source encoder.
+
+The latent offsets occupy normal cache positions. If a forward raises,
+discard the request cache and restart from the original prompt. Serialized
+reconciliation checkpoints also pin implementation bytes and need a cold
+replay when those bytes change. The publication format is unchanged.
+[Execution evidence](RESULTS.md#routing-through-an-interior-residual-block)
+
 ## Discovering native continuation parents
 
 Use `reader.maintain(memory, max_seeds=seeds, max_parent_scores=scores)`

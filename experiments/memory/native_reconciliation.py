@@ -90,11 +90,8 @@ def _frontier(steps, row_count, source_seal):
 
 
 def _trace(reader, item, memory, confirmation_steps, *, capture=False):
-    import torch
-
     lookup = reader._model.get_input_embeddings().weight
-    encoded = torch.tensor(item.row, dtype=lookup.dtype, device=lookup.device)[None, None, :]
-    hidden, cache = reader._backbone(encoded * reader._relay_gain, retain_cache=True)
+    hidden, cache, _ = reader._seed_state(item, lookup)
     states, frontiers, selected = [], [], set()
     derived_count = sum(len(shard.spans) for shard in memory._selective.derived)
     source_count = memory.rows if capture else 0

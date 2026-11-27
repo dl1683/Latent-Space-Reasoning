@@ -87,12 +87,13 @@ def _kernel(*, terminal_axis=4):
                                 feedback_key=query, feedback_value=np.zeros((6, 6)), max_steps=2)
 
 
-def _reader(backbone, *, terminal_axis=4, latent_steps=2, top_k=None, tie_limit=16):
-    return NativeLatentModel(backbone, _Tokenizer(), _kernel(terminal_axis=terminal_axis),
+def _reader(backbone, *, terminal_axis=4, latent_steps=2, top_k=None, tie_limit=16, tokenizer=None, **options):
+    return NativeLatentModel(backbone, _Tokenizer() if tokenizer is None else tokenizer,
+                             _kernel(terminal_axis=terminal_axis),
                              source_chars=4, context_tokens=12, latent_steps=latent_steps, top_k=top_k,
                              tie_limit=tie_limit,
                              output_tokens=2, representation_scale=0.25, memory_gain=1, null_weight=0.1,
-                             eos_ids=(0,))
+                             eos_ids=(0,), **options)
 
 
 def test_two_native_steps_use_only_the_current_source_moments(tmp_path):
@@ -324,6 +325,266 @@ def test_transformers_llama_backbone_accepts_continuous_cached_inputs(tmp_path, 
         reopened = read_native_publication(directory, fresh, seal=seal, source_seal=feed.seal,
                                            runtime_sha256=runtime, max_bytes=65_536)
         assert fresh("What follows?", memory=reopened) == replace(with_memory, publication_seal=seal)
+
+
+
+def test_residual_recurrence_carries_worker_computation_across_source_revisions(tmp_path):
+    from experiments.memory.native_workspace import NativeWorkspace
+
+    class ResidualStep(torch.nn.Module):
+        def forward(self, hidden_states, *, cached):
+            result = hidden_states.clone()
+            if cached:
+                result[..., 0] = 0
+            return result, None
+
+    class ReadoutLayer(torch.nn.Module):
+        def forward(self, hidden_states):
+            result = hidden_states.clone()
+            result[..., 0] *= torch.where(result[..., 3] != 0, 1, -1)
+            return result
+
+    class Body(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.layers = torch.nn.ModuleList([torch.nn.Identity(), ResidualStep(), ReadoutLayer()])
+
+        def forward(self, *, inputs_embeds, past_key_values, use_cache, return_dict):
+            assert return_dict
+            prefix = 0 if past_key_values is None else past_key_values.get_seq_length()
+            lower = self.layers[0](inputs_embeds)
+            state, _ = self.layers[1](hidden_states=lower, cached=prefix > 0)
+            final = self.layers[2](state)
+            cache = _Cache(prefix + inputs_embeds.shape[1]) if use_cache else None
+            return SimpleNamespace(last_hidden_state=final, past_key_values=cache)
+
+    class LayeredBackbone(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.fixture = _StandIn()
+            self.base_model = Body()
+            self.config = self.fixture.config
+
+        def get_input_embeddings(self):
+            return self.fixture.get_input_embeddings()
+
+        def get_output_embeddings(self):
+            return self.fixture.get_output_embeddings()
+
+    cue, bridge, distractor = (letter * 32 for letter in "abc")
+    pixmap = b"P6\n1 1\n255\n"
+    blue, gold = pixmap + b"\x00\x00\xff", pixmap + b"\xff\xc0\x00"
+
+    def ingress(source, raw):
+        if source == bridge and raw in (blue, gold):
+            return (0, 1, 0, 0, 1 if raw == blue else -1, 0)
+        return None
+
+    tokenizer_identity = sha256(b"supplied fixture token mapping")
+
+    def make_reader(layer=1, source_tokenizer=tokenizer_identity):
+        return _reader(LayeredBackbone().eval(), top_k=1, residual_layer=layer, source_ingress=ingress,
+                       source_ingress_sha256=sha256(b"blue and gold pixel fixture"),
+                       source_tokenizer_sha256=source_tokenizer)
+
+    runtime, limit = sha256(b"layer boundary software fixture"), 65_536
+    opening_dir = tmp_path / "opening"
+    opening = write_source_delta(opening_dir, {cue: "\u00e9cho".encode(), bridge: blue, distractor: b"side"},
+                                 binary_sources=(bridge,), max_bytes=limit)
+    worker = make_reader()
+    initial = worker.publish(opening_dir, opening.seal, max_source_bytes=limit)
+    directory = tmp_path / "workspace"
+    workspace = NativeWorkspace.create(directory, worker, initial, runtime_sha256=runtime, max_bytes=limit)
+    first = workspace.maintain(worker, workspace.head(), max_seeds=1)
+
+    fresh = make_reader()
+    reopened = NativeWorkspace(directory, runtime_sha256=runtime, max_bytes=limit)
+    active = reopened.attach(fresh, pin=first)
+    seed, = active.derived_seeds
+    question = "What follows?"
+    answer = fresh(question, memory=active, steps=1)
+    assert answer.text == "blue" and answer.terminated and answer.applied_derived_steps == 1
+    assert fresh(question, memory=fresh._without_continuation(active, seed), steps=1).text == ""
+    withheld = fresh.read_token_ids(fresh.task_token_ids(question, steps=1), memory=active, steps=1,
+                                    withhold_continuation_value=seed)
+    assert withheld.text == "" and withheld.value_withholding.changed_input
+    assert fresh(question, steps=1).text == ""
+    assert active.evidence_spans(answer) == (*active.source_spans(cue), *active.source_spans(bridge))
+
+    bank, = active._selective.derived
+    flipped = replace(bank, keys=-bank.keys)
+    address_only = replace(active, _selective=replace(active._selective, derived=(flipped,)))
+    missed = fresh(question, memory=address_only, steps=1)
+    assert missed.text == "" and missed.derived_reads[0].status == "empty"
+    assert missed.source_steps == answer.source_steps
+    assert missed.derived_steps[0].query == answer.derived_steps[0].query
+
+    legacy = make_reader(None)
+    legacy_memory = legacy.maintain(legacy.publish(opening_dir, opening.seal, max_source_bytes=limit), max_seeds=1)
+    assert legacy_memory.derived_seeds == (seed,)
+    ordinary = legacy(question, memory=legacy_memory, steps=1)
+    assert ordinary.derived_reads[0].status == "empty" and ordinary.text == ""
+    q8_query = np.frombuffer(ordinary.derived_steps[0].query, dtype=np.int8).astype(np.int64)
+    legacy_shard, = legacy_memory._selective.derived
+    assert int(legacy_shard.keys[0] @ q8_query) < 0
+    with pytest.raises(ValueError, match="reader differs"):
+        reopened.attach(legacy, pin=first)
+    with pytest.raises(ValueError, match="reader differs"):
+        reopened.attach(make_reader(source_tokenizer=sha256(b"different mapping")), pin=first)
+    with pytest.raises(ValueError, match="custom source tokenizer identity"):
+        make_reader(source_tokenizer=None)
+
+    correction_dir = tmp_path / "correction"
+    correction = write_source_delta(correction_dir, {bridge: gold}, previous=opening,
+                                    binary_sources=(bridge,), max_bytes=limit)
+    from experiments.memory.native_publication import write_native_publication
+
+    worker._scale *= 2
+    with pytest.raises(ValueError, match="unchanged opening reader"):
+        worker.publish(correction_dir, correction.seal, previous=initial, max_source_bytes=limit)
+    with pytest.raises(ValueError, match="unchanged source encoder"):
+        write_native_publication(tmp_path / "drift", worker, initial, runtime_sha256=runtime, max_bytes=limit)
+    worker._scale /= 2
+
+    corrected = workspace.revise(worker, first, correction_dir, correction.seal, max_source_bytes=limit)
+    assert reopened.attach(fresh, pin=corrected).derived_seeds == ()
+    assert fresh(question, memory=reopened.attach(fresh), steps=1).text == ""
+    second = workspace.maintain(worker, corrected, max_seeds=3)
+    updated = reopened.attach(fresh, pin=second)
+    assert fresh(question, memory=updated, steps=1).text == "gold"
+    assert fresh(question, memory=reopened.attach(fresh, pin=first), steps=1) == answer
+
+
+def test_random_llama_boundary_injects_the_exact_row_and_releases_hooks(tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event
+
+    from experiments.memory.native_latent_recurrence import _RESIDUAL_CALL
+
+    transformers = pytest.importorskip("transformers")
+    config = transformers.LlamaConfig(vocab_size=10, hidden_size=6, intermediate_size=12, head_dim=6,
+                                      num_hidden_layers=3, num_attention_heads=1, num_key_value_heads=1,
+                                      max_position_embeddings=16, eos_token_id=0)
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(17)
+        model = transformers.LlamaForCausalLM(config).eval()
+    tokenizer_identity = sha256(b"supplied fixture token mapping")
+    residual = dict(residual_layer=1, source_tokenizer_sha256=tokenizer_identity)
+    reader = _reader(model, top_k=1, **residual)
+    for invalid in (True, 0, 2):
+        with pytest.raises(ValueError, match="eager backbone layer index"):
+            _reader(model, top_k=1, residual_layer=invalid)
+    assert reader.compare_greedy("What follows?").matches
+
+    layer = model.base_model.layers[1]
+    seen = []
+
+    def observe(_layer, args, kwargs, output):
+        hidden = args[0] if args else kwargs["hidden_states"]
+        if isinstance(output, tuple):
+            output = output[0]
+        seen.append((hidden.clone(), output[:, -1:, :].clone()))
+
+    with torch.inference_mode():
+        embeddings = reader._embed_ids((1, 2))
+        state, cache, final = reader._latent_backbone(embeddings, retain_cache=True)
+        ordinary, alternative_cache = reader._backbone(embeddings, retain_cache=True)
+        torch.testing.assert_close(final, ordinary, atol=0, rtol=0)
+        assert not torch.equal(final, state)
+        thought = state * 0.5
+        with layer.register_forward_hook(observe, with_kwargs=True):
+            next_state, advanced, _ = reader._latent_backbone(thought, cache, retain_cache=True, inject=True)
+        assert advanced.get_seq_length() == 3
+        supplied, captured = seen.pop()
+        torch.testing.assert_close(supplied, thought, atol=0, rtol=0)
+        torch.testing.assert_close(captured, next_state, atol=0, rtol=0)
+        _, alternative_cache, _ = reader._latent_backbone(-thought, alternative_cache,
+                                                           retain_cache=True, inject=True)
+        for attr in ("keys", "values"):
+            early = getattr(advanced.layers[0], attr)
+            torch.testing.assert_close(early, getattr(alternative_cache.layers[0], attr), atol=0, rtol=0)
+            assert not torch.equal(getattr(advanced.layers[1], attr), getattr(alternative_cache.layers[1], attr))
+
+        prefix_keys = [slot.keys.clone() for slot in advanced.layers]
+        _, advanced, _ = reader._latent_backbone(next_state * 0.5, advanced, retain_cache=True, inject=True)
+        assert [slot.keys.shape[-2] for slot in advanced.layers] == [4, 4, 4]
+        _, advanced = reader._backbone(reader._embed_ids((0,)), advanced, retain_cache=True)
+        for position, prefix in enumerate(prefix_keys):
+            assert advanced.layers[position].keys.shape[-2] == 5
+            torch.testing.assert_close(advanced.layers[position].keys[..., :3, :], prefix, atol=0, rtol=0)
+
+        with layer.register_forward_hook(lambda *_: torch.full_like(embeddings, float("nan"))):
+            with pytest.raises(FloatingPointError, match="native residual state"):
+                reader._latent_backbone(embeddings, retain_cache=True, inject=True)
+        assert not layer._forward_hooks and not layer._forward_pre_hooks
+
+    alternate_reader = _reader(model, top_k=1, **residual)
+    assert alternate_reader._residual_lock is reader._residual_lock
+    native_entered, release_native = Event(), Event()
+    ordinary_snapshotted, release_ordinary = Event(), Event()
+
+    def pause_native_call(_layer, _args, _kwargs):
+        if _RESIDUAL_CALL.get() is not None:
+            native_entered.set()
+            assert release_native.wait(10)
+
+    def pause_ordinary_call(_layer, _args, _kwargs):
+        if _RESIDUAL_CALL.get() is None:
+            ordinary_snapshotted.set()
+            assert release_ordinary.wait(10)
+
+    def advance_in_thread():
+        with torch.inference_mode():
+            return alternate_reader._latent_backbone(thought, retain_cache=True, inject=True)
+
+    def decode_in_thread():
+        with torch.inference_mode():
+            return reader._backbone(embeddings, retain_cache=True)
+
+    with (model.base_model.layers[0].register_forward_pre_hook(pause_native_call, with_kwargs=True),
+          layer.register_forward_pre_hook(pause_ordinary_call, with_kwargs=True),
+          ThreadPoolExecutor(max_workers=2) as pool):
+        native = pool.submit(advance_in_thread)
+        try:
+            assert native_entered.wait(10)
+            raw = pool.submit(decode_in_thread)
+            assert ordinary_snapshotted.wait(10)
+            release_native.set()
+            assert native.result(timeout=10)[1].get_seq_length() == 1
+        finally:
+            release_native.set()
+            release_ordinary.set()
+        concurrent, _ = raw.result(timeout=10)
+        torch.testing.assert_close(concurrent, ordinary, atol=0, rtol=0)
+    assert not layer._forward_hooks and not layer._forward_pre_hooks
+
+    moments = _reader(model, **residual)
+    source_path = tmp_path / "source"
+    delta = write_source_delta(source_path, {"b" * 32: b"blue"})
+    live = moments.publish(source_path, delta.seal)
+    assert live.rows == 1 and live._reader_fingerprint_sha256 is not None
+    assert moments("What follows?", memory=live).source_seal == delta.seal
+
+    from experiments.memory.native_publication import read_native_publication, write_native_publication
+
+    tokenizers = pytest.importorskip("tokenizers")
+    backend = tokenizers.Tokenizer(tokenizers.models.WordLevel({"[PAD]": 0, "[UNK]": 1, "blue": 4},
+                                                               unk_token="[UNK]"))
+    fast = transformers.PreTrainedTokenizerFast(tokenizer_object=backend, pad_token="[PAD]", unk_token="[UNK]")
+
+    def set_transient_options():
+        fast.backend_tokenizer.enable_padding(pad_id=0, pad_token="[PAD]", length=3)
+        fast.backend_tokenizer.enable_truncation(max_length=4)
+
+    set_transient_options()
+    fast_reader = _reader(model, top_k=1, residual_layer=1, tokenizer=fast)
+    fast_rows = fast_reader.publish(source_path, delta.seal)
+    directory = tmp_path / "fast-publication"
+    runtime = sha256(b"fixed-source residual fixture")
+    seal = write_native_publication(directory, fast_reader, fast_rows, runtime_sha256=runtime, max_bytes=65_536)
+    set_transient_options()
+    assert read_native_publication(directory, fast_reader, seal=seal, source_seal=delta.seal,
+                                   runtime_sha256=runtime, max_bytes=65_536).rows == 1
 
 
 def test_chat_task_matches_plain_greedy_and_pins_its_template(tmp_path, monkeypatch):

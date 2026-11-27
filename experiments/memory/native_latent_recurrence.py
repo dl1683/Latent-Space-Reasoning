@@ -1,12 +1,15 @@
 """Feed versioned source moments into a borrowed causal backbone's hidden steps."""
 
 from collections.abc import Mapping
+from contextlib import ExitStack
+from contextvars import ContextVar
 from dataclasses import asdict, dataclass, field, replace
 from itertools import chain, islice
 from math import isfinite
 from pathlib import Path
 from threading import Lock
 from types import MappingProxyType
+from weakref import WeakKeyDictionary
 
 import numpy as np
 
@@ -29,6 +32,9 @@ from experiments.memory.verified_source_tool import SourceSpan, require_digest, 
 
 _GEAR = tuple(int.from_bytes(bytes.fromhex(sha256(bytes((value,))))[:8], "little") for value in range(256))
 _GEAR_MASK = (1 << 64) - 1
+_RESIDUAL_CALL = ContextVar("native_residual_call", default=None)
+_RESIDUAL_LOCKS = WeakKeyDictionary()
+_RESIDUAL_LOCKS_GUARD = Lock()
 
 
 def _content_chunks(text, width):
@@ -94,6 +100,7 @@ class NativeValueWithholding:
 class _LatentRun:
     hidden: object
     cache: object
+    readout: object
     routed: int = 0
     applied: int = 0
     derived: int = 0
@@ -312,7 +319,7 @@ class NativeLatentModel:
                  output_tokens, representation_scale, memory_gain, null_weight, eos_ids,
                  relay_gain=1.0, derived_gain=0.5, top_k=None, tie_limit=16, temperature=0.1,
                  score_margin=0, task_template=None, source_ingress=None, source_ingress_sha256=None,
-                 source_chunking="fixed", source_tokenizer_sha256=None):
+                 source_chunking="fixed", source_tokenizer_sha256=None, residual_layer=None):
         _require_cpu_eval(model)
         embedding = model.get_input_embeddings()
         if (embedding.weight.device.type != "cpu" or model.get_output_embeddings() is None
@@ -349,7 +356,21 @@ class NativeLatentModel:
             raise ValueError("source ingress must be callable")
         if source_ingress is not None or source_ingress_sha256 is not None:
             require_digest(source_ingress_sha256)
+        self._residual_lock = None
+        if residual_layer is not None:
+            import torch
+
+            layers = getattr(model.base_model, "layers", None)
+            if (type(residual_layer) is not int or not isinstance(layers, torch.nn.ModuleList)
+                    or not 0 < residual_layer < len(layers) - 1):
+                raise ValueError("residual recurrence requires an interior eager backbone layer index")
+            backend = getattr(tokenizer, "backend_tokenizer", None)
+            if source_tokenizer_sha256 is None and not callable(getattr(backend, "to_str", None)):
+                raise ValueError("residual recurrence needs an explicit custom source tokenizer identity")
+            with _RESIDUAL_LOCKS_GUARD:
+                self._residual_lock = _RESIDUAL_LOCKS.setdefault(model.base_model, Lock())
         self._model, self._tokenizer, self._moments = model, tokenizer, moments
+        self._residual_layer = residual_layer
         self._task_template = task_template
         self._source_ingress, self._source_ingress_sha256 = source_ingress, source_ingress_sha256
         self._source_chars, self._context_tokens = source_chars, context_tokens
@@ -422,6 +443,67 @@ class NativeLatentModel:
             raise ValueError("backbone did not retain the expected causal prefix")
         return hidden, next_cache
 
+    def _latent_backbone(self, embeddings, cache=None, *, retain_cache, inject=False):
+        if self._residual_layer is None:
+            hidden, cache = self._backbone(embeddings, cache, retain_cache=retain_cache)
+            return hidden, cache, hidden
+
+        import torch
+
+        if _RESIDUAL_CALL.get() is not None:
+            raise ValueError("native residual recurrence does not support reentrant forwards")
+        layer = self._model.base_model.layers[self._residual_layer]
+        invocation = object()
+        retained = None
+        injected = False
+
+        def inject_residual(_module, args, kwargs=None):
+            nonlocal injected
+            # An ordinary forward may have snapshotted this hook before its
+            # handle and kwargs registration were removed.
+            if _RESIDUAL_CALL.get() is not invocation:
+                return None
+            if kwargs is None:
+                raise ValueError("native residual hook lost its keyword-argument registration")
+            if injected:
+                raise ValueError("the native residual layer received more than one input")
+            original = args[0] if args else kwargs.get("hidden_states")
+            if (not isinstance(original, torch.Tensor) or original.shape != embeddings.shape
+                    or original.dtype != embeddings.dtype or original.device != embeddings.device):
+                raise ValueError("native residual input differs from the selected layer's ABI")
+            injected = True
+            if args:
+                return (embeddings, *args[1:]), kwargs
+            return args, {**kwargs, "hidden_states": embeddings}
+
+        def keep_residual(_module, _args, output):
+            nonlocal retained
+            if _RESIDUAL_CALL.get() is not invocation:
+                return
+            if retained is not None:
+                raise ValueError("the native residual layer ran more than once")
+            hidden = output[0] if isinstance(output, tuple) else output
+            if (not isinstance(hidden, torch.Tensor) or hidden.shape != embeddings.shape
+                    or hidden.dtype != embeddings.dtype or hidden.device != embeddings.device):
+                raise ValueError("native residual output differs from the selected layer's ABI")
+            retained = hidden[:, -1:, :].clone()
+            if not torch.isfinite(retained).all():
+                raise FloatingPointError("nonfinite native residual state")
+
+        if inject and not torch.isfinite(embeddings).all():
+            raise FloatingPointError("nonfinite native residual input")
+        with self._residual_lock, ExitStack() as hooks:
+            hooks.callback(_RESIDUAL_CALL.reset, _RESIDUAL_CALL.set(invocation))
+            if inject:
+                hooks.enter_context(layer.register_forward_pre_hook(inject_residual, with_kwargs=True))
+            hooks.enter_context(layer.register_forward_hook(keep_residual))
+            # Keep earlier layers on a content-free carrier while their caches advance.
+            carrier = torch.zeros_like(embeddings) if inject else embeddings
+            readout, cache = self._backbone(carrier, cache, retain_cache=retain_cache)
+        if retained is None or (inject and not injected):
+            raise ValueError("the native residual layer was not reached")
+        return retained, cache, readout
+
     def _encode_source(self, source, raw, version, *, binary, previous_text=()):
         if binary:
             projected = self._source_ingress(source, raw)
@@ -449,7 +531,7 @@ class NativeLatentModel:
             key = digest, input_sha256
             row = retained.get(key)
             if row is None:
-                hidden, _ = self._backbone(self._embed_ids(ids), retain_cache=False)
+                hidden, _, _ = self._latent_backbone(self._embed_ids(ids), retain_cache=False)
                 row = _frozen(self._encode_hidden(hidden))
                 if input_sha256 is not None:
                     retained[key] = row
@@ -487,12 +569,13 @@ class NativeLatentModel:
         import torch
 
         fingerprint = None
-        if self._source_chunking == "content":
+        content_chunks = self._source_chunking == "content"
+        if content_chunks or self._residual_layer is not None:
             from experiments.memory.native_publication import _reader_digest
 
             fingerprint = _reader_digest(self)
             if previous is not None and fingerprint != previous._reader_fingerprint_sha256:
-                raise ValueError("content-defined source reuse requires the unchanged opening reader")
+                raise ValueError("native source reuse requires the unchanged opening reader")
         sources = {} if previous is None else dict(previous._sources)
         bank = None
         retire, add = [], []
@@ -503,7 +586,7 @@ class NativeLatentModel:
                     retire.extend(item.row for item in old_rows)
                 if raw is not None:
                     was_text = previous is not None and source not in previous._scope.binary_sources
-                    reusable = old_rows if fingerprint is not None and was_text else ()
+                    reusable = old_rows if content_chunks and was_text else ()
                     encoded = self._encode_source(source, raw, delta.manifest[source],
                                                   binary=source in delta.binary_sources, previous_text=reusable)
                     sources[source] = encoded
@@ -649,10 +732,10 @@ class NativeLatentModel:
         delta = torch.tensor(value, dtype=hidden.dtype, device=hidden.device)
         return (gain * weight) * delta
 
-    def _continue(self, hidden, cache, memory, steps, *, withhold_continuation_value=None):
+    def _continue(self, hidden, cache, memory, steps, *, readout=None, withhold_continuation_value=None):
         import torch
 
-        run = _LatentRun(hidden, cache)
+        run = _LatentRun(hidden, cache, hidden if readout is None else readout)
         if withhold_continuation_value is not None:
             run.value_withholding = NativeValueWithholding(withhold_continuation_value)
         source_steps, derived_reads, derived_steps = [], [], []
@@ -715,20 +798,23 @@ class NativeLatentModel:
                 run.applied += bool(torch.any(thought != relay))
             if not torch.isfinite(thought).all():
                 raise FloatingPointError("nonfinite continuous input")
-            hidden, cache = self._backbone(thought, cache, retain_cache=True)
+            hidden, cache, run.readout = self._latent_backbone(thought, cache, retain_cache=True, inject=True)
         run.hidden, run.cache = hidden, cache
         run.source_steps = tuple(source_steps)
         run.derived_reads = tuple(derived_reads)
         run.derived_steps = tuple(derived_steps)
         return run
 
-    def _run_seed(self, item, memory, lookup):
+    def _seed_state(self, item, lookup):
         import torch
 
         seed = torch.tensor(item.row, dtype=lookup.dtype, device=lookup.device)[None, None, :]
-        hidden, cache = self._backbone(seed * self._relay_gain, retain_cache=True)
+        return self._latent_backbone(seed * self._relay_gain, retain_cache=True, inject=True)
+
+    def _run_seed(self, item, memory, lookup):
+        hidden, cache, readout = self._seed_state(item, lookup)
         address = self._encode_hidden(hidden)
-        return address, self._continue(hidden, cache, memory, self._steps)
+        return address, self._continue(hidden, cache, memory, self._steps, readout=readout)
 
     def _check_forecast_reader(self, memory):
         from experiments.memory.native_publication import _reader_digest
@@ -1226,9 +1312,10 @@ class NativeLatentModel:
         import torch
 
         with torch.inference_mode():
-            hidden, cache = self._backbone(self._embed_ids(input_ids), retain_cache=True)
-            run = self._continue(hidden, cache, memory, steps, withhold_continuation_value=withhold_continuation_value)
-            hidden, cache = run.hidden, run.cache
+            hidden, cache, readout = self._latent_backbone(self._embed_ids(input_ids), retain_cache=True)
+            run = self._continue(hidden, cache, memory, steps, readout=readout,
+                                 withhold_continuation_value=withhold_continuation_value)
+            hidden, cache = run.readout, run.cache
             ids = []
             for step in range(output_limit):
                 logits = self._model.get_output_embeddings()(hidden)

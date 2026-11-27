@@ -337,6 +337,39 @@ only; the p2 source explicitly states that the correction was withdrawn. The
 ordinary direct-text baseline is also preserved in the linked artifact. Do not
 interpret retrieval or a retained vector as reasoning.
 
+## Routing through an interior residual block
+
+**CPU software controls.** A source-only worker used a supplied layered
+backbone and image ingress to publish a continuation. A fresh reader
+addressed that operation at the interior block and answered `blue` in
+one latent step. Removing the continuation, withholding its selected
+value, or omitting memory left the answer unresolved. Reversing only the
+retained key also left it unresolved while the task query and first
+ordinary source read stayed fixed. The final-layer control had published
+the continuation but its task score was negative. A corrected image
+invalidated the old operation, subsequent maintenance recovered `gold`,
+and the original pin preserved `blue`. Changing the source encoder scale
+refused revision and publication of older rows.
+
+A separate randomly initialized three-block Llama verified the exact
+injected and retained tensors, matched ordinary zero-step decoding, and
+advanced the prefix through two latent positions and one ordinary token.
+Two distinct injected thoughts gave byte-identical keys and values in
+the earlier block and different keys and values in the selected block.
+An ordinary call that resumed after the concurrent residual hooks
+were removed matched its own baseline. The hooks also cleaned up after
+a deliberate nonfinite output. Live moment memory ingested and read a
+source. A fixed-chunk fast tokenizer could seal and reopen with different
+transient options, and a different custom tokenizer identity was refused.
+The previous implementation's legacy reader digest matched on the default
+fixture.
+
+These results exercise the interior recurrence and sealed worker-to-reader
+path. The fixture supplies the addressing geometry. Learned task routing,
+semantic acquisition, the effect of zero-carrier cache slots on language
+quality and full lifecycle cost are unmeasured.
+[Fixtures](../experiments/memory/test_native_latent_recurrence.py)
+
 ## Raw full-text strategy canary, 26 November 2026
 
 One ordinary greedy Qwen3-0.6B call received the exact visible T8 task and all

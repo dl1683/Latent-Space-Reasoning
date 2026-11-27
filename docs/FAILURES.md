@@ -535,6 +535,14 @@ An applied route remains diagnostic until withdrawal, alternative
 routes and independent task outcomes are checked on the same source
 pin. [Address control](RESULTS.md#changing-a-continuations-address-with-its-value-fixed)
 
+Feeding a thought at both the embedding input and an interior block gives
+earlier caches another path to carry it. The interior control uses a
+fixed zero carrier and checked equal earlier keys and values for different
+thoughts. Added cache positions can still affect decoding. Include a
+same-depth memory-omitted arm and keep layer-dependent scale and gains
+fixed before measuring task benefit.
+[Interior-block control](RESULTS.md#routing-through-an-interior-residual-block)
+
 ## Decisions carried forward
 
 1. **Central object:** one useful retained-state consequence/revision with a competent equally exposed conventional comparator; keep recurrence and feedback distinct. Receiver perfection on arbitrary tasks is not required, but the selected operation's positive control is.

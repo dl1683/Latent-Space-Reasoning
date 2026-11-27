@@ -114,9 +114,9 @@ The selective arm can transfer its retained state and worker queue to
 a fresh reader as a sealed [publication](#sealing-the-native-world-for-a-late-reader).
 
 The first rival uses an intermediate residual layer as both the read
-and write coordinate system, with a fitted relay into the reused block.
-The second lets a selective continuation operate on retained rows
-while fixed moments supply aggregate evidence. Both should be compared
+and write coordinate system. The second lets a selective continuation
+operate on final-layer rows while fixed moments supply aggregate evidence.
+Both should be compared
 over identical scope against source-only recurrence, warm indexed
 relations and a warm text reader. Layer transfer, source dilution and
 binding collisions can each break the current construction. Test a
@@ -126,6 +126,36 @@ maintenance, state retention, inference and exact evidence reopening in
 the comparison. [Implementation](../experiments/memory/native_latent_recurrence.py)
 · [Continuous thought feedback](https://arxiv.org/abs/2412.06769)
 · [Retrofitted recurrence](https://arxiv.org/abs/2511.07384)
+
+#### Reusing an interior residual block
+
+[SLICE] An opt-in eager reader captures the last-position output of a
+selected interior block during source encoding and task prefill. A
+worker replays its source seed in these coordinates. During each latent
+step the relay and retained contributions enter the same block before its
+forward pass. Earlier layers receive a fixed zero embedding for that
+position. The vocabulary head reads the final backbone output and normal
+output tokens use ordinary cached decoding. Memory is optional in the
+same call and omission still permits the interior recurrence.
+
+The full stack runs on every latent step and the carrier positions occupy
+causal cache slots. Request caches belong to their forward path and a
+failed forward may have partly advanced them. Native residual calls on
+the same eager backbone serialize hook lifetimes. Hooks observe their own
+call context and are removed on exceptions. Other in-process hooks
+remain trusted. The sealed reader fingerprint covers the layer, carrier,
+implementation and the existing scale and gains.
+[PyTorch eager hooks](https://docs.pytorch.org/docs/stable/generated/torch.nn.Module)
+
+A future calibration must choose the coordinate scale, gains and any
+binary ingress from separate sources before looking at test tasks.
+Compare with the final-layer reader, a key-only source-address control
+and a model with the same added positions and memory omitted. Full
+prefill, each cached forward, later source reads and reopens count toward
+cost. This implementation establishes a second recurrence path with
+revision and readout controls on supplied data. Learned use and the
+effect on supported task outcomes remain open.
+[Execution evidence](RESULTS.md#routing-through-an-interior-residual-block)
 
 #### Selective reads and continuation reuse
 
