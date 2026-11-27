@@ -349,6 +349,29 @@ disjoint evidence-bearing needs before treating the interface as qualified.
 Then verify the
 frozen runtime's tokenizer and template, since the model still has to choose
 and ground the actions.
+
+An opt-in v2 compact search/read wire is now implemented in the task host. It
+supports up to six needs, three search/read operations per action, six of each
+over an episode, and citations to any verified episode read. The eight-slot
+need string has one global 96-character cap. The host enforces the registered
+seven-call, 512-token per-call, 1,792-token aggregate-output, 8,192-token
+aggregate-input, and 8,192-token context ceilings. Specialized role, joint-state,
+and recurrent tools remain on v1. V2 has not had a tokenizer/schema feasibility
+run or a model episode; its planner gate remains **NOT PASSED**. This interface
+change addresses host capacity and citation semantics, not whether a model
+infers useful obligations or whether maintained computation improves an
+independently graded answer.
+
+The next useful science step is a fresh small falsification screen with broad
+late tasks spanning a cross-source bridge, conflicting authority, a missing
+premise, an alternative or counterfactual, and an unrelated side fact. The
+source-only worker must publish before seeing those tasks. Remove and restore
+the acquired computation at the same pin, and compare an incremental exact
+join and a competent text-search reader under matched evidence and cost. Use
+newly authored sources, tasks, and grades; do not use the exposed T8 or repeated
+counterfactual canaries for tuning. A small screen is a stop/continue decision,
+not the held whole-world evaluation.
+
 Set `TaskBudget` to at most 24 actions, eight candidates per search, 8,192
 returned evidence bytes, 2 MiB source bytes, and 512 aggregate role-work units
 across ordinary probes and joint role-link calls. A maintenance round gets at most two calls per

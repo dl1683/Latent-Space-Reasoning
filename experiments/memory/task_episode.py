@@ -30,9 +30,11 @@ _EPISODE_IMPLEMENTATION_FILES = (
 )
 
 
-def _episode_implementation_manifest():
+def _episode_implementation_manifest(*, compact_wire_v2=False):
     root = Path(__file__).parent
-    return {name: sha256((root / name).read_bytes()) for name in _EPISODE_IMPLEMENTATION_FILES}
+    files = (*_EPISODE_IMPLEMENTATION_FILES,
+             *(('compact_task_planner_wire_v2.py',) if compact_wire_v2 else ()))
+    return {name: sha256((root / name).read_bytes()) for name in files}
 
 
 _SYSTEM = (
@@ -463,6 +465,8 @@ class EpisodePolicy:
     probes_enabled: bool = False
     output_constraint_sha256: str | None = None
     compact_delivery: bool = False
+    compact_wire_version: int = 1
+    compact_wire_sha256: str | None = None
 
     def __post_init__(self):
         for name in ("policy_id", "backend_id", "tokenizer_id"):
@@ -474,6 +478,17 @@ class EpisodePolicy:
         if self.output_constraint_sha256 is not None:
             require_digest(self.output_constraint_sha256)
         _validate_delivery(self.compact_delivery, self.state_kind)
+        if type(self.compact_wire_version) is not int or self.compact_wire_version not in (1, 2):
+            raise ValueError("unsupported compact task-planner wire version")
+        if self.compact_wire_version == 1:
+            if self.compact_wire_sha256 is not None:
+                raise ValueError("v1 compact wire must not declare a v2 digest")
+        else:
+            from experiments.memory.compact_task_planner_wire_v2 import WIRE_SHA256
+
+            if (self.state_kind != "compact_needs" or not self.compact_delivery
+                    or self.compact_wire_sha256 != WIRE_SHA256):
+                raise ValueError("v2 compact wire requires compact delivery and its exact contract digest")
 
 
 @dataclass(frozen=True, slots=True)
@@ -500,6 +515,20 @@ class EpisodeArtifact:
 def _validate_delivery(compact, state_kind):
     if type(compact) is not bool or (compact and state_kind != "compact_needs"):
         raise ValueError("compact delivery requires the compact needs policy")
+
+
+def _validate_compact_wire(version, digest, *, state_kind, compact_delivery):
+    if type(version) is not int or version not in (1, 2):
+        raise ValueError("unsupported compact task-planner wire version")
+    if version == 1:
+        if digest is not None:
+            raise ValueError("v1 compact wire cannot carry a v2 contract digest")
+        return
+    from experiments.memory.compact_task_planner_wire_v2 import WIRE_SHA256
+
+    if (state_kind != "compact_needs" or compact_delivery is not True
+            or digest != WIRE_SHA256):
+        raise ValueError("episode v2 compact wire declaration is not bound to its contract")
 
 
 def _episode_output_constraint_identity(opening_data):
@@ -608,6 +637,10 @@ def read_episode(artifact):
         if policy_record.get("output_constraint_sha256") is not None:
             require_digest(policy_record["output_constraint_sha256"])
         _validate_delivery(policy_record.get("compact_delivery", False), policy_record.get("state_kind"))
+        _validate_compact_wire(policy_record.get("compact_wire_version", 1),
+                               policy_record.get("compact_wire_sha256"),
+                               state_kind=policy_record.get("state_kind"),
+                               compact_delivery=policy_record.get("compact_delivery", False))
     native_pin = opening_data.get("native_world_pin")
     if ("source_epoch_seal" in opening_data) != (version == 3):
         raise ValueError("episode source epoch field differs from its schema")
@@ -1229,7 +1262,7 @@ class _Tools:
         public["read"]["terminal_reads"] = branches
         return {"request": receipt["request"], "result": public}
 
-    def submission(self, report, need_ids=()):
+    def submission(self, report, need_ids=(), *, allow_partial=False):
         if (type(report) is not dict or report.keys() != {"findings", "open_questions"}
                 or type(report["findings"]) is not list or type(report["open_questions"]) is not list):
             raise ValueError("invalid final submission fields")
@@ -1282,10 +1315,17 @@ class _Tools:
                         closed_receipts.add(query)
                 else:
                     self._validate_role_support(finding, citations, need_id, open_need_ids)
-            if seen != known:
-                raise ValueError("every declared need requires at least one finding")
-            if adjudicated != joint_queries:
-                raise ValueError("each distinct joint query requires a structured receipt finding")
+            if allow_partial:
+                if len(seen) != len(report["findings"]):
+                    raise ValueError("a partial final batch cannot repeat a need finding")
+                covered_queries = {query for query in joint_queries if query[0] in seen}
+                if adjudicated != covered_queries:
+                    raise ValueError("each covered need's joint query requires a structured receipt finding")
+            else:
+                if seen != known:
+                    raise ValueError("every declared need requires at least one finding")
+                if adjudicated != joint_queries:
+                    raise ValueError("each distinct joint query requires a structured receipt finding")
             if not closed_queries <= closed_receipts:
                 raise ValueError("an incomplete receipt cannot replace a completed receipt for the same query")
             return report
@@ -1342,6 +1382,29 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
         raise ValueError("the recurrent bridge must be bound to this exact TaskWorld")
     if not callable(generate):
         raise TypeError("a generation adapter is required")
+    compact_wire_v2 = policy.state_kind == "compact_needs" and policy.compact_wire_version == 2
+    if compact_wire_v2:
+        from experiments.memory.compact_task_planner_wire_v2 import (
+            MAX_CALLS as V2_MAX_CALLS,
+            MAX_CONTEXT_TOKENS as V2_MAX_CONTEXT_TOKENS,
+            MAX_INPUT_TOKENS as V2_MAX_INPUT_TOKENS,
+            MAX_READS as V2_MAX_READS,
+            MAX_SEARCHES as V2_MAX_SEARCHES,
+            MAX_OUTPUT_TOKENS_PER_CALL as V2_MAX_OUTPUT_PER_CALL,
+            MAX_OUTPUT_TOKENS_PER_EPISODE as V2_MAX_OUTPUT_PER_EPISODE,
+        )
+
+        if (limits.calls > V2_MAX_CALLS or limits.queries > V2_MAX_SEARCHES
+                or limits.reads > V2_MAX_READS
+                or limits.context_tokens > V2_MAX_CONTEXT_TOKENS
+                or limits.input_tokens > V2_MAX_INPUT_TOKENS
+                or limits.max_new_tokens > V2_MAX_OUTPUT_PER_CALL
+                or limits.output_tokens > V2_MAX_OUTPUT_PER_EPISODE):
+            raise ValueError("v2 episode limits exceed its registered call, evidence, token, or context caps")
+        if (policy.probes_enabled or limits.probes > 0 or limits.joint_roles > 0
+                or limits.access.joint_state is not None or limits.scoped_read_batches
+                or recurrent_bridge is not None):
+            raise ValueError("v2 currently exposes search/read only; use the v1 wire for specialized role or recurrent tools")
     from experiments.memory.compact_episode_constraint import CompactSearchReadConstraint, _PlainCompactBackend
 
     if limits.scoped_read_batches:
@@ -1355,6 +1418,8 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
             if not isinstance(decoder, ScopedCompactSearchReadConstraint):
                 raise ValueError("the existing compact decoder does not support grouped reads")
     if isinstance(generate, _PlainCompactBackend):
+        if policy.compact_wire_version != 1:
+            raise ValueError("the v1 compact decoder cannot be used for a v2 wire episode")
         generate.constraint.check_episode(policy, limits, tokenizer)
     native_opening = None
     if native_backend is not None:
@@ -1403,15 +1468,22 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
     need_registry = []
     plan_registered = not compact_needs
     plan_requires_action = False
+    pending_final = []
+    pending_final_questions = []
+    finalizing = False
     final = rejection = None
     calls = input_tokens = output_tokens = 0
     output_complete = True
     status = "call_limit"
     with path.open("xb") as handle:
         ledger = _Ledger(handle)
+        policy_data = asdict(policy)
+        if policy.compact_wire_version == 1:
+            policy_data.pop("compact_wire_version")
+            policy_data.pop("compact_wire_sha256")
         opening = {"version": 3 if world.source_seal is not None else 2,
                    "task": task, "pin": asdict(world.pin),
-                   "policy": asdict(policy), "limits": asdict(limits),
+                   "policy": policy_data, "limits": asdict(limits),
                    "setup_source_bytes": world.setup_source_bytes,
                    "setup_native_source_verification_bytes": native_source_bytes,
                    "setup_total_source_bytes": total_setup_source_bytes}
@@ -1432,7 +1504,9 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
             del opening["limits"]["access"]["joint_state"]
         if toolbox.joint_state_enabled:
             opening["joint_state_version"] = 1
-        opening["experiment_implementation"] = _episode_implementation_manifest()
+        opening["experiment_implementation"] = _episode_implementation_manifest(
+            compact_wire_v2=compact_wire_v2,
+        )
         if recurrent_bridge is not None:
             memory = recurrent_bridge._memory
             arrays = [memory._key_map]
@@ -1498,10 +1572,17 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
             if compact_needs:
                 framed["need_registry"] = need_registry
                 framed["planning_phase"] = ("declare" if not plan_registered else
-                                             "act_after_plan" if plan_requires_action else "investigate")
+                                             "act_after_plan" if plan_requires_action else
+                                             "finalize" if compact_wire_v2 and finalizing else "investigate")
             if limits.scoped_read_batches:
                 framed["scoped_read_batches_enabled"] = True
                 framed["scoped_reads_remaining"] = max(0, limits.reads - toolbox.attempts["read"])
+            if compact_wire_v2:
+                framed["compact_wire_version"] = 2
+                framed["compact_search_limit"] = min(6, limits.queries)
+                framed["compact_read_limit"] = min(6, limits.reads)
+                framed["pending_final"] = pending_final
+                framed["pending_questions"] = pending_final_questions
             if world.pin.as_of is not None:
                 framed["as_of"] = world.pin.as_of
             if world._receiver is not None:
@@ -1515,8 +1596,13 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
             instructions = system + system_suffix
             if policy.compact_delivery:
                 phase = framed["planning_phase"]
-                instructions = _compact_delivery_system(phase)
-                if phase not in ("declare", "act_after_plan"):
+                if compact_wire_v2:
+                    from experiments.memory.compact_task_planner_wire_v2 import system_prompt
+
+                    instructions = system_prompt(phase)
+                else:
+                    instructions = _compact_delivery_system(phase)
+                if phase not in ("declare", "act_after_plan") and not compact_wire_v2:
                     instructions += system_suffix
             messages = frame_evidence(instructions, framed)
             try:
@@ -1593,7 +1679,40 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
             compact_plan = None
             try:
                 action = _decode(reply.text)
+                if compact_wire_v2 and type(action) is dict and action.keys() == {"f"}:
+                    if not plan_registered or plan_requires_action:
+                        raise ValueError("the v2 planner must take its first search action before finalizing")
+                    from experiments.memory.compact_task_planner_wire_v2 import normalize_finish
+
+                    batch = normalize_finish(action["f"], need_registry,
+                                             toolbox._session.reads, pending_final)
+                    toolbox.submission(batch, tuple(need["id"] for need in need_registry),
+                                       allow_partial=True)
+                    next_findings = [*pending_final, *batch["findings"]]
+                    next_questions = [*pending_final_questions, *batch["open_questions"]]
+                    covered = {row["need_id"] for row in next_findings}
+                    expected = {need["id"] for need in need_registry}
+                    if covered == expected:
+                        order = {need["id"]: index for index, need in enumerate(need_registry)}
+                        report = {
+                            "findings": sorted(next_findings, key=lambda row: order[row["need_id"]]),
+                            "open_questions": sorted(next_questions,
+                                                     key=lambda row: order[row["need_id"]]),
+                        }
+                        final = toolbox.submission(report, tuple(order))
+                        pending_final, pending_final_questions = next_findings, next_questions
+                        ledger.write("final_batch", batch)
+                        status = "completed"
+                        break
+                    pending_final, pending_final_questions = next_findings, next_questions
+                    ledger.write("final_batch", batch)
+                    finalizing = True
+                    rejection = None
+                    continue
+
                 if type(action) is dict and action.keys() == {"finish"}:
+                    if compact_wire_v2:
+                        raise ValueError("v2 final findings must use the bounded f wire")
                     if compact_needs and (not plan_registered or plan_requires_action):
                         raise ValueError("the compact planner must take its first search action before finishing")
                     registry = need_registry if compact_needs else state["needs"] if typed_needs else ()
@@ -1603,7 +1722,50 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                     break
 
                 if compact_needs:
-                    if not plan_registered:
+                    if compact_wire_v2:
+                        from experiments.memory.compact_task_planner_wire_v2 import (
+                            normalize_additions as normalize_v2_additions,
+                            normalize_plan as normalize_v2_plan,
+                            normalize_tools as normalize_v2_tools,
+                        )
+
+                        if not plan_registered:
+                            if type(action) is not dict or action.keys() != {"p"}:
+                                raise ValueError("the v2 compact planner must declare its initial plan")
+                            compact_plan = _compact_need_additions(
+                                normalize_v2_plan(action["p"]), (), toolbox._session.reads, require_one=True,
+                            )
+                            action = {"plan": compact_plan}
+                        else:
+                            if finalizing:
+                                raise ValueError("v2 investigation cannot resume after finalization begins")
+                            if type(action) is not dict or action.keys() != {"a", "t"}:
+                                raise ValueError("v2 compact actions require need additions and an ordered tool list")
+                            additions = _compact_need_additions(
+                                normalize_v2_additions(action["a"], need_registry, toolbox._session.reads),
+                                need_registry, toolbox._session.reads,
+                            )
+                            registry_ids = {need["id"] for need in (*need_registry, *additions)}
+                            proposed_tools = normalize_v2_tools(
+                                action["t"], registry_ids, first_search=plan_requires_action,
+                            )
+                            searches = sum(row["op"] == "search" for row in proposed_tools)
+                            reads = sum(row["op"] == "read" for row in proposed_tools)
+                            if (toolbox.attempts.get("search", 0) + searches > min(6, limits.queries)
+                                    or toolbox.attempts.get("read", 0) + reads > min(6, limits.reads)):
+                                raise ValueError("v2 action exceeds its six-search or six-read wire cap")
+                            # A read in a multi-tool response may only use a candidate
+                            # authorized before this response, never one created by a
+                            # preceding search in the same response.
+                            for request in proposed_tools:
+                                if request["op"] == "read":
+                                    candidate, need_id = request["candidate"], request["need_id"]
+                                    if (not 0 <= candidate < len(toolbox._pointers)
+                                            or need_id not in toolbox._candidate_needs.get(candidate, ())):
+                                        raise ValueError("v2 read must use a pre-response candidate for the same need")
+                            action = {"state": "", "need_additions": additions,
+                                      "tools": proposed_tools}
+                    elif not plan_registered:
                         if type(action) is not dict or action.keys() != {"plan"}:
                             raise ValueError("the compact planner must declare its initial plan before using tools")
                         compact_plan = _compact_need_additions(
@@ -1650,9 +1812,15 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                         plan_requires_action = False
                         ledger.write("action", action)
                         need_ids = tuple(need["id"] for need in need_registry)
-                        receipt = {"request": action["tool"], "result": toolbox.call(action["tool"], need_ids)}
-                        ledger.write("tool", {**receipt, "usage": toolbox.counters()})
-                        toolbox.receipts.append(toolbox.prompt_receipt(receipt))
+                        if compact_wire_v2:
+                            for tool in action["tools"]:
+                                receipt = {"request": tool, "result": toolbox.call(tool, need_ids)}
+                                ledger.write("tool", {**receipt, "usage": toolbox.counters()})
+                                toolbox.receipts.append(toolbox.prompt_receipt(receipt))
+                        else:
+                            receipt = {"request": action["tool"], "result": toolbox.call(action["tool"], need_ids)}
+                            ledger.write("tool", {**receipt, "usage": toolbox.counters()})
+                            toolbox.receipts.append(toolbox.prompt_receipt(receipt))
                     rejection = None
                     continue
 
@@ -1674,16 +1842,20 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                 ledger.write("tool", {**receipt, "usage": toolbox.counters()})
                 toolbox.receipts.append(toolbox.prompt_receipt(receipt))
 
-        ledger.write("finish", {"status": status, "submission": final,
-                                "need_registry": (need_registry if compact_needs else
-                                                  state["needs"] if typed_needs else None),
-                                "usage": {"calls": calls, "input_tokens": input_tokens,
-                                          "known_output_tokens": output_tokens,
-                                          "output_usage_complete": output_complete,
-                                          "setup_source_bytes": world.setup_source_bytes,
-                                          "setup_native_source_verification_bytes": native_source_bytes,
-                                          "setup_total_source_bytes": total_setup_source_bytes,
-                                          **toolbox.counters()}})
+        finish_data = {"status": status, "submission": final,
+                       "need_registry": (need_registry if compact_needs else
+                                         state["needs"] if typed_needs else None),
+                       "usage": {"calls": calls, "input_tokens": input_tokens,
+                                 "known_output_tokens": output_tokens,
+                                 "output_usage_complete": output_complete,
+                                 "setup_source_bytes": world.setup_source_bytes,
+                                 "setup_native_source_verification_bytes": native_source_bytes,
+                                 "setup_total_source_bytes": total_setup_source_bytes,
+                                 **toolbox.counters()}}
+        if compact_wire_v2:
+            finish_data["pending_findings"] = pending_final
+            finish_data["pending_questions"] = pending_final_questions
+        ledger.write("finish", finish_data)
         return EpisodeArtifact(path, ledger.head)
 
 
@@ -1831,6 +2003,10 @@ def read_episode_pair(left: EpisodeArtifact, right: EpisodeArtifact, *, contrast
         raise ValueError("episode output constraint identity differs")
     if contrast != "policy" and a.get("compact_delivery", False) != b.get("compact_delivery", False):
         raise ValueError("episode compact delivery differs")
+    if contrast != "policy" and (
+            a.get("compact_wire_version", 1) != b.get("compact_wire_version", 1)
+            or a.get("compact_wire_sha256") != b.get("compact_wire_sha256")):
+        raise ValueError("episode compact wire differs")
     if contrast == "native_text":
         if any(a[field] != b[field] for field in ("policy_id", "state_kind", "probes_enabled")):
             raise ValueError("native-text comparison changes the episode policy")
