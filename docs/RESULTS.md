@@ -2378,14 +2378,15 @@ under exploratory limits of 32,768 aggregate input tokens, 4,096 aggregate
 output tokens, and 1,024 output tokens per call. Each trace used seven calls,
 four verified reads, and the same fixed scripted actions in the full and
 compact arms. The pinned Qwen3-0.6B tokenizer and LMFE 0.11.3 parser accepted
-maximum-sized plan, action, read-batch, and final fixtures. No model weights
-were loaded and evaluator gold was not opened.
+the specific plan, action, read-batch, and final fixtures recorded here; this
+did not exercise every citation-list branch, as the independent audit below
+explains. No model weights were loaded and evaluator gold was not opened.
 
 The bounded contract permits five needs total, at most two in the initial plan,
 one addition per action, and up to four individually charged reads in batches
-of two. Maximum legal fixture sizes were 927 tokens for the two-need plan, 529
-for one added need plus search, 28 for a two-candidate read, and 806 for a
-five-need final. The maximum legal seven-call output path is 3,376 tokens; the
+of two. The maximum-text fixtures measured 927 tokens for the two-need plan,
+529 for one added need plus search, 28 for a two-candidate read, and 806 for a
+five-need final. Their seven-call output bound is 3,376 tokens; the
 scripted episodes used 3,236.4 tokens on average and at most 3,241.
 
 This does **not** pass the registered whole-world protocol, which allows 512
@@ -2416,6 +2417,18 @@ planning goal. It does not establish latent-world reasoning, material-need
 inference, evidence sufficiency, or an advantage over iterative RAG or an
 equal-information join. Do not start model inference until a schema-bound
 trace fits the registered limits or the protocol is revised for every arm.
+
+An independent [evidence-access audit](PLANNER_EVIDENCE_ACCESS_BOUND.md)
+identified a separate v7 contract defect: final findings could cite only reads
+acquired under that same need, while the common host and registered protocol
+allow a verified read to support more than one need. Under the v7 per-need
+restriction, five evidence actions, three searches and four reads can provide
+separately acquired evidence to at most two need IDs when each needs its own
+source. The archived traces in fact cite only n1 and n2; these are structural
+counts on scripted strings, not a quality score. A corrected contract must
+restore cross-need citation and include a capacity case with three needs that
+require distinct sources. Shared citations alone will not prove that the
+retriever can acquire disjoint evidence for every obligation.
 
 ## Latent revision software verification, 24–25 November 2026
 

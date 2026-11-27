@@ -340,7 +340,13 @@ fixed traces also exceed the 8,192-token aggregate input allowance. The
 registered planner gate therefore remains **NOT PASSED**. This preflight does
 not qualify model execution under the registered protocol. Reduce the
 wire/prompt cost or revise the protocol for every compared arm before loading
-model weights. Then verify the
+model weights. A separate [evidence-access audit](PLANNER_EVIDENCE_ACCESS_BOUND.md)
+also found that the v7 final schema blocks cross-need citation sharing and
+that five evidence-action calls cannot acquire distinct support sources for
+three different needs under the current per-need search/read tool. Restore the
+host's global verified-citation semantics and preflight a case with three
+disjoint evidence-bearing needs before treating the interface as qualified.
+Then verify the
 frozen runtime's tokenizer and template, since the model still has to choose
 and ground the actions.
 Set `TaskBudget` to at most 24 actions, eight candidates per search, 8,192

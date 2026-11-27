@@ -929,11 +929,16 @@ The prompt-only full/compact input means were 25,400.5 and 18,330.1 tokens;
 compact delivery reduced input by 27.8% but still exceeded the registered
 budget. A four-candidate batch boundary was not accepted by the pinned LMFE
 parser, so the interface caps batches at two while retaining four total read
-slots. No model weights or evaluator gold were used. This is an output and
-context-budget failure, not a model-planning or latent-world result. Keep the
-gate closed until the need/receipt wire format fits the protocol or all
-comparison arms receive a documented budget revision. Exact ledgers, summary
-and checksums are in
+slots. No model weights or evaluator gold were used. This is an output,
+context-budget and evidence-access contract failure, not a model-planning or
+latent-world result. A separate audit found that the v7 final schema prevented
+verified reads from being cited across needs, contrary to the common host and
+protocol; under that restriction the five-action path can acquire separate
+reads for at most two needs. See the [evidence-access audit](PLANNER_EVIDENCE_ACCESS_BOUND.md)
+for its scope and exact structural counts. Keep the gate closed until the
+wire format, evidence-sharing semantics and capacity for disjoint needs are
+qualified, or all comparison arms receive a documented budget revision. Exact
+ledgers, summary and checksums are in
 [`whole_world_planner_preflight_2026-11-26_v7`](../experiments/results/whole_world_planner_preflight_2026-11-26_v7/).
 
 ## Recovery and interpretation
