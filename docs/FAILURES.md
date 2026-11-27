@@ -451,6 +451,8 @@ qualify on a fresh frozen set with the paired full/compact control. Details and
 the reproducible artifact are in
 [the compact-planner result](RESULTS.md#compact-typed-planner-canaries).
 
+**A matching opening seal can coexist with a wrong replay trajectory, 26 November 2026.** An intentionally reissued digest made a structurally valid checkpoint pass the artifact hash check after either its numerical state or its selected bank rows were changed. Exact replay on the receiving worker caught both changes at the sampled anchor and refused the import. A single-anchor check is bounded compatibility evidence. Trust in the other rows depends on the controller's authenticated seal and the legitimate producing runtime. An undersized work cap leaves the handoff unused. [Fresh-worker control](RESULTS.md#passing-replay-state-to-a-fresh-worker)
+
 ## Decisions carried forward
 
 1. **Central object:** one useful retained-state consequence/revision with a competent equally exposed conventional comparator; keep recurrence and feedback distinct. Receiver perfection on arbitrary tasks is not required, but the selected operation's positive control is.

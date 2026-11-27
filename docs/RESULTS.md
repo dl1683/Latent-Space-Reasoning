@@ -492,6 +492,35 @@ inclusive cutoff, a later key change to a row previously below it,
 a selected value-only replacement, and changed survivor order.
 [Episode fixture](../experiments/memory/test_task_episode.py) · [Selector fixture](../experiments/memory/test_selective_continuations.py)
 
+## Passing replay state to a fresh worker
+
+**Deterministic CPU software control.** A source-only publisher sealed
+an opening and successor publication and exported its opening replay
+checkpoint. A fresh process reopened both publications with zero
+backbone calls, checked one opening anchor and reconciled the successor.
+It read the task only afterward. The cold and carried passes agreed on
+the exact Q8 traces, ordered selection frontiers and candidate decisions.
+A separate cold opening pass in the test also matched the entire imported
+checkpoint. The historical answer stayed `L07` and the revised answer
+was `L11`. The edit changed the supplied latent row by switching a
+source's declared ingress from text to binary while preserving its
+bytes and span identity.
+
+| Pass on the successor | Retained anchors | Backbone calls | Row scores |
+| --- | ---: | ---: | ---: |
+| Cold with frontiers | 0 | 36 | 234 |
+| Handoff and reuse | 4 | 24 | 190 |
+
+The second row includes four calls and 27 row scores to replay the import
+sample. It assumes the previous maintenance pass already ran and excludes
+elapsed checkpoint creation, transport, storage and publication opening.
+The fixture also checks refusals for insufficient capacity, a seal mismatch,
+an incorrect opening, and a sampled state or route that differs even with a
+reissued seal. Both processes use the same host and deterministic runtime.
+Actual multimodal understanding, learned replay stability, end-to-end
+economics and continual swarm operation remain open.
+[Fresh-worker fixture](../experiments/memory/test_native_publication.py)
+
 ## Qualifying a continuation before a late task, 26 November 2026
 
 **CPU software control.** A native worker drafted one pending

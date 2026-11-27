@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass, replace
 import json
+from pathlib import Path
 from types import MappingProxyType
 
 import numpy as np
@@ -9,7 +10,8 @@ import numpy as np
 from experiments.memory.linear_feedback import _quantize
 from experiments.memory.native_latent_recurrence import NativeLatentModel, NativeSourceMemory, _require_cpu_eval
 from experiments.memory.native_publication import _reader_digest
-from experiments.memory.verified_source_tool import SourceSpan, require_digest
+from experiments.memory.source_revision_feed import _encode
+from experiments.memory.verified_source_tool import SourceSpan, require_digest, sha256
 
 
 @dataclass(frozen=True, slots=True)
@@ -42,6 +44,7 @@ class _ReplayTrace:
 class _IntactReplay:
     opening: NativeSourceMemory
     confirmation_steps: int
+    implementation_sha256: str
     traces: MappingProxyType
 
 
@@ -63,6 +66,15 @@ class NativeReconciliation:
 
 class _ReplayBudgetExceeded(Exception):
     pass
+
+
+def _implementation_sha256():
+    modules = (
+        "latent_feedback.py", "linear_feedback.py", "native_latent_recurrence.py",
+        "native_publication.py", "native_reconciliation.py", "native_replay_checkpoint.py",
+        "selective_continuations.py", "source_revision_feed.py", "verified_source_tool.py",
+    )
+    return sha256(_encode([(name, sha256(Path(__file__).with_name(name).read_bytes())) for name in modules]))
 
 
 def _frontier(steps, row_count, source_seal):
@@ -139,8 +151,9 @@ def _can_reuse(trace, deltas, required_steps, score_arrivals):
     return True
 
 
-def _previous_opening(replay, memory, confirmation_steps):
-    if replay is None or replay.confirmation_steps != confirmation_steps:
+def _previous_opening(replay, memory, confirmation_steps, implementation):
+    if (replay is None or replay.confirmation_steps != confirmation_steps
+            or replay.implementation_sha256 != implementation):
         return None
     opening = replay.opening
     if (opening._owner is not memory._owner
@@ -242,7 +255,8 @@ def reconcile_native_continuations(reader, memory, *, expected_publication_sha25
     if not leaves:
         return NativeReconciliation(memory, "no_eligible_leaf", expected_publication_sha256, anchor_count)
     confirmation_steps = reference_step + 1
-    opening = _previous_opening(previous_replay, memory, confirmation_steps)
+    implementation = _implementation_sha256() if use_frontiers else None
+    opening = _previous_opening(previous_replay, memory, confirmation_steps, implementation)
     if opening is not None and opening.rows > max_anchors:
         opening = None
     derived_rows = len(selective.acquired)
@@ -330,7 +344,7 @@ def reconcile_native_continuations(reader, memory, *, expected_publication_sha25
         except _ReplayBudgetExceeded:
             return NativeReconciliation(memory, "budget_exceeded", expected_publication_sha256, anchor_count,
                                         calls, scores, frontier_scores=frontier_scores)
-        checkpoint = (_IntactReplay(memory, confirmation_steps, MappingProxyType(
+        checkpoint = (_IntactReplay(memory, confirmation_steps, implementation, MappingProxyType(
             {item.span: trace for item, trace in zip(anchors, intact, strict=True)})) if use_frontiers else None)
         evidence = dict(backbone_calls=calls, row_scores=scores, comparisons=tuple(comparisons),
                         reused_pairs=reused, reused_anchors=reused_anchors, frontier_scores=frontier_scores,

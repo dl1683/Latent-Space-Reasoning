@@ -645,8 +645,30 @@ trajectory supplies numerical state for maintenance. Source evidence
 receipts still come from the current reader. Certificate dot products
 count against the same row-score budget as fresh replay. The worker
 holds the previous publication and checkpoint in memory while using
-them. Restart, storage costs and reuse across workers remain separate
-questions. [Revision control](RESULTS.md#carrying-reconciliation-trajectories-across-source-edits)
+them. [Revision control](RESULTS.md#carrying-reconciliation-trajectories-across-source-edits)
+
+### Passing a reconciliation checkpoint between workers
+
+[SLICE] A controller can export complete trajectories from an intact
+opening publication as a byte-bounded data-only checkpoint. It retains
+Q8 states, per-step queries and cutoffs, and ordered selections indexed
+against the already verified publication. It binds the exact publication,
+source epoch, reader, runtime, replay depth and replay implementation.
+The controller transfers the expected checkpoint digest through a
+separate trusted path. A fresh worker opens the prior and successor
+publications through their ordinary verifier before using the checkpoint
+on the successor. Publication evidence still comes from the reader.
+
+The receiving worker validates the whole payload and exactly replays
+one opening anchor chosen for derived-bank involvement. A disagreeing
+trace, insufficient sample budget or empty handoff leaves cold replay
+available. The sample checks compatibility on the receiving runtime.
+The checkpoint's integrity and origin depend on the trusted seal and
+producer. Reuse on the successor still requires the bank and frontier
+checks for each carried trajectory. The same-host deterministic fixture
+exercises process turnover. Learned replay stability and cost over many
+workers or revisions remain open.
+[Fresh-worker control](RESULTS.md#passing-replay-state-to-a-fresh-worker)
 
 ### Warm exact control on a separate corpus
 

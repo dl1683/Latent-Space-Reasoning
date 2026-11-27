@@ -963,8 +963,24 @@ successful pass's `intact_replay` as `previous_replay` with
 previous pass, before any selected retirement. The next pass validates
 against both actual sealed banks. `reused_anchors` counts anchors
 carried across the edit. `frontier_scores` is the certificate portion
-of `row_scores`. Use the checkpoint only in the worker process that
-created it. A new reader or incompatible source lineage starts cold.
+of `row_scores`. For a fresh worker on the same verified runtime,
+export the intact replay with
+`write_native_replay_checkpoint(path, reader, result.intact_replay, max_bytes=...)`
+from `experiments.memory.native_replay_checkpoint`. Keep the payload
+within the private maintenance workspace. Transfer its returned digest
+through the trusted controller separately from the file.
+
+The receiving worker verifies and opens the opening and successor
+publications. Call `read_native_replay_checkpoint(path, fresh_reader,
+verified_opening, seal=expected_digest, max_bytes=...,
+max_backbone_calls=..., max_row_scores=...)`, then pass its `replay`
+as `previous_replay` to reconciliation. Record the handoff forwards
+and row scores alongside reconciliation work. `empty`, `budget_exceeded`
+and `sample_mismatch` return `replay=None`, which allows a cold pass.
+Invalid custody, structure or opening/runtime identity raises an error.
+Spend at most the supplied bounds and keep the trusted artifact seal
+and exact verified runtime pinned. The one-anchor check is a runtime
+probe with a trusted producer.
 
 ## Compact task-episode delivery
 

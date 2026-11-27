@@ -911,8 +911,139 @@ def test_calibrated_binary_projection_changes_the_retained_read(tmp_path):
     assert updated.continuation_reads(cue_span)[1].selected[0].span.source_id == image
 
 
+def _handoff_child(root, old_seal, old_source, current_seal, current_source, replay_seal, ingress):
+    from experiments.memory.native_isolated_stage import _CausalControl, _reader as make_reader
+    from experiments.memory.native_reconciliation import reconcile_native_continuations
+    from experiments.memory.native_replay_checkpoint import read_native_replay_checkpoint
+
+    root = Path(root)
+    model = _CausalControl().eval()
+    reader = make_reader(model, source_ingress_sha256=ingress)
+    opening = _read(root / "opening", reader, old_seal, old_source)
+    current = _read(root / "current", reader, current_seal, current_source)
+    assert model.calls == 0
+    attachment = read_native_replay_checkpoint(
+        root / "replay.jsonl", reader, opening, seal=replay_seal, max_bytes=_LIMIT,
+        max_backbone_calls=4, max_row_scores=30,
+    )
+    assert attachment.status == "attached" and model.calls == attachment.backbone_calls == 4
+    options = dict(expected_publication_sha256=current_seal, short_steps=(1,), reference_step=2,
+                   max_anchors=8, max_leaves=8, max_backbone_calls=64, max_row_scores=1024, use_frontiers=True)
+    warm = reconcile_native_continuations(reader, current, **options, previous_replay=attachment.replay)
+    assert model.calls == warm.backbone_calls + attachment.backbone_calls
+    cold = reconcile_native_continuations(reader, current, **options)
+    assert warm.comparisons == cold.comparisons and warm.retired == cold.retired and warm.status == cold.status
+    assert warm.intact_replay.traces == cold.intact_replay.traces
+    assert model.calls == cold.backbone_calls + warm.backbone_calls + attachment.backbone_calls
+    # Compare all imported anchors against a separate cold opening replay as a test oracle.
+    opening_cold = reconcile_native_continuations(
+        reader, opening, **{**options, "expected_publication_sha256": old_seal},
+    )
+    assert attachment.replay.traces == opening_cold.intact_replay.traces
+    task = (root / "late-question.txt").read_text(encoding="utf8")
+    return {"attach_calls": attachment.backbone_calls, "attach_scores": attachment.row_scores,
+            "checkpoint_bytes": attachment.bytes_read, "reused": warm.reused_anchors,
+            "warm_calls": warm.backbone_calls, "cold_calls": cold.backbone_calls,
+            "warm_scores": warm.row_scores, "cold_scores": cold.row_scores,
+            "historical": reader(task, memory=opening).text, "successor": reader(task, memory=warm.memory).text}
+
+
+def test_fresh_worker_recovers_verified_replay_checkpoint(tmp_path):
+    import numpy as np
+    from experiments.memory.native_isolated_stage import LABELS, _CausalControl, _reader as make_reader
+    from experiments.memory.native_reconciliation import reconcile_native_continuations
+    from experiments.memory.native_replay_checkpoint import read_native_replay_checkpoint, write_native_replay_checkpoint
+
+    cue, bridge, first, second, side, side_end = (char * 32 for char in "abcdef")
+    raw_bridge = b"link L01 L02"
+    ingress = sha256(b"supplied role rows for a text-to-binary revision replay")
+
+    def binary_bridge(source_id, raw):
+        if source_id != bridge or raw != raw_bridge:
+            return None
+        row = np.zeros(3 * len(LABELS) + 1)
+        row[1] = row[len(LABELS) + 3] = 0.8
+        return row
+
+    writer = make_reader(_CausalControl().eval(), source_ingress=binary_bridge, source_ingress_sha256=ingress)
+    opening_dir = tmp_path / "text"
+    opening = write_source_delta(opening_dir, {
+        cue: b"link L00 L01", bridge: raw_bridge, first: b"name L02 L07", second: b"name L03 L11",
+        side: b"link L08 L09", side_end: b"name L09 L10",
+    }, max_bytes=_LIMIT)
+    memory = writer.maintain(writer.publish(opening_dir, opening.seal, max_source_bytes=_LIMIT), max_seeds=6)
+    old_seal = write_native_publication(tmp_path / "opening", writer, memory, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    attached = _read(tmp_path / "opening", writer, old_seal, opening.seal)
+    previous = reconcile_native_continuations(
+        writer, attached, expected_publication_sha256=old_seal, short_steps=(1,), reference_step=2,
+        max_anchors=8, max_leaves=8, max_backbone_calls=64, max_row_scores=1024, use_frontiers=True,
+    )
+    checkpoint = tmp_path / "replay.jsonl"
+    digest = write_native_replay_checkpoint(checkpoint, writer, previous.intact_replay, max_bytes=_LIMIT)
+    cap_path = tmp_path / "over-cap.jsonl"
+    with pytest.raises(ValueError, match="byte allowance"):
+        write_native_replay_checkpoint(cap_path, writer, previous.intact_replay,
+                                       max_bytes=checkpoint.stat().st_size - 1)
+    assert not cap_path.exists()
+
+    binary = tmp_path / "binary"
+    current = write_source_delta(binary, {bridge: raw_bridge}, previous=opening,
+                                 binary_sources=(bridge,), max_bytes=_LIMIT)
+    updated = writer.maintain(writer.publish(binary, current.seal, previous=memory, max_source_bytes=_LIMIT),
+                              max_seeds=6)
+    new_seal = write_native_publication(tmp_path / "current", writer, updated, runtime_sha256=_RUNTIME, max_bytes=_LIMIT)
+    assert attached.source_spans(bridge) == updated.source_spans(bridge)
+    assert attached._sources[bridge][0].row.tobytes() != updated._sources[bridge][0].row.tobytes()
+
+    # The publisher seals the checkpoint before the task file exists.
+    (tmp_path / "late-question.txt").write_text("follow L00", encoding="utf8")
+    output = subprocess.check_output([
+        sys.executable, "-m", "experiments.memory.test_native_publication", "handoff", str(tmp_path),
+        old_seal, opening.seal, new_seal, current.seal, digest, ingress,
+    ], timeout=60)
+    report = json.loads(output)
+    assert report == {"attach_calls": 4, "attach_scores": 27, "checkpoint_bytes": checkpoint.stat().st_size,
+                      "reused": 4, "warm_calls": 20, "cold_calls": 36, "warm_scores": 163, "cold_scores": 234,
+                      "historical": "L07", "successor": "L11"}
+
+    options = dict(seal=digest, max_bytes=_LIMIT, max_backbone_calls=4, max_row_scores=30)
+    calls_before = writer._model.calls
+    assert read_native_replay_checkpoint(checkpoint, writer, attached, **{**options, "max_backbone_calls": 3}).status == (
+        "budget_exceeded"
+    )
+    assert writer._model.calls == calls_before
+    with pytest.raises(ValueError, match="byte allowance"):
+        read_native_replay_checkpoint(checkpoint, writer, attached, **{**options, "max_bytes": checkpoint.stat().st_size - 1})
+    new_attached = _read(tmp_path / "current", writer, new_seal, current.seal)
+    with pytest.raises(ValueError, match="opening, runtime or depth differs"):
+        read_native_replay_checkpoint(checkpoint, writer, new_attached, **options)
+
+    # A re-issued seal for structurally valid but incorrect states still fails the anchor check.
+    header, *rows = map(json.loads, checkpoint.read_bytes().splitlines())
+    for row in rows:
+        state = row[1][0]
+        row[1][0] = ("01" if state[:2] == "00" else "00") + state[2:]
+    corrupt = tmp_path / "corrupt.jsonl"
+    payload = b"\n".join(_encode(row) for row in [header, *rows]) + b"\n"
+    corrupt.write_bytes(payload)
+    with pytest.raises(ValueError, match="seal differs"):
+        read_native_replay_checkpoint(corrupt, writer, attached, **options)
+    refused = read_native_replay_checkpoint(corrupt, writer, attached, **{**options, "seal": sha256(payload)})
+    assert refused.status == "sample_mismatch" and refused.replay is None and refused.backbone_calls == 4
+
+    header, *rows = map(json.loads, checkpoint.read_bytes().splitlines())
+    for row in rows:
+        for _, derived in row[3]:
+            derived[2] = [(index + 1) % len(attached.derived_seeds) for index in derived[2]]
+    wrong_route = tmp_path / "wrong-route.jsonl"
+    payload = b"\n".join(_encode(row) for row in [header, *rows]) + b"\n"
+    wrong_route.write_bytes(payload)
+    refused = read_native_replay_checkpoint(wrong_route, writer, attached, **{**options, "seal": sha256(payload)})
+    assert refused.status == "sample_mismatch" and refused.replay is None
+
+
 if __name__ == "__main__":
-    run = {"publish": _publish_child, "read": _child}[sys.argv[1]]
+    run = {"publish": _publish_child, "read": _child, "handoff": _handoff_child}[sys.argv[1]]
     print(json.dumps(run(*sys.argv[2:])))
 
 
