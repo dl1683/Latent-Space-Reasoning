@@ -605,8 +605,10 @@ preserves their evidence and remains available for historical replay.
 
 This pass tests convergence on stored source rows. The accepted
 reference can agree even when an independent question would need
-a different route or outcome. A competing architecture keeps both
-routes available to a latent verifier at task time. Compare the two
+a different route or outcome. A four-coordinate counterexample loses
+a later readout even for mixtures inside the convex hull of the tested
+anchors. Treat accepted retirement as reversible outside its verified
+states. A competing architecture keeps both routes available to a latent verifier at task time. Compare the two
 under the same backbone and total lifecycle allowance.
 [Control](RESULTS.md#reconciling-a-continuation-bank-without-late-tasks)
 

@@ -302,6 +302,10 @@ class NativeTaskEpisodeBackend:
                 or policy.output_constraint_sha256 != self._output_constraint_sha256
                 or limits.max_new_tokens > self._reader._output_tokens):
             raise ValueError("episode policy, output constraint or allowance differs from the native backend")
+        from experiments.memory.compact_episode_constraint import CompactSearchReadConstraint
+
+        if isinstance(self._output_token_allowlist, CompactSearchReadConstraint):
+            self._output_token_allowlist.check_native(self._reader, policy, limits, tokenizer)
         if self._pin is None:
             pin = NativeTaskWorldPin.bind(
                 world, self._reader, self._base_memory, memory_view=self._memory_view,

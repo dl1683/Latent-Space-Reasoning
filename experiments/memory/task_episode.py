@@ -1294,6 +1294,10 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
         raise ValueError("the recurrent bridge must be bound to this exact TaskWorld")
     if not callable(generate):
         raise TypeError("a generation adapter is required")
+    from experiments.memory.compact_episode_constraint import _PlainCompactBackend
+
+    if isinstance(generate, _PlainCompactBackend):
+        generate.constraint.check_episode(policy, limits, tokenizer)
     native_opening = None
     if native_backend is not None:
         from experiments.memory.native_task_episode import NativeTaskEpisodeBackend

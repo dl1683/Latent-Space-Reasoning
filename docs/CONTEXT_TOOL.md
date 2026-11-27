@@ -982,6 +982,26 @@ Spend at most the supplied bounds and keep the trusted artifact seal
 and exact verified runtime pinned. The one-anchor check is a runtime
 probe with a trusted producer.
 
+## Shared compact search and read decoder
+
+Use `CompactSearchReadConstraint(tokenizer, limits)` from
+`experiments.memory.compact_episode_constraint` for matched compact
+search/read episodes. It uses `lm-format-enforcer` and `jsonschema`
+on a fast tokenizer with one EOS. Set `state_kind="compact_needs"`,
+`compact_delivery=True`, and `output_constraint_sha256=constraint.sha256`
+on both policies. Reuse the same tokenizer, EOS and limits. Disable
+probes for this shared interface.
+
+Pass `constraint.plain_backend(model)` as the ordinary `run_episode`
+generation callable with an initialized eval-mode causal model. Pass
+`constraint` as `output_token_allowlist` and its digest as
+`output_constraint_sha256` on `NativeTaskEpisodeBackend`. Use an
+active verified native publication for the native-text contrast.
+The decoder compiles from the host's response phase and visible
+handles. The host verifies actions, submission structure, references and
+budgets. Both adapters verify the declared constraint digest, limits and
+tokenizer. The native reader also verifies its stop token. Preserve reservations and count EOS in both arms.
+
 ## Compact task-episode delivery
 
 Set `EpisodePolicy(..., state_kind="compact_needs", compact_delivery=True)`

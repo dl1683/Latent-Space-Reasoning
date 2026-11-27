@@ -453,6 +453,24 @@ the reproducible artifact are in
 
 **A matching opening seal can coexist with a wrong replay trajectory, 26 November 2026.** An intentionally reissued digest made a structurally valid checkpoint pass the artifact hash check after either its numerical state or its selected bank rows were changed. Exact replay on the receiving worker caught both changes at the sampled anchor and refused the import. A single-anchor check is bounded compatibility evidence. Trust in the other rows depends on the controller's authenticated seal and the legitimate producing runtime. An undersized work cap leaves the handoff unused. [Fresh-worker control](RESULTS.md#passing-replay-state-to-a-fresh-worker)
 
+**All source anchors can agree while an unseen mixture needs a retired
+operation, 26 November 2026.** A four-coordinate exact construction
+reproduced the source-only acceptance rule and then lost a depth-two
+readout on 66 of 99 chosen interior mixtures. Each affected mixture
+would veto removal as an anchor. Treat source-only retirement as a
+reversible proposal outside its tested states. Compare it with keeping
+both alternatives for task-time disambiguation, and measure lost correct
+answers on independent late tasks. [Executable construction](../experiments/memory/reconciliation_coverage_counterexample.py)
+
+**A legal JSON response can lose its usual tokenization, 26 November 2026.**
+The compact decoder masked five combined punctuation pieces in the
+tokenizer-only final assessment. Smaller pieces preserved the exact
+decoded response. A character-level route or a successful scripted
+replay cannot measure how the mask redirects a model's preferred
+tokens and subsequent decisions. Record the effect at phase, action
+and evidence-choice boundaries during generated calibration.
+[Shared decoder control](RESULTS.md#sharing-one-decoder-between-ordinary-and-native-episodes)
+
 ## Decisions carried forward
 
 1. **Central object:** one useful retained-state consequence/revision with a competent equally exposed conventional comparator; keep recurrence and feedback distinct. Receiver perfection on arbitrary tasks is not required, but the selected operation's positive control is.

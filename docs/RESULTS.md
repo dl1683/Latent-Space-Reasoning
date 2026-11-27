@@ -385,6 +385,38 @@ No pretrained generation ran. A generated calibration still has to show that
 the planner discovers the needs and chooses useful evidence, under the exact
 runtime to be used in the comparison.
 
+## Sharing one decoder between ordinary and native episodes
+
+**Scripted CPU software control.** The ordinary cached forward and the
+sealed native episode backend used one compact search/read decoder. Both
+accepted the same plan, evidence actions and final assessment on the
+same source pin. The fixture declared two needs, added a third and
+searched for it in the same action, opened a same-need read batch and kept
+the duty question open. The request and output IDs matched across all seven calls.
+The native receipts contained the exact supplied output IDs, and both
+episodes counted EOS. The constraint refused a cross-need candidate,
+premature finish and invented discovery read. The fixture also reused
+an identifier containing quotes.
+
+A tokenizer-only replay of those supplied responses also reached
+completion with the previously pinned
+[SmolLM2-360M-Instruct tokenizer](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct/tree/a10cc1512eabd3dde888204e902eca88bddb4951).
+It used 616 response tokens including EOS, at most 192 per call and
+zero backbone calls. The final assessment included escaped quotes and
+a Unicode escape. The standard tokenization of the final assessment
+used five combined punctuation pieces excluded by the mask. The
+exact same JSON was reachable by splitting those pieces. This measures
+one supplied path and exposes where the mask can steer token choice.
+
+The decoder compiles response shapes from the host's phase, need IDs
+and actual receipts. It leaves query text, evidence choice and
+assessment to the caller. It checks strict JSON and the exact response
+schema before accepting EOS. The fixture supplies logits and uses
+zero native recurrence steps. It establishes parity of the task
+interface. Learned need inference, search, grounded assessment,
+multimodal reasoning and a causal benefit from swarm work remain open.
+[Paired fixture](../experiments/memory/test_compact_episode_constraint.py)
+
 ## Isolating one retained computation across a source revision
 
 **CPU software control.** An episode attached a sealed, seven-source world
@@ -444,6 +476,17 @@ This pass repaired one deterministic control. It measures the work of
 a complete local comparison. Learned task transfer, coverage beyond the
 stored rows and net lifecycle savings remain open.
 [Control fixture](../experiments/memory/test_task_episode.py)
+
+**Counterexample to general late-task preservation.** An independent
+reviewer ran the actual comparison rule on exact abstract trajectories in
+a four-coordinate piecewise-linear system. Removing one operation
+qualified on both source anchors. It lost a depth-two readout on 66 of
+99 interior mixtures of those anchors, and restoring the operation
+recovered every intact trajectory. Adding any affected mixture as an
+anchor vetoed removal. The constructed grid demonstrates a coverage
+failure even inside the convex hull; it gives no population rate and
+uses no learned backbone. The seven-source control above remains a
+separate observation. [Executable construction](../experiments/memory/reconciliation_coverage_counterexample.py)
 
 ## Reusing unaffected continuation trajectories
 

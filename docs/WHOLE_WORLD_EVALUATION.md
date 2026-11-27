@@ -733,6 +733,15 @@ whose evidence grows. Run a paired full/compact control before using
 the shorter format in a memory comparison.
 [Offline framing and two-pin control](RESULTS.md#compact-task-delivery-and-historical-replay-26-november-2026)
 
+The [shared compact decoder](RESULTS.md#sharing-one-decoder-between-ordinary-and-native-episodes)
+now exercises the ordinary full-forward and sealed native entry points
+with the same response shapes. The scripted control closes the adapter
+wiring only. Preflight all eight cases with the intended tokenizer and
+measure allowed choices and intervention where the mask changes the
+model's preferred action. Keep evidence and task judgments independently
+graded. A separate bounded authorization is required for pretrained
+generation.
+
 The query-blind bridge worker can now take a bounded batch from a revision-led
 agenda and publish its resulting operators. Late paths carry the publication
 digest for bridges installed by those batches. A typed `role_support`
