@@ -789,6 +789,20 @@ metadata check on one archived case with no new execution. It leaves
 coverage on a newly acquired bank open.
 [Opening](../experiments/memory/results/native_world_addressing_p2_2026-11-26/publications/opening-p0/manifest.json) · [Correction](../experiments/memory/results/native_world_addressing_p2_2026-11-26/publications/corrected-p1/manifest.json) · [Restoration](../experiments/memory/results/native_world_addressing_p2_2026-11-26/publications/restored-p2/manifest.json)
 
+**Exact shared-split replay, 27 November 2026.** The two saved reader
+states add two independent directions to the full six-key bank.
+Shared invertible affine coordinates and exact operand reconstruction
+at one common address allow at most one extra direction. The best
+shared orthogonal split with all six keys leaves residuals of
+approximately 1,867.65 and 1,736.44 Q8 L2 units. Allowing near-equal
+addresses gives lower bounds of over 1,541 and 1,410, both above
+the 80-unit rounding allowance. Separate splits for each query fit
+the acquired key exactly in the relaxed geometry. The run used two
+steps from the same frozen trajectory and performed no new inference
+or grading. Compare role-specific encoding or new operand directions
+with the raw shared split on fresh work.
+[Derivation and replay](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-one-shared-coordinate-change-supply-both-operands)
+
 ## Composing separately qualified latent operations
 
 **CPU mechanism control.** Two source-card proposals on one opening

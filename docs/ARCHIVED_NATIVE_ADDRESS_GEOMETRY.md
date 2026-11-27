@@ -131,6 +131,86 @@ by another address could still help the task. Query reconstruction
 alone cannot judge that effect.
 [Exact replay](../experiments/memory/archived_native_span_control.py)
 
+## Can one shared coordinate change supply both operands?
+
+**27 November 2026. Mathematical bound on saved states.** Use the two
+frozen task queries beside the acquired key, the key of its seed
+source, and the bank of all five source keys plus the acquired key.
+For each of those three banks, both queries add independent
+directions modulo the span of the keys. An exact shared address can
+absorb at most one such direction. This rules out a shared invertible
+affine change of coordinates for addressing and reconstructing both
+saved inputs, for the tested banks and any subset of them.
+
+Let a shared map be $x\mapsto Tx+b$, with $T$ invertible. Let all
+bank keys $k_j$ and queries $q_i$ have the same address $a$ after
+the split. If signed coefficients $c_i$ reconstruct the transformed
+operand of $q_i$ from the transformed bank $K$, then
+
+$$q_i-Kc_i=(1-\mathbf{1}^{\top}c_i)T^{-1}\big((a,0)-b\big).$$
+
+Modulo $\operatorname{span}(K)$, every query must therefore lie on one
+line. Exact rank gain is two even for all six keys, so no smaller
+subset of those keys can have rank gain one. This argument uses exact
+linear operands, a common address, and a shared invertible map.
+
+For an orthogonal address projection $A$, write $D$ for the span of
+all differences from one reference key to the other keys and queries.
+An exact common address requires $D\subseteq\ker A$. Any operand
+residual is at least $\|P_D(q-Kc)\|_2$. The relaxed minimum is attained
+by $A=P_{D^\perp}$ and least squares on the projected key bank.
+For a split on the original axes, keep every axis with a difference
+as an operand coordinate and allow all shared axes to serve as the
+address. This gives the corresponding best original-axis fit.
+
+| Key bank | Directions added by both queries | Nonzero shared original axes | Best original-axis residuals | Best orthogonal residuals | Near-address residual lower bounds |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Acquired key | 2 | 19 | 3,492.75 / 3,526.86 | 1,677.32 / 1,935.83 | 1,376.66 / 1,634.74 |
+| Seed source key | 2 | 25 | 3,488.86 / 3,516.54 | 1,894.93 / 1,717.29 | 1,612.96 / 1,434.88 |
+| All six keys | 2 | 3 | 3,494.80 / 3,550.39 | 1,867.65 / 1,736.44 | 1,541.81 / 1,410.11 |
+
+Pairs give the two step residuals in Q8 grid L2 units, rounded for
+display. The all-six
+case includes more coefficient choices and more vectors required to
+share an address. If a split can be chosen separately for each query,
+the relaxed orthogonal fit with the acquired key has zero residual
+on each step. The obstruction concerns reuse of one split.
+In the shared relaxation the projected key span has codimension one
+in $D$ for all three banks. A map allowed to discard that direction
+can therefore make both projected operands fit. This establishes
+geometric feasibility under information loss. It leaves the effect on
+the operation's required inputs unknown.
+
+The near-address bound allows $\|Ad_j\|_2\le32$ for every
+reference difference $d_j$ and caps $\|c\|_1$ at four. Let $r$ be
+the optimal residual in $D$ and write $r=\sum_j\beta_j d_j$.
+Then $r^\top K=0$, $r^\top q=\|r\|_2^2$, and
+$\|Ar\|_2\le32\|\beta\|_1$. Taking the inner product of
+$(I-A)(q-Kc)$ with $r$ gives a lower bound of
+
+$$\frac{\left[\|r\|_2^2-32\|\beta\|_1(\|q\|_2+4\max_j\|k_j\|_2)\right]_+}{\|r\|_2}.$$
+
+The implementation rounds the input norms up to integers and
+compares squared quantities over rationals. The address allowance
+covers equality after rounding to the same unclipped unit grid in
+up to 1,024 coordinates. Rounding the operands can remove at most
+another 80 units under the same coefficient cap. The table gives
+bounds before operand rounding. Subtracting 80 still leaves every
+bound positive. This extension assumes shared
+orthogonal coordinates and unclipped rounding. Input-dependent,
+clipped and independently calibrated maps require separate evidence.
+
+Run `python -m experiments.memory.archived_native_span_control --orthogonal-split`.
+It uses the same pinned archive inputs as the earlier span replay.
+An independent QR calculation using the original key bank plus the
+common address component reproduced all six orthogonal residuals.
+The replay used two consecutive steps of one exposed task and ran
+without a model or grading data. The common-address calculation
+requires both frozen steps to use the same address. A live reasoner
+can use a different address on the second step, and applying an
+operation at the first step can change the second query. Operand
+semantics remain unverified.
+
 ## Decision and next discriminator
 
 The independently observed failure of ordinary direct text (p2 and T8)
@@ -149,14 +229,18 @@ diagnostic may be used separately to distinguish task-addressing from
 operation/readout defects, not as an unhinted success. Do not fit a key,
 threshold or sign rule to this retired p2 case.
 
-If the worker-to-task addressing failure persists, the architecture needs a
-source-only acquired operation with a task-compatible key, not another
-maintenance fixture. One falsifiable design contrast is to separate the
-learned key from the continuation value and qualify a source-derived
-multi-context address on source-disjoint calibration. Hold the reader,
-source information, proposal/fit budget, retained bytes and exact verification
-opportunity fixed. Compare a source-anchor address (a cheap control) with
-a learned task-compatible address and the current hidden-state address.
+Use two separate interventions. To test routing, hold the operation
+and its operands fixed and compare the current address, the seed
+source anchor and a task-compatible address calibrated on disjoint
+source contexts. To test operand validity, supply the operation
+identity and compare a source-derived role map with an additional
+independently acquired operand direction. Include supplied role
+coordinates as a positive control. Freeze each arm before seeing
+late tasks. Hold the reader, source information, proposal budget,
+retained bytes and exact verification opportunity fixed. Shared
+coordinate alignment has precedents in model stitching. Here the
+acceptance criterion is a correct downstream operation across
+corpus revisions. [Functional latent alignment](https://arxiv.org/abs/2505.20142)
 An anchor match is routing, not reasoning. A key must be frozen before the
 late tasks; charge all key construction and additional reads. No credit for
 routing alone: the same acquired operation must improve independently

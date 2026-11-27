@@ -95,6 +95,15 @@ outscore an exact address match. Keep source authority, operand validity
 and operation identity as separate tests.
 [Address and operand control](RESULTS.md#separating-the-operation-address-from-its-operands)
 
+**One shared exact address leaves at most one extra operand direction.**
+Both frozen late states add two independent directions modulo the
+six retained keys. A shared invertible coordinate change cannot
+reconstruct both operands at one exact address. Each probe alone
+admits a tailored orthogonal split in the relaxed calculation.
+Calibrate address and operand roles separately before pursuing a
+shared-space repair on fresh inputs.
+[Exact archived bound](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-one-shared-coordinate-change-supply-both-operands)
+
 **A separating projection is conditional on the forecast roster.**
 A worker can reject a descriptor whose tolerance regions overlap without
 seeing its outcome. An informative projection can still fail because no

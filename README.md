@@ -63,6 +63,12 @@ the task. A later read uses both in sequence and loses its answer
 when either is disabled at the same source pin. The fixture supplies
 the latent coordinates and backbone. Learned composition remains open.
 
+A [learned-state replay](docs/ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-one-shared-coordinate-change-supply-both-operands)
+rules out exact operand-space reconstruction of both saved queries
+from the retained keys at one common address under a shared
+invertible affine map. The next comparison should test routing and
+operand encoding separately on fresh tasks.
+
 A [cross-source acquisition control](docs/RESULTS.md#acquiring-continuations-after-self-only-reads)
 retries seeds whose ordinary maintenance read only their own source.
 Two such retries acquired continuations that a fresh reader used.

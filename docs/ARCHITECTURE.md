@@ -157,6 +157,14 @@ rule. Distinct real operations can collide under that rule. A learned
 address and operand encoder must demonstrate held-out validity.
 [CPU results](RESULTS.md#separating-the-operation-address-from-its-operands)
 
+An exact archived rank bound rules out an invertible shared basis
+change for fitting both saved queries at one common address. On fresh
+calibration, hold the qualified operator fixed while testing routing,
+then supply its identity while testing separately acquired operand
+directions or separate role projections. This distinguishes lack of
+coverage from an operator that cannot compute on the incoming state.
+[Archived bound](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-one-shared-coordinate-change-supply-both-operands)
+
 #### Admitting a retained operation on a source revision
 
 [SLICE] The opt-in gated reader keeps proposed basis cohorts in the
