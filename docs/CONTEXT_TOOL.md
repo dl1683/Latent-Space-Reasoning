@@ -1129,6 +1129,26 @@ handles. The host verifies actions, submission structure, references and
 budgets. Both adapters verify the declared constraint digest, limits and
 tokenizer. The native reader also verifies its stop token. Preserve reservations and count EOS in both arms.
 
+## Compact v2 search and read decoder
+
+Use `CompactWireV2Constraint(tokenizer, limits)` from
+`experiments.memory.compact_wire_v2_constraint` for matched v2 episodes.
+Use the same policy and adapter wiring as above, adding
+`compact_wire_version=2` and `compact_wire_sha256=WIRE_SHA256` from
+`compact_task_planner_wire_v2` to each policy. Bind the complete limits, the
+same fast tokenizer and its single EOS in both arms. V2 accepts up to three
+scalar search/read operations per reply. A read requires its own need's
+candidate from an earlier response. Final citations are episode-global.
+
+The built-in decoder uses eight-slot registry entries and span handles shared
+between searches and reads. Call `unpack_receipts(frame)` to reconstruct the
+receipt objects from that prompt. Custom v2 callbacks receive the original
+object-shaped receipt and registry prompt. Exact tool and evidence
+receipts stay in the ledger. The prefix mask limits the next tokens and the
+decoder checks the complete reply before allowing EOS. A dead end that
+raises from the backend leaves the output usage of that call unknown.
+[Six-source matched replay](RESULTS.md#fitting-a-six-source-route-in-both-task-adapters)
+
 ## Grouped reads for separately scoped candidates
 
 `EpisodeLimits(scoped_read_batches=True, ...)` opts a linked-need episode into

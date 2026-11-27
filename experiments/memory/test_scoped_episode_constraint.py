@@ -124,28 +124,8 @@ def test_parser_fallback_eos_is_refused(constraint, monkeypatch):
         constraint(call)(call.input_ids)
 
 
-def test_scoped_decoder_matches_plain_and_sealed_native_adapters(tmp_path, constraint):
-    import numpy as np
+def _scripted_backbone(tokenizer, context_tokens):
     import torch
-
-    from experiments.memory.linear_feedback import LinearFeedbackKernel
-    from experiments.memory.native_latent_recurrence import NativeLatentModel
-    from experiments.memory.native_publication import read_native_publication, write_native_publication
-    from experiments.memory.native_task_episode import NativeTaskEpisodeBackend
-    from experiments.memory.source_revision_feed import write_source_delta
-    from experiments.memory.task_episode import EpisodePolicy, read_episode_pair, run_episode
-    from experiments.memory.task_evidence import TaskWorld
-    from experiments.memory.test_scoped_episode_reads import EVIDENCE, SOURCE_IDS, TASK, _run_disjoint
-    from experiments.memory.verified_source_tool import sha256
-
-    tokenizer = constraint.tokenizer
-    eos = tokenizer.eos_token_id
-    feed = tmp_path / "source"
-    source = write_source_delta(feed, dict(zip(SOURCE_IDS, (v.encode() for v in EVIDENCE), strict=True)))
-    world = TaskWorld.from_source_epoch(feed, source.seal, max_feed_bytes=8192, max_source_bytes=8192, max_passages=8)
-    reference = _run_disjoint(world, tmp_path / "host-only", grouped=True, calls=7)
-    expected = [tuple(tokenizer.encode(_wire(json.loads(row["data"]["text"])))) + (eos,)
-                for row in reference if row["kind"] == "response"]
 
     class Cache(SimpleNamespace):
         def get_seq_length(self):
@@ -154,7 +134,7 @@ def test_scoped_decoder_matches_plain_and_sealed_native_adapters(tmp_path, const
     class ScriptedBackbone(torch.nn.Module):
         def __init__(self):
             super().__init__()
-            self.config = SimpleNamespace(max_position_embeddings=LIMITS.context_tokens)
+            self.config = SimpleNamespace(max_position_embeddings=context_tokens)
             self.lookup = torch.nn.Embedding.from_pretrained(torch.zeros(len(tokenizer), 1))
             self.script = ()
 
@@ -180,6 +160,31 @@ def test_scoped_decoder_matches_plain_and_sealed_native_adapters(tmp_path, const
                                     use_cache=use_cache, return_dict=return_dict)
             return SimpleNamespace(logits=self.head(state.last_hidden_state), past_key_values=state.past_key_values)
 
+    return ScriptedBackbone().eval()
+
+
+def test_scoped_decoder_matches_plain_and_sealed_native_adapters(tmp_path, constraint):
+    import numpy as np
+
+    from experiments.memory.linear_feedback import LinearFeedbackKernel
+    from experiments.memory.native_latent_recurrence import NativeLatentModel
+    from experiments.memory.native_publication import read_native_publication, write_native_publication
+    from experiments.memory.native_task_episode import NativeTaskEpisodeBackend
+    from experiments.memory.source_revision_feed import write_source_delta
+    from experiments.memory.task_episode import EpisodePolicy, read_episode_pair, run_episode
+    from experiments.memory.task_evidence import TaskWorld
+    from experiments.memory.test_scoped_episode_reads import EVIDENCE, SOURCE_IDS, TASK, _run_disjoint
+    from experiments.memory.verified_source_tool import sha256
+
+    tokenizer = constraint.tokenizer
+    eos = tokenizer.eos_token_id
+    feed = tmp_path / "source"
+    source = write_source_delta(feed, dict(zip(SOURCE_IDS, (v.encode() for v in EVIDENCE), strict=True)))
+    world = TaskWorld.from_source_epoch(feed, source.seal, max_feed_bytes=8192, max_source_bytes=8192, max_passages=8)
+    reference = _run_disjoint(world, tmp_path / "host-only", grouped=True, calls=7)
+    expected = [tuple(tokenizer.encode(_wire(json.loads(row["data"]["text"])))) + (eos,)
+                for row in reference if row["kind"] == "response"]
+
     class ScriptedConstraint(ScopedCompactSearchReadConstraint):
         def __init__(self, model):
             super().__init__(tokenizer, LIMITS)
@@ -203,8 +208,8 @@ def test_scoped_decoder_matches_plain_and_sealed_native_adapters(tmp_path, const
 
             return trace
 
-    plain_model = ScriptedBackbone().eval()
-    native_model = ScriptedBackbone().eval()
+    plain_model = _scripted_backbone(tokenizer, LIMITS.context_tokens)
+    native_model = _scripted_backbone(tokenizer, LIMITS.context_tokens)
     plain_constraint = ScriptedConstraint(plain_model)
     native_constraint = ScriptedConstraint(native_model)
     assert plain_constraint.sha256 == native_constraint.sha256

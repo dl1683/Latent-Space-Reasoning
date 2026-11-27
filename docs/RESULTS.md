@@ -1543,6 +1543,27 @@ not a result about the persistent world. The adapter is unqualified and the
 five runs do not count as five independent tasks. Preserve exact run
 denominators and ledger hashes in the [failure ledger](FAILURES.md#current-supporting-pilot-failures).
 
+## Fitting a six-source route in both task adapters
+
+A scripted six-need software fixture first exhausted its original v2 prompt
+budget. Five calls charged 5,798 input tokens and opened all six distinct
+sources. The first final prompt needed 2,552 more and the host refused it.
+Packing each span once and keeping the registry in eight-slot form preserved
+the verified source bytes while reducing repeated framing.
+
+The same fixture then completed seven calls through both the ordinary cached
+forward and the sealed native adapter. Each charged 6,585 input and 622
+output tokens including EOS. Each made six searches and six reads, verified
+203 source bytes, and emitted two final batches covering six needs. The
+fixture checked a global citation across two needs and identical token
+allowlists on the two paths. It used a pinned, locally cached tokenizer and
+scripted logits on CPU. No pretrained weights, task grading, or evidence of
+a maintenance advantage were involved. Larger verified text and longer
+dependency chains remain unqualified under the registered caps. The next
+scientific question is still whether a source-only worker's contribution
+changes a fresh, correctly grounded answer after removal and restoration.
+[Executable replay](../experiments/memory/test_compact_wire_v2_constraint.py)
+
 ## Source-complete publication into a recurrent task world, 26 November 2026
 
 **Fixed-input software control, one known route.** Publication schema v2

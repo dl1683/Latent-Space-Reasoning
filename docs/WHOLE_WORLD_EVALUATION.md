@@ -356,11 +356,14 @@ over an episode, and citations to any verified episode read. The eight-slot
 need string has one global 96-character cap. The host enforces the registered
 seven-call, 512-token per-call, 1,792-token aggregate-output, 8,192-token
 aggregate-input, and 8,192-token context ceilings. Specialized role, joint-state,
-and recurrent tools remain on v1. V2 has not had a tokenizer/schema feasibility
-run or a model episode; its planner gate remains **NOT PASSED**. This interface
-change addresses host capacity and citation semantics, not whether a model
-infers useful obligations or whether maintained computation improves an
-independently graded answer.
+and recurrent tools use v1. The ordinary and sealed native adapters completed
+one scripted six-source route with the same v2 token mask, including both
+final batches. The [software result](RESULTS.md#fitting-a-six-source-route-in-both-task-adapters)
+covers short verified source receipts. Long bodies, failed attempts, adaptive
+dependencies, and generated task quality remain open. The registered planner
+gate remains **NOT PASSED**. The central comparison still asks whether
+query-independent maintenance contributes to a later independently graded
+answer when the reader can already use direct evidence.
 
 The next useful science step is a fresh small falsification screen with broad
 late tasks spanning a cross-source bridge, conflicting authority, a missing

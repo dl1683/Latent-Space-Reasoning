@@ -378,9 +378,10 @@ class NativeTaskEpisodeBackend:
             raise ValueError("episode policy, output constraint or allowance differs from the native backend")
         if policy.compact_wire_version == 2:
             from experiments.memory.compact_task_planner_wire_v2 import BoundOutputConstraint
+            from experiments.memory.compact_wire_v2_constraint import CompactWireV2Constraint
 
             constraint = self._output_token_allowlist
-            if (type(constraint) is not BoundOutputConstraint
+            if (type(constraint) not in (BoundOutputConstraint, CompactWireV2Constraint)
                     or constraint.sha256 != policy.output_constraint_sha256
                     or constraint.compact_wire_sha256 != policy.compact_wire_sha256):
                 raise ValueError("native v2 decoding must bind its output constraint to the selected wire")

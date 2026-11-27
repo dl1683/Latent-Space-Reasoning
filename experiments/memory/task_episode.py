@@ -1407,19 +1407,26 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
             raise ValueError("v2 currently exposes search/read only; use the v1 wire for specialized role or recurrent tools")
     from experiments.memory.compact_episode_constraint import CompactSearchReadConstraint, _PlainCompactBackend
 
+    decoder = (generate.constraint if isinstance(generate, _PlainCompactBackend)
+               else getattr(native_backend, "_output_token_allowlist", None))
+    packed_v2_prompt = False
+    if compact_wire_v2 or isinstance(generate, _PlainCompactBackend):
+        from experiments.memory.compact_wire_v2_constraint import CompactWireV2Constraint
+
+        packed_v2_prompt = compact_wire_v2 and type(decoder) is CompactWireV2Constraint
+
     if limits.scoped_read_batches:
         if policy.state_kind not in ("compact_needs", "typed_needs"):
             raise ValueError("grouped reads require linked needs")
-        decoder = (generate.constraint if isinstance(generate, _PlainCompactBackend)
-                   else getattr(native_backend, "_output_token_allowlist", None))
         if isinstance(decoder, CompactSearchReadConstraint):
             from experiments.memory.scoped_episode_constraint import ScopedCompactSearchReadConstraint
 
             if not isinstance(decoder, ScopedCompactSearchReadConstraint):
                 raise ValueError("the existing compact decoder does not support grouped reads")
     if isinstance(generate, _PlainCompactBackend):
-        if policy.compact_wire_version != 1:
-            raise ValueError("the v1 compact decoder cannot be used for a v2 wire episode")
+        if compact_wire_v2 != isinstance(generate.constraint, CompactWireV2Constraint) or (
+                compact_wire_v2 and not packed_v2_prompt):
+            raise ValueError("the ordinary compact decoder and episode wire version differ")
         generate.constraint.check_episode(policy, limits, tokenizer)
     native_opening = None
     if native_backend is not None:
@@ -1597,9 +1604,13 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
             if policy.compact_delivery:
                 phase = framed["planning_phase"]
                 if compact_wire_v2:
-                    from experiments.memory.compact_task_planner_wire_v2 import system_prompt
+                    from experiments.memory.compact_task_planner_wire_v2 import (
+                        packed_system_prompt, project_prompt, system_prompt,
+                    )
 
-                    instructions = system_prompt(phase)
+                    if packed_v2_prompt:
+                        framed = project_prompt(framed)
+                    instructions = packed_system_prompt(phase) if packed_v2_prompt else system_prompt(phase)
                 else:
                     instructions = _compact_delivery_system(phase)
                 if phase not in ("declare", "act_after_plan") and not compact_wire_v2:

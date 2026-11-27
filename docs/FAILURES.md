@@ -24,6 +24,16 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Repeated evidence fields can exhaust the planner before it can answer, 26 November 2026.**
+The original v2 prompt spent 5,798 input tokens finding and opening six short
+sources. It needed another 2,552 tokens to ask for the first final batch,
+exceeding the 8,192-token allowance. Sharing span metadata and keeping the
+registry in eight-slot form let the same route finish through both adapters.
+Count every ordered prefill. Long verified text and late dependencies can
+still exhaust the budget. Prefix constraints can also dead-end on a reply
+the host would reject. Such calls are backend errors with incomplete output
+accounting. [Matched software replay](RESULTS.md#fitting-a-six-source-route-in-both-task-adapters)
+
 **A revision mean can conceal opposing passages, 26 November 2026.**
 The same edit let one candidate pass the byte-weighted mean while
 both candidates failed against the individual changed rows. The
