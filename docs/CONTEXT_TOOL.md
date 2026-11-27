@@ -1067,6 +1067,22 @@ handles. The host verifies actions, submission structure, references and
 budgets. Both adapters verify the declared constraint digest, limits and
 tokenizer. The native reader also verifies its stop token. Preserve reservations and count EOS in both arms.
 
+## Grouped reads for separately scoped candidates
+
+`EpisodeLimits(scoped_read_batches=True, ...)` opts a linked-need episode into
+`{"op":"read_scoped","items":[{"need_id":text,"candidate":integer},{"need_id":text,"candidate":integer}]}`.
+Use two different registered needs and two distinct candidate IDs. Each
+candidate must have already been returned for its own need. The host
+charges two attempts per dispatch and checks the read allowance and both
+pairings before opening either source. Each item then uses ordinary source
+verification, remaining byte budgets and per-item error handling.
+
+The ordered `SCOPED_READ_BATCH` receipt records the owning `need_id`, candidate
+and ordinary read result for each item. Verified read IDs are available
+for ordinary citations as before. This opt-in is for scripted host work.
+The existing compact decoder refuses it.
+[Disjoint access control](RESULTS.md#opening-evidence-for-three-disjoint-needs-in-five-actions)
+
 ## Compact task-episode delivery
 
 Set `EpisodePolicy(..., state_kind="compact_needs", compact_delivery=True)`

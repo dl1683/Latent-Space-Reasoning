@@ -62,6 +62,16 @@ assert max(r.bit_count() for s, r in reach(6, 3, 4, 0, 0)) == 3
 
 A local standard JSON Schema check using isolated copies of the pinned `_string`, `_array`, `_finding_schema` and `_finish_schema` bodies also compared 27 combinations of empty, verified and nonexistent citation IDs across three findings. All 54 old/proposed-schema expectations passed. For a read ID 0 acquired only for n1, the old schema rejects n2 citing 0; the proposed global-ID enum accepts it and rejects nonexistent ID 1. This is a standard JSON Schema test, **not** a pinned LMFE parser or full host execution test. Empty-citation semantic validation remains the host's responsibility.
 
+## Later host access control
+
+An opt-in ordinary host fixture permits two already authorized, differently
+scoped candidate reads in one action. Under the same disjoint-source assumption
+the action requirement becomes `K + ceil(K / 2) <= A`, with the search and read
+allowances unchanged. Five actions reached three distinct sources in the
+fixture. This uses a new scripted host option and leaves the v7 bound, artifacts
+and existing compact decoder unchanged.
+[Host results](RESULTS.md#opening-evidence-for-three-disjoint-needs-in-five-actions)
+
 ## Highest-leverage correction for the next version
 
 Restore the registered semantics: make all verified read IDs at the same pinned episode available to ordinary final findings (the existing global `verified_read_ids` index is sufficient for the enum). Keep same-need candidate/read authorization, exact receipt/pin verification, role-specific provenance and independent assessment of whether each citation actually supports the claim. Do not treat sharing as independent corroboration or automatic relevance. No repeated source open should be needed merely to reuse the same receipt in another finding.

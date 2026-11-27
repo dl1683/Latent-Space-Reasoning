@@ -947,6 +947,13 @@ root a carried checkpoint at the latest verified publication.
 Historical frontiers on their own cannot identify the whole successor
 bank. [Revision controls](RESULTS.md#carrying-reconciliation-trajectories-across-source-edits)
 
+**Cross-need citation alone cannot buy a third disjoint read.** With three
+separately exposed sources, the ordinary five-action control found only
+two using separate reads. An opt-in grouped read reached the third at the
+same action cap while charging each read. The short scripted result does
+not qualify the existing decoder or the five-need stress workload.
+[Disjoint host control](RESULTS.md#opening-evidence-for-three-disjoint-needs-in-five-actions)
+
 **The five-need planner contract exceeds the registered episode budget, 26
 November 2026.** A visible-only, scripted preflight completed 22/22 episodes
 over 11 source pins under exploratory ceilings of 32,768 input tokens and

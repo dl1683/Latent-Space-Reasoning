@@ -433,6 +433,7 @@ class EpisodeLimits:
     access: TaskBudget = TaskBudget()
     joint_roles: int | None = None
     batch_reads: bool = False
+    scoped_read_batches: bool = False
 
     def __post_init__(self):
         for name in ("calls", "queries", "reads", "probes", "context_tokens", "input_tokens",
@@ -445,8 +446,8 @@ class EpisodeLimits:
         if joint_roles < 0:
             raise ValueError("invalid joint role allowance")
         object.__setattr__(self, "joint_roles", joint_roles)
-        if type(self.batch_reads) is not bool:
-            raise ValueError("episode read batching must be boolean")
+        if type(self.batch_reads) is not bool or type(self.scoped_read_batches) is not bool:
+            raise ValueError("episode read batching flags must be boolean")
         if type(self.access) is not TaskBudget or self.max_new_tokens >= self.context_tokens:
             raise ValueError("episode requires tool allowances and room for framed input")
 
@@ -576,6 +577,8 @@ def read_episode(artifact):
             continue
         request = row["data"].get("request")
         result = row["data"].get("result")
+        if type(result) is dict and result.get("status") == "SCOPED_READ_BATCH":
+            _verify_scoped_read_receipt(request, result, opening_data.get("limits"))
         if type(result) is dict and result.get("status") == "RECURRENT_WORLD_RESULT":
             if type(request) is not dict or request.get("op") != "world_read":
                 raise ValueError("recurrent-world result is detached from its request")
@@ -651,10 +654,37 @@ def read_episode(artifact):
     return tuple(records)
 
 
+def _scoped_read_pairs(items):
+    if (type(items) is not list or len(items) != 2
+            or any(type(item) is not dict or item.keys() != {"need_id", "candidate"}
+                   or type(item["need_id"]) is not str or not item["need_id"].strip()
+                   or type(item["candidate"]) is not int or item["candidate"] < 0
+                   for item in items)):
+        raise ValueError("grouped reads require exactly two need and candidate pairs")
+    pairs = tuple((item["need_id"], item["candidate"]) for item in items)
+    if pairs[0][0] == pairs[1][0] or pairs[0][1] == pairs[1][1]:
+        raise ValueError("grouped reads require distinct needs and candidates")
+    return pairs
+
+
+def _verify_scoped_read_receipt(request, result, limits):
+    if (type(limits) is not dict or limits.get("scoped_read_batches") is not True
+            or type(request) is not dict or request.keys() != {"op", "items"}
+            or request["op"] != "read_scoped"):
+        raise ValueError("grouped read receipt has no matching enabled request")
+    pairs = _scoped_read_pairs(request["items"])
+    rows = result.get("reads")
+    if (type(rows) is not list or len(rows) != len(pairs)
+            or any(type(row) is not dict or row.get("need_id") != need
+                   or type(row.get("candidate")) is not int or row["candidate"] != candidate
+                   for (need, candidate), row in zip(pairs, rows, strict=True))):
+        raise ValueError("grouped read receipt does not bind its requested pairs in order")
+
+
 class _Tools:
     """Host-owned, budgeted task access shared by all policy state formats."""
 
-    _field_sets = {"search": {"query"}, "read": {"candidate"},
+    _field_sets = {"search": {"query"}, "read": {"candidate"}, "read_scoped": {"items"},
                    "world_read": {"read", "ordinal", "steps"},
                    "world_spans": {"receipt", "offset"},
                    "probe": {"read", "ordinal", "outcomes", "hops"},
@@ -669,8 +699,11 @@ class _Tools:
                 type(recurrent_bridge) is not RecurrentTaskBridge
                 or recurrent_bridge._task_world is not world):
             raise ValueError("the recurrent bridge must be bound to this exact TaskWorld")
+        if limits.scoped_read_batches and not typed_needs:
+            raise ValueError("grouped reads require linked needs")
         self._session = _Investigation(task, world, limits.access)
         self._recurrent_bridge = recurrent_bridge
+        self._scoped_read_batches = limits.scoped_read_batches
         self._world_receipts = []
         self._world_offsets = {}
         self._world_candidate_spans_materialized = 0
@@ -736,16 +769,19 @@ class _Tools:
             return {"status": "INVALID_TOOL"}
         op = request["op"]
         if (op not in self._field_sets
+                or (op == "read_scoped" and not self._scoped_read_batches)
                 or (op in ("joint_check", "joint_state", "joint_spans") and not self.joint_state_enabled)
                 or (op in ("world_read", "world_spans") and self._recurrent_bridge is None)):
             return {"status": "INVALID_TOOL"}
         allowance = {"reason": "probe", "role_spans": "search", "joint_spans": "search",
-                     "joint_check": "joint_state", "world_read": "probe", "world_spans": "search"}.get(op, op)
-        self.attempts[allowance] += 1
+                     "joint_check": "joint_state", "world_read": "probe", "world_spans": "search",
+                     "read_scoped": "read"}.get(op, op)
+        self.attempts[allowance] += 2 if op == "read_scoped" else 1
         if op == "role_spans":
             self.role_span_pages += 1
         need_id = None
-        if self._typed_needs:
+        single_scope = self._typed_needs and op != "read_scoped"
+        if single_scope:
             need_id = request.get("need_id")
             if type(need_id) is not str or need_id not in set(need_ids):
                 return {"status": "INVALID_NEED_ID"}
@@ -753,7 +789,7 @@ class _Tools:
             return {"status": "PROBE_DISABLED"}
         if self.attempts[allowance] > self._limits[allowance]:
             return {"status": "TOOL_ATTEMPT_LIMIT"}
-        ignored_fields = {"op", "need_id"} if self._typed_needs else {"op"}
+        ignored_fields = {"op", "need_id"} if single_scope else {"op"}
         fields = request.keys() - ignored_fields
         permitted = self._field_sets[op]
         if (fields != permitted and not (op == "probe" and fields == {"read", "ordinal", "outcomes"})
@@ -766,6 +802,8 @@ class _Tools:
                 if type(request["candidate"]) is list and self.batch_reads_enabled:
                     return self._read_batch(request["candidate"], need_id)
                 return self._read(request, need_id)
+            if op == "read_scoped":
+                return self._read_scoped(request["items"], need_ids)
             if op == "world_read":
                 return self._recurrent_world_read(request, need_id)
             if op == "world_spans":
@@ -856,14 +894,24 @@ class _Tools:
         if self._typed_needs and any(need_id not in self._candidate_needs.get(candidate, ())
                                      for candidate in candidates):
             raise ValueError("a read batch requires candidates returned for the same need")
-        reads = []
-        for candidate in candidates:
-            try:
-                row = self._read({"candidate": candidate}, need_id)
-            except OSError as error:
-                row = {"status": "SOURCE_ERROR", "reason": type(error).__name__}
-            reads.append({"candidate": candidate, **row})
+        reads = [self._batch_read_item(candidate, need_id) for candidate in candidates]
         return {"status": "READ_BATCH", "reads": reads}
+
+    def _read_scoped(self, items, need_ids):
+        pairs = _scoped_read_pairs(items)
+        known = set(need_ids)
+        if any(need not in known or need not in self._candidate_needs.get(candidate, ())
+               for need, candidate in pairs):
+            raise ValueError("each grouped candidate must have been returned for its registered need")
+        reads = [{"need_id": need, **self._batch_read_item(candidate, need)} for need, candidate in pairs]
+        return {"status": "SCOPED_READ_BATCH", "reads": reads}
+
+    def _batch_read_item(self, candidate, need_id):
+        try:
+            row = self._read({"candidate": candidate}, need_id)
+        except OSError as error:
+            row = {"status": "SOURCE_ERROR", "reason": type(error).__name__}
+        return {"candidate": candidate, **row}
 
     def _recurrent_world_read(self, request, need_id):
         """Resolve a verified same-need seed and register versioned world leads."""
@@ -1294,8 +1342,15 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
         raise ValueError("the recurrent bridge must be bound to this exact TaskWorld")
     if not callable(generate):
         raise TypeError("a generation adapter is required")
-    from experiments.memory.compact_episode_constraint import _PlainCompactBackend
+    from experiments.memory.compact_episode_constraint import CompactSearchReadConstraint, _PlainCompactBackend
 
+    if limits.scoped_read_batches:
+        if policy.state_kind not in ("compact_needs", "typed_needs"):
+            raise ValueError("grouped reads require linked needs")
+        decoder = (generate.constraint if isinstance(generate, _PlainCompactBackend)
+                   else getattr(native_backend, "_output_token_allowlist", None))
+        if isinstance(decoder, CompactSearchReadConstraint):
+            raise ValueError("the existing compact decoder does not support grouped reads")
     if isinstance(generate, _PlainCompactBackend):
         generate.constraint.check_episode(policy, limits, tokenizer)
     native_opening = None
@@ -1327,6 +1382,11 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
         system_suffix += " Pass a list of candidate numbers to read to open those candidates together."
     if limits.batch_reads:
         system_suffix += " Every candidate in a read list counts against the read allowance."
+    if limits.scoped_read_batches:
+        system_suffix += (' Use {"op":"read_scoped","items":[{"need_id":text,"candidate":integer},'
+                          '{"need_id":text,"candidate":integer}]} to open two candidates together. '
+                          "Use two different registered needs and candidates. Each candidate must have "
+                          "been returned for its own need. The batch charges two reads.")
     if world._receiver is not None and policy.probes_enabled:
         system_suffix += (_COMPACT_JOINT_ROLE_INSTRUCTIONS if compact_needs else
                           _TYPED_JOINT_ROLE_INSTRUCTIONS if typed_needs else _JOINT_ROLE_INSTRUCTIONS)
@@ -1354,6 +1414,8 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                    "setup_total_source_bytes": total_setup_source_bytes}
         if not limits.batch_reads:
             del opening["limits"]["batch_reads"]
+        if not limits.scoped_read_batches:
+            del opening["limits"]["scoped_read_batches"]
         if world.source_seal is not None:
             opening["source_epoch_seal"] = world.source_seal
         if native_opening is not None:
@@ -1434,6 +1496,8 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                 framed["need_registry"] = need_registry
                 framed["planning_phase"] = ("declare" if not plan_registered else
                                              "act_after_plan" if plan_requires_action else "investigate")
+            if limits.scoped_read_batches:
+                framed["scoped_read_batches_enabled"] = True
             if world.pin.as_of is not None:
                 framed["as_of"] = world.pin.as_of
             if world._receiver is not None:
@@ -1557,9 +1621,12 @@ def run_episode(task: str, world: TaskWorld, policy: EpisodePolicy, limits: Epis
                         registry_ids = {need["id"] for need in (*need_registry, *additions)}
                         tool = action["tool"]
                         if (type(tool) is not dict or type(tool.get("op")) is not str
-                                or tool["op"] not in toolbox._field_sets
-                                or type(tool.get("need_id")) is not str
-                                or tool["need_id"] not in registry_ids):
+                                or tool["op"] not in toolbox._field_sets):
+                            raise ValueError("compact tool actions must use a registered need ID")
+                        if tool["op"] == "read_scoped":
+                            if not limits.scoped_read_batches:
+                                raise ValueError("compact tool actions must use a registered need ID")
+                        elif type(tool.get("need_id")) is not str or tool["need_id"] not in registry_ids:
                             raise ValueError("compact tool actions must use a registered need ID")
                         if plan_requires_action and (
                             tool.get("op") != "search" or tool.keys() != {"op", "need_id", "query"}

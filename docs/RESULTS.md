@@ -2563,6 +2563,42 @@ and the tokenizer-only snapshot at
 The program prints per-call counts and reads the existing v7 archive. The
 reported reconstruction used Transformers 5.12.1.
 
+#### Opening evidence for three disjoint needs in five actions
+
+**Ordinary host software control.** A compact episode searched three distinct
+registered needs, each exposing only its own pinned source. An opt-in grouped
+read opened the first two returned candidates, with each still authorized
+under its own need. A single read opened the third. The host recorded three
+search attempts, three individually charged reads and 82 verified evidence
+bytes. The supplied final report cited all three distinct sources in seven
+total calls, including its plan and final report. With separate same-need
+reads, a seven-call control cited two sources and left one need unresolved.
+An eight-call control recovered the same three receipts and exact final report
+as the grouped path.
+
+A wrong, unknown, duplicate or over-budget pair opened no source. A source
+failure and a source-byte limit produced per-item results. Reopening a
+successful grouped receipt requires the opt-in and the exact request pairs
+in order. Ordinary final citation validation still accepts verified IDs
+from the same episode, with relevance independently assessed.
+
+Retokenizing the exact short scripted frames with
+[SmolLM2-360M-Instruct at a10cc151](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct/tree/a10cc1512eabd3dde888204e902eca88bddb4951)
+used 6,786 aggregate input tokens and 612 aggregate output tokens for the
+grouped path, with a maximum of 170 output tokens per call. Output counts
+include one EOS per scripted reply. The seven-call separate-read control used
+6,066 input and 606 output tokens and cited only two sources. The eight-call
+complete separate-read control used 7,488 input and 625 output tokens.
+These counts use Transformers 5.12.1 and a cached tokenizer only. The host
+fixture itself uses a different software tokenizer for dispatch.
+
+This establishes disjoint-access feasibility for the short ordinary host
+fixture. It leaves constrained decoding, full stress-token feasibility,
+native comparison, learned planning and evaluator scoring open. The existing
+compact decoder refuses this opt-in. The frozen v7 artifacts and held
+comparison retain their original paths.
+[Software fixture](../experiments/memory/test_scoped_episode_reads.py)
+
 ## Latent revision software verification, 24–25 November 2026
 
 The review branch's [latent field](../experiments/memory/latent_field.py) passed five focused CPU fixtures. An observation revision reached downstream states through a cycle and matched an independently assembled dense fixed-point reference within its declared residual bound. The fixtures also cover unrelated cells, earlier snapshots, restoration, aggregate contraction, inherited residuals and exhaustion without a write. The field initialized from supplied arrays and used no model weights.
