@@ -177,6 +177,171 @@ def test_source_only_maintenance_installs_a_useful_continuation_at_fixed_pin(tmp
     assert reader(question, memory=maintained) == enabled
 
 
+def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_path):
+    from experiments.memory.native_task_episode import NativeTaskWorldPin
+    from experiments.memory.native_transport_model import NativeTransportModel
+    from experiments.memory.native_workspace import NativeWorkspace
+    from experiments.memory.task_evidence import TaskWorld
+
+    class Tokenizer:
+        def encode(self, text, **_):
+            ids = {"cue-a": 1, "cue-b": 2, "witness-a": 3, "new late input": 4,
+                   "unsupported input": 5, "other late input": 6}
+            return [ids[text]]
+
+        def decode(self, ids, **_):
+            return " ".join({7: "blue", 8: "gold"}[token] for token in ids if token != 0)
+
+    class Backbone(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.config = SimpleNamespace(max_position_embeddings=12)
+            rows = torch.zeros(9, 8)
+            rows[1, :2] = torch.atanh(torch.tensor([100, 0]) / 127)
+            rows[2, :2] = torch.atanh(torch.tensor([40, 50]) / 127)
+            rows[3, :2] = torch.atanh(torch.tensor([80, -20]) / 127)
+            rows[1:3, 7] = rows[3, 3] = 1
+            rows[3, 7] = 0.5
+            rows[4:6, :2] = torch.atanh(torch.tensor([55, -25]) / 127)
+            rows[5, 2] = torch.atanh(torch.tensor(1 / 127))
+            rows[6, :2] = torch.atanh(torch.tensor([75, 25]) / 127)
+            self.lookup = torch.nn.Embedding.from_pretrained(rows)
+
+        def get_input_embeddings(self):
+            return self.lookup
+
+        def get_output_embeddings(self):
+            def scores(hidden):
+                logits = hidden.new_full((1, 1, 9), -1)
+                logits[..., 0] = 0.08
+                logits[..., 7] = -hidden[..., 6]
+                logits[..., 8] = hidden[..., 6]
+                return logits
+            return scores
+
+        def base_model(self, *, inputs_embeds, past_key_values, use_cache, return_dict):
+            prefix = 0 if past_key_values is None else past_key_values.get_seq_length()
+            state = inputs_embeds.clone()
+            worker = bool(state[..., 7].any()) if prefix == 0 else past_key_values.worker
+            if prefix == 0 and use_cache and worker:
+                # Cues re-enter the same Q8 coordinates that were published.
+                state[..., :3] = (torch.atanh(state[..., :3])
+                                  if bool((state[..., 7] > 0.6).any()) else 0)
+            if prefix:
+                if worker:
+                    state[..., 5:7] = torch.sign(state[..., 3:5])
+                elif prefix == 1:
+                    # The next ordinary source can change with this answer,
+                    # while its observation channels remain separate.
+                    later = [40, 50, 1] if float(state[..., 6]) < 0 else [55, -25, 1]
+                    state[..., :3] = torch.atanh(state.new_tensor(later) / 127)
+                state[..., 3:5] = 0
+            cache = _Cache(prefix + inputs_embeds.shape[1]) if use_cache else None
+            if cache is not None:
+                cache.worker = worker
+            return SimpleNamespace(last_hidden_state=state, past_key_values=cache)
+
+    cue_a, cue_b, text, image = (character * 32 for character in "abcd")
+    pixmap = b"P6\n1 1\n255\n"
+    opening_pixel, corrected_pixel = pixmap + bytes((0, 0, 255)), pixmap + bytes((255, 192, 0))
+
+    def ingress(source, raw):
+        if source == image and raw in (opening_pixel, corrected_pixel):
+            sign = 1 if raw == opening_pixel else -1
+            return (0, 100 / 127, 0, 0, sign, 0, 0, 0.5)
+        return None
+
+    query = np.eye(8, 3)
+    value = np.diag((0, 0, 0, 1, 1, 0, 0, 0))
+    kernel = LinearFeedbackKernel(query=query, carry=None, observation_key=query, observation_value=value,
+                                  feedback_key=query, feedback_value=np.zeros((8, 8)), max_steps=2)
+
+    def reader(*, l1):
+        model = NativeLatentModel if l1 is None else NativeTransportModel
+        transport = {} if l1 is None else {"derived_transport_l1": l1}
+        return model(Backbone().eval(), Tokenizer(), kernel, source_chars=12, context_tokens=12,
+                     latent_steps=2, output_tokens=2, representation_scale=1, memory_gain=1,
+                     null_weight=0.1, derived_gain=1, eos_ids=(0,), top_k=2, tie_limit=2,
+                     temperature=0.5, source_ingress=ingress,
+                     source_ingress_sha256=sha256(b"test PPM plus text row mapping"), **transport)
+
+    limit, runtime = 65_536, sha256(b"isolated local transport fixture")
+    p0, p1 = tmp_path / "p0", tmp_path / "p1"
+    original_feed = write_source_delta(
+        p0, {cue_a: b"cue-a", cue_b: b"cue-b", text: b"witness-a", image: opening_pixel},
+        binary_sources=(image,), max_bytes=limit,
+    )
+    correction = write_source_delta(p1, {image: corrected_pixel}, previous=original_feed,
+                                    binary_sources=(image,), max_bytes=limit)
+    worker = reader(l1=2)
+    source = worker.publish(p0, original_feed.seal, max_source_bytes=limit)
+    directory = tmp_path / "workspace"
+    workspace = NativeWorkspace.create(directory, worker, source, runtime_sha256=runtime, max_bytes=limit)
+    opening = workspace.maintain(worker, workspace.head(), max_seeds=4)
+    revised = workspace.revise(worker, opening, p1, correction.seal, max_source_bytes=limit)
+    updated = workspace.maintain(worker, revised, max_seeds=1)
+
+    fresh = reader(l1=2)
+    reopened = NativeWorkspace(directory, runtime_sha256=runtime, max_bytes=limit)
+    original, corrected = (reopened.attach(fresh, pin=x) for x in (opening, updated))
+    assert [span.source_id for span in original.derived_seeds] == [cue_a, cue_b]
+    assert [span.source_id for span in corrected.derived_seeds] == [cue_a, cue_b]
+    assert len(reopened.attach(fresh, pin=revised).derived_seeds) == 1
+
+    # The exact control solves 50*c_b = -25 then 100*c_a + 40*c_b = 55.
+    # The PPM correction negates the second source consequence.
+    task = "new late input"
+    read = fresh(task, memory=original)
+    fixed = fresh(task, memory=corrected)
+    assert (read.text, fixed.text) == ("blue", "gold")
+    assert read.terminated and fixed.terminated and read.applied_derived_steps == fixed.applied_derived_steps == 1
+    assert np.frombuffer(read.derived_steps[0].query, dtype=np.int8).tolist() == [55, -25, 0]
+    assert {span.source_id for span in original.evidence_spans(read)} == {cue_a, cue_b, text, image}
+    assert fresh(task, memory=reopened.attach(fresh, pin=revised)).text == ""
+    assert fresh(task, memory=fresh.without_derived(original)).text == ""
+    assert fresh(task).text == ""
+    unsupported = fresh("unsupported input", memory=original)
+    assert unsupported.text == "" and unsupported.derived_reads[0].status == "unsupported"
+    assert fresh(task, memory=reopened.attach(fresh, pin=opening)) == read
+    # The same two published rows give coefficients 0.55 and 0.5 here.
+    second = "other late input"
+    assert fresh(second, memory=original).text == "gold"
+    assert fresh(second, memory=corrected).text == "blue"
+    assert fresh(second, memory=reopened.attach(fresh, pin=revised)).text == ""
+
+    baseline = reader(l1=None)
+    plain_source = baseline.publish(p0, original_feed.seal, max_source_bytes=limit)
+    plain_memory = baseline.maintain(plain_source, max_seeds=4)
+    plain = baseline(task, memory=plain_memory)
+    assert [span.source_id for span in plain_memory.derived_seeds] == [cue_a, cue_b]
+    assert plain.source_steps[0] == read.source_steps[0]
+    assert plain.derived_steps[0] == read.derived_steps[0] and plain.text == "gold"
+    donor = fresh.compare_continuation_value(fresh.task_token_ids(task), original, original.derived_seeds[1],
+                                             corrected, corrected.derived_seeds[1])
+    assert donor.rerouted.text == donor.source_clamped.text == "gold"
+    assert donor.rerouted.source_steps[1] != read.source_steps[1]
+    assert donor.source_clamped.source_steps == read.source_steps
+    assert donor.source_clamped.value_substitution.input_max_abs_delta > 0
+    assert donor.original_q8_squared_norm == donor.donor_q8_squared_norm > 0
+    assert all(arm.derived_reads[1].status == "unsupported"
+               for arm in (donor.intact, donor.rerouted, donor.source_clamped))
+    with pytest.raises(ValueError, match="reader"):
+        reopened.attach(baseline, pin=opening)
+
+    # Episode records have no representation for transport coefficients.
+    text_dir = tmp_path / "episode-text"
+    text_feed = write_source_delta(text_dir, {cue_a: b"cue-a", cue_b: b"cue-b"})
+    text_source = worker.publish(text_dir, text_feed.seal, max_source_bytes=limit)
+    text_store = NativeWorkspace.create(tmp_path / "episode-workspace", worker, text_source,
+                                        runtime_sha256=runtime, max_bytes=limit)
+    text_memory = text_store.attach(fresh)
+    world = TaskWorld.from_source_epoch(text_dir, text_feed.seal, max_feed_bytes=limit,
+                                       max_source_bytes=limit, max_passages=8)
+    with pytest.raises(TypeError, match="native latent reader"):
+        NativeTaskWorldPin.bind(world, fresh, text_memory, memory_view="active", latent_steps=2,
+                                expected_runtime_sha256=runtime, max_source_verification_bytes=limit)
+
+
 def test_small_alignment_has_proportionally_small_observation_support():
     kernel = _kernel()
     row = np.array([[1, 0, 0, 1, 0, 0]])

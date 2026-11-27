@@ -524,6 +524,16 @@ run. Check later derived choices and distinguish an unresolved or
 unrelated output from reversal to the original answer.
 [Native comparison](RESULTS.md#separating-native-source-rerouting-from-a-retained-terminal)
 
+**Reconstructing a query key leaves the output law unidentified.**
+Permuting worker values preserves the key fit and all its numeric
+admission checks, despite changing the implied operation. A signed fit
+can also add negative components outside the observed value hull. Keep
+the tight Q8 prototype as a mechanism control. On a qualified reader,
+measure admitted late directions separately from agreement with a held-out
+source-derived outcome or on-demand recomputation. The old p2 gate has
+zero eligible derived reads and supplies no accepted late direction.
+[Retained operation control](RESULTS.md#applying-a-retained-operation-to-a-new-latent-input)
+
 **Exact sharing can lose to ordinary compression.** The eight-pin native
 fixture retained far fewer numeric file bytes with immutable shared blocks
 than with full copies. Independently compressing each sparse stand-in

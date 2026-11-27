@@ -630,6 +630,37 @@ content, and the intervention can create an atypical state. Learned
 routing, task quality and cost remain open.
 [Native fixture](../experiments/memory/test_native_latent_recurrence.py)
 
+## Applying a retained operation to a new latent input
+
+**CPU mechanism control.** A source-only workspace worker published two
+retained responses based on text and a one-pixel PPM image. A fresh reader
+received a task with a Q8 address that jointly used both rows and matched
+neither. For the supplied linear reference, the exact coefficients were
+$3/4$ and $-1/2$. The signed read gave blue. The ordinary positive mixture
+used the same first-step rows and mass on the same source bytes and gave
+gold. A second new input used coefficients $0.55$ and $0.5$ and
+returned gold on that same opening publication. An out-of-span address,
+dependent keys, and a required coefficient
+norm above the cap all produced a derived refusal.
+
+Correcting the image withdrew one row. That pin left the task unresolved
+until the source-only worker reacquired the row, after which the task
+returned gold on the first input and blue on the second. The memory-omitted
+and derived-off calls for the first input stayed unresolved.
+Reopening the historical publication reproduced blue. At the original
+pin, replacing the selected value with the corrected value changed blue
+to gold even when the later ordinary source input was replayed exactly.
+The live donor selected a different later source, and the later derived
+fit was refused in all donor arms.
+
+The mapping and backbone were supplied. This shows a task input can use a
+signed function synthesized from worker results, with revision and causal
+handoff in the same reader. It leaves semantic acquisition and lifecycle
+advantage open. The archived visible p2 trained-reader gate has zero
+eligible derived reads across two active steps, so it cannot evaluate
+this operation.
+[CPU fixtures](../experiments/memory/test_native_latent_recurrence.py) · [Frozen p2 gate](../experiments/memory/results/native_world_addressing_p2_2026-11-26/README.md)
+
 ## Sharing a native workspace across workers
 
 **CPU software control.** Two handles shared a native publication history.

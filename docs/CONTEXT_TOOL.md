@@ -991,6 +991,21 @@ the target was read again. Calls start a fresh private prefix cache. The
 read-only diagnostic uses the direct token reader and its receipt cannot
 reopen candidate evidence. Standard task episodes use the ordinary reader.
 
+## Applying a local operation to a late native input
+
+Use `NativeTransportModel` from `experiments.memory.native_transport_model`
+with `derived_transport_l1` to select a bounded signed fit over its acquired continuation rows. Use a
+`tie_limit` of at most eight and an L1 cap from one to four. Reopen with the
+exact transport-enabled reader and use the usual optional `memory` argument.
+The source worker still acquires individual rows through the ordinary
+recurrence. A read can report `unsupported` on the derived bank when its
+shortlist fails the span, conditioning or coefficient checks. Those rows
+are candidate evidence. Verify a resulting claim against the pinned sources.
+For interventions the fitted coefficients remain fixed during replacement
+or value withholding. Use direct reader calls for this prototype.
+The task-episode adapter requires a future receipt contract for signed fits.
+[Technical bounds](ARCHITECTURE.md#applying-a-local-operation-from-retained-worker-rows)
+
 ## Holding later ordinary source inputs fixed
 
 Pass exact question token IDs, an intact reopened selective memory,

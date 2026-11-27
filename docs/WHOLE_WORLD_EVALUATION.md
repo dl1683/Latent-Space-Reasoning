@@ -386,6 +386,17 @@ the text or iterative-RAG control demonstrates correct direct-support
 competence before the latent maintenance contrast can answer the intended
 question.
 
+The [reviewer's competence diagnostic](FRESH_REASONER_COMPETENCE_DIAGNOSTIC.md)
+separates unassisted need inference and answer generation from two
+assisted diagnostic arms. Only an unassisted, supported answer qualifies
+ordinary competence. The operation screen requires at least two late
+input bindings chosen independently after publication. Preserve the
+warm exact and on-demand recomputation controls. The
+[signed-fit software fixture](RESULTS.md#applying-a-retained-operation-to-a-new-latent-input)
+uses two supplied bindings for the mechanism check. Geometric support
+and accurate consequences on independently chosen inputs remain
+separate gates.
+
 Set `TaskBudget` to at most 24 actions, eight candidates per search, 8,192
 returned evidence bytes, 2 MiB source bytes, and 512 aggregate role-work units
 across ordinary probes and joint role-link calls. A maintenance round gets at most two calls per

@@ -72,6 +72,15 @@ def _reader_digest(reader):
         h.update(_record(name, dtype, shape, len(raw)))
         h.update(raw)
 
+    transport = selector is not None and selector._transport_l1 is not None
+    if transport:
+        implementations = {
+            name: sha256(Path(__file__).with_name(name).read_bytes().replace(b"\r\n", b"\n"))
+            for name in ("selective_continuations.py", "native_transport_model.py", "native_latent_recurrence.py")
+        }
+        add("derived-transport", "json", None, _record(
+            "q8-local-linear-v1", selector._transport_l1, implementations,
+        ))
     tokenizer = getattr(reader._tokenizer, "backend_tokenizer", None)
     if reader._source_chunking == "content" or reader._residual_layer is not None:
         if callable(getattr(tokenizer, "to_str", None)):
@@ -97,7 +106,8 @@ def _reader_digest(reader):
         add("source-chunking", "utf8", None, b"content-v1")
     if reader._residual_layer is not None:
         layer = reader._model.base_model.layers[reader._residual_layer]
-        implementation = sha256(Path(__file__).with_name("native_latent_recurrence.py").read_bytes())
+        implementation = Path(__file__).with_name("native_latent_recurrence.py").read_bytes()
+        implementation = sha256(implementation.replace(b"\r\n", b"\n") if transport else implementation)
         add("residual-recurrence", "json", None, _record(
             "layer-in-out-zero-carrier-v1", reader._residual_layer,
             type(layer).__module__, type(layer).__qualname__, implementation,

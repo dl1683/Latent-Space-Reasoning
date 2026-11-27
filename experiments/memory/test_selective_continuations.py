@@ -1,7 +1,7 @@
 import numpy as np
 
 from experiments.memory.linear_feedback import LinearFeedbackKernel
-from experiments.memory.selective_continuations import RetainedSelector, frontier_survives
+from experiments.memory.selective_continuations import RetainedSelector, _TransportShard, frontier_survives
 from experiments.memory.verified_source_tool import SourceSpan
 
 
@@ -14,6 +14,39 @@ def _selector(width, *, top_k, tie_limit=16):
 
 def _span(source, offset=0):
     return SourceSpan(source, "1" * 64, offset, offset + 1, "2" * 64)
+
+
+def test_transport_bounds_unsupported_input_and_preserves_signed_interventions():
+    kernel, _ = _selector(3, top_k=2)
+    selector = RetainedSelector(kernel, top_k=2, tie_limit=2, temperature=0.5, transport_l1=2)
+    left, right = _span("a"), _span("b")
+    keys = np.array([[100, 0, 0], [40, 50, 0]]) / 127
+    values = np.eye(3)[:2]
+    shard = selector.shard((left, right), keys, values)
+    def signed(bank):
+        return (_TransportShard(bank.spans, bank.keys, bank.values),)
+
+    task = np.array([55, -25, 0]) / 127
+    read, mass, trace, withheld = selector.read_withheld_value(task, signed(shard), right)
+    assert trace.receipt.status == "ready"
+    np.testing.assert_allclose(read, (0.75, -0.5, 0), atol=1e-10)
+    np.testing.assert_allclose(withheld, (0.75, 0, 0), atol=1e-10)
+    blended, ordinary_mass, ordinary_trace = selector.read(task, (shard,))
+    assert blended[1] > 0 and mass == ordinary_mass and trace == ordinary_trace
+
+    wide = selector.shard((left, right), keys * 0.4, values)
+    degenerate = selector.shard((left, right), keys[[0, 0]], values)
+    for hidden, bank in ((task + np.array([0, 0, 1]) / 127, shard), (task, wide), (task, degenerate)):
+        refused, mass, trace = selector.read(hidden, signed(bank))
+        assert refused is None and mass == 0 and trace.receipt.status == "unsupported"
+        assert len(trace.receipt.selected) == 2
+
+    # Distinct keys can be equally relevant and still span the requested input.
+    tied = selector.shard((left, right), np.eye(3)[:2], values)
+    _, _, blend_decision = selector.read(np.array([1, 1, 0]), (tied,))
+    computed, _, transport_decision = selector.read(np.array([1, 1, 0]), signed(tied))
+    assert blend_decision.receipt.status == "competing" and transport_decision.receipt.status == "ready"
+    np.testing.assert_allclose(computed, (1, 1, 0), atol=1e-10)
 
 
 def test_exact_selection_preserves_the_planted_value_in_24000_retained_rows():

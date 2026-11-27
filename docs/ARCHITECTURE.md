@@ -127,6 +127,32 @@ the comparison. [Implementation](../experiments/memory/native_latent_recurrence.
 · [Continuous thought feedback](https://arxiv.org/abs/2412.06769)
 · [Retrofitted recurrence](https://arxiv.org/abs/2511.07384)
 
+#### Applying a local operation from retained worker rows
+
+[SLICE] `NativeTransportModel` extends the optional-memory reader with
+`derived_transport_l1`. It uses source-acquired address/value pairs to act on a new input $q$.
+Select the bounded positive-dot neighborhood as usual. Let $K$ hold
+its projected Q8 keys as columns and $V$ its Q8 worker values as columns.
+Solve $Kc=q$ in the admitted span and use $Vc/127$ for the derived input.
+The reader keeps the usual routed mass, gain, context, and readout. The
+pre-task worker and ordinary source bank use their existing rules. A
+signed coefficient changes the value function beyond the convex hull of
+the stored outputs.
+
+The prototype accepts at most eight selected rows, complete column rank
+at relative singular cutoff $1/1024$, reconstruction within $10^{-7}$
+per Q8 key coordinate, and a caller-selected coefficient L1 limit in
+$[1,4]$. A refused fit contributes no derived input and records
+`unsupported` with the shortlisted rows. Overflow keeps its existing
+meaning. The reader fingerprint binds the opt-in, selector and recurrence code.
+Direct reader calls exercise the prototype. Task episodes lack a signed-fit
+receipt contract. Reconstruction qualifies the geometry alone. Nearby publications may
+carry competing operations. Future empirical use needs held-out value
+predictions, source authority, coverage and strong exact or on-demand
+recomputation controls before treating a fit as support. The local
+regression analogy also suggests a fitted-at-maintenance comparator.
+[Prototype result](RESULTS.md#applying-a-retained-operation-to-a-new-latent-input) · [Local Linear Attention](https://proceedings.iclr.cc/paper_files/paper/2026/hash/f9af970430ac401594ce01022fccb049-Abstract-Conference.html) · [Test-time regression](https://www.jmlr.org/papers/v27/25-0903.html)
+
 #### Reusing an interior residual block
 
 [SLICE] An opt-in eager reader captures the last-position output of a

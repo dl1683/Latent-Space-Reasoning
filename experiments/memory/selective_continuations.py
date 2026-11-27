@@ -40,20 +40,41 @@ class RowShard:
     values: np.ndarray
 
 
+class _TransportShard(RowShard):
+    """A derived shard viewed through a late transport read."""
+
+    __slots__ = ()
+
+
 def competing_values(selected, values, margin):
     return any(a.score - b.score <= margin and not np.array_equal(left, right)
                for a, b, left, right in zip(selected[:-1], selected[1:], values[:-1], values[1:], strict=True))
 
 
+def _transport_weights(keys, query, limit):
+    """Fit a bounded signed combination of Q8 keys without inventing directions."""
+    basis = np.asarray(keys, dtype=np.float64).T
+    weights, _, rank, _ = np.linalg.lstsq(basis, query, rcond=1 / 1024)
+    if (rank != len(keys) or np.sum(np.abs(weights)) > limit + 1e-10
+            or not np.allclose(basis @ weights, query, rtol=0, atol=1e-7)):
+        return None
+    return weights
+
+
 class RetainedSelector:
     """Use exact signed inner products with a bounded, inclusive cutoff."""
 
-    def __init__(self, kernel, *, top_k, tie_limit, temperature, score_margin=0):
+    def __init__(self, kernel, *, top_k, tie_limit, temperature, score_margin=0, transport_l1=None):
         if (type(top_k) is not int or top_k < 1 or type(tie_limit) is not int or tie_limit < top_k
                 or not isfinite(temperature) or temperature <= 0
                 or type(score_margin) is not int or score_margin < 0):
             raise ValueError("selection needs a positive size, tie bound and temperature")
+        if transport_l1 is not None and (
+                type(transport_l1) not in (int, float) or not isfinite(transport_l1)
+                or not 1 <= transport_l1 <= 4 or tie_limit > 8):
+            raise ValueError("derived transport needs an L1 bound in [1, 4] and at most eight selected rows")
         self._kernel = kernel
+        self._transport_l1 = None if transport_l1 is None else float(transport_l1)
         self._k, self._tie_limit, self._temperature = top_k, tie_limit, temperature
         self._margin = score_margin
 
@@ -140,16 +161,23 @@ class RetainedSelector:
             indices = np.concatenate((better, tied))
         indices = indices[np.argsort(-scores[indices], kind="stable")]
         ends = np.cumsum([len(shard.spans) for shard in shards])
-        selected, values = [], []
+        selected, values, keys = [], [], []
+        transport = isinstance(shards[0], _TransportShard) and self._transport_l1 is not None
         for flat in indices:
             shard_no = int(np.searchsorted(ends, flat, side="right"))
             offset = flat - (ends[shard_no - 1] if shard_no else 0)
             shard = shards[shard_no]
             selected.append(SelectedSpan(shard.spans[offset], int(scores[flat])))
             values.append(shard.values[offset])
-        status = "ready"
+            if transport:
+                keys.append(shard.keys[offset])
+        status, weights = "ready", None
         if eligible > self._tie_limit:
             status = "overflow"
+        elif transport:
+            weights = _transport_weights(keys, query, self._transport_l1)
+            if weights is None:
+                status = "unsupported"
         elif competing_values(selected, values, self._margin):
             status = "competing"
         receipt = SelectionReceipt(status, tuple(selected), eligible, len(scores))
@@ -158,9 +186,10 @@ class RetainedSelector:
             return None, 0.0, trace, None
 
         scores = scores[indices].astype(np.float64) / (_LEVELS ** 2)
-        with np.errstate(over="ignore", under="ignore"):
-            weights = np.exp((scores - scores[0]) / self._temperature)
-        weights /= weights.sum()
+        if weights is None:
+            with np.errstate(over="ignore", under="ignore"):
+                weights = np.exp((scores - scores[0]) / self._temperature)
+            weights /= weights.sum()
         values = np.asarray(values)
         full = (weights @ values) / _LEVELS
         alternate = None
