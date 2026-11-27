@@ -24,17 +24,17 @@ uniqueness of a reusable operation.
 
 **1. The source event that distinguishes two rival laws can be excluded by
 positive-dot selection.** Let two orthogonal Q8 role keys be
-(k_1=64e_1, k_2=64e_2). A late or source-event operand
-(q=a e_1-b e_2), for positive integers (a,b\le64), has exact signed
-coefficients ((a/64,-b/64)), with L1 norm at most 2. The second key scores
+`k1 = 64 e1, k2 = 64 e2`. A late or source-event operand
+`q = a e1 - b e2`, for positive integers `a,b <= 64`, has exact signed
+coefficients `(a/64,-b/64)`, with L1 norm at most 2. The second key scores
 strictly negative. Even granting a shortlist of two and an exact numerical
 solver, the selector sees only the first key and cannot fit q. This is not
 the prior archived all-bank span failure: here the complete bank spans q
 exactly.
 
 Consider two supplied candidate laws in these operand coordinates:
-identity and role swap. Both agree on ((a,a)), but predict
-((a,-b)) versus ((-b,a)) on the contrast. These consequences have
+identity and role swap. Both agree on `(a,a)`, but predict
+`(a,-b)` versus `(-b,a)` on the contrast. These consequences have
 equal norm. A source-only worker that has obtained these rival hypotheses
 and the operands of those two candidate source events can choose the
 contrast before observing the event outcome or the late task. Yet the
@@ -45,8 +45,8 @@ A higher similarity score or a longer list of positive keys does not fix
 this example.
 
 **2. New coherent evidence can make a defined operation unavailable.**
-Take the positive operand ((a,b)) and the same two keys, with values
-(v_1,v_2). A third source with the same (k_1,v_1) leaves the linear law
+Take the positive operand `(a,b)` and the same two keys, with values
+`v1,v2`. A third source with the same `k1,v1` leaves the linear law
 unchanged. With top-k=3, margin=0, tie limit=3, the original two columns
 pass full-column-rank admission; adding the coherent row makes the three
 columns rank deficient, so the current fitter refuses. The ambiguity is
@@ -55,9 +55,7 @@ world, where multiple independently pinned documents may express the same
 relation.
 
 For any selected operation group, define the feasible set
-[
- C(q)=\{c:Kc=q,\ \|c\|_1\le L\}.
-]
+`C(q) = { c : Kc = q, ||c||_1 <= L }`.
 When nonempty, a unique predicted value exists exactly when V annihilates
 all differences between elements of C(q). A sufficient global condition
 is `ker K subset ker V`: for two feasible solutions their difference is
@@ -73,6 +71,9 @@ give distinct outputs. Never merge those contradictory observations.
 This does not authorize relaxing the existing numerical or ambiguity gate.
 An implementation may simply use a consistent independent basis for a
 validated group, retaining each source identity and provenance separately.
+For exact duplicate columns this can preserve the L1 feasible domain by
+combining coefficients of the duplicates; a general basis change need
+not preserve that domain, so it requires a separate equivalence check.
 Inconsistent or insufficiently verified groups remain rival hypotheses.
 An exact solver needs the same grouping, operand encoder, admissible
 domain, source rights and revision semantics. A basis change after
