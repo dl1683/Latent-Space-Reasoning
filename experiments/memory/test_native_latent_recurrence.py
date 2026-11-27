@@ -1,4 +1,4 @@
-from dataclasses import replace
+from dataclasses import asdict, replace
 from types import SimpleNamespace
 
 import numpy as np
@@ -177,7 +177,42 @@ def test_source_only_maintenance_installs_a_useful_continuation_at_fixed_pin(tmp
     assert reader(question, memory=maintained) == enabled
 
 
-def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_path):
+def test_operand_group_preserves_duplicate_origins_and_refuses_conflicting_values():
+    from experiments.memory.native_operand_model import _OperandSelector
+    from experiments.memory.selective_continuations import RetainedSelector, RowShard
+
+    identity = np.eye(4)
+    kernel = LinearFeedbackKernel(query=identity, carry=None, observation_key=identity, observation_value=identity,
+                                  feedback_key=identity, feedback_value=identity, max_steps=1)
+    selector = _OperandSelector(RetainedSelector(kernel, top_k=2, tie_limit=4, temperature=1),
+                                address_axes=(2, 3), transport_l1=2)
+    spans = ("a", "b", "duplicate")
+    keys = np.array([[64, 0, 32, 0], [0, 64, 32, 0], [64, 0, 32, 0]], dtype=np.int8)
+    values = np.array([[64, 0, 0, 0], [0, 64, 0, 0], [64, 0, 0, 0]], dtype=np.int8)
+    operand = np.array([16, -32, 8, 8]) / 127
+    clean = selector.prepare((RowShard(spans[:2], keys[:2], values[:2]),))
+    duplicated = selector.prepare((RowShard(spans, keys, values),))
+    base, _, _ = selector.read(operand, clean)
+    reused, _, step = selector.read(operand, duplicated)
+    np.testing.assert_allclose(reused, np.array([16, -32, 0, 0]) / 127)
+    np.testing.assert_array_equal(base, reused)
+    assert [hit.span for hit in step.receipt.selected] == list(spans)
+    with pytest.raises(ValueError, match="coherent operand basis row"):
+        selector.read_withheld_value(operand, duplicated, "duplicate")
+
+    wrong = values.copy()
+    wrong[-1] *= -1
+    conflict = selector.prepare((RowShard(spans, keys, wrong),))
+    assert selector.read(operand, conflict)[2].receipt.status == "competing"
+    competing_address = np.array([[64, 0, 0, 32]], dtype=np.int8)
+    rival = selector.prepare((RowShard(spans, keys, values),
+                              RowShard(("rival",), competing_address, values[:1])))
+    assert selector.read(operand, rival)[2].receipt.status == "competing"
+
+
+@pytest.mark.parametrize("separate_address", [False, True])
+def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_path, separate_address):
+    from experiments.memory.native_operand_model import NativeOperandModel
     from experiments.memory.native_task_episode import NativeTaskWorldPin
     from experiments.memory.native_transport_model import NativeTransportModel
     from experiments.memory.native_workspace import NativeWorkspace
@@ -205,6 +240,12 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
             rows[4:6, :2] = torch.atanh(torch.tensor([55, -25]) / 127)
             rows[5, 2] = torch.atanh(torch.tensor(1 / 127))
             rows[6, :2] = torch.atanh(torch.tensor([75, 25]) / 127)
+            if separate_address:
+                rows[2, :2] = torch.atanh(torch.tensor([0, 50]) / 127)
+                rows[1:3, 5] = torch.atanh(torch.tensor(64 / 127))
+                rows[4:7, 5] = torch.atanh(torch.tensor(8 / 127))
+                rows[4:6, :2] = torch.atanh(torch.tensor([40, -48]) / 127)
+                rows[6, :2] = torch.atanh(torch.tensor([-48, 40]) / 127)
             self.lookup = torch.nn.Embedding.from_pretrained(rows)
 
         def get_input_embeddings(self):
@@ -241,7 +282,7 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
                 cache.worker = worker
             return SimpleNamespace(last_hidden_state=state, past_key_values=cache)
 
-    cue_a, cue_b, text, image = (character * 32 for character in "abcd")
+    cue_a, cue_b, text, image, outcome_source = (character * 32 for character in "abcde")
     pixmap = b"P6\n1 1\n255\n"
     opening_pixel, corrected_pixel = pixmap + bytes((0, 0, 255)), pixmap + bytes((255, 192, 0))
 
@@ -249,19 +290,25 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
         if source == image and raw in (opening_pixel, corrected_pixel):
             sign = 1 if raw == opening_pixel else -1
             return (0, 100 / 127, 0, 0, sign, 0, 0, 0.5)
+        if separate_address and source == outcome_source and raw[:-3] == pixmap and raw[-3] <= 254:
+            return (0, 0, 0, 0, 0, 0, (raw[-3] - 127) / 127, 0)
         return None
 
-    query = np.eye(8, 3)
+    query = np.eye(8)[:, [0, 1, 2, 5]] if separate_address else np.eye(8, 3)
     value = np.diag((0, 0, 0, 1, 1, 0, 0, 0))
     kernel = LinearFeedbackKernel(query=query, carry=None, observation_key=query, observation_value=value,
                                   feedback_key=query, feedback_value=np.zeros((8, 8)), max_steps=2)
 
-    def reader(*, l1):
+    def reader(*, l1, legacy=False):
         model = NativeLatentModel if l1 is None else NativeTransportModel
         transport = {} if l1 is None else {"derived_transport_l1": l1}
+        if separate_address and l1 is not None and not legacy:
+            model = NativeOperandModel
+            transport["address_axes"] = (3,)
         return model(Backbone().eval(), Tokenizer(), kernel, source_chars=12, context_tokens=12,
-                     latent_steps=2, output_tokens=2, representation_scale=1, memory_gain=1,
-                     null_weight=0.1, derived_gain=1, eos_ids=(0,), top_k=2, tie_limit=2,
+                     latent_steps=1 if separate_address else 2, output_tokens=2, representation_scale=1,
+                     memory_gain=1, null_weight=0.001 if separate_address else 0.1,
+                     derived_gain=1, eos_ids=(0,), top_k=2, tie_limit=2,
                      temperature=0.5, source_ingress=ingress,
                      source_ingress_sha256=sha256(b"test PPM plus text row mapping"), **transport)
 
@@ -288,6 +335,46 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
     assert [span.source_id for span in corrected.derived_seeds] == [cue_a, cue_b]
     assert len(reopened.attach(fresh, pin=revised).derived_seeds) == 1
 
+    if separate_address:
+        from fractions import Fraction
+
+        from experiments.memory.native_witness_selection import choose_forecast_witness
+        from experiments.memory.source_revision_feed import _encode
+
+        # Both candidate pins precede the controller's outcome release.
+        events = (("agree", (32, 0)), (outcome_source, (16, 32)))
+        options = []
+        for event, (left, right) in events:
+            latent = np.array([left, right, 0, 0, 0, 8, 0, 0]) / 127
+            predictions = []
+            for memory, polarity in ((original, 1), (corrected, -1)):
+                consequence, receipt = fresh.predict_operation(memory, latent)
+                assert receipt.status == "ready" and receipt.observed_source_seal == memory.seal
+                # Exact oracle for the image-controlled role, independent of the fitted solve.
+                assert consequence[6] == pytest.approx(float(Fraction(polarity * right * 97, 50 * 127)))
+                predictions.append((round(127 * consequence[6]),))
+            options.append((event, 0, tuple(predictions)))
+        assert choose_forecast_witness(options[:1]) is None
+        selected = choose_forecast_witness(options)
+        assert selected == outcome_source
+        expected_options = (("agree", 0, ((0,), (0,))), (outcome_source, 0, ((62,), (-62,))))
+        assert tuple(options) == expected_options
+        preimage = ["q8-rint-v1", asdict(opening), asdict(updated), events, 8, 6, selected, tuple(options)]
+        frozen = sha256(_encode(preimage))
+
+        outcome_path = tmp_path / "chosen-event"
+        released_pixel = pixmap + bytes((65, 0, 0))
+        event = write_source_delta(outcome_path, {outcome_source: released_pixel}, previous=correction,
+                                   binary_sources=(outcome_source,), max_bytes=limit)
+        observed_pin = reopened.revise(worker, updated, outcome_path, event.seal, max_source_bytes=limit)
+        observed = reopened.attach(fresh, pin=observed_pin)
+        outcome, = observed._sources[outcome_source]
+        live = (round(127 * outcome.row[6]),)
+        assert frozen == sha256(_encode(preimage))
+        assert live == options[1][2][1] != options[1][2][0]
+        assert fresh("new late input", memory=observed).text == "gold"
+        assert fresh("other late input", memory=observed).text == "blue"
+
     # The exact control solves 50*c_b = -25 then 100*c_a + 40*c_b = 55.
     # The PPM correction negates the second source consequence.
     task = "new late input"
@@ -295,7 +382,8 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
     fixed = fresh(task, memory=corrected)
     assert (read.text, fixed.text) == ("blue", "gold")
     assert read.terminated and fixed.terminated and read.applied_derived_steps == fixed.applied_derived_steps == 1
-    assert np.frombuffer(read.derived_steps[0].query, dtype=np.int8).tolist() == [55, -25, 0]
+    expected_query = [40, -48, 0, 8] if separate_address else [55, -25, 0]
+    assert np.frombuffer(read.derived_steps[0].query, dtype=np.int8).tolist() == expected_query
     assert {span.source_id for span in original.evidence_spans(read)} == {cue_a, cue_b, text, image}
     assert fresh(task, memory=reopened.attach(fresh, pin=revised)).text == ""
     assert fresh(task, memory=fresh.without_derived(original)).text == ""
@@ -305,9 +393,29 @@ def test_source_only_rows_compute_a_new_late_input_across_an_image_revision(tmp_
     assert fresh(task, memory=reopened.attach(fresh, pin=opening)) == read
     # The same two published rows give coefficients 0.55 and 0.5 here.
     second = "other late input"
-    assert fresh(second, memory=original).text == "gold"
+    second_read = fresh(second, memory=original)
+    assert second_read.text == "gold"
     assert fresh(second, memory=corrected).text == "blue"
     assert fresh(second, memory=reopened.attach(fresh, pin=revised)).text == ""
+
+    if separate_address:
+        assert second_read.derived_reads[0].selected == read.derived_reads[0].selected
+        assert np.frombuffer(second_read.derived_steps[0].query, dtype=np.int8).tolist() == [-48, 40, 0, 8]
+        baseline = reader(l1=2, legacy=True)
+        baseline_opening = baseline.publish(p0, original_feed.seal, max_source_bytes=limit)
+        baseline_opening = baseline.maintain(baseline_opening, max_seeds=4)
+        for question in (task, second):
+            plain = baseline(question, memory=baseline_opening)
+            assert plain.text == "" and plain.derived_reads[0].status == "unsupported"
+            assert len(plain.derived_reads[0].selected) == 1
+        with pytest.raises(ValueError, match="reader"):
+            reopened.attach(baseline, pin=opening)
+        donor = fresh.compare_continuation_value(fresh.task_token_ids(task), original,
+                                                 original.derived_seeds[1], corrected, corrected.derived_seeds[1])
+        assert donor.source_clamped.text == "gold"
+        assert donor.source_clamped.source_steps == read.source_steps
+        assert donor.source_clamped.value_substitution.input_max_abs_delta > 0
+        return
 
     baseline = reader(l1=None)
     plain_source = baseline.publish(p0, original_feed.seal, max_source_bytes=limit)

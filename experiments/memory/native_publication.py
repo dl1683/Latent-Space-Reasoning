@@ -81,6 +81,12 @@ def _reader_digest(reader):
         add("derived-transport", "json", None, _record(
             "q8-local-linear-v1", selector._transport_l1, implementations,
         ))
+    address_axes = getattr(selector, "_operand_address_axes", None)
+    if address_axes is not None:
+        implementation = Path(__file__).with_name("native_operand_model.py").read_bytes()
+        add("operand-operation", "json", None, _record(
+            "q8-address-operand-v1", address_axes, sha256(implementation.replace(b"\r\n", b"\n")),
+        ))
     tokenizer = getattr(reader._tokenizer, "backend_tokenizer", None)
     if reader._source_chunking == "content" or reader._residual_layer is not None:
         if callable(getattr(tokenizer, "to_str", None)):

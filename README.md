@@ -28,6 +28,13 @@ using the surviving operation on new operands remain open.
 
 A [bounded latent operation](docs/RESULTS.md#applying-a-retained-operation-to-a-new-latent-input) now combines query-blind worker outputs with signed coefficients on a new task input. On the supplied text-and-image fixture it recovered the expected result where positive averaging did not, then changed it after a source correction while the original pin stayed readable. The test uses a deterministic backbone and supplied coordinates. Real-model address coverage and independently graded answers remain open.
 
+An [address-and-operand control](docs/RESULTS.md#separating-the-operation-address-from-its-operands)
+uses a fixed operation address with two signed inputs. Both resolved in the
+text-and-image fixture, and both reversed after an image correction and
+maintenance. Historical rivals also made different predictions for an
+event's operand before its supplied outcome was released. The coordinate
+split is supplied. Independent acquisition and grading remain open.
+
 An [archived learned-state check](docs/ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md#can-reweighting-recover-the-two-archived-task-inputs) found that even all six retained keys cannot reconstruct either late input from the retired p2 run. The next design needs to distinguish selecting a reusable operation from encoding the operands it will act on.
 
 A [visual operation check](docs/RESULTS.md#applying-published-visual-operations-to-new-grids)

@@ -411,6 +411,15 @@ operand of matched scale that predicts a distinct gradeable result.
 Also withhold and restore the selected value. The fresh two-input test and warm recomputation control decide
 whether that representation carries a useful operation.
 
+A [fixed-address control](RESULTS.md#separating-the-operation-address-from-its-operands)
+now applies two signed operands through the native recurrence where the
+joint positive-key fit refused both. Two historical pins also produce
+different Q8 predictions on a supplied source-event operand under the
+same projection. The controller observed the separating result only
+after freezing both predictions. The winner was already published. The
+main screen still needs admission and withdrawal tied to a verified
+event and independent late bindings on the same newly published state.
+
 The [signed admission bound](SIGNED_OPERATION_ADMISSION_BOUND.md) gives two
 exact controls for this design. A negative role coordinate can be necessary
 even when the full bank has a bounded exact fit. Adding coherent duplicate

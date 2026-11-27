@@ -37,6 +37,17 @@ direct query and left a query through an extra alias link unresolved. Keep
 the two-unseen-operand criterion for the main screen.
 [Handoff control](RESULTS.md#transferring-a-forecast-between-worker-processes)
 
+**Joint address and operand selection can exclude an indispensable row.**
+In the fixed-address CPU control the positive-key neighborhood excluded a
+required direction on both role inputs. The separated reader solved the
+operand using the full routed group's signed span. Equal declared addresses
+still do not establish that rows express the same semantic operation.
+Distinct operations with different basis directions can share an address
+without producing identical-key conflicts. A higher-norm key can also
+outscore an exact address match. Keep source authority, operand validity
+and operation identity as separate tests.
+[Address and operand control](RESULTS.md#separating-the-operation-address-from-its-operands)
+
 **A separating projection is conditional on the forecast roster.**
 A worker can reject a descriptor whose tolerance regions overlap without
 seeing its outcome. An informative projection can still fail because no

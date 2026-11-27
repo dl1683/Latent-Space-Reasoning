@@ -1051,6 +1051,26 @@ or value withholding. Use direct reader calls for this prototype.
 The task-episode adapter requires a future receipt contract for signed fits.
 [Technical bounds](ARCHITECTURE.md#applying-a-local-operation-from-retained-worker-rows)
 
+Use `NativeOperandModel` from `experiments.memory.native_operand_model`
+with `address_axes` (a sorted proper subset of the projected key columns)
+and `derived_transport_l1` to select an operation by address and apply it
+to the complementary signed operand. Reopen using the same policy and
+call the ordinary reader with optional `memory`. A source-only worker
+can call `reader.predict_operation(memory, latent)` with a normalized
+input row. It receives the raw consequence or a refusal and a receipt
+bound to the source seal. Retain the publication pin alongside a forecast
+receipt. The method performs the same operation selection and arithmetic
+as the late call before recurrent gain and language readout. It does not
+encode an event or verify its future outcome.
+
+Competing addresses or contradictory duplicate keys refuse. Coherent
+duplicates retain all candidate source origins and share a basis entry.
+Single-source substitution of such an entry refuses. Withdraw the origin
+through a normal source revision to test its effect independently.
+The direct reader path exercises this prototype. The task-episode adapter
+does not support it.
+[Address and operand contract](ARCHITECTURE.md#separating-operand-computation-from-the-operation-address)
+
 ## Holding later ordinary source inputs fixed
 
 Pass exact question token IDs, an intact reopened selective memory,

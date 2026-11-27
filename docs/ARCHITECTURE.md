@@ -127,6 +127,36 @@ the comparison. [Implementation](../experiments/memory/native_latent_recurrence.
 · [Continuous thought feedback](https://arxiv.org/abs/2412.06769)
 · [Retrofitted recurrence](https://arxiv.org/abs/2511.07384)
 
+#### Separating operand computation from the operation address
+
+[SLICE] The opt-in native operand reader partitions the projected Q8 key
+into declared address and operand coordinates. Group retained worker rows
+by exact address coordinates. Select the winning group using only the
+address, with a positive score and ambiguity and membership bounds. The
+operation acts on the remaining signed coordinates, including rows that
+would have a negative score in a joint key lookup.
+
+Let $K$ contain that group's operand keys as columns and $V$ contain their
+paired Q8 values. Once per compiled attached bank, factor the independent
+operand columns. On each read solve $Kc=q$ for the signed operand $q$ and
+apply $Vc/127$ before the ordinary native transition. The same rank,
+residual and L1 limits as local transport decide support. Exact duplicate
+key/value pairs share a coefficient and retain their separate origins.
+An equal key with conflicting values, a competing address, or an
+unrepresentable operand refuses. Rows in the receipt identify candidate
+origins. A provenance check still needs to inspect which computation
+was applied and what the sources establish.
+
+The same computation predicts a consequence from a normalized latent
+source-event operand before readout. A reader caches compiled factors for
+one attached derived bank. Source revision and model fingerprints bind the
+raw rows and declared coordinate split, so a cold process recompiles its
+bank. The source worker and ordinary source reads use the existing
+recurrence. Equality in the address coordinates is a supplied grouping
+rule. Distinct real operations can collide under that rule. A learned
+address and operand encoder must demonstrate held-out validity.
+[CPU results](RESULTS.md#separating-the-operation-address-from-its-operands)
+
 #### Applying a local operation from retained worker rows
 
 [SLICE] `NativeTransportModel` extends the optional-memory reader with

@@ -661,6 +661,42 @@ eligible derived reads across two active steps, so it cannot evaluate
 this operation.
 [CPU fixtures](../experiments/memory/test_native_latent_recurrence.py) · [Frozen p2 gate](../experiments/memory/results/native_world_addressing_p2_2026-11-26/README.md)
 
+### Separating the operation address from its operands
+
+**CPU mechanism control.** A source-only worker published two text-and-image
+continuation rows. On a fresh reader two signed inputs held the operation
+address fixed while exchanging operand roles. The reader selected exactly
+the same origins and returned blue and gold respectively. A joint
+positive-key lookup on the same source rows excluded one required operand
+direction for each input and returned no answer. An operand outside the
+compiled span was also unresolved. Both compared readers used one recurrent
+step and a null weight of 0.001. A source correction withdrew the image
+contribution and left both inputs unresolved. Maintenance recovered the
+operation with the opposite answer for both inputs. Omitting memory or
+the derived bank left the direct read unresolved, and the historical pin
+still returned blue. Same-pin value replacement changed blue to gold
+with its ordinary source input held fixed in the one-step fixture.
+
+Before a new source outcome was available, the old and corrected pins
+were compared as two known rival operations. In the same coordinate
+and tolerance policy they each predicted zero on the neutral operand
+and gave Q8 projections $+62$ and $-62$ on the second operand. An exact
+rational comparator agreed on the scored coordinate before readout.
+The selector committed the contrast, and a separately released image
+carried the matching value $-62$.
+The corrected pin was already published and served both late answers
+after incorporating that source. The fixture checks prospective
+discrimination of known operations without implying that the event
+admitted a new operation. It supplies the operand coordinates and the
+source outcome and does not grade learned semantics.
+
+Coherent duplicate rows preserved the result and retained all origins.
+A conflicting duplicate and two equally scored distinct addresses
+refused. Factorization runs outside the task recurrence and is reused
+within an attached bank. Whole-corpus costs, independently chosen
+bindings and competing mechanisms on learned coordinates remain open.
+[CPU fixtures](../experiments/memory/test_native_latent_recurrence.py)
+
 ### Checking the signed fit on archived learned states
 
 **Offline exact arithmetic, one exposed task.** Across both active
