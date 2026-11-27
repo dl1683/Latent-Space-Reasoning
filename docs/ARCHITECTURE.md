@@ -909,6 +909,28 @@ The corpus becomes a persistent state that numerical operators can write, combin
 
 The architecture research swarm and the maintenance swarm have different timescales. The first proposes executable weight edits, new operators and changes to their wiring, using inspected pretrained blocks where they preserve a demonstrated operation. The second refines the corpus state using an admitted operator version while remaining in continuous coordinates between I/O steps. A candidate operator must retain earlier capabilities after installation and under subsequent maintenance. A short supervised calibration can fit a narrow adapter or update rule after that operation and the receiver are defined. The run budget should follow the information gained by the smallest adequate control.
 
+### One shared head for native workers
+
+[SLICE] A local `NativeWorkspace` wraps the existing sealed native publication
+format. A worker opens a committed pin, builds a bounded source-only successor,
+and verifies the sealed draft outside the SQLite write transaction. The draft
+must keep the opening reader fingerprint. The
+transaction compares workspace identity, revision, source seal and publication
+seal. It records the parent and either a maintenance pass on the same source
+epoch or a direct source revision. A worker with a stale opening must re-read
+the head before building again. Readers reopen an exact current or historical
+pin through the same native model call with optional memory.
+
+The retained artifacts and SQLite history belong to cooperating local workers.
+The installed head is the committed database row. A process exit between a
+snapshot rename and its commit can leave an unreferenced object. Recovery checks
+that object's native seals before reuse. An exit after commit leaves the new
+pin recoverable by revision. Costs include lost worker attempts, writing and
+verifying full snapshots, and retained history. The serial controller that
+hands workers sealed pins is the simpler comparator. Learned worker value,
+distributed storage and power-loss recovery remain open.
+[Workspace control](RESULTS.md#sharing-a-native-workspace-across-workers)
+
 ### Recurrent numerical revision candidate
 
 [SLICE] The NumPy [latent field](../experiments/memory/latent_field.py) implements an initial operation for revising coupled numerical state. Each cell holds a drive $b_i$ and a width-$d$ state $z_i$. A directed weight block $W_{ij}$ maps a message from cell $j$ into cell $i$. The shared synchronous transition computes $z_i' = \tanh(b_i + \sum_j W_{ij}z_j)$ coordinatewise. The caller supplies the drives and weights. Relation provenance and source text stay outside the transition.

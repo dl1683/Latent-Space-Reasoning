@@ -510,6 +510,34 @@ task impact, learned acquisition and the full-cost comparison remain open.
 [Selector fixture](../experiments/memory/test_selective_continuations.py) ·
 [Sealed-reader fixture](../experiments/memory/test_task_episode.py)
 
+## Sharing a native workspace across workers
+
+**CPU software control.** Two handles shared a native publication history.
+On the same source pin, a bounded maintenance pass published a continuation
+that a fresh reader used to answer `side` to a later task. Its opening pin,
+derived-off view and memory-omitted call yielded no answer. A source worker
+then withdrew a premise while a maintenance worker held a computed successor
+from the earlier pin. The correction won, the delayed install was refused,
+and a separate process reopened both the historical answer and the corrected
+unresolved state. Two simultaneous same-source maintenance calls from the
+same opening produced one install and one stale refusal.
+
+A failed database insert left a sealed object outside committed history.
+A forged pin could not attach it. Reuse refused corrupted bytes and
+accepted the restored matching artifact. A process-exit fixture interrupted
+the install before and after the SQL commit. Reopen recovered the old head
+in the first case and the new head and its parent in the second. A worker
+that changed its reader after computing a successor was refused. The compatible
+reader could still attach the opening publication. A separate fixed-chunk
+fast-tokenizer control added the first document after an empty epoch and
+reopened both pins with a freshly configured reader.
+[Workspace fixtures](../experiments/memory/test_native_workspace.py)
+
+This exercises query-blind publication and reading on a supplied
+deterministic source grammar. Every successor currently stores a complete
+snapshot. Full lifecycle cost, partitioned worker efficiency, independently
+graded learned answers and storage durability under power loss remain open.
+
 ## Reconciling a continuation bank without late tasks
 
 **CPU software control.** A source-only replay on the corrected

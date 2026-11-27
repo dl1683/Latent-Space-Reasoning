@@ -471,6 +471,16 @@ tokens and subsequent decisions. Record the effect at phase, action
 and evidence-choice boundaries during generated calibration.
 [Shared decoder control](RESULTS.md#sharing-one-decoder-between-ordinary-and-native-episodes)
 
+**A sealed successor can still have a stale parent.** Independent native
+workers could produce individually valid snapshots from the same opening.
+Choosing a later artifact by arrival time could drop a newer source
+correction. A durable head now compares the full opening pin before
+advancing. Staged work that loses this comparison is discarded, and its
+compute still counts. An object written before a failed commit stays
+outside committed history. A corrupted orphan blocks reuse of that
+object. The guarded head also refuses a staged successor whose reader changed
+since opening. [Workspace control](RESULTS.md#sharing-a-native-workspace-across-workers)
+
 **Removing a row also changes the selector, 26 November 2026.** In a
 two-row exact tie, removing either identical nonzero row renormalizes the
 survivor. Zeroing a stored row before the ambiguity gate makes the

@@ -899,6 +899,30 @@ projected coordinates outside the native bounds. The controller
 verifies the encoder identity and calibration provenance. The wrapper
 does not certify the semantics or range coverage of in-span rows.
 
+## Sharing a native workspace across workers
+
+`NativeWorkspace.create(directory, reader, memory, runtime_sha256=..., max_bytes=...)`
+installs an initial selective snapshot in a new directory. Workers reopen the
+same workspace with `NativeWorkspace(directory, runtime_sha256=..., max_bytes=...)`.
+Keep reader fingerprints compatible across workers. Each worker gets an opening
+pin with `head()` and calls `maintain(reader, opening, max_seeds=...)`, or
+`revise(reader, opening, epoch_directory, source_seal, max_source_bytes=...)`
+for an immediate source update. Both calls consume source state only.
+`StaleNativeWorkspace` means the head changed. A SQLite lock timeout raises
+`sqlite3.OperationalError`. Source revision preserves transient fast-tokenizer
+settings. A changed reader fingerprint refuses publication. The
+library dispatches no background work.
+
+A controller attaches the current state with `attach(reader)` or a fixed
+historical state with `attach(reader, pin=workspace.pin_at(revision))`, then
+calls the ordinary model with that memory. For historical exact evidence,
+retain the original source feed alongside the workspace. After an
+interrupted install, read the durable head and history to establish what
+committed. Abandoned partial directories are possible after a process exit.
+An interrupted first creation without a head can be restarted from the same
+opening snapshot in a new directory. This is a cooperating local filesystem
+interface with process-exit tests. Power-loss durability remains unverified.
+
 ## Withholding a continuation value after selection
 
 For a direct numerical diagnostic, call `reader.read_token_ids` with an
