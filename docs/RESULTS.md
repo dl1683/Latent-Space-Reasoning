@@ -466,6 +466,32 @@ and competing cases. The comparison holds on the verified deterministic
 runtime. Learned replay stability and wider lifecycle costs remain open.
 [Control fixture](../experiments/memory/test_task_episode.py)
 
+## Carrying reconciliation trajectories across source edits
+
+**Deterministic CPU control.** The same worker reconciled two successive
+sealed source edits against a cold frontier-enabled pass at each pin.
+Both paths produced identical intact Q8 trajectories and ordered
+frontiers at both pins. Across the first edit they matched candidate
+decisions and produced the same publication seal. A fresh episode
+reader recovered the corrected answer. The second edit kept the
+published computation bank under both paths.
+
+| Source edit | Retained anchors | Cold forwards | Carried forwards | Cold row scores | Carried row scores |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Corrected the alias endpoint | 2 of 7 | 55 | 45 | 456 | 407 |
+| Changed the unrelated endpoint | 4 of 7 | 45 | 25 | 316 | 190 |
+
+The carried totals include 39 and 18 certificate row scores. They
+assume the previous maintenance checkpoint was already in memory.
+The comparison excludes Python object retention and full lifecycle
+cost. The first edit matched the existing exhaustive publication.
+Incompatible epochs fell back to cold replay, and insufficient
+budgets returned the intact publication with no retirement. A
+separate selector fixture forced replay for an arrival at the
+inclusive cutoff, a later key change to a row previously below it,
+a selected value-only replacement, and changed survivor order.
+[Episode fixture](../experiments/memory/test_task_episode.py) · [Selector fixture](../experiments/memory/test_selective_continuations.py)
+
 ## Qualifying a continuation before a late task, 26 November 2026
 
 **CPU software control.** A native worker drafted one pending

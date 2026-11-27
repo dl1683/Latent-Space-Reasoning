@@ -957,6 +957,15 @@ counts consumed forwards and scored rows. Exhausting a staged budget
 returns the original publication without a retirement decision.
 Omitting `use_frontiers` keeps the exhaustive preflight and replay.
 
+For a direct source successor on the same worker, supply the previous
+successful pass's `intact_replay` as `previous_replay` with
+`use_frontiers=True`. It describes the publication that entered the
+previous pass, before any selected retirement. The next pass validates
+against both actual sealed banks. `reused_anchors` counts anchors
+carried across the edit. `frontier_scores` is the certificate portion
+of `row_scores`. Use the checkpoint only in the worker process that
+created it. A new reader or incompatible source lineage starts cold.
+
 ## Compact task-episode delivery
 
 Set `EpisodePolicy(..., state_kind="compact_needs", compact_delivery=True)`

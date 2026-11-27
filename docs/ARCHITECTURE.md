@@ -628,6 +628,26 @@ shortcut on a learned runtime. The fast path may complete within a work
 cap that the exhaustive path cannot fit.
 [Measured comparison](RESULTS.md#reusing-unaffected-continuation-trajectories)
 
+The same deterministic worker can carry intact trajectories to a
+direct successor of the source epoch. An in-process checkpoint binds
+the opening publication, reader, runtime and replay depth. The encoded
+starting row must remain byte-identical. For both the source and
+derived banks, compare the actual sealed keys and values. Treat a new
+payload at an old identity as a departure and arrival. Reuse requires
+complete frontiers, the same survivor order, no selected departure, and
+no arrival scoring at or above the original cutoff at any replay step.
+
+The reusable payload contains Q8 state bytes, the per-step query and
+cutoff, and the ordered selected spans. Each new checkpoint binds the
+current intact publication, including rows that arrived below a
+cutoff. Future edits are checked against that publication. A reused
+trajectory supplies numerical state for maintenance. Source evidence
+receipts still come from the current reader. Certificate dot products
+count against the same row-score budget as fresh replay. The worker
+holds the previous publication and checkpoint in memory while using
+them. Restart, storage costs and reuse across workers remain separate
+questions. [Revision control](RESULTS.md#carrying-reconciliation-trajectories-across-source-edits)
+
 ### Warm exact control on a separate corpus
 
 [SLICE] The exact relation index stores immutable forward and reverse

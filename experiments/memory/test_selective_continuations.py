@@ -112,3 +112,44 @@ def test_revision_keeps_selected_world_only_when_changed_rows_stay_below_old_cut
     rebuilt, new_mass, new_step = top_one.read([1, 0], (initial, weak))
     np.testing.assert_array_equal(rebuilt, value)
     assert new_mass == mass and new_step.receipt.selected == full.receipt.selected
+
+
+def test_revision_replay_refuses_an_inclusive_arrival_replacement_and_reorder():
+    from dataclasses import replace
+
+    from experiments.memory.native_reconciliation import (
+        _ReplayTrace, _arrivals_reach_cutoff, _bank_delta, _can_reuse, _frontier,
+    )
+
+    _, selector = _selector(2, top_k=1)
+    spans = [_span("active"), _span("inert")]
+    original = selector.shard(spans, [[1, 0], [0, 1]], [[0, 1], [1, 0]])
+    source_seal = "3" * 64
+
+    value, mass, step = selector.read([1, 0], (original,))
+    step = replace(step, receipt=replace(step.receipt, observed_source_seal=source_seal))
+    border = _frontier((step,), 2, source_seal)
+    assert border is not None
+    checkpoint = _ReplayTrace((b"example",), True, frozenset(spans[:1]), True, ((border, border),))
+    unchanged = _bank_delta((original,), (original,))
+    rule = _arrivals_reach_cutoff
+    below = selector.shard([_span("below")], [[126 / 127, 0]], [[0, -1]])
+    tie = selector.shard([_span("tie")], [[1, 0]], [[0, -1]])
+    weaker = _bank_delta((original,), (original, below))
+    arrival = _bank_delta((original,), (original, tie))
+    assert _can_reuse(checkpoint, (unchanged, weaker), 1, rule)
+    assert not _can_reuse(checkpoint, (unchanged, arrival), 1, rule)
+    new_value, new_mass, _ = selector.read([1, 0], (original, below))
+    np.testing.assert_array_equal(new_value, value)
+    assert new_mass == mass
+    assert selector.read([1, 0], (original, tie))[2].receipt.status == "competing"
+
+    reaches_cutoff_later = selector.shard(below.spans, [[1, 0]], [[0, -1]])
+    second_hop = _bank_delta((original, below), (original, reaches_cutoff_later))
+    assert not _can_reuse(checkpoint, (unchanged, second_hop), 1, rule)
+
+    replacement = selector.shard(spans, [[1, 0], [0, 1]], [[0, -1], [1, 0]])
+    changed = _bank_delta((original,), (replacement,))
+    assert not _can_reuse(checkpoint, (changed, unchanged), 1, rule)
+    reordered = selector.shard(spans[::-1], [[0, 1], [1, 0]], [[1, 0], [0, 1]])
+    assert _bank_delta((original,), (reordered,)) is None

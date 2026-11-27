@@ -881,6 +881,14 @@ intact trajectory. Replay remains necessary when overflow obscures
 the active candidates.
 [Comparison](RESULTS.md#reusing-unaffected-continuation-trajectories)
 
+**An unchanged source identity can carry changed computation.**
+A derived value can change while its score and span stay fixed.
+An arrival below the cutoff can become eligible on a later edit.
+Compare the actual sealed rows, check inclusive thresholds, and
+root a carried checkpoint at the latest verified publication.
+Historical frontiers on their own cannot identify the whole successor
+bank. [Revision controls](RESULTS.md#carrying-reconciliation-trajectories-across-source-edits)
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

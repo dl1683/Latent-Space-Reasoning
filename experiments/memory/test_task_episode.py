@@ -1174,6 +1174,41 @@ def test_native_episode_withholds_only_the_pinned_leaf(tmp_path, monkeypatch):
             assert stopped.row_scores == observed_scores - starting_scores == 416
             assert not stopped.comparisons and stopped.retired is None
 
+        previous = read_native_publication(publication, audit_reader, seal=seal, source_seal=source.seal,
+                                           runtime_sha256=runtime, max_bytes=budget)
+        opening_replay = reconcile_native_continuations(
+            audit_reader, previous, **{**replay, "expected_publication_sha256": seal, "use_frontiers": True},
+        )
+        assert opening_replay.intact_replay is not None
+        starting_calls, starting_scores = audit_reader._model.calls, observed_scores
+        carry_options = {**efficient, "previous_replay": opening_replay.intact_replay,
+                         "max_backbone_calls": 45, "max_row_scores": 407}
+        carried = reconcile_native_continuations(audit_reader, current, **carry_options)
+        assert carried.status == optimized.status == "retired" and carried.retired == optimized.retired
+        assert carried.comparisons == optimized.comparisons and carried.reused_pairs == optimized.reused_pairs
+        assert carried.intact_replay.traces == optimized.intact_replay.traces
+        assert carried.reused_anchors == 2
+        assert carried.backbone_calls == audit_reader._model.calls - starting_calls == 45
+        assert carried.row_scores == observed_scores - starting_scores + carried.frontier_scores
+        assert carried.frontier_scores == 39 and carried.row_scores == 407
+
+        for budget_name, bound in (("max_backbone_calls", 44), ("max_row_scores", 406)):
+            starting_calls, starting_scores = audit_reader._model.calls, observed_scores
+            too_tight = reconcile_native_continuations(
+                audit_reader, current, **{**carry_options, budget_name: bound},
+            )
+            assert too_tight.status == "budget_exceeded"
+            assert getattr(too_tight, budget_name.removeprefix("max_")) <= bound
+            assert too_tight.backbone_calls == audit_reader._model.calls - starting_calls
+            assert too_tight.row_scores == observed_scores - starting_scores + too_tight.frontier_scores
+            assert too_tight.memory is current and too_tight.intact_replay is None and not too_tight.comparisons
+
+        expired = reconcile_native_continuations(
+            audit_reader, current, **{**efficient, "previous_replay": optimized.intact_replay},
+        )
+        assert expired.reused_anchors == expired.frontier_scores == 0 and expired.backbone_calls == 55
+        assert expired.comparisons == optimized.comparisons
+
     # The selector can truncate an overflow receipt and hide a causal leaf.
     selective = current._selective
     shard, = selective.derived
@@ -1215,12 +1250,36 @@ def test_native_episode_withholds_only_the_pinned_leaf(tmp_path, monkeypatch):
     assert result.memory.derived_seeds == tuple(seed for seed in current.derived_seeds if seed != alias_seed)
     assert result.memory.pending_seeds == current.pending_seeds + 1 and alias_seed in current.derived_seeds
     reconciled_path = tmp_path / "reconciled-publication"
-    reconciled_seal = write_native_publication(reconciled_path, audit_reader, optimized.memory,
+    reconciled_seal = write_native_publication(reconciled_path, audit_reader, carried.memory,
                                                 runtime_sha256=runtime, max_bytes=budget)
+    cold_path = tmp_path / "cold-frontier-publication"
+    assert write_native_publication(cold_path, audit_reader, optimized.memory, runtime_sha256=runtime,
+                                    max_bytes=budget) == reconciled_seal
     reference_path = tmp_path / "exhaustive-publication"
     assert write_native_publication(reference_path, audit_reader, result.memory, runtime_sha256=runtime,
                                     max_bytes=budget) == reconciled_seal
     assert (reference_path / "rows.bin").read_bytes() == (reconciled_path / "rows.bin").read_bytes()
+    reopened_for_maintenance = read_native_publication(
+        reconciled_path, audit_reader, seal=reconciled_seal, source_seal=correction.seal,
+        runtime_sha256=runtime, max_bytes=budget,
+    )
+    followup_path = tmp_path / "unrelated-revision"
+    followup_feed = write_source_delta(followup_path, {independent_name: b"name L08 L11"}, previous=correction)
+    next_world = audit_reader.publish(followup_path, followup_feed.seal, previous=reopened_for_maintenance)
+    next_path = tmp_path / "unrelated-publication"
+    next_seal = write_native_publication(next_path, audit_reader, next_world, runtime_sha256=runtime, max_bytes=budget)
+    next_memory = read_native_publication(next_path, audit_reader, seal=next_seal, source_seal=followup_feed.seal,
+                                          runtime_sha256=runtime, max_bytes=budget)
+    next_options = {**replay, "expected_publication_sha256": next_seal, "use_frontiers": True}
+    cold_next = reconcile_native_continuations(audit_reader, next_memory, **next_options)
+    warm_next = reconcile_native_continuations(audit_reader, next_memory, **next_options,
+                                               previous_replay=carried.intact_replay)
+    assert warm_next.status == cold_next.status and warm_next.retired == cold_next.retired
+    assert warm_next.comparisons == cold_next.comparisons
+    assert warm_next.intact_replay.traces == cold_next.intact_replay.traces
+    assert warm_next.reused_anchors == 4 and warm_next.backbone_calls == 25 and cold_next.backbone_calls == 45
+    assert warm_next.frontier_scores == 18 and warm_next.row_scores == 190 and cold_next.row_scores == 316
+
     late_reader = make_reader()
     reopened = read_native_publication(reconciled_path, late_reader, seal=reconciled_seal, source_seal=correction.seal,
                                        runtime_sha256=runtime, max_bytes=budget)
