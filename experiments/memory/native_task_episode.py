@@ -1,11 +1,10 @@
 """Bind a sealed native world to exact task-episode calls and receipts."""
 
-from dataclasses import asdict, dataclass, replace
+from dataclasses import asdict, dataclass
 from hashlib import sha256 as _hash_bytes
 import json
 from types import MappingProxyType
 
-from experiments.memory.latent_feedback import _frozen
 from experiments.memory.native_latent_recurrence import NativeLatentModel, NativeSourceMemory
 from experiments.memory.native_publication import _reader_digest
 from experiments.memory.source_revision_feed import (
@@ -163,9 +162,7 @@ class NativeTaskWorldPin:
         if intervention_seed is not None:
             if type(intervention_seed) is not SourceSpan or intervention_seed not in memory._selective.acquired:
                 raise ValueError("native intervention seed must be an installed continuation")
-            acquired = memory._selective.acquired
-            if any(child in acquired and parent == intervention_seed
-                   for child, parent in memory._selective.parents.items()):
+            if not memory._is_continuation_leaf(intervention_seed):
                 raise ValueError("native intervention seed has an installed dependent")
         if type(latent_steps) is not int or not 0 <= latent_steps <= reader._steps:
             raise ValueError("native task latent-step budget is invalid")
@@ -325,16 +322,7 @@ class NativeTaskEpisodeBackend:
         elif self._memory_view == "derived_off":
             self._memory = self._reader.without_derived(self._base_memory)
         elif self._memory_view == "continuation_off":
-            # The sealed publication and provenance remain the same. Only this
-            # episode's scored bank changes, and the view stays in the reader.
-            selective = self._base_memory._selective
-            shard, = selective.derived
-            index = shard.spans.index(self._intervention_seed)
-            kept = [position for position in range(len(shard.spans)) if position != index]
-            bank = (replace(shard, spans=shard.spans[:index] + shard.spans[index + 1:],
-                            keys=_frozen(shard.keys[kept]), values=_frozen(shard.values[kept])),) if kept else ()
-            self._memory = replace(self._base_memory, _selective=replace(selective, derived=bank),
-                                   _omitted_continuation=self._intervention_seed)
+            self._memory = self._reader._without_continuation(self._base_memory, self._intervention_seed)
         else:
             self._memory = None
 

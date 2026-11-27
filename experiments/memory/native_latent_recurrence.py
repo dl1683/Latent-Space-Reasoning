@@ -131,6 +131,12 @@ class NativeSourceMemory:
     def source_spans(self, source):
         return tuple(item.span for item in self._sources[source])
 
+    def _is_continuation_leaf(self, seed):
+        selective = self._selective
+        return seed in selective.acquired and not any(
+            child in selective.acquired and parent == seed for child, parent in selective.parents.items()
+        )
+
     def continuation_reads(self, seed):
         if self._selective is None:
             raise ValueError("continuation receipts require selective memory")
@@ -574,6 +580,19 @@ class NativeLatentModel:
             shards = MappingProxyType({key: row for key, row in selective.shards.items() if key != source})
             selective = replace(selective, shards=shards)
         return replace(memory, _bank=bank, _selective=selective, omitted_sources=memory.omitted_sources | {source})
+
+    def _without_continuation(self, memory, seed):
+        self._check_memory(memory)
+        if (memory._selective is None or memory._derived_off or memory.omitted_sources
+                or not isinstance(seed, SourceSpan) or not memory._is_continuation_leaf(seed)):
+            raise ValueError("disabling a continuation requires an installed leaf and intact source bank")
+        selective = memory._selective
+        shard, = selective.derived
+        index = shard.spans.index(seed)
+        kept = [position for position in range(len(shard.spans)) if position != index]
+        bank = (replace(shard, spans=shard.spans[:index] + shard.spans[index + 1:],
+                        keys=_frozen(shard.keys[kept]), values=_frozen(shard.values[kept])),) if kept else ()
+        return replace(memory, _selective=replace(selective, derived=bank), _omitted_continuation=seed)
 
     def without_derived(self, memory):
         """Keep the source observations and disable their acquired associations."""

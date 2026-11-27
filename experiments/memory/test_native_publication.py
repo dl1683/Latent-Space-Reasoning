@@ -601,6 +601,16 @@ def test_forecast_admits_only_a_later_better_observation(tmp_path, pixel, status
     assert forecast.seed == base.source_spans(cue)[0] and forecast.parent == base.source_spans(root)[0]
     assert forecast.baseline == (127, 0, 0) and forecast.prediction == (0, 127, 0)
     assert forecast.seed not in base.derived_seeds
+    if status == "admitted":
+        from experiments.memory.native_reconciliation import reconcile_native_continuations
+
+        before = model.calls
+        deferred = reconcile_native_continuations(
+            reader, base, expected_publication_sha256=opening_seal, short_steps=(1,), reference_step=2,
+            max_anchors=4, max_leaves=1, max_backbone_calls=48, max_row_scores=156,
+        )
+        assert deferred.status == "pending_forecast" and deferred.memory is base
+        assert deferred.backbone_calls == deferred.row_scores == 0 and model.calls == before
     with pytest.raises(ValueError, match="already holds a pending forecast"):
         reader.forecast_next(base, **options)
     with pytest.raises(ValueError, match="different opening world"):

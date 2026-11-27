@@ -938,6 +938,18 @@ the original sealed publication tests restoration. Use
 `memory_view="memory_omitted"` with the same declaration for the
 optional-memory control.
 
+For source-only maintenance, call
+`reconcile_native_continuations` from
+`experiments.memory.native_reconciliation` with an intact attached
+publication, its expected seal, `short_steps`, `reference_step`, and
+the anchor, leaf, backbone call and row score limits. Resolve or cancel
+an outstanding forecast on that reader before reconciling. A retired result
+contains a candidate native world at the same source pin. Seal and
+reopen that candidate with the ordinary publication API. Retain the
+opening publication and the decision record for replay. The returned
+state retains pending work, including the retired seed. A later
+maintenance pass can reconsider it.
+
 ## Compact task-episode delivery
 
 Set `EpisodePolicy(..., state_kind="compact_needs", compact_delivery=True)`

@@ -849,6 +849,21 @@ mask check refused that parent even though it was the only installed row.
 The check now uses only live edges. A reopened fixture can mask the row and
 records zero scored derived rows in the off arm.
 
+**One apparent improvement can hide a loss elsewhere in the same bank.**
+In the corrected native control, removing one leaf broke endpoint
+agreement and removing another worsened an unrelated short trajectory.
+The source-only pass compares every eligible leaf against all stored
+rows and declines a truncated scan. Agreement at two successive
+depths can still reflect shared collapse. Held tasks and an exact
+comparator remain necessary before using the rule as a capability gate.
+[Results](RESULTS.md#reconciling-a-continuation-bank-without-late-tasks)
+
+**A pending forecast also constrains maintenance on its reader.**
+A forecast can remain tied to the opening publication while reconciliation
+produces a new checkpoint. The pass now defers when that worker has a
+pending forecast. The regression verifies zero replay calls and normal
+resolution of the original forecast.
+
 ## Recovery and interpretation
 
 The table preserves all 125 historical F-IDs and their source-reported qualifications. Raw historical records are not bundled, and their present availability has not been independently reverified. These are historical recovery keys, not active launch surfaces.

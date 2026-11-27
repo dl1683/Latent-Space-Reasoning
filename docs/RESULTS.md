@@ -419,6 +419,32 @@ another route after publication. The result uses a deterministic backbone
 and supplied tasks. Learned coverage, generalization and a full-cost
 advantage remain open.
 
+## Reconciling a continuation bank without late tasks
+
+**CPU software control.** A source-only replay on the corrected
+seven-source publication considered all three eligible leaf removals over
+all seven stored rows. It used depths one and two, a depth-three reference,
+and depth four to check endpoint stability. One removal broke endpoint
+agreement. Another moved an early state farther from the stable endpoint.
+The removal of the interfering alias improved one short-horizon check
+and preserved all other short-horizon distances. The source-only control
+did not reach the agreed endpoint for that check.
+
+The pass selected the alias without seeing a question or consulting token
+encoding, decoding, or logits. It used **175 backbone forwards and 1,344
+selector row scores**. Each insufficient work or coverage cap refused
+before the first forward. Other computations and the corrected source
+pin stayed fixed. The original publication remained readable. After
+sealing and reopening the selected world through the normal publication
+path, the affected late read returned the corrected answer. The direct
+and unrelated reads still returned their earlier corrected-pin answers.
+The original pin still returned its historical answer.
+
+This pass repaired one deterministic control. It measures the work of
+a complete local comparison. Learned task transfer, coverage beyond the
+stored rows and net lifecycle savings remain open.
+[Control fixture](../experiments/memory/test_task_episode.py)
+
 ## Qualifying a continuation before a late task, 26 November 2026
 
 **CPU software control.** A native worker drafted one pending

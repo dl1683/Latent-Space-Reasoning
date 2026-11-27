@@ -959,7 +959,7 @@ def test_plain_compact_episode_batches_verified_reads_with_per_candidate_cost(tm
     assert limited["status"] == "TOOL_ATTEMPT_LIMIT" and not tools._session.reads
 
 
-def test_native_episode_withholds_only_the_pinned_leaf(tmp_path):
+def test_native_episode_withholds_only_the_pinned_leaf(tmp_path, monkeypatch):
     from copy import deepcopy
 
     from experiments.memory.native_isolated_stage import _CausalControl, _Tokenizer, _reader
@@ -968,6 +968,7 @@ def test_native_episode_withholds_only_the_pinned_leaf(tmp_path):
     from experiments.memory.native_task_episode import (
         NativeTaskEpisodeBackend, NativeTaskWorldPin, _validate_native_read,
     )
+    from experiments.memory.native_reconciliation import reconcile_native_continuations
     from experiments.memory.source_revision_feed import write_source_delta
     from experiments.memory.verified_source_tool import sha256
 
@@ -1022,8 +1023,8 @@ def test_native_episode_withholds_only_the_pinned_leaf(tmp_path):
     with pytest.raises(ValueError, match="pinned seed"):
         NativeTaskWorldPin.bind(pinned, reader, memory, **pin_options)
 
-    def episode(task, name, view, seed=target, *, world=pinned, publication_memory=memory):
-        backend = NativeTaskEpisodeBackend(world, reader, publication_memory, backend_id=policy.backend_id,
+    def episode(task, name, view, seed=target, *, world=pinned, publication_memory=memory, live_reader=reader):
+        backend = NativeTaskEpisodeBackend(world, live_reader, publication_memory, backend_id=policy.backend_id,
                                            tokenizer_id=policy.tokenizer_id, expected_runtime_sha256=runtime,
                                            steps=2, memory_view=view, intervention_seed=seed)
         artifact = run_episode(task, world, policy, limits, tokenizer, backend, tmp_path / name,
@@ -1128,6 +1129,59 @@ def test_native_episode_withholds_only_the_pinned_leaf(tmp_path):
                         labels.append(json.loads(tokenizer.decode([token], skip_special_tokens=True))
                                       ["finish"]["open_questions"][0])
                     assert tuple(labels) == expected
+    # The maintenance reader starts from the publication with no task history.
+    audit_reader = make_reader()
+    current = read_native_publication(after_path, audit_reader, seal=after_seal, source_seal=correction.seal,
+                                       runtime_sha256=runtime, max_bytes=budget)
+    replay = dict(expected_publication_sha256=after_seal, short_steps=(1, 2), reference_step=3,
+                  max_anchors=7, max_leaves=3, max_backbone_calls=175, max_row_scores=1344)
+    observed_scores = 0
+    assert audit_reader._model.calls == 0
+    select = audit_reader._selector.read
+
+    def count_scores(*args):
+        nonlocal observed_scores
+        value, mass, step = select(*args)
+        observed_scores += step.receipt.rows_scored
+        return value, mass, step
+
+    with monkeypatch.context() as block_decode:
+        block_decode.setattr(audit_reader._selector, "read", count_scores)
+        block_decode.setattr(tokenizer, "decode", lambda *a, **k: pytest.fail("reconciliation decoded"))
+        block_decode.setattr(tokenizer, "encode", lambda *a, **k: pytest.fail("reconciliation tokenized"))
+        block_decode.setattr(audit_reader._model, "get_output_embeddings", lambda: pytest.fail("reconciliation read logits"))
+        with pytest.raises(ValueError, match="expected intact sealed publication"):
+            reconcile_native_continuations(audit_reader, current, **{**replay, "expected_publication_sha256": seal})
+        for budget_name in ("max_anchors", "max_leaves", "max_backbone_calls", "max_row_scores"):
+            constrained = {**replay, budget_name: replay[budget_name] - 1}
+            stopped = reconcile_native_continuations(audit_reader, current, **constrained)
+            assert stopped.status == "budget_exceeded" and stopped.memory is current and stopped.backbone_calls == 0
+        assert audit_reader._model.calls == 0 and observed_scores == 0
+        result = reconcile_native_continuations(audit_reader, current, **replay)
+    assert result.status == "retired" and result.retired == alias_seed
+    assert result.opening_publication_sha256 == after_seal and result.anchor_count == 7
+    assert result.backbone_calls == audit_reader._model.calls == 175
+    assert result.row_scores == observed_scores == 1344
+    assert {row.seed: row.status for row in result.comparisons} == {
+        target: "endpoint_disagreement", other: "short_regression", alias_seed: "qualified",
+    }
+    assert sum(row.improved_checks for row in result.comparisons) == 1
+    assert result.memory.seal == current.seal and result.memory._sources is current._sources
+    assert result.memory.derived_seeds == tuple(seed for seed in current.derived_seeds if seed != alias_seed)
+    assert result.memory.pending_seeds == current.pending_seeds + 1 and alias_seed in current.derived_seeds
+    reconciled_path = tmp_path / "reconciled-publication"
+    reconciled_seal = write_native_publication(reconciled_path, audit_reader, result.memory, runtime_sha256=runtime,
+                                                max_bytes=budget)
+    late_reader = make_reader()
+    reopened = read_native_publication(reconciled_path, late_reader, seal=reconciled_seal, source_seal=correction.seal,
+                                       runtime_sha256=runtime, max_bytes=budget)
+    assert late_reader._model.calls == 0
+    for address, answer in (("L00", "L10"), ("L01", "L10"), ("L07", "L09")):
+        fixed, _ = episode(f"follow {address}", address + "-reconciled", "active",
+                           world=world, publication_memory=reopened, live_reader=late_reader)
+        ledger = read_episode(fixed)
+        response(ledger)
+        assert ledger[-1]["data"]["submission"]["open_questions"] == [answer]
     historical, _ = episode("follow L00", "historical-replay", "active")
     assert read_episode(historical)[-1]["data"]["submission"]["open_questions"] == ["L06"]
 

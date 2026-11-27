@@ -370,6 +370,11 @@ whether the answer and evidence recover after restoration. Include an
 unrelated leaf mask at the same pin and compare checkpoint progression
 with a frozen worker under the same acquisition and retention budgets.
 An access effect and maintenance quality require separate measurements.
+Compare source-only reconciliation with a receiver that preserves both
+alternative trajectories. Freeze the source, opening bank, late task
+custody and total work allowance across arms. A held question that requires
+a retired operation and succeeds with preserved alternatives falsifies the
+retirement rule on that case.
 [Intervention control](RESULTS.md#isolating-one-retained-computation-across-a-source-revision)
 
 ## Costs and decision gates

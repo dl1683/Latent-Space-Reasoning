@@ -582,6 +582,34 @@ both by task outcomes and rerouting side effects after edits. Retain current
 hidden-state addressing as the comparator.
 [Archived diagnosis](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md) · [Software control](RESULTS.md#isolating-one-retained-computation-across-a-source-revision)
 
+#### Reconciling continuations before a new publication
+
+A separate maintenance pass reads an intact sealed native world and
+replays every stored source row through the intact bank, a source-only
+view, and each eligible single-leaf exclusion. Installed dependents and
+admitted forecast alternatives protect their referenced computations.
+An unresolved forecast on the worker defers reconciliation. The pass
+receives no late task and works directly with quantized hidden
+states. Bounds cover the complete anchor and leaf census, backbone
+calls, and scored rows.
+
+Changed trajectories must agree on a nonzero quantized state at the
+reference depth and one additional step, with ready or empty selections.
+At each declared shorter depth, exclusion must preserve or reduce the
+L1 distance to that state on every anchor. At least one comparison must
+improve, and its source-only trajectory must miss the agreed endpoint.
+Exactly one eligible exclusion may qualify. Otherwise the original state
+is returned. A qualifying leaf and its failed dependent attempts return
+to the maintenance queue in the new state. The original publication
+preserves their evidence and remains available for historical replay.
+
+This pass tests convergence on stored source rows. The accepted
+reference can agree even when an independent question would need
+a different route or outcome. A competing architecture keeps both
+routes available to a latent verifier at task time. Compare the two
+under the same backbone and total lifecycle allowance.
+[Control](RESULTS.md#reconciling-a-continuation-bank-without-late-tasks)
+
 ### Warm exact control on a separate corpus
 
 [SLICE] The exact relation index stores immutable forward and reverse
