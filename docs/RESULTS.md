@@ -26,6 +26,22 @@ calibration still requires cases, passage and tokenizer budgets that
 fit its actual frames, and a qualified backend.
 [Reader interface](CONTEXT_TOOL.md#four-call-ordinary-text-calibration).
 
+### Preparing the CPU execution for the independent gate
+
+**Software control.** A scripted four-case batch used eight generation
+calls and preserved its first completions. The four cases used three
+distinct read-epoch positions and kept source versions current after
+replacement or withdrawal. The input
+digest check refused an unmatched packet, and the output directory
+protected the first transcripts against a repeat at that path. A simulated RAM
+stop at EOS preserved both emitted tokens and marked the reply
+unterminated. A simulated allocation failure preserved the failed
+dispatch. The remaining cases were explicitly unrun. A start-time
+RAM refusal left all four unrun. No checkpoint or independent
+case was used. A tiny untrained LFM2 instance exercised generation
+twice through the installed library and returned the same reply.
+[CPU runner](CONTEXT_TOOL.md#running-the-four-case-ordinary-calibration)
+
 ## Using a maintained observation in the native model
 
 **CPU software control.** A worker picked a source card before its

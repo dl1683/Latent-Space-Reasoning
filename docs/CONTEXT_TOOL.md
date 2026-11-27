@@ -1465,6 +1465,36 @@ and reopens the first answer. A submitted disposition checks output
 presence and citation handles. The grader determines correctness,
 support and whether a stated missing premise follows from the evidence.
 
+### Running the four-case ordinary calibration
+
+The operator supplies the confirmed input bytes, the independent input
+digest and the custodian's schema adapter to
+`run_ordinary_cpu_calibration` in
+`experiments.memory.ordinary_cpu_calibration`. The adapter returns
+four `OrdinaryCalibrationCase` values with case ID, question, ordered
+text deltas and a one-based read epoch. Pass only the input. Before
+generation, the runner constructs and verifies all requested worlds
+with the frozen passage and evidence limits. Older or later versions
+remain outside the prompts for the requested epoch.
+
+`CpuOrdinaryPolicy` takes an already loaded CPU evaluation model, a
+pinned tokenizer and an absolute monotonic deadline. It starts a fresh
+greedy decode for each request, with the exact prepared IDs and matching
+model/tokenizer stop tokens. It checks the configured PyTorch thread
+counts and 12 GiB free-RAM floor before each call and between generated
+tokens. A resource stop persists for the rest of
+the batch. The authorized controller supplies the pre-load checks
+and a process deadline that also covers loading and a blocked forward.
+
+The controller supplies a private parent directory and enforces
+a single attempt across output paths. The batch ledger binds the input,
+backend and tokenizer identities, observed runtime profile, every case
+disposition, transcript seals and source setup bytes across revisions.
+A missing case row or finish seal after external termination means the
+batch is incomplete. Hand the
+sealed first-answer transcripts to the independent grader according
+to the custody protocol. [Independent limits](INDEPENDENT_ORDINARY_GATE_AND_SCALAR_BOUNDARY.md#frozen-ordinary-access-contract)
+
 ## Checking a joint state in a task
 
 Use `run_episode` with a current `TaskWorld` whose `bindings` and

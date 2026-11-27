@@ -1,19 +1,151 @@
 from dataclasses import replace
 from json import loads
+from time import monotonic
+from types import SimpleNamespace
 
 import pytest
 
 from experiments.memory.iterative_text_competence import (
     MAX_INPUT_TOKENS, read_iterative_text_competence, run_iterative_text_competence,
 )
+from experiments.memory.ordinary_cpu_calibration import (
+    CpuOrdinaryPolicy, OrdinaryCalibrationCase, run_ordinary_cpu_calibration,
+)
 from experiments.memory.source_revision_feed import write_source_delta
-from experiments.memory.task_episode import PolicyReply
+from experiments.memory.task_episode import PolicyCall, PolicyReply
 from experiments.memory.task_evidence import TaskBudget, TaskWorld
+from experiments.memory.verified_source_tool import sha256
 
 
 class _Tokenizer:
     def apply_chat_template(self, messages, **_options):
         return list("\n".join(row["content"] for row in messages).encode())
+
+
+def test_cpu_policy_uses_the_installed_lfm2_generation_interface(monkeypatch):
+    torch = pytest.importorskip("torch")
+    lfm2 = pytest.importorskip("transformers.models.lfm2")
+    psutil = pytest.importorskip("psutil")
+    monkeypatch.setattr(torch, "get_num_threads", lambda: 4)
+    monkeypatch.setattr(torch, "get_num_interop_threads", lambda: 1)
+    monkeypatch.setattr(psutil, "virtual_memory", lambda: SimpleNamespace(available=24 * 2**30))
+    config = lfm2.Lfm2Config(
+        vocab_size=32, hidden_size=32, intermediate_size=64, block_dim=32, block_ff_dim=64,
+        block_multiple_of=16, num_attention_heads=4, num_key_value_heads=2, num_hidden_layers=2,
+        layer_types=["conv", "full_attention"], conv_dim=32, max_position_embeddings=64,
+        eos_token_id=7, pad_token_id=0, bos_token_id=1,
+    )
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(11)
+        model = lfm2.Lfm2ForCausalLM(config).eval()
+    model.generation_config.do_sample = True
+    tokenizer = SimpleNamespace(eos_token_id=7, pad_token_id=0, decode=lambda ids, **_: str(ids))
+    policy = CpuOrdinaryPolicy(model, tokenizer, deadline=monotonic() + 30)
+    call = PolicyCall((), (1, 3, 4), 2)
+    reply = policy(call)
+    assert 0 < reply.output_tokens <= 2 and policy(call) == reply
+
+
+@pytest.mark.parametrize("mode", ["complete", "guard_at_eos", "preflight_guard", "allocation_failure"])
+def test_frozen_cpu_gate_keeps_first_completions_and_attempts_at_requested_epochs(tmp_path, monkeypatch, mode):
+    torch = pytest.importorskip("torch")
+    pytest.importorskip("transformers")
+    psutil = pytest.importorskip("psutil")
+    monkeypatch.setattr(torch, "get_num_threads", lambda: 4)
+    monkeypatch.setattr(torch, "get_num_interop_threads", lambda: 1)
+    free = SimpleNamespace(available=24 * 2**30)
+    monkeypatch.setattr(psutil, "virtual_memory", lambda: free)
+    gates = {"Oak": "north", "Cedar": "east", "Birch": "south", "Elm": "west"}
+
+    class Tokenizer(_Tokenizer):
+        eos_token_id = 256
+        pad_token_id = 0
+
+        def decode(self, ids, *, skip_special_tokens, clean_up_tokenization_spaces):
+            assert skip_special_tokens and not clean_up_tokenization_spaces
+            return bytes(token for token in ids if token != self.eos_token_id).decode()
+
+    class ScriptedGeneration(torch.nn.Module):
+        calls = 0
+        generation_config = SimpleNamespace(eos_token_id=256, pad_token_id=0)
+
+        def generate(self, *, input_ids, attention_mask, generation_config, use_model_defaults, stopping_criteria):
+            self.calls += 1
+            assert input_ids.device.type == "cpu" and torch.all(attention_mask)
+            assert not generation_config.do_sample and generation_config.use_cache
+            assert use_model_defaults is False
+            assert generation_config.max_new_tokens == 512 and generation_config.eos_token_id == 256
+            prompt = bytes(input_ids[0].tolist()).decode()
+            payload = loads(prompt.split("\n", 1)[1])
+            parcel = payload["task"].split()[-1].rstrip("?")
+            assert [row["text"] for row in payload["passages"]] == [
+                f"Parcel {parcel} belongs at the {gates[parcel]} gate."
+            ]
+            assert not any(text in prompt for text in ("obsolete annex", "future outpost", "withdrawn site"))
+            message = b"STOP" if self.calls % 2 else f"Use the {gates[parcel]} gate [r1].".encode()
+            if mode == "allocation_failure":
+                raise MemoryError("simulated allocation failure")
+            if mode == "guard_at_eos":
+                free.available = 0
+                assert stopping_criteria[0](input_ids, None).tolist() == [True]
+                tokens = [message[0], 256]
+                free.available = 24 * 2**30
+            else:
+                assert stopping_criteria[0](input_ids, None).tolist() == [False]
+                tokens = [*message, 256]
+            return torch.cat((input_ids, input_ids.new_tensor([tokens])), dim=1)
+
+    packet = b"public software fixture"
+    cases = []
+    for index, (parcel, epoch) in enumerate(zip(gates, (1, 2, 3, 2), strict=True)):
+        earlier = [
+            {"a" * 32: f"Parcel {parcel} moved to obsolete annex {revision}.",
+             "b" * 32: f"Parcel {parcel} must go to withdrawn site {revision}."}
+            for revision in range(1, epoch)
+        ]
+        current = {"a" * 32: f"Parcel {parcel} belongs at the {gates[parcel]} gate."}
+        if earlier:
+            current["b" * 32] = None
+        future = {"a" * 32: f"Parcel {parcel} belongs at the future outpost."}
+        cases.append(OrdinaryCalibrationCase(f"case-{index}", f"Which gate applies to parcel {parcel}?",
+                                             (*earlier, current, future), epoch))
+    model = ScriptedGeneration().eval()
+    policy = CpuOrdinaryPolicy(model, Tokenizer(), deadline=monotonic() + 30)
+    output = tmp_path / "first-read"
+
+    def run(digest):
+        return run_ordinary_cpu_calibration(packet, packet_sha256=digest, decode_cases=lambda _: cases,
+                                            backend=policy, output=output, backend_id="scripted", tokenizer_id="bytes")
+
+    with pytest.raises(ValueError, match="frozen custody digest"):
+        run("0" * 64)
+    assert model.calls == 0 and not output.exists()
+    if mode == "preflight_guard":
+        free.available = 0
+    seal = run(sha256(packet))
+    batch = [loads(line) for line in (output / "batch.jsonl").read_bytes().splitlines()]
+    assert batch[0]["data"]["input_sha256"] == sha256(packet) and batch[-1]["sha256"] == seal
+    assert len(batch[1:-1]) == 4 and all(row["data"]["revision_feed_bytes"] > 0 for row in batch[1:-1])
+    assert batch[0]["data"]["runtime"]["eos_id"] == 256
+    if mode == "preflight_guard":
+        assert model.calls == 0 and all(row["kind"] == "not_run" for row in batch[1:-1])
+        assert not (output / "case-1.jsonl").exists()
+        return
+    first = [loads(line) for line in (output / "case-1.jsonl").read_bytes().splitlines()]
+    if mode in ("guard_at_eos", "allocation_failure"):
+        assert model.calls == 1 and sum(row["kind"] == "not_run" for row in batch) == 3
+        if mode == "guard_at_eos":
+            assert first[-1]["data"]["status"] == "unterminated" and first[-1]["data"]["output_tokens"] == 2
+        else:
+            assert first[-1]["data"]["status"] == "backend_error" and not first[-1]["data"]["output_usage_complete"]
+        assert batch[-1]["data"]["stop_reason"] == "MemoryError"
+    else:
+        assert model.calls == 8 and all(row["data"]["status"] == "submitted" for row in batch[1:-1])
+        assert len({row["data"]["source_seal"] for row in batch[1:-1]}) == 4
+        assert first[-2]["data"]["text"] == "Use the north gate [r1]."
+        with pytest.raises(FileExistsError):
+            run(sha256(packet))
+        assert model.calls == 8
 
 
 def _world(path, changes, *, previous=None, previous_world=None):

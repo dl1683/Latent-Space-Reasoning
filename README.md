@@ -27,6 +27,9 @@ The independent reviewer has frozen four calibration cases outside this
 repository and checked path feasibility on all four. The learned gate
 is pending a bounded run and independent grading.
 [Independent calibration protocol](docs/INDEPENDENT_ORDINARY_GATE_AND_SCALAR_BOUNDARY.md).
+The [CPU runner](docs/CONTEXT_TOOL.md#running-the-four-case-ordinary-calibration)
+checks the input digest, opens each requested source epoch, and
+records first-answer or resource-stop outcomes for the four case IDs.
 
 An opt-in v2 compact search/read wire now fits one scripted six-source route through the ordinary and sealed native adapters under the registered caps. Both use the same token constraint and can cite any verified episode read. The registered planner gate remains **NOT PASSED** pending broader feasibility and independently graded generated answers. The next research step is a fresh, independently scored maintenance-to-late-task screen with same-pin removal/restoration and matched text and exact-join controls; see the [evaluation plan](docs/WHOLE_WORLD_EVALUATION.md).
 
