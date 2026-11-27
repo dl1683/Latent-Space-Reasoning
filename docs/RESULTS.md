@@ -4,6 +4,28 @@ The existing results were consolidated on 22 October 2026. That consolidation us
 
 The full optional-memory multimodal latent reasoner is a TARGET. Navigation is a supporting SLICE; source-byte identity does not establish semantic support, completeness, calibrated absence or useful latent computation. Design closure is not runtime qualification or launch authority.
 
+## Opening a newly discovered source within four reader calls
+
+On 27 November 2026, a scripted reader followed three new lookup keys in
+four calls. An initial search on the task opened the first verified
+passage. Each follow-up key appeared in the last verified passage and
+opened the next one before the next call. After withdrawing the last
+source, the same schedule preserved the prior passages and allowed the
+script to report the remaining premise as unresolved. A direct fixture
+used two calls. The transcript checks retained the first answers,
+rejected a forged handle and a changed transcript, refused a 4,097-token
+prompt before dispatch, and accounted for failed or inconsistent replies.
+A malformed query advanced to the reserved answer call without a search retry.
+The answer frame disclosed when an available match could not be opened
+under the read-step limit.
+
+These are software checks using scripted replies and a byte tokenizer.
+Learned competence, maintenance effects and cost advantage remain
+unmeasured. The scripted route fits the call envelope. Independent
+calibration still requires cases, passage and tokenizer budgets that
+fit its actual frames, and a qualified backend.
+[Reader interface](CONTEXT_TOOL.md#four-call-ordinary-text-calibration).
+
 ## Qualifying a byte-weighted revision forecast, 26 November 2026
 
 **Software controls.** Two newly introduced rows of 32 and 10 bytes

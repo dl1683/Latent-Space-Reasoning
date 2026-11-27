@@ -1410,6 +1410,33 @@ Each candidate uses one read attempt and its verified source and delivery
 bytes. Use the same setting and allowances for the text and latent arms.
 The episode opening records an explicitly enabled setting.
 
+## Four-call ordinary text calibration
+
+`run_iterative_text_competence(task, world, tokenizer, generate, output,
+backend_id=..., tokenizer_id=..., budget=...)` takes a verified source-only
+`TaskWorld`, a pinned tokenizer, a generation adapter and an explicit
+`TaskBudget`. The first BM25 search uses the raw task and opens the top
+positive, previously unattempted spans allowed by the budget. Each later
+search decision returns one query or `STOP`. The host verifies the new
+passages before the next model call. The final call receives the task,
+every verified passage and the search outcomes, including read limits.
+It requests cited plain prose.
+
+This reader allows at most four calls, with 4,096 rendered input tokens
+and 512 generated tokens per call. The adapter must enforce the supplied
+generation limit and report actual generated-token use and termination.
+Freeze passage width, search depth and read allowances so early results
+leave room for a later lookup and its answer frame. The host refuses
+oversized frames before dispatch. It charges search and
+read attempts, records source setup and read bytes, and stores exact
+requests, replies and the terminal disposition in a new transcript.
+
+Send the returned artifact and its seal to the independent grader.
+`read_iterative_text_competence(artifact)` verifies transcript continuity
+and reopens the first answer. A submitted disposition checks output
+presence and citation handles. The grader determines correctness,
+support and whether a stated missing premise follows from the evidence.
+
 ## Checking a joint state in a task
 
 Use `run_episode` with a current `TaskWorld` whose `bindings` and

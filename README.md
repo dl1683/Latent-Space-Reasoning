@@ -18,6 +18,12 @@ general model ceiling. The ordinary text/RAG control still needs to show
 competence before a memory advantage can be measured.
 [Run and limits](docs/RESULTS.md#fresh-06b-reader-competence-screen-27-november-2026).
 
+The independent four-call text calibration now has an ordinary reader that
+verifies passages between model calls. Scripted checks followed three newly
+discovered links and surfaced an unresolved premise after a source withdrawal.
+Independent model answers and the maintenance comparison are still pending.
+[Four-call reader checks](docs/RESULTS.md#opening-a-newly-discovered-source-within-four-reader-calls).
+
 An opt-in v2 compact search/read wire now fits one scripted six-source route through the ordinary and sealed native adapters under the registered caps. Both use the same token constraint and can cite any verified episode read. The registered planner gate remains **NOT PASSED** pending broader feasibility and independently graded generated answers. The next research step is a fresh, independently scored maintenance-to-late-task screen with same-pin removal/restoration and matched text and exact-join controls; see the [evaluation plan](docs/WHOLE_WORLD_EVALUATION.md).
 
 The Rank 1 receiver run remains **PAUSED** after its three-round unsuccessful-repair cap. Separately, bounded task-directed whole-world research is active on `research-review`. The implemented context tool is a **navigation slice**: it returns bounded, byte-verified source evidence through Python, CLI and MCP. Large Markdown sources can return byte-verified heading blocks or titled prose from an oversized heading. General latent reasoning, whole-corpus completeness, calibrated absence, multimodal optional-memory operation and complete efficiency remain research objectives.

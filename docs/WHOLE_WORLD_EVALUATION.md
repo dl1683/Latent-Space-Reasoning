@@ -396,6 +396,29 @@ ceiling or a memory effect; it strengthens the reason to qualify the reader
 control before opening the maintenance comparison. Its exact scope and
 blinding and format limitations are recorded in [RESULTS](RESULTS.md#fresh-06b-reader-competence-screen-27-november-2026).
 
+Within the independent four-call budget, compact v2 spends separate calls
+on declaration, candidate search, evidence opening and the answer. An alias
+first seen in the opened evidence arrives too late to search and use in that
+answer. The opt-in [ordinary text reader](CONTEXT_TOOL.md#four-call-ordinary-text-calibration)
+opens byte-verified BM25 passages between calls and reserves the last call
+for unassisted prose. This is a bounded iterative retrieval control inspired
+by [IRCoT](https://aclanthology.org/2023.acl-long.557/). Use complete verified
+text as an ordinary control when it fits and keep stronger warm iterative
+retrieval eligible for larger corpora. The registered compact v2 protocol
+still governs its own study.
+
+The [independent brief](ROLE_SUFFICIENCY_AND_INDEPENDENT_SCREEN.md#finite-execution-brief-for-the-current-held-packet)
+requires four fresh independently authored tasks, two direct and two
+composed, with a changed or missing premise. At least one composed test
+should expose a lookup key the initial task does not supply. Grade the
+first complete answer and every consequential premise from its cited
+sources. Scripted software checks exercise delivery only. To test the
+program claim, the same task-time model must use a maintained latent
+operation on a late input, lose the consequence when the operation is
+removed, and regain it when restored while the ordinary source world stays
+fixed. Compare against warm exact computation and charge the cost to build,
+revise, verify and query the retained operation across repeated use.
+
 The [reviewer's competence diagnostic](FRESH_REASONER_COMPETENCE_DIAGNOSTIC.md)
 separates unassisted need inference and answer generation from two
 assisted diagnostic arms. Only an unassisted, supported answer qualifies

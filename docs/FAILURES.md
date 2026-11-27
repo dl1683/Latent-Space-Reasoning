@@ -24,6 +24,16 @@ This is a saved-source synthesis of all **125 historical F-IDs**, not a new audi
 
 ## Current supporting pilot failures
 
+**Candidate-only search misses an adaptive lookup under the four-call v2 schedule.**
+The separate declare, search, open and answer phases consume all four
+model calls. If a new lookup key first appears in the opened passage,
+there is no remaining search-and-answer turn pair. This is an interface
+limit, separate from the observed 0/18 full-text reader diagnostic.
+Use verified text directly when it fits, and use immediate passage
+verification between retrieval turns for a bounded ordinary iterative
+control. The original compact v2 protocol keeps its existing envelope.
+[Evaluation plan](WHOLE_WORLD_EVALUATION.md).
+
 **Process-local forecast drafts tied resolution to their proposer.**
 The original workspace call required the same pending Python objects at
 the opening and at source release. A separate fresh reader could only
