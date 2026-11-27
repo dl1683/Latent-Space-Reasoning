@@ -30,6 +30,9 @@ is pending a bounded run and independent grading.
 The [CPU runner](docs/CONTEXT_TOOL.md#running-the-four-case-ordinary-calibration)
 checks the input digest, opens each requested source epoch, and
 records first-answer or resource-stop outcomes for the four case IDs.
+Its pinned Qwen3-0.6B CPU generation path now terminates on a no-case smoke
+under the full 512-token cap; the four-case competence gate is still unrun
+because the frozen input packet has not been supplied.
 
 The native task adapter now pins admitted operator cohorts and their source
 witnesses, then links each applied read step to its operation. A deterministic

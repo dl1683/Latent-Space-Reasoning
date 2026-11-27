@@ -42,6 +42,27 @@ case was used. A tiny untrained LFM2 instance exercised generation
 twice through the installed library and returned the same reply.
 [CPU runner](CONTEXT_TOOL.md#running-the-four-case-ordinary-calibration)
 
+## Pinned 0.6B CPU backend preflight, 27 November 2026
+
+**Runtime preflight.** The local Qwen3-0.6B snapshot at revision
+`c1899de289a04d12100db370d81485cdf75e47ca` loaded in FP32 on CPU with
+PyTorch `2.12.0+cu130` and Transformers `5.12.1`. Before the adapter
+configuration, its generation config listed EOS IDs `[151645, 151643]`,
+while the tokenizer specifies EOS `151645` and padding `151643`; the
+registered `CpuOrdinaryPolicy` correctly refused that mismatch. The pinned
+adapter now sets one tokenizer EOS and the tokenizer padding ID explicitly.
+
+Through the repository's `encode_messages` helper and `CpuOrdinaryPolicy`, a
+15-token no-case prompt generated 109 tokens and terminated at EOS under the
+full 512-token allowance in 18.08 seconds. The runtime record showed four CPU
+threads and about 35.9 GB free RAM after generation, above the 12 GiB floor.
+Transformers logged that temperature/top-p/top-k flags may be ignored under
+greedy decoding; `do_sample=False` was active. No independent case, answer
+grade, or maintenance arm was used. This establishes only that the pinned
+generation path runs within the basic contract. The frozen input packet is
+still not present, so the four-case competence gate remains **NOT_RUN**.
+[One-run controller](CONTEXT_TOOL.md#running-the-four-case-ordinary-calibration)
+
 ## Using a maintained observation in the native model
 
 **CPU software control.** A worker picked a source card before its

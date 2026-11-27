@@ -1495,6 +1495,15 @@ batch is incomplete. Hand the
 sealed first-answer transcripts to the independent grader according
 to the custody protocol. [Independent limits](INDEPENDENT_ORDINARY_GATE_AND_SCALAR_BOUNDARY.md#frozen-ordinary-access-contract)
 
+On this controller, run the pinned Qwen3-0.6B CPU adapter with
+`python -m experiments.memory.run_independent_ordinary_gate --input <input-json> --output <new-private-directory>`.
+It verifies the frozen input digest and schema, rejects input/output paths
+inside the checkout, and writes a one-attempt marker in the output parent.
+It uses the cached model revision, FP32 weights, four CPU threads, a 45-minute
+process deadline, tokenizer EOS, and tokenizer padding ID. It does not accept
+a grader path or fetch model files from the network. The controller should
+preserve the separate grader with its custodian.
+
 ## Checking a joint state in a task
 
 Use `run_episode` with a current `TaskWorld` whose `bindings` and
