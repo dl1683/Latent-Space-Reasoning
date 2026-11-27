@@ -600,6 +600,36 @@ maintained route can be judged directly on task quality and full cost
 against an equally warm exact join.
 [Reviewed executable construction](../experiments/memory/multimodal_suffix_causality_control.js)
 
+### Separating native source rerouting from a retained terminal
+
+**CPU software controls.** Two supplied interior-block backbones used the
+same text and image revision. A source-only worker published a
+continuation, an image correction invalidated it, and maintenance
+produced a second sealed value. The ordinary reopened reads returned
+blue and gold on their respective pins. On the original pin, the reader
+then substituted the corrected Q8 value at the first ready selection.
+The original and donor values had equal squared norms in both controls.
+
+| Worker value | Intact answer | Replacement with live source reads | Replacement with later ordinary source inputs fixed |
+| --- | --- | --- | --- |
+| Route | blue | gold | blue |
+| Route and terminal | blue | gold | gold |
+
+The two altered reads used the same first selection and numerical input
+change. Their later derived reads stayed live. The fixed-source read
+reported both the ordinary input it used and the live selection it
+bypassed. The unchanged-value sham matched ordinary readout. An
+unselected target applied nothing and a final-step replacement had no
+later source input to hold. Altered reads were refused for citations.
+
+This is an integrated mechanism control on supplied coordinates, with
+the answer-bearing paths specified by the fixture. A surviving change
+only rules out dependence on fresh later ordinary source inputs in the
+paired run. Earlier evidence or a later derived read can still carry
+content, and the intervention can create an atypical state. Learned
+routing, task quality and cost remain open.
+[Native fixture](../experiments/memory/test_native_latent_recurrence.py)
+
 ## Sharing a native workspace across workers
 
 **CPU software control.** Two handles shared a native publication history.

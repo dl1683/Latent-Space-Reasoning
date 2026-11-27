@@ -65,12 +65,25 @@ def test_withholding_one_tied_value_preserves_ready_selection_and_weights():
     assert len(trace.receipt.selected) == 2 and mass == masked_mass == 1
     np.testing.assert_array_equal(full, value)
     np.testing.assert_array_equal(masked, [0, 0.5])
+    for invalid in (np.array([0], dtype=np.int8), np.array([0, -128], dtype=np.int8),
+                    np.array([0, -127], dtype=np.int16)):
+        with np.testing.assert_raises(ValueError):
+            selector.read_with_replacement(query, (shard,), target, invalid)
+    replacement = np.array([0, -127], dtype=np.int8)
+    intact, swap_mass, swap_trace, swapped = selector.read_with_replacement(query, (shard,), target, replacement)
+    assert swap_trace == trace and swap_mass == mass
+    np.testing.assert_array_equal(intact, value)
+    np.testing.assert_array_equal(swapped, [0, 0])
     np.testing.assert_array_equal(shard.values, [[0, 127], [0, 127]])
 
     conflicting = selector.shard((target, other), [[1, 0], [1, 0]], [[0, 1], [0, 0]])
     value, mass, trace, masked = selector.read_withheld_value(query, (conflicting,), target)
     assert trace.receipt.status == "competing" and mass == 0
     assert value is masked is None
+    full, donor_mass, donor_trace, alternative = selector.read_with_replacement(
+        query, (conflicting,), other, np.array([0, 127], dtype=np.int8),
+    )
+    assert donor_trace == trace and donor_mass == 0 and full is alternative is None
 
 
 def test_overflow_preserves_strict_winners_and_margin_checks_near_cutoff():

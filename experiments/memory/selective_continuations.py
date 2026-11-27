@@ -106,9 +106,16 @@ class RetainedSelector:
 
     def read_withheld_value(self, hidden, shards, seed):
         """Also return a mixture with one selected value set to zero."""
-        return self._read(hidden, shards, withheld=seed)
+        return self._read(hidden, shards, substitution=(seed, 0))
 
-    def _read(self, hidden, shards, *, withheld=None):
+    def read_with_replacement(self, hidden, shards, seed, value):
+        """Return a second mixture with one selected Q8 value replaced."""
+        if (not isinstance(value, np.ndarray) or value.dtype != np.int8
+                or value.shape != (self._kernel._width,) or np.any(value == -128)):
+            raise ValueError("continuation replacement requires an exact Q8 row")
+        return self._read(hidden, shards, substitution=(seed, value))
+
+    def _read(self, hidden, shards, *, substitution=None):
         shards = tuple(shards)
         with np.errstate(over="raise", invalid="raise"):
             projected = np.clip(self._kernel._vector(hidden) @ self._kernel._query, -1, 1)
@@ -156,15 +163,16 @@ class RetainedSelector:
         weights /= weights.sum()
         values = np.asarray(values)
         full = (weights @ values) / _LEVELS
-        masked = None
-        if withheld is not None:
+        alternate = None
+        if substitution is not None:
+            seed, value = substitution
             for index, hit in enumerate(selected):
-                if hit.span == withheld:
+                if hit.span == seed:
                     # Ambiguity and normalization were decided using the original rows.
-                    values[index] = 0
-                    masked = (weights @ values) / _LEVELS
+                    values[index] = value
+                    alternate = (weights @ values) / _LEVELS
                     break
-        return full, float(scores[0]), trace, masked
+        return full, float(scores[0]), trace, alternate
 
 
 def frontier_survives(frontier, changed_sources, revised_shards):

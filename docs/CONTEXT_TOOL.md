@@ -991,6 +991,29 @@ the target was read again. Calls start a fresh private prefix cache. The
 read-only diagnostic uses the direct token reader and its receipt cannot
 reopen candidate evidence. Standard task episodes use the ordinary reader.
 
+## Holding later ordinary source inputs fixed
+
+Pass exact question token IDs, an intact reopened selective memory,
+a target leaf and a donor publication with its leaf to
+`reader.compare_continuation_value(input_ids, memory, seed, donor, donor_seed, steps=...)`.
+Both publications must belong to the same compatible reader and runtime.
+The three reads start fresh caches from identical tokens. The first
+reads normally. The second substitutes the donor's stored Q8 value at
+the target's first ready selection. The third makes the same substitution
+and applies the first run's ordinary source additions on strictly later
+steps. The original selected rows, scores and weights determine the
+substitution. Later derived selection stays live.
+
+The output includes the two stored Q8 squared norms, the matched
+intervention step and the change at native precision. In the held-source
+arm, the later source trace identifies the applied reference choices,
+and `live_suffix_reads` reports the unused live selections. A zero
+change or an absent step supplies no effect. A final-step intervention
+supplies no information about later ordinary source reads. Donor values
+can change the mixture even when they would be refused by the
+original competition rule. Both altered reads lack citation authority.
+[Native comparison](RESULTS.md#separating-native-source-rerouting-from-a-retained-terminal)
+
 ## Reopening native candidate evidence
 
 After recording the raw answer, call `opened_memory.evidence_spans(read)`

@@ -620,6 +620,19 @@ both by task outcomes and rerouting side effects after edits. Retain current
 hidden-state addressing as the comparator.
 [Archived diagnosis](ARCHIVED_NATIVE_ADDRESS_GEOMETRY.md) · [Software control](RESULTS.md#isolating-one-retained-computation-across-a-source-revision)
 
+#### Separating a retained value from a later ordinary read
+
+The native reader can replay one question from three fresh prefixes.
+It exchanges one selected continuation value for a compatible donor,
+with the same initial scoring and softmax weights. In the third run
+the reader substitutes the same value and holds strictly later ordinary
+source contributions to the intact run's tensors at their applied
+precision. The prefix and first intervention selection must match.
+Later derived selection stays live. The trace distinguishes applied
+source contributions from unused live selections in the clamped run.
+This read-only comparison has no authority to reopen citations.
+[Native comparison](RESULTS.md#separating-native-source-rerouting-from-a-retained-terminal)
+
 #### Changing only a continuation's address
 
 [SLICE] The source-anchor control replaces one installed leaf's derived

@@ -96,6 +96,40 @@ class NativeValueWithholding:
     input_max_abs_delta: float | None = None
 
 
+@dataclass(frozen=True, slots=True)
+class NativeValueSubstitution:
+    seed: SourceSpan
+    donor_seed: SourceSpan
+    donor_publication_seal: str
+    donor_source_seal: str
+    clamp_source_suffix: bool
+    step: int | None = None
+    input_max_abs_delta: float | None = None
+    live_suffix_reads: tuple[SelectionReceipt, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class _ProbeStep:
+    source_trace: SelectionStep
+    source_delta: object
+    input_state: object
+
+
+@dataclass(slots=True)
+class _ValueProbe:
+    receipt: NativeValueSubstitution
+    value: np.ndarray
+    reference: tuple[_ProbeStep, ...]
+    input_state: object = None
+
+
+def _same_probe_input(left, right):
+    import torch
+
+    return (left.dtype == right.dtype and left.device == right.device
+            and torch.equal(left, right))
+
+
 @dataclass(slots=True)
 class _LatentRun:
     hidden: object
@@ -109,6 +143,7 @@ class _LatentRun:
     derived_reads: tuple[SelectionReceipt, ...] = ()
     derived_steps: tuple[SelectionStep, ...] = ()
     value_withholding: NativeValueWithholding | None = None
+    value_substitution: NativeValueSubstitution | None = None
 
 
 @dataclass(frozen=True, slots=True, eq=False)
@@ -189,7 +224,7 @@ class NativeSourceMemory:
                 or read.derived_omitted != self._derived_off or read.omitted_sources != self.omitted_sources
                 or read.omitted_continuation != self._omitted_continuation
                 or read.source_anchor_seed != self._source_anchor_seed
-                or read.value_withholding is not None):
+                or read.value_withholding is not None or read.value_substitution is not None):
             raise ValueError("evidence spans require a read from the matching reopened publication")
 
         def selected(receipts):
@@ -273,6 +308,7 @@ class NativeLatentRead:
     omitted_continuation: SourceSpan | None = None
     source_anchor_seed: SourceSpan | None = None
     value_withholding: NativeValueWithholding | None = None
+    value_substitution: NativeValueSubstitution | None = None
 
     def json_record(self):
         """Serialize a read receipt, preserving packed queries as hexadecimal."""
@@ -284,10 +320,21 @@ class NativeLatentRead:
             del record["source_anchor_seed"]
         if self.value_withholding is None:
             del record["value_withholding"]
+        if self.value_substitution is None:
+            del record["value_substitution"]
         for name in ("source_steps", "derived_steps"):
             for step in record[name]:
                 step["query"] = step["query"].hex()
         return record
+
+
+@dataclass(frozen=True, slots=True)
+class NativeValueComparison:
+    intact: NativeLatentRead
+    rerouted: NativeLatentRead
+    source_clamped: NativeLatentRead
+    original_q8_squared_norm: int
+    donor_q8_squared_norm: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -732,43 +779,64 @@ class NativeLatentModel:
         delta = torch.tensor(value, dtype=hidden.dtype, device=hidden.device)
         return (gain * weight) * delta
 
-    def _continue(self, hidden, cache, memory, steps, *, readout=None, withhold_continuation_value=None):
+    def _continue(self, hidden, cache, memory, steps, *, readout=None, withhold_continuation_value=None,
+                  capture_probe=None, probe=None):
         import torch
 
         run = _LatentRun(hidden, cache, hidden if readout is None else readout)
         if withhold_continuation_value is not None:
             run.value_withholding = NativeValueWithholding(withhold_continuation_value)
+        if probe is not None:
+            run.value_substitution = probe.receipt
         source_steps, derived_reads, derived_steps = [], [], []
+        live_suffix_reads = []
         selective = None if memory is None else memory._selective
         shards = () if selective is None else tuple(selective.shards.values())
         for step in range(1, steps + 1):
             relay = hidden * self._relay_gain
             thought = relay
+            pending_probe = probe is not None and run.value_substitution.step is None
             if memory is not None:
                 query = self._encode_hidden(hidden)
-                if selective is None:
-                    value, mass = self._moments.read_observations(query, memory._bank)
+                if probe is not None and probe.receipt.clamp_source_suffix and not pending_probe:
+                    _, _, live = self._selector.read(query, shards)
+                    live_suffix_reads.append(replace(live.receipt, observed_source_seal=memory.seal))
+                    earlier = probe.reference[step - 1]
+                    trace, source_delta = earlier.source_trace, earlier.source_delta
+                    if source_delta is not None and (
+                            source_delta.dtype != hidden.dtype or source_delta.device != hidden.device):
+                        raise ValueError("continuation probe changed the source contribution precision or device")
                 else:
-                    value, mass, trace = self._selector.read(query, shards)
-                    if value is not None:
-                        value = _apply_value(self._moments._observation_value, value)
-                if mass > 0:
-                    thought = thought + self._memory_delta(hidden, value, mass, self._memory_gain)
+                    if selective is None:
+                        value, mass = self._moments.read_observations(query, memory._bank)
+                    else:
+                        value, mass, trace = self._selector.read(query, shards)
+                        if value is not None:
+                            value = _apply_value(self._moments._observation_value, value)
+                    source_delta = (self._memory_delta(hidden, value, mass, self._memory_gain)
+                                    if mass > 0 else None)
+                if source_delta is not None:
+                    thought = thought + source_delta
                     run.routed += 1
                 if selective is not None:
                     receipt = replace(trace.receipt, observed_source_seal=memory.seal)
                     source_steps.append(replace(trace, receipt=receipt, applied=bool(torch.any(thought != relay))))
-                masked_association = None
+                alternate_association = None
+                ordinary_input = None
                 if memory._derived is not None:
                     association, mass = self._moments.read_associations(query, memory._derived)
                     derived_trace = None
                 elif selective is not None and not memory._derived_off:
-                    if withhold_continuation_value is None:
-                        association, mass, trace = self._selector.read(query, selective.derived)
-                    else:
-                        association, mass, trace, masked_association = self._selector.read_withheld_value(
+                    if pending_probe:
+                        association, mass, trace, alternate_association = self._selector.read_with_replacement(
+                            query, selective.derived, probe.receipt.seed, probe.value,
+                        )
+                    elif withhold_continuation_value is not None:
+                        association, mass, trace, alternate_association = self._selector.read_withheld_value(
                             query, selective.derived, withhold_continuation_value,
                         )
+                    else:
+                        association, mass, trace = self._selector.read(query, selective.derived)
                     receipt = replace(trace.receipt, observed_source_seal=memory.seal)
                     derived_reads.append(receipt)
                     derived_trace = replace(trace, receipt=receipt)
@@ -778,16 +846,21 @@ class NativeLatentModel:
                 if mass > 0:
                     previous = thought
                     thought = previous + self._memory_delta(hidden, association, mass, self._derived_gain)
-                    if masked_association is not None:
-                        masked = previous + self._memory_delta(hidden, masked_association, mass, self._derived_gain)
-                        change = float(torch.max(torch.abs(thought.double() - masked.double())))
+                    if alternate_association is not None:
+                        ordinary_input = thought
+                        thought = previous + self._memory_delta(hidden, alternate_association, mass,
+                                                                self._derived_gain)
+                        change = float(torch.max(torch.abs(ordinary_input.double() - thought.double())))
                         if not isfinite(change):
-                            raise FloatingPointError("nonfinite value-withholding effect")
-                        run.value_withholding = NativeValueWithholding(
-                            withhold_continuation_value, step, change > 0, change,
-                        )
-                        thought = masked
-                        withhold_continuation_value = None
+                            raise FloatingPointError("nonfinite continuation intervention effect")
+                        if pending_probe:
+                            run.value_substitution = replace(probe.receipt, step=step, input_max_abs_delta=change)
+                            probe.input_state = thought.clone()
+                        else:
+                            run.value_withholding = NativeValueWithholding(
+                                withhold_continuation_value, step, change > 0, change,
+                            )
+                            withhold_continuation_value = None
                     run.derived += 1
                     derived_applied = bool(torch.any(thought != previous))
                     run.applied_derived += derived_applied
@@ -796,6 +869,13 @@ class NativeLatentModel:
                 if derived_trace is not None:
                     derived_steps.append(replace(derived_trace, applied=derived_applied))
                 run.applied += bool(torch.any(thought != relay))
+                if capture_probe is not None:
+                    capture_probe.append(_ProbeStep(source_steps[-1], source_delta, thought.clone()))
+                if pending_probe:
+                    expected = probe.reference[step - 1].input_state
+                    actual = thought if ordinary_input is None else ordinary_input
+                    if not _same_probe_input(actual, expected):
+                        raise ValueError("continuation probe did not reproduce the intact prefix")
             if not torch.isfinite(thought).all():
                 raise FloatingPointError("nonfinite continuous input")
             hidden, cache, run.readout = self._latent_backbone(thought, cache, retain_cache=True, inject=True)
@@ -803,6 +883,8 @@ class NativeLatentModel:
         run.source_steps = tuple(source_steps)
         run.derived_reads = tuple(derived_reads)
         run.derived_steps = tuple(derived_steps)
+        if live_suffix_reads:
+            run.value_substitution = replace(run.value_substitution, live_suffix_reads=tuple(live_suffix_reads))
         return run
 
     def _seed_state(self, item, lookup):
@@ -1307,14 +1389,66 @@ class NativeLatentModel:
                                          allowed_next_tokens=allowed_next_tokens,
                                          withhold_continuation_value=withhold_continuation_value)
 
+    def compare_continuation_value(self, input_ids, memory, seed, donor, donor_seed, *, steps=None):
+        """Compare a donor Q8 value with live or intact later ordinary source inputs."""
+        from experiments.memory.native_publication import _reader_digest
+
+        _require_cpu_eval(self._model)
+        fingerprint = _reader_digest(self)
+        for view in (memory, donor):
+            self._check_memory(view)
+            if (view._publication_seal is None or view._selective is None or view._derived_off
+                    or view.omitted_sources or view._reader_fingerprint_sha256 != fingerprint):
+                raise ValueError("continuation comparison requires intact compatible reopened publications")
+        if memory._publication_runtime_sha256 != donor._publication_runtime_sha256:
+            raise ValueError("continuation comparison requires one publication runtime")
+        if (not isinstance(seed, SourceSpan) or not memory._is_continuation_leaf(seed)
+                or not isinstance(donor_seed, SourceSpan) or not donor._is_continuation_leaf(donor_seed)):
+            raise ValueError("continuation comparison requires installed target and donor leaves")
+        steps = self._step_budget(steps)
+        input_ids = tuple(input_ids)
+        self._check_input_ids(input_ids, self._context_tokens - steps - self._output_tokens)
+
+        original_bank, = memory._selective.derived
+        donor_bank, = donor._selective.derived
+        original = original_bank.values[original_bank.spans.index(seed)].astype(np.int64)
+        replacement = donor_bank.values[donor_bank.spans.index(donor_seed)]
+        donor_wide = replacement.astype(np.int64)
+
+        reference = []
+        intact = self._read_ids_with_limit(input_ids, memory, steps, self._output_tokens, capture_probe=reference)
+        receipt = NativeValueSubstitution(seed, donor_seed, donor._publication_seal, donor.seal, False)
+        live_probe = _ValueProbe(receipt, replacement, tuple(reference))
+        fixed_probe = _ValueProbe(replace(receipt, clamp_source_suffix=True), replacement, tuple(reference))
+        rerouted = self._read_ids_with_limit(input_ids, memory, steps, self._output_tokens, probe=live_probe)
+        clamped = self._read_ids_with_limit(input_ids, memory, steps, self._output_tokens, probe=fixed_probe)
+        selected_step = next((index for index, trace in enumerate(intact.derived_steps, 1)
+                              if trace.receipt.status == "ready"
+                              and any(hit.span == seed for hit in trace.receipt.selected)), None)
+        prefix = steps if selected_step is None else selected_step
+        def prefix_derived(read):
+            traces = read.derived_steps[:prefix]
+            return traces if selected_step is None else (*traces[:-1], replace(traces[-1], applied=False))
+
+        for counterpart in (rerouted, clamped):
+            if (counterpart.value_substitution.step != selected_step
+                    or counterpart.source_steps[:prefix] != intact.source_steps[:prefix]
+                    or prefix_derived(counterpart) != prefix_derived(intact)):
+                raise ValueError("continuation probe reached different prefix selections")
+        if selected_step is not None and not _same_probe_input(live_probe.input_state, fixed_probe.input_state):
+            raise ValueError("continuation probe produced different inputs at the intervention")
+        return NativeValueComparison(intact, rerouted, clamped, int(original @ original),
+                                     int(donor_wide @ donor_wide))
+
     def _read_ids_with_limit(self, input_ids, memory, steps, output_limit, *, allowed_next_tokens=None,
-                             withhold_continuation_value=None):
+                             withhold_continuation_value=None, capture_probe=None, probe=None):
         import torch
 
         with torch.inference_mode():
             hidden, cache, readout = self._latent_backbone(self._embed_ids(input_ids), retain_cache=True)
             run = self._continue(hidden, cache, memory, steps, readout=readout,
-                                 withhold_continuation_value=withhold_continuation_value)
+                                 withhold_continuation_value=withhold_continuation_value,
+                                 capture_probe=capture_probe, probe=probe)
             hidden, cache = run.readout, run.cache
             ids = []
             for step in range(output_limit):
@@ -1355,4 +1489,4 @@ class NativeLatentModel:
                                 run.source_steps, run.derived_steps,
                                 None if memory is None else memory._omitted_continuation,
                                 None if memory is None else memory._source_anchor_seed,
-                                run.value_withholding)
+                                run.value_withholding, run.value_substitution)

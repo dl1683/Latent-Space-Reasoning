@@ -455,6 +455,159 @@ def test_residual_recurrence_carries_worker_computation_across_source_revisions(
     assert fresh(question, memory=reopened.attach(fresh, pin=first), steps=1) == answer
 
 
+
+@pytest.mark.parametrize("stores_terminal", [False, True])
+def test_native_value_substitution_distinguishes_late_observation_from_terminal(tmp_path, stores_terminal):
+    from experiments.memory.native_workspace import NativeWorkspace
+
+    class Interior(torch.nn.Module):
+        def forward(self, hidden_states, *, prefix, worker):
+            if prefix == 0:
+                # The image is a premise. Only a cue can initiate its own route.
+                if worker and torch.count_nonzero(hidden_states[..., 3:5]):
+                    return torch.zeros_like(hidden_states)
+                return hidden_states
+            output = torch.zeros_like(hidden_states)
+            routes = hidden_states[0, -1, 3:5]
+            if float(routes.max()) > 0:
+                route = int(routes.argmax())
+                output[..., 1 + route] = output[..., 3 + route] = 1
+            if worker and prefix == 2:
+                output[..., :3] = 0
+                if stores_terminal:
+                    output[..., 6] = torch.sign(hidden_states[..., 5])
+            elif not worker:
+                output[..., 5:7] = hidden_states[..., 5:7]
+            return output
+
+    class Body(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.layers = torch.nn.ModuleList([torch.nn.Identity(), Interior(), torch.nn.Identity()])
+
+        def forward(self, *, inputs_embeds, past_key_values, use_cache, return_dict):
+            assert return_dict
+            prefix = 0 if past_key_values is None else past_key_values.get_seq_length()
+            worker = not torch.count_nonzero(inputs_embeds) if past_key_values is None else past_key_values.worker
+            state = self.layers[0](inputs_embeds)
+            state = self.layers[1](state, prefix=prefix, worker=worker)
+            state = self.layers[2](state)
+            cache = _Cache(prefix + inputs_embeds.shape[1]) if use_cache else None
+            if cache is not None:
+                cache.worker = worker
+            return SimpleNamespace(last_hidden_state=state, past_key_values=cache)
+
+    class MixedModalBackbone(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.config = SimpleNamespace(max_position_embeddings=12, stores_terminal=stores_terminal)
+            self.base_model = Body()
+            rows = torch.zeros(10, 8)
+            rows[1, 0] = rows[2, 1] = 1
+            rows[3, 0] = 0.2
+            rows[4, 1] = rows[4, 5] = rows[5, 2] = 1
+            rows[5, 5] = -1
+            self.lookup = torch.nn.Embedding.from_pretrained(rows)
+
+        def get_input_embeddings(self):
+            return self.lookup
+
+        def get_output_embeddings(self):
+            def score(hidden):
+                chosen = torch.where(hidden[..., 6].abs() > 0.125, hidden[..., 6], hidden[..., 5])
+                logits = hidden.new_full((1, 1, 10), -1)
+                logits[..., 0] = 0.125
+                logits[..., 7], logits[..., 8] = chosen, -chosen
+                return logits
+            return score
+
+    cue, picture, left, right = (letter * 32 for letter in "abcd")
+    pixmap = b"P6\n1 1\n255\n"
+    blue, gold = pixmap + b"\x00\x00\xff", pixmap + b"\xff\xc0\x00"
+
+    def ingress(source, raw):
+        if source != picture or raw not in (blue, gold):
+            return None
+        return (1, 0, 0, int(raw == blue), int(raw == gold), 0, 0, 0)
+
+    query = np.eye(8, 3)
+    values = np.diag((0, 0, 0, 1, 1, 1, 0, 0))
+    kernel = LinearFeedbackKernel(query=query, carry=None, observation_key=query, observation_value=values,
+                                  feedback_key=query, feedback_value=np.zeros((8, 8)), max_steps=2)
+
+    def make_reader():
+        return NativeLatentModel(MixedModalBackbone().eval(), _Tokenizer(), kernel, source_chars=4,
+                                 context_tokens=12, latent_steps=2, output_tokens=2, representation_scale=0.25,
+                                 memory_gain=1, null_weight=0.1, derived_gain=3, eos_ids=(0,), top_k=1,
+                                 source_ingress=ingress, source_ingress_sha256=sha256(b"two genuine PPM rows"),
+                                 residual_layer=1, source_tokenizer_sha256=sha256(b"fixture tokenizer mapping"))
+
+    limit, runtime = 65_536, sha256(b"mixed modal source mediation fixture")
+    opening_dir, edited_dir = tmp_path / "opening", tmp_path / "edited"
+    opening = write_source_delta(opening_dir, {cue: "\u00e9cho".encode(), picture: blue, left: b"blue", right: b"gold"},
+                                 binary_sources=(picture,), max_bytes=limit)
+    edited = write_source_delta(edited_dir, {picture: gold}, previous=opening,
+                                binary_sources=(picture,), max_bytes=limit)
+    worker = make_reader()
+    source_world = worker.publish(opening_dir, opening.seal, max_source_bytes=limit)
+    directory = tmp_path / "workspace"
+    workspace = NativeWorkspace.create(directory, worker, source_world, runtime_sha256=runtime, max_bytes=limit)
+    initial = workspace.maintain(worker, workspace.head(), max_seeds=1)
+    corrected = workspace.revise(worker, initial, edited_dir, edited.seal, max_source_bytes=limit)
+    updated = workspace.maintain(worker, corrected, max_seeds=4)
+
+    fresh = make_reader()
+    store = NativeWorkspace(directory, runtime_sha256=runtime, max_bytes=limit)
+    original, donor = (store.attach(fresh, pin=pin) for pin in (initial, updated))
+    seed, = original.derived_seeds
+    assert seed == original.source_spans(cue)[0]
+    assert donor.derived_seeds == (seed,)
+    question = "What follows?"
+    ids = fresh.task_token_ids(question)
+    assert fresh(question, memory=donor).text == "gold"
+    paired = fresh.compare_continuation_value(ids, original, seed, donor, seed)
+    assert paired.intact == fresh(question, memory=original)
+    assert paired.original_q8_squared_norm == paired.donor_q8_squared_norm > 0
+    assert paired.intact.text == "blue"
+    assert paired.rerouted.text == "gold"
+    assert paired.source_clamped.text == ("gold" if stores_terminal else "blue")
+    assert paired.intact.source_reads[1].selected[0].span.source_id == left
+    assert paired.rerouted.source_reads[1].selected[0].span.source_id == right
+    assert paired.source_clamped.source_reads[1] == paired.intact.source_reads[1]
+    assert paired.source_clamped.value_substitution.live_suffix_reads == paired.rerouted.source_reads[1:]
+    assert paired.intact.derived_steps[0] == paired.rerouted.derived_steps[0]
+    receipt = paired.rerouted.value_substitution
+    assert receipt.step == 1 and receipt.input_max_abs_delta > 0
+    assert receipt.donor_publication_seal == updated.publication_seal and receipt.donor_source_seal == edited.seal
+    assert paired.source_clamped.value_substitution.input_max_abs_delta == receipt.input_max_abs_delta
+    assert "value_substitution" not in paired.intact.json_record()
+    for invalid in (paired.rerouted, paired.source_clamped):
+        assert invalid.json_record()["value_substitution"]["step"] == 1
+        with pytest.raises(ValueError, match="evidence spans require"):
+            original.evidence_spans(invalid)
+
+    sham = fresh.compare_continuation_value(ids, original, seed, original, seed)
+    assert sham.rerouted.value_substitution.input_max_abs_delta == 0
+    assert replace(sham.source_clamped, value_substitution=None) == sham.intact
+    other_ids = fresh.task_token_ids("What else?")
+    untouched = fresh.compare_continuation_value(other_ids, original, seed, donor, seed)
+    assert untouched.source_clamped.value_substitution.step is None
+    assert untouched.source_clamped.value_substitution.live_suffix_reads == ()
+    assert replace(untouched.source_clamped, value_substitution=None) == untouched.intact
+    last = fresh.compare_continuation_value(ids, original, seed, donor, seed, steps=1)
+    assert last.source_clamped.value_substitution.step == 1
+    assert last.source_clamped.value_substitution.live_suffix_reads == ()
+    assert replace(last.source_clamped, value_substitution=last.rerouted.value_substitution) == last.rerouted
+
+    with pytest.raises(ValueError, match="intact compatible"):
+        fresh.compare_continuation_value(ids, original, seed, fresh.without_derived(donor), seed)
+    foreign = store.attach(make_reader(), pin=updated)
+    with pytest.raises(ValueError, match="different native reader"):
+        fresh.compare_continuation_value(ids, original, seed, foreign, seed)
+    other_runtime = replace(donor, _publication_runtime_sha256=sha256(b"different runtime"))
+    with pytest.raises(ValueError, match="one publication runtime"):
+        fresh.compare_continuation_value(ids, original, seed, other_runtime, seed)
+
 def test_random_llama_boundary_injects_the_exact_row_and_releases_hooks(tmp_path):
     from concurrent.futures import ThreadPoolExecutor
     from threading import Event

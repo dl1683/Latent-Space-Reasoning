@@ -507,6 +507,13 @@ a separate read-only diagnostic. The normal rerouting arm continues
 to measure useful maintained links.
 [Multimodal control](RESULTS.md#distinguishing-stored-consequences-from-later-source-reads)
 
+Holding later ordinary source inputs fixed can still leave a route
+through the earlier state or a later derived read. Treat a surviving
+donor effect as independence from fresh ordinary suffix inputs on that
+run. Check later derived choices and distinguish an unresolved or
+unrelated output from reversal to the original answer.
+[Native comparison](RESULTS.md#separating-native-source-rerouting-from-a-retained-terminal)
+
 **Exact sharing can lose to ordinary compression.** The eight-pin native
 fixture retained far fewer numeric file bytes with immutable shared blocks
 than with full copies. Independently compressing each sparse stand-in
