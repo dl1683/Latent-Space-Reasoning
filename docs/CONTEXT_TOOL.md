@@ -1505,7 +1505,21 @@ records how the earlier profile was wrapped.
 
 The adapter verifies the frozen input digest and schema, rejects input/output
 paths inside the checkout, and writes a one-attempt marker in the output
-parent before the batch. It uses the cached model revision, FP32 weights,
+parent **after backend loading**, before the batch. The authorized external
+controller must reserve the single attempt before starting the child process
+and retain its disposition even if loading fails or is killed before that
+internal marker exists. Absence of the internal marker is not retry authority.
+
+Before dispatch, check the effective process/container memory allowance as
+well as host available RAM. The earlier adapter checks
+`psutil.virtual_memory().available`, which is not a guarantee of usable memory
+under a cgroup or job-object limit. On the review environment, a model-free
+preflight measured 4,974,067,712 host-available bytes, a cgroup-v2 limit of
+4,294,967,296 bytes, and 583,954,432 charged bytes (at most 3,711,012,864 bytes
+of immediate cgroup headroom). This host fails the 12 GiB floor even before
+loading. On other hosts check applicable ancestor limits and shared usage;
+if effective headroom cannot be established, record NOT_RUN. This is an
+execution safety check, not reader competence or a change to the frozen gate. It uses the cached model revision, FP32 weights,
 four CPU threads, tokenizer EOS and tokenizer padding ID. Its monotonic
 deadline is checked cooperatively, including between generated tokens;
 it cannot interrupt a blocked model load or forward. The external watchdog
