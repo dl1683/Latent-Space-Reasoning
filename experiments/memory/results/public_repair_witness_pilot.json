@@ -1,0 +1,116 @@
+{
+  "dataCommit": "bac88aa1ca01c4b2fcf7ca05dad0a2c5623b2588",
+  "inputBlobs": {
+    "folio": "e5428ca9a4efbe9460bc8a833d9e5f01ff3d92d9",
+    "malls": "c42ef1680ce6b21cbaf33a429faa93644e011c37"
+  },
+  "folio": {
+    "n": 79,
+    "groups": 41,
+    "balanced": 69,
+    "unchanged": 19,
+    "train": 23,
+    "structure": {
+      "all": [
+        41,
+        1,
+        37
+      ],
+      "balanced": [
+        36,
+        1,
+        32
+      ],
+      "unchanged": [
+        7,
+        1,
+        11
+      ]
+    },
+    "joint": {
+      "all": [
+        35,
+        0,
+        44
+      ],
+      "balanced": [
+        31,
+        0,
+        38
+      ],
+      "unchanged": [
+        8,
+        0,
+        11
+      ]
+    },
+    "shorter": [
+      20,
+      4,
+      55
+    ],
+    "paren": [
+      10,
+      69,
+      0
+    ]
+  },
+  "malls": {
+    "n": 23,
+    "groups": 23,
+    "balanced": 23,
+    "unchanged": 0,
+    "train": 79,
+    "structure": {
+      "all": [
+        15,
+        0,
+        8
+      ],
+      "balanced": [
+        15,
+        0,
+        8
+      ],
+      "unchanged": [
+        0,
+        0,
+        0
+      ]
+    },
+    "joint": {
+      "all": [
+        15,
+        0,
+        8
+      ],
+      "balanced": [
+        15,
+        0,
+        8
+      ],
+      "unchanged": [
+        0,
+        0,
+        0
+      ]
+    },
+    "shorter": [
+      5,
+      3,
+      15
+    ],
+    "paren": [
+      0,
+      23,
+      0
+    ]
+  },
+  "endpoint": {
+    "human": 58,
+    "solver": 23,
+    "conclusions": 201,
+    "incorrectConclusions": 63,
+    "incorrectValidSolver": 41
+  }
+}
